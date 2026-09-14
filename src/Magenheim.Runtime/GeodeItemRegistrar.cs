@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using BepInEx.Logging;
 using Jotunn.Entities;
 using Jotunn.Managers;
+using Magenheim.Core;
 using Magenheim.Core.Definitions;
 
 namespace Magenheim.Runtime;
@@ -52,7 +54,7 @@ internal sealed class GeodeItemRegistrar : IDisposable
                 RegisterGeodeItem(geode);
 
             _registered = true;
-            _log.LogInfo($"Registered {_definitions.Geodes.Count} Magenheim geode item prefab(s) from definition authority.");
+            _log.LogInfo($"Registered {_definitions.Geodes.Count} biome geode item prefab(s) from definition authority.");
         }
         catch (Exception exception)
         {
@@ -65,13 +67,14 @@ internal sealed class GeodeItemRegistrar : IDisposable
         }
     }
 
-    private void RegisterGeodeItem(GeodeDefinition geode)
+    private static void RegisterGeodeItem(GeodeDefinition geode)
     {
         if (CustomItem.IsCustomItem(geode.PrefabName))
             throw new InvalidOperationException($"Geode prefab '{geode.PrefabName}' is already registered as a custom item.");
 
         var customItem = new CustomItem(geode.PrefabName, PlaceholderBasePrefab);
         var shared = customItem.ItemDrop.m_itemData.m_shared;
+        var dominant = ElementVisualPalette.DominantElement(geode);
 
         shared.m_name = BuildDisplayName(geode);
         shared.m_description = BuildDescription(geode);
@@ -80,10 +83,18 @@ internal sealed class GeodeItemRegistrar : IDisposable
         shared.m_weight = DefaultWeight;
         shared.m_value = 0;
         shared.m_dlc = string.Empty;
-        if (geode.Id == "magenheim.geode.meadows.earth")
+
+        if (dominant == ElementalAlignment.Earth && geode.ElementWeights.Count == 1)
         {
             shared.m_icons = new[] { EarthAssets.Icon("geode") };
             EarthAssets.ReplaceVisual(customItem.ItemPrefab, "geode");
+        }
+        else
+        {
+            var variant = "geode-" + ElementVisualPalette.Variant(dominant);
+            var tint = ElementVisualPalette.Tint(dominant);
+            shared.m_icons = new[] { EarthAssets.Icon("geode", variant, tint) };
+            EarthAssets.ReplaceVisual(customItem.ItemPrefab, "geode", variant: variant, tint: tint);
         }
 
         if (!ItemManager.Instance.AddItem(customItem))
@@ -92,12 +103,20 @@ internal sealed class GeodeItemRegistrar : IDisposable
 
     private static string BuildDisplayName(GeodeDefinition geode)
     {
+        var biome = ElementVisualPalette.DisplayBiome(geode.Biome);
         if (geode.ElementWeights.Count == 1)
-            return $"{geode.Biome} {geode.ElementWeights[0].Element} Geode";
-
-        return $"{geode.Biome} Geode";
+            return $"{biome} {geode.ElementWeights[0].Element} Geode";
+        return $"{biome} Geode";
     }
 
-    private static string BuildDescription(GeodeDefinition geode) =>
-        $"An intact geode recovered from the {geode.Biome}. Its crystalline interior can be opened through Crystal Shaping.";
+    private static string BuildDescription(GeodeDefinition geode)
+    {
+        var biome = ElementVisualPalette.DisplayBiome(geode.Biome);
+        var total = geode.ElementWeights.Sum(weight => weight.Weight);
+        var affinity = string.Join(", ", geode.ElementWeights
+            .OrderByDescending(weight => weight.Weight)
+            .Select(weight => $"{weight.Element} {weight.Weight / total:P0}"));
+        return $"An intact geode recovered from the {biome}. Open it at a Geologist's Workstation to reveal Rough crystals. " +
+               $"Observed affinities: {affinity}.";
+    }
 }
