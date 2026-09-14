@@ -187,10 +187,17 @@ internal static class WorkshopOperationsRuntime
             if (_services is null || _authority is null || _log is null)
                 throw new InvalidOperationException("Workshop operation runtime was not configured before crafting.");
 
-            if (ZNet.instance is null || !ZNet.instance.IsServer())
+            if (ZNet.instance is null)
             {
                 player.Message(MessageHud.MessageType.Center,
-                    "Magenheim workstation transactions require server approval; client RPC execution is not active in this build.");
+                    "Magenheim workstation transactions require an active network session.");
+                return true;
+            }
+
+            if (!ZNet.instance.IsServer())
+            {
+                WorkshopOperationRpc.TrySubmitClient(gui, player, operation, out var remoteDiagnostic);
+                player.Message(MessageHud.MessageType.Center, remoteDiagnostic);
                 return true;
             }
 
@@ -269,15 +276,18 @@ internal static class WorkshopOperationsRuntime
             return;
         }
 
-        if (!WorkshopInventoryTransactions.TryApply(inventory, source, decision.Plan.ConsumeGeodeCount, grants, out var mutationError))
+        if (!WorkshopInventoryTransactions.TryApplyAndCommit(
+                inventory,
+                source,
+                decision.Plan.ConsumeGeodeCount,
+                grants,
+                () => services.GeodeOpeningOperations.MarkApplied(key),
+                out var mutationError))
         {
             services.GeodeOpeningOperations.AbortPrepared(key);
             player.Message(MessageHud.MessageType.Center, mutationError);
             return;
         }
-
-        if (!services.GeodeOpeningOperations.MarkApplied(key))
-            throw new InvalidOperationException("Applied geode operation could not be committed to replay state.");
 
         player.RaiseSkill(EarthContentRegistrar.CrystalShapingSkill, CrystalShapingExperience.CrackGeode);
         player.Message(MessageHud.MessageType.Center,
@@ -349,15 +359,18 @@ internal static class WorkshopOperationsRuntime
             return;
         }
 
-        if (!WorkshopInventoryTransactions.TryApply(inventory, source, decision.Plan.ConsumeSourceCount, grants, out var mutationError))
+        if (!WorkshopInventoryTransactions.TryApplyAndCommit(
+                inventory,
+                source,
+                decision.Plan.ConsumeSourceCount,
+                grants,
+                () => services.RefinementOperations.MarkApplied(key),
+                out var mutationError))
         {
             services.RefinementOperations.AbortPrepared(key);
             player.Message(MessageHud.MessageType.Center, mutationError);
             return;
         }
-
-        if (!services.RefinementOperations.MarkApplied(key))
-            throw new InvalidOperationException("Applied refinement operation could not be committed to replay state.");
 
         if (decision.Plan.AwardExperience)
             player.RaiseSkill(
@@ -484,6 +497,27 @@ internal static class WorkshopInventoryTransactions
         ItemDrop.ItemData source,
         int consumeAmount,
         IReadOnlyList<InventoryGrant> grants,
+        out string error) =>
+        TryApplyCore(inventory, source, consumeAmount, grants, null, out error);
+
+    internal static bool TryApplyAndCommit(
+        Inventory inventory,
+        ItemDrop.ItemData source,
+        int consumeAmount,
+        IReadOnlyList<InventoryGrant> grants,
+        Func<bool> commitReplayState,
+        out string error)
+    {
+        if (commitReplayState is null) throw new ArgumentNullException(nameof(commitReplayState));
+        return TryApplyCore(inventory, source, consumeAmount, grants, commitReplayState, out error);
+    }
+
+    private static bool TryApplyCore(
+        Inventory inventory,
+        ItemDrop.ItemData source,
+        int consumeAmount,
+        IReadOnlyList<InventoryGrant> grants,
+        Func<bool>? commitReplayState,
         out string error)
     {
         if (!CanApply(inventory, source, consumeAmount, grants, out error))
@@ -508,6 +542,9 @@ internal static class WorkshopInventoryTransactions
                 if (!inventory.AddItem(prefab, grant.Amount))
                     throw new InvalidOperationException($"Inventory refused preflighted output '{grant.PrefabName}' x{grant.Amount}.");
             }
+
+            if (commitReplayState is not null && !commitReplayState())
+                throw new InvalidOperationException("Replay-state commit refused the applied inventory transaction.");
 
             error = string.Empty;
             return true;
