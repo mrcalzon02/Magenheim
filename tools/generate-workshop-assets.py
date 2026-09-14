@@ -65,7 +65,8 @@ def bench():
             m.box((x,.18,z),(.181,.065,.181),IRON)
     for z in [-.32,.32]: m.box((0,.65,z),(1.53,.16,.11),DARKWOOD)
     for z in [-.32,0,.32]: m.box((0,.93,z),(1.82,.14,.30),LIGHTWOOD)
-    for x in [-.76,.76]: m.box((x,.934,0),(.055,.153,.94),IRON)
+    # Thin straps sit on the finished tabletop surface instead of intersecting the plank volume.
+    for x in [-.76,.76]: m.box((x,1.0085,0),(.055,.017,.94),IRON)
     for z in [-.22,0,.22]: m.box((0,.24,z),(1.4,.075,.20),WOOD)
     # Stone work surface, removable wedge, and striking hammer.
     m.box((-.34,1.033,0),(.76,.075,.65),STONE)
