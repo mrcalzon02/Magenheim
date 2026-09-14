@@ -120,6 +120,12 @@ internal sealed class CrystallineIceBoxRegistrar : IDisposable
             ambient.transform.SetParent(prefab.transform, false);
             producer.m_beeEffect = ambient;
 
+            var harvestPoint = new GameObject("magenheim.crystalline-ice-box.harvest-point") { layer = prefab.layer };
+            harvestPoint.transform.SetParent(prefab.transform, false);
+            harvestPoint.transform.localPosition = new Vector3(0f, 1.05f, -.88f);
+            producer.m_spawnPoint = harvestPoint.transform;
+            producer.m_coverPoint = harvestPoint.transform;
+
             ConfigureCollider(prefab);
             var wear = prefab.GetComponent<WearNTear>();
             if (wear)
