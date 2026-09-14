@@ -35,7 +35,7 @@ internal sealed class FurnitureRegistrar : IDisposable
                 RegisterPiece(definition);
 
             _registered = true;
-            _log.LogInfo("Registered 10 original Magenheim geology/crystal furniture pieces in Hammer > Furniture.");
+            _log.LogInfo("Registered 10 original Magenheim geology/crystal furniture pieces in Hammer > Furniture with unique Magenheim icons.");
         }
         catch (Exception exception)
         {
@@ -54,9 +54,8 @@ internal sealed class FurnitureRegistrar : IDisposable
             throw new InvalidOperationException($"Cannot replace occupied furniture identity '{definition.PrefabName}'.");
 
         var source = ResolveSource(definition.SourceCandidates);
-        var sourcePrefab = PrefabManager.Instance.GetPrefab(source)
-            ?? throw new InvalidOperationException($"Resolved furniture source '{source}' disappeared before cloning.");
-        var sourcePiece = sourcePrefab.GetComponent<Piece>();
+        if (PrefabManager.Instance.GetPrefab(source) is null)
+            throw new InvalidOperationException($"Resolved furniture source '{source}' disappeared before cloning.");
 
         var config = new PieceConfig
         {
@@ -66,7 +65,7 @@ internal sealed class FurnitureRegistrar : IDisposable
             Category = "Furniture",
             CraftingStation = "piece_workbench",
             Requirements = definition.Requirements,
-            Icon = sourcePiece ? sourcePiece.m_icon : null,
+            Icon = FurnitureIcons.Icon(definition.ModelId),
         };
 
         var custom = new CustomPiece(definition.PrefabName, source, config);
