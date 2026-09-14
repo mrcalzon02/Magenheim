@@ -88,11 +88,13 @@ internal static class CrystallineIceBoxVisuals
         Prism(root, "corner-growth-left", new Vector3(-1.05f, .88f, -.66f), .10f, .38f, 6, crystal, new Vector3(-15f, 18f, 7f));
         Prism(root, "corner-growth-right", new Vector3(1.05f, .84f, -.66f), .10f, .34f, 6, crystal, new Vector3(14f, -22f, -6f));
 
-        var light = root.AddComponent<Light>();
+        var lightObject = new GameObject("cold-light") { layer = root.layer };
+        lightObject.transform.SetParent(root.transform, false);
+        lightObject.transform.localPosition = new Vector3(0f, .86f, -.20f);
+        var light = lightObject.AddComponent<Light>();
         light.color = new Color(.48f, .84f, 1f, 1f);
         light.range = 3.6f;
         light.intensity = .72f;
-        light.transform.localPosition = new Vector3(0f, .86f, -.20f);
 
         foreach (var renderer in original)
             renderer.enabled = false;
