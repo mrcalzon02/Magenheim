@@ -37,7 +37,7 @@ internal sealed class FurnitureRegistrar : IDisposable
                 RegisterPiece(definition);
 
             _registered = true;
-            _log.LogInfo("Registered 10 original Magenheim geology/crystal furniture pieces in Hammer > Furniture with explicit comfort and Crystal Shaping-gated material costs.");
+            _log.LogInfo("Registered 10 original Magenheim geology/crystal furniture pieces in Hammer > Furniture with explicit comfort groups and Crystal Shaping-gated material costs.");
         }
         catch (Exception exception)
         {
@@ -78,6 +78,7 @@ internal sealed class FurnitureRegistrar : IDisposable
         var prefab = custom.PiecePrefab;
         custom.Piece.m_dlc = string.Empty;
         custom.Piece.m_comfort = definition.Comfort;
+        custom.Piece.m_comfortGroup = ResolveComfortGroup(definition.ComfortGroup);
 
         var visual = FurnitureVisuals.Apply(prefab, definition.ModelId);
         ConfigureWear(prefab, visual);
@@ -85,6 +86,14 @@ internal sealed class FurnitureRegistrar : IDisposable
 
         if (!PieceManager.Instance.AddPiece(custom))
             throw new InvalidOperationException($"Jotunn refused furniture piece '{definition.PrefabName}'.");
+    }
+
+    private static Piece.ComfortGroup ResolveComfortGroup(string name)
+    {
+        if (!Enum.TryParse(name, true, out Piece.ComfortGroup group) ||
+            !Enum.IsDefined(typeof(Piece.ComfortGroup), group))
+            throw new InvalidOperationException($"Required Valheim comfort group '{name}' is unavailable.");
+        return group;
     }
 
     private static string ResolveSource(IReadOnlyList<string> candidates)
@@ -196,52 +205,52 @@ internal sealed class FurnitureRegistrar : IDisposable
     private static IReadOnlyList<FurnitureDefinition> Definitions() => new[]
     {
         new FurnitureDefinition(
-            "Magenheim_Furniture_GeodeTable", FurnitureVisuals.GeodeTable, "Geode Table", 1,
+            "Magenheim_Furniture_GeodeTable", FurnitureVisuals.GeodeTable, "Geode Table", 1, "Table",
             "A broad stone-topped table with a cut geode specimen set into its center.",
             new[] { "piece_table", "wood_floor" },
             Cost("FineWood", 8), Cost("Stone", 4), Crystals(8)),
         new FurnitureDefinition(
-            "Magenheim_Furniture_GeodeChair", FurnitureVisuals.GeodeChair, "Geode Chair", 2,
+            "Magenheim_Furniture_GeodeChair", FurnitureVisuals.GeodeChair, "Geode Chair", 2, "Chair",
             "A rugged stone-and-timber chair crowned with small crystal points.",
             new[] { "piece_chair", "piece_bench01", "wood_floor" },
             Cost("FineWood", 4), Cost("Stone", 2), Crystals(5)),
         new FurnitureDefinition(
-            "Magenheim_Furniture_CrystalBench", FurnitureVisuals.CrystalBench, "Crystal Bench", 2,
+            "Magenheim_Furniture_CrystalBench", FurnitureVisuals.CrystalBench, "Crystal Bench", 2, "Chair",
             "A low geological bench with iron-bound stone and crystal end caps.",
             new[] { "piece_bench01", "piece_chair", "wood_floor" },
             Cost("FineWood", 6), Cost("Stone", 4), Crystals(8)),
         new FurnitureDefinition(
-            "Magenheim_Furniture_CrystalBed", FurnitureVisuals.CrystalBed, "Crystal-set Bed", 2,
+            "Magenheim_Furniture_CrystalBed", FurnitureVisuals.CrystalBed, "Crystal-set Bed", 2, "Bed",
             "A heavy timber bed with a stone headboard and softly luminous crystal finials.",
             new[] { "bed", "wood_floor" },
             Cost("FineWood", 8), Cost("DeerHide", 4), Cost("Stone", 4), Crystals(10)),
         new FurnitureDefinition(
-            "Magenheim_Furniture_MineralShelf", FurnitureVisuals.MineralShelf, "Mineral Shelf", 1,
+            "Magenheim_Furniture_MineralShelf", FurnitureVisuals.MineralShelf, "Mineral Shelf", 1, "Table",
             "A three-tier specimen shelf for geodes, crystals, ore samples, and tools.",
             new[] { "piece_table", "wood_floor" },
             Cost("FineWood", 8), Cost("Iron", 2), Cost("Stone", 2), Crystals(10)),
         new FurnitureDefinition(
-            "Magenheim_Furniture_LapidaryCabinet", FurnitureVisuals.LapidaryCabinet, "Lapidary Cabinet", 1,
+            "Magenheim_Furniture_LapidaryCabinet", FurnitureVisuals.LapidaryCabinet, "Lapidary Cabinet", 1, "Table",
             "A reinforced cabinet for mineral samples, shaping tools, and valuable crystal stock.",
             new[] { "piece_chest_wood", "piece_chest", "piece_table", "wood_floor" },
             Cost("FineWood", 10), Cost("Bronze", 2), Cost("Stone", 2), Crystals(12)),
         new FurnitureDefinition(
-            "Magenheim_Furniture_GeoDesk", FurnitureVisuals.GeoDesk, "Geologist's Desk", 1,
+            "Magenheim_Furniture_GeoDesk", FurnitureVisuals.GeoDesk, "Geologist's Desk", 1, "Table",
             "A specimen desk with stone writing surface, metal inlay, and a crystal scribing point.",
             new[] { "piece_table", "wood_floor" },
             Cost("FineWood", 10), Cost("Stone", 4), Cost("Bronze", 1), Crystals(12)),
         new FurnitureDefinition(
-            "Magenheim_Furniture_GeodePedestal", FurnitureVisuals.GeodePedestal, "Geode Pedestal", 1,
+            "Magenheim_Furniture_GeodePedestal", FurnitureVisuals.GeodePedestal, "Geode Pedestal", 1, "Table",
             "A short stone display plinth carrying a permanently mounted cracked geode specimen.",
             new[] { "piece_table", "wood_floor" },
             Cost("Stone", 8), Cost("Iron", 1), Crystals(8)),
         new FurnitureDefinition(
-            "Magenheim_Furniture_CrystalDivider", FurnitureVisuals.CrystalDivider, "Crystal Screen", 1,
+            "Magenheim_Furniture_CrystalDivider", FurnitureVisuals.CrystalDivider, "Crystal Screen", 1, "Table",
             "An open timber room divider crossed by metal rails and suspended crystal points.",
             new[] { "woodwall", "wood_wall", "wood_floor" },
             Cost("FineWood", 8), Cost("Iron", 2), Crystals(14)),
         new FurnitureDefinition(
-            "Magenheim_Furniture_CrystalThrone", FurnitureVisuals.CrystalThrone, "Crystal Throne", 3,
+            "Magenheim_Furniture_CrystalThrone", FurnitureVisuals.CrystalThrone, "Crystal Throne", 3, "Chair",
             "A ceremonial seat of dark stone, fine timber, iron, bronze, and a resonant crystal heart.",
             new[] { "piece_throne01", "piece_chair", "wood_floor" },
             Cost("FineWood", 12), Cost("Stone", 10), Cost("Iron", 4), Cost("Bronze", 2), Crystals(20)),
@@ -261,6 +270,7 @@ internal sealed class FurnitureRegistrar : IDisposable
             string modelId,
             string displayName,
             int comfort,
+            string comfortGroup,
             string description,
             IReadOnlyList<string> sourceCandidates,
             params RequirementConfig[] requirements)
@@ -269,6 +279,7 @@ internal sealed class FurnitureRegistrar : IDisposable
             ModelId = modelId;
             DisplayName = displayName;
             Comfort = comfort;
+            ComfortGroup = comfortGroup;
             Description = description;
             SourceCandidates = sourceCandidates;
             Requirements = requirements;
@@ -278,6 +289,7 @@ internal sealed class FurnitureRegistrar : IDisposable
         internal string ModelId { get; }
         internal string DisplayName { get; }
         internal int Comfort { get; }
+        internal string ComfortGroup { get; }
         internal string Description { get; }
         internal IReadOnlyList<string> SourceCandidates { get; }
         internal RequirementConfig[] Requirements { get; }
