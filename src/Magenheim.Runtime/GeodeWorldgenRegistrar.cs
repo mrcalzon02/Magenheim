@@ -5,7 +5,6 @@ using BepInEx.Logging;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
-using Magenheim.Core;
 using Magenheim.Core.Definitions;
 using Magenheim.Core.Worldgen;
 using UnityEngine;
@@ -22,8 +21,8 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
     private const string VanillaWorldBasePrefab = "Rock_4";
     private const float DefaultHealth = 20f;
     private const int DefaultMinToolTier = 0;
-    // Live test 1 showed the original 3.5x nodule was far too large. All biome geodes now use
-    // the corrected ground-stone scale while their elemental tint provides visual identity.
+    // All biomes deliberately share one physical cracked geode model. Definition-driven
+    // interior palette is the only biome visual variant.
     private const float WorldVisualScale = 1.2f;
 
     private readonly MagenheimDefinitionSet _definitions;
@@ -191,21 +190,12 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
 
     private static void ApplyGeodeVisual(GameObject worldPrefab, GeodeDefinition geode)
     {
-        var dominant = ElementVisualPalette.DominantElement(geode);
-        if (dominant == ElementalAlignment.Earth && geode.ElementWeights.Count == 1)
-        {
-            EarthAssets.ReplaceVisual(worldPrefab, "geode", WorldVisualScale, worldObject: true);
-            return;
-        }
-
-        var variant = "geode-" + ElementVisualPalette.Variant(dominant);
-        EarthAssets.ReplaceVisual(
+        // Same geometry in every biome. Only the exposed mineral interior palette changes.
+        GeodeVisuals.Apply(
             worldPrefab,
-            "geode",
+            ElementVisualPalette.GeodeTint(geode),
             WorldVisualScale,
-            worldObject: true,
-            variant: variant,
-            tint: ElementVisualPalette.Tint(dominant));
+            worldObject: true);
     }
 
     private GeodeDefinition FindGeode(string registrationKey)

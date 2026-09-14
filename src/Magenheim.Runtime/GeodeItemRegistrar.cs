@@ -53,7 +53,7 @@ internal sealed class GeodeItemRegistrar : IDisposable
                 RegisterGeodeItem(geode);
 
             _registered = true;
-            _log.LogInfo($"Registered {_definitions.Geodes.Count} biome geode item prefab(s) from definition authority.");
+            _log.LogInfo($"Registered {_definitions.Geodes.Count} biome geode item prefab(s) using the shared cracked geode model.");
         }
         catch (Exception exception)
         {
@@ -73,8 +73,7 @@ internal sealed class GeodeItemRegistrar : IDisposable
 
         var customItem = new CustomItem(geode.PrefabName, PlaceholderBasePrefab);
         var shared = customItem.ItemDrop.m_itemData.m_shared;
-        var variant = ElementVisualPalette.GeodeVariant(geode);
-        var tint = ElementVisualPalette.GeodeTint(geode);
+        var interiorTint = ElementVisualPalette.GeodeTint(geode);
 
         shared.m_name = BuildDisplayName(geode);
         shared.m_description = BuildDescription(geode);
@@ -83,8 +82,12 @@ internal sealed class GeodeItemRegistrar : IDisposable
         shared.m_weight = DefaultWeight;
         shared.m_value = 0;
         shared.m_dlc = string.Empty;
-        shared.m_icons = new[] { EarthAssets.Icon("geode", variant, tint) };
-        EarthAssets.ReplaceVisual(customItem.ItemPrefab, "geode", variant: variant, tint: tint);
+
+        // Every biome uses exactly the same physical geode model: a squat, knobbly,
+        // cracked dodecahedral basalt/granite shell. Only the visible cutaway interior
+        // palette changes, preserving instant biome readability without silhouette drift.
+        shared.m_icons = new[] { GeodeVisuals.Icon(geode.Biome, interiorTint) };
+        GeodeVisuals.Apply(customItem.ItemPrefab, interiorTint);
 
         if (!ItemManager.Instance.AddItem(customItem))
             throw new InvalidOperationException($"Jotunn refused geode item '{geode.PrefabName}'.");
@@ -101,6 +104,6 @@ internal sealed class GeodeItemRegistrar : IDisposable
             .OrderByDescending(weight => weight.Weight)
             .Select(weight => $"{weight.Element} {weight.Weight / total:P0}"));
         return $"An intact geode recovered from the {biome}. Open it at a Geologist's Workstation to reveal Rough crystals. " +
-               $"Observed affinities: {affinity}.";
+               $"Its exposed cutaway color marks the local mineral mix. Observed affinities: {affinity}.";
     }
 }
