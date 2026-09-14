@@ -25,6 +25,13 @@ public sealed record EquipmentDescriptor(
     string ModOrigin,
     EquipmentCategory Category)
 {
+    /// <summary>
+    /// Stable per-item identity when the runtime exposes one separately from prefab identity.
+    /// For Valheim this is the shared item name/localization token. It is intentionally
+    /// optional so pure callers and unknown foreign items can remain fail-safe.
+    /// </summary>
+    public string ItemName { get; init; } = string.Empty;
+
     public void Validate()
     {
         if (string.IsNullOrWhiteSpace(PrefabName))
