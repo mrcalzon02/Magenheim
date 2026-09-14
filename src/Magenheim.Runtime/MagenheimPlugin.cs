@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.20";
+    internal const string PluginVersion = "0.0.21";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -29,6 +29,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private FrostStaffRegistrar? _frostStaffRegistrar;
     private StormStaffRegistrar? _stormStaffRegistrar;
     private EarthStaffRegistrar? _earthStaffRegistrar;
+    private VenomStaffRegistrar? _venomStaffRegistrar;
     private SocketWorkstationOverlay? _socketWorkstationOverlay;
     private Harmony? _harmony;
 
@@ -91,14 +92,16 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _stormStaffRegistrar.Register();
             _earthStaffRegistrar = new EarthStaffRegistrar(Logger);
             _earthStaffRegistrar.Register();
+            _venomStaffRegistrar = new VenomStaffRegistrar(Logger);
+            _venomStaffRegistrar.Register();
 
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
                 "Player content includes eight biome geodes, eight five-tier elemental crystal families, elemental shard recombination, " +
-                "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and four complete four-tier staff families. " +
-                "Fire is direct destructive pressure, Frost is precision/slow saturation, Storm is electrical discharge geometry, and Earth now uses " +
-                "radial sledge shockwaves for short-range interruption, posture breaking, crowd displacement, and Master-tier seismic control.");
+                "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and five complete four-tier staff families. " +
+                "Fire is direct destructive pressure, Frost is precision/slow saturation, Storm is electrical discharge geometry, Earth is short-range seismic control, " +
+                "and Venom now uses Ooze Bomb poison fields for repeated contamination, corrosive attrition, and persistent area denial.");
         }
         catch (Exception exception)
         {
@@ -109,6 +112,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
     private void OnDestroy()
     {
+        _venomStaffRegistrar?.Dispose();
         _earthStaffRegistrar?.Dispose();
         _stormStaffRegistrar?.Dispose();
         _frostStaffRegistrar?.Dispose();
