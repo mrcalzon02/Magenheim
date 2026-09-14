@@ -36,7 +36,7 @@ public sealed record RefinementRule(
 {
     public void Validate()
     {
-        if (DestinationTier != SourceTier + 1)
+        if ((int)DestinationTier != (int)SourceTier + 1)
             throw new InvalidOperationException($"Refinement must advance exactly one tier: {SourceTier} -> {DestinationTier}.");
 
         if (SuccessChance < 0d || SuccessChance > 1d)
@@ -61,6 +61,7 @@ public enum RefinementOutcome
     Success,
     FailedPreserved,
     FailedDestroyed,
+    NoRule,
     InvalidSkill,
     InvalidStation,
     InvalidRoll
