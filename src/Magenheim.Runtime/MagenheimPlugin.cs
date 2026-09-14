@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.27";
+    internal const string PluginVersion = "0.0.28";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -115,8 +115,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 "Socket item/prefab/category/mod-origin compatibility rules participate in multiplayer mutation authority. " +
                 "Player content includes eight biome geodes, eight five-tier elemental crystal families, elemental shard recombination, " +
                 "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and all eight four-tier elemental staff families. " +
-                "Radiance owns hard-light/flash/sanctuary payloads, Spirit owns spectral echo fields, Seidr owns movement-binding hexes, and Venom now owns " +
-                "tiered toxic fields plus Corrosion and Deep Corrosion attrition that persist briefly after contaminated ground is escaped.");
+                "Radiance owns hard-light/flash/sanctuary payloads, Spirit owns spectral echo fields, Seidr owns movement-binding hexes, Venom owns persistent corrosion, " +
+                "and Storm now turns Arc Chain impacts into real secondary lightning discharges while Thunderhead seeds repeated electrical pulse fields.");
         }
         catch (Exception exception)
         {

@@ -19,16 +19,17 @@ internal static class StaffEffectPayloads
         string prefabName,
         Color tint,
         float emission,
-        GameObject? spawnOnHit = null)
+        GameObject? spawnOnHit = null,
+        string sourceStaffPrefab = BaseStaffPrefab)
     {
         EnsureIdentityFree(prefabName);
 
-        var baseStaff = PrefabManager.Instance.GetPrefab(BaseStaffPrefab)
-            ?? throw new InvalidOperationException($"Required spell carrier '{BaseStaffPrefab}' is unavailable.");
+        var baseStaff = PrefabManager.Instance.GetPrefab(sourceStaffPrefab)
+            ?? throw new InvalidOperationException($"Required spell carrier '{sourceStaffPrefab}' is unavailable.");
         var itemDrop = baseStaff.GetComponent<ItemDrop>()
-            ?? throw new InvalidOperationException($"Spell carrier '{BaseStaffPrefab}' has no ItemDrop component.");
+            ?? throw new InvalidOperationException($"Spell carrier '{sourceStaffPrefab}' has no ItemDrop component.");
         var sourceProjectile = itemDrop.m_itemData.m_shared.m_attack.m_attackProjectile
-            ?? throw new InvalidOperationException($"Spell carrier '{BaseStaffPrefab}' has no attack projectile.");
+            ?? throw new InvalidOperationException($"Spell carrier '{sourceStaffPrefab}' has no attack projectile.");
 
         var clone = PrefabManager.Instance.CreateClonedPrefab(prefabName, sourceProjectile)
             ?? throw new InvalidOperationException($"Unable to clone spell projectile '{sourceProjectile.name}' as '{prefabName}'.");
