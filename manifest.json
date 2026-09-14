@@ -1,0 +1,10 @@
+{
+  "name": "Magenheim",
+  "version_number": "0.0.1",
+  "website_url": "",
+  "description": "Development foundation for Magenheim: Crystal Shaping skill and validated Earth refinement rules. No playable geodes, crafting or spells yet.",
+  "dependencies": [
+    "denikson-BepInExPack_Valheim-5.4.2350",
+    "ValheimModding-Jotunn-2.30.0"
+  ]
+}

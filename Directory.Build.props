@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <GamePath Condition="'$(GamePath)' == ''">$(MSBuildThisFileDirectory)..</GamePath>
+    <ModProfile Condition="'$(ModProfile)' == ''">$(APPDATA)\r2modmanPlus-local\Valheim\profiles\Central Fuckery</ModProfile>
+    <ManagedPath>$(GamePath)\valheim_Data\Managed</ManagedPath>
+    <LangVersion>5</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>$(NoWarn);1701</NoWarn>
+    <EnableDefaultCompileItems>true</EnableDefaultCompileItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+</Project>

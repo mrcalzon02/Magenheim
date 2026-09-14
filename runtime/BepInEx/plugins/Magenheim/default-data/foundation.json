@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 2,
+  "elements": ["earth"],
+  "maximumFailureReduction": 0.75,
+  "shardsRequiredForSimpleCrystal": 5,
+  "geodes": [
+    {
+      "id": "meadows",
+      "secondCrystalChance": 0.35,
+      "thirdCrystalChance": 0.10,
+      "experience": 0.15,
+      "weights": [{"element": "earth", "weight": 100}]
+    }
+  ],
+  "refinement": [
+    {"source":"rough", "target":"simple", "baseFailure":0.10, "failureShards":1, "stationLevel":1, "experience":0.50},
+    {"source":"simple", "target":"refined", "baseFailure":0.20, "failureShards":2, "stationLevel":2, "experience":1.00},
+    {"source":"refined", "target":"advanced", "baseFailure":0.30, "failureShards":3, "stationLevel":3, "experience":2.00},
+    {"source":"advanced", "target":"master", "baseFailure":0.40, "failureShards":5, "stationLevel":4, "experience":4.00}
+  ]
+}
