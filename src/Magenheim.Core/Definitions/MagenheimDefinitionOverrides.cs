@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Magenheim.Core.Socketing;
 using Magenheim.Core.Worldgen;
 
 namespace Magenheim.Core.Definitions;
@@ -26,7 +27,8 @@ public static class MagenheimDefinitionOverrideApplier
         MagenheimDefinitionSet baseline,
         IEnumerable<RefinementBalanceOverride> refinementOverrides,
         IEnumerable<GeodeBalanceOverride> geodeOverrides,
-        WorldgenCompatibilityPolicy? worldgenCompatibilityOverride = null)
+        WorldgenCompatibilityPolicy? worldgenCompatibilityOverride = null,
+        SocketEffectDefinitionSet? socketEffectsOverride = null)
     {
         if (baseline is null)
             throw new ArgumentNullException(nameof(baseline));
@@ -63,7 +65,7 @@ public static class MagenheimDefinitionOverrideApplier
             refinementRules,
             geodes,
             worldgenCompatibilityOverride ?? baseline.WorldgenCompatibility,
-            baseline.SocketEffects);
+            socketEffectsOverride ?? baseline.SocketEffects);
     }
 
     private static GeodeDefinition ApplyGeodeBalance(
