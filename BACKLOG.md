@@ -43,6 +43,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 ## P1 — Meadows/Earth vertical slice
 
 - [x] Define the initial Meadows geode data with one guaranteed Earth crystal and independent 35%/10% additional-crystal chances.
+- [x] Add deterministic pure-core coverage for geode cracking: independent bonus rolls, chance boundaries, fixed RNG consumption, weighted element selection, Rough-tier output, and fail-closed malformed input/definitions.
 - [ ] Register an intact Meadows geode item/prefab.
 - [ ] Bind the additive worldgen planner to a thin Jötunn registrar using the validated definition policy.
 - [ ] Explicitly map pure-core `SpawnArea.All` to current runtime `Heightmap.BiomeArea.Everywhere` rather than casting enum integers.
