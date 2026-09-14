@@ -4,7 +4,35 @@
 
 `INSTRUCTIONS.md`, committed source on the live `main` branch, and directly observed repository/runtime evidence are authoritative. Backlog, validation records, archived design, scheduled prompts, and conversation are subordinate when they disagree with verified live state.
 
-## Repository state — 2026-09-14
+## Current local delivery - 0.0.16
+
+The local content set now contains eleven original models/texture atlases and
+twelve icons: geode, five Earth crystal tiers, shards, Crystal Shaping badge,
+Geologist's Workstation, and three station upgrades. Models have OBJ/MTL exports.
+Workshop pieces have build costs, collision shapes, distinct wear variants, and
+upgrade links to the Geologist's Workstation. Its crafting skill is Crystal Shaping.
+
+The prior worldgen drop-table fix is installed. Valheim startup using the same
+packaged assemblies now registers all seven inventory items, Crystal Shaping,
+the four workshop pieces, and one Meadows geode vegetation addition without a
+Magenheim registration error. The isolated check loaded no world and was closed.
+
+0.0.16 is installed and hash-verified in the active Central Fuckery profile.
+The previous installation was archived under backups/Local-Magenheim-20260914-075509.zip.
+Build: zero errors/warnings. Core harness: 113 assertions passed. Eleven art
+assets pass geometry, UV, atlas, and icon checks. Source changes remain local on
+main and have not been committed or pushed during these content deliveries.
+
+See TESTING.md and docs/validation/2026-09-14-workshop-content.md. Next playable
+work is authoritative geode opening/refinement and earned Crystal Shaping XP.
+The workshop is buildable but has no mineral recipes yet. Actual placement,
+station leveling, natural mining, visual appearance, save/reload, and multiplayer
+still require world tests.
+
+The historical snapshot below predates the local content deliveries. Its
+no-compiler/no-content statements are superseded by this section.
+
+## Prior source-only snapshot — 2026-09-14
 
 Repository: `mrcalzon02/Magenheim`.
 

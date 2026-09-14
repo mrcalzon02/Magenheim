@@ -1,0 +1,3 @@
+newmtl geode
+Kd 1 1 1
+map_Kd geode.png

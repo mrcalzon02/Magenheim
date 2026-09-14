@@ -7,16 +7,35 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>Magenheim</AssemblyName>
     <RootNamespace>Magenheim.Runtime</RootNamespace>
-    <Version>0.0.14</Version>
+    <Version>0.0.16</Version>
+    <ValheimManagedPath Condition="'$(ValheimManagedPath)' == ''">$(MSBuildThisFileDirectory)../../../valheim_Data/Managed</ValheimManagedPath>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="../Magenheim.Core/Magenheim.Core.csproj" />
-    <PackageReference Include="JotunnLib" Version="2.30.0" />
+    <PackageReference Include="JotunnLib" Version="2.30.0" ExcludeAssets="build" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
+  <!-- Compile against the installed game without publicizing or modifying its assemblies. -->
   <ItemGroup>
+    <Reference Include="$(ValheimManagedPath)/assembly_*.dll" Private="false" />
+    <Reference Include="$(ValheimManagedPath)/UnityEngine*.dll" Private="false" />
+    <Reference Include="$(ValheimManagedPath)/SoftReferenceableAssets.dll" Private="false" />
+    <Reference Include="$(ValheimManagedPath)/netstandard.dll" Private="false" />
+    <Reference Include="$(BepInExPath)/core/BepInEx.dll" Private="false" />
+    <Reference Include="$(BepInExPath)/core/0Harmony.dll" Private="false" />
+  </ItemGroup>
+
+  <Target Name="ValidateLocalReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="!Exists('$(ValheimManagedPath)/assembly_valheim.dll')" Text="Set ValheimManagedPath to the installed game's valheim_Data/Managed folder." />
+    <Error Condition="!Exists('$(BepInExPath)/core/BepInEx.dll')" Text="Set BepInExPath to the active mod profile's BepInEx folder, or use build.ps1." />
+  </Target>
+
+  <ItemGroup>
+    <None Include="../../assets/earth/*.mesh.json;../../assets/earth/*.png"
+          Exclude="../../assets/earth/*preview.png"
+          Link="assets/earth/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../default-data/foundation.json"
           Link="default-data/foundation.json"
           CopyToOutputDirectory="PreserveNewest" />

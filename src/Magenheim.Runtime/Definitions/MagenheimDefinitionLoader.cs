@@ -165,14 +165,14 @@ internal static class MagenheimDefinitionLoader
     private static TEnum ParseEnum<TEnum>(string? value, string field)
         where TEnum : struct
     {
-        if (string.IsNullOrWhiteSpace(value) || !Enum.TryParse(value.Trim(), true, out TEnum parsed) || !Enum.IsDefined(typeof(TEnum), parsed))
+        if (value is null || string.IsNullOrWhiteSpace(value) || !Enum.TryParse(value.Trim(), true, out TEnum parsed) || !Enum.IsDefined(typeof(TEnum), parsed))
             throw new InvalidDataException($"Field '{field}' contains unknown {typeof(TEnum).Name} value '{value}'.");
         return parsed;
     }
 
     private static string RequireText(string? value, string field)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (value is null || string.IsNullOrWhiteSpace(value))
             throw new InvalidDataException($"Field '{field}' is required and cannot be empty.");
         return value.Trim();
     }

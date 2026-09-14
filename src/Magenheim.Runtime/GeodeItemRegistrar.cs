@@ -79,8 +79,15 @@ internal sealed class GeodeItemRegistrar : IDisposable
         shared.m_maxStackSize = DefaultStackSize;
         shared.m_weight = DefaultWeight;
         shared.m_value = 0;
+        shared.m_dlc = string.Empty;
+        if (geode.Id == "magenheim.geode.meadows.earth")
+        {
+            shared.m_icons = new[] { EarthAssets.Icon("geode") };
+            EarthAssets.ReplaceVisual(customItem.ItemPrefab, "geode");
+        }
 
-        ItemManager.Instance.AddItem(customItem);
+        if (!ItemManager.Instance.AddItem(customItem))
+            throw new InvalidOperationException($"Jotunn refused geode item '{geode.PrefabName}'.");
     }
 
     private static string BuildDisplayName(GeodeDefinition geode)

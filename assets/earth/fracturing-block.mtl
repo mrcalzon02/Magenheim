@@ -1,0 +1,3 @@
+newmtl fracturing-block
+Kd 1 1 1
+map_Kd fracturing-block.png

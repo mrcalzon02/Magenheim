@@ -89,7 +89,7 @@ public static class SpawnAreaValidator
         string? configuredValue,
         InvalidAreaBehavior behavior = InvalidAreaBehavior.Reject)
     {
-        if (string.IsNullOrWhiteSpace(configuredValue))
+        if (configuredValue is null || string.IsNullOrWhiteSpace(configuredValue))
         {
             return behavior == InvalidAreaBehavior.FallbackToAll
                 ? new AreaValidationResult(

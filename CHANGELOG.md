@@ -1,5 +1,32 @@
 # Magenheim Changelog
 
+## 0.0.16 - Geologist workshop
+
+- Added four original models, texture atlases, build icons, and OBJ/MTL exports:
+  Geologist's Workstation, Fracturing Block, Faceting Wheel, and Resonance Frame.
+- Registered four Hammer/Crafting pieces with recoverable material costs, custom
+  colliders, separate wear variants, and three non-stacking station upgrades.
+- Connected the workstation to the registered Crystal Shaping skill identity.
+- Preserved cloned station connection/area effects while replacing model visuals.
+- Verified all content and the corrected world geode path register during isolated
+  Valheim startup. Installed and hash-verified 0.0.16 in the active profile.
+
+
+## 0.0.15 - Earth mineral content test
+
+- Created original geode, five crystal tiers, and shard meshes, painted atlases,
+  inventory icons, a skill badge, OBJ/MTL exports, and reproducible art tools.
+- Registered Crystal Shaping and six Earth crystal/shard items; connected custom
+  geode inventory/world visuals and isolated new materials and world colliders.
+- Added working local build, package, backup, installation, and testing instructions.
+- Repaired actual compilation errors: netstandard Dictionary API, nullability,
+  game/Core SpawnArea ambiguity, and private server-peer lookup usage.
+- Compiled against installed game APIs without rewriting/publicizing game DLLs.
+- Repaired the live worldgen failure caused by a nonexistent drop-table field;
+  use an independently owned current-game table with one unscaled geode drop.
+- Disabled inherited LOD groups on customized clones to retain the new visuals.
+
+
 ## Unreleased — lifecycle-safe worldgen observation
 
 - Removed the `ZoneManager.GetZoneVegetation` lookup from the `OnVanillaPrefabsAvailable` collision-observation path after current Jötunn source review showed that method dereferences `ZoneSystem.instance` when no custom vegetation match exists.

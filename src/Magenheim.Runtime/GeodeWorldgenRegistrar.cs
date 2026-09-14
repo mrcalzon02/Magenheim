@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Linq;
 using System.Reflection;
 using BepInEx.Logging;
@@ -144,6 +143,8 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
         ConfigurePersistentNetworkState(worldPrefab, addition.Desired.PrefabName);
         ConfigureDestructible(worldPrefab, addition.Desired.PrefabName);
         ConfigureSingleIntactGeodeDrop(worldPrefab, intactGeodePrefab, addition.Desired.PrefabName);
+        if (geode.Id == "magenheim.geode.meadows.earth")
+            EarthAssets.ReplaceVisual(worldPrefab, "geode", 3.5f, worldObject: true);
 
         var vegetationConfig = new VegetationConfig
         {
@@ -233,32 +234,26 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
         var dropOnDestroyed = prefab.GetComponent<DropOnDestroyed>()
             ?? throw new InvalidOperationException($"Geode world prefab '{prefabName}' has no DropOnDestroyed component.");
 
-        var dropTableField = GetRequiredField(dropOnDestroyed.GetType(), "m_dropWhenDestroyed", prefabName);
-        var dropTable = dropTableField.GetValue(dropOnDestroyed)
-            ?? throw new InvalidOperationException($"Geode world prefab '{prefabName}' has no destruction drop table.");
-
-        SetRequiredField(dropTable, "m_dropMin", 1, prefabName);
-        SetRequiredField(dropTable, "m_dropMax", 1, prefabName);
-        SetRequiredField(dropTable, "m_dropChance", 1f, prefabName);
-        SetRequiredField(dropTable, "m_onePerPlayer", false, prefabName);
-
-        var dropsField = GetRequiredField(dropTable.GetType(), "m_drops", prefabName);
-        if (!(dropsField.GetValue(dropTable) is IList drops) || drops.Count == 0)
+        // Own a fresh table and entry instead of mutating any table inherited from Rock_4.
+        // Current Valheim has m_oneOfEach, not the previously assumed m_onePerPlayer.
+        dropOnDestroyed.m_dropWhenDestroyed = new DropTable
         {
-            throw new InvalidOperationException(
-                $"Geode world prefab '{prefabName}' base destruction drop table exposes no reusable drop entry.");
-        }
-
-        while (drops.Count > 1)
-            drops.RemoveAt(drops.Count - 1);
-
-        var firstDrop = drops[0]
-            ?? throw new InvalidOperationException($"Geode world prefab '{prefabName}' has a null destruction drop entry.");
-
-        SetRequiredField(firstDrop, "m_item", intactGeodePrefab, prefabName);
-        SetRequiredField(firstDrop, "m_stackMin", 1, prefabName);
-        SetRequiredField(firstDrop, "m_stackMax", 1, prefabName);
-        SetRequiredField(firstDrop, "m_weight", 1f, prefabName);
+            m_dropMin = 1,
+            m_dropMax = 1,
+            m_dropChance = 1f,
+            m_oneOfEach = false,
+            m_drops = new System.Collections.Generic.List<DropTable.DropData>
+            {
+                new DropTable.DropData
+                {
+                    m_item = intactGeodePrefab,
+                    m_stackMin = 1,
+                    m_stackMax = 1,
+                    m_weight = 1f,
+                    m_dontScale = true
+                }
+            }
+        };
     }
 
     private static FieldInfo GetRequiredField(Type type, string fieldName, string prefabName)

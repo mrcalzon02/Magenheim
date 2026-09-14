@@ -4,3 +4,4 @@ dist/
 backups/
 *.user
 *.local.props
+__pycache__/

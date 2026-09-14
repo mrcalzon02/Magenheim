@@ -151,7 +151,7 @@ internal static class MagenheimBalanceConfig
 
     private static string[] ParseCsv(string? value)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (value is null || string.IsNullOrWhiteSpace(value))
             return Array.Empty<string>();
 
         return value

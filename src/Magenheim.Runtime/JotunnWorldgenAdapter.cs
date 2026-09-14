@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Jotunn.Managers;
 using Magenheim.Core.Worldgen;
+using CoreSpawnArea = Magenheim.Core.Worldgen.SpawnArea;
 
 namespace Magenheim.Runtime;
 
@@ -31,12 +32,12 @@ internal static class JotunnWorldgenAdapter
         };
     }
 
-    internal static Heightmap.BiomeArea MapArea(SpawnArea area) =>
+    internal static Heightmap.BiomeArea MapArea(CoreSpawnArea area) =>
         area switch
         {
-            SpawnArea.Median => ParseBiomeArea("Median"),
-            SpawnArea.Edge => ParseBiomeArea("Edge"),
-            SpawnArea.All => ParseBiomeArea("Everything", "Everywhere"),
+            CoreSpawnArea.Median => ParseBiomeArea("Median"),
+            CoreSpawnArea.Edge => ParseBiomeArea("Edge"),
+            CoreSpawnArea.All => ParseBiomeArea("Everything", "Everywhere"),
             _ => throw new InvalidOperationException(
                 $"Unsupported spawn area '{area}' at the Jotunn adapter boundary. " +
                 "Area values must be normalized by Magenheim.Core before runtime mapping."),

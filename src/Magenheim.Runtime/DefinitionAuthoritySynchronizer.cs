@@ -118,7 +118,7 @@ internal sealed class DefinitionAuthoritySynchronizer
             acknowledgement.Write(ClientAcknowledgementMessage);
             WriteDescriptor(acknowledgement, serverAuthority);
             WriteDescriptor(acknowledgement, _localAuthority);
-            _rpc.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), acknowledgement);
+            _rpc.SendPackage(sender, acknowledgement);
         }
 
         yield break;

@@ -14,12 +14,14 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.14";
+    internal const string PluginVersion = "0.0.16";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
     private GeodeItemRegistrar? _geodeItemRegistrar;
     private GeodeWorldgenRegistrar? _geodeWorldgenRegistrar;
+    private EarthContentRegistrar? _earthContentRegistrar;
+    private WorkshopRegistrar? _workshopRegistrar;
 
     private void Awake()
     {
@@ -37,6 +39,10 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 _services.GeodeOpeningOperations,
                 Logger);
 
+            _earthContentRegistrar = new EarthContentRegistrar(Logger);
+            _earthContentRegistrar.Register();
+            _workshopRegistrar = new WorkshopRegistrar(Logger);
+            _workshopRegistrar.Register();
             _geodeItemRegistrar = new GeodeItemRegistrar(effectiveDefinitions, Logger);
             _geodeItemRegistrar.Register();
             _geodeWorldgenRegistrar = new GeodeWorldgenRegistrar(effectiveDefinitions, Logger);
@@ -58,6 +64,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
     private void OnDestroy()
     {
+        _earthContentRegistrar?.Dispose();
+        _workshopRegistrar?.Dispose();
         _geodeWorldgenRegistrar?.Dispose();
         _geodeItemRegistrar?.Dispose();
     }

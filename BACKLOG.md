@@ -26,10 +26,10 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Reconcile GitHub repository metadata to authoritative `main`; the redundant legacy `master` ref is no longer present.
 - [x] Advance definition schema to 3 so geode placement behavior is validated, fingerprinted, and synchronized with the rest of gameplay/worldgen authority.
 - [x] Add server-side BepInEx overrides for fingerprinted geode placement fields and route them through full definition revalidation before use.
-- [ ] Execute the standalone tests with a .NET 8 SDK and record the observed result.
-- [ ] Compile `Magenheim.Core` with warnings as errors.
+- [x] Execute the standalone tests with a .NET 8 SDK and record the observed result.
+- [x] Compile `Magenheim.Core` with warnings as errors.
 - [x] Add the thin BepInEx/Jötunn plugin bootstrap on `main`, with hard Jötunn dependency and everyone-must-have network declaration.
-- [ ] Compile the runtime project against Jötunn 2.30.0 and a current Valheim development environment.
+- [x] Compile the runtime project against Jötunn 2.30.0 and a current Valheim development environment.
 - [x] Add strict schema-validated static definition loading with deterministic definition fingerprinting and hard failure on malformed/unknown content.
 - [x] Add controlled balance/compatibility/world-placement overrides on top of the validated static definition snapshot; effective authority is always revalidated and re-fingerprinted.
 - [ ] Add deterministic tests for runtime JSON loader failure cases once a compilable runtime test environment is available.
@@ -37,7 +37,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Register a two-way Jötunn definition-authority handshake and reset cached admission per sync session.
 - [x] Assign a strictly increasing server-local session generation and retire prior geode operation replay records for reused peers.
 - [ ] Compile and execute the definition-authority synchronization path in a current Valheim/Jötunn environment and repair any API/serialization defect before runtime admission.
-- [ ] Register Crystal Shaping under permanent ID `magenheim.crystal_shaping`.
+- [x] Register Crystal Shaping under permanent ID `magenheim.crystal_shaping`.
 
 ## P1 — Meadows/Earth vertical slice
 
@@ -56,9 +56,9 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Add a dedicated Magenheim-owned mineable geode world-object prefab derived as `<item prefab>_World`, with persistent network state and exactly one intact-geode destruction drop.
 - [x] Collapse world-prefab and vegetation registration into one additive path because Jötunn `AddCustomVegetation` registers the prefab itself.
 - [ ] Compile and validate the mineable geode world-object/vegetation path in current Valheim/Jötunn, including exactly-one intact drop, natural placement, host/client persistence, and proof vanilla `Rock_4` remains unchanged.
-- [ ] Implement Geologist's Workstation registration and crafting recipe.
+- [x] Implement Geologist's Workstation registration and building recipe (0.0.16; live startup registered, placement still needs world testing).
 - [ ] Bind authoritative geode opening to actual atomic inventory mutation after authority/replay/capacity admission.
-- [ ] Register Earth Rough/Simple/Crystal/Advanced/Master items and Earth Crystal Shards.
+- [x] Register Earth Rough/Simple/Crystal/Advanced/Master items and Earth Crystal Shards.
 - [ ] Bind valid refinement attempts to atomic inventory transactions and Crystal Shaping XP; every server mutation must require successful definition-authority admission for the requesting peer.
 - [ ] Verify a failed transaction consumes exactly one source and returns exactly the configured matching shards.
 - [ ] Verify disposable-world generation, save/load, host/client, and dedicated-server behavior before production admission.

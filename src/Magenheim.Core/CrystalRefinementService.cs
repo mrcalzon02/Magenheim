@@ -21,8 +21,9 @@ public sealed class CrystalRefinementService
             if (rule is null) throw new InvalidOperationException("Refinement rules cannot contain null entries.");
             rule.Validate();
 
-            if (!map.TryAdd(rule.SourceTier, rule))
+            if (map.ContainsKey(rule.SourceTier))
                 throw new InvalidOperationException($"Duplicate refinement rule for {rule.SourceTier}.");
+            map.Add(rule.SourceTier, rule);
         }
 
         _rules = map;
