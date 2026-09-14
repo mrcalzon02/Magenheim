@@ -56,15 +56,16 @@ internal sealed class DefinitionAuthoritySynchronizer
 
     private IEnumerator ReceiveServerAuthority(long sender, ZPackage package)
     {
-        DefinitionAuthorityDescriptor remoteAuthority;
+        DefinitionAuthorityDescriptor? serverAuthority = null;
+
         try
         {
             var messageType = package.ReadInt();
             if (messageType != ServerAuthorityMessage)
                 throw new InvalidOperationException($"Unexpected definition authority message type {messageType} on client.");
 
-            remoteAuthority = ReadDescriptor(package);
-            ClientAuthorityResult = DefinitionAuthorityHandshake.Compare(_localAuthority, remoteAuthority);
+            serverAuthority = ReadDescriptor(package);
+            ClientAuthorityResult = DefinitionAuthorityHandshake.Compare(_localAuthority, serverAuthority);
         }
         catch (Exception exception)
         {
@@ -79,10 +80,18 @@ internal sealed class DefinitionAuthoritySynchronizer
         else
             _logger.LogError($"Magenheim gameplay mutation disabled for this connection. {ClientAuthorityResult.Diagnostic}");
 
-        var acknowledgement = new ZPackage();
-        acknowledgement.Write(ClientAcknowledgementMessage);
-        WriteDescriptor(acknowledgement, _localAuthority);
-        _rpc.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), acknowledgement);
+        // Fail closed: only acknowledge after the server descriptor was successfully parsed.
+        // The acknowledgement echoes that descriptor so the server can prove the client
+        // actually received its authority, rather than authorizing solely from the client's
+        // self-reported descriptor.
+        if (serverAuthority is not null)
+        {
+            var acknowledgement = new ZPackage();
+            acknowledgement.Write(ClientAcknowledgementMessage);
+            WriteDescriptor(acknowledgement, serverAuthority);
+            WriteDescriptor(acknowledgement, _localAuthority);
+            _rpc.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), acknowledgement);
+        }
 
         yield break;
     }
@@ -96,15 +105,28 @@ internal sealed class DefinitionAuthoritySynchronizer
             if (messageType != ClientAcknowledgementMessage)
                 throw new InvalidOperationException($"Unexpected definition authority message type {messageType} on server.");
 
-            var remoteAuthority = ReadDescriptor(package);
-            result = DefinitionAuthorityHandshake.Compare(_localAuthority, remoteAuthority);
+            var echoedServerAuthority = ReadDescriptor(package);
+            var clientAuthority = ReadDescriptor(package);
+
+            var echoResult = DefinitionAuthorityHandshake.Compare(_localAuthority, echoedServerAuthority);
+            if (!echoResult.MutationAuthorized)
+            {
+                result = new DefinitionAuthorityResult(
+                    echoResult.Status,
+                    false,
+                    $"Client did not acknowledge this server's definition authority. {echoResult.Diagnostic}");
+            }
+            else
+            {
+                result = DefinitionAuthorityHandshake.Compare(_localAuthority, clientAuthority);
+            }
         }
         catch (Exception exception)
         {
             result = new DefinitionAuthorityResult(
                 DefinitionAuthorityStatus.InvalidDescriptor,
                 false,
-                $"Failed to read client definition authority: {exception.Message}");
+                $"Failed to read client definition authority acknowledgement: {exception.Message}");
         }
 
         _peerResults[sender] = result;
