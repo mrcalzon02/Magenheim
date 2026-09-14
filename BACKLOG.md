@@ -22,13 +22,14 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [ ] Compile `Magenheim.Core` with warnings as errors.
 - [x] Add the thin BepInEx/Jötunn plugin bootstrap on `main`, with hard Jötunn dependency and everyone-must-have/minor-version network declaration.
 - [ ] Compile the runtime project against Jötunn 2.30.0 and a current Valheim development environment.
-- [ ] Add strict config/data loading for refinement and geode definitions.
+- [x] Add strict schema-validated static definition loading for refinement and geode definitions, including deterministic definition fingerprinting and hard failure on malformed/unknown content.
+- [ ] Add controlled server configuration overrides on top of the validated static definition snapshot; overrides must be revalidated and fingerprinted before use.
 - [ ] Register Crystal Shaping under permanent ID `magenheim.crystal_shaping`.
-- [ ] Add server-authoritative definition synchronization before gameplay mutations are enabled.
+- [ ] Add server-authoritative definition synchronization/fingerprint enforcement before gameplay mutations are enabled.
 
 ## P1 — Meadows/Earth vertical slice
 
-- [ ] Define the Meadows geode data and Earth-dominant initial outcome table.
+- [x] Define the initial Meadows geode data with one guaranteed Earth crystal and independent 35%/10% additional-crystal chances.
 - [ ] Register an intact Meadows geode item/prefab.
 - [ ] Bind the additive worldgen planner to a thin Jötunn registrar.
 - [ ] Explicitly map pure-core `SpawnArea.All` to current runtime `Heightmap.BiomeArea.Everywhere` rather than casting enum integers.
