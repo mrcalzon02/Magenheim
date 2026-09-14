@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.37";
+    internal const string PluginVersion = "0.0.38";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -67,6 +67,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             WorkshopOperationCatalog.Configure(effectiveDefinitions);
             WorkshopOperationsRuntime.Configure(_services, _authoritySynchronizer, Logger);
             WorkshopOperationRpc.Register(_services, _authoritySynchronizer, Logger);
+            SocketOperationRpc.Register(_services, _authoritySynchronizer, Logger);
             SocketEffectsRuntime.Configure(effectiveDefinitions, Logger);
             SocketTooltipRuntime.Configure(effectiveDefinitions);
 
@@ -128,7 +129,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 "Player content includes eight biome geodes, eight five-tier elemental crystal families, the full geology workstation refinement ladder, " +
                 "20 geology/crystal furniture and decor pieces, a rainbow Crystal Hearth, three crystal beam sizes, three crystal foundation sizes, " +
                 "a 10-piece high-durability physical crystal weapon set, deliberate Rough-crystal/shard grinding, Crystal Dust, Prismatic Eitrwine fermentation, " +
-                "resolved socket bonuses, and eight four-tier staff families with distinct runtime effects. " +
+                "resolved socket bonuses with server-authoritative remote socket/install/extraction requests, and eight four-tier staff families with distinct runtime effects. " +
                 "Fire owns fireburst/scorch/meteor burn terrain; Frost owns Brittle and Rime fields; Storm owns secondary discharges; " +
                 "Earth owns Fractured/Shattered Armor and Tremor; Venom owns corrosion; Radiance owns hard-light/flash/sanctuary payloads; " +
                 "Seidr owns binding hexes; and Spirit owns Haunted, Dissonance, and Soul Suppression attack-damage suppression through spectral echo fields.");

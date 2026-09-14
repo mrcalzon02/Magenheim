@@ -15,6 +15,8 @@ namespace Magenheim.Runtime;
 /// Explicit per-item socket management surface shown only while the local player is using
 /// the Geologist's Workstation. It never edits shared prefabs: all mutation is performed
 /// through Magenheim's namespaced ItemData metadata and pure-core transaction planners.
+/// Remote clients submit immutable socket intent to the server and apply only the approved
+/// plan to the exact selected ItemData after stale-state revalidation.
 /// </summary>
 internal sealed class SocketWorkstationOverlay : MonoBehaviour
 {
@@ -134,7 +136,7 @@ internal sealed class SocketWorkstationOverlay : MonoBehaviour
                 var crystal = state.InstalledCrystals[i];
                 GUILayout.BeginHorizontal();
                 GUILayout.Label($"{i + 1}. {crystal.Tier} {crystal.Element}");
-                GUI.enabled = IsLocalMutationHost() && HasFacetingWheel(player);
+                GUI.enabled = CanRequestMutation() && HasFacetingWheel(player);
                 if (GUILayout.Button("Extract", GUILayout.Width(90f)))
                     TryExtract(player, inventory, equipment, i);
                 GUI.enabled = true;
@@ -145,7 +147,7 @@ internal sealed class SocketWorkstationOverlay : MonoBehaviour
                 GUILayout.Label("Crystal extraction requires the Faceting Wheel upgrade.");
         }
 
-        GUI.enabled = IsLocalMutationHost() && eligibility.IsEligible;
+        GUI.enabled = CanRequestMutation() && eligibility.IsEligible;
         if (GUILayout.Button("Open one socket"))
             TryAddSlot(player, inventory, equipment);
         GUI.enabled = true;
@@ -162,7 +164,7 @@ internal sealed class SocketWorkstationOverlay : MonoBehaviour
             foreach (var crystalItem in crystals)
             {
                 if (!TryParseCrystal(crystalItem, out var crystal)) continue;
-                GUI.enabled = IsLocalMutationHost() && eligibility.IsEligible && state.FreeSlots > 0;
+                GUI.enabled = CanRequestMutation() && eligibility.IsEligible && state.FreeSlots > 0;
                 if (GUILayout.Button($"Install {crystal.Tier} {crystal.Element} (x{crystalItem.m_stack})"))
                     TryInstall(player, inventory, equipment, crystalItem, crystal);
                 GUI.enabled = true;
@@ -170,11 +172,15 @@ internal sealed class SocketWorkstationOverlay : MonoBehaviour
         }
         GUILayout.EndScrollView();
 
-        if (!IsLocalMutationHost())
+        if (IsRemoteMutationClient())
         {
             GUILayout.Label(
-                "This build currently admits workstation socket mutation only on the host. " +
-                "Remote-client request/approval RPC remains the next multiplayer binding step.");
+                "Remote socket changes are resolved by the server, then applied only if this exact item still matches the approved original state.");
+        }
+        else if (!IsLocalMutationHost())
+        {
+            GUILayout.Label(
+                "Socket mutation is unavailable until the server admits this client's synchronized Magenheim gameplay authority.");
         }
     }
 
@@ -207,7 +213,13 @@ internal sealed class SocketWorkstationOverlay : MonoBehaviour
         if (_services is null || _authority is null) return;
         if (!IsLocalMutationHost())
         {
-            _status = "Socket mutation requires host authority in this build.";
+            if (IsRemoteMutationClient())
+            {
+                SocketOperationRpc.TrySubmitAddSlot(player, equipment, out _status);
+                return;
+            }
+
+            _status = "Socket mutation requires admitted server authority.";
             return;
         }
 
@@ -265,7 +277,13 @@ internal sealed class SocketWorkstationOverlay : MonoBehaviour
         if (_services is null || _authority is null) return;
         if (!IsLocalMutationHost())
         {
-            _status = "Crystal installation requires host authority in this build.";
+            if (IsRemoteMutationClient())
+            {
+                SocketOperationRpc.TrySubmitInstall(player, equipment, crystalItem, crystal, out _status);
+                return;
+            }
+
+            _status = "Crystal installation requires admitted server authority.";
             return;
         }
         if (!inventory.ContainsItem(crystalItem) || crystalItem.m_stack < 1)
@@ -338,7 +356,13 @@ internal sealed class SocketWorkstationOverlay : MonoBehaviour
         if (_services is null || _authority is null) return;
         if (!IsLocalMutationHost())
         {
-            _status = "Crystal extraction requires host authority in this build.";
+            if (IsRemoteMutationClient())
+            {
+                SocketOperationRpc.TrySubmitExtraction(player, equipment, crystalIndex, out _status);
+                return;
+            }
+
+            _status = "Crystal extraction requires admitted server authority.";
             return;
         }
         if (!HasFacetingWheel(player))
@@ -427,9 +451,15 @@ internal sealed class SocketWorkstationOverlay : MonoBehaviour
         }
     }
 
+    private bool CanRequestMutation() => IsLocalMutationHost() || IsRemoteMutationClient();
+
     private bool IsLocalMutationHost() =>
         ZNet.instance is not null && ZNet.instance.IsServer() &&
         _authority is not null && _authority.LocalAuthorityResult.MutationAuthorized;
+
+    private bool IsRemoteMutationClient() =>
+        ZNet.instance is not null && !ZNet.instance.IsServer() &&
+        _authority is not null && _authority.IsClientMutationAuthorized;
 
     private static bool TryGetMagenheimStation(Player player, out CraftingStation station)
     {

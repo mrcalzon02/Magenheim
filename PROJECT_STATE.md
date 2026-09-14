@@ -6,7 +6,7 @@
 
 ## Current source state — 2026-09-14
 
-Current source/package identity is **0.0.37**. The most recently live-tested/installed package remains **0.0.16**; do not conflate later committed source with live acceptance.
+Current source/package identity is **0.0.38**. The most recently live-tested/installed package remains **0.0.16**; do not conflate later committed source with live acceptance.
 
 The repository has advanced substantially beyond the first live-world-test baseline. Current source includes:
 
@@ -15,15 +15,15 @@ The repository has advanced substantially beyond the first live-world-test basel
 - Crystal Shaping skill/refinement authority;
 - Geologist's Workstation and three progression upgrades;
 - authority/replay-aware workshop transaction infrastructure;
-- per-item adaptive socket metadata, eligibility, effects, extraction, workstation UI, rollback planning, and synchronized gameplay-authority policy;
+- per-item adaptive socket metadata, eligibility, effects, extraction, workstation UI, rollback planning, synchronized gameplay-authority policy, and server-authoritative remote-client socket request/response/ack transport;
 - Fire, Frost, Storm, Earth, Venom, Radiance, Seidr, and Spirit four-tier staff families with increasingly distinct runtime effect languages;
 - original world-artifact geometry for later wardstone, passage, totem, keelstone, lighting, runecraft, ritual, spirit-fetish, Fate, and boss-resonance systems without falsely registering unfinished gameplay;
-- a registered ten-piece geology/crystal furniture family under Hammer > Furniture;
+- a registered ten-piece geology/crystal furniture family under Hammer > Furniture with explicit comfort grouping;
 - ten dedicated generated Hammer icons so the furniture no longer masquerades as unrelated vanilla clone-source pieces;
 - later additive crystal architecture/weapon/alchemy content, including the current crystal-grinding and Prismatic Eitrwine source work;
 - patch-strict multiplayer gameplay-authority synchronization.
 
-Verified source presence is not runtime acceptance. Current 0.0.37 source has not been rebuilt or run in this connector-only execution cycle.
+Verified source presence is not runtime acceptance. Current 0.0.38 source has not been rebuilt or run in this connector-only execution cycle.
 
 ## Geology/crystal furniture source
 
@@ -40,9 +40,9 @@ The current furniture family is:
 - Crystal Screen;
 - Crystal Throne.
 
-`FurnitureVisuals.cs` owns the original procedural geometry and reuses the established Magenheim material language: rugged stone, dark/fine timber, iron and bronze banding, faceted mineral cores, and restrained crystal emission. `FurnitureRegistrar.cs` owns additive Hammer registration, recoverable build costs, compatible vanilla source selection, wear variants, and model-specific replacement colliders. `FurnitureIcons.cs` generates one Magenheim-owned 128x128 icon per furniture identity so menu presentation does not reuse the source prefab icon.
+`FurnitureVisuals.cs` owns the original procedural geometry and reuses the established Magenheim material language: rugged stone, dark/fine timber, iron and bronze banding, faceted mineral cores, and restrained crystal emission. `FurnitureRegistrar.cs` owns additive Hammer registration, recoverable build costs, explicit comfort grouping, compatible vanilla source selection, wear variants, and model-specific replacement colliders. `FurnitureIcons.cs` generates one Magenheim-owned 128x128 icon per furniture identity so menu presentation does not reuse the source prefab icon.
 
-Static validation is recorded in `docs/validation/2026-09-14-furniture-icons-static.md`. Runtime placement, inherited seating/bed/storage interaction, wear switching, collision, refund behavior, and multiplayer behavior remain explicitly unadmitted until a rebuilt disposable-world test.
+Static validation is recorded in the furniture validation records under `docs/validation/`. Runtime placement, inherited seating/bed/storage interaction, wear switching, collision, refund behavior, comfort stacking, and multiplayer behavior remain explicitly unadmitted until a rebuilt disposable-world test.
 
 ## Live runtime evidence retained from 0.0.16
 
@@ -68,7 +68,7 @@ Worldgen remains additive-only. Magenheim does not rewrite, delete, disable, reo
 
 Spawn-area handling remains fail-closed. Negative numeric masks cannot clamp into All through sign extension. Unknown bits are governed by validated policy. Text configuration accepts the Magenheim `All` abstraction plus runtime-facing aliases.
 
-At the Valheim boundary, `JotunnWorldgenAdapter` now resolves the runtime `Median` and `Edge` values first and requires them to be distinct and non-empty. `All` is composed from those components. A runtime alias named `Everything` or `Everywhere` is accepted only when its value is exactly equivalent to the composed `Median | Edge` value; aliases with missing or extra bits are rejected rather than silently broadening or narrowing placement. This avoids numeric-cast assumptions and familiar-name assumptions at the same time.
+At the Valheim boundary, `JotunnWorldgenAdapter` resolves runtime `Median` and `Edge` first and requires them to be distinct and non-empty. `All` is composed from those components. A runtime alias named `Everything` or `Everywhere` is accepted only when its value is exactly equivalent to the composed `Median | Edge` value; aliases with missing or extra bits are rejected rather than silently broadening or narrowing placement.
 
 Geode placement density, altitude/depth, terrain delta, tilt, forest thresholds, scale, grouping, block checking, force placement, and offset are validated/fingerprinted authority and can be overridden only through revalidation before registration.
 
@@ -78,7 +78,7 @@ See `docs/validation/2026-09-14-runtime-biome-area-semantic-guard.md` for the cu
 
 ## Adaptive socket authority
 
-Per-item socket persistence is namespaced under `magenheim.sockets.v1`. Socket writes operate on the individual `ItemDrop.ItemData.m_customData` dictionary and preserve unrelated foreign custom-data keys. Shared vanilla/foreign prefabs and shared item definitions are not the socket-state store.
+Per-item socket persistence is namespaced under `magenheim.sockets.v1`. Socket writes operate on individual `ItemDrop.ItemData.m_customData` and preserve unrelated foreign custom-data keys. Shared vanilla/foreign prefabs and shared item definitions are not the socket-state store.
 
 Eligibility is adaptive and conservative:
 
@@ -98,7 +98,11 @@ Source coverage for this authority repair is recorded in `SocketCompatibilityAut
 
 ## Socket workstation/runtime boundary
 
-The Geologist's Workstation source includes a dedicated socket-management overlay. Local-host operations can plan/open sockets, install crystals, and extract crystals using per-item state, authority/replay guards, inventory snapshots, rollback, and Crystal Shaping XP. Remote-client socket mutation remains intentionally unadmitted until its server request/approval RPC path is bound and validated.
+The Geologist's Workstation has a dedicated socket-management overlay for open-slot, install, and risky extraction operations. Local-host operations continue to use the existing pure planners, authority/replay guards, exact-item state checks, inventory snapshots, rollback, and Crystal Shaping XP.
+
+0.0.38 adds the remote-client transport previously missing from this boundary. `SocketOperationRpc` uses a request/response/ack protocol parallel to the established workshop transaction transport. The server requires an admitted peer session, validates workstation proximity, validates the Faceting Wheel for extraction, reconstructs equipment classification from the registered server prefab rather than trusting client category/mod-origin claims, evaluates the synchronized socket policy, owns the extraction roll, and reserves the existing socket/extraction replay guard. The client retains the exact `ItemData` reference and refuses stale responses before writing `magenheim.sockets.v1`; install source crystals and extraction output capacity are also revalidated before mutation. A successful local apply is acknowledged before the server marks the prepared replay guard applied; failure sends a negative acknowledgement and aborts the prepared reservation.
+
+This is source-complete but not runtime-admitted. Compilation and host/client verification remain required. Static validation is recorded in `docs/validation/2026-09-14-remote-socket-authority-binding.md`.
 
 Socket effects are computed from Magenheim-owned per-item metadata and applied through runtime effect patches by equipment category. They do not require replacing another mod's item prefab or recipe.
 
@@ -106,32 +110,31 @@ Socket effects are computed from Magenheim-owned per-item metadata and applied t
 
 `main` remains the sole authoritative development branch by policy. Historical redundant refs `radiance-content`, `tmp-radiance-content`, and `__delete_me__` remain visible.
 
-The historical refs were previously observed at the same SHA `a8b6947c696e4da71e4837ff1b731ac53e98a387`. Fresh comparison of `radiance-content` against current `main` shows that SHA is still the merge base, `main` is 45 commits ahead and zero behind, and the side ref contains no unique material work. They are safe to prune when branch-ref deletion capability is available. The current connector does not expose branch deletion, so physical deletion is not claimed.
+The historical refs were previously observed at the same SHA `a8b6947c696e4da71e4837ff1b731ac53e98a387`. They are already contained in `main` and contain no unique material work. They are safe to prune when branch-ref deletion capability is available. The current connector does not expose branch deletion, so physical deletion is not claimed.
 
 ## Build and validation boundary
 
 Earlier project revisions were successfully compiled and tested in the normal Valheim development environment, including a recorded zero-error/warning build and deterministic core run before later source expansion.
 
-This connector-only execution cycle did not invoke the normal local .NET/Valheim build/runtime environment. For 0.0.37, remote source/read-back and static-source validation are therefore the strongest admissible claims from this cycle.
+This execution environment cannot clone GitHub through the local container and does not provide the normal local Valheim managed assemblies/runtime profile. For 0.0.38, remote source/read-back and static-source validation are therefore the strongest admissible claims from this cycle.
 
 Current live gates include:
 
-- rebuild 0.0.37 and rerun the full deterministic suite;
-- plugin startup with the composite gameplay-authority fingerprint;
+- rebuild 0.0.38 and rerun the full deterministic suite;
+- plugin startup with the composite gameplay-authority fingerprint and both workstation/socket RPC registrations;
+- host/client remote socket open/install/extraction including stale-state, duplicate/replay, policy mismatch, and descriptor-spoof rejection;
 - verify runtime `Median`, `Edge`, and `All` geode area mapping under the installed Valheim/Jötunn enum;
 - snapshot pre/post worldgen registrations and prove repeated-load idempotence;
 - verify current furniture, architecture, weapon, and alchemy additions in a disposable world;
-- client/server rejection when socket policies differ;
 - live item/prefab/mod-origin exclusion behavior on representative third-party equipment;
 - socket metadata persistence through save/load, drop/pickup, storage, repair, upgrade, transfer, death, and dedicated-server flows;
-- remote-client socket request/approval RPC;
 - world-geode opacity/scale/collision retest;
 - workstation iron-band geometry repair/retest.
 
 ## Next dependency-valid action
 
-1. rebuild/install current 0.0.37 in the normal Valheim development profile and execute the deterministic suite;
-2. validate runtime area semantics and repeated-load additive worldgen idempotence before broadening worldgen behavior;
-3. re-run the outstanding geode/workstation live visual gates in the same build;
-4. exercise the newer furniture/architecture/weapon/alchemy registrations in a disposable world and repair any source-prefab, collider, material, recipe, or interaction defect at its authoritative source;
-5. continue remote-client socket authority and representative mod-compatibility validation after the build is clean.
+1. compile/install current 0.0.38 in the normal Valheim development profile and execute the deterministic suite;
+2. run a host plus remote-client socket matrix covering open/install/extract, stale response rejection, duplicate delivery, policy mismatch, and representative third-party equipment classification;
+3. validate runtime area semantics and repeated-load additive worldgen idempotence;
+4. re-run the outstanding geode/workstation live visual gates;
+5. continue persistence validation through save/load, inventory movement/storage, equipment repair/upgrade, death, transfer, and dedicated-server flows.

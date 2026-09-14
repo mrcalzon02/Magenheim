@@ -32,7 +32,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Compile `Magenheim.Core` with warnings as errors for the earlier admitted build.
 - [x] Add the thin BepInEx/Jötunn plugin bootstrap on `main`, with hard Jötunn dependency and everyone-must-have network declaration.
 - [x] Compile the runtime project against Jötunn 2.30.0 and a current Valheim development environment for the earlier admitted build.
-- [ ] Rebuild current 0.0.37 source and rerun the full deterministic suite after the accumulated socket/worldgen/content changes.
+- [ ] Rebuild current 0.0.38 source and rerun the full deterministic suite after the accumulated socket/worldgen/content changes.
 - [x] Add strict schema-validated static definition loading with deterministic definition fingerprinting and hard failure on malformed/unknown content.
 - [x] Add controlled balance/compatibility/world-placement overrides on top of the validated static definition snapshot; effective authority is always revalidated and re-fingerprinted.
 - [ ] Add deterministic tests for runtime JSON loader failure cases once a compilable runtime test environment is available.
@@ -83,7 +83,8 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Add authority/replay-gated socket add/install/extraction planners and local-host transactional rollback paths.
 - [x] Fold gameplay-significant socket limits and compatibility rules into the multiplayer gameplay authority fingerprint.
 - [x] Add deterministic source coverage for item-level compatibility, identity normalization, policy fingerprint drift, replay identity, metadata preservation, socket mutation, extraction, and effect calculation.
-- [ ] Bind remote-client socket-management requests to the server-authoritative RPC/approval path; current workstation overlay admits mutation only on the local host.
+- [x] Bind remote-client socket-management requests to a server-authoritative request/response/ack RPC using existing socket/extraction replay guards; server reconstructs equipment classification from the registered prefab and owns extraction randomness.
+- [ ] Compile and live-validate remote-client socket open/install/extraction, stale-state rejection, replay behavior, policy mismatch rejection, and third-party descriptor spoof rejection in a current Valheim/Jötunn multiplayer environment.
 - [ ] Validate persistence and behavior through save/load, drop/pickup, chest storage, repair, upgrade, player transfer, death, dedicated server, and mod removal.
 - [ ] Live-test representative third-party equipment, including explicit item/prefab/mod-origin exclusions and unknown-category opt-in behavior.
 
