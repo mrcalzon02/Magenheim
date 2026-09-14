@@ -182,6 +182,98 @@ internal static class SocketingTests
         Assert(guard.RetirePeerSessions(33, 5) == 1,
             "New peer session should retire stale socket replay reservations.");
 
+        var extractionState = new SocketState(1, new[]
+        {
+            new Crystal(ElementalAlignment.Earth, CrystalTier.Master)
+        });
+        var extractionSuccess = SocketExtractionService.Plan(new SocketExtractionRequest(
+            authority,
+            extractionState,
+            0,
+            0,
+            SocketExtractionService.RequiredStationId,
+            0.90d));
+        Assert(extractionSuccess.MutationAuthorized && extractionSuccess.ReturnsCrystal &&
+               extractionSuccess.ReturnedCrystal is { Element: ElementalAlignment.Earth, Tier: CrystalTier.Master } &&
+               extractionSuccess.ResultState.InstalledCrystals.Count == 0 &&
+               Math.Abs(extractionSuccess.EffectiveFailureChance - 0.40d) < 0.0000001d,
+            "A Master extraction roll above the skill-zero 40% break chance should return the exact crystal and clear its socket.");
+        Assert(Math.Abs(extractionSuccess.CrystalShapingExperience - CrystalShapingExperience.CrystalExtraction) < 0.0000001d,
+            "Valid extraction should award the canonical Crystal Shaping extraction experience weight.");
+
+        var extractionFailure = SocketExtractionService.Plan(new SocketExtractionRequest(
+            authority,
+            extractionState,
+            0,
+            0,
+            SocketExtractionService.RequiredStationId,
+            0.10d));
+        Assert(extractionFailure.MutationAuthorized &&
+               extractionFailure.Outcome == SocketExtractionOutcome.FailedShatteredCrystal &&
+               extractionFailure.ReturnedCrystal is null &&
+               extractionFailure.ShardElement == ElementalAlignment.Earth &&
+               extractionFailure.ShardReturnCount == 5 &&
+               extractionFailure.ResultState.InstalledCrystals.Count == 0,
+            "A failed Master extraction should clear the socket, destroy the crystal, and return five matching shards.");
+
+        var skilledExtraction = SocketExtractionService.Plan(new SocketExtractionRequest(
+            authority,
+            extractionState,
+            0,
+            100,
+            SocketExtractionService.RequiredStationId,
+            0.11d));
+        Assert(skilledExtraction.Outcome == SocketExtractionOutcome.SuccessReturnedCrystal &&
+               Math.Abs(skilledExtraction.EffectiveFailureChance - 0.10d) < 0.0000001d,
+            "Skill 100 with the default 75% maximum reduction should lower Master extraction break chance from 40% to 10%.");
+
+        var wrongStationExtraction = SocketExtractionService.Plan(new SocketExtractionRequest(
+            authority,
+            extractionState,
+            0,
+            0,
+            "Magenheim_GeologistWorkstation",
+            0.90d));
+        Assert(!wrongStationExtraction.MutationAuthorized &&
+               wrongStationExtraction.Outcome == SocketExtractionOutcome.InvalidStation &&
+               wrongStationExtraction.ResultState.InstalledCrystals.Count == 1,
+            "Extraction without the Faceting Wheel must fail without changing per-item metadata.");
+
+        var extractionAuthorityDenied = SocketExtractionService.Plan(new SocketExtractionRequest(
+            DefinitionAuthorityResult.Pending,
+            extractionState,
+            0,
+            0,
+            SocketExtractionService.RequiredStationId,
+            0.90d));
+        Assert(!extractionAuthorityDenied.MutationAuthorized &&
+               extractionAuthorityDenied.Outcome == SocketExtractionOutcome.AuthorityDenied,
+            "Unsynchronized definition authority must deny crystal extraction.");
+
+        var extractionGuard = new SocketExtractionOperationGuard();
+        var extractionKey = new SocketExtractionOperationKey(44, 2, "extract-1");
+        var extractionRequest = new SocketExtractionRequest(
+            authority,
+            extractionState,
+            0,
+            0,
+            SocketExtractionService.RequiredStationId,
+            0.90d);
+        Assert(extractionGuard.Begin(extractionKey, extractionRequest).MutationAuthorized,
+            "Fresh extraction should reserve exactly one metadata mutation attempt.");
+        Assert(extractionGuard.Begin(extractionKey, extractionRequest).Outcome == SocketExtractionOperationOutcome.DuplicatePrepared,
+            "Prepared extraction replay must not authorize a second mutation.");
+        Assert(extractionGuard.MarkApplied(extractionKey),
+            "Prepared extraction should mark applied exactly once.");
+        Assert(extractionGuard.Begin(extractionKey, extractionRequest).Outcome == SocketExtractionOperationOutcome.DuplicateApplied,
+            "Applied extraction replay must remain non-mutating.");
+
+        var oldExtraction = new SocketExtractionOperationKey(55, 7, "extract-old");
+        Assert(extractionGuard.Begin(oldExtraction, extractionRequest).MutationAuthorized,
+            "Old-session extraction setup should prepare.");
+        Assert(extractionGuard.RetirePeerSessions(55, 8) == 1,
+            "A new peer session must retire stale extraction replay reservations.");
+
         return assertions;
     }
 }
