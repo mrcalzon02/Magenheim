@@ -6,7 +6,7 @@
 
 ## Current source state — 2026-09-14
 
-Current source/package identity is **0.0.23**. The most recently live-tested/installed package remains **0.0.16**; do not conflate later committed source with live acceptance.
+Current source/package identity is **0.0.32**. The most recently live-tested/installed package remains **0.0.16**; do not conflate later committed source with live acceptance.
 
 The repository has advanced substantially beyond the first live-world-test baseline. Current source includes:
 
@@ -15,11 +15,33 @@ The repository has advanced substantially beyond the first live-world-test basel
 - Crystal Shaping skill/refinement authority;
 - Geologist's Workstation and three progression upgrades;
 - authority/replay-aware workshop transaction infrastructure;
-- per-item adaptive socket metadata, eligibility, effects, extraction, workstation UI, and rollback planning;
-- Fire, Frost, Storm, Earth, Venom, Radiance, and Seidr four-tier staff families;
+- per-item adaptive socket metadata, eligibility, effects, extraction, workstation UI, rollback planning, and synchronized gameplay-authority policy;
+- Fire, Frost, Storm, Earth, Venom, Radiance, Seidr, and Spirit four-tier staff families with increasingly distinct runtime effect languages;
+- original world-artifact geometry for later wardstone, passage, totem, keelstone, lighting, runecraft, ritual, spirit-fetish, Fate, and boss-resonance systems without falsely registering unfinished gameplay;
+- a registered ten-piece geology/crystal furniture family under Hammer > Furniture;
+- ten dedicated generated Hammer icons so the furniture no longer masquerades as unrelated vanilla clone-source pieces;
 - patch-strict multiplayer gameplay-authority synchronization.
 
-Verified source presence is not runtime acceptance. Current 0.0.23 source has not been rebuilt or run in this execution environment.
+Verified source presence is not runtime acceptance. Current 0.0.32 source has not been rebuilt or run in this connector-only execution cycle.
+
+## Geology/crystal furniture — 0.0.32 source
+
+The current furniture family is:
+
+- Geode Table;
+- Geode Chair;
+- Crystal Bench;
+- Crystal-set Bed;
+- Mineral Shelf;
+- Lapidary Cabinet;
+- Geologist's Desk;
+- Geode Pedestal;
+- Crystal Screen;
+- Crystal Throne.
+
+`FurnitureVisuals.cs` owns the original procedural geometry and reuses the established Magenheim material language: rugged stone, dark/fine timber, iron and bronze banding, faceted mineral cores, and restrained crystal emission. `FurnitureRegistrar.cs` owns additive Hammer registration, recoverable build costs, compatible vanilla source selection, wear variants, and model-specific replacement colliders. `FurnitureIcons.cs` generates one Magenheim-owned 128x128 icon per furniture identity so menu presentation does not reuse the source prefab icon.
+
+Static validation is recorded in `docs/validation/2026-09-14-furniture-icons-static.md`. Runtime placement, inherited seating/bed/storage interaction, wear switching, collision, refund behavior, and multiplayer behavior remain explicitly unadmitted until a rebuilt disposable-world test.
 
 ## Live runtime evidence retained from 0.0.16
 
@@ -35,6 +57,8 @@ See `docs/validation/2026-09-14-live-world-test-1.md` and `TESTING.md` for the p
 
 Crystal tiers remain `Rough -> Simple -> Crystal -> Advanced -> Master`. Normal elemental alignments remain Earth, Fire, Frost, Storm, Venom, Radiance, Seidr, and Spirit. Ordinary refinement preserves alignment. Base refinement failure remains 10/20/30/40 percent with Crystal Shaping reduction and workstation/upgrade progression. Valid failed attempts destroy the source and return matching shards according to tier.
 
+Furniture and later artifact models do not alter this gameplay authority. They are additive Magenheim-owned content and presentation layers.
+
 ## Worldgen and area compatibility
 
 Definition schema 3 owns refinement, geodes, worldgen compatibility, and complete geode placement behavior in one validated/fingerprinted snapshot.
@@ -45,7 +69,7 @@ Spawn-area handling remains fail-closed. Negative numeric masks cannot clamp int
 
 Geode placement density, altitude/depth, terrain delta, tilt, forest thresholds, scale, grouping, block checking, force placement, and offset are validated/fingerprinted authority and can be overridden only through revalidation before registration.
 
-## Adaptive socket authority — 0.0.23 source
+## Adaptive socket authority
 
 Per-item socket persistence is namespaced under `magenheim.sockets.v1`. Socket writes operate on the individual `ItemDrop.ItemData.m_customData` dictionary and preserve unrelated foreign custom-data keys. Shared vanilla/foreign prefabs and shared item definitions are not the socket-state store.
 
@@ -61,38 +85,32 @@ Eligibility is adaptive and conservative:
 
 Jötunn `ModQuery` is enabled during plugin startup before equipment classification so mod-origin rules can identify modded prefabs. Item identity is separately carried from Valheim `m_shared.m_name`, allowing compatibility rules that are finer-grained than prefab origin alone.
 
-### Gameplay-authority repair
+`GameplayAuthorityFingerprint` combines the validated definition fingerprint with every gameplay-significant socket eligibility field. `DefinitionAuthoritySynchronizer` exchanges this composite gameplay fingerprint, so persistent gameplay mutation fails authority admission when peers disagree on socket compatibility rules rather than silently diverging.
 
-Socket compatibility previously lived outside `MagenheimDefinitionSet.Fingerprint`, allowing peers with identical content definitions but different socket limits/include/exclude rules to appear authority-compatible.
-
-`GameplayAuthorityFingerprint` now combines the validated definition fingerprint with every gameplay-significant socket eligibility field: category slot limits, explicit-include limit, identity mode, item/prefab/mod-origin include/exclude sets, and excluded categories. Case-insensitive identities are canonicalized for hashing while exact mode preserves casing significance.
-
-`DefinitionAuthoritySynchronizer` now exchanges this composite gameplay fingerprint. Persistent gameplay mutation therefore fails authority admission when peers disagree on socket compatibility rules rather than silently diverging.
-
-Source coverage for this pass is recorded in `SocketCompatibilityAuthorityTests` and `docs/validation/2026-09-14-socket-compatibility-gameplay-authority.md`.
+Source coverage for this authority repair is recorded in `SocketCompatibilityAuthorityTests` and `docs/validation/2026-09-14-socket-compatibility-gameplay-authority.md`.
 
 ## Socket workstation/runtime boundary
 
-The Geologist's Workstation source now includes a dedicated socket-management overlay. Local-host operations can plan/open sockets, install crystals, and extract crystals using per-item state, authority/replay guards, inventory snapshots, rollback, and Crystal Shaping XP. Remote-client socket mutation remains intentionally unadmitted until its server request/approval RPC path is bound and validated.
+The Geologist's Workstation source includes a dedicated socket-management overlay. Local-host operations can plan/open sockets, install crystals, and extract crystals using per-item state, authority/replay guards, inventory snapshots, rollback, and Crystal Shaping XP. Remote-client socket mutation remains intentionally unadmitted until its server request/approval RPC path is bound and validated.
 
 Socket effects are computed from Magenheim-owned per-item metadata and applied through runtime effect patches by equipment category. They do not require replacing another mod's item prefab or recipe.
 
 ## Repository branch reconciliation
 
-`main` remains the sole authoritative development branch by policy. Current branch enumeration nevertheless exposes three redundant refs: `radiance-content`, `tmp-radiance-content`, and `__delete_me__`.
-
-All three point to `a8b6947c696e4da71e4837ff1b731ac53e98a387`. Direct comparison proves current `main` contains that commit and is ahead of it, so those refs contain no unique material work and are safe to delete. The available GitHub connector in this session exposes branch create/update but not branch deletion, so their deletion is an explicit repository-cleanup blocker rather than a falsely claimed completion.
+`main` remains the sole authoritative development branch by policy. Historical redundant refs (`radiance-content`, `tmp-radiance-content`, and `__delete_me__`) were previously proven to contain no unique material work relative to `main`; deletion remains repository cleanup when branch-ref deletion capability is available.
 
 ## Build and validation boundary
 
 Earlier project revisions were successfully compiled and tested in the normal Valheim development environment, including a recorded zero-error/warning build and deterministic core run before later source expansion.
 
-This execution host currently exposes **no `dotnet`, `csc`, `mcs`, or `msbuild`**, so current 0.0.23 changes cannot be compiled or executed here. The source/remote read-back level is therefore the strongest admissible claim for this pass.
+This connector-only execution cycle did not invoke the normal local .NET/Valheim build/runtime environment. For 0.0.32, remote source/read-back and static-source validation are therefore the strongest admissible claims from this cycle.
 
 Current live gates include:
 
-- rebuild 0.0.23 and rerun the full deterministic suite;
+- rebuild 0.0.32 and rerun the full deterministic suite;
 - plugin startup with the composite gameplay-authority fingerprint;
+- verify all ten furniture entries appear under Hammer > Furniture with distinct Magenheim icons;
+- place all ten furniture pieces and validate collision/wear/refund behavior plus representative inherited chair/throne, bed, and cabinet interactions;
 - client/server rejection when socket policies differ;
 - live item/prefab/mod-origin exclusion behavior on representative third-party equipment;
 - socket metadata persistence through save/load, drop/pickup, storage, repair, upgrade, transfer, death, and dedicated-server flows;
@@ -103,8 +121,7 @@ Current live gates include:
 
 ## Next dependency-valid action
 
-1. rebuild current 0.0.23 source in the normal .NET/Valheim development environment and execute the deterministic suite, including `SocketCompatibilityAuthorityTests`;
-2. repair any compile/test/API defect at its authoritative source;
-3. live-test socket compatibility on vanilla and representative modded equipment, including item/prefab/mod-origin exclusions and mismatched multiplayer policy;
-4. bind remote-client socket-management requests to the server-authoritative approval path;
-5. continue remaining live-world defect repairs before broadening content scope further.
+1. rebuild/install current 0.0.32 in the normal Valheim development profile and execute the deterministic suite;
+2. in a disposable world, validate the ten-piece furniture collection and its generated Hammer icons, then repair any source-prefab, interaction, collider, wear, or material defect at the authoritative source;
+3. re-run the outstanding geode/workstation live visual gates in the same build;
+4. continue remote-client socket authority and representative mod-compatibility validation after the build is clean.
