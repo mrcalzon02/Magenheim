@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Magenheim.Core;
 using Magenheim.Core.Definitions;
+using Magenheim.Core.Socketing;
 using Magenheim.Core.Worldgen;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -52,12 +53,15 @@ internal static class MagenheimDefinitionLoader
             var geodes = document.Geodes
                 .Select(geode => ToGeodeDefinition(geode, compatibility.InvalidAreaBehavior))
                 .ToArray();
+            var socketEffects = new SocketEffectDefinitionSet(
+                document.SocketEffects.Select(ToSocketEffectRule).ToArray());
 
             return MagenheimDefinitionValidator.ValidateAndFreeze(
                 document.SchemaVersion,
                 refinementRules,
                 geodes,
-                compatibility);
+                compatibility,
+                socketEffects);
         }
         catch (JsonException exception)
         {
@@ -152,6 +156,18 @@ internal static class MagenheimDefinitionLoader
         };
     }
 
+    private static SocketEffectRule ToSocketEffectRule(SocketEffectRuleDocument document)
+    {
+        if (document is null)
+            throw new InvalidDataException("Socket-effect definition cannot be null.");
+
+        return new SocketEffectRule(
+            ParseEnum<ElementalAlignment>(document.Element, "socketEffects.element"),
+            ParseEnum<EquipmentCategory>(document.Category, "socketEffects.category"),
+            ParseEnum<SocketEffectKind>(document.Effect, "socketEffects.effect"),
+            document.SimpleMagnitude);
+    }
+
     private static ElementWeight ToElementWeight(ElementWeightDocument document)
     {
         if (document is null)
@@ -187,6 +203,9 @@ internal static class MagenheimDefinitionLoader
 
         [JsonProperty("geodes", Required = Required.Always)]
         public List<GeodeDefinitionDocument> Geodes { get; set; } = null!;
+
+        [JsonProperty("socketEffects", Required = Required.Always)]
+        public List<SocketEffectRuleDocument> SocketEffects { get; set; } = null!;
 
         [JsonProperty("worldgenCompatibility", Required = Required.Always)]
         public WorldgenCompatibilityDocument WorldgenCompatibility { get; set; } = null!;
@@ -310,6 +329,21 @@ internal static class MagenheimDefinitionLoader
 
         [JsonProperty("groundOffset", Required = Required.Always)]
         public double GroundOffset { get; set; }
+    }
+
+    private sealed class SocketEffectRuleDocument
+    {
+        [JsonProperty("element", Required = Required.Always)]
+        public string Element { get; set; } = null!;
+
+        [JsonProperty("category", Required = Required.Always)]
+        public string Category { get; set; } = null!;
+
+        [JsonProperty("effect", Required = Required.Always)]
+        public string Effect { get; set; } = null!;
+
+        [JsonProperty("simpleMagnitude", Required = Required.Always)]
+        public double SimpleMagnitude { get; set; }
     }
 
     private sealed class WorldgenCompatibilityDocument
