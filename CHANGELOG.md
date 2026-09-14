@@ -19,6 +19,7 @@
 - Added `default-data/foundation.json` as the shipped static content authority and configured it to copy with the runtime build output.
 - Moved runtime refinement construction from hard-coded defaults to the validated definition snapshot; invalid definitions now fail startup instead of silently selecting a fallback ruleset.
 - Added the initial Meadows/Earth definition with one guaranteed Earth crystal and independent 35% and 10% additional-crystal chances.
+- Added deterministic geode-cracking coverage for independent 35%/10% bonus rolls, exact chance boundaries, fixed three-roll element RNG consumption, weighted element selection, Rough-tier output, and fail-closed malformed requests/definitions.
 - Advanced the definition schema to version 2 and moved worldgen compatibility policy into the validated/fingerprinted definition snapshot.
 - Compatibility definitions now control invalid-area behavior, duplicate-registration behavior, prefab collision detection, identity comparison, and Magenheim-only registration/prefab exclusions.
 - Corrected loader ordering so configured invalid-area behavior actually governs geode area parsing rather than being ignored behind a hard-coded Reject pass.
