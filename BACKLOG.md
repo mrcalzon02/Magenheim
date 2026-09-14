@@ -51,10 +51,13 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Add session-scoped exact-once geode-opening admission keyed by peer/session generation/operation id, with duplicate-prepared, duplicate-applied, conflicting-replay, abort-and-retry, and reconnect-session handling.
 - [x] Add definition-driven Jötunn geode item registration source using canonical prefab identities and a temporary vanilla Stone visual base; no recipe or inventory mutation is introduced.
 - [ ] Validate intact Meadows geode item/prefab registration in a current Valheim/Jötunn runtime and replace the Stone placeholder only after the custom geode asset passes prefab/visual validation.
+- [x] Carry authoritative geode biome metadata into `DesiredWorldgenAddition` and build worldgen plans directly from the validated definition snapshot.
+- [x] Add an explicit Jötunn adapter boundary for validated biome/area mapping and read-only desired-prefab collision observation; no vegetation registration or host mutation occurs in this slice.
 - [ ] Bind the additive worldgen planner to a thin Jötunn registrar using the validated definition policy.
-- [ ] Explicitly map pure-core `SpawnArea.All` to current runtime `Heightmap.BiomeArea.Everywhere` rather than casting enum integers.
+- [x] Explicitly map pure-core `SpawnArea.All` to current runtime `Heightmap.BiomeArea.Everywhere` rather than casting enum integers.
 - [ ] Implement configurable non-destructive Meadows world placement.
 - [ ] Snapshot pre/post worldgen registrations and prove repeated-load idempotence.
+- [ ] Create/validate a Magenheim-owned mineable geode world-object prefab; do not use the temporary item/Stone placeholder as vegetation.
 - [ ] Implement Geologist's Workstation registration and crafting recipe.
 - [ ] Implement authoritative geode opening: one guaranteed crystal, independent 35% second-crystal roll, independent 10% third-crystal roll.
 - [ ] Register Earth Rough/Simple/Crystal/Advanced/Master items and Earth Crystal Shards.

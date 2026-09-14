@@ -54,7 +54,17 @@ Definition schema 2 makes this compatibility policy part of the same validated g
 
 Definition duplicate detection and exclusion de-duplication use the configured identity comparer. Case-insensitive exclusion identities are also canonicalized only for fingerprint hashing, so casing differences that do not change effective exclusion behavior no longer cause false server/client authority mismatches. Exact comparison retains casing as authority. Runtime-facing geode registration keys and prefab definition names remain case-preserving.
 
-The runtime loader parses compatibility policy before geodes so configured invalid-area behavior governs geode area parsing. The eventual Jötunn adapter must still map pure `SpawnArea` values explicitly to current `Heightmap.BiomeArea` values rather than casting enum integers.
+The runtime loader parses compatibility policy before geodes so configured invalid-area behavior governs geode area parsing. Pure definition-driven worldgen planning now carries the authoritative biome through `DesiredWorldgenAddition` rather than reconstructing biome placement later.
+
+## Jötunn worldgen adapter boundary — 2026-09-14
+
+`src/Magenheim.Runtime/JotunnWorldgenAdapter.cs` now owns the runtime translation boundary without owning worldgen policy.
+
+It explicitly maps validated Magenheim biome names to defined `Heightmap.Biome` runtime values and maps `SpawnArea.Median`, `Edge`, and `All` to `Heightmap.BiomeArea.Median`, `Edge`, and `Everywhere`. Unsupported values throw rather than relying on enum integer coincidence. The Ashlands name path accepts the expected `Ashlands`/`AshLands` runtime-name variation while still requiring a defined enum value.
+
+The adapter also provides read-only collision observation scoped to the vegetation prefab identities Magenheim intends to add. It uses `ZoneManager.GetZoneVegetation` only as a lookup and converts host presence into `ObservedWorldgenRegistration` input for the pure planner. It does not add, remove, disable, reorder, clone, or edit host vegetation.
+
+The adapter intentionally does not register the existing temporary geode item prefab as vegetation. That item currently clones vanilla `Stone` only as an inventory visual placeholder; the authoritative mineable world-object prefab remains a dependency before natural geode placement can be admitted.
 
 ## Runtime bootstrap
 
@@ -68,7 +78,7 @@ Runtime bootstrap properties:
 - hard dependency on `Jotunn.Main.ModGuid`;
 - Jötunn network compatibility: `EveryoneMustHaveMod` with `VersionStrictness.Patch`;
 - runtime startup consumes the validated core definition snapshot;
-- no world objects, items, sockets, inventory mutations, or persistent gameplay state are enabled by this bootstrap.
+- no world objects, sockets, inventory mutations, or persistent gameplay state are enabled by this bootstrap.
 
 `Magenheim.Core` targets `netstandard2.0` so it can remain consumable by both the net462 runtime and the net8.0 standalone test harness.
 
@@ -99,29 +109,29 @@ The server admits a peer to future Magenheim gameplay mutation only when both co
 1. the echoed server descriptor exactly matches the server's current authority;
 2. the client's own schema/fingerprint exactly matches the server authority.
 
-This closes a fail-closed defect in the earlier 0.0.7 protocol, where the client sent an acknowledgement even after failing to parse the server package and the server could authorize solely from the client's self-reported descriptor. In 0.0.8 malformed/unreadable server authority produces no acknowledgement, leaving server-side mutation admission false. Schema/fingerprint mismatch remains non-authorizing.
+Malformed/unreadable server authority produces no acknowledgement, leaving server-side mutation admission false. Schema/fingerprint mismatch remains non-authorizing.
 
 No inventory, socket, geode-opening, refinement, or other persistent gameplay transaction consumes the admission gate yet; those mutations remain disabled.
 
 ## Deterministic authority coverage — 2026-09-14
 
-The pure-core console harness invokes `DefinitionAuthorityTests`, covering pending/non-authorizing state, matching authority admission, schema mismatch, fingerprint mismatch, invalid local and remote descriptors, uppercase/non-canonical fingerprints, null descriptors, wrong-length fingerprints, non-hexadecimal fingerprints, and canonical validation. These tests directly exercise `DefinitionAuthorityHandshake` without introducing Jötunn or Valheim dependencies.
+The pure-core console harness invokes `DefinitionAuthorityTests`, covering pending/non-authorizing state, matching authority admission, schema mismatch, fingerprint mismatch, invalid local and remote descriptors, uppercase/non-canonical fingerprints, null descriptors, wrong-length fingerprints, non-hexadecimal fingerprints, and canonical validation.
 
-`DefinitionCompatibilityTests` now also covers the identity semantics that feed authority hashing: case-only duplicate identities are rejected under case-insensitive policy, exact-mode case distinctions remain valid, case-insensitive exclusion casing canonicalizes to one fingerprint, and exact-mode exclusion casing remains fingerprint-significant.
+`DefinitionCompatibilityTests` also covers identity semantics that feed authority hashing: case-only duplicate identities are rejected under case-insensitive policy, exact-mode case distinctions remain valid, case-insensitive exclusion casing canonicalizes to one fingerprint, and exact-mode exclusion casing remains fingerprint-significant.
 
 The test source has been committed and statically reviewed, but execution remains pending because this host has no .NET SDK/compiler. No passing-test claim is made until the harness is actually run.
 
 ## Validation boundary
 
-The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compilation and test execution therefore remain unclaimed. Jötunn 2.30.0 documentation was checked for the current `SynchronizationManager.AddInitialSynchronization(CustomRPC, Func<ZPackage>)` contract and `CustomRPC` coroutine receive model; the source shape remains consistent with those documented interfaces, but that is not a substitute for compilation or in-game execution.
+The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compilation and test execution therefore remain unclaimed. Current Jötunn documentation confirms that vegetation is the normal path for singular scattered objects including rocks/ore, that `BiomeArea` controls biome middle/edge placement, that `VegetationConfig.BiomeArea` uses `Everywhere`, and that custom vegetation additions should be registered once. Static API review is not a substitute for compilation or in-game execution.
 
 ## Next exact action
 
 In a .NET 8 SDK / current Valheim development environment:
 
-1. run `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`, including the definition-authority and compatibility-fingerprint assertions;
-2. compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` against Jötunn 2.30.0 and current Valheim dependencies;
-3. execute the 0.0.8 authority synchronization on host/client and dedicated server, including malformed, schema-mismatch, fingerprint-mismatch, matching-authority, and case-insensitive exclusion-casing equivalence cases;
-4. repair any compile/API/serialization defect at the authoritative source;
-5. register Crystal Shaping under permanent ID `magenheim.crystal_shaping` only after the runtime compile gate passes;
-6. then bind the pure worldgen plan to a thin Jötunn registrar using the effective compatibility policy, explicit `Heightmap.BiomeArea` mapping, and repeated-load idempotence checks.
+1. run `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`;
+2. compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` against Jötunn 2.30.0 and current Valheim dependencies, including `JotunnWorldgenAdapter`;
+3. repair any compile/API/enum-name defect at the authoritative source;
+4. create and validate a Magenheim-owned mineable geode world-object prefab rather than using the temporary Stone-backed inventory item as vegetation;
+5. feed validated desired additions through `DefinitionWorldgenPlanner` plus read-only host observation, then register only approved vegetation once through a thin Jötunn registrar;
+6. verify repeated world loads do not duplicate Magenheim vegetation and that occupied foreign prefab identities are skipped/errored according to the effective compatibility policy without host mutation.
