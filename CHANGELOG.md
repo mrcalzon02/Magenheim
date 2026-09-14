@@ -1,5 +1,22 @@
 # Magenheim Changelog
 
+## Unreleased — live-world test 1 fixes
+
+- Recorded the first disposable-world observations: the Geologist's Workstation opens,
+  direct Earth inventory-item spawns work, and the direct world-geode prefab uses the
+  custom Magenheim geometry.
+- Fixed the authoritative custom-material loading path so opaque Magenheim RGB atlases
+  no longer inherit transparent blend/depth state from cloned vanilla source materials.
+  A rebuilt in-game retest is still required before the translucent-geode defect is closed.
+- Corrected the Crystal Shaping console diagnostic to use the permanent single-token
+  identifier `magenheim.crystal_shaping`; the spaced display name is split by Valheim's
+  `raiseskill` parser before Jötunn can resolve it.
+- Classified the empty workstation Craft panel and absent socket-management operation as
+  real implementation gaps rather than discovery failures. Authority-gated geode opening,
+  refinement, earned XP, and adaptive per-item socketing remain unfinished.
+- Traced workstation iron-band surface fighting to intersecting/coplanar generated geometry;
+  the generator and checked-in derived mesh still require a coordinated repair and retest.
+
 ## 0.0.16 - Geologist workshop
 
 - Added four original models, texture atlases, build icons, and OBJ/MTL exports:

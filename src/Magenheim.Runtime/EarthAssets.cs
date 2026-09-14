@@ -50,6 +50,7 @@ internal static class EarthAssets
             if (material.HasProperty("_BumpMap")) material.SetTexture("_BumpMap", null);
             material.DisableKeyword("_NORMALMAP");
             material.DisableKeyword("_EMISSION");
+            ConfigureOpaqueMaterial(material);
             Materials.Add(asset, material);
         }
 
@@ -75,6 +76,25 @@ internal static class EarthAssets
             noduleCollider.radius = .65f;
         }
         return visual;
+    }
+
+    private static void ConfigureOpaqueMaterial(Material material)
+    {
+        // Clone sources such as Rock_4 can carry shader/render-state settings that are
+        // inappropriate for Magenheim's fully opaque RGB atlases. Normalize the cloned
+        // material instead of inheriting transparency/blending from the source prefab.
+        material.SetOverrideTag("RenderType", "Opaque");
+        if (material.HasProperty("_Mode")) material.SetFloat("_Mode", 0f);
+        if (material.HasProperty("_Surface")) material.SetFloat("_Surface", 0f);
+        if (material.HasProperty("_SrcBlend")) material.SetFloat("_SrcBlend", 1f);
+        if (material.HasProperty("_DstBlend")) material.SetFloat("_DstBlend", 0f);
+        if (material.HasProperty("_ZWrite")) material.SetFloat("_ZWrite", 1f);
+        if (material.HasProperty("_AlphaClip")) material.SetFloat("_AlphaClip", 0f);
+        if (material.HasProperty("_Cutoff")) material.SetFloat("_Cutoff", 0f);
+        material.DisableKeyword("_ALPHATEST_ON");
+        material.DisableKeyword("_ALPHABLEND_ON");
+        material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        material.renderQueue = 2000;
     }
 
     private static Texture2D Texture(string filename)

@@ -4,33 +4,60 @@
 
 `INSTRUCTIONS.md`, committed source on the live `main` branch, and directly observed repository/runtime evidence are authoritative. Backlog, validation records, archived design, scheduled prompts, and conversation are subordinate when they disagree with verified live state.
 
-## Current local delivery - 0.0.16
+## Current delivery - 0.0.16 plus post-test source repair
 
-The local content set now contains eleven original models/texture atlases and
-twelve icons: geode, five Earth crystal tiers, shards, Crystal Shaping badge,
-Geologist's Workstation, and three station upgrades. Models have OBJ/MTL exports.
-Workshop pieces have build costs, collision shapes, distinct wear variants, and
-upgrade links to the Geologist's Workstation. Its crafting skill is Crystal Shaping.
+The 0.0.16 content set contains eleven original models/texture atlases and twelve
+icons: geode, five Earth crystal tiers, shards, Crystal Shaping badge, Geologist's
+Workstation, and three station upgrades. Models have OBJ/MTL exports. Workshop pieces
+have build costs, collision shapes, distinct wear variants, and upgrade links to the
+Geologist's Workstation. Its crafting skill is Crystal Shaping.
 
-The prior worldgen drop-table fix is installed. Valheim startup using the same
-packaged assemblies now registers all seven inventory items, Crystal Shaping,
-the four workshop pieces, and one Meadows geode vegetation addition without a
-Magenheim registration error. The isolated check loaded no world and was closed.
+Valheim startup using the packaged assemblies registered all seven inventory items,
+Crystal Shaping, the four workshop pieces, and one Meadows geode vegetation addition
+without a Magenheim registration exception. The local 0.0.16 package was built with
+zero errors/warnings, passed 113 core assertions, and was installed/hash-verified in
+the active Central Fuckery profile before the first live world test.
 
-0.0.16 is installed and hash-verified in the active Central Fuckery profile.
-The previous installation was archived under backups/Local-Magenheim-20260914-075509.zip.
-Build: zero errors/warnings. Core harness: 113 assertions passed. Eleven art
-assets pass geometry, UV, atlas, and icon checks. Source changes remain local on
-main and have not been committed or pushed during these content deliveries.
+### Live world test 1 - 2026-09-14
 
-See TESTING.md and docs/validation/2026-09-14-workshop-content.md. Next playable
-work is authoritative geode opening/refinement and earned Crystal Shaping XP.
-The workshop is buildable but has no mineral recipes yet. Actual placement,
-station leveling, natural mining, visual appearance, save/reload, and multiplayer
-still require world tests.
+Direct in-game testing materially advanced the evidence boundary. The Geologist's
+Workstation exists, opens its station UI, and all directly spawned Earth inventory
+items appeared correctly. The dedicated Meadows Earth world-geode prefab also spawned
+with the custom Magenheim geometry.
 
-The historical snapshot below predates the local content deliveries. Its
-no-compiler/no-content statements are superseded by this section.
+The same test exposed four distinct conditions:
+
+- the world geode custom mesh rendered translucent;
+- workstation tabletop/iron-band surface fighting is visible;
+- the workstation Craft panel has no mineral operations;
+- no adaptive equipment-slotting operation exists.
+
+The last two are confirmed implementation gaps, not hidden/discovery failures. Current
+runtime source registers the content but does not bind authoritative geode opening or
+crystal refinement inventory transactions to the station UI, and P2 socket metadata,
+eligibility, transaction, and persistence work is not implemented yet.
+
+The translucent geode was traced to inherited render state on cloned source materials,
+not texture transparency: Magenheim atlases are opaque RGB images. `EarthAssets` now
+normalizes Magenheim-owned cloned materials to Opaque RenderType, opaque blend factors,
+ZWrite, non-alpha shader keywords, and geometry render queue. That source repair is not
+accepted as a live fix until a rebuilt package is installed and observed in Valheim.
+
+The workstation iron-band issue is traced to asset geometry: the generator places thick
+iron band cuboids through the tabletop boards and shares visible surface planes. That
+repair remains open because the generator and checked-in derived mesh must be changed
+together rather than patched at runtime.
+
+The attempted console diagnostic `raiseskill Crystal Shaping 1` was rejected by the
+vanilla command parser. The permanent Jotunn custom-skill identifier is the required
+single-token diagnostic argument: `raiseskill magenheim.crystal_shaping 1`. That exact
+command still requires live confirmation and is not a substitute for earned gameplay XP.
+
+See `TESTING.md` and `docs/validation/2026-09-14-live-world-test-1.md`. The highest-priority
+next work is to rebuild/retest the opaque material repair, then repair/bake the workstation
+band geometry, then bind authority-gated geode opening/refinement transactions and earned
+Crystal Shaping XP to the Geologist's Workstation. Adaptive socketing remains P2 and must
+use per-item persistent metadata rather than shared prefab mutation.
 
 ## Prior source-only snapshot — 2026-09-14
 
@@ -84,23 +111,19 @@ These fields are legitimate server configuration because any effective change is
 
 ## Runtime identity
 
-Runtime source/package version is 0.0.14. Target framework remains .NET Framework 4.6.2 with `JotunnLib` 2.30.0. BepInEx plugin GUID is `mrcalzon02.magenheim`; network compatibility remains `EveryoneMustHaveMod` with patch strictness. Definition-authority synchronization and session-scoped geode-operation replay protection remain in source.
+Installed/tested package identity remains 0.0.16. Target framework remains .NET Framework 4.6.2 with `JotunnLib` 2.30.0. BepInEx plugin GUID is `mrcalzon02.magenheim`; network compatibility remains `EveryoneMustHaveMod` with patch strictness. Definition-authority synchronization and session-scoped geode-operation replay protection remain in source.
 
 ## Validation boundary
 
-This execution host still exposes no `dotnet`, `csc`, or `mcs`, so compilation and deterministic test execution are not claimed. `GeodePlacementDefinitionTests` exists for placement preservation, fingerprint sensitivity, invalid tilt, runtime-float representability, and validated override propagation; the source is committed but not executed here.
+The 0.0.16 build/startup path has already been compiled and exercised locally, while the post-test material-state source repair has not yet been rebuilt in this execution context. Do not conflate source inspection with a compiled/runtime acceptance result.
 
-Valheim startup, schema-3 JSON loading in-game, BepInEx config binding, natural geode generation, repeated-load idempotence, host/client replication, exact destruction/drop behavior, and proof that vanilla `Rock_4` remains unchanged remain runtime gates.
+Natural geode generation, exact mining/drop behavior, repeated-load idempotence, save/reload persistence, host/client replication, dedicated-server behavior, authority-gated geode opening/refinement, earned Crystal Shaping XP, and socket persistence remain runtime gates.
 
 ## Next exact action
 
-In a current .NET/Valheim development environment:
-
-1. run the pure-core test harness and repair any schema-3 defect;
-2. compile `Magenheim.Runtime` against Jötunn 2.30.0/current Valheim assemblies;
-3. launch a disposable world and verify one Magenheim custom vegetation registration per geode identity with no duplication across actual menu/world transitions;
-4. verify server placement overrides change the effective fingerprint and produce matching host/client authority;
-5. verify occupied foreign prefab identities are skipped/errored by policy without mutation;
-6. mine a naturally generated Meadows geode and verify persistent network behavior plus exactly one intact-geode drop;
-7. verify vanilla `Rock_4` remains unchanged;
-8. then continue the Meadows loop with permanent Crystal Shaping registration, Geologist's Workstation, Earth crystal/shard item registration, and actual authority-gated inventory transactions.
+1. build the current `main` source and rerun the deterministic core harness;
+2. install the rebuilt package and spawn `Magenheim_Geode_Meadows_Earth_World` to confirm opaque rendering;
+3. test `raiseskill magenheim.crystal_shaping 1` and verify the skill value changes;
+4. repair the workstation iron-band generator geometry and checked-in generated mesh together, then retest placement/lighting;
+5. implement the Geologist's Workstation geode-opening/refinement transaction binding with atomic inventory mutation, station/upgrade gating, failure shard returns, and earned Crystal Shaping XP;
+6. only after that P1 transaction path is validated, begin adaptive per-item socket metadata and the station slot-management operation.

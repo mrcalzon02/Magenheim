@@ -14,9 +14,12 @@ does not use this profile. Exit the game before rebuilding or installing.
 - Geologist's Workstation plus Fracturing Block, Faceting Wheel, and Resonance Frame,
   all with original models, icons, build costs, collision shapes, and wear variants.
 
-This is a content test. Geode opening, mineral crafting recipes, refinement inventory
-transactions, and earned skill XP are not connected yet. Do not consume geodes
-expecting an opening action. All crystal tiers can be inspected using console spawns.
+This is still a content/vertical-slice test. Geode opening, refinement inventory
+transactions, earned skill XP, and adaptive equipment socketing are not connected
+to the workstation yet. The empty workstation Craft panel and absence of a slotting
+operation are therefore confirmed implementation gaps, not recipe-discovery failures.
+Do not consume geodes expecting an opening action. All crystal tiers can be inspected
+using console spawns.
 
 ## Build the workshop
 
@@ -36,8 +39,6 @@ Duplicate copies of one upgrade do not stack.
 All listed resources are recoverable on removal. Check placement preview, collision,
 repair/removal, upgrade connection effects, station level, and save/reload in a
 disposable world. The main bench can be used outdoors without a roof or fire.
-The workshop currently provides buildable content and station progression; its
-crafting panel has no mineral recipes yet.
 
 Direct prefab inspection commands, after `devcommands` in the local test world:
 
@@ -73,15 +74,36 @@ Save, quit to menu, and reload to check item/nodule persistence and no duplicate
 Natural geodes appear in newly generated Meadows zones; existing explored terrain
 is not retroactively regenerated. A console-spawned nodule does not validate natural placement.
 
-To inspect skill display and saving on the disposable character:
+To inspect skill display and saving on the disposable character, use the permanent
+single-token skill identifier. Valheim's `raiseskill` parser treats the display name's
+space as another argument before Jotunn can resolve it, so `raiseskill Crystal Shaping 1`
+is not a valid diagnostic command.
 
 ```text
-raiseskill "Crystal Shaping" 1
+raiseskill magenheim.crystal_shaping 1
 ```
 
-If the game's command parser rejects the quoted display name, inspect the registered
-numeric skill ID in `BepInEx/LogOutput.log` and use that ID with `raiseskill`.
-This diagnostic is not an XP gameplay implementation.
+This is only a diagnostic for the registered skill. It does not substitute for the
+still-unimplemented XP award on valid geode/refinement transactions.
+
+## Live world test 1 - 2026-09-14
+
+Observed in the disposable world:
+
+- the Geologist's Workstation exists and opens its Craft panel;
+- the Craft panel contains no Magenheim mineral operations yet;
+- no equipment-slotting operation is exposed yet;
+- all directly spawned Earth inventory items appeared correctly;
+- the spawned world geode used the custom mesh but rendered translucent;
+- visible workstation surface fighting was observed around the iron tabletop bands;
+- `raiseskill Crystal Shaping 1` was rejected by the command parser.
+
+The translucent geode has been traced to cloned source-material render state rather
+than texture alpha: Magenheim's checked-in atlases are opaque RGB images. Source now
+normalizes Magenheim custom materials to opaque blend/depth state; that repair requires
+a rebuild/install and live retest before it is accepted. The workstation banding issue,
+refinement/geode-opening operations, and socketing operation remain open until their
+runtime implementations are changed and retested.
 
 ## Build and install
 
@@ -96,6 +118,8 @@ It does not install bundled Unity, framework, or third-party runtime DLLs.
 
 ## Evidence boundaries
 
-See `docs/validation/2026-09-14-earth-content-package.md` for observed build/startup
-results. Natural worldgen, actual mining drops, visual appearance under in-game
-lighting, persistence, and multiplayer require separate observations.
+See `docs/validation/2026-09-14-earth-content-package.md`,
+`docs/validation/2026-09-14-workshop-content.md`, and
+`docs/validation/2026-09-14-live-world-test-1.md` for observed results and current
+acceptance boundaries. Natural worldgen, persistence, and multiplayer still require
+separate observations.

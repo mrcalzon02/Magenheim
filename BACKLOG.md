@@ -38,6 +38,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Assign a strictly increasing server-local session generation and retire prior geode operation replay records for reused peers.
 - [ ] Compile and execute the definition-authority synchronization path in a current Valheim/Jötunn environment and repair any API/serialization defect before runtime admission.
 - [x] Register Crystal Shaping under permanent ID `magenheim.crystal_shaping`.
+- [ ] Confirm the live console diagnostic `raiseskill magenheim.crystal_shaping 1`; the spaced display name is not a valid `raiseskill` argument.
 
 ## P1 — Meadows/Earth vertical slice
 
@@ -56,10 +57,15 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Add a dedicated Magenheim-owned mineable geode world-object prefab derived as `<item prefab>_World`, with persistent network state and exactly one intact-geode destruction drop.
 - [x] Collapse world-prefab and vegetation registration into one additive path because Jötunn `AddCustomVegetation` registers the prefab itself.
 - [ ] Compile and validate the mineable geode world-object/vegetation path in current Valheim/Jötunn, including exactly-one intact drop, natural placement, host/client persistence, and proof vanilla `Rock_4` remains unchanged.
-- [x] Implement Geologist's Workstation registration and building recipe (0.0.16; live startup registered, placement still needs world testing).
+- [x] Implement Geologist's Workstation registration and building recipe (0.0.16; live world test now confirms the station exists and opens its UI).
+- [x] Record live-world test 1 confirming station UI access, direct Earth inventory-item spawning, and direct custom world-geode geometry.
+- [x] Normalize Magenheim-owned cloned materials to opaque blend/depth state at the authoritative visual-loading boundary after the live world geode rendered translucent.
+- [ ] Rebuild/install and confirm the spawned world geode is opaque under live Valheim lighting after the material-state repair.
+- [ ] Repair the Geologist's Workstation iron-band geometry in the generator and checked-in generated mesh together; current bands intersect the tabletop and share visible planes.
 - [ ] Bind authoritative geode opening to actual atomic inventory mutation after authority/replay/capacity admission.
 - [x] Register Earth Rough/Simple/Crystal/Advanced/Master items and Earth Crystal Shards.
 - [ ] Bind valid refinement attempts to atomic inventory transactions and Crystal Shaping XP; every server mutation must require successful definition-authority admission for the requesting peer.
+- [ ] Expose the authority-gated geode-opening/refinement operations through the Geologist's Workstation UI; an empty Craft panel is currently expected because no runtime operation binding exists.
 - [ ] Verify a failed transaction consumes exactly one source and returns exactly the configured matching shards.
 - [ ] Verify disposable-world generation, save/load, host/client, and dedicated-server behavior before production admission.
 
@@ -69,6 +75,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [ ] Discover eligible equipment adaptively from item category/capabilities and metadata.
 - [ ] Add configurable include/exclude rules by item, prefab, category, and mod origin.
 - [ ] Map crystal bonuses by equipment category without replacing external prefabs or recipes.
+- [ ] Add an explicit Geologist's Workstation socket-management operation; do not mutate shared item prefabs as a shortcut.
 - [ ] Preserve unknown foreign custom-data keys.
 - [ ] Validate persistence, multiplayer authority, transfer, death/drop, repair, upgrade, and mod-removal behavior.
 
