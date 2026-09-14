@@ -57,7 +57,8 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Explicitly map pure-core `SpawnArea.All` to current runtime `Heightmap.BiomeArea.Everywhere` rather than casting enum integers.
 - [ ] Implement configurable non-destructive Meadows world placement.
 - [ ] Snapshot pre/post worldgen registrations and prove repeated-load idempotence.
-- [ ] Create/validate a Magenheim-owned mineable geode world-object prefab; do not use the temporary item/Stone placeholder as vegetation.
+- [x] Add source for a dedicated Magenheim-owned mineable geode world-object prefab derived as `<item prefab>_World`, with persistent network state and exactly one intact-geode destruction drop; never use the temporary item/Stone placeholder as vegetation.
+- [ ] Compile and validate the mineable geode world-object prefab in current Valheim/Jötunn, including exactly-one intact drop, host/client persistence, and proof vanilla `Rock_4` remains unchanged.
 - [ ] Implement Geologist's Workstation registration and crafting recipe.
 - [ ] Implement authoritative geode opening: one guaranteed crystal, independent 35% second-crystal roll, independent 10% third-crystal roll.
 - [ ] Register Earth Rough/Simple/Crystal/Advanced/Master items and Earth Crystal Shards.
