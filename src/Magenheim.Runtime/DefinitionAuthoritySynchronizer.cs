@@ -21,6 +21,7 @@ internal sealed class DefinitionAuthoritySynchronizer
     private readonly GeodeOpeningOperationGuard _geodeOpeningOperations;
     private readonly RefinementOperationGuard _refinementOperations;
     private readonly SocketOperationGuard _socketOperations;
+    private readonly SocketExtractionOperationGuard _socketExtractionOperations;
     private readonly Dictionary<long, DefinitionAuthorityResult> _peerResults = new();
     private readonly Dictionary<long, long> _peerSessionGenerations = new();
     private readonly CustomRPC _rpc;
@@ -30,12 +31,14 @@ internal sealed class DefinitionAuthoritySynchronizer
         GeodeOpeningOperationGuard geodeOpeningOperations,
         RefinementOperationGuard refinementOperations,
         SocketOperationGuard socketOperations,
+        SocketExtractionOperationGuard socketExtractionOperations,
         ManualLogSource logger)
     {
         if (definitions is null) throw new ArgumentNullException(nameof(definitions));
         _geodeOpeningOperations = geodeOpeningOperations ?? throw new ArgumentNullException(nameof(geodeOpeningOperations));
         _refinementOperations = refinementOperations ?? throw new ArgumentNullException(nameof(refinementOperations));
         _socketOperations = socketOperations ?? throw new ArgumentNullException(nameof(socketOperations));
+        _socketExtractionOperations = socketExtractionOperations ?? throw new ArgumentNullException(nameof(socketExtractionOperations));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         _localAuthority = new DefinitionAuthorityDescriptor(definitions.SchemaVersion, definitions.Fingerprint);
@@ -80,6 +83,7 @@ internal sealed class DefinitionAuthoritySynchronizer
         _geodeOpeningOperations.RetirePeerSessions(peer.m_uid, nextGeneration);
         _refinementOperations.RetirePeerSessions(peer.m_uid, nextGeneration);
         _socketOperations.RetirePeerSessions(peer.m_uid, nextGeneration);
+        _socketExtractionOperations.RetirePeerSessions(peer.m_uid, nextGeneration);
 
         var package = new ZPackage();
         package.Write(ServerAuthorityMessage);
