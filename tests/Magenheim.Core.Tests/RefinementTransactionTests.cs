@@ -112,6 +112,18 @@ internal static class RefinementTransactionTests
                !duplicateApplied.MutationAuthorized,
             "Applied refinement replay must not authorize duplicate mutation.");
 
+        var postMutationReplay = request with
+        {
+            SourceCrystalCount = 0,
+            AvailableOutputSlotsAfterConsumption = 0,
+        };
+        var duplicateAfterConsumption = guard.Begin(key, postMutationReplay);
+        Assert(duplicateAfterConsumption.Outcome == RefinementOperationOutcome.DuplicateApplied &&
+               !duplicateAfterConsumption.MutationAuthorized,
+            "Applied refinement replay must remain identifiable after the source crystal is consumed.");
+        Assert(duplicateAfterConsumption.Plan == fresh.Plan,
+            "Applied refinement replay must return the stored original plan rather than replanning against post-mutation inventory.");
+
         var conflictKey = new RefinementOperationKey(42, 3, "refine-2");
         var first = guard.Begin(conflictKey, request);
         Assert(first.MutationAuthorized, "Second fresh key should prepare normally.");
@@ -121,8 +133,23 @@ internal static class RefinementTransactionTests
         };
         var conflict = guard.Begin(conflictKey, conflictingRequest);
         Assert(conflict.Outcome == RefinementOperationOutcome.ConflictingReplay,
-            "Reusing an operation id with a different mutation plan must fail closed.");
+            "Reusing an operation id with different immutable refinement intent must fail closed.");
+
+        var conflictingAfterInventoryChange = conflictingRequest with
+        {
+            SourceCrystalCount = 0,
+            AvailableOutputSlotsAfterConsumption = 0,
+        };
+        var postMutationConflict = guard.Begin(conflictKey, conflictingAfterInventoryChange);
+        Assert(postMutationConflict.Outcome == RefinementOperationOutcome.ConflictingReplay,
+            "Conflicting replay identity must be detected before mutable inventory state can mask it.");
         Assert(guard.AbortPrepared(conflictKey), "Unapplied prepared refinement should be abortable for retry.");
+
+        var missingFreshKey = new RefinementOperationKey(42, 3, "refine-missing");
+        var missingFresh = guard.Begin(missingFreshKey, request with { SourceCrystalCount = 0 });
+        Assert(missingFresh.Outcome == RefinementOperationOutcome.PlanRejected &&
+               missingFresh.Plan.Outcome == RefinementTransactionPlanOutcome.MissingSource,
+            "A genuinely fresh operation with no source crystal must still fail normal transaction planning.");
 
         var staleKey = new RefinementOperationKey(77, 1, "old-session");
         Assert(guard.Begin(staleKey, request).MutationAuthorized,
