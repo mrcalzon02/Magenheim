@@ -1,5 +1,8 @@
+using System;
+using System.IO;
 using BepInEx;
 using Jotunn.Utils;
+using Magenheim.Runtime.Definitions;
 
 namespace Magenheim.Runtime;
 
@@ -16,7 +19,22 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
     private void Awake()
     {
-        _services = RuntimeServices.Create();
-        Logger.LogInfo($"{PluginName} {PluginVersion} runtime bootstrap initialized. Gameplay mutation remains disabled until server-authoritative transactions are implemented.");
+        try
+        {
+            var assemblyDirectory = Path.GetDirectoryName(typeof(MagenheimPlugin).Assembly.Location)
+                ?? throw new InvalidOperationException("Unable to determine the Magenheim plugin directory.");
+            var definitionPath = Path.Combine(assemblyDirectory, "default-data", "foundation.json");
+            var definitions = MagenheimDefinitionLoader.LoadFromFile(definitionPath);
+
+            _services = RuntimeServices.Create(definitions);
+            Logger.LogInfo(
+                $"{PluginName} {PluginVersion} loaded definition schema {definitions.SchemaVersion} " +
+                $"with fingerprint {definitions.Fingerprint}. Gameplay mutation remains disabled until server-authoritative transactions are implemented.");
+        }
+        catch (Exception exception)
+        {
+            Logger.LogFatal($"{PluginName} definition bootstrap failed: {exception}");
+            throw;
+        }
     }
 }
