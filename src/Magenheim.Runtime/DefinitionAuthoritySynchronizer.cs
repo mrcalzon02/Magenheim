@@ -18,6 +18,7 @@ internal sealed class DefinitionAuthoritySynchronizer
     private readonly DefinitionAuthorityDescriptor _localAuthority;
     private readonly ManualLogSource _logger;
     private readonly GeodeOpeningOperationGuard _geodeOpeningOperations;
+    private readonly RefinementOperationGuard _refinementOperations;
     private readonly Dictionary<long, DefinitionAuthorityResult> _peerResults = new();
     private readonly Dictionary<long, long> _peerSessionGenerations = new();
     private readonly CustomRPC _rpc;
@@ -25,10 +26,12 @@ internal sealed class DefinitionAuthoritySynchronizer
     internal DefinitionAuthoritySynchronizer(
         MagenheimDefinitionSet definitions,
         GeodeOpeningOperationGuard geodeOpeningOperations,
+        RefinementOperationGuard refinementOperations,
         ManualLogSource logger)
     {
         if (definitions is null) throw new ArgumentNullException(nameof(definitions));
         _geodeOpeningOperations = geodeOpeningOperations ?? throw new ArgumentNullException(nameof(geodeOpeningOperations));
+        _refinementOperations = refinementOperations ?? throw new ArgumentNullException(nameof(refinementOperations));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         _localAuthority = new DefinitionAuthorityDescriptor(definitions.SchemaVersion, definitions.Fingerprint);
@@ -42,6 +45,9 @@ internal sealed class DefinitionAuthoritySynchronizer
 
         SynchronizationManager.Instance.AddInitialSynchronization(_rpc, BuildServerAuthorityPackage);
     }
+
+    internal DefinitionAuthorityResult LocalAuthorityResult =>
+        DefinitionAuthorityHandshake.Compare(_localAuthority, _localAuthority);
 
     internal DefinitionAuthorityResult ClientAuthorityResult { get; private set; } = DefinitionAuthorityResult.Pending;
 
@@ -68,6 +74,7 @@ internal sealed class DefinitionAuthoritySynchronizer
         var nextGeneration = NextSessionGeneration(peer.m_uid);
         _peerSessionGenerations[peer.m_uid] = nextGeneration;
         _geodeOpeningOperations.RetirePeerSessions(peer.m_uid, nextGeneration);
+        _refinementOperations.RetirePeerSessions(peer.m_uid, nextGeneration);
 
         var package = new ZPackage();
         package.Write(ServerAuthorityMessage);

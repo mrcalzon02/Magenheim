@@ -37,6 +37,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _authoritySynchronizer = new DefinitionAuthoritySynchronizer(
                 effectiveDefinitions,
                 _services.GeodeOpeningOperations,
+                _services.RefinementOperations,
                 Logger);
 
             _earthContentRegistrar = new EarthContentRegistrar(Logger);
@@ -51,7 +52,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
-                "Definition authority synchronization, session-scoped geode replay protection, definition-driven intact geode items, " +
+                "Definition authority synchronization, session-scoped geode/refinement replay protection, definition-driven intact geode items, " +
                 "fingerprinted geode placement configuration, and additive geode vegetation registration are configured. " +
                 "Persistent inventory/socket mutations remain gated pending runtime validation.");
         }
