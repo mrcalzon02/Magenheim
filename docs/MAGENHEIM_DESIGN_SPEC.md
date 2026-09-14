@@ -73,15 +73,21 @@ The first bounded content slice is Meadows/Earth. Additional biome tables are da
 
 ## World-generation invariants
 
-Worldgen integration is additive and non-destructive. Magenheim may add its own prefabs, vegetation, locations, or clutter, but compatibility code must not delete, rewrite, disable, or reorder vanilla or third-party entries.
+Worldgen integration is additive and non-destructive. Magenheim may add its own prefabs, vegetation, locations, or clutter, but compatibility code must not delete, rewrite, disable, reorder, or replace vanilla or third-party entries.
 
-Every Magenheim registration uses a stable `magenheim.` key. Before registration, integration code observes existing registrations and creates a plan. An occupied key is skipped or rejected according to conservative policy; the existing entry survives unchanged.
+Every Magenheim registration uses a stable `magenheim.` key. Before registration, integration code observes existing host identities and creates a plan. An occupied identity is skipped or rejected according to the validated compatibility policy; the existing entry survives unchanged. Configurability may make Magenheim less intrusive but must never authorize destructive foreign mutation.
 
-Supported abstract spawn areas are Median, Edge, and All. `All` is Magenheim's stable core term for the runtime concept Jötunn currently exposes as `Heightmap.BiomeArea.Everywhere`; configuration accepts `Everywhere` as an alias without making the pure core depend on Valheim types. None and unknown bits are invalid by default. Negative numeric flag values are never clampable because sign extension can falsely set every known bit. Configuration may explicitly clamp recognized positive bits or fall back to All.
+Supported abstract spawn areas are Median, Edge, and All. None and unknown bits are invalid by default. Negative numeric flag values are never clampable because sign extension can falsely set every known bit. Configuration may explicitly clamp recognized positive bits or fall back to All. The runtime adapter resolves the current Valheim/Jötunn combined `BiomeArea` name from `Everything` or `Everywhere` and never relies on enum integer coincidence.
 
-Collision planning checks Magenheim registration keys and, by conservative default, prefab identity. Duplicate or foreign-occupied identities are skipped or errored according to policy without mutating the observed host entry. Compatibility configuration may disable a specific Magenheim registration key or prefab and may opt into case-insensitive identity comparison. Those controls only make Magenheim less intrusive; destructive foreign mutation can never be enabled through compatibility configuration.
+Collision planning checks Magenheim registration keys and, by conservative default, prefab identity. The execution boundary also refuses an already-occupied prefab identity even when proactive prefab-collision reporting is disabled; this is a safety invariant, not an optional compatibility preference.
 
-The pure planner validates definitions and collisions. A thin runtime adapter translates approved entries to current Jötunn/Valheim APIs and records what it attempted. Repeated lifecycle calls must be idempotent. The runtime adapter must explicitly map Magenheim `Median`, `Edge`, and `All` to the current `Heightmap.BiomeArea` values rather than relying on coincidental integer equivalence.
+The pure planner owns Add/Skip/Error decisions. Runtime registration consumes only approved additions and uses Jötunn's additive `CustomVegetation` path. `ZoneManager.AddCustomVegetation` is the single prefab/vegetation registration boundary for natural geodes; Magenheim must not pre-register the same world prefab through a second path.
+
+Each geode owns a schema-versioned placement definition. Placement authority includes block/force-placement behavior, per-zone density/chance, altitude and ocean-depth ranges, terrain-delta range/radius, tilt, forest thresholds, scale, group size/radius, and ground offset. These values are validated in `Magenheim.Core`, included in the definition fingerprint, and synchronized with the rest of gameplay authority.
+
+Server placement overrides are permitted only through the validated definition override path. Runtime code must not keep a parallel set of placement constants or consume unsynchronized client-local values. Repeated lifecycle calls must be idempotent and live validation must prove that the same Magenheim vegetation identity is not registered twice.
+
+Dedicated natural geode prefabs use deterministic `<intact item prefab>_World` identities. The intact inventory item and the mineable natural world object are separate prefabs; the temporary inventory visual must never be registered directly as vegetation. Natural world prefabs may clone a vanilla source but must not mutate that source.
 
 ## Adaptive equipment socketing
 
@@ -102,7 +108,7 @@ Rules:
 
 Server gameplay rules are authoritative. Gameplay-significant definitions must not silently diverge between peers.
 
-Geode opening, refinement, socket changes, inventory consumption, item grants, and skill experience are authoritative transactions. Client UI may preview, but persisted mutation requires server approval. Operations must defend against replay, reconnect duplication, inventory-full cases, and partial consumption.
+Geode opening, refinement, socket changes, inventory consumption, item grants, skill experience, worldgen compatibility, and geode placement definitions are authoritative state. Client UI may preview, but persisted mutation requires server approval. Operations must defend against replay, reconnect duplication, inventory-full cases, and partial consumption.
 
 Before persistent socketing is production-admitted, metadata must survive save/load, drop/pickup, storage, repair, upgrade, player/world transfer, host/client, and dedicated-server flows.
 

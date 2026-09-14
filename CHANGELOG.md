@@ -1,5 +1,17 @@
 # Magenheim Changelog
 
+## Unreleased — fingerprinted geode placement authority
+
+- Advanced the definition schema to version 3 and made complete geode vegetation placement behavior part of the validated/fingerprinted authority snapshot.
+- Added pure `GeodePlacementDefinition` validation for per-zone values, altitude/ocean-depth limits, terrain delta/radius, tilt, forest thresholds, scale, group sizing/radius, ground offset, and runtime-float representability.
+- Added required schema-3 `placement` data to the Meadows/Earth foundation definition.
+- Added server-side BepInEx placement overrides under `Worldgen.Placement.<geode id>` and routed every override through the existing pure definition override/validation/fingerprint pipeline before worldgen registration.
+- Removed the runtime registrar's temporary density/terrain/scale/group constants; `GeodeWorldgenRegistrar` now consumes the validated geode placement record directly.
+- Added deterministic source coverage proving placement survives validation, changes the fingerprint, rejects invalid tilt/unrepresentable runtime values, and flows through the validated server override path.
+- Updated definition-authority tests to use the current schema constant instead of embedding schema 2.
+- Advanced runtime source/package identity to 0.0.13.
+- Runtime compilation and in-game schema-3/worldgen behavior remain unclaimed pending execution in a current .NET/Valheim/Jötunn environment.
+
 ## Unreleased — additive geode worldgen
 
 - Reconciled repository metadata to a single authoritative `main` branch; the legacy `master` ref is no longer present.
@@ -7,36 +19,16 @@
 - Removed the redundant `GeodeWorldPrefabRegistrar`. Jötunn `ZoneManager.AddCustomVegetation` already registers the supplied prefab through `PrefabManager`, so pre-registering the world prefab risked a self-collision.
 - Expanded host collision observation to include both ZoneManager vegetation and the broader PrefabManager namespace without mutating either.
 - Hardened runtime area mapping against the Jötunn/Valheim combined-area naming difference by resolving `Heightmap.BiomeArea` from `Everything` or `Everywhere` at runtime instead of compiling against one spelling or casting enum integers.
-- Added a centralized conservative Meadows geode placement profile as an implementation baseline; placement density/terrain settings remain non-user-configurable until moved into fingerprinted definition authority.
-- Advanced runtime source/package identity to 0.0.12.
 - Added `docs/validation/2026-09-14-additive-geode-vegetation-registration.md` documenting the registration contract, API reconciliation, and remaining runtime gates.
 - Compilation and in-game generation remain unclaimed until executed in a current .NET/Valheim/Jötunn environment.
 
 ## Earlier unreleased foundation
 
-- Reconciled divergent `main` and `master` histories while preserving both ancestries.
-- Replaced a contaminated committed merge tree containing unresolved conflict markers with an explicitly resolved live tree.
-- Retained the material additive worldgen area validator/planner and deterministic worldgen tests from the divergent work.
-- Reconciled crystal tier authority to Rough -> Simple -> Crystal -> Advanced -> Master.
-- Added project-level repository and compatibility instructions.
-- Added a standalone combined pure-core test harness and `IsExternalInit` compatibility shim.
-- Preserved the large pre-reconciliation design specification under `docs/archive/` for provenance and future recovery.
-- Retargeted `Magenheim.Core` from `netstandard2.1` to `netstandard2.0` so the pure rules remain consumable by both the .NET 8 test harness and Jötunn's .NET Framework 4.6.2 runtime.
-- Added `Magenheim.Runtime` targeting net462 with JötunnLib 2.30.0.
-- Added BepInEx plugin identity `mrcalzon02.magenheim`, hard Jötunn dependency, and everyone-must-have network compatibility declaration.
-- Added a thin runtime service composition boundary that consumes authoritative core services without duplicating gameplay rules.
-- Added schema-versioned refinement/geode/worldgen compatibility definition models, strict validation, and deterministic SHA-256 fingerprinting.
-- Added strict Newtonsoft.Json runtime loading that rejects unknown members, duplicate properties, missing required values, unsupported schemas, invalid enum/reference values, duplicate geode identities, invalid areas, and invalid weights.
-- Added `default-data/foundation.json` as the shipped static content authority and configured it to copy with runtime build output.
-- Added the initial Meadows/Earth definition with one guaranteed Earth crystal and independent 35% and 10% additional-crystal chances.
-- Added deterministic geode-cracking and authority-gated geode-opening transaction planning.
-- Added session-scoped exact-once geode operation admission and definition-authority synchronization source.
-- Moved worldgen compatibility policy into the validated/fingerprinted definition snapshot and aligned area/identity validation with that policy.
-- Restricted compatibility exclusions to Magenheim-owned registration/prefab namespaces.
-- Added dedicated geode world-object identity derivation (`<item prefab>_World`) so natural worldgen never registers the temporary Stone-backed intact item directly.
-- Added definition-driven Jötunn intact-geode item registration and dedicated mineable world-prefab source.
-- Hardened spawn-area handling so negative numeric flags cannot be clamped into `All` through sign extension.
-- Added textual area parsing for `Median`, `Edge`, `All`, and the runtime-facing `Everywhere` alias.
-- Extended additive worldgen compatibility planning to detect prefab collisions as well as registration-key collisions.
-- Added non-destructive compatibility controls for Magenheim-owned exclusions and optional case-insensitive identity comparison.
-- Did not admit bundled runtime/vendor binaries, runtime logs/process files, unrelated third-party repair utilities, duplicate legacy engines, or stale build/runtime claims into the live source tree.
+- Reconciled divergent repository histories without discarding material work or using force-pushes.
+- Restored canonical crystal/refinement authority and established project instructions, state, backlog, design, and validation records.
+- Added the pure core, net462 Jötunn runtime bootstrap, strict definition loading, deterministic SHA-256 definition fingerprinting, and validated balance/compatibility overrides.
+- Added Meadows/Earth geode definitions, deterministic cracking, authority-gated opening transaction planning, definition-authority synchronization, and session-scoped replay protection.
+- Added additive-only worldgen area validation/planning, configurable collision behavior, Magenheim-owned exclusions, and dedicated `<item prefab>_World` geode identities.
+- Added definition-driven intact geode item registration and dedicated mineable world-object source while keeping temporary Stone-derived visuals separate from natural worldgen identity.
+- Hardened negative/unknown spawn-area handling and exact/case-insensitive identity semantics.
+- Did not admit bundled runtime/vendor binaries, runtime logs/process files, unrelated third-party repair utilities, duplicate legacy engines, or stale runtime claims into live source.
