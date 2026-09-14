@@ -49,34 +49,48 @@ Observed dependency facts before implementation:
 - current Jötunn package version selected for the runtime is `JotunnLib` 2.30.0;
 - Jötunn 2.30.0 targets .NET Framework 4.6.2;
 - Jötunn documentation recommends a hard `BepInDependency(Jotunn.Main.ModGuid)` and `NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)` for mods whose items/RPCs require consistent client/server presence;
-- `Magenheim.Core` was targeting `netstandard2.1`, which is not consumable from .NET Framework.
+- `Magenheim.Core` was retargeted to `netstandard2.0` so it can be consumed by the net462 runtime and net8.0 test harness.
 
-Repair and implementation performed:
+Implemented runtime foundation:
 
-- retargeted `Magenheim.Core` from `netstandard2.1` to `netstandard2.0`;
-- preserved the .NET 8 standalone test project as a consumer of the same core;
-- added `src/Magenheim.Runtime/Magenheim.Runtime.csproj` targeting `net462` and referencing `JotunnLib` 2.30.0;
-- added BepInEx plugin identity `mrcalzon02.magenheim`, hard Jötunn dependency, and everyone-must-have/minor-version network compatibility declaration;
-- added a runtime service boundary that creates the existing authoritative `CrystalRefinementService` from canonical core defaults instead of implementing a second rule engine;
-- deliberately left item registration, world generation, sockets, RPCs, inventory mutation, and persistent gameplay state disabled.
+- `src/Magenheim.Runtime/Magenheim.Runtime.csproj` targeting `net462` and referencing `JotunnLib` 2.30.0;
+- BepInEx plugin identity `mrcalzon02.magenheim`, hard Jötunn dependency, and everyone-must-have/minor-version network compatibility declaration;
+- runtime service composition that consumes the existing authoritative `CrystalRefinementService` rather than implementing a second rule engine;
+- item registration, world generation, sockets, RPCs, inventory mutation, and persistent gameplay state remain disabled pending their validation gates.
 
-Static checks performed:
+## Worldgen compatibility hardening — 2026-09-13
 
-- net462 -> netstandard2.0 compatibility was confirmed against current Microsoft framework compatibility guidance;
-- plugin attribute forms were checked against current BepInEx/Jötunn documentation;
-- current Jötunn package target/version metadata was checked before pinning 2.30.0;
-- no runtime code duplicates refinement equations or canonical tier definitions;
-- no foreign prefab/worldgen mutation was introduced;
-- no GitHub Actions or bundled runtime binaries were added.
+Implementation commit: `22c4a6dd8a0400d8f53a888af7a1d50da422df6f`.
+
+Static source review identified and repaired a flags failure mode: negative numeric values such as `-1` could previously be passed through `ClampKnownBits`, where sign extension made both known bits appear set and could silently normalize the invalid value to `All`. Negative numeric values now reject under Reject/Clamp policies and only become All under the explicit fallback policy.
+
+Additional static compatibility checks added to the pure core and deterministic test harness:
+
+- textual parsing accepts `Median`, `Edge`, `All`, and `Everywhere`;
+- unknown textual tokens reject by default;
+- clamp mode may preserve recognized textual areas while discarding unknown tokens;
+- occupied prefab identities are detected in addition to occupied registration keys;
+- collision checks are observation-only and do not mutate existing registrations;
+- per-Magenheim registration-key and prefab exclusions produce Skip decisions rather than host mutation;
+- optional case-insensitive identity matching can be enabled for interoperability;
+- `AdditiveOnly = false` continues to be rejected rather than opening a destructive compatibility mode.
+
+Current Jötunn documentation describes the runtime spawn enum default as `Heightmap.BiomeArea.Everywhere`, while generated vegetation data exposes Edge and Median area membership. The future runtime adapter therefore must map Magenheim's abstract All explicitly to the runtime Everywhere value rather than relying on integer coincidence.
+
+## Repository/branch review
+
+During this pass, concurrent authorized work advanced `main` twice. Each advancement was detected before ref mutation and reconciled without force-pushing. A first prepared commit was intentionally not published after GitHub rejected it as non-fast-forward. The final compatibility implementation was rebuilt on top of the newer authoritative runtime-foundation history and then fast-forwarded normally.
+
+`master` was subsequently fast-forwarded to the same implementation commit so the legacy default-branch pointer did not become a divergent development line. The available connector does not expose branch deletion or default-branch reassignment, so remote pruning beyond synchronization is deferred rather than falsely claimed.
 
 ## Compile/test boundary
 
-The current execution environment exposes no .NET SDK/compiler. Therefore no compilation, package restore, deterministic test execution, or Valheim startup success is claimed.
+The current execution environment exposes no `dotnet`, `csc`, or `mcs`. Therefore no compilation, package restore, deterministic test execution, Valheim startup, Jötunn registration, or fresh-world generation success is claimed.
 
 Required next validation commands/environment:
 
 `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`
 
-Then compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` from a development environment with .NET Framework 4.6.2 targeting support and the current Valheim/Jötunn development dependencies available. Any resulting defect must be repaired at the authoritative source before config loading or skill registration is admitted.
+Then compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` from a development environment with .NET Framework 4.6.2 targeting support and current Valheim/Jötunn development dependencies available. Any resulting defect must be repaired at the authoritative source before config loading, worldgen registration, or skill registration is admitted.
 
-Runtime startup, Jötunn registration, world generation, multiplayer authority, save/load, and persistence remain unverified until directly observed.
+Runtime startup, natural geode generation, repeated-load idempotence, multiplayer authority, save/load, and persistence remain unverified until directly observed.

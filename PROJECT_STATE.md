@@ -20,9 +20,9 @@ The live tree deliberately does not adopt bundled BepInEx/Jötunn runtime binari
 
 ## Verified consolidation result
 
-The divergent histories were reconciled by two-parent commit `7859a27462d4b0c7a4748d3760065df599c7a521`, with the previous `main` and `master` heads as parents. `main` was advanced without force, then `master` was fast-forwarded to the same commit. A direct branch comparison reported `identical`, ahead 0 / behind 0.
+The divergent histories were reconciled by two-parent commit `7859a27462d4b0c7a4748d3760065df599c7a521`, with the previous `main` and `master` heads as parents. `main` was advanced without force and `master` was brought onto the same ancestry.
 
-`main` remains the authoritative development branch even though the repository's older GitHub default-branch metadata still names `master`. Because the branch tips were synchronized at consolidation, that metadata no longer represented divergent content; future development remains on `main` and any retained `master` pointer must not become an independent work line.
+`main` remains the authoritative development branch even though the repository's older GitHub default-branch metadata still names `master`. The available repository connector does not expose default-branch mutation or branch deletion. `master` is therefore treated only as a synchronized compatibility pointer and must not become an independent development line.
 
 ## Current domain authority
 
@@ -40,11 +40,24 @@ The default maximum reduction is 75%, configurable between 50% and 100%. Station
 
 ## Worldgen compatibility foundation
 
-`Magenheim.Core.Worldgen` validates Median/Edge/All area flags and plans only additions under `magenheim.` keys. Existing registrations are copied into read-only planning snapshots. Duplicate or occupied keys are skipped or errored according to policy without modifying foreign data. Destructive compatibility mode is rejected.
+Implementation commit `22c4a6dd8a0400d8f53a888af7a1d50da422df6f` hardens the pure worldgen compatibility layer.
+
+Current rules:
+
+- abstract areas remain Median, Edge, and All;
+- configuration also accepts `Everywhere` as the runtime-facing alias for All;
+- negative numeric flag values cannot be clamped into All through sign extension;
+- unknown positive bits reject by default, may retain recognized bits only under explicit clamp policy, or may fall back to All only under explicit fallback policy;
+- occupied Magenheim registration keys and occupied prefab identities are collision-checked without changing observed host data;
+- specific Magenheim registration keys or prefabs may be excluded through compatibility policy;
+- identity matching is exact by default with an optional case-insensitive compatibility mode;
+- destructive compatibility mode remains structurally rejected.
+
+The eventual Jötunn adapter must map these abstract values explicitly to current `Heightmap.BiomeArea` values rather than casting enum integers.
 
 ## Runtime bootstrap — 2026-09-13
 
-A thin runtime project now exists at `src/Magenheim.Runtime` and consumes the authoritative pure-core project rather than recreating refinement rules.
+A thin runtime project exists at `src/Magenheim.Runtime` and consumes the authoritative pure-core project rather than recreating refinement rules.
 
 Runtime bootstrap properties:
 
@@ -56,11 +69,11 @@ Runtime bootstrap properties:
 - runtime startup builds `CrystalRefinementService` from the canonical core defaults;
 - no world objects, items, sockets, inventory mutations, RPCs, or persistent gameplay state are enabled by this bootstrap.
 
-During dependency review, `Magenheim.Core` was found to target `netstandard2.1`, which cannot be consumed by a .NET Framework runtime. It was retargeted to `netstandard2.0`, which is compatible with both the net462 runtime and the net8.0 standalone test harness. This is an architectural compatibility repair, not a gameplay change.
+`Magenheim.Core` targets `netstandard2.0` so it can remain consumable by both the net462 runtime and the net8.0 standalone test harness.
 
 ## Validation boundary
 
-The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compilation and test execution therefore remain unclaimed. Runtime source was checked against current Jötunn documentation and package metadata, but plugin startup has not been observed inside Valheim.
+The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compilation and test execution therefore remain unclaimed. Runtime source and worldgen compatibility assumptions were checked against current Jötunn documentation, but plugin startup and actual world generation have not been observed inside Valheim.
 
 ## Next exact action
 
@@ -68,5 +81,6 @@ In a .NET 8 SDK / Valheim development environment:
 
 1. run `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`;
 2. compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` against Jötunn 2.30.0 and current Valheim dependencies;
-3. repair any compile defect at the authoritative source;
-4. then implement strict configuration/data loading before Crystal Shaping registration or gameplay mutations.
+3. repair any compile/test defect at the authoritative source;
+4. implement strict configuration/data loading that feeds the validated compatibility policy;
+5. then bind the pure worldgen plan to a thin Jötunn registrar with explicit `Heightmap.BiomeArea` mapping and repeated-load idempotence checks.
