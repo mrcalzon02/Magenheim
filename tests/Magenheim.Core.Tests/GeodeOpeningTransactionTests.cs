@@ -16,11 +16,13 @@ internal static class GeodeOpeningTransactionTests
             true,
             "compatible");
 
-        var ready = GeodeOpeningTransactionPlanner.Plan(new GeodeOpeningTransactionRequest(
+        var request = new GeodeOpeningTransactionRequest(
             compatible,
             1,
             3,
-            new GeodeCrackingRequest(geode, 0d, 0d, new[] { 0d, 0d, 0d })));
+            new GeodeCrackingRequest(geode, 0d, 0d, new[] { 0d, 0d, 0d }));
+
+        var ready = GeodeOpeningTransactionPlanner.Plan(request);
         Assert(ready.IsReady, "Compatible authority with source and capacity should produce a ready transaction plan.", ref assertions);
         Assert(ready.ConsumeGeodeCount == 1, "A ready plan must consume exactly one source geode.", ref assertions);
         Assert(ready.GrantCrystals.Count == 3, "Successful bonus rolls must be represented exactly in the planned grants.", ref assertions);
@@ -71,6 +73,48 @@ internal static class GeodeOpeningTransactionTests
             new GeodeCrackingRequest(geode, 1d, 0d, new[] { 0d, 0d, 0d })));
         Assert(malformedCracking.Outcome == GeodeOpeningPlanOutcome.InvalidCrackingRequest, "Malformed cracking input must fail before a transaction plan is emitted.", ref assertions);
         Assert(malformedCracking.ConsumeGeodeCount == 0 && malformedCracking.GrantCrystals.Count == 0, "Invalid cracking must remain non-mutating.", ref assertions);
+
+        var guard = new GeodeOpeningOperationGuard();
+        var key = new GeodeOpeningOperationKey(77L, 1L, "open-0001");
+        var first = guard.Begin(key, request);
+        Assert(first.MutationAuthorized, "A fresh valid operation key must authorize exactly one mutation attempt.", ref assertions);
+
+        var duplicatePrepared = guard.Begin(key, request);
+        Assert(duplicatePrepared.Outcome == GeodeOpeningOperationOutcome.DuplicatePrepared, "A replay before completion must be rejected as already prepared.", ref assertions);
+        Assert(!duplicatePrepared.MutationAuthorized, "Duplicate prepared operations must never authorize a second mutation.", ref assertions);
+
+        Assert(guard.MarkApplied(key), "The first prepared operation must transition to applied exactly once.", ref assertions);
+        Assert(!guard.MarkApplied(key), "An applied operation must not transition to applied twice.", ref assertions);
+
+        var duplicateApplied = guard.Begin(key, request);
+        Assert(duplicateApplied.Outcome == GeodeOpeningOperationOutcome.DuplicateApplied, "A completed operation replay must be recognized as already applied.", ref assertions);
+        Assert(!duplicateApplied.MutationAuthorized, "Applied replays must never authorize duplicate output.", ref assertions);
+
+        var conflictingRequest = new GeodeOpeningTransactionRequest(
+            compatible,
+            1,
+            1,
+            new GeodeCrackingRequest(geode, 0.35d, 0.10d, new[] { 0d, 0.5d, 0.9d }));
+        var conflict = guard.Begin(key, conflictingRequest);
+        Assert(conflict.Outcome == GeodeOpeningOperationOutcome.ConflictingReplay, "Reusing an operation id for a different mutation plan must fail closed.", ref assertions);
+        Assert(!conflict.MutationAuthorized, "Conflicting replays must never authorize mutation.", ref assertions);
+
+        var retryKey = new GeodeOpeningOperationKey(77L, 1L, "open-0002");
+        var retryFirst = guard.Begin(retryKey, request);
+        Assert(retryFirst.MutationAuthorized, "A second fresh operation should prepare normally.", ref assertions);
+        Assert(guard.AbortPrepared(retryKey), "A prepared operation with no mutation may be aborted for safe retry.", ref assertions);
+        Assert(guard.Begin(retryKey, request).MutationAuthorized, "An aborted non-mutating reservation may be retried.", ref assertions);
+
+        var staleSessionKey = new GeodeOpeningOperationKey(77L, 1L, "open-stale");
+        Assert(guard.Begin(staleSessionKey, request).MutationAuthorized, "Old session setup must prepare before retirement coverage.", ref assertions);
+        var retired = guard.RetirePeerSessions(77L, 2L);
+        Assert(retired >= 1, "Starting a new peer session must retire old replay history for that routed peer id.", ref assertions);
+        var newSession = guard.Begin(new GeodeOpeningOperationKey(77L, 2L, "open-stale"), request);
+        Assert(newSession.MutationAuthorized, "The same client operation id in a new server session generation must be a distinct operation key.", ref assertions);
+
+        var invalidGeneration = guard.Begin(new GeodeOpeningOperationKey(77L, 0L, "invalid"), request);
+        Assert(invalidGeneration.Outcome == GeodeOpeningOperationOutcome.InvalidOperationKey, "Session generation zero must fail closed.", ref assertions);
+        Assert(!invalidGeneration.MutationAuthorized, "Invalid operation keys must never authorize mutation.", ref assertions);
 
         return assertions;
     }

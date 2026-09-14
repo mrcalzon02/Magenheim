@@ -14,7 +14,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.8";
+    internal const string PluginVersion = "0.0.9";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -30,12 +30,16 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             var effectiveDefinitions = MagenheimBalanceConfig.Apply(Config, baselineDefinitions);
 
             _services = RuntimeServices.Create(effectiveDefinitions);
-            _authoritySynchronizer = new DefinitionAuthoritySynchronizer(effectiveDefinitions, Logger);
+            _authoritySynchronizer = new DefinitionAuthoritySynchronizer(
+                effectiveDefinitions,
+                _services.GeodeOpeningOperations,
+                Logger);
 
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
-                "Definition authority synchronization is registered; gameplay mutation remains disabled until authoritative transactions consume its admission gate.");
+                "Definition authority synchronization and session-scoped geode replay protection are registered; " +
+                "inventory mutation remains disabled until a server transaction adapter executes plans atomically.");
         }
         catch (Exception exception)
         {

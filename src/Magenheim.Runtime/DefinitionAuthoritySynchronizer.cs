@@ -6,6 +6,7 @@ using Jotunn.Entities;
 using Jotunn.Managers;
 using Magenheim.Core.Definitions;
 using Magenheim.Core.Networking;
+using Magenheim.Core.Transactions;
 
 namespace Magenheim.Runtime.Networking;
 
@@ -16,12 +17,18 @@ internal sealed class DefinitionAuthoritySynchronizer
 
     private readonly DefinitionAuthorityDescriptor _localAuthority;
     private readonly ManualLogSource _logger;
+    private readonly GeodeOpeningOperationGuard _geodeOpeningOperations;
     private readonly Dictionary<long, DefinitionAuthorityResult> _peerResults = new();
+    private readonly Dictionary<long, long> _peerSessionGenerations = new();
     private readonly CustomRPC _rpc;
 
-    internal DefinitionAuthoritySynchronizer(MagenheimDefinitionSet definitions, ManualLogSource logger)
+    internal DefinitionAuthoritySynchronizer(
+        MagenheimDefinitionSet definitions,
+        GeodeOpeningOperationGuard geodeOpeningOperations,
+        ManualLogSource logger)
     {
         if (definitions is null) throw new ArgumentNullException(nameof(definitions));
+        _geodeOpeningOperations = geodeOpeningOperations ?? throw new ArgumentNullException(nameof(geodeOpeningOperations));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         _localAuthority = new DefinitionAuthorityDescriptor(definitions.SchemaVersion, definitions.Fingerprint);
@@ -46,19 +53,37 @@ internal sealed class DefinitionAuthoritySynchronizer
     internal DefinitionAuthorityResult GetPeerResult(long peerId) =>
         _peerResults.TryGetValue(peerId, out var result) ? result : DefinitionAuthorityResult.Pending;
 
+    internal long GetPeerSessionGeneration(long peerId) =>
+        _peerSessionGenerations.TryGetValue(peerId, out var generation) ? generation : 0L;
+
     private ZPackage BuildServerAuthorityPackage(ZNetPeer peer)
     {
         if (peer is null) throw new ArgumentNullException(nameof(peer));
 
         // Peer ids are transport/session identities, not durable authorization identities.
-        // A reconnect or id reuse must begin Pending even if an earlier connection using
-        // the same routed-rpc uid had already passed the authority handshake.
+        // Every initial synchronization creates a fresh server-local generation so replay
+        // keys from an earlier connection cannot authorize a mutation after reconnect/id reuse.
         _peerResults.Remove(peer.m_uid);
+
+        var nextGeneration = NextSessionGeneration(peer.m_uid);
+        _peerSessionGenerations[peer.m_uid] = nextGeneration;
+        _geodeOpeningOperations.RetirePeerSessions(peer.m_uid, nextGeneration);
 
         var package = new ZPackage();
         package.Write(ServerAuthorityMessage);
         WriteDescriptor(package, _localAuthority);
         return package;
+    }
+
+    private long NextSessionGeneration(long peerId)
+    {
+        if (!_peerSessionGenerations.TryGetValue(peerId, out var current))
+            return 1L;
+
+        if (current == long.MaxValue)
+            throw new InvalidOperationException($"Peer {peerId} exhausted Magenheim session generations; refusing to recycle replay identity.");
+
+        return current + 1L;
     }
 
     private IEnumerator ReceiveServerAuthority(long sender, ZPackage package)
@@ -87,10 +112,6 @@ internal sealed class DefinitionAuthoritySynchronizer
         else
             _logger.LogError($"Magenheim gameplay mutation disabled for this connection. {ClientAuthorityResult.Diagnostic}");
 
-        // Fail closed: only acknowledge after the server descriptor was successfully parsed.
-        // The acknowledgement echoes that descriptor so the server can prove the client
-        // actually received its authority, rather than authorizing solely from the client's
-        // self-reported descriptor.
         if (serverAuthority is not null)
         {
             var acknowledgement = new ZPackage();
@@ -139,7 +160,7 @@ internal sealed class DefinitionAuthoritySynchronizer
         _peerResults[sender] = result;
 
         if (result.MutationAuthorized)
-            _logger.LogInfo($"Peer {sender} admitted to Magenheim gameplay authority. {result.Diagnostic}");
+            _logger.LogInfo($"Peer {sender} admitted to Magenheim gameplay authority for session {GetPeerSessionGeneration(sender)}. {result.Diagnostic}");
         else
             _logger.LogError($"Peer {sender} is not admitted to Magenheim gameplay mutation. {result.Diagnostic}");
 
