@@ -4,6 +4,9 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
+<<<<<<< HEAD
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+=======
+>>>>>>> origin/main
   </PropertyGroup>
 </Project>
