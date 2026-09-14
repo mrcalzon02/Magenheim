@@ -31,6 +31,8 @@
 - Added deterministic pure-core assertions proving compatibility settings affect the definition fingerprint and destructive/foreign exclusion policies are rejected.
 - Aligned definition duplicate detection and exclusion normalization with the configured exact/case-insensitive identity comparer.
 - Canonicalized compatibility exclusion casing during fingerprint hashing when case-insensitive identity matching is selected, preventing semantically identical exclusions from causing false multiplayer authority mismatches while preserving casing significance in exact mode.
+- Added deterministic dedicated world-object prefab identity derivation for geodes (`<item prefab>_World`) so worldgen can never accidentally register the temporary Stone-backed inventory geode as vegetation.
+- Updated definition-driven worldgen planning and deterministic coverage to use and collision-check the dedicated mineable world-object identity while leaving the inventory item identity unchanged.
 - Kept world objects, items, sockets, RPCs, inventory mutation, and persistent gameplay changes disabled pending validation and server-authoritative transaction work.
 - Hardened spawn-area handling so negative numeric flags cannot be clamped into `All` through sign extension.
 - Added textual area parsing for `Median`, `Edge`, `All`, and the runtime-facing `Everywhere` alias, with explicit reject/clamp/fallback policy.
