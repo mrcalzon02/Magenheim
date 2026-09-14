@@ -52,6 +52,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 _services.SocketExtractionOperations,
                 Logger);
 
+            WorkshopOperationCatalog.Configure(effectiveDefinitions);
             WorkshopOperationsRuntime.Configure(_services, _authoritySynchronizer, Logger);
             WorkshopOperationRpc.Register(_services, _authoritySynchronizer, Logger);
             SocketEffectsRuntime.Configure(effectiveDefinitions, Logger);
@@ -86,8 +87,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
                 "Definition authority synchronization, adaptive socket eligibility/configured mod-origin discovery, session-scoped geode/refinement/socket/extraction replay protection, " +
-                "definition-driven intact geode items, fingerprinted geode placement and socket-effect balance configuration, additive geode vegetation registration, " +
-                "host-local and remote-client server-resolved geology workshop operations, deterministic Earth shard recombination, active local-host socket workstation management, " +
+                "eight-biome geode progression, eight elemental crystal families, fingerprinted geode placement and socket-effect balance configuration, additive geode vegetation registration, " +
+                "host-local and remote-client server-resolved geology workshop operations, elemental shard recombination, active local-host socket workstation management, " +
                 "and per-item socket damage/armor/block/carry/mining effect adapters are configured. " +
                 "Remote socket mutation RPC, knockback/stagger runtime channels, and persistence multiplayer validation remain gated pending implementation/validation.");
         }
