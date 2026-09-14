@@ -2,6 +2,19 @@
 
 ## Unreleased — live-world test 1 fixes
 
+- Repaired the local developer delivery path that allowed Git source to advance while the
+  active r2modman profile continued loading an obsolete Magenheim DLL. `install-local.ps1`
+  now builds current source by default, aborts before installation on test/build failure,
+  derives the expected package version from `MagenheimPlugin.PluginVersion`, verifies the
+  package manifest, refuses duplicate DLL copies, SHA-256 verifies the installed tree, and
+  prints the exact expected startup version.
+- Removed hard-coded local package version authority from `build.ps1`; package directory and
+  manifest version now derive from the plugin source, and the versioned package directory is
+  recreated cleanly to prevent stale files surviving between builds.
+- Reconciled test instructions with current source: local-host workstation geode opening and
+  Earth refinement are now source-implemented with authority/replay/capacity admission,
+  atomic inventory mutation, failure shard returns, and Crystal Shaping XP. They still require
+  rebuilt live-world acceptance and remote-client RPC remains unfinished.
 - Recorded the first disposable-world observations: the Geologist's Workstation opens,
   direct Earth inventory-item spawns work, and the direct world-geode prefab uses the
   custom Magenheim geometry.
@@ -11,9 +24,6 @@
 - Corrected the Crystal Shaping console diagnostic to use the permanent single-token
   identifier `magenheim.crystal_shaping`; the spaced display name is split by Valheim's
   `raiseskill` parser before Jötunn can resolve it.
-- Classified the empty workstation Craft panel and absent socket-management operation as
-  real implementation gaps rather than discovery failures. Authority-gated geode opening,
-  refinement, earned XP, and adaptive per-item socketing remain unfinished.
 - Traced workstation iron-band surface fighting to intersecting/coplanar generated geometry;
   the generator and checked-in derived mesh still require a coordinated repair and retest.
 
