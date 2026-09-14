@@ -138,9 +138,11 @@ public static class DeepFracturePlanValidator
         var reuseCounts = new Dictionary<string, int>(StringComparer.Ordinal);
         var descentCount = 0;
         var heartCount = 0;
+        DungeonDepthBand? priorBand = null;
 
-        foreach (var module in plan.Modules)
+        for (var index = 0; index < plan.Modules.Count; index++)
         {
+            var module = plan.Modules[index];
             if (module is null)
             {
                 errors.Add("Deep Fracture plan cannot contain a null module.");
@@ -159,22 +161,55 @@ public static class DeepFracturePlanValidator
             if (!piece.AllowedBands.Contains(module.DepthBand))
                 errors.Add($"{module.PieceFamilyId} is not allowed in depth band {module.DepthBand}.");
 
+            if (priorBand.HasValue && module.DepthBand < priorBand.Value)
+                errors.Add($"Depth band regressed from {priorBand.Value} to {module.DepthBand} at module '{module.InstanceId}'.");
+            priorBand = module.DepthBand;
+
             reuseCounts.TryGetValue(module.PieceFamilyId, out var reuseCount);
             reuseCount++;
             reuseCounts[module.PieceFamilyId] = reuseCount;
             if (reuseCount > piece.MaximumRecommendedReuse)
                 errors.Add($"{module.PieceFamilyId} exceeds its supported reuse count of {piece.MaximumRecommendedReuse}.");
 
+            if (module.ElementalStates is null)
+            {
+                errors.Add($"{module.InstanceId} requires an elemental-state collection, even when empty.");
+            }
+            else
+            {
+                if (module.ElementalStates.Distinct().Count() != module.ElementalStates.Count)
+                    errors.Add($"{module.InstanceId} contains duplicate elemental influences.");
+                if (!piece.SupportsElementalMutation && module.ElementalStates.Count > 0)
+                    errors.Add($"{module.PieceFamilyId} does not support elemental mutation.");
+            }
+
             if (string.Equals(module.PieceFamilyId, "DF-01", StringComparison.Ordinal))
+            {
                 descentCount++;
+                if (module.ElementalStates is not null && module.ElementalStates.Count > 0)
+                    errors.Add("DF-01 Fracture Descent must not predeclare the dungeon's elemental domain.");
+            }
+
             if (string.Equals(module.PieceFamilyId, "DF-20", StringComparison.Ordinal))
+            {
                 heartCount++;
+                if (module.ElementalStates is null || module.ElementalStates.Count < 2)
+                    errors.Add("DF-20 Confluence Heart requires at least two elemental influences.");
+            }
         }
 
         if (descentCount != 1)
             errors.Add($"Deep Fracture plan requires exactly one DF-01 Fracture Descent; found {descentCount}.");
         if (heartCount != 1)
             errors.Add($"Deep Fracture plan requires exactly one DF-20 Confluence Heart; found {heartCount}.");
+
+        if (plan.Modules.Count > 0)
+        {
+            if (!string.Equals(plan.Modules[0].PieceFamilyId, "DF-01", StringComparison.Ordinal))
+                errors.Add("DF-01 Fracture Descent must be the first major module.");
+            if (!string.Equals(plan.Modules[plan.Modules.Count - 1].PieceFamilyId, "DF-20", StringComparison.Ordinal))
+                errors.Add("DF-20 Confluence Heart must be the final major module.");
+        }
 
         return new DeepFracturePlanValidationResult(errors);
     }

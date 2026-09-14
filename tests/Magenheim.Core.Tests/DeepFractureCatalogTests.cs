@@ -37,6 +37,7 @@ internal static class DeepFractureCatalogTests
 
         var validPlan = new DeepFractureDungeonPlan(
             DeepFractureScale.Small,
+            42,
             new[]
             {
                 Module("m01", "DF-01", DungeonDepthBand.UpperFracture),
@@ -50,7 +51,7 @@ internal static class DeepFractureCatalogTests
                 Module("m09", "DF-15", DungeonDepthBand.DeepDomains, ElementalAlignment.Radiance),
                 Module("m10", "DF-17", DungeonDepthBand.DeepDomains, ElementalAlignment.Spirit),
                 Module("m11", "DF-12", DungeonDepthBand.DeepDomains, ElementalAlignment.Earth),
-                Module("m12", "DF-20", DungeonDepthBand.Heart),
+                Module("m12", "DF-20", DungeonDepthBand.Heart, ElementalAlignment.Fire, ElementalAlignment.Frost, ElementalAlignment.Storm),
             });
 
         var validResult = DeepFracturePlanValidator.Validate(validPlan);
@@ -58,6 +59,7 @@ internal static class DeepFractureCatalogTests
 
         var invalidBand = new DeepFractureDungeonPlan(
             DeepFractureScale.Small,
+            validPlan.Seed,
             validPlan.Modules.Select(module =>
                 module.InstanceId == "m09"
                     ? module with { DepthBand = DungeonDepthBand.UpperFracture }
@@ -67,11 +69,13 @@ internal static class DeepFractureCatalogTests
 
         var overused = new List<DungeonModuleState>(validPlan.Modules)
         {
-            Module("m13", "DF-03", DungeonDepthBand.MiddleWorks),
+            Module("m13", "DF-03", DungeonDepthBand.DeepDomains),
             Module("m14", "DF-03", DungeonDepthBand.DeepDomains),
             Module("m15", "DF-03", DungeonDepthBand.DeepDomains),
         };
-        var overusedResult = DeepFracturePlanValidator.Validate(new DeepFractureDungeonPlan(DeepFractureScale.Small, overused));
+        overused.RemoveAt(11);
+        overused.Add(Module("m16", "DF-20", DungeonDepthBand.Heart, ElementalAlignment.Earth, ElementalAlignment.Storm));
+        var overusedResult = DeepFracturePlanValidator.Validate(new DeepFractureDungeonPlan(DeepFractureScale.Small, 42, overused));
         Assert(!overusedResult.IsValid && overusedResult.Errors.Any(error => error.Contains("reuse", StringComparison.OrdinalIgnoreCase)), "Fourth use of a standard major piece must be rejected.");
 
         var encounter = new EnemyEncounterDefinition(
@@ -87,6 +91,42 @@ internal static class DeepFractureCatalogTests
         encounter.Validate(DeepFractureCatalog.CreatePieceIndex());
         assertions++;
 
+        var defaultPolicy = DeepFractureGenerationPolicy.Default;
+        defaultPolicy.Validate();
+        Assert(!defaultPolicy.DomainAlignments.Contains(ElementalAlignment.Seidr), "Deep Fracture default domains must follow the seven designed dungeon elements rather than silently adding Seidr.");
+
+        foreach (var scale in new[] { DeepFractureScale.Small, DeepFractureScale.Full, DeepFractureScale.Grand })
+        {
+            for (var seed = 1; seed <= 8; seed++)
+            {
+                var generated = DeepFractureLayoutPlanner.Build(new DeepFractureGenerationRequest(scale, seed));
+                var validation = DeepFracturePlanValidator.Validate(generated);
+                Assert(validation.IsValid, $"Generated {scale} fracture for seed {seed} must validate.");
+                Assert(generated.Modules[0].PieceFamilyId == "DF-01", "Generated fracture must begin with DF-01.");
+                Assert(generated.Modules[generated.Modules.Count - 1].PieceFamilyId == "DF-20", "Generated fracture must end with DF-20.");
+                Assert(generated.Modules.Where(module => module.DepthBand == DungeonDepthBand.DeepDomains).All(module => module.ElementalStates.Count >= 1), "Generated Deep Domain districts must carry elemental influence.");
+                Assert(generated.Modules[generated.Modules.Count - 1].ElementalStates.Count >= 2, "Generated Confluence Heart must combine multiple elemental influences.");
+            }
+        }
+
+        var deterministicA = DeepFractureLayoutPlanner.Build(new DeepFractureGenerationRequest(DeepFractureScale.Full, 8675309));
+        var deterministicB = DeepFractureLayoutPlanner.Build(new DeepFractureGenerationRequest(DeepFractureScale.Full, 8675309));
+        Assert(PlansEquivalent(deterministicA, deterministicB), "Equal scale, seed, and policy must produce an identical Deep Fracture plan.");
+
+        var invalidPolicyThrew = false;
+        try
+        {
+            DeepFractureLayoutPlanner.Build(new DeepFractureGenerationRequest(
+                DeepFractureScale.Small,
+                7,
+                DeepFractureGenerationPolicy.Default with { DeepDomainsFraction = 0.60d }));
+        }
+        catch (InvalidOperationException)
+        {
+            invalidPolicyThrew = true;
+        }
+        Assert(invalidPolicyThrew, "Invalid depth-band policy must fail before generation.");
+
         return assertions;
     }
 
@@ -94,14 +134,37 @@ internal static class DeepFractureCatalogTests
         string instanceId,
         string pieceFamilyId,
         DungeonDepthBand depthBand,
-        ElementalAlignment? elementalState = null)
+        params ElementalAlignment[] elementalStates)
         => new(
             instanceId,
             pieceFamilyId,
             depthBand,
-            elementalState,
+            elementalStates,
             StructuralDamageState.Intact,
             OccupationProfile.Empty,
             ResourceState.Normal,
             ConnectionState.Open);
+
+    private static bool PlansEquivalent(DeepFractureDungeonPlan left, DeepFractureDungeonPlan right)
+    {
+        if (left.Scale != right.Scale || left.Seed != right.Seed || left.Modules.Count != right.Modules.Count)
+            return false;
+
+        for (var index = 0; index < left.Modules.Count; index++)
+        {
+            var a = left.Modules[index];
+            var b = right.Modules[index];
+            if (!string.Equals(a.InstanceId, b.InstanceId, StringComparison.Ordinal)
+                || !string.Equals(a.PieceFamilyId, b.PieceFamilyId, StringComparison.Ordinal)
+                || a.DepthBand != b.DepthBand
+                || a.StructuralDamage != b.StructuralDamage
+                || a.Occupation != b.Occupation
+                || a.Resources != b.Resources
+                || a.Connections != b.Connections
+                || !a.ElementalStates.SequenceEqual(b.ElementalStates))
+                return false;
+        }
+
+        return true;
+    }
 }

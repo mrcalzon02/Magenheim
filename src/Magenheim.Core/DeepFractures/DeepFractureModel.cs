@@ -212,7 +212,7 @@ public sealed record DungeonModuleState(
     string InstanceId,
     string PieceFamilyId,
     DungeonDepthBand DepthBand,
-    ElementalAlignment? ElementalState,
+    IReadOnlyList<ElementalAlignment> ElementalStates,
     StructuralDamageState StructuralDamage,
     OccupationProfile Occupation,
     ResourceState Resources,
@@ -220,6 +220,7 @@ public sealed record DungeonModuleState(
 
 public sealed record DeepFractureDungeonPlan(
     DeepFractureScale Scale,
+    int Seed,
     IReadOnlyList<DungeonModuleState> Modules);
 
 public sealed record DeepFracturePlanValidationResult(
