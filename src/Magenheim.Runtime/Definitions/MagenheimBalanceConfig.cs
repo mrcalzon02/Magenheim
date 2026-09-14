@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
 using Magenheim.Core.Definitions;
+using Magenheim.Core.Worldgen;
 
 namespace Magenheim.Runtime.Definitions;
 
@@ -50,9 +52,57 @@ internal static class MagenheimBalanceConfig
                 weights));
         }
 
+        var compatibility = ReadWorldgenCompatibility(config, baseline.WorldgenCompatibility);
+
         return MagenheimDefinitionOverrideApplier.Apply(
             baseline,
             refinementOverrides,
-            geodeOverrides);
+            geodeOverrides,
+            compatibility);
+    }
+
+    private static WorldgenCompatibilityPolicy ReadWorldgenCompatibility(
+        ConfigFile config,
+        WorldgenCompatibilityPolicy baseline)
+    {
+        const string section = "Worldgen.Compatibility";
+
+        var invalidArea = config.Bind(section, "InvalidAreaBehavior", baseline.InvalidAreaBehavior,
+            "How invalid configured spawn areas are handled before registration: Reject, ClampKnownBits, or FallbackToAll.");
+        var duplicate = config.Bind(section, "DuplicateRegistrationBehavior", baseline.DuplicateRegistrationBehavior,
+            "How occupied Magenheim registration identities are handled: Skip or Error. Existing host content is never modified.");
+        var detectPrefabs = config.Bind(section, "DetectPrefabCollisions", baseline.DetectPrefabCollisions,
+            "When true, prefab names are collision-checked in addition to registration keys.");
+        var identity = config.Bind(section, "IdentityComparison", baseline.IdentityComparison,
+            "Identity comparison mode for collision detection: Exact or CaseInsensitive.");
+        var excludedKeys = config.Bind(section, "ExcludedRegistrationKeys",
+            string.Join(",", baseline.ExcludedRegistrationKeys),
+            "Comma-separated Magenheim registration keys to suppress. Values must begin with 'magenheim.'.");
+        var excludedPrefabs = config.Bind(section, "ExcludedPrefabNames",
+            string.Join(",", baseline.ExcludedPrefabNames),
+            "Comma-separated Magenheim prefab names to suppress. Values must begin with 'Magenheim_'.");
+
+        return baseline with
+        {
+            InvalidAreaBehavior = invalidArea.Value,
+            DuplicateRegistrationBehavior = duplicate.Value,
+            AdditiveOnly = true,
+            DetectPrefabCollisions = detectPrefabs.Value,
+            IdentityComparison = identity.Value,
+            ExcludedRegistrationKeys = ParseCsv(excludedKeys.Value),
+            ExcludedPrefabNames = ParseCsv(excludedPrefabs.Value),
+        };
+    }
+
+    private static string[] ParseCsv(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return Array.Empty<string>();
+
+        return value
+            .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+            .Select(item => item.Trim())
+            .Where(item => item.Length > 0)
+            .ToArray();
     }
 }

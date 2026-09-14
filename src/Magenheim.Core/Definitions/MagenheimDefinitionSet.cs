@@ -24,11 +24,12 @@ public sealed record MagenheimDefinitionSet(
     int SchemaVersion,
     IReadOnlyList<RefinementRule> RefinementRules,
     IReadOnlyList<GeodeDefinition> Geodes,
+    WorldgenCompatibilityPolicy WorldgenCompatibility,
     string Fingerprint);
 
 public static class MagenheimDefinitionValidator
 {
-    public const int CurrentSchemaVersion = 1;
+    public const int CurrentSchemaVersion = 2;
 
     private static readonly HashSet<string> SupportedBiomes = new(StringComparer.Ordinal)
     {
@@ -45,7 +46,8 @@ public static class MagenheimDefinitionValidator
     public static MagenheimDefinitionSet ValidateAndFreeze(
         int schemaVersion,
         IEnumerable<RefinementRule> refinementRules,
-        IEnumerable<GeodeDefinition> geodes)
+        IEnumerable<GeodeDefinition> geodes,
+        WorldgenCompatibilityPolicy worldgenCompatibility)
     {
         if (schemaVersion != CurrentSchemaVersion)
             throw new InvalidOperationException($"Unsupported definition schema {schemaVersion}. Expected {CurrentSchemaVersion}.");
@@ -54,9 +56,12 @@ public static class MagenheimDefinitionValidator
             throw new ArgumentNullException(nameof(refinementRules));
         if (geodes is null)
             throw new ArgumentNullException(nameof(geodes));
+        if (worldgenCompatibility is null)
+            throw new ArgumentNullException(nameof(worldgenCompatibility));
 
         var frozenRules = refinementRules.ToArray();
         var frozenGeodes = geodes.Select(ValidateAndFreezeGeode).ToArray();
+        var frozenCompatibility = ValidateAndFreezeWorldgenCompatibility(worldgenCompatibility);
 
         ValidateRefinementRules(frozenRules);
         if (frozenGeodes.Length == 0)
@@ -74,11 +79,12 @@ public static class MagenheimDefinitionValidator
         if (duplicatePrefab is not null)
             throw new InvalidOperationException($"Duplicate geode prefab '{duplicatePrefab.Key}'.");
 
-        var fingerprint = ComputeFingerprint(schemaVersion, frozenRules, frozenGeodes);
+        var fingerprint = ComputeFingerprint(schemaVersion, frozenRules, frozenGeodes, frozenCompatibility);
         return new MagenheimDefinitionSet(
             schemaVersion,
             Array.AsReadOnly(frozenRules),
             Array.AsReadOnly(frozenGeodes),
+            frozenCompatibility,
             fingerprint);
     }
 
@@ -159,6 +165,53 @@ public static class MagenheimDefinitionValidator
         };
     }
 
+    private static WorldgenCompatibilityPolicy ValidateAndFreezeWorldgenCompatibility(WorldgenCompatibilityPolicy policy)
+    {
+        if (!policy.AdditiveOnly)
+            throw new InvalidOperationException("Worldgen compatibility cannot disable additive-only behavior.");
+
+        var excludedKeys = NormalizeDistinct(
+            policy.ExcludedRegistrationKeys,
+            "worldgen compatibility registration-key exclusion",
+            value => value.StartsWith("magenheim.", StringComparison.Ordinal),
+            "Excluded registration keys must use the 'magenheim.' namespace.");
+
+        var excludedPrefabs = NormalizeDistinct(
+            policy.ExcludedPrefabNames,
+            "worldgen compatibility prefab exclusion",
+            value => value.StartsWith("Magenheim_", StringComparison.Ordinal),
+            "Excluded prefab names must use the 'Magenheim_' namespace.");
+
+        return policy with
+        {
+            AdditiveOnly = true,
+            ExcludedRegistrationKeys = Array.AsReadOnly(excludedKeys),
+            ExcludedPrefabNames = Array.AsReadOnly(excludedPrefabs),
+        };
+    }
+
+    private static string[] NormalizeDistinct(
+        IEnumerable<string>? values,
+        string field,
+        Func<string, bool> validator,
+        string validationMessage)
+    {
+        if (values is null)
+            return Array.Empty<string>();
+
+        var normalized = values.Select(value => value?.Trim() ?? string.Empty).ToArray();
+        if (normalized.Any(string.IsNullOrWhiteSpace))
+            throw new InvalidOperationException($"{field} cannot contain empty values.");
+        if (normalized.Any(value => !validator(value)))
+            throw new InvalidOperationException(validationMessage);
+
+        var duplicate = normalized.GroupBy(value => value, StringComparer.Ordinal).FirstOrDefault(group => group.Count() > 1);
+        if (duplicate is not null)
+            throw new InvalidOperationException($"Duplicate {field} '{duplicate.Key}'.");
+
+        return normalized;
+    }
+
     private static void ValidateChance(double value, string geodeId, string field)
     {
         if (double.IsNaN(value) || double.IsInfinity(value) || value < 0d || value > 1d)
@@ -168,10 +221,23 @@ public static class MagenheimDefinitionValidator
     private static string ComputeFingerprint(
         int schemaVersion,
         IEnumerable<RefinementRule> rules,
-        IEnumerable<GeodeDefinition> geodes)
+        IEnumerable<GeodeDefinition> geodes,
+        WorldgenCompatibilityPolicy worldgenCompatibility)
     {
         var builder = new StringBuilder();
         builder.Append("schema=").Append(schemaVersion).Append('\n');
+
+        builder.Append("worldgen|")
+            .Append(worldgenCompatibility.InvalidAreaBehavior).Append('|')
+            .Append(worldgenCompatibility.DuplicateRegistrationBehavior).Append('|')
+            .Append(worldgenCompatibility.AdditiveOnly ? "1" : "0").Append('|')
+            .Append(worldgenCompatibility.DetectPrefabCollisions ? "1" : "0").Append('|')
+            .Append(worldgenCompatibility.IdentityComparison).Append('\n');
+
+        foreach (var excludedKey in worldgenCompatibility.ExcludedRegistrationKeys.OrderBy(value => value, StringComparer.Ordinal))
+            builder.Append("worldgen-exclude-key|").Append(excludedKey).Append('\n');
+        foreach (var excludedPrefab in worldgenCompatibility.ExcludedPrefabNames.OrderBy(value => value, StringComparer.Ordinal))
+            builder.Append("worldgen-exclude-prefab|").Append(excludedPrefab).Append('\n');
 
         foreach (var rule in rules.OrderBy(rule => rule.SourceTier))
         {

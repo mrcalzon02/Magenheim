@@ -19,7 +19,11 @@
 - Added `default-data/foundation.json` as the shipped static content authority and configured it to copy with the runtime build output.
 - Moved runtime refinement construction from hard-coded defaults to the validated definition snapshot; invalid definitions now fail startup instead of silently selecting a fallback ruleset.
 - Added the initial Meadows/Earth definition with one guaranteed Earth crystal and independent 35% and 10% additional-crystal chances.
-- Advanced the runtime foundation version to `0.0.4` for the definition-pipeline behavior change.
+- Advanced the definition schema to version 2 and moved worldgen compatibility policy into the validated/fingerprinted definition snapshot.
+- Compatibility definitions now control invalid-area behavior, duplicate-registration behavior, prefab collision detection, identity comparison, and Magenheim-only registration/prefab exclusions.
+- Corrected loader ordering so configured invalid-area behavior actually governs geode area parsing rather than being ignored behind a hard-coded Reject pass.
+- Restricted compatibility exclusions to `magenheim.` registration keys and `Magenheim_` prefabs, preventing configuration from targeting foreign content.
+- Added deterministic pure-core assertions proving compatibility settings affect the definition fingerprint and destructive/foreign exclusion policies are rejected.
 - Kept world objects, items, sockets, RPCs, inventory mutation, and persistent gameplay changes disabled pending validation and server-authoritative transaction work.
 - Hardened spawn-area handling so negative numeric flags cannot be clamped into `All` through sign extension.
 - Added textual area parsing for `Median`, `Edge`, `All`, and the runtime-facing `Everywhere` alias, with explicit reject/clamp/fallback policy.

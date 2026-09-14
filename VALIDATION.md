@@ -49,70 +49,60 @@ Observed dependency facts before implementation:
 - current Jötunn package version selected for the runtime is `JotunnLib` 2.30.0;
 - Jötunn 2.30.0 targets .NET Framework 4.6.2;
 - Jötunn documentation recommends a hard `BepInDependency(Jotunn.Main.ModGuid)` and `NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)` for mods whose items/RPCs require consistent client/server presence;
-- `Magenheim.Core` was retargeted to `netstandard2.0` so it can be consumed by the net462 runtime and net8.0 test harness.
+- `Magenheim.Core` targets `netstandard2.0` so it can be consumed by the net462 runtime and net8.0 test harness.
 
 Implemented runtime foundation:
 
 - `src/Magenheim.Runtime/Magenheim.Runtime.csproj` targeting `net462` and referencing `JotunnLib` 2.30.0;
 - BepInEx plugin identity `mrcalzon02.magenheim`, hard Jötunn dependency, and everyone-must-have/minor-version network compatibility declaration;
-- runtime service composition that consumes the existing authoritative `CrystalRefinementService` rather than implementing a second rule engine;
+- runtime service composition consumes the existing authoritative `CrystalRefinementService` rather than implementing a second rule engine;
 - item registration, world generation, sockets, RPCs, inventory mutation, and persistent gameplay state remain disabled pending their validation gates.
 
 ## Worldgen compatibility hardening — 2026-09-13
 
-Implementation commit: `22c4a6dd8a0400d8f53a888af7a1d50da422df6f`.
+The pure core currently enforces:
 
-Static source review identified and repaired a flags failure mode: negative numeric values such as `-1` could previously be passed through `ClampKnownBits`, where sign extension made both known bits appear set and could silently normalize the invalid value to `All`. Negative numeric values now reject under Reject/Clamp policies and only become All under the explicit fallback policy.
+- textual areas `Median`, `Edge`, `All`, and runtime-facing alias `Everywhere`;
+- negative numeric areas reject under Reject/Clamp policy and only broaden under explicit fallback policy;
+- occupied registration keys and prefab identities are detected without host mutation;
+- per-Magenheim registration-key/prefab exclusions produce Skip decisions;
+- optional case-insensitive identity matching is available for interoperability;
+- `AdditiveOnly = false` is rejected rather than opening destructive compatibility behavior.
 
-Additional static compatibility checks added to the pure core and deterministic test harness:
+The future runtime adapter must map Magenheim's abstract All explicitly to the current Jötunn/Valheim Everywhere value rather than relying on enum integer coincidence.
 
-- textual parsing accepts `Median`, `Edge`, `All`, and `Everywhere`;
-- unknown textual tokens reject by default;
-- clamp mode may preserve recognized textual areas while discarding unknown tokens;
-- occupied prefab identities are detected in addition to occupied registration keys;
-- collision checks are observation-only and do not mutate existing registrations;
-- per-Magenheim registration-key and prefab exclusions produce Skip decisions rather than host mutation;
-- optional case-insensitive identity matching can be enabled for interoperability;
-- `AdditiveOnly = false` continues to be rejected rather than opening a destructive compatibility mode.
+## Strict definition and compatibility authority — 2026-09-13
 
-Current Jötunn documentation describes the runtime spawn enum default as `Heightmap.BiomeArea.Everywhere`, while generated vegetation data exposes Edge and Median area membership. The future runtime adapter therefore must map Magenheim's abstract All explicitly to the runtime Everywhere value rather than relying on integer coincidence.
+Definition schema is now version 2. `default-data/foundation.json` requires a `worldgenCompatibility` object in addition to refinement and geode definitions.
 
-## Strict definition pipeline — 2026-09-13
+Static validation performed for the compatibility-definition pass:
 
-Source-level validation completed for the new definition authority introduced for runtime version `0.0.4`.
+- compatibility policy is parsed before geode area parsing;
+- configured `invalidAreaBehavior` now actually governs textual geode-area parsing;
+- duplicate behavior, prefab collision detection, identity comparison, and Magenheim-only exclusion sets are stored in the validated snapshot;
+- compatibility policy is included in the normalized SHA-256 definition fingerprint;
+- changing identity comparison therefore changes the gameplay-authority fingerprint;
+- registration exclusions outside the `magenheim.` namespace reject validation;
+- prefab exclusions outside the `Magenheim_` namespace reject validation;
+- duplicate or empty exclusion entries reject validation;
+- `AdditiveOnly = false` rejects validation;
+- old schema-1 documents are intentionally rejected instead of silently assuming non-fingerprinted compatibility defaults;
+- the deterministic test harness contains explicit assertions for policy freezing, fingerprint variance, foreign exclusion rejection, and destructive-policy rejection.
 
-Observed implementation:
+The shipped schema-2 compatibility defaults are conservative:
 
-- `default-data/foundation.json` is the shipped static definition source and is copied into the runtime output under `default-data/foundation.json`;
-- runtime JSON parsing uses Newtonsoft.Json with `MissingMemberHandling.Error`;
-- duplicate JSON property names are rejected during `JObject` parsing;
-- required schema fields use `Required.Always` rather than accepting missing default values;
-- parsed refinement/geode records are passed into `MagenheimDefinitionValidator.ValidateAndFreeze` before `RuntimeServices` is constructed;
-- startup failure is logged as fatal and rethrown; no hard-coded refinement fallback is retained in the runtime composition path;
-- validated content receives a normalized deterministic SHA-256 fingerprint for later client/server authority comparison.
+- `invalidAreaBehavior`: `Reject`;
+- `duplicateRegistrationBehavior`: `Skip`;
+- `detectPrefabCollisions`: `true`;
+- `identityComparison`: `Exact`;
+- no registration-key exclusions;
+- no prefab exclusions.
 
-Pure-core definition validation statically enforces:
-
-- exact schema version 1;
-- exactly one Rough, Simple, Crystal, and Advanced source refinement transition and no Master source transition;
-- existing `RefinementRule.Validate()` range, tier-order, station, and shard constraints;
-- `magenheim.geode.` registration identity namespace and `Magenheim_` prefab namespace;
-- supported terrestrial biome names only;
-- conservative spawn-area admission through `SpawnAreaValidator`;
-- exactly one guaranteed crystal in the current geode contract;
-- finite second/third crystal chances in [0,1];
-- at least one positive finite elemental weight with no duplicate element entries;
-- duplicate geode ids and duplicate geode prefab identities rejected.
-
-The shipped Meadows definition contains only Earth at weight 100.0 and uses one guaranteed result plus independent 0.35 and 0.10 additional-crystal probabilities. This is definition presence and static-schema evidence only; the actual random selection/cracking transaction is not yet implemented and is not claimed.
-
-Static readback confirmed the runtime project, loader, plugin startup path, core definition validator, foundation JSON, backlog, project state, and README are all present on `main` after the changes. No generated DLL or vendor binary was committed.
+The Meadows definition remains Earth-only at weight 100.0, one guaranteed crystal, and independent 0.35 / 0.10 additional-crystal probabilities. Definition presence is not evidence that random cracking or natural world generation is implemented.
 
 ## Repository/branch review
 
-During the earlier compatibility pass, concurrent authorized work advanced `main` twice. Each advancement was detected before ref mutation and reconciled without force-pushing. A first prepared commit was intentionally not published after GitHub rejected it as non-fast-forward. The final compatibility implementation was rebuilt on top of the newer authoritative runtime-foundation history and then fast-forwarded normally.
-
-`master` was subsequently fast-forwarded to the same implementation commit so the legacy default-branch pointer did not become a divergent development line. The available connector does not expose branch deletion or default-branch reassignment, so remote pruning beyond synchronization is deferred rather than falsely claimed.
+`main` and `master` were observed at the same starting commit for this pass. `main` remains the only authoritative development branch; `master` is retained only as a synchronized compatibility/default-branch pointer because the available connector does not expose default-branch reassignment or branch deletion.
 
 ## Compile/test boundary
 
@@ -122,6 +112,6 @@ Required next validation commands/environment:
 
 `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`
 
-Then compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` from a development environment with .NET Framework 4.6.2 targeting support and current Valheim/Jötunn development dependencies available. Any resulting defect must be repaired at the authoritative source before server configuration overrides, skill registration, worldgen registration, or gameplay mutation is admitted.
+Then compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` from a development environment with .NET Framework 4.6.2 targeting support and current Valheim/Jötunn development dependencies available. Any resulting defect must be repaired at the authoritative source before server overrides, skill registration, worldgen registration, or gameplay mutation is admitted.
 
 Runtime startup, natural geode generation, repeated-load idempotence, multiplayer authority, save/load, and persistence remain unverified until directly observed.

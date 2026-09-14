@@ -47,13 +47,17 @@ internal static class MagenheimDefinitionLoader
             var document = root.ToObject<DefinitionFileDocument>(serializer)
                 ?? throw new InvalidDataException("Magenheim definition document deserialized to null.");
 
+            var compatibility = ToWorldgenCompatibility(document.WorldgenCompatibility);
             var refinementRules = document.RefinementRules.Select(ToRefinementRule).ToArray();
-            var geodes = document.Geodes.Select(ToGeodeDefinition).ToArray();
+            var geodes = document.Geodes
+                .Select(geode => ToGeodeDefinition(geode, compatibility.InvalidAreaBehavior))
+                .ToArray();
 
             return MagenheimDefinitionValidator.ValidateAndFreeze(
                 document.SchemaVersion,
                 refinementRules,
-                geodes);
+                geodes,
+                compatibility);
         }
         catch (JsonException exception)
         {
@@ -75,12 +79,14 @@ internal static class MagenheimDefinitionLoader
             document.FailureShardCount);
     }
 
-    private static GeodeDefinition ToGeodeDefinition(GeodeDefinitionDocument document)
+    private static GeodeDefinition ToGeodeDefinition(
+        GeodeDefinitionDocument document,
+        InvalidAreaBehavior invalidAreaBehavior)
     {
         if (document is null)
             throw new InvalidDataException("Geode definition cannot be null.");
 
-        var area = SpawnAreaValidator.ParseConfiguredArea(document.Area, InvalidAreaBehavior.Reject);
+        var area = SpawnAreaValidator.ParseConfiguredArea(document.Area, invalidAreaBehavior);
         if (!area.IsValid)
             throw new InvalidDataException($"Geode '{document.Id}' has invalid area: {area.Diagnostic}");
 
@@ -94,6 +100,23 @@ internal static class MagenheimDefinitionLoader
             document.SecondCrystalChance,
             document.ThirdCrystalChance,
             Array.AsReadOnly(weights));
+    }
+
+    private static WorldgenCompatibilityPolicy ToWorldgenCompatibility(WorldgenCompatibilityDocument document)
+    {
+        if (document is null)
+            throw new InvalidDataException("Worldgen compatibility definition cannot be null.");
+
+        return new WorldgenCompatibilityPolicy(
+            ParseEnum<InvalidAreaBehavior>(document.InvalidAreaBehavior, "worldgenCompatibility.invalidAreaBehavior"),
+            ParseEnum<DuplicateRegistrationBehavior>(document.DuplicateRegistrationBehavior, "worldgenCompatibility.duplicateRegistrationBehavior"),
+            AdditiveOnly: true)
+        {
+            DetectPrefabCollisions = document.DetectPrefabCollisions,
+            IdentityComparison = ParseEnum<RegistrationIdentityComparison>(document.IdentityComparison, "worldgenCompatibility.identityComparison"),
+            ExcludedRegistrationKeys = Array.AsReadOnly(document.ExcludedRegistrationKeys.Select(value => RequireText(value, "worldgenCompatibility.excludedRegistrationKeys")).ToArray()),
+            ExcludedPrefabNames = Array.AsReadOnly(document.ExcludedPrefabNames.Select(value => RequireText(value, "worldgenCompatibility.excludedPrefabNames")).ToArray()),
+        };
     }
 
     private static ElementWeight ToElementWeight(ElementWeightDocument document)
@@ -131,6 +154,9 @@ internal static class MagenheimDefinitionLoader
 
         [JsonProperty("geodes", Required = Required.Always)]
         public List<GeodeDefinitionDocument> Geodes { get; set; } = null!;
+
+        [JsonProperty("worldgenCompatibility", Required = Required.Always)]
+        public WorldgenCompatibilityDocument WorldgenCompatibility { get; set; } = null!;
     }
 
     private sealed class RefinementRuleDocument
@@ -179,6 +205,27 @@ internal static class MagenheimDefinitionLoader
 
         [JsonProperty("elements", Required = Required.Always)]
         public List<ElementWeightDocument> Elements { get; set; } = null!;
+    }
+
+    private sealed class WorldgenCompatibilityDocument
+    {
+        [JsonProperty("invalidAreaBehavior", Required = Required.Always)]
+        public string InvalidAreaBehavior { get; set; } = null!;
+
+        [JsonProperty("duplicateRegistrationBehavior", Required = Required.Always)]
+        public string DuplicateRegistrationBehavior { get; set; } = null!;
+
+        [JsonProperty("detectPrefabCollisions", Required = Required.Always)]
+        public bool DetectPrefabCollisions { get; set; }
+
+        [JsonProperty("identityComparison", Required = Required.Always)]
+        public string IdentityComparison { get; set; } = null!;
+
+        [JsonProperty("excludedRegistrationKeys", Required = Required.Always)]
+        public List<string> ExcludedRegistrationKeys { get; set; } = null!;
+
+        [JsonProperty("excludedPrefabNames", Required = Required.Always)]
+        public List<string> ExcludedPrefabNames { get; set; } = null!;
     }
 
     private sealed class ElementWeightDocument

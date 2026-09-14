@@ -45,13 +45,14 @@ Current rules:
 - abstract areas remain Median, Edge, and All;
 - configuration also accepts `Everywhere` as the runtime-facing alias for All;
 - negative numeric flag values cannot be clamped into All through sign extension;
-- unknown positive bits reject by default, may retain recognized bits only under explicit clamp policy, or may fall back to All only under explicit fallback policy;
-- occupied Magenheim registration keys and occupied prefab identities are collision-checked without changing observed host data;
+- occupied Magenheim registration keys and prefab identities are collision-checked without changing observed host data;
 - specific Magenheim registration keys or prefabs may be excluded through compatibility policy;
-- identity matching is exact by default with an optional case-insensitive compatibility mode;
+- identity matching is exact by default with optional case-insensitive comparison;
 - destructive compatibility mode remains structurally rejected.
 
-The eventual Jötunn adapter must map these abstract values explicitly to current `Heightmap.BiomeArea` values rather than casting enum integers.
+Definition schema 2 makes this compatibility policy part of the same validated gameplay snapshot as refinement and geodes. The fingerprint now includes invalid-area behavior, duplicate-registration behavior, prefab collision detection, identity comparison, and Magenheim-only exclusion sets. Exclusions outside `magenheim.` registration keys or `Magenheim_` prefabs reject validation.
+
+The runtime loader parses compatibility policy before geodes so configured invalid-area behavior actually governs geode area parsing. The eventual Jötunn adapter must still map pure `SpawnArea` values explicitly to current `Heightmap.BiomeArea` values rather than casting enum integers.
 
 ## Runtime bootstrap
 
@@ -73,30 +74,23 @@ Runtime bootstrap properties:
 
 The runtime loads `default-data/foundation.json`, converts it into pure-core definition records, validates the complete snapshot, computes a deterministic SHA-256 fingerprint, and only then creates runtime services.
 
-Definition admission rules include exact schema matching, strict JSON member handling, canonical four-step refinement topology, namespaced geode IDs/prefabs, supported biome validation, conservative spawn-area validation, fixed one-guaranteed-crystal geode contract, finite 0..1 additional-crystal probabilities, positive finite elemental weights, and duplicate identity rejection.
+Definition schema is version 2. Version-1 files are intentionally rejected because they do not carry fingerprinted worldgen compatibility policy.
 
-The shipped foundation snapshot defines the Meadows Earth vertical slice: one guaranteed Earth crystal plus independent 35% and 10% additional-crystal probabilities.
+The shipped foundation snapshot defines the Meadows Earth vertical slice: one guaranteed Earth crystal plus independent 35% and 10% additional-crystal probabilities. Default worldgen compatibility remains conservative: Reject invalid areas, Skip occupied additions, detect prefab collisions, exact identity comparison, and no exclusions.
 
-## Controlled balance overrides — 2026-09-13
+## Controlled runtime overrides — 2026-09-13
 
-Runtime version `0.0.5` adds a constrained BepInEx configuration layer over the validated baseline snapshot.
+Runtime version `0.0.6` uses the existing validated BepInEx override path for both balance and worldgen compatibility settings.
 
-Permitted runtime balance overrides are limited to:
+Permitted balance overrides remain limited to existing refinement/geode balance fields and cannot alter topology, ownership, prefab identity, guaranteed-crystal count, or elemental identity sets.
 
-- refinement base failure chance;
-- refinement minimum Crystal Shaping skill;
-- refinement failure shard return count;
-- geode second-crystal probability;
-- geode third-crystal probability;
-- relative weights of elemental identities already present in that geode definition.
+Worldgen compatibility overrides may change only the validated policy fields: invalid-area behavior, duplicate handling, prefab collision detection, identity comparison, and Magenheim-owned exclusions. They cannot disable additive-only behavior or target foreign identities. The override applier rebuilds the effective snapshot through `MagenheimDefinitionValidator.ValidateAndFreeze`, so invalid settings fail admission and the effective fingerprint changes when compatibility policy changes.
 
-The override layer cannot alter crystal tier topology, refinement source/destination identities, required stations, geode IDs, biome ownership, prefab identities, guaranteed-crystal count, or add/remove/replace elemental identities. Unknown refinement/geode override targets reject. Effective definitions are rebuilt through `MagenheimDefinitionValidator.ValidateAndFreeze`, so invalid configured values fail admission and the effective gameplay fingerprint is regenerated from normalized validated data.
-
-Plugin startup now logs both baseline and effective fingerprints. Gameplay mutation remains disabled, so client/server fingerprint enforcement can be implemented before any divergent configuration is allowed to affect inventory, sockets, or world state.
+Plugin startup logs both baseline and effective fingerprints. Gameplay mutation remains disabled until server/client fingerprint enforcement exists.
 
 ## Validation boundary
 
-The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compilation and test execution therefore remain unclaimed. Plugin startup, BepInEx config binding, definition override execution inside Valheim, and actual world generation have not been directly observed in Valheim.
+The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compilation and test execution therefore remain unclaimed. Static source assertions were expanded for compatibility-policy freezing, fingerprint variance, foreign-exclusion rejection, and destructive-policy rejection, but they have not executed here.
 
 ## Next exact action
 
@@ -105,7 +99,6 @@ In a .NET 8 SDK / Valheim development environment:
 1. run `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`;
 2. compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` against Jötunn 2.30.0 and current Valheim dependencies;
 3. repair any compile/test defect at the authoritative source;
-4. add deterministic tests covering definition-validation failures and override admission/rejection/fingerprint changes;
-5. implement server-authoritative definition fingerprint synchronization/enforcement before gameplay mutation;
-6. register Crystal Shaping under permanent ID `magenheim.crystal_shaping` only after the runtime project passes its compile gate;
-7. then bind the pure worldgen plan to a thin Jötunn registrar with explicit `Heightmap.BiomeArea` mapping and repeated-load idempotence checks.
+4. implement server-authoritative definition fingerprint synchronization/enforcement before gameplay mutation;
+5. register Crystal Shaping under permanent ID `magenheim.crystal_shaping` only after the runtime project passes its compile gate;
+6. then bind the pure worldgen plan to a thin Jötunn registrar using the effective compatibility policy, explicit `Heightmap.BiomeArea` mapping, and repeated-load idempotence checks.

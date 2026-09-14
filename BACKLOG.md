@@ -18,13 +18,17 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Add configuration parsing for Median/Edge/All plus the Jötunn-facing `Everywhere` alias.
 - [x] Detect prefab collisions as well as registration-key collisions without mutating observed data.
 - [x] Add compatibility exclusions by Magenheim registration key/prefab and optional case-insensitive identity matching.
+- [x] Move worldgen compatibility policy into schema-versioned definition authority and include it in the deterministic fingerprint.
+- [x] Make configured invalid-area behavior govern geode area parsing rather than hard-coding Reject before policy admission.
+- [x] Restrict compatibility exclusions to Magenheim-owned registration/prefab namespaces so configuration cannot target foreign content.
 - [ ] Execute the standalone tests with a .NET 8 SDK and record the observed result.
 - [ ] Compile `Magenheim.Core` with warnings as errors.
 - [x] Add the thin BepInEx/Jötunn plugin bootstrap on `main`, with hard Jötunn dependency and everyone-must-have/minor-version network declaration.
 - [ ] Compile the runtime project against Jötunn 2.30.0 and a current Valheim development environment.
 - [x] Add strict schema-validated static definition loading for refinement and geode definitions, including deterministic definition fingerprinting and hard failure on malformed/unknown content.
 - [x] Add controlled balance overrides on top of the validated static definition snapshot; only existing rule/geode balance fields may change, elemental identity sets remain fixed, and the effective snapshot is revalidated and fingerprinted before use.
-- [ ] Add deterministic tests for definition validation, override admission, and loader failure cases.
+- [x] Extend the same validated override path to worldgen compatibility policy so server-side compatibility settings are revalidated and re-fingerprinted before use.
+- [ ] Add deterministic tests for runtime JSON loader failure cases once a compilable runtime test environment is available.
 - [ ] Register Crystal Shaping under permanent ID `magenheim.crystal_shaping`.
 - [ ] Add server-authoritative definition synchronization/fingerprint enforcement before gameplay mutations are enabled.
 
@@ -32,7 +36,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 
 - [x] Define the initial Meadows geode data with one guaranteed Earth crystal and independent 35%/10% additional-crystal chances.
 - [ ] Register an intact Meadows geode item/prefab.
-- [ ] Bind the additive worldgen planner to a thin Jötunn registrar.
+- [ ] Bind the additive worldgen planner to a thin Jötunn registrar using the validated definition policy.
 - [ ] Explicitly map pure-core `SpawnArea.All` to current runtime `Heightmap.BiomeArea.Everywhere` rather than casting enum integers.
 - [ ] Implement configurable non-destructive Meadows world placement.
 - [ ] Snapshot pre/post worldgen registrations and prove repeated-load idempotence.

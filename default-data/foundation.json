@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "refinementRules": [
     {
       "sourceTier": "Rough",
@@ -50,5 +50,13 @@
         }
       ]
     }
-  ]
+  ],
+  "worldgenCompatibility": {
+    "invalidAreaBehavior": "Reject",
+    "duplicateRegistrationBehavior": "Skip",
+    "detectPrefabCollisions": true,
+    "identityComparison": "Exact",
+    "excludedRegistrationKeys": [],
+    "excludedPrefabNames": []
+  }
 }

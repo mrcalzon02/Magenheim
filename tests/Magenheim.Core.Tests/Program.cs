@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Magenheim.Core;
+using Magenheim.Core.Definitions;
 using Magenheim.Core.Worldgen;
 
 internal static class Program
@@ -32,6 +33,11 @@ internal static class Program
         PlannerCanExcludeSpecificAddition();
         PlannerSupportsOptionalCaseInsensitiveIdentityComparison();
         PlannerCannotDisableAdditiveOnly();
+
+        DefinitionSnapshotFreezesCompatibilityPolicy();
+        DefinitionFingerprintChangesWithCompatibilityPolicy();
+        DefinitionSnapshotRejectsForeignCompatibilityExclusion();
+        DefinitionSnapshotRejectsDestructiveCompatibilityPolicy();
 
         Console.WriteLine($"Magenheim.Core.Tests: {_assertions} assertions passed.");
     }
@@ -231,6 +237,89 @@ internal static class Program
             threw = true;
         }
         Assert(threw, "Compatibility policy must not enable destructive worldgen mode.");
+    }
+
+    private static void DefinitionSnapshotFreezesCompatibilityPolicy()
+    {
+        var policy = WorldgenCompatibilityPolicy.Conservative with
+        {
+            ExcludedRegistrationKeys = new[] { "magenheim.geode.meadows.earth" },
+            ExcludedPrefabNames = new[] { "Magenheim_Geode_Meadows_Earth" },
+        };
+
+        var snapshot = CreateDefinitionSnapshot(policy);
+        Assert(snapshot.SchemaVersion == MagenheimDefinitionValidator.CurrentSchemaVersion, "Definition snapshot should use the current schema.");
+        Assert(snapshot.WorldgenCompatibility.ExcludedRegistrationKeys.Single() == "magenheim.geode.meadows.earth", "Compatibility key exclusions should survive validation.");
+        Assert(snapshot.WorldgenCompatibility.ExcludedPrefabNames.Single() == "Magenheim_Geode_Meadows_Earth", "Compatibility prefab exclusions should survive validation.");
+    }
+
+    private static void DefinitionFingerprintChangesWithCompatibilityPolicy()
+    {
+        var baseline = CreateDefinitionSnapshot(WorldgenCompatibilityPolicy.Conservative);
+        var changed = CreateDefinitionSnapshot(WorldgenCompatibilityPolicy.Conservative with
+        {
+            IdentityComparison = RegistrationIdentityComparison.CaseInsensitive,
+        });
+
+        Assert(!string.Equals(baseline.Fingerprint, changed.Fingerprint, StringComparison.Ordinal), "Gameplay fingerprint must change when compatibility policy changes.");
+    }
+
+    private static void DefinitionSnapshotRejectsForeignCompatibilityExclusion()
+    {
+        var threw = false;
+        try
+        {
+            CreateDefinitionSnapshot(WorldgenCompatibilityPolicy.Conservative with
+            {
+                ExcludedRegistrationKeys = new[] { "othermod.geode" },
+            });
+        }
+        catch (InvalidOperationException)
+        {
+            threw = true;
+        }
+
+        Assert(threw, "Compatibility exclusions must not target foreign registration namespaces.");
+    }
+
+    private static void DefinitionSnapshotRejectsDestructiveCompatibilityPolicy()
+    {
+        var threw = false;
+        try
+        {
+            CreateDefinitionSnapshot(new WorldgenCompatibilityPolicy(
+                InvalidAreaBehavior.Reject,
+                DuplicateRegistrationBehavior.Skip,
+                AdditiveOnly: false));
+        }
+        catch (InvalidOperationException)
+        {
+            threw = true;
+        }
+
+        Assert(threw, "Definition admission must reject destructive worldgen compatibility policy.");
+    }
+
+    private static MagenheimDefinitionSet CreateDefinitionSnapshot(WorldgenCompatibilityPolicy policy)
+    {
+        var geodes = new[]
+        {
+            new GeodeDefinition(
+                "magenheim.geode.meadows.earth",
+                "Meadows",
+                "Magenheim_Geode_Meadows_Earth",
+                SpawnArea.All,
+                1,
+                0.35d,
+                0.10d,
+                new[] { new ElementWeight(ElementalAlignment.Earth, 100d) }),
+        };
+
+        return MagenheimDefinitionValidator.ValidateAndFreeze(
+            MagenheimDefinitionValidator.CurrentSchemaVersion,
+            CrystalRefinementService.CreateCanonicalDefaults(),
+            geodes,
+            policy);
     }
 
     private static bool Approximately(double left, double right) => Math.Abs(left - right) < 0.0000001d;
