@@ -7,10 +7,10 @@ namespace Magenheim.Core.Socketing;
 public sealed class SocketEligibilityPolicy
 {
     public SocketEligibilityPolicy(
-        int weaponMaxSlots = 3,
-        int armorMaxSlots = 2,
-        int shieldMaxSlots = 2,
-        int toolMaxSlots = 2,
+        int weaponMaxSlots = 1,
+        int armorMaxSlots = 1,
+        int shieldMaxSlots = 1,
+        int toolMaxSlots = 1,
         int utilityMaxSlots = 1,
         int explicitIncludeMaxSlots = 1,
         IEnumerable<string>? includedPrefabNames = null,

@@ -6,6 +6,7 @@ using Jotunn.Entities;
 using Jotunn.Managers;
 using Magenheim.Core.Definitions;
 using Magenheim.Core.Networking;
+using Magenheim.Core.Socketing;
 using Magenheim.Core.Transactions;
 
 namespace Magenheim.Runtime.Networking;
@@ -19,6 +20,7 @@ internal sealed class DefinitionAuthoritySynchronizer
     private readonly ManualLogSource _logger;
     private readonly GeodeOpeningOperationGuard _geodeOpeningOperations;
     private readonly RefinementOperationGuard _refinementOperations;
+    private readonly SocketOperationGuard _socketOperations;
     private readonly Dictionary<long, DefinitionAuthorityResult> _peerResults = new();
     private readonly Dictionary<long, long> _peerSessionGenerations = new();
     private readonly CustomRPC _rpc;
@@ -27,11 +29,13 @@ internal sealed class DefinitionAuthoritySynchronizer
         MagenheimDefinitionSet definitions,
         GeodeOpeningOperationGuard geodeOpeningOperations,
         RefinementOperationGuard refinementOperations,
+        SocketOperationGuard socketOperations,
         ManualLogSource logger)
     {
         if (definitions is null) throw new ArgumentNullException(nameof(definitions));
         _geodeOpeningOperations = geodeOpeningOperations ?? throw new ArgumentNullException(nameof(geodeOpeningOperations));
         _refinementOperations = refinementOperations ?? throw new ArgumentNullException(nameof(refinementOperations));
+        _socketOperations = socketOperations ?? throw new ArgumentNullException(nameof(socketOperations));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         _localAuthority = new DefinitionAuthorityDescriptor(definitions.SchemaVersion, definitions.Fingerprint);
@@ -75,6 +79,7 @@ internal sealed class DefinitionAuthoritySynchronizer
         _peerSessionGenerations[peer.m_uid] = nextGeneration;
         _geodeOpeningOperations.RetirePeerSessions(peer.m_uid, nextGeneration);
         _refinementOperations.RetirePeerSessions(peer.m_uid, nextGeneration);
+        _socketOperations.RetirePeerSessions(peer.m_uid, nextGeneration);
 
         var package = new ZPackage();
         package.Write(ServerAuthorityMessage);

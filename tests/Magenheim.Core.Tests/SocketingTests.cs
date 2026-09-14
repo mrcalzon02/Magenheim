@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Magenheim.Core.Networking;
 using Magenheim.Core.Socketing;
 
 internal static class SocketingTests
@@ -32,6 +33,8 @@ internal static class SocketingTests
             "Metadata with more crystals than slots must fail closed.");
         Assert(!SocketMetadataCodec.TryDecode("2|1|Earth:Simple", out _, out _),
             "Unknown socket metadata versions must fail closed.");
+        Assert(!SocketMetadataCodec.TryDecode("1|4|", out _, out _),
+            "Socket metadata above the supported 0..3 range must fail closed.");
 
         var foreignData = new Dictionary<string, string>
         {
@@ -57,6 +60,11 @@ internal static class SocketingTests
         Assert(!atCapacity.Changed && atCapacity.Outcome == SocketMutationOutcome.AtCapacity,
             "Adding beyond configured capacity must not mutate socket state.");
 
+        var roughRejected = SocketingService.InstallCrystal(addTwo.State,
+            new Crystal(ElementalAlignment.Earth, CrystalTier.Rough));
+        Assert(!roughRejected.Changed && roughRejected.Outcome == SocketMutationOutcome.RoughCrystalNotSocketable,
+            "Rough crystals must never be socketable.");
+
         var installed = SocketingService.InstallCrystal(addTwo.State,
             new Crystal(ElementalAlignment.Storm, CrystalTier.Master));
         Assert(installed.Changed && installed.State.InstalledCrystals.Count == 1,
@@ -68,8 +76,16 @@ internal static class SocketingTests
         var policy = new SocketEligibilityPolicy();
         var weapon = SocketEligibilityService.Evaluate(
             new EquipmentDescriptor("SwordIron", "vanilla", EquipmentCategory.Weapon), policy);
-        Assert(weapon.IsEligible && weapon.MaximumSlots == 3,
-            "Default adaptive weapon classification should permit three sockets.");
+        Assert(weapon.IsEligible && weapon.MaximumSlots == 1,
+            "Version-one default weapon classification should permit one socket, not silently enable multi-socket balance.");
+        var shield = SocketEligibilityService.Evaluate(
+            new EquipmentDescriptor("ShieldIron", "vanilla", EquipmentCategory.Shield), policy);
+        Assert(shield.IsEligible && shield.MaximumSlots == 1,
+            "Adaptive shield classification should default to one socket.");
+        var tool = SocketEligibilityService.Evaluate(
+            new EquipmentDescriptor("PickaxeIron", "vanilla", EquipmentCategory.Tool), policy);
+        Assert(tool.IsEligible && tool.MaximumSlots == 1,
+            "Adaptive tool classification should default to one socket.");
 
         var unknown = SocketEligibilityService.Evaluate(
             new EquipmentDescriptor("ForeignThing", "SomeMod", EquipmentCategory.Unknown), policy);
@@ -92,6 +108,79 @@ internal static class SocketingTests
             new EquipmentDescriptor("ForeignThing", "SomeMod", EquipmentCategory.Unknown), exclusionWins);
         Assert(!excluded.IsEligible && excluded.Outcome == SocketEligibilityOutcome.ExcludedPrefab,
             "Explicit exclusion must win over inclusion under the configured identity comparer.");
+
+        var authority = new DefinitionAuthorityResult(
+            DefinitionAuthorityStatus.Compatible, true, "test authority");
+        var sword = new EquipmentDescriptor("SwordIron", "vanilla", EquipmentCategory.Weapon);
+        var addSlotPlan = SocketTransactionPlanner.Plan(new SocketTransactionRequest(
+            authority, sword, policy, SocketState.Empty, SocketTransactionKind.AddSlot, null, 0));
+        Assert(addSlotPlan.IsReady && addSlotPlan.ResultState.UnlockedSlots == 1 &&
+               addSlotPlan.ConsumeCrystalCount == 0,
+            "Eligible equipment should prepare a per-instance AddSlot mutation without consuming a crystal.");
+
+        var secondSlotDenied = SocketTransactionPlanner.Plan(new SocketTransactionRequest(
+            authority, sword, policy, addSlotPlan.ResultState, SocketTransactionKind.AddSlot, null, 0));
+        Assert(!secondSlotDenied.IsReady && secondSlotDenied.Outcome == SocketTransactionOutcome.MutationRejected,
+            "Default one-socket policy must deny a second unlocked socket.");
+
+        var installPlan = SocketTransactionPlanner.Plan(new SocketTransactionRequest(
+            authority,
+            sword,
+            policy,
+            addSlotPlan.ResultState,
+            SocketTransactionKind.InstallCrystal,
+            new Crystal(ElementalAlignment.Earth, CrystalTier.Simple),
+            1));
+        Assert(installPlan.IsReady && installPlan.ConsumeCrystalCount == 1 &&
+               installPlan.ResultState.InstalledCrystals.Count == 1 &&
+               Math.Abs(installPlan.CrystalShapingExperience - 0.25d) < 0.0000001d,
+            "Installing a Simple crystal should consume exactly one crystal and award the configured initial socket-install XP weight.");
+
+        var missingCrystal = SocketTransactionPlanner.Plan(new SocketTransactionRequest(
+            authority,
+            sword,
+            policy,
+            addSlotPlan.ResultState,
+            SocketTransactionKind.InstallCrystal,
+            new Crystal(ElementalAlignment.Earth, CrystalTier.Simple),
+            0));
+        Assert(!missingCrystal.IsReady && missingCrystal.Outcome == SocketTransactionOutcome.MissingCrystal,
+            "Socket install must fail without the exact source crystal.");
+
+        var deniedAuthority = SocketTransactionPlanner.Plan(new SocketTransactionRequest(
+            DefinitionAuthorityResult.Pending,
+            sword,
+            policy,
+            SocketState.Empty,
+            SocketTransactionKind.AddSlot,
+            null,
+            0));
+        Assert(!deniedAuthority.IsReady && deniedAuthority.Outcome == SocketTransactionOutcome.AuthorityDenied,
+            "Unsynchronized authority must deny socket metadata mutation.");
+
+        var guard = new SocketOperationGuard();
+        var key = new SocketOperationKey(21, 1, "socket-1");
+        var transaction = new SocketTransactionRequest(
+            authority, sword, policy, SocketState.Empty, SocketTransactionKind.AddSlot, null, 0);
+        var fresh = guard.Begin(key, transaction);
+        Assert(fresh.MutationAuthorized,
+            "Fresh socket operation should reserve exactly one metadata mutation attempt.");
+        var duplicatePrepared = guard.Begin(key, transaction);
+        Assert(duplicatePrepared.Outcome == SocketOperationOutcome.DuplicatePrepared &&
+               !duplicatePrepared.MutationAuthorized,
+            "Prepared socket replay must not authorize duplicate mutation.");
+        Assert(guard.MarkApplied(key), "Prepared socket operation should mark applied exactly once.");
+        Assert(!guard.MarkApplied(key), "Applied socket operation must not mark applied twice.");
+        var duplicateApplied = guard.Begin(key, transaction);
+        Assert(duplicateApplied.Outcome == SocketOperationOutcome.DuplicateApplied &&
+               !duplicateApplied.MutationAuthorized,
+            "Applied socket replay must not authorize a second metadata write.");
+
+        var stale = new SocketOperationKey(33, 4, "socket-old");
+        Assert(guard.Begin(stale, transaction).MutationAuthorized,
+            "Old-session setup socket operation should prepare.");
+        Assert(guard.RetirePeerSessions(33, 5) == 1,
+            "New peer session should retire stale socket replay reservations.");
 
         return assertions;
     }

@@ -37,7 +37,10 @@ public sealed record EquipmentDescriptor(
 
 public sealed class SocketState
 {
-    public const int MaximumSupportedSlots = 8;
+    // The engine and metadata format can represent multiple sockets, but the supported
+    // server-configurable gameplay range is deliberately capped at three. Version-one
+    // defaults remain one socket per eligible item until multi-socket UI/balance is proven.
+    public const int MaximumSupportedSlots = 3;
     private readonly Crystal[] _installedCrystals;
 
     public SocketState(int unlockedSlots, IEnumerable<Crystal>? installedCrystals = null)
@@ -75,7 +78,8 @@ public enum SocketMutationOutcome
     NoFreeSlot = 2,
     NoInstalledCrystal = 3,
     InvalidPolicy = 4,
-    InvalidIndex = 5
+    InvalidIndex = 5,
+    RoughCrystalNotSocketable = 6
 }
 
 public sealed record SocketMutationResult(
@@ -110,6 +114,9 @@ public static class SocketingService
     public static SocketMutationResult InstallCrystal(SocketState state, Crystal crystal)
     {
         if (state is null) throw new ArgumentNullException(nameof(state));
+        if (crystal.Tier == CrystalTier.Rough)
+            return new SocketMutationResult(SocketMutationOutcome.RoughCrystalNotSocketable, state, null,
+                "Rough crystals cannot be socketed; refine the crystal to Simple or better first.");
         if (state.FreeSlots <= 0)
             return new SocketMutationResult(SocketMutationOutcome.NoFreeSlot, state, null,
                 "Item has no free socket.");

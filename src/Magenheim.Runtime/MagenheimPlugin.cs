@@ -24,6 +24,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private EarthContentRegistrar? _earthContentRegistrar;
     private WorkshopRegistrar? _workshopRegistrar;
     private WorkshopOperationRegistrar? _workshopOperationRegistrar;
+    private ShardRecipeRegistrar? _shardRecipeRegistrar;
     private Harmony? _harmony;
 
     private void Awake()
@@ -41,6 +42,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 effectiveDefinitions,
                 _services.GeodeOpeningOperations,
                 _services.RefinementOperations,
+                _services.SocketOperations,
                 Logger);
 
             WorkshopOperationsRuntime.Configure(_services, _authoritySynchronizer, Logger);
@@ -57,13 +59,15 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _geodeWorldgenRegistrar.Register();
             _workshopOperationRegistrar = new WorkshopOperationRegistrar(Logger);
             _workshopOperationRegistrar.Register();
+            _shardRecipeRegistrar = new ShardRecipeRegistrar(Logger);
+            _shardRecipeRegistrar.Register();
 
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
-                "Definition authority synchronization, session-scoped geode/refinement replay protection, definition-driven intact geode items, " +
-                "fingerprinted geode placement configuration, additive geode vegetation registration, and local-host geology workshop operations are configured. " +
-                "Remote-client operation RPC and socket effect application remain gated pending implementation/validation.");
+                "Definition authority synchronization, session-scoped geode/refinement/socket replay protection, definition-driven intact geode items, " +
+                "fingerprinted geode placement configuration, additive geode vegetation registration, local-host geology workshop operations, " +
+                "and deterministic Earth shard recombination are configured. Remote-client operation RPC, socket workstation UI, and socket effect application remain gated pending implementation/validation.");
         }
         catch (Exception exception)
         {
@@ -74,6 +78,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
     private void OnDestroy()
     {
+        _shardRecipeRegistrar?.Dispose();
         _workshopOperationRegistrar?.Dispose();
         _earthContentRegistrar?.Dispose();
         _workshopRegistrar?.Dispose();
