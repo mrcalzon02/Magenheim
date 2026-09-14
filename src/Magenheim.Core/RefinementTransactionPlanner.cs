@@ -142,8 +142,9 @@ public sealed record RefinementOperationDecision(
 }
 
 /// <summary>
-/// Session-scoped exact-once admission for refinement. This mirrors geode-opening replay
-/// protection so a retransmitted craft request cannot consume or grant inventory twice.
+/// Session-scoped exact-once admission for refinement. Immutable operation intent is
+/// captured before mutable inventory/capacity state is replanned so retransmission remains
+/// identifiable after the original transaction consumed its source crystal.
 /// </summary>
 public sealed class RefinementOperationGuard
 {
@@ -164,21 +165,15 @@ public sealed class RefinementOperationGuard
                 EmptyPlan(keyError),
                 keyError);
 
-        var plan = _planner.Plan(request);
-        if (!plan.IsReady)
-            return new RefinementOperationDecision(
-                RefinementOperationOutcome.PlanRejected,
-                plan,
-                plan.Diagnostic);
-
+        var intent = RefinementIntent.From(request);
         if (_operations.TryGetValue(key, out var existing))
         {
-            if (!PlansMatch(existing.Plan, plan))
+            if (!existing.Intent.Equals(intent))
             {
                 return new RefinementOperationDecision(
                     RefinementOperationOutcome.ConflictingReplay,
-                    EmptyPlan("The operation id was replayed with a different refinement plan."),
-                    "The operation id was replayed with a different refinement plan; mutation is denied.");
+                    EmptyPlan("The operation id was replayed with different immutable refinement intent."),
+                    "The operation id was replayed with different immutable refinement intent; mutation is denied.");
             }
 
             var duplicateOutcome = existing.Applied
@@ -192,7 +187,14 @@ public sealed class RefinementOperationGuard
                     : "This refinement operation is already prepared; concurrent/replayed mutation is denied.");
         }
 
-        _operations.Add(key, new OperationRecord(plan));
+        var plan = _planner.Plan(request);
+        if (!plan.IsReady)
+            return new RefinementOperationDecision(
+                RefinementOperationOutcome.PlanRejected,
+                plan,
+                plan.Diagnostic);
+
+        _operations.Add(key, new OperationRecord(intent, plan));
         return new RefinementOperationDecision(
             RefinementOperationOutcome.Ready,
             plan,
@@ -251,22 +253,87 @@ public sealed class RefinementOperationGuard
         return true;
     }
 
-    private static bool PlansMatch(RefinementTransactionPlan left, RefinementTransactionPlan right) =>
-        left.Outcome == right.Outcome &&
-        left.ConsumeSourceCount == right.ConsumeSourceCount &&
-        left.GrantCrystal == right.GrantCrystal &&
-        left.GrantShardCount == right.GrantShardCount &&
-        left.ShardElement == right.ShardElement &&
-        left.AwardExperience == right.AwardExperience &&
-        Math.Abs(left.EffectiveFailureChance - right.EffectiveFailureChance) < 0.0000001d;
-
     private static RefinementTransactionPlan EmptyPlan(string diagnostic) =>
         new(RefinementTransactionPlanOutcome.RefinementRejected, 0, null, 0, null, false, 0d, diagnostic);
 
     private sealed class OperationRecord
     {
-        internal OperationRecord(RefinementTransactionPlan plan) => Plan = plan;
+        internal OperationRecord(RefinementIntent intent, RefinementTransactionPlan plan)
+        {
+            Intent = intent;
+            Plan = plan;
+        }
+
+        internal RefinementIntent Intent { get; }
         internal RefinementTransactionPlan Plan { get; }
         internal bool Applied { get; set; }
+    }
+
+    private sealed class RefinementIntent : IEquatable<RefinementIntent>
+    {
+        private RefinementIntent(
+            ElementalAlignment element,
+            CrystalTier tier,
+            int skillLevel,
+            string stationId,
+            long rollBits,
+            long maximumFailureReductionBits)
+        {
+            Element = element;
+            Tier = tier;
+            SkillLevel = skillLevel;
+            StationId = stationId;
+            RollBits = rollBits;
+            MaximumFailureReductionBits = maximumFailureReductionBits;
+        }
+
+        private ElementalAlignment Element { get; }
+        private CrystalTier Tier { get; }
+        private int SkillLevel { get; }
+        private string StationId { get; }
+        private long RollBits { get; }
+        private long MaximumFailureReductionBits { get; }
+
+        internal static RefinementIntent From(RefinementTransactionRequest request)
+        {
+            if (request is null || request.Refinement is null)
+                return new RefinementIntent(default, default, 0, string.Empty, 0L, 0L);
+
+            var refinement = request.Refinement;
+            return new RefinementIntent(
+                refinement.Input.Element,
+                refinement.Input.Tier,
+                refinement.CrystalShapingSkillLevel,
+                refinement.StationId ?? string.Empty,
+                BitConverter.DoubleToInt64Bits(refinement.Roll),
+                BitConverter.DoubleToInt64Bits(refinement.MaximumFailureReduction));
+        }
+
+        public bool Equals(RefinementIntent other)
+        {
+            if (ReferenceEquals(other, null)) return false;
+            return Element == other.Element &&
+                   Tier == other.Tier &&
+                   SkillLevel == other.SkillLevel &&
+                   string.Equals(StationId, other.StationId, StringComparison.Ordinal) &&
+                   RollBits == other.RollBits &&
+                   MaximumFailureReductionBits == other.MaximumFailureReductionBits;
+        }
+
+        public override bool Equals(object obj) => obj is RefinementIntent other && Equals(other);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hash = (int)Element;
+                hash = (hash * 397) ^ (int)Tier;
+                hash = (hash * 397) ^ SkillLevel;
+                hash = (hash * 397) ^ StringComparer.Ordinal.GetHashCode(StationId);
+                hash = (hash * 397) ^ RollBits.GetHashCode();
+                hash = (hash * 397) ^ MaximumFailureReductionBits.GetHashCode();
+                return hash;
+            }
+        }
     }
 }
