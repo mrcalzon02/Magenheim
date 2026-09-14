@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Jotunn.Utils;
 using Magenheim.Core.Socketing;
 
 namespace Magenheim.Runtime;
@@ -14,7 +15,10 @@ internal static class ItemSocketAdapter
     {
         if (item is null) throw new ArgumentNullException(nameof(item));
         var prefabName = item.m_dropPrefab ? item.m_dropPrefab.name : item.m_shared.m_name;
-        return new EquipmentDescriptor(prefabName, modOrigin ?? string.Empty, Classify(item));
+        var origin = string.IsNullOrWhiteSpace(modOrigin)
+            ? ResolveModOrigin(prefabName)
+            : modOrigin.Trim();
+        return new EquipmentDescriptor(prefabName, origin, Classify(item));
     }
 
     internal static bool TryRead(ItemDrop.ItemData item, out SocketState state, out string diagnostic)
@@ -56,5 +60,14 @@ internal static class ItemSocketAdapter
             return EquipmentCategory.Weapon;
 
         return EquipmentCategory.Unknown;
+    }
+
+    private static string ResolveModOrigin(string prefabName)
+    {
+        if (string.IsNullOrWhiteSpace(prefabName))
+            return string.Empty;
+
+        var modPrefab = ModQuery.GetPrefab(prefabName);
+        return modPrefab?.SourceMod?.GUID ?? "vanilla";
     }
 }
