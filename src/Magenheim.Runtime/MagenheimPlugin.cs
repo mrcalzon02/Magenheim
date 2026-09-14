@@ -43,6 +43,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 _services.GeodeOpeningOperations,
                 _services.RefinementOperations,
                 _services.SocketOperations,
+                _services.SocketExtractionOperations,
                 Logger);
 
             WorkshopOperationsRuntime.Configure(_services, _authoritySynchronizer, Logger);
@@ -65,7 +66,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
-                "Definition authority synchronization, session-scoped geode/refinement/socket replay protection, definition-driven intact geode items, " +
+                "Definition authority synchronization, session-scoped geode/refinement/socket/extraction replay protection, definition-driven intact geode items, " +
                 "fingerprinted geode placement configuration, additive geode vegetation registration, local-host geology workshop operations, " +
                 "and deterministic Earth shard recombination are configured. Remote-client operation RPC, socket workstation UI, and socket effect application remain gated pending implementation/validation.");
         }
