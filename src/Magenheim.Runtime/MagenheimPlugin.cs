@@ -25,6 +25,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private WorkshopRegistrar? _workshopRegistrar;
     private WorkshopOperationRegistrar? _workshopOperationRegistrar;
     private ShardRecipeRegistrar? _shardRecipeRegistrar;
+    private SocketWorkstationOverlay? _socketWorkstationOverlay;
     private Harmony? _harmony;
 
     private void Awake()
@@ -53,6 +54,13 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
             WorkshopOperationsRuntime.Configure(_services, _authoritySynchronizer, Logger);
             SocketEffectsRuntime.Configure(effectiveDefinitions, Logger);
+
+            // The socket management implementation is a real workstation surface, not merely
+            // dormant source. Attach it to the plugin GameObject so Unity invokes OnGUI while
+            // the local player is actively using the Geologist's Workstation.
+            _socketWorkstationOverlay = gameObject.AddComponent<SocketWorkstationOverlay>();
+            _socketWorkstationOverlay.Configure(_services, _authoritySynchronizer, Logger);
+
             _harmony = new Harmony(PluginGuid + ".gameplay");
             _harmony.PatchAll(typeof(WorkshopCraftingPatch));
             _harmony.PatchAll(typeof(SocketDamagePatch));
@@ -78,8 +86,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
                 "Definition authority synchronization, adaptive socket eligibility/configured mod-origin discovery, session-scoped geode/refinement/socket/extraction replay protection, " +
                 "definition-driven intact geode items, fingerprinted geode placement and socket-effect balance configuration, additive geode vegetation registration, " +
-                "local-host geology workshop operations, deterministic Earth shard recombination, and per-item socket damage/armor/block/carry/mining effect adapters are configured. " +
-                "Remote-client operation RPC, socket workstation mutation UI, knockback/stagger runtime channels, and persistence multiplayer validation remain gated pending implementation/validation.");
+                "local-host geology workshop operations, deterministic Earth shard recombination, active local-host socket workstation management, and per-item socket damage/armor/block/carry/mining effect adapters are configured. " +
+                "Remote-client operation RPC, knockback/stagger runtime channels, and persistence multiplayer validation remain gated pending implementation/validation.");
         }
         catch (Exception exception)
         {
@@ -96,6 +104,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
         _workshopRegistrar?.Dispose();
         _geodeWorldgenRegistrar?.Dispose();
         _geodeItemRegistrar?.Dispose();
+        if (_socketWorkstationOverlay is not null)
+            Destroy(_socketWorkstationOverlay);
         _harmony?.UnpatchSelf();
     }
 }
