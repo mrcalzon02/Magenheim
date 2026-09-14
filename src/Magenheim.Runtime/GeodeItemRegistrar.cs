@@ -3,7 +3,6 @@ using System.Linq;
 using BepInEx.Logging;
 using Jotunn.Entities;
 using Jotunn.Managers;
-using Magenheim.Core;
 using Magenheim.Core.Definitions;
 
 namespace Magenheim.Runtime;
@@ -74,7 +73,8 @@ internal sealed class GeodeItemRegistrar : IDisposable
 
         var customItem = new CustomItem(geode.PrefabName, PlaceholderBasePrefab);
         var shared = customItem.ItemDrop.m_itemData.m_shared;
-        var dominant = ElementVisualPalette.DominantElement(geode);
+        var variant = ElementVisualPalette.GeodeVariant(geode);
+        var tint = ElementVisualPalette.GeodeTint(geode);
 
         shared.m_name = BuildDisplayName(geode);
         shared.m_description = BuildDescription(geode);
@@ -83,31 +83,15 @@ internal sealed class GeodeItemRegistrar : IDisposable
         shared.m_weight = DefaultWeight;
         shared.m_value = 0;
         shared.m_dlc = string.Empty;
-
-        if (dominant == ElementalAlignment.Earth && geode.ElementWeights.Count == 1)
-        {
-            shared.m_icons = new[] { EarthAssets.Icon("geode") };
-            EarthAssets.ReplaceVisual(customItem.ItemPrefab, "geode");
-        }
-        else
-        {
-            var variant = "geode-" + ElementVisualPalette.Variant(dominant);
-            var tint = ElementVisualPalette.Tint(dominant);
-            shared.m_icons = new[] { EarthAssets.Icon("geode", variant, tint) };
-            EarthAssets.ReplaceVisual(customItem.ItemPrefab, "geode", variant: variant, tint: tint);
-        }
+        shared.m_icons = new[] { EarthAssets.Icon("geode", variant, tint) };
+        EarthAssets.ReplaceVisual(customItem.ItemPrefab, "geode", variant: variant, tint: tint);
 
         if (!ItemManager.Instance.AddItem(customItem))
             throw new InvalidOperationException($"Jotunn refused geode item '{geode.PrefabName}'.");
     }
 
-    private static string BuildDisplayName(GeodeDefinition geode)
-    {
-        var biome = ElementVisualPalette.DisplayBiome(geode.Biome);
-        if (geode.ElementWeights.Count == 1)
-            return $"{biome} {geode.ElementWeights[0].Element} Geode";
-        return $"{biome} Geode";
-    }
+    private static string BuildDisplayName(GeodeDefinition geode) =>
+        $"{ElementVisualPalette.DisplayBiome(geode.Biome)} Geode";
 
     private static string BuildDescription(GeodeDefinition geode)
     {
