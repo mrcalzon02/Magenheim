@@ -96,29 +96,53 @@ internal static class JotunnWorldgenAdapter
 
     private static Heightmap.BiomeArea ParseAllBiomeArea()
     {
-        // Prefer an explicit runtime alias when one exists. Jotunn/Valheim versions have exposed
-        // both Everything and Everywhere for the combined biome-area identity.
-        if (TryParseDefinedBiomeArea("Everything", out var combined) ||
-            TryParseDefinedBiomeArea("Everywhere", out combined))
-        {
-            return combined;
-        }
-
-        // A flags enum does not have to declare a named member for every valid combination.
-        // Compose All from the two authoritative component names so Magenheim remains compatible
-        // with runtimes that expose Median and Edge but no Everything/Everywhere alias.
+        // Resolve the authoritative components first. A runtime alias is only acceptable if it
+        // demonstrably contains both distinct component bits; trusting a familiar enum name alone
+        // could silently map Magenheim's All intent onto a changed or malformed runtime value.
         var median = ParseBiomeArea("Median");
         var edge = ParseBiomeArea("Edge");
-        var composed = median | edge;
 
-        if (composed.Equals(default(Heightmap.BiomeArea)))
+        if (median.Equals(default(Heightmap.BiomeArea)) ||
+            edge.Equals(default(Heightmap.BiomeArea)) ||
+            median.Equals(edge))
         {
             throw new InvalidOperationException(
-                "The current Valheim biome-area enum resolved Median and Edge to an empty combined value.");
+                $"The current Valheim biome-area enum does not expose distinct non-empty Median and Edge values " +
+                $"(Median={median}, Edge={edge}). Magenheim will not guess an All mapping.");
         }
 
+        var composed = median | edge;
+        if (composed.Equals(default(Heightmap.BiomeArea)) ||
+            !ContainsArea(composed, median) ||
+            !ContainsArea(composed, edge))
+        {
+            throw new InvalidOperationException(
+                $"The current Valheim biome-area enum could not compose a valid Median|Edge value " +
+                $"(Median={median}, Edge={edge}, composed={composed}).");
+        }
+
+        // Prefer a named runtime alias only when it is semantically equivalent to the composed
+        // components. Extra bits are rejected so a future broader 'Everything' value cannot make
+        // Magenheim geodes appear in an area category that the validated core did not request.
+        if (TryParseDefinedBiomeArea("Everything", out var alias) ||
+            TryParseDefinedBiomeArea("Everywhere", out alias))
+        {
+            if (!alias.Equals(composed))
+            {
+                throw new InvalidOperationException(
+                    $"The current Valheim biome-area alias '{alias}' is not equivalent to Median|Edge '{composed}'. " +
+                    "Magenheim will fail closed rather than broaden or narrow placement semantics.");
+            }
+
+            return alias;
+        }
+
+        // Flags enums do not need a named value for every valid combination.
         return composed;
     }
+
+    private static bool ContainsArea(Heightmap.BiomeArea combined, Heightmap.BiomeArea component) =>
+        (combined & component).Equals(component);
 
     private static Heightmap.BiomeArea ParseBiomeArea(params string[] candidates)
     {
