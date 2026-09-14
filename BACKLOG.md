@@ -12,10 +12,12 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Restore canonical crystal/refinement domain authority with Rough -> Simple -> Crystal -> Advanced -> Master.
 - [x] Retain additive-only spawn-area validation and non-destructive worldgen planning from divergent work.
 - [x] Add deterministic standalone tests for refinement and worldgen planning.
-- [x] Add a `netstandard2.1` `IsExternalInit` compatibility shim for record-based core models.
+- [x] Add an `IsExternalInit` compatibility shim for record-based core models.
+- [x] Align `Magenheim.Core` to `netstandard2.0` so it can be consumed by the .NET Framework 4.6.2 Valheim/Jötunn runtime while remaining consumable by the .NET 8 test harness.
 - [ ] Execute the standalone tests with a .NET 8 SDK and record the observed result.
 - [ ] Compile `Magenheim.Core` with warnings as errors.
-- [ ] Add the BepInEx/Jötunn plugin bootstrap on `main`.
+- [x] Add the thin BepInEx/Jötunn plugin bootstrap on `main`, with hard Jötunn dependency and everyone-must-have/minor-version network declaration.
+- [ ] Compile the runtime project against Jötunn 2.30.0 and a current Valheim development environment.
 - [ ] Add strict config/data loading for refinement and geode definitions.
 - [ ] Register Crystal Shaping under permanent ID `magenheim.crystal_shaping`.
 - [ ] Add server-authoritative definition synchronization before gameplay mutations are enabled.
