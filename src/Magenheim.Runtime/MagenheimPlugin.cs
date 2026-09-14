@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.17";
+    internal const string PluginVersion = "0.0.18";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -26,6 +26,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private WorkshopOperationRegistrar? _workshopOperationRegistrar;
     private ShardRecipeRegistrar? _shardRecipeRegistrar;
     private FireStaffRegistrar? _fireStaffRegistrar;
+    private FrostStaffRegistrar? _frostStaffRegistrar;
     private SocketWorkstationOverlay? _socketWorkstationOverlay;
     private Harmony? _harmony;
 
@@ -82,14 +83,16 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _shardRecipeRegistrar.Register();
             _fireStaffRegistrar = new FireStaffRegistrar(Logger);
             _fireStaffRegistrar.Register();
+            _frostStaffRegistrar = new FrostStaffRegistrar(Logger);
+            _frostStaffRegistrar.Register();
 
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
                 "Player content now includes eight biome geodes, eight five-tier elemental crystal families, elemental shard recombination, " +
-                "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and the first four-tier usable staff family: " +
-                "Fire Ember Dart, Firebolt, Flameburst, and Meteorfall barrage. " +
-                "The Fire staff family progresses from stamina-only casting through mixed stamina/Eitr into a Master Eitr barrage; remaining elemental staff families are the next content expansion.");
+                "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and two complete four-tier staff families. " +
+                "Fire provides Ember Dart, Firebolt, Flameburst, and Meteorfall. Frost provides Water Dart, Frost Lance, Ice Volley, and Rime Torrent, " +
+                "with native frost buildup preserved while each tier changes projectile velocity, spread, force, stagger, burst count, and resource economy.");
         }
         catch (Exception exception)
         {
@@ -100,6 +103,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
     private void OnDestroy()
     {
+        _frostStaffRegistrar?.Dispose();
         _fireStaffRegistrar?.Dispose();
         _shardRecipeRegistrar?.Dispose();
         _workshopOperationRegistrar?.Dispose();
