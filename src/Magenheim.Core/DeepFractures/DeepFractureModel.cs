@@ -50,14 +50,32 @@ public enum ResourceState
     HeartReward
 }
 
-public enum ConnectionState
+public enum DungeonConnectionRole
+{
+    MainRoute,
+    Branch,
+    Loop,
+    Shortcut
+}
+
+public enum DungeonConnectorKind
+{
+    FaultCorridor,
+    ShortPassage,
+    VerticalShaft,
+    Bridge,
+    AncientLift,
+    CrystalTransit,
+    ReopenedFracture
+}
+
+public enum DungeonConnectionState
 {
     Open,
-    Blocked,
-    Collapsed,
+    Dormant,
+    Opened,
     Locked,
-    ShortcutDormant,
-    ShortcutOpened
+    OneWayForward
 }
 
 public enum EncounterRole
@@ -215,13 +233,23 @@ public sealed record DungeonModuleState(
     IReadOnlyList<ElementalAlignment> ElementalStates,
     StructuralDamageState StructuralDamage,
     OccupationProfile Occupation,
-    ResourceState Resources,
-    ConnectionState Connections);
+    ResourceState Resources);
+
+public sealed record DungeonConnection(
+    string Id,
+    string FromModuleId,
+    string ToModuleId,
+    DungeonConnectionRole Role,
+    DungeonConnectorKind Kind,
+    DungeonConnectionState State,
+    bool IsBidirectional,
+    bool RequiredForHeartReachability);
 
 public sealed record DeepFractureDungeonPlan(
     DeepFractureScale Scale,
     int Seed,
-    IReadOnlyList<DungeonModuleState> Modules);
+    IReadOnlyList<DungeonModuleState> Modules,
+    IReadOnlyList<DungeonConnection> Connections);
 
 public sealed record DeepFracturePlanValidationResult(
     IReadOnlyList<string> Errors)

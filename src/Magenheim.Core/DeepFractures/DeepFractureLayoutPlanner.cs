@@ -66,7 +66,8 @@ public sealed record DeepFractureGenerationPolicy(
 public sealed record DeepFractureGenerationRequest(
     DeepFractureScale Scale,
     int Seed,
-    DeepFractureGenerationPolicy? Policy = null);
+    DeepFractureGenerationPolicy? Policy = null,
+    DeepFractureConnectionPolicy? ConnectionPolicy = null);
 
 public static class DeepFractureLayoutPlanner
 {
@@ -140,29 +141,19 @@ public static class DeepFractureLayoutPlanner
         var reuseCounts = new Dictionary<string, int>(StringComparer.Ordinal);
         var modules = new List<DungeonModuleState>(moduleCount);
 
-        AddModule(
-            modules,
-            pieceIndex["DF-01"],
-            DungeonDepthBand.UpperFracture,
-            request.Seed,
-            random,
-            policy,
-            reuseCounts);
-
+        AddModule(modules, pieceIndex["DF-01"], DungeonDepthBand.UpperFracture, request.Seed, random, policy, reuseCounts);
         AddBandModules(modules, DungeonDepthBand.UpperFracture, bandCounts.Upper, request.Seed, random, policy, reuseCounts);
         AddBandModules(modules, DungeonDepthBand.MiddleWorks, bandCounts.Middle, request.Seed, random, policy, reuseCounts);
         AddBandModules(modules, DungeonDepthBand.DeepDomains, bandCounts.Deep, request.Seed, random, policy, reuseCounts);
+        AddModule(modules, pieceIndex["DF-20"], DungeonDepthBand.Heart, request.Seed, random, policy, reuseCounts);
 
-        AddModule(
-            modules,
-            pieceIndex["DF-20"],
-            DungeonDepthBand.Heart,
+        var structuralPlan = new DeepFractureDungeonPlan(
+            request.Scale,
             request.Seed,
-            random,
-            policy,
-            reuseCounts);
+            modules.ToArray(),
+            Array.Empty<DungeonConnection>());
 
-        var plan = new DeepFractureDungeonPlan(request.Scale, request.Seed, modules.ToArray());
+        var plan = DeepFractureConnectionPlanner.Attach(structuralPlan, request.ConnectionPolicy);
         var validation = DeepFracturePlanValidator.Validate(plan);
         if (!validation.IsValid)
             throw new InvalidOperationException("Generated Deep Fracture plan failed validation: " + string.Join(" | ", validation.Errors));
@@ -239,8 +230,7 @@ public static class DeepFractureLayoutPlanner
             elements,
             structuralDamage,
             occupation,
-            resources,
-            ConnectionState.Open));
+            resources));
     }
 
     private static IReadOnlyList<ElementalAlignment> SelectElements(
@@ -391,36 +381,5 @@ public static class DeepFractureLayoutPlanner
             throw new InvalidOperationException("Depth-band policy cannot produce at least one Upper, Middle, and Deep district.");
 
         return (upper, middle, deep);
-    }
-
-    private sealed class DeterministicSequence
-    {
-        private uint _state;
-
-        public DeterministicSequence(int seed)
-        {
-            _state = unchecked((uint)seed) ^ 0x9E3779B9u;
-            if (_state == 0u)
-                _state = 0xA341316Cu;
-        }
-
-        public int NextInt(int exclusiveMaximum)
-        {
-            if (exclusiveMaximum <= 0)
-                throw new ArgumentOutOfRangeException(nameof(exclusiveMaximum), "Exclusive maximum must be positive.");
-            return (int)(NextUInt() % (uint)exclusiveMaximum);
-        }
-
-        public double NextDouble() => NextUInt() / ((double)uint.MaxValue + 1d);
-
-        private uint NextUInt()
-        {
-            var value = _state;
-            value ^= value << 13;
-            value ^= value >> 17;
-            value ^= value << 5;
-            _state = value;
-            return value;
-        }
     }
 }

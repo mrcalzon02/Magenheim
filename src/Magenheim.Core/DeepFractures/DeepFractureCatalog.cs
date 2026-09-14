@@ -135,6 +135,7 @@ public static class DeepFracturePlanValidator
 
         var pieceIndex = DeepFractureCatalog.CreatePieceIndex();
         var instanceIds = new HashSet<string>(StringComparer.Ordinal);
+        var moduleIndexById = new Dictionary<string, int>(StringComparer.Ordinal);
         var reuseCounts = new Dictionary<string, int>(StringComparer.Ordinal);
         var descentCount = 0;
         var heartCount = 0;
@@ -150,7 +151,13 @@ public static class DeepFracturePlanValidator
             }
 
             if (string.IsNullOrWhiteSpace(module.InstanceId) || !instanceIds.Add(module.InstanceId))
+            {
                 errors.Add($"Deep Fracture module instance ID '{module.InstanceId}' is empty or duplicated.");
+            }
+            else
+            {
+                moduleIndexById[module.InstanceId] = index;
+            }
 
             if (!pieceIndex.TryGetValue(module.PieceFamilyId, out var piece))
             {
@@ -211,6 +218,141 @@ public static class DeepFracturePlanValidator
                 errors.Add("DF-20 Confluence Heart must be the final major module.");
         }
 
+        ValidateConnections(plan, moduleIndexById, errors);
         return new DeepFracturePlanValidationResult(errors);
     }
+
+    private static void ValidateConnections(
+        DeepFractureDungeonPlan plan,
+        IReadOnlyDictionary<string, int> moduleIndexById,
+        List<string> errors)
+    {
+        if (plan.Connections is null)
+        {
+            errors.Add("Deep Fracture plan requires a connection graph.");
+            return;
+        }
+
+        if (plan.Modules.Count > 1 && plan.Connections.Count == 0)
+        {
+            errors.Add("Deep Fracture plan with multiple modules cannot have an empty connection graph.");
+            return;
+        }
+
+        var connectionIds = new HashSet<string>(StringComparer.Ordinal);
+        var pairs = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var connection in plan.Connections)
+        {
+            if (connection is null)
+            {
+                errors.Add("Deep Fracture connection graph cannot contain a null connection.");
+                continue;
+            }
+
+            if (string.IsNullOrWhiteSpace(connection.Id) || !connectionIds.Add(connection.Id))
+                errors.Add($"Deep Fracture connection ID '{connection.Id}' is empty or duplicated.");
+            else if (!connection.Id.StartsWith("magenheim.fracture.", StringComparison.Ordinal))
+                errors.Add($"Deep Fracture connection ID '{connection.Id}' must use the magenheim.fracture namespace.");
+
+            if (!moduleIndexById.TryGetValue(connection.FromModuleId, out var fromIndex))
+            {
+                errors.Add($"Connection '{connection.Id}' references unknown source module '{connection.FromModuleId}'.");
+                continue;
+            }
+            if (!moduleIndexById.TryGetValue(connection.ToModuleId, out var toIndex))
+            {
+                errors.Add($"Connection '{connection.Id}' references unknown destination module '{connection.ToModuleId}'.");
+                continue;
+            }
+            if (fromIndex == toIndex)
+            {
+                errors.Add($"Connection '{connection.Id}' cannot connect a module to itself.");
+                continue;
+            }
+
+            var pair = PairKey(connection.FromModuleId, connection.ToModuleId);
+            if (!pairs.Add(pair))
+                errors.Add($"Connection '{connection.Id}' duplicates module pair '{pair}'.");
+
+            if (connection.Role == DungeonConnectionRole.MainRoute)
+            {
+                if (!connection.RequiredForHeartReachability)
+                    errors.Add($"Main-route connection '{connection.Id}' must be marked required for Heart reachability.");
+                if (fromIndex >= toIndex)
+                    errors.Add($"Main-route connection '{connection.Id}' must advance through module order.");
+            }
+            else if (connection.RequiredForHeartReachability)
+            {
+                errors.Add($"Only main-route connections may be required for Heart reachability; '{connection.Id}' is {connection.Role}.");
+            }
+
+            if (connection.RequiredForHeartReachability
+                && connection.State != DungeonConnectionState.Open
+                && connection.State != DungeonConnectionState.Opened)
+                errors.Add($"Required connection '{connection.Id}' cannot begin in non-traversable state {connection.State}.");
+
+            if (connection.Role == DungeonConnectionRole.Shortcut)
+            {
+                if (connection.State != DungeonConnectionState.Dormant && connection.State != DungeonConnectionState.Opened)
+                    errors.Add($"Shortcut '{connection.Id}' must be Dormant or Opened.");
+                if (!connection.IsBidirectional)
+                    errors.Add($"Shortcut '{connection.Id}' must support return travel once opened.");
+            }
+        }
+
+        if (plan.Modules.Count == 0 || !moduleIndexById.ContainsKey(plan.Modules[0].InstanceId))
+            return;
+
+        var entranceId = plan.Modules[0].InstanceId;
+        var heartId = plan.Modules[plan.Modules.Count - 1].InstanceId;
+        var openReachable = Traverse(plan, entranceId, connection => IsInitiallyTraversable(connection));
+        foreach (var module in plan.Modules)
+        {
+            if (!openReachable.Contains(module.InstanceId))
+                errors.Add($"Module '{module.InstanceId}' is not reachable from the entrance through initially traversable connections.");
+        }
+
+        var requiredReachable = Traverse(plan, entranceId, connection => connection.RequiredForHeartReachability && IsInitiallyTraversable(connection));
+        if (!requiredReachable.Contains(heartId))
+            errors.Add("Confluence Heart is not reachable from the entrance through required main-route connections.");
+    }
+
+    private static HashSet<string> Traverse(
+        DeepFractureDungeonPlan plan,
+        string startModuleId,
+        Func<DungeonConnection, bool> includeConnection)
+    {
+        var visited = new HashSet<string>(StringComparer.Ordinal) { startModuleId };
+        var queue = new Queue<string>();
+        queue.Enqueue(startModuleId);
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            foreach (var connection in plan.Connections)
+            {
+                if (!includeConnection(connection))
+                    continue;
+
+                string? next = null;
+                if (string.Equals(connection.FromModuleId, current, StringComparison.Ordinal))
+                    next = connection.ToModuleId;
+                else if (connection.IsBidirectional && string.Equals(connection.ToModuleId, current, StringComparison.Ordinal))
+                    next = connection.FromModuleId;
+
+                if (next is not null && visited.Add(next))
+                    queue.Enqueue(next);
+            }
+        }
+
+        return visited;
+    }
+
+    private static bool IsInitiallyTraversable(DungeonConnection connection)
+        => connection.State == DungeonConnectionState.Open
+            || connection.State == DungeonConnectionState.Opened
+            || connection.State == DungeonConnectionState.OneWayForward;
+
+    private static string PairKey(string left, string right)
+        => string.CompareOrdinal(left, right) <= 0 ? left + "|" + right : right + "|" + left;
 }
