@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.40";
+    internal const string PluginVersion = "0.0.41";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -29,6 +29,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private CrystalBannerRegistrar? _crystalBannerRegistrar;
     private CrystalSentinelRegistrar? _crystalSentinelRegistrar;
     private CrystalBedRegistrar? _crystalBedRegistrar;
+    private CrystallineIceBoxRegistrar? _crystallineIceBoxRegistrar;
     private CrystalWeaponRegistrar? _crystalWeaponRegistrar;
     private CrystalAlchemyRegistrar? _crystalAlchemyRegistrar;
     private WorkshopOperationRegistrar? _workshopOperationRegistrar;
@@ -102,6 +103,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _crystalSentinelRegistrar.Register();
             _crystalBedRegistrar = new CrystalBedRegistrar(Logger, Config);
             _crystalBedRegistrar.Register();
+            _crystallineIceBoxRegistrar = new CrystallineIceBoxRegistrar(Logger, Config);
+            _crystallineIceBoxRegistrar.Register();
             _crystalWeaponRegistrar = new CrystalWeaponRegistrar(Logger);
             _crystalWeaponRegistrar.Register();
             _geodeItemRegistrar = new GeodeItemRegistrar(effectiveDefinitions, Logger);
@@ -138,7 +141,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 "Player content includes eight biome geodes, eight five-tier elemental crystal families, the full geology workstation refinement ladder, " +
                 "20 geology/crystal furniture and decor pieces, a rainbow Crystal Hearth, three crystal beam sizes, three crystal foundation sizes, " +
                 "24 elemental crystal banners, a floating Crystal Sentinel with eight shard-refined elemental munition types, eight alignment-locked water-filled Crystal Beds, " +
-                "a 10-piece high-durability physical crystal weapon set, deliberate Rough-crystal/shard grinding, Crystal Dust, Prismatic Eitrwine fermentation, " +
+                "a configurable persistent Crystalline Ice Box, a 10-piece high-durability physical crystal weapon set, deliberate Rough-crystal/shard grinding, Crystal Dust, Prismatic Eitrwine fermentation, " +
                 "resolved socket bonuses with server-authoritative remote socket/install/extraction requests, and eight four-tier staff families with distinct runtime effects. " +
                 "Fire owns fireburst/scorch/meteor burn terrain; Frost owns Brittle and Rime fields; Storm owns secondary discharges; " +
                 "Earth owns Fractured/Shattered Armor and Tremor; Venom owns corrosion; Radiance owns hard-light/flash/sanctuary payloads; " +
@@ -167,6 +170,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
         _geodeWorldgenRegistrar?.Dispose();
         _geodeItemRegistrar?.Dispose();
         _crystalWeaponRegistrar?.Dispose();
+        _crystallineIceBoxRegistrar?.Dispose();
         _crystalBedRegistrar?.Dispose();
         _crystalSentinelRegistrar?.Dispose();
         _crystalBannerRegistrar?.Dispose();
