@@ -39,6 +39,8 @@ internal static class Program
         DefinitionSnapshotRejectsForeignCompatibilityExclusion();
         DefinitionSnapshotRejectsDestructiveCompatibilityPolicy();
 
+        _assertions += DefinitionAuthorityTests.Run();
+
         Console.WriteLine($"Magenheim.Core.Tests: {_assertions} assertions passed.");
     }
 
