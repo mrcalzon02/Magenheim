@@ -23,20 +23,23 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Restrict compatibility exclusions to Magenheim-owned registration/prefab namespaces so configuration cannot target foreign content.
 - [x] Make definition duplicate detection and exclusion normalization obey the configured exact/case-insensitive identity comparer.
 - [x] Canonicalize case-insensitive compatibility exclusions in the definition fingerprint while preserving exact-mode casing authority.
-- [x] Reconcile GitHub repository metadata to authoritative `main`; the redundant legacy `master` ref is no longer present.
+- [x] Reconcile the former `main`/`master` split and make `main` authoritative.
+- [ ] Delete redundant `radiance-content`, `tmp-radiance-content`, and `__delete_me__` refs. All three point to `a8b6947c696e4da71e4837ff1b731ac53e98a387`, which is already contained in `main`; the current connector cannot delete branch refs.
 - [x] Advance definition schema to 3 so geode placement behavior is validated, fingerprinted, and synchronized with the rest of gameplay/worldgen authority.
 - [x] Add server-side BepInEx overrides for fingerprinted geode placement fields and route them through full definition revalidation before use.
-- [x] Execute the standalone tests with a .NET 8 SDK and record the observed result.
-- [x] Compile `Magenheim.Core` with warnings as errors.
+- [x] Execute the standalone tests with a .NET 8 SDK and record the observed result for the earlier admitted build.
+- [x] Compile `Magenheim.Core` with warnings as errors for the earlier admitted build.
 - [x] Add the thin BepInEx/Jötunn plugin bootstrap on `main`, with hard Jötunn dependency and everyone-must-have network declaration.
-- [x] Compile the runtime project against Jötunn 2.30.0 and a current Valheim development environment.
+- [x] Compile the runtime project against Jötunn 2.30.0 and a current Valheim development environment for the earlier admitted build.
+- [ ] Rebuild current 0.0.23 source and rerun the full deterministic suite after socket gameplay-authority changes.
 - [x] Add strict schema-validated static definition loading with deterministic definition fingerprinting and hard failure on malformed/unknown content.
 - [x] Add controlled balance/compatibility/world-placement overrides on top of the validated static definition snapshot; effective authority is always revalidated and re-fingerprinted.
 - [ ] Add deterministic tests for runtime JSON loader failure cases once a compilable runtime test environment is available.
 - [x] Add deterministic schema/fingerprint authority comparison with fail-closed mutation admission.
-- [x] Register a two-way Jötunn definition-authority handshake and reset cached admission per sync session.
-- [x] Assign a strictly increasing server-local session generation and retire prior geode operation replay records for reused peers.
-- [ ] Compile and execute the definition-authority synchronization path in a current Valheim/Jötunn environment and repair any API/serialization defect before runtime admission.
+- [x] Register a two-way Jötunn gameplay-authority handshake and reset cached admission per sync session.
+- [x] Include socket eligibility/configuration policy in the synchronized gameplay fingerprint so peers with different socket rules cannot authorize persistent mutations.
+- [x] Assign a strictly increasing server-local session generation and retire prior operation replay records for reused peers.
+- [ ] Compile and execute the updated gameplay-authority synchronization path in a current Valheim/Jötunn environment and repair any API/serialization defect before runtime admission.
 - [x] Register Crystal Shaping under permanent ID `magenheim.crystal_shaping`.
 - [ ] Confirm the live console diagnostic `raiseskill magenheim.crystal_shaping 1`; the spaced display name is not a valid `raiseskill` argument.
 
@@ -57,28 +60,32 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Add a dedicated Magenheim-owned mineable geode world-object prefab derived as `<item prefab>_World`, with persistent network state and exactly one intact-geode destruction drop.
 - [x] Collapse world-prefab and vegetation registration into one additive path because Jötunn `AddCustomVegetation` registers the prefab itself.
 - [ ] Compile and validate the mineable geode world-object/vegetation path in current Valheim/Jötunn, including exactly-one intact drop, natural placement, host/client persistence, and proof vanilla `Rock_4` remains unchanged.
-- [x] Implement Geologist's Workstation registration and building recipe (0.0.16; live world test now confirms the station exists and opens its UI).
+- [x] Implement Geologist's Workstation registration and building recipe (0.0.16; live world test confirms the station exists and opens its UI).
 - [x] Record live-world test 1 confirming station UI access, direct Earth inventory-item spawning, and direct custom world-geode geometry.
 - [x] Normalize Magenheim-owned cloned materials to opaque blend/depth state at the authoritative visual-loading boundary after the live world geode rendered translucent.
 - [ ] Rebuild/install and confirm the spawned world geode is opaque under live Valheim lighting after the material-state repair.
 - [ ] Repair the Geologist's Workstation iron-band geometry in the generator and checked-in generated mesh together; current bands intersect the tabletop and share visible planes.
-- [ ] Bind authoritative geode opening to actual atomic inventory mutation after authority/replay/capacity admission.
+- [ ] Revalidate the current authority-gated geode-opening/refinement workstation operation binding in live Valheim after the source advanced beyond the first-world-test baseline.
 - [x] Register Earth Rough/Simple/Crystal/Advanced/Master items and Earth Crystal Shards.
-- [ ] Bind valid refinement attempts to atomic inventory transactions and Crystal Shaping XP; every server mutation must require successful definition-authority admission for the requesting peer.
-- [ ] Expose the authority-gated geode-opening/refinement operations through the Geologist's Workstation UI; an empty Craft panel is currently expected because no runtime operation binding exists.
-- [ ] Verify a failed transaction consumes exactly one source and returns exactly the configured matching shards.
+- [ ] Verify a failed refinement transaction consumes exactly one source and returns exactly the configured matching shards in live runtime.
 - [ ] Verify disposable-world generation, save/load, host/client, and dedicated-server behavior before production admission.
 
 ## P2 — adaptive sockets
 
-- [ ] Define namespaced persistent socket metadata.
-- [ ] Discover eligible equipment adaptively from item category/capabilities and metadata.
-- [ ] Add configurable include/exclude rules by item, prefab, category, and mod origin.
-- [ ] Map crystal bonuses by equipment category without replacing external prefabs or recipes.
-- [ ] Add an explicit Geologist's Workstation socket-management operation; do not mutate shared item prefabs as a shortcut.
-- [ ] Preserve unknown foreign custom-data keys.
-- [ ] Validate persistence, multiplayer authority, transfer, death/drop, repair, upgrade, and mod-removal behavior.
+- [x] Define namespaced persistent per-item socket metadata under `magenheim.sockets.v1` without changing shared item/prefab definitions.
+- [x] Discover eligible equipment adaptively from runtime item category with a fail-safe Unknown result; unknown equipment requires explicit compatibility opt-in.
+- [x] Add configurable include/exclude rules by shared item identity, prefab, category, and mod origin, with exact/case-insensitive identity semantics.
+- [x] Enable Jötunn ModQuery before equipment classification so mod-origin compatibility rules can resolve non-Jötunn as well as Jötunn-added prefabs.
+- [x] Map crystal bonuses by equipment category through Magenheim-owned runtime effect patches without replacing external prefabs or recipes.
+- [x] Add an explicit Geologist's Workstation socket-management surface for local-host operations; mutations remain per-item metadata operations.
+- [x] Preserve unknown foreign custom-data keys when writing or clearing Magenheim socket metadata.
+- [x] Add authority/replay-gated socket add/install/extraction planners and local-host transactional rollback paths.
+- [x] Fold gameplay-significant socket limits and compatibility rules into the multiplayer gameplay authority fingerprint.
+- [x] Add deterministic source coverage for item-level compatibility, identity normalization, policy fingerprint drift, replay identity, metadata preservation, socket mutation, extraction, and effect calculation.
+- [ ] Bind remote-client socket-management requests to the server-authoritative RPC/approval path; current workstation overlay admits mutation only on the local host.
+- [ ] Validate persistence and behavior through save/load, drop/pickup, chest storage, repair, upgrade, player transfer, death, dedicated server, and mod removal.
+- [ ] Live-test representative third-party equipment, including explicit item/prefab/mod-origin exclusions and unknown-category opt-in behavior.
 
 ## P3 — biome and magic expansion
 
-Add biome geodes, elemental weight tables, staves, runes, Galdr, Seidr, wards, travel, ship attunement, resonance, totems, spirits, Fate, and boss-resonance systems only after the Meadows/Earth vertical slice has passed its dependency and runtime gates. Use the archived detailed design as recovery material, not as evidence of implementation.
+Continue remaining elemental/magic content only when it does not outrank broken intended behavior or validation gates above. The archived detailed design remains recovery material, not evidence of implementation. Current source already contains substantial elemental staff work beyond the original Earth vertical-slice baseline; live source and validation records outrank this historical phase label.
