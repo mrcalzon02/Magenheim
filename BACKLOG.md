@@ -36,6 +36,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Register a two-way Jötunn definition-authority handshake: server sends effective schema/fingerprint during initial synchronization, client compares and acknowledges its own authority, server records per-peer admission.
 - [x] Harden the authority acknowledgement so the client must echo the exact server descriptor it successfully parsed; malformed server authority now produces no acknowledgement and cannot yield server-side mutation admission.
 - [x] Tighten pre-release network version enforcement to patch strictness when the authority RPC was introduced, preventing older 0.0.x clients without the current RPC contract from passing version admission.
+- [x] Reset cached peer mutation admission at the start of every Jötunn initial-sync session so reconnects or reused peer IDs cannot inherit prior authorization.
 - [ ] Compile and execute the definition-authority synchronization path in a current Valheim/Jötunn environment and repair any API/serialization defect before runtime admission.
 - [ ] Register Crystal Shaping under permanent ID `magenheim.crystal_shaping`.
 

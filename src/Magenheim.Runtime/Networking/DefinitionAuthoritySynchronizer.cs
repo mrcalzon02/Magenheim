@@ -46,8 +46,15 @@ internal sealed class DefinitionAuthoritySynchronizer
     internal DefinitionAuthorityResult GetPeerResult(long peerId) =>
         _peerResults.TryGetValue(peerId, out var result) ? result : DefinitionAuthorityResult.Pending;
 
-    private ZPackage BuildServerAuthorityPackage()
+    private ZPackage BuildServerAuthorityPackage(ZNetPeer peer)
     {
+        if (peer is null) throw new ArgumentNullException(nameof(peer));
+
+        // Peer ids are transport/session identities, not durable authorization identities.
+        // A reconnect or id reuse must begin Pending even if an earlier connection using
+        // the same routed-rpc uid had already passed the authority handshake.
+        _peerResults.Remove(peer.m_uid);
+
         var package = new ZPackage();
         package.Write(ServerAuthorityMessage);
         WriteDescriptor(package, _localAuthority);
