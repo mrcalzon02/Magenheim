@@ -28,12 +28,13 @@ public sealed record GeodeCrackingResult(
 /// <summary>
 /// Pure deterministic geode outcome authority. Randomness is supplied explicitly by the caller so
 /// multiplayer/runtime code can keep RNG ownership server-side and replay/verify the same decision.
-/// The current schema always consumes both bonus rolls and one element roll for every possible
-/// crystal slot, even when a bonus crystal does not materialize. This prevents variable RNG-stream
-/// consumption from becoming a hidden synchronization dependency.
+/// The current schema always consumes both bonus rolls and all three possible element rolls even
+/// when a bonus crystal does not materialize. Fixed consumption prevents hidden RNG-stream drift.
 /// </summary>
 public static class GeodeCrackingService
 {
+    public const int CurrentSchemaElementRollCount = 3;
+
     public static GeodeCrackingResult Crack(GeodeCrackingRequest request)
     {
         if (request is null)
@@ -44,8 +45,8 @@ public static class GeodeCrackingService
             return InvalidRequest("Element rolls are required.");
 
         var geode = request.Geode;
-        if (geode.GuaranteedCrystalCount < 1)
-            return InvalidDefinition("GuaranteedCrystalCount must be at least one.");
+        if (geode.GuaranteedCrystalCount != 1)
+            return InvalidDefinition("The current geode schema requires exactly one guaranteed crystal.");
         if (!IsChance(geode.SecondCrystalChance) || !IsChance(geode.ThirdCrystalChance))
             return InvalidDefinition("Bonus crystal chances must be finite values between 0 and 1 inclusive.");
         if (geode.ElementWeights is null || geode.ElementWeights.Count == 0)
@@ -53,10 +54,8 @@ public static class GeodeCrackingService
 
         if (!IsRoll(request.SecondCrystalRoll) || !IsRoll(request.ThirdCrystalRoll))
             return InvalidRequest("Bonus rolls must be finite values in the range [0,1).");
-
-        var maximumCrystalCount = checked(geode.GuaranteedCrystalCount + 2);
-        if (request.ElementRolls.Count != maximumCrystalCount)
-            return InvalidRequest($"Exactly {maximumCrystalCount} element rolls are required for deterministic cracking of '{geode.Id}'.");
+        if (request.ElementRolls.Count != CurrentSchemaElementRollCount)
+            return InvalidRequest($"Exactly {CurrentSchemaElementRollCount} element rolls are required for deterministic cracking of '{geode.Id}'.");
 
         for (var i = 0; i < request.ElementRolls.Count; i++)
         {
@@ -76,7 +75,7 @@ public static class GeodeCrackingService
         if (double.IsInfinity(totalWeight) || totalWeight <= 0d)
             return InvalidDefinition("Element weight total must be finite and greater than zero.");
 
-        var crystalCount = geode.GuaranteedCrystalCount;
+        var crystalCount = 1;
         if (request.SecondCrystalRoll < geode.SecondCrystalChance)
             crystalCount++;
         if (request.ThirdCrystalRoll < geode.ThirdCrystalChance)
@@ -109,8 +108,6 @@ public static class GeodeCrackingService
                 return weights[i].Element;
         }
 
-        // Floating-point rounding can only place a valid [0,1) roll microscopically past the
-        // cumulative sum. Returning the final admitted weight keeps the selector total and stable.
         return weights[weights.Count - 1].Element;
     }
 
