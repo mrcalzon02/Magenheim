@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Magenheim.Core.Networking;
 
 namespace Magenheim.Core.Socketing;
@@ -165,9 +166,11 @@ public sealed record SocketOperationDecision(
 }
 
 /// <summary>
-/// Session-scoped exact-once reservation for socket metadata mutation. The guard stores
-/// no ItemData reference; the runtime must bind the prepared plan to the exact selected
-/// item instance and compare its current metadata to Plan.OriginalState before applying.
+/// Session-scoped exact-once reservation for socket metadata mutation. Immutable request
+/// intent is recorded before mutable source-crystal availability is replanned, so an install
+/// remains identifiable after its source crystal was consumed. The guard stores no ItemData
+/// reference; runtime still binds the prepared plan to the exact selected item instance and
+/// verifies Plan.OriginalState immediately before applying metadata.
 /// </summary>
 public sealed class SocketOperationGuard
 {
@@ -182,18 +185,15 @@ public sealed class SocketOperationGuard
                 EmptyPlan(keyError),
                 keyError);
 
-        var plan = SocketTransactionPlanner.Plan(request);
-        if (!plan.IsReady)
-            return new SocketOperationDecision(SocketOperationOutcome.PlanRejected, plan, plan.Diagnostic);
-
+        var intent = SocketOperationIntent.From(request);
         if (_operations.TryGetValue(key, out var existing))
         {
-            if (!PlansMatch(existing.Plan, plan))
+            if (!existing.Intent.Equals(intent))
             {
                 return new SocketOperationDecision(
                     SocketOperationOutcome.ConflictingReplay,
-                    EmptyPlan("The operation id was replayed with a different socket plan."),
-                    "The operation id was replayed with a different socket plan; mutation is denied.");
+                    EmptyPlan("The operation id was replayed with different immutable socket intent."),
+                    "The operation id was replayed with different immutable socket intent; mutation is denied.");
             }
 
             var outcome = existing.Applied
@@ -207,7 +207,11 @@ public sealed class SocketOperationGuard
                     : "This socket operation is already prepared; concurrent/replayed mutation is denied.");
         }
 
-        _operations.Add(key, new OperationRecord(plan));
+        var plan = SocketTransactionPlanner.Plan(request);
+        if (!plan.IsReady)
+            return new SocketOperationDecision(SocketOperationOutcome.PlanRejected, plan, plan.Diagnostic);
+
+        _operations.Add(key, new OperationRecord(intent, plan));
         return new SocketOperationDecision(
             SocketOperationOutcome.Ready,
             plan,
@@ -266,34 +270,250 @@ public sealed class SocketOperationGuard
         return true;
     }
 
-    private static bool PlansMatch(SocketTransactionPlan left, SocketTransactionPlan right)
-    {
-        if (left.Outcome != right.Outcome ||
-            left.ConsumeCrystalCount != right.ConsumeCrystalCount ||
-            left.ConsumedCrystal != right.ConsumedCrystal ||
-            Math.Abs(left.CrystalShapingExperience - right.CrystalShapingExperience) > 0.0000001d)
-            return false;
-        return StatesMatch(left.OriginalState, right.OriginalState) &&
-               StatesMatch(left.ResultState, right.ResultState);
-    }
-
-    private static bool StatesMatch(SocketState left, SocketState right)
-    {
-        if (left.UnlockedSlots != right.UnlockedSlots ||
-            left.InstalledCrystals.Count != right.InstalledCrystals.Count)
-            return false;
-        for (var i = 0; i < left.InstalledCrystals.Count; i++)
-            if (left.InstalledCrystals[i] != right.InstalledCrystals[i]) return false;
-        return true;
-    }
-
     private static SocketTransactionPlan EmptyPlan(string diagnostic) =>
         new(SocketTransactionOutcome.InvalidRequest, SocketState.Empty, SocketState.Empty, 0, null, 0d, diagnostic);
 
     private sealed class OperationRecord
     {
-        internal OperationRecord(SocketTransactionPlan plan) => Plan = plan;
+        internal OperationRecord(SocketOperationIntent intent, SocketTransactionPlan plan)
+        {
+            Intent = intent;
+            Plan = plan;
+        }
+
+        internal SocketOperationIntent Intent { get; }
         internal SocketTransactionPlan Plan { get; }
         internal bool Applied { get; set; }
+    }
+
+    private sealed class SocketOperationIntent : IEquatable<SocketOperationIntent>
+    {
+        private SocketOperationIntent(
+            string prefabName,
+            string modOrigin,
+            EquipmentCategory category,
+            SocketTransactionKind kind,
+            Crystal? crystal,
+            int unlockedSlots,
+            Crystal[] installedCrystals,
+            SocketPolicyIntent policy)
+        {
+            PrefabName = prefabName;
+            ModOrigin = modOrigin;
+            Category = category;
+            Kind = kind;
+            Crystal = crystal;
+            UnlockedSlots = unlockedSlots;
+            InstalledCrystals = installedCrystals;
+            Policy = policy;
+        }
+
+        private string PrefabName { get; }
+        private string ModOrigin { get; }
+        private EquipmentCategory Category { get; }
+        private SocketTransactionKind Kind { get; }
+        private Crystal? Crystal { get; }
+        private int UnlockedSlots { get; }
+        private Crystal[] InstalledCrystals { get; }
+        private SocketPolicyIntent Policy { get; }
+
+        internal static SocketOperationIntent From(SocketTransactionRequest request)
+        {
+            if (request is null || request.Equipment is null || request.Policy is null || request.CurrentState is null)
+            {
+                return new SocketOperationIntent(
+                    string.Empty,
+                    string.Empty,
+                    EquipmentCategory.Unknown,
+                    default,
+                    null,
+                    0,
+                    Array.Empty<Crystal>(),
+                    SocketPolicyIntent.Empty);
+            }
+
+            return new SocketOperationIntent(
+                request.Equipment.PrefabName ?? string.Empty,
+                request.Equipment.ModOrigin ?? string.Empty,
+                request.Equipment.Category,
+                request.Kind,
+                request.Crystal,
+                request.CurrentState.UnlockedSlots,
+                request.CurrentState.InstalledCrystals.ToArray(),
+                SocketPolicyIntent.From(request.Policy));
+        }
+
+        public bool Equals(SocketOperationIntent other)
+        {
+            if (ReferenceEquals(other, null)) return false;
+            if (!string.Equals(PrefabName, other.PrefabName, StringComparison.Ordinal) ||
+                !string.Equals(ModOrigin, other.ModOrigin, StringComparison.Ordinal) ||
+                Category != other.Category ||
+                Kind != other.Kind ||
+                Crystal != other.Crystal ||
+                UnlockedSlots != other.UnlockedSlots ||
+                InstalledCrystals.Length != other.InstalledCrystals.Length ||
+                !Policy.Equals(other.Policy))
+                return false;
+
+            for (var index = 0; index < InstalledCrystals.Length; index++)
+                if (InstalledCrystals[index] != other.InstalledCrystals[index]) return false;
+            return true;
+        }
+
+        public override bool Equals(object obj) => obj is SocketOperationIntent other && Equals(other);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hash = StringComparer.Ordinal.GetHashCode(PrefabName);
+                hash = (hash * 397) ^ StringComparer.Ordinal.GetHashCode(ModOrigin);
+                hash = (hash * 397) ^ (int)Category;
+                hash = (hash * 397) ^ (int)Kind;
+                hash = (hash * 397) ^ (Crystal?.GetHashCode() ?? 0);
+                hash = (hash * 397) ^ UnlockedSlots;
+                for (var index = 0; index < InstalledCrystals.Length; index++)
+                    hash = (hash * 397) ^ InstalledCrystals[index].GetHashCode();
+                hash = (hash * 397) ^ Policy.GetHashCode();
+                return hash;
+            }
+        }
+    }
+
+    private sealed class SocketPolicyIntent : IEquatable<SocketPolicyIntent>
+    {
+        internal static SocketPolicyIntent Empty { get; } = new(
+            0, 0, 0, 0, 0, 0, SocketIdentityComparison.Exact,
+            Array.Empty<string>(), Array.Empty<string>(), Array.Empty<string>(), Array.Empty<string>(), Array.Empty<EquipmentCategory>());
+
+        private SocketPolicyIntent(
+            int weaponMaxSlots,
+            int armorMaxSlots,
+            int shieldMaxSlots,
+            int toolMaxSlots,
+            int utilityMaxSlots,
+            int explicitIncludeMaxSlots,
+            SocketIdentityComparison identityComparison,
+            string[] includedPrefabs,
+            string[] excludedPrefabs,
+            string[] includedOrigins,
+            string[] excludedOrigins,
+            EquipmentCategory[] excludedCategories)
+        {
+            WeaponMaxSlots = weaponMaxSlots;
+            ArmorMaxSlots = armorMaxSlots;
+            ShieldMaxSlots = shieldMaxSlots;
+            ToolMaxSlots = toolMaxSlots;
+            UtilityMaxSlots = utilityMaxSlots;
+            ExplicitIncludeMaxSlots = explicitIncludeMaxSlots;
+            IdentityComparison = identityComparison;
+            IncludedPrefabs = includedPrefabs;
+            ExcludedPrefabs = excludedPrefabs;
+            IncludedOrigins = includedOrigins;
+            ExcludedOrigins = excludedOrigins;
+            ExcludedCategories = excludedCategories;
+        }
+
+        private int WeaponMaxSlots { get; }
+        private int ArmorMaxSlots { get; }
+        private int ShieldMaxSlots { get; }
+        private int ToolMaxSlots { get; }
+        private int UtilityMaxSlots { get; }
+        private int ExplicitIncludeMaxSlots { get; }
+        private SocketIdentityComparison IdentityComparison { get; }
+        private string[] IncludedPrefabs { get; }
+        private string[] ExcludedPrefabs { get; }
+        private string[] IncludedOrigins { get; }
+        private string[] ExcludedOrigins { get; }
+        private EquipmentCategory[] ExcludedCategories { get; }
+
+        internal static SocketPolicyIntent From(SocketEligibilityPolicy policy)
+        {
+            var comparer = policy.IdentityComparison == SocketIdentityComparison.CaseInsensitive
+                ? StringComparer.OrdinalIgnoreCase
+                : StringComparer.Ordinal;
+            return new SocketPolicyIntent(
+                policy.WeaponMaxSlots,
+                policy.ArmorMaxSlots,
+                policy.ShieldMaxSlots,
+                policy.ToolMaxSlots,
+                policy.UtilityMaxSlots,
+                policy.ExplicitIncludeMaxSlots,
+                policy.IdentityComparison,
+                Canonicalize(policy.IncludedPrefabNames, comparer),
+                Canonicalize(policy.ExcludedPrefabNames, comparer),
+                Canonicalize(policy.IncludedModOrigins, comparer),
+                Canonicalize(policy.ExcludedModOrigins, comparer),
+                policy.ExcludedCategories.OrderBy(value => (int)value).ToArray());
+        }
+
+        public bool Equals(SocketPolicyIntent other)
+        {
+            if (ReferenceEquals(other, null)) return false;
+            if (WeaponMaxSlots != other.WeaponMaxSlots ||
+                ArmorMaxSlots != other.ArmorMaxSlots ||
+                ShieldMaxSlots != other.ShieldMaxSlots ||
+                ToolMaxSlots != other.ToolMaxSlots ||
+                UtilityMaxSlots != other.UtilityMaxSlots ||
+                ExplicitIncludeMaxSlots != other.ExplicitIncludeMaxSlots ||
+                IdentityComparison != other.IdentityComparison ||
+                !SequencesEqual(IncludedPrefabs, other.IncludedPrefabs) ||
+                !SequencesEqual(ExcludedPrefabs, other.ExcludedPrefabs) ||
+                !SequencesEqual(IncludedOrigins, other.IncludedOrigins) ||
+                !SequencesEqual(ExcludedOrigins, other.ExcludedOrigins) ||
+                ExcludedCategories.Length != other.ExcludedCategories.Length)
+                return false;
+
+            for (var index = 0; index < ExcludedCategories.Length; index++)
+                if (ExcludedCategories[index] != other.ExcludedCategories[index]) return false;
+            return true;
+        }
+
+        public override bool Equals(object obj) => obj is SocketPolicyIntent other && Equals(other);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hash = WeaponMaxSlots;
+                hash = (hash * 397) ^ ArmorMaxSlots;
+                hash = (hash * 397) ^ ShieldMaxSlots;
+                hash = (hash * 397) ^ ToolMaxSlots;
+                hash = (hash * 397) ^ UtilityMaxSlots;
+                hash = (hash * 397) ^ ExplicitIncludeMaxSlots;
+                hash = (hash * 397) ^ (int)IdentityComparison;
+                AppendHash(ref hash, IncludedPrefabs);
+                AppendHash(ref hash, ExcludedPrefabs);
+                AppendHash(ref hash, IncludedOrigins);
+                AppendHash(ref hash, ExcludedOrigins);
+                for (var index = 0; index < ExcludedCategories.Length; index++)
+                    hash = (hash * 397) ^ (int)ExcludedCategories[index];
+                return hash;
+            }
+        }
+
+        private static string[] Canonicalize(IReadOnlyList<string> values, StringComparer comparer)
+        {
+            var result = values
+                .Select(value => comparer == StringComparer.OrdinalIgnoreCase ? value.ToUpperInvariant() : value)
+                .OrderBy(value => value, StringComparer.Ordinal)
+                .ToArray();
+            return result;
+        }
+
+        private static bool SequencesEqual(string[] left, string[] right)
+        {
+            if (left.Length != right.Length) return false;
+            for (var index = 0; index < left.Length; index++)
+                if (!string.Equals(left[index], right[index], StringComparison.Ordinal)) return false;
+            return true;
+        }
+
+        private static void AppendHash(ref int hash, string[] values)
+        {
+            for (var index = 0; index < values.Length; index++)
+                hash = (hash * 397) ^ StringComparer.Ordinal.GetHashCode(values[index]);
+        }
     }
 }
