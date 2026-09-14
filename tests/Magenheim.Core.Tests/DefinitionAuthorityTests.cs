@@ -51,6 +51,7 @@ internal static class DefinitionAuthorityTests
         Assert(!DefinitionAuthorityHandshake.IsValid(new DefinitionAuthorityDescriptor(2, new string('g', 64)), out _), "Non-hexadecimal fingerprints must be invalid.");
         Assert(DefinitionAuthorityHandshake.IsValid(local, out var validError) && validError.Length == 0, "Canonical descriptor must validate without an error diagnostic.");
 
+        assertions += GeodeCrackingTests.Run();
         return assertions;
     }
 }
