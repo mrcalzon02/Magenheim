@@ -6,8 +6,9 @@ using Magenheim.Core.Worldgen;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Read-only boundary between validated Magenheim worldgen intent and the current Valheim/Jotunn
-/// enum/registration surface. This class deliberately does not add, remove, or modify vegetation.
+/// Translation and observation boundary between validated Magenheim worldgen intent and the
+/// current Valheim/Jotunn enum/registration surface. Observation is read-only; mutation remains
+/// owned by the dedicated Magenheim registrar and is limited to new Magenheim vegetation.
 /// </summary>
 internal static class JotunnWorldgenAdapter
 {
@@ -33,39 +34,54 @@ internal static class JotunnWorldgenAdapter
     internal static Heightmap.BiomeArea MapArea(SpawnArea area) =>
         area switch
         {
-            SpawnArea.Median => Heightmap.BiomeArea.Median,
-            SpawnArea.Edge => Heightmap.BiomeArea.Edge,
-            SpawnArea.All => Heightmap.BiomeArea.Everywhere,
+            SpawnArea.Median => ParseBiomeArea("Median"),
+            SpawnArea.Edge => ParseBiomeArea("Edge"),
+            // Valheim/Jotunn builds have used both names for the combined value. Resolve the
+            // actual runtime enum instead of compiling against one spelling and guessing.
+            SpawnArea.All => ParseBiomeArea("Everything", "Everywhere"),
             _ => throw new InvalidOperationException(
                 $"Unsupported spawn area '{area}' at the Jotunn adapter boundary. " +
                 "Area values must be normalized by Magenheim.Core before runtime mapping."),
         };
 
     /// <summary>
-    /// Observes only the host vegetation identities Magenheim intends to add. The result can be
-    /// passed back to DefinitionWorldgenPlanner for collision decisions. No host entry is mutated.
-    /// Invoke only when ZoneManager vanilla/custom vegetation is available for lookup.
+    /// Observes only host identities Magenheim intends to add. Both ZoneManager vegetation and
+    /// the broader PrefabManager namespace are checked because AddCustomVegetation registers the
+    /// prefab itself. No host entry is mutated.
     /// </summary>
-    internal static IReadOnlyList<ObservedWorldgenRegistration> ObserveDesiredVegetation(
+    internal static IReadOnlyList<ObservedWorldgenRegistration> ObserveDesiredHostIdentities(
         IEnumerable<DesiredWorldgenAddition> desired)
     {
         if (desired is null)
             throw new ArgumentNullException(nameof(desired));
 
         var observed = new List<ObservedWorldgenRegistration>();
+        var seenPrefabs = new HashSet<string>(StringComparer.Ordinal);
+
         foreach (var addition in desired)
         {
             if (addition is null || string.IsNullOrWhiteSpace(addition.PrefabName))
                 continue;
-
-            var existing = ZoneManager.Instance.GetZoneVegetation(addition.PrefabName);
-            if (existing is null)
+            if (!seenPrefabs.Add(addition.PrefabName))
                 continue;
 
-            observed.Add(new ObservedWorldgenRegistration(
-                string.Empty,
-                "host-existing-vegetation",
-                addition.PrefabName));
+            var existingVegetation = ZoneManager.Instance.GetZoneVegetation(addition.PrefabName);
+            if (existingVegetation is not null)
+            {
+                observed.Add(new ObservedWorldgenRegistration(
+                    string.Empty,
+                    "host-existing-vegetation",
+                    addition.PrefabName));
+                continue;
+            }
+
+            if (PrefabManager.Instance.GetPrefab(addition.PrefabName) is not null)
+            {
+                observed.Add(new ObservedWorldgenRegistration(
+                    string.Empty,
+                    "host-existing-prefab",
+                    addition.PrefabName));
+            }
         }
 
         return observed.AsReadOnly();
@@ -84,5 +100,20 @@ internal static class JotunnWorldgenAdapter
 
         throw new InvalidOperationException(
             $"None of the expected Valheim biome enum names [{string.Join(", ", candidates)}] exist in this runtime.");
+    }
+
+    private static Heightmap.BiomeArea ParseBiomeArea(params string[] candidates)
+    {
+        foreach (var candidate in candidates)
+        {
+            if (Enum.TryParse(candidate, ignoreCase: true, out Heightmap.BiomeArea parsed) &&
+                Enum.IsDefined(typeof(Heightmap.BiomeArea), parsed))
+            {
+                return parsed;
+            }
+        }
+
+        throw new InvalidOperationException(
+            $"None of the expected Valheim biome-area enum names [{string.Join(", ", candidates)}] exist in this runtime.");
     }
 }

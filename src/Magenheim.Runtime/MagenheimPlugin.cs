@@ -14,12 +14,12 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.11";
+    internal const string PluginVersion = "0.0.12";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
     private GeodeItemRegistrar? _geodeItemRegistrar;
-    private GeodeWorldPrefabRegistrar? _geodeWorldPrefabRegistrar;
+    private GeodeWorldgenRegistrar? _geodeWorldgenRegistrar;
 
     private void Awake()
     {
@@ -37,18 +37,18 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 _services.GeodeOpeningOperations,
                 Logger);
 
-            // Registration order is intentional. World prefabs require the intact geode item prefab
-            // as their sole destruction drop, so the item registrar subscribes first.
+            // Registration order is intentional. Worldgen creation needs the intact geode item as
+            // its destruction drop, so the item registrar subscribes before the worldgen registrar.
             _geodeItemRegistrar = new GeodeItemRegistrar(effectiveDefinitions, Logger);
             _geodeItemRegistrar.Register();
-            _geodeWorldPrefabRegistrar = new GeodeWorldPrefabRegistrar(effectiveDefinitions, Logger);
-            _geodeWorldPrefabRegistrar.Register();
+            _geodeWorldgenRegistrar = new GeodeWorldgenRegistrar(effectiveDefinitions, Logger);
+            _geodeWorldgenRegistrar.Register();
 
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
-                "Definition authority synchronization, session-scoped geode replay protection, definition-driven intact geode items, and dedicated mineable geode world prefabs are configured; " +
-                "natural world placement and inventory mutation remain disabled pending runtime validation and thin additive registrar admission.");
+                "Definition authority synchronization, session-scoped geode replay protection, definition-driven intact geode items, " +
+                "and additive geode vegetation registration are configured. Persistent inventory/socket mutations remain gated pending runtime validation.");
         }
         catch (Exception exception)
         {
@@ -59,7 +59,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
     private void OnDestroy()
     {
-        _geodeWorldPrefabRegistrar?.Dispose();
+        _geodeWorldgenRegistrar?.Dispose();
         _geodeItemRegistrar?.Dispose();
     }
 }

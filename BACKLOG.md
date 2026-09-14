@@ -22,7 +22,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Make configured invalid-area behavior govern geode area parsing rather than hard-coding Reject before policy admission.
 - [x] Restrict compatibility exclusions to Magenheim-owned registration/prefab namespaces so configuration cannot target foreign content.
 - [x] Make definition duplicate detection and exclusion normalization obey the configured exact/case-insensitive identity comparer, preventing definitions that the runtime planner would later collapse into collisions.
-- [x] Canonicalize case-insensitive compatibility exclusions in the definition fingerprint so semantically identical casing cannot cause false server/client authority mismatches; exact mode remains casing-sensitive.
+- [x] Canonicalize case-insensitive compatibility exclusions in the definition fingerprint so semantically identical casing cannot cause false server/client authority mismatches; exact comparison retains casing as authority.
 - [x] Flatten singleton Core Networking/Transactions and Runtime Networking source directories while preserving their namespaces and single authorities.
 - [x] Reconcile GitHub repository metadata to authoritative `main`; the redundant legacy `master` ref is no longer present.
 - [ ] Execute the standalone tests with a .NET 8 SDK and record the observed result.
@@ -52,13 +52,14 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Add definition-driven Jötunn geode item registration source using canonical prefab identities and a temporary vanilla Stone visual base; no recipe or inventory mutation is introduced.
 - [ ] Validate intact Meadows geode item/prefab registration in a current Valheim/Jötunn runtime and replace the Stone placeholder only after the custom geode asset passes prefab/visual validation.
 - [x] Carry authoritative geode biome metadata into `DesiredWorldgenAddition` and build worldgen plans directly from the validated definition snapshot.
-- [x] Add an explicit Jötunn adapter boundary for validated biome/area mapping and read-only desired-prefab collision observation; no vegetation registration or host mutation occurs in this slice.
-- [ ] Bind the additive worldgen planner to a thin Jötunn registrar using the validated definition policy.
-- [x] Explicitly map pure-core `SpawnArea.All` to current runtime `Heightmap.BiomeArea.Everywhere` rather than casting enum integers.
-- [ ] Implement configurable non-destructive Meadows world placement.
-- [ ] Snapshot pre/post worldgen registrations and prove repeated-load idempotence.
+- [x] Add an explicit Jötunn adapter boundary for validated biome/area mapping and read-only desired-host collision observation.
+- [x] Bind the additive worldgen planner to a one-time Jötunn `CustomVegetation` registrar using the validated definition compatibility policy.
+- [x] Explicitly resolve pure-core `SpawnArea.All` against runtime `Heightmap.BiomeArea` names `Everything`/`Everywhere` rather than compiling against a single version-specific spelling or casting enum integers.
+- [ ] Move geode placement density/terrain limits into fingerprinted definition authority before exposing them as user-configurable placement settings.
+- [ ] Snapshot pre/post worldgen registrations and prove repeated-load idempotence in a live Valheim/Jötunn environment.
 - [x] Add source for a dedicated Magenheim-owned mineable geode world-object prefab derived as `<item prefab>_World`, with persistent network state and exactly one intact-geode destruction drop; never use the temporary item/Stone placeholder as vegetation.
-- [ ] Compile and validate the mineable geode world-object prefab in current Valheim/Jötunn, including exactly-one intact drop, host/client persistence, and proof vanilla `Rock_4` remains unchanged.
+- [x] Collapse world-prefab and vegetation registration into one additive path because Jötunn `AddCustomVegetation` registers the prefab itself; remove the superfluous separate prefab-registration path.
+- [ ] Compile and validate the mineable geode world-object/vegetation path in current Valheim/Jötunn, including exactly-one intact drop, natural placement, host/client persistence, and proof vanilla `Rock_4` remains unchanged.
 - [ ] Implement Geologist's Workstation registration and crafting recipe.
 - [ ] Implement authoritative geode opening: one guaranteed crystal, independent 35% second-crystal roll, independent 10% third-crystal roll.
 - [ ] Register Earth Rough/Simple/Crystal/Advanced/Master items and Earth Crystal Shards.
