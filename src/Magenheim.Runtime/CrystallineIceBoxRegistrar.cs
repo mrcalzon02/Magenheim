@@ -63,8 +63,8 @@ internal sealed class CrystallineIceBoxRegistrar : IDisposable
                 throw new InvalidOperationException($"Cannot replace occupied Crystalline Ice Box identity '{PrefabName}'.");
             if (PrefabManager.Instance.GetPrefab("piece_beehive") is null)
                 throw new InvalidOperationException("Vanilla persistent producer source 'piece_beehive' is unavailable.");
-            if (PrefabManager.Instance.GetPrefab("piece_magetable") is null)
-                throw new InvalidOperationException("Galdr Table is unavailable for Crystalline Ice Box construction.");
+            if (PrefabManager.Instance.GetPrefab(CrystalEnchantingDaisRegistrar.PrefabName) is null)
+                throw new InvalidOperationException("Crystal Enchanting Dais must be registered before Crystalline Ice Box construction is enabled.");
             if (PrefabManager.Instance.GetPrefab("Magenheim_Crystal_Frost_Master") is null)
                 throw new InvalidOperationException("Crystalline Ice Box requires the registered Frost Master crystal.");
 
@@ -78,10 +78,10 @@ internal sealed class CrystallineIceBoxRegistrar : IDisposable
                 Name = "Crystalline Ice Box",
                 Description =
                     "A black-stone refrigeration chest wrapped in iron and Frost crystal. " +
-                    "Its cold lattice slowly condenses harvestable Ice from ambient moisture.",
+                    "Focused through a Crystal Enchanting Dais, its cold lattice slowly condenses harvestable Ice from ambient moisture.",
                 PieceTable = "Hammer",
                 Category = "Crafting",
-                CraftingStation = "piece_magetable",
+                CraftingStation = CrystalEnchantingDaisRegistrar.PrefabName,
                 Icon = CrystallineIceBoxIcons.Icon(),
                 Requirements = new[]
                 {
@@ -137,7 +137,7 @@ internal sealed class CrystallineIceBoxRegistrar : IDisposable
 
             _registered = true;
             _log.LogInfo(
-                $"Registered Crystalline Ice Box: one Ice every {_growthSecondsPerIce / 60f:0.##} minutes, storing up to {_storedIceLimit}.");
+                $"Registered Crystalline Ice Box behind the Crystal Enchanting Dais: one Ice every {_growthSecondsPerIce / 60f:0.##} minutes, storing up to {_storedIceLimit}.");
         }
         catch (Exception exception)
         {
