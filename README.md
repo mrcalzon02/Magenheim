@@ -22,9 +22,9 @@ Implemented in source:
 - a one-time additive `CustomVegetation` path for approved Magenheim geode world objects, with no foreign/vanilla mutation path;
 - schema-3 server-configurable placement density, terrain, scale, grouping, forest, and offset controls that are revalidated and included in multiplayer definition authority before registration.
 
-Runtime source version `0.0.13` consumes `default-data/foundation.json` schema 3. Natural geode placement flows through validated definitions -> read-only host observation -> pure Add/Skip/Error planning -> preflight -> `ZoneManager.AddCustomVegetation` for approved Magenheim-owned additions only.
+Runtime source version `0.0.14` consumes `default-data/foundation.json` schema 3. Natural geode placement flows through validated definitions -> prefab-namespace collision observation -> pure Add/Skip/Error planning -> preflight -> `ZoneManager.AddCustomVegetation` for approved Magenheim-owned additions only.
 
-The old separate world-prefab registration path was removed because Jötunn's vegetation API already registers the supplied prefab. The area adapter also resolves the combined runtime `BiomeArea` value from `Everything` or `Everywhere`, avoiding a version-specific spelling dependency.
+The old separate world-prefab registration path was removed because Jötunn's vegetation API already registers the supplied prefab. The area adapter resolves the combined runtime `BiomeArea` value from `Everything` or `Everywhere`, avoiding a version-specific spelling dependency. Collision observation during `OnVanillaPrefabsAvailable` deliberately uses `PrefabManager` rather than `ZoneManager.GetZoneVegetation`, because current Jötunn source dereferences `ZoneSystem.instance` in the latter and a live ZoneSystem is not guaranteed at the prefab/ObjectDB lifecycle event.
 
 ## Meadows/Earth vertical slice
 
@@ -32,7 +32,7 @@ The shipped foundation defines `magenheim.geode.meadows.earth`. Opening produces
 
 The natural world object is `Magenheim_Geode_Meadows_Earth_World`; the intact inventory item remains `Magenheim_Geode_Meadows_Earth`. The temporary inventory visual still derives from vanilla Stone until the custom geode asset is runtime-validated. The temporary item visual is never registered directly as world vegetation.
 
-The initial fingerprinted Meadows placement profile uses block checking, no force placement, a 35% maximum single-group chance per zone, altitude 1–1000, terrain delta <=2 over radius 2, tilt <=35 degrees, scale 0.85–1.15, one-object groups, and ground offset -0.10. Server overrides for these and the other Jötunn placement fields are admitted only after pure validation and fingerprint regeneration.
+The fingerprinted Meadows placement profile uses block checking, no force placement, a 35% maximum single-group chance per zone, altitude 1–1000, terrain delta <=2 over radius 2, tilt <=35 degrees, scale 0.85–1.15, one-object groups, and ground offset -0.10. Server overrides for these and the other Jötunn placement fields are admitted only after pure validation and fingerprint regeneration.
 
 ## Validation boundary
 
@@ -40,4 +40,4 @@ This execution environment has no .NET SDK/compiler. Source/API/Git reconciliati
 
 ## Immediate target
 
-Compile and run the deterministic suite, compile the runtime against current Valheim/Jötunn, then validate the Meadows geode in a disposable world: one additive vegetation registration, no duplicate registration across world loads, placement overrides synchronized by definition fingerprint, no mutation of occupied foreign identities or vanilla `Rock_4`, persistent network behavior, and exactly one intact-geode destruction drop. After that, continue the playable loop with Crystal Shaping registration, the Geologist's Workstation, Earth crystal/shard items, and authority-gated atomic inventory transactions.
+Compile and run the deterministic suite, compile the runtime against current Valheim/Jötunn, then validate the Meadows geode in a disposable world: one additive vegetation registration, no duplicate registration across actual menu/world transitions, placement overrides synchronized by definition fingerprint, no mutation of occupied foreign identities or vanilla `Rock_4`, persistent network behavior, and exactly one intact-geode destruction drop. After that, continue the playable loop with Crystal Shaping registration, the Geologist's Workstation, Earth crystal/shard items, and authority-gated atomic inventory transactions.
