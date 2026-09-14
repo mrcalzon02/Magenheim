@@ -53,6 +53,7 @@ internal static class DefinitionAuthorityTests
         Assert(!DefinitionAuthorityHandshake.IsValid(new DefinitionAuthorityDescriptor(currentSchema, new string('g', 64)), out _), "Non-hexadecimal fingerprints must be invalid.");
         Assert(DefinitionAuthorityHandshake.IsValid(local, out var validError) && validError.Length == 0, "Canonical descriptor must validate without an error diagnostic.");
 
+        assertions += DeepFractureCatalogTests.Run();
         assertions += GeodeCrackingTests.Run();
         assertions += GeodeOpeningTransactionTests.Run();
         return assertions;
