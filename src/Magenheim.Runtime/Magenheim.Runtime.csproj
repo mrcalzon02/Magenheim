@@ -13,5 +13,12 @@
   <ItemGroup>
     <ProjectReference Include="../Magenheim.Core/Magenheim.Core.csproj" />
     <PackageReference Include="JotunnLib" Version="2.30.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../default-data/foundation.json"
+          Link="default-data/foundation.json"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>
