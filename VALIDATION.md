@@ -42,22 +42,41 @@ Current refinement invariants:
 - valid success/failure attempts award experience eligibility; invalid attempts do not;
 - elemental alignment is preserved.
 
-## Static validation performed
+## Runtime bootstrap review — 2026-09-13
 
-- reviewed `main` and `master` branch heads and their common ancestor;
-- compared both directions to identify unique material files;
-- inspected the contaminated merge and confirmed tracked conflict-marker content;
-- reviewed current refinement source against live design authority;
-- reviewed worldgen validator/planner for additive-only behavior and no mutation of observed registrations;
-- constructed one resolved consolidation tree rather than stacking another post-merge mutator;
-- preserved rejected branch material through merge ancestry rather than deleting published history.
+Observed dependency facts before implementation:
+
+- current Jötunn package version selected for the runtime is `JotunnLib` 2.30.0;
+- Jötunn 2.30.0 targets .NET Framework 4.6.2;
+- Jötunn documentation recommends a hard `BepInDependency(Jotunn.Main.ModGuid)` and `NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)` for mods whose items/RPCs require consistent client/server presence;
+- `Magenheim.Core` was targeting `netstandard2.1`, which is not consumable from .NET Framework.
+
+Repair and implementation performed:
+
+- retargeted `Magenheim.Core` from `netstandard2.1` to `netstandard2.0`;
+- preserved the .NET 8 standalone test project as a consumer of the same core;
+- added `src/Magenheim.Runtime/Magenheim.Runtime.csproj` targeting `net462` and referencing `JotunnLib` 2.30.0;
+- added BepInEx plugin identity `mrcalzon02.magenheim`, hard Jötunn dependency, and everyone-must-have/minor-version network compatibility declaration;
+- added a runtime service boundary that creates the existing authoritative `CrystalRefinementService` from canonical core defaults instead of implementing a second rule engine;
+- deliberately left item registration, world generation, sockets, RPCs, inventory mutation, and persistent gameplay state disabled.
+
+Static checks performed:
+
+- net462 -> netstandard2.0 compatibility was confirmed against current Microsoft framework compatibility guidance;
+- plugin attribute forms were checked against current BepInEx/Jötunn documentation;
+- current Jötunn package target/version metadata was checked before pinning 2.30.0;
+- no runtime code duplicates refinement equations or canonical tier definitions;
+- no foreign prefab/worldgen mutation was introduced;
+- no GitHub Actions or bundled runtime binaries were added.
 
 ## Compile/test boundary
 
-The current execution environment exposes no .NET SDK/compiler. Therefore no compilation or test-execution success is claimed. A deterministic console test project exists at `tests/Magenheim.Core.Tests` and is the next validation target.
+The current execution environment exposes no .NET SDK/compiler. Therefore no compilation, package restore, deterministic test execution, or Valheim startup success is claimed.
 
-Required next command in a .NET 8 SDK environment:
+Required next validation commands/environment:
 
 `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`
 
-Runtime startup, Jötunn registration, world generation, multiplayer authority, save/load, and persistence remain deferred until implemented and directly observed.
+Then compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` from a development environment with .NET Framework 4.6.2 targeting support and the current Valheim/Jötunn development dependencies available. Any resulting defect must be repaired at the authoritative source before config loading or skill registration is admitted.
+
+Runtime startup, Jötunn registration, world generation, multiplayer authority, save/load, and persistence remain unverified until directly observed.
