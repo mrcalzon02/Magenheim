@@ -274,6 +274,77 @@ internal static class SocketingTests
         Assert(extractionGuard.RetirePeerSessions(55, 8) == 1,
             "A new peer session must retire stale extraction replay reservations.");
 
+        var effectDefinitions = new SocketEffectDefinitionSet(new[]
+        {
+            new SocketEffectRule(ElementalAlignment.Earth, EquipmentCategory.Weapon, SocketEffectKind.BluntDamage, 2d),
+            new SocketEffectRule(ElementalAlignment.Earth, EquipmentCategory.Weapon, SocketEffectKind.Knockback, 0.05d),
+            new SocketEffectRule(ElementalAlignment.Earth, EquipmentCategory.Armor, SocketEffectKind.Armor, 1.5d),
+            new SocketEffectRule(ElementalAlignment.Fire, EquipmentCategory.Weapon, SocketEffectKind.FireDamage, 3d)
+        });
+        var mixedEffectState = new SocketState(2, new[]
+        {
+            new Crystal(ElementalAlignment.Earth, CrystalTier.Master),
+            new Crystal(ElementalAlignment.Fire, CrystalTier.Crystal)
+        });
+        var weaponEffects = SocketEffectService.Calculate(
+            mixedEffectState,
+            EquipmentCategory.Weapon,
+            effectDefinitions);
+        Assert(weaponEffects.IsSuccess &&
+               Math.Abs(weaponEffects.Get(SocketEffectKind.BluntDamage) - 7d) < 0.0000001d &&
+               Math.Abs(weaponEffects.Get(SocketEffectKind.Knockback) - 0.175d) < 0.0000001d &&
+               Math.Abs(weaponEffects.Get(SocketEffectKind.FireDamage) - 4.5d) < 0.0000001d,
+            "Socket effect calculation must scale each installed crystal by tier and add only matching element/category rules.");
+        Assert(Math.Abs(weaponEffects.Get(SocketEffectKind.Armor)) < 0.0000001d,
+            "Weapon effect calculation must not leak armor-category rules onto the same item.");
+
+        var armorEffects = SocketEffectService.Calculate(
+            mixedEffectState,
+            EquipmentCategory.Armor,
+            effectDefinitions);
+        Assert(armorEffects.IsSuccess &&
+               Math.Abs(armorEffects.Get(SocketEffectKind.Armor) - 5.25d) < 0.0000001d &&
+               Math.Abs(armorEffects.Get(SocketEffectKind.FireDamage)) < 0.0000001d,
+            "Armor calculation should apply the Master Earth tier scalar and ignore weapon-only Fire rules.");
+
+        var unknownEffects = SocketEffectService.Calculate(
+            mixedEffectState,
+            EquipmentCategory.Unknown,
+            effectDefinitions);
+        Assert(!unknownEffects.IsSuccess &&
+               unknownEffects.Outcome == SocketEffectCalculationOutcome.UnknownEquipmentCategory &&
+               unknownEffects.Effects.Count == 0,
+            "Unknown equipment classification must fail closed without applying guessed socket bonuses.");
+
+        var malformedRoughState = new SocketState(1, new[]
+        {
+            new Crystal(ElementalAlignment.Earth, CrystalTier.Rough)
+        });
+        var roughEffects = SocketEffectService.Calculate(
+            malformedRoughState,
+            EquipmentCategory.Weapon,
+            effectDefinitions);
+        Assert(!roughEffects.IsSuccess &&
+               roughEffects.Outcome == SocketEffectCalculationOutcome.InvalidSocketState &&
+               roughEffects.Effects.Count == 0,
+            "Malformed metadata containing a Rough installed crystal must not produce gameplay effects.");
+
+        var duplicateRuleRejected = false;
+        try
+        {
+            _ = new SocketEffectDefinitionSet(new[]
+            {
+                new SocketEffectRule(ElementalAlignment.Earth, EquipmentCategory.Weapon, SocketEffectKind.BluntDamage, 1d),
+                new SocketEffectRule(ElementalAlignment.Earth, EquipmentCategory.Weapon, SocketEffectKind.BluntDamage, 2d)
+            });
+        }
+        catch (InvalidOperationException)
+        {
+            duplicateRuleRejected = true;
+        }
+        Assert(duplicateRuleRejected,
+            "Duplicate element/category/effect rules must reject instead of silently stacking ambiguous balance authority.");
+
         return assertions;
     }
 }
