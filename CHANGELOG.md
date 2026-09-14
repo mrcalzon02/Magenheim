@@ -22,6 +22,8 @@
 - Advanced the definition schema to version 2 and moved worldgen compatibility policy into the validated/fingerprinted definition snapshot.
 - Compatibility definitions now control invalid-area behavior, duplicate-registration behavior, prefab collision detection, identity comparison, and Magenheim-only registration/prefab exclusions.
 - Corrected loader ordering so configured invalid-area behavior actually governs geode area parsing rather than being ignored behind a hard-coded Reject pass.
+- Corrected pure snapshot validation so the same configured invalid-area policy governs geodes after loading and during any non-JSON definition construction; compatibility policy is now the single area-normalization authority.
+- Added fail-closed enum validation for worldgen compatibility policy both at definition admission and direct planner entry, preventing unknown enum values from silently behaving as another valid mode.
 - Restricted compatibility exclusions to `magenheim.` registration keys and `Magenheim_` prefabs, preventing configuration from targeting foreign content.
 - Added deterministic pure-core assertions proving compatibility settings affect the definition fingerprint and destructive/foreign exclusion policies are rejected.
 - Kept world objects, items, sockets, RPCs, inventory mutation, and persistent gameplay changes disabled pending validation and server-authoritative transaction work.
@@ -30,5 +32,6 @@
 - Extended additive worldgen compatibility planning to detect prefab collisions as well as registration-key collisions.
 - Added non-destructive compatibility controls for per-Magenheim key/prefab exclusions and optional case-insensitive identity comparison.
 - Kept collision/exclusion behavior observation-only: existing vanilla or foreign registrations are never rewritten, disabled, removed, or reordered.
+- Reconciled the runtime project package/assembly version with `MagenheimPlugin.PluginVersion` at 0.0.8 so network/version identity no longer advertises two different pre-release versions from the same source tree.
 - Did not admit bundled runtime/vendor binaries, runtime logs/process files, unrelated third-party repair utilities, duplicate legacy engines, or stale build/runtime claims into the live source tree.
 - Compilation and Valheim runtime validation remain unclaimed because the current execution environment does not provide the required compiler/runtime test environment.

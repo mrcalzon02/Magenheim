@@ -59,9 +59,11 @@ public static class MagenheimDefinitionValidator
         if (worldgenCompatibility is null)
             throw new ArgumentNullException(nameof(worldgenCompatibility));
 
-        var frozenRules = refinementRules.ToArray();
-        var frozenGeodes = geodes.Select(ValidateAndFreezeGeode).ToArray();
         var frozenCompatibility = ValidateAndFreezeWorldgenCompatibility(worldgenCompatibility);
+        var frozenRules = refinementRules.ToArray();
+        var frozenGeodes = geodes
+            .Select(geode => ValidateAndFreezeGeode(geode, frozenCompatibility.InvalidAreaBehavior))
+            .ToArray();
 
         ValidateRefinementRules(frozenRules);
         if (frozenGeodes.Length == 0)
@@ -112,7 +114,9 @@ public static class MagenheimDefinitionValidator
         }
     }
 
-    private static GeodeDefinition ValidateAndFreezeGeode(GeodeDefinition geode)
+    private static GeodeDefinition ValidateAndFreezeGeode(
+        GeodeDefinition geode,
+        InvalidAreaBehavior invalidAreaBehavior)
     {
         if (geode is null)
             throw new InvalidOperationException("Geode definitions cannot contain null entries.");
@@ -128,7 +132,7 @@ public static class MagenheimDefinitionValidator
         if (!prefabName.StartsWith("Magenheim_", StringComparison.Ordinal))
             throw new InvalidOperationException($"Geode '{id}' prefab '{prefabName}' must use the Magenheim_ namespace.");
 
-        var area = SpawnAreaValidator.Normalize(geode.Area, InvalidAreaBehavior.Reject);
+        var area = SpawnAreaValidator.Normalize(geode.Area, invalidAreaBehavior);
         if (!area.IsValid)
             throw new InvalidOperationException($"Geode '{id}' has invalid area: {area.Diagnostic}");
 
@@ -169,6 +173,12 @@ public static class MagenheimDefinitionValidator
     {
         if (!policy.AdditiveOnly)
             throw new InvalidOperationException("Worldgen compatibility cannot disable additive-only behavior.");
+        if (!Enum.IsDefined(typeof(InvalidAreaBehavior), policy.InvalidAreaBehavior))
+            throw new InvalidOperationException($"Unknown invalid-area behavior '{policy.InvalidAreaBehavior}'.");
+        if (!Enum.IsDefined(typeof(DuplicateRegistrationBehavior), policy.DuplicateRegistrationBehavior))
+            throw new InvalidOperationException($"Unknown duplicate-registration behavior '{policy.DuplicateRegistrationBehavior}'.");
+        if (!Enum.IsDefined(typeof(RegistrationIdentityComparison), policy.IdentityComparison))
+            throw new InvalidOperationException($"Unknown registration identity comparison '{policy.IdentityComparison}'.");
 
         var excludedKeys = NormalizeDistinct(
             policy.ExcludedRegistrationKeys,

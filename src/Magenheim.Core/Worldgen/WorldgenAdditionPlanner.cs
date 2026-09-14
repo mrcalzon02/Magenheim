@@ -82,11 +82,7 @@ public static class WorldgenAdditionPlanner
         if (observed is null) throw new ArgumentNullException(nameof(observed));
 
         policy ??= WorldgenCompatibilityPolicy.Conservative;
-        if (!policy.AdditiveOnly)
-        {
-            throw new InvalidOperationException(
-                "Magenheim compatibility policy cannot disable additive-only worldgen behavior.");
-        }
+        ValidatePolicy(policy);
 
         var comparer = policy.IdentityComparison == RegistrationIdentityComparison.CaseInsensitive
             ? StringComparer.OrdinalIgnoreCase
@@ -99,14 +95,10 @@ public static class WorldgenAdditionPlanner
         foreach (var item in observedSnapshot)
         {
             if (!string.IsNullOrWhiteSpace(item.RegistrationKey))
-            {
                 occupiedKeys.Add(item.RegistrationKey.Trim());
-            }
 
             if (policy.DetectPrefabCollisions && !string.IsNullOrWhiteSpace(item.PrefabName))
-            {
                 occupiedPrefabs.Add(item.PrefabName.Trim());
-            }
         }
 
         var excludedKeys = new HashSet<string>(
@@ -128,9 +120,7 @@ public static class WorldgenAdditionPlanner
         foreach (var addition in desired.ToArray())
         {
             if (addition is null)
-            {
                 continue;
-            }
 
             if (string.IsNullOrWhiteSpace(addition.RegistrationKey) ||
                 !addition.RegistrationKey.StartsWith(OwnedPrefix, StringComparison.Ordinal))
@@ -223,9 +213,7 @@ public static class WorldgenAdditionPlanner
 
             plannedKeys.Add(addition.RegistrationKey);
             if (policy.DetectPrefabCollisions)
-            {
                 plannedPrefabs.Add(addition.PrefabName);
-            }
 
             results.Add(new WorldgenPlanEntry(
                 addition,
@@ -235,5 +223,17 @@ public static class WorldgenAdditionPlanner
         }
 
         return new WorldgenAdditionPlan(results);
+    }
+
+    private static void ValidatePolicy(WorldgenCompatibilityPolicy policy)
+    {
+        if (!policy.AdditiveOnly)
+            throw new InvalidOperationException("Magenheim compatibility policy cannot disable additive-only worldgen behavior.");
+        if (!Enum.IsDefined(typeof(InvalidAreaBehavior), policy.InvalidAreaBehavior))
+            throw new InvalidOperationException($"Unknown invalid-area behavior '{policy.InvalidAreaBehavior}'.");
+        if (!Enum.IsDefined(typeof(DuplicateRegistrationBehavior), policy.DuplicateRegistrationBehavior))
+            throw new InvalidOperationException($"Unknown duplicate-registration behavior '{policy.DuplicateRegistrationBehavior}'.");
+        if (!Enum.IsDefined(typeof(RegistrationIdentityComparison), policy.IdentityComparison))
+            throw new InvalidOperationException($"Unknown registration identity comparison '{policy.IdentityComparison}'.");
     }
 }
