@@ -47,8 +47,13 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 Logger);
 
             WorkshopOperationsRuntime.Configure(_services, _authoritySynchronizer, Logger);
-            _harmony = new Harmony(PluginGuid + ".workshop-operations");
+            SocketEffectsRuntime.Configure(effectiveDefinitions, Logger);
+            _harmony = new Harmony(PluginGuid + ".gameplay");
             _harmony.PatchAll(typeof(WorkshopCraftingPatch));
+            _harmony.PatchAll(typeof(SocketDamagePatch));
+            _harmony.PatchAll(typeof(SocketArmorPatch));
+            _harmony.PatchAll(typeof(SocketBlockPowerPatch));
+            _harmony.PatchAll(typeof(SocketCarryWeightPatch));
 
             _earthContentRegistrar = new EarthContentRegistrar(Logger);
             _earthContentRegistrar.Register();
@@ -68,7 +73,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
                 "Definition authority synchronization, session-scoped geode/refinement/socket/extraction replay protection, definition-driven intact geode items, " +
                 "fingerprinted geode placement configuration, additive geode vegetation registration, local-host geology workshop operations, " +
-                "and deterministic Earth shard recombination are configured. Remote-client operation RPC, socket workstation UI, and socket effect application remain gated pending implementation/validation.");
+                "deterministic Earth shard recombination, and per-item socket damage/armor/block/carry/mining effect adapters are configured. " +
+                "Remote-client operation RPC, socket workstation mutation UI, knockback/stagger runtime channels, and persistence multiplayer validation remain gated pending implementation/validation.");
         }
         catch (Exception exception)
         {
