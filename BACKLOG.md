@@ -23,7 +23,8 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Add the thin BepInEx/Jötunn plugin bootstrap on `main`, with hard Jötunn dependency and everyone-must-have/minor-version network declaration.
 - [ ] Compile the runtime project against Jötunn 2.30.0 and a current Valheim development environment.
 - [x] Add strict schema-validated static definition loading for refinement and geode definitions, including deterministic definition fingerprinting and hard failure on malformed/unknown content.
-- [ ] Add controlled server configuration overrides on top of the validated static definition snapshot; overrides must be revalidated and fingerprinted before use.
+- [x] Add controlled balance overrides on top of the validated static definition snapshot; only existing rule/geode balance fields may change, elemental identity sets remain fixed, and the effective snapshot is revalidated and fingerprinted before use.
+- [ ] Add deterministic tests for definition validation, override admission, and loader failure cases.
 - [ ] Register Crystal Shaping under permanent ID `magenheim.crystal_shaping`.
 - [ ] Add server-authoritative definition synchronization/fingerprint enforcement before gameplay mutations are enabled.
 
