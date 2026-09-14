@@ -300,11 +300,13 @@ internal static class WorkshopOperationRpc
         var authority = _authority!;
         try
         {
-            if (operation.SourceTier is null)
-                return ServerOperationRecord.Rejected(operation.RecipeName, "Refinement operation has no source tier.");
+            if (operation.SourceTier is null || operation.Element is null)
+                return ServerOperationRecord.Rejected(
+                    operation.RecipeName,
+                    "Refinement operation has incomplete elemental/tier identity.");
 
             var refinement = new RefinementRequest(
-                new Crystal(ElementalAlignment.Earth, operation.SourceTier.Value),
+                new Crystal(operation.Element.Value, operation.SourceTier.Value),
                 clientSkill,
                 operation.RequiredStationIdentity,
                 ServerRandom.NextUnit());
