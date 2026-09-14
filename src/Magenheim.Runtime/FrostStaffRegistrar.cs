@@ -9,7 +9,7 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Playable Frost staff family built on Valheim's native StaffIceShards projectile/status path.
-/// Each tier deliberately changes cast topology rather than only scaling damage.
+/// Each tier deliberately changes cast topology and carries its own original Magenheim geometry.
 /// </summary>
 internal sealed class FrostStaffRegistrar : IDisposable
 {
@@ -47,7 +47,7 @@ internal sealed class FrostStaffRegistrar : IDisposable
             }
 
             _registered = true;
-            _log.LogInfo("Registered the four-tier Frost staff family: Water Dart, Frost Lance, Ice Volley, and Rime Torrent.");
+            _log.LogInfo("Registered the four-tier Frost staff family with distinct Magenheim geometry and icons: Water Dart, Frost Lance, Ice Volley, and Rime Torrent.");
         }
         catch (Exception exception)
         {
@@ -72,6 +72,7 @@ internal sealed class FrostStaffRegistrar : IDisposable
         shared.m_maxQuality = 1;
         shared.m_value = 0;
         shared.m_dlc = string.Empty;
+        shared.m_icons = new[] { EarthAssets.Icon(definition.AssetName) };
 
         // Keep the native frost projectile and hit-status behavior, but reshape the cast itself.
         // This preserves real frost buildup while giving every Magenheim tier a distinct combat role.
@@ -89,6 +90,8 @@ internal sealed class FrostStaffRegistrar : IDisposable
         attack.m_projectileBursts = definition.Bursts;
         attack.m_burstInterval = definition.BurstInterval;
         attack.m_perBurstResourceUsage = false;
+
+        FrostStaffVisuals.Apply(item.ItemPrefab, definition.AssetName);
 
         if (!ItemManager.Instance.AddItem(item))
             throw new InvalidOperationException($"Jotunn refused Frost staff item '{definition.PrefabName}'.");
@@ -117,6 +120,7 @@ internal sealed class FrostStaffRegistrar : IDisposable
     {
         new FrostStaffDefinition(
             "Magenheim_Staff_Frost_Simple",
+            "staff-frost-simple",
             "Simple Staff of Frost",
             "Water Dart: condenses a water-heavy shard and snaps it forward. The impact carries a weak but genuine freezing bite and costs only stamina.",
             minimumStationLevel: 1,
@@ -136,6 +140,7 @@ internal sealed class FrostStaffRegistrar : IDisposable
 
         new FrostStaffDefinition(
             "Magenheim_Staff_Frost_Crystal",
+            "staff-frost-crystal",
             "Crystal Staff of Frost",
             "Frost Lance: compresses the cast into one long, precise ice spike. It hits hard, travels exceptionally fast, and carries substantially more force and stagger.",
             minimumStationLevel: 2,
@@ -155,6 +160,7 @@ internal sealed class FrostStaffRegistrar : IDisposable
 
         new FrostStaffDefinition(
             "Magenheim_Staff_Frost_Advanced",
+            "staff-frost-advanced",
             "Advanced Staff of Frost",
             "Ice Volley: breaks one shaping impulse into a five-shard fan. Individual shards are lighter, but the spread can blanket a target or freeze a clustered advance.",
             minimumStationLevel: 3,
@@ -175,6 +181,7 @@ internal sealed class FrostStaffRegistrar : IDisposable
 
         new FrostStaffDefinition(
             "Magenheim_Staff_Frost_Master",
+            "staff-frost-master",
             "Master Staff of Frost",
             "Rime Torrent: opens the crystal continuously for a heartbeat, pouring paired ice shards through eight rapid pulses. The stream sacrifices per-hit force for relentless frost pressure.",
             minimumStationLevel: 4,
@@ -218,6 +225,7 @@ internal sealed class FrostStaffRegistrar : IDisposable
     {
         internal FrostStaffDefinition(
             string prefabName,
+            string assetName,
             string displayName,
             string description,
             int minimumStationLevel,
@@ -234,6 +242,7 @@ internal sealed class FrostStaffRegistrar : IDisposable
             params StaffRequirement[] requirements)
         {
             PrefabName = prefabName;
+            AssetName = assetName;
             DisplayName = displayName;
             Description = description;
             MinimumStationLevel = minimumStationLevel;
@@ -251,6 +260,7 @@ internal sealed class FrostStaffRegistrar : IDisposable
         }
 
         internal string PrefabName { get; }
+        internal string AssetName { get; }
         internal string DisplayName { get; }
         internal string Description { get; }
         internal int MinimumStationLevel { get; }
