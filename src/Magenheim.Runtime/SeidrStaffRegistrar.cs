@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using BepInEx.Logging;
 using Jotunn.Configs;
 using Jotunn.Entities;
@@ -10,9 +11,9 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Four-tier Seidr staff family. Seidr is deliberate sorcery: precise hexes, rune pressure,
-/// spreading weave patterns, and repeated fate-line barrages. Every tier has original
-/// procedural geometry rather than a recolored vanilla staff.
+/// Four-tier Seidr staff family. Seidr is deliberate binding sorcery: precise hexes,
+/// impact seals, spreading witchweave, and fate knots that constrain movement rather
+/// than merely borrowing another elemental projectile.
 /// </summary>
 internal sealed class SeidrStaffRegistrar : IDisposable
 {
@@ -41,14 +42,76 @@ internal sealed class SeidrStaffRegistrar : IDisposable
             if (PrefabManager.Instance.GetPrefab(WorkshopRegistrar.StationPrefab) is null)
                 throw new InvalidOperationException("Geologist's Workstation must exist before Seidr staff recipes are registered.");
 
+            var snare = RegisterBindingEffect(
+                "Magenheim_SE_SeidrSnare",
+                "Seidr Snare",
+                "Binding runes drag against every step.",
+                ttl: 2.2f,
+                speedModifier: -.20f,
+                new Color(.63f, .27f, .94f, 1f));
+            var fateBind = RegisterBindingEffect(
+                "Magenheim_SE_SeidrFateBind",
+                "Fate Bind",
+                "A woven fate-line constrains movement until the omen releases.",
+                ttl: 4f,
+                speedModifier: -.35f,
+                new Color(.84f, .53f, 1f, 1f));
+
+            var hexMark = StaffEffectPayloads.CreateField(
+                "Magenheim_Seidr_HexMark",
+                new HitData.DamageTypes { m_spirit = .5f },
+                radius: .70f,
+                ttl: .15f,
+                hitInterval: .15f,
+                attackForce: 0f,
+                tint: new Color(.57f, .19f, .88f, 1f),
+                emission: 1.35f,
+                statusEffect: snare);
+            var runeSeal = StaffEffectPayloads.CreateField(
+                "Magenheim_Seidr_RuneSeal",
+                new HitData.DamageTypes { m_spirit = 3f },
+                radius: 2.4f,
+                ttl: .22f,
+                hitInterval: .22f,
+                attackForce: 8f,
+                tint: new Color(.67f, .28f, .96f, 1f),
+                emission: 1.50f,
+                statusEffect: snare);
+            var witchweave = StaffEffectPayloads.CreateField(
+                "Magenheim_Seidr_WitchweaveSeal",
+                new HitData.DamageTypes { m_spirit = 1.5f },
+                radius: 1.35f,
+                ttl: .26f,
+                hitInterval: .26f,
+                attackForce: 3f,
+                tint: new Color(.75f, .39f, 1f, 1f),
+                emission: 1.60f,
+                statusEffect: snare);
+            var fateKnot = StaffEffectPayloads.CreateField(
+                "Magenheim_Seidr_FateKnot",
+                new HitData.DamageTypes { m_spirit = 2f },
+                radius: 1.65f,
+                ttl: .36f,
+                hitInterval: .36f,
+                attackForce: 4f,
+                tint: new Color(.88f, .64f, 1f, 1f),
+                emission: 1.80f,
+                statusEffect: fateBind);
+
+            var payloads = new PayloadSet(
+                StaffEffectPayloads.CreateProjectile("Magenheim_Seidr_HexProjectile", new Color(.52f, .16f, .85f, 1f), 1.35f, hexMark),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Seidr_RuneProjectile", new Color(.64f, .25f, .95f, 1f), 1.50f, runeSeal),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Seidr_WeaveProjectile", new Color(.74f, .38f, 1f, 1f), 1.62f, witchweave),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Seidr_FateProjectile", new Color(.88f, .62f, 1f, 1f), 1.85f, fateKnot));
+
             foreach (var definition in Definitions())
             {
-                RegisterStaff(definition);
+                RegisterStaff(definition, payloads);
                 RegisterRecipe(definition);
             }
 
             _registered = true;
-            _log.LogInfo("Registered Seidr staffs: Hex Needle, Rune Spear, Witchweave, and Fate Loom.");
+            _log.LogInfo("Registered Seidr abilities: Hex Needle, Rune Spear, Witchweave, and Fate Loom with binding effects.");
         }
         catch (Exception exception)
         {
@@ -61,7 +124,34 @@ internal sealed class SeidrStaffRegistrar : IDisposable
         }
     }
 
-    private static void RegisterStaff(Definition definition)
+    private static StatusEffect RegisterBindingEffect(
+        string identity,
+        string displayName,
+        string tooltip,
+        float ttl,
+        float speedModifier,
+        Color tint)
+    {
+        var effect = ScriptableObject.CreateInstance<SE_Stats>();
+        effect.name = identity;
+        effect.m_name = displayName;
+        effect.m_tooltip = tooltip;
+        effect.m_ttl = ttl;
+        effect.m_icon = EarthAssets.Icon("crystal", identity, tint);
+
+        var speedField = typeof(SE_Stats).GetField(
+            "m_speedModifier",
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            ?? throw new InvalidOperationException("Current Valheim SE_Stats no longer exposes the m_speedModifier field required by Seidr binding.");
+        speedField.SetValue(effect, speedModifier);
+
+        var custom = new CustomStatusEffect(effect, fixReference: false);
+        if (!ItemManager.Instance.AddStatusEffect(custom))
+            throw new InvalidOperationException($"Jotunn refused Seidr status effect '{identity}'.");
+        return custom.StatusEffect;
+    }
+
+    private static void RegisterStaff(Definition definition, PayloadSet payloads)
     {
         if (PrefabManager.Instance.GetPrefab(definition.PrefabName) || CustomItem.IsCustomItem(definition.PrefabName))
             throw new InvalidOperationException($"Cannot replace occupied Seidr staff identity '{definition.PrefabName}'.");
@@ -75,12 +165,14 @@ internal sealed class SeidrStaffRegistrar : IDisposable
         shared.m_value = 0;
         shared.m_dlc = string.Empty;
         shared.m_damages = new HitData.DamageTypes { m_spirit = definition.SpiritDamage };
+        shared.m_damagesPerLevel = new HitData.DamageTypes();
         shared.m_icons = new[]
         {
             EarthAssets.Icon("crystal", definition.AssetName, new Color(.67f, .30f, .96f, 1f))
         };
 
         var attack = shared.m_attack;
+        attack.m_attackProjectile = payloads.Resolve(definition.Payload);
         attack.m_attackStamina = definition.StaminaCost;
         attack.m_attackEitr = definition.EitrCost;
         attack.m_damageMultiplier = definition.DamageMultiplier;
@@ -121,23 +213,23 @@ internal sealed class SeidrStaffRegistrar : IDisposable
     {
         new Definition(
             "Magenheim_Staff_Seidr_Simple", "staff-seidr-simple", "Simple Staff of Seidr",
-            "Hex Needle: drives a narrow omen-laced bolt through one chosen line. Cheap, exact, and intentionally unforgiving of poor aim.",
-            1, 18f, 0f, 22f, .58f, .42f, .55f, 42f, .75f, 1, 1, 0f,
+            "Hex Needle: drives one omen-laced bolt into the chosen target. The impact inscribes a brief Seidr Snare, dragging twenty percent from movement instead of pretending the hex is only damage.",
+            1, 18f, 0f, 15f, 1f, .30f, .40f, 44f, .60f, 1, 1, 0f, PayloadKind.Hex,
             new Requirement("FineWood", 8), new Requirement("GreydwarfEye", 6), new Requirement("Magenheim_Crystal_Seidr_Simple", 1)),
         new Definition(
             "Magenheim_Staff_Seidr_Crystal", "staff-seidr-crystal", "Crystal Staff of Seidr",
-            "Rune Spear: channels a fully shaped crystal through a rigid fork of binding runes, producing one heavy, straight sorcerous strike.",
-            2, 28f, 0f, 42f, 1.05f, 1.10f, 1.15f, 50f, .35f, 1, 1, 0f,
+            "Rune Spear: hurls one heavy sorcerous lance. Its impact opens a binding seal around the struck point, damaging nearby spirits and catching movement in the same rune.",
+            2, 28f, 0f, 34f, 1f, .70f, .90f, 54f, .25f, 1, 1, 0f, PayloadKind.Rune,
             new Requirement("ElderBark", 10), new Requirement("AncientSeed", 3), new Requirement("Silver", 2), new Requirement("Magenheim_Crystal_Seidr_Crystal", 1)),
         new Definition(
             "Magenheim_Staff_Seidr_Advanced", "staff-seidr-advanced", "Advanced Staff of Seidr",
-            "Witchweave: fractures a single command into five crossing omen-lines. The fan is less violent per bolt but blankets evasive targets with sorcerous pressure.",
-            3, 10f, 18f, 28f, .42f, .68f, .72f, 38f, 9.0f, 5, 1, 0f,
+            "Witchweave: casts five crossing omen-lines. Every line leaves a small binding seal, trading raw impact for a fan of overlapping snares that catches evasive or clustered enemies.",
+            3, 10f, 18f, 9f, .50f, .35f, .55f, 42f, 9f, 5, 1, 0f, PayloadKind.Weave,
             new Requirement("YggdrasilWood", 10), new Requirement("BlackCore", 2), new Requirement("Eitr", 6), new Requirement("Magenheim_Crystal_Seidr_Advanced", 1)),
         new Definition(
             "Magenheim_Staff_Seidr_Master", "staff-seidr-master", "Master Staff of Seidr",
-            "Fate Loom: holds the master crystal inside intersecting rune halos and releases repeated three-line volleys, stitching the target zone with controlled sorcery.",
-            4, 0f, 46f, 34f, .46f, .76f, .80f, 42f, 7.0f, 3, 5, .13f,
+            "Fate Loom: releases three omen-lines through four successive responses. Every impact knots a stronger Fate Bind into the ground, reducing movement by thirty-five percent for four seconds and turning the target lane into controlled sorcery.",
+            4, 0f, 48f, 8f, .40f, .40f, .65f, 45f, 7f, 3, 4, .13f, PayloadKind.Fate,
             new Requirement("YggdrasilWood", 15), new Requirement("BlackCore", 4), new Requirement("Eitr", 12), new Requirement("Magenheim_Crystal_Seidr_Master", 1)),
     };
 
@@ -146,6 +238,33 @@ internal sealed class SeidrStaffRegistrar : IDisposable
         if (!_subscribed) return;
         PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent;
         _subscribed = false;
+    }
+
+    private enum PayloadKind { Hex, Rune, Weave, Fate }
+
+    private sealed class PayloadSet
+    {
+        private readonly GameObject _hex;
+        private readonly GameObject _rune;
+        private readonly GameObject _weave;
+        private readonly GameObject _fate;
+
+        internal PayloadSet(GameObject hex, GameObject rune, GameObject weave, GameObject fate)
+        {
+            _hex = hex;
+            _rune = rune;
+            _weave = weave;
+            _fate = fate;
+        }
+
+        internal GameObject Resolve(PayloadKind kind) => kind switch
+        {
+            PayloadKind.Hex => _hex,
+            PayloadKind.Rune => _rune,
+            PayloadKind.Weave => _weave,
+            PayloadKind.Fate => _fate,
+            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
+        };
     }
 
     private readonly struct Requirement
@@ -161,7 +280,7 @@ internal sealed class SeidrStaffRegistrar : IDisposable
             string prefabName, string assetName, string displayName, string description, int minimumStationLevel,
             float staminaCost, float eitrCost, float spiritDamage, float damageMultiplier, float forceMultiplier,
             float staggerMultiplier, float projectileVelocity, float projectileAccuracy, int projectiles, int bursts,
-            float burstInterval, params Requirement[] requirements)
+            float burstInterval, PayloadKind payload, params Requirement[] requirements)
         {
             PrefabName = prefabName;
             AssetName = assetName;
@@ -179,6 +298,7 @@ internal sealed class SeidrStaffRegistrar : IDisposable
             Projectiles = projectiles;
             Bursts = bursts;
             BurstInterval = burstInterval;
+            Payload = payload;
             Requirements = requirements;
         }
 
@@ -198,6 +318,7 @@ internal sealed class SeidrStaffRegistrar : IDisposable
         internal int Projectiles { get; }
         internal int Bursts { get; }
         internal float BurstInterval { get; }
+        internal PayloadKind Payload { get; }
         internal IReadOnlyList<Requirement> Requirements { get; }
     }
 }

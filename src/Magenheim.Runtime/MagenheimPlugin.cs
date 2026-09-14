@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.25";
+    internal const string PluginVersion = "0.0.26";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -115,8 +115,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 "Socket item/prefab/category/mod-origin compatibility rules participate in multiplayer mutation authority. " +
                 "Player content includes eight biome geodes, eight five-tier elemental crystal families, elemental shard recombination, " +
                 "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and all eight four-tier elemental staff families. " +
-                "Radiance now owns hard-light projectiles, Corona impact flashes, and a persistent Daybreak sanctuary; Spirit now owns spectral projectiles " +
-                "and tiered impact echoes instead of inheriting Staff of Embers' fire payload behavior.");
+                "Radiance owns hard-light/flash/sanctuary payloads, Spirit owns spectral echo fields, and Seidr now owns binding seals plus " +
+                "twenty-percent Snare and thirty-five-percent Fate Bind movement hexes instead of inheriting generic fireball impacts.");
         }
         catch (Exception exception)
         {

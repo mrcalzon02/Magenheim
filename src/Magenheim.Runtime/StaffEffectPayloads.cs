@@ -35,8 +35,6 @@ internal static class StaffEffectPayloads
         var projectile = clone.GetComponent<Projectile>()
             ?? throw new InvalidOperationException($"Cloned spell payload '{prefabName}' has no Projectile component.");
 
-        // Remove Staff of Embers' baked combat identity. Attack/item damage is supplied by the
-        // owning Magenheim staff; optional spawn-on-hit content is explicitly Magenheim-owned.
         SetOptionalField(projectile, "m_damage", new HitData.DamageTypes());
         SetOptionalField(projectile, "m_aoe", 0f);
         SetOptionalField(projectile, "m_attackForce", 0f);
@@ -61,7 +59,8 @@ internal static class StaffEffectPayloads
         float hitInterval,
         float attackForce,
         Color tint,
-        float emission)
+        float emission,
+        StatusEffect? statusEffect = null)
     {
         EnsureIdentityFree(prefabName);
 
@@ -107,7 +106,7 @@ internal static class StaffEffectPayloads
         SetOptionalField(aoe, "m_hitOnEnable", true);
         SetOptionalField(aoe, "m_hitAfterTtl", false);
         SetOptionalField(aoe, "m_attachToCaster", false);
-        ClearOptionalReferenceField(aoe, "m_statusEffect");
+        SetStatusEffectField(aoe, statusEffect, prefabName);
         ClearOptionalReferenceField(aoe, "m_statusEffectIfBoss");
         ClearOptionalReferenceField(aoe, "m_statusEffectIfPlayer");
 
@@ -115,6 +114,28 @@ internal static class StaffEffectPayloads
         PrefabManager.Instance.AddPrefab(clone);
         EnsureRegistered(prefabName);
         return clone;
+    }
+
+    private static void SetStatusEffectField(object target, StatusEffect? effect, string ownerName)
+    {
+        var field = FindField(target.GetType(), "m_statusEffect");
+        if (field is null)
+            return;
+
+        if (field.FieldType == typeof(string))
+        {
+            field.SetValue(target, effect ? effect.name : string.Empty);
+            return;
+        }
+
+        if (typeof(StatusEffect).IsAssignableFrom(field.FieldType))
+        {
+            field.SetValue(target, effect);
+            return;
+        }
+
+        throw new InvalidOperationException(
+            $"Prefab '{ownerName}' exposes unsupported status-effect field type '{field.FieldType.FullName}'.");
     }
 
     private static T? ReadRequiredField<T>(object target, string fieldName, string ownerName) where T : class
