@@ -6,7 +6,7 @@ public enum CrystalTier
 {
     Rough = 0,
     Simple = 1,
-    Refined = 2,
+    Crystal = 2,
     Advanced = 3,
     Master = 4
 }

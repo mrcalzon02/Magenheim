@@ -103,8 +103,8 @@ public sealed class CrystalRefinementService
         new[]
         {
             new RefinementRule(CrystalTier.Rough, CrystalTier.Simple, 0.10d, 0, "Magenheim_GeologistWorkstation", 1),
-            new RefinementRule(CrystalTier.Simple, CrystalTier.Refined, 0.20d, 0, "Magenheim_StationUpgrade_FracturingBlock", 2),
-            new RefinementRule(CrystalTier.Refined, CrystalTier.Advanced, 0.30d, 0, "Magenheim_StationUpgrade_FacetingWheel", 3),
+            new RefinementRule(CrystalTier.Simple, CrystalTier.Crystal, 0.20d, 0, "Magenheim_StationUpgrade_FracturingBlock", 2),
+            new RefinementRule(CrystalTier.Crystal, CrystalTier.Advanced, 0.30d, 0, "Magenheim_StationUpgrade_FacetingWheel", 3),
             new RefinementRule(CrystalTier.Advanced, CrystalTier.Master, 0.40d, 0, "Magenheim_StationUpgrade_ResonanceFrame", 5)
         };
 

@@ -1,39 +1,47 @@
 # Magenheim Backlog
 
-Priority is dependency order, with broken intended behavior repaired before new scope.
+Priority is dependency order. Broken intended behavior and repository divergence outrank new scope.
 
-## P0 — repository/runtime foundation
+## P0 — repository and pure-core foundation
 
-- [x] Reconcile README claims against actual committed state.
-- [x] Establish authoritative project state and design documents.
-- [x] Restore pure-domain crystal tier/alignment/refinement foundation.
-- [x] Correct canonical tier/element identity drift and authoritative skill-scaled destructive failure/shard semantics.
-- [ ] Add deterministic standalone tests and a reproducible build path for the pure-domain refinement engine.
-- [ ] Add BepInEx/Jötunn plugin bootstrap on `main`.
-- [ ] Add config/data loading for refinement definitions with strict validation and explicit startup errors for unsupported schema/config values.
+- [x] Reconcile false bootstrap claims against committed repository reality.
+- [x] Establish authoritative instructions, project state, design, backlog, and validation records.
+- [x] Reconcile divergent `main`/`master` histories without force-pushing or discarding ancestry.
+- [x] Remove committed unresolved-merge text from the live authority by constructing an explicit resolved consolidation tree.
+- [x] Preserve material legacy design work without making stale content authoritative.
+- [x] Restore canonical crystal/refinement domain authority with Rough -> Simple -> Crystal -> Advanced -> Master.
+- [x] Retain additive-only spawn-area validation and non-destructive worldgen planning from divergent work.
+- [x] Add deterministic standalone tests for refinement and worldgen planning.
+- [x] Add a `netstandard2.1` `IsExternalInit` compatibility shim for record-based core models.
+- [ ] Execute the standalone tests with a .NET 8 SDK and record the observed result.
+- [ ] Compile `Magenheim.Core` with warnings as errors.
+- [ ] Add the BepInEx/Jötunn plugin bootstrap on `main`.
+- [ ] Add strict config/data loading for refinement and geode definitions.
 - [ ] Register Crystal Shaping under permanent ID `magenheim.crystal_shaping`.
 - [ ] Add server-authoritative definition synchronization before gameplay mutations are enabled.
 
 ## P1 — Meadows/Earth vertical slice
 
-- [ ] Define Meadows geode data and Earth-only initial outcome table.
-- [ ] Register intact Meadows geode item/prefab.
-- [ ] Implement additive, non-destructive Meadows world placement with configurable spawn controls.
+- [ ] Define the Meadows geode data and Earth-dominant initial outcome table.
+- [ ] Register an intact Meadows geode item/prefab.
+- [ ] Bind the additive worldgen planner to a thin Jötunn registrar.
+- [ ] Implement configurable non-destructive Meadows world placement.
 - [ ] Implement Geologist's Workstation registration and crafting recipe.
-- [ ] Implement geode opening transaction with independent outcome rolls.
-- [ ] Register Earth Rough/Simple/Refined/Advanced/Master items and Earth Crystal Shards.
+- [ ] Implement authoritative geode opening: one guaranteed crystal, independent 35% second-crystal roll, independent 10% third-crystal roll.
+- [ ] Register Earth Rough/Simple/Crystal/Advanced/Master items and Earth Crystal Shards.
 - [ ] Bind valid refinement attempts to atomic inventory transactions and Crystal Shaping XP.
-- [ ] Verify failure consumes exactly one source and returns exactly the configured matching shards.
-- [ ] Implement multiplayer/server authority before enabling persistent gameplay mutation.
+- [ ] Verify a failed transaction consumes exactly one source and returns exactly the configured matching shards.
+- [ ] Verify disposable-world generation, save/load, host/client, and dedicated-server behavior before production admission.
 
 ## P2 — adaptive sockets
 
 - [ ] Define namespaced persistent socket metadata.
-- [ ] Discover eligible equipment adaptively from item category and metadata.
+- [ ] Discover eligible equipment adaptively from item category/capabilities and metadata.
 - [ ] Add configurable include/exclude rules by item, prefab, category, and mod origin.
-- [ ] Apply crystal effects additively without replacing external prefabs or recipes.
-- [ ] Validate persistence, multiplayer authority, item transfer, death/drop, repair, upgrade, and mod-removal behavior.
+- [ ] Map crystal bonuses by equipment category without replacing external prefabs or recipes.
+- [ ] Preserve unknown foreign custom-data keys.
+- [ ] Validate persistence, multiplayer authority, transfer, death/drop, repair, upgrade, and mod-removal behavior.
 
-## P3 — biome expansion
+## P3 — biome and magic expansion
 
-Add biome geodes and elemental weight tables only after the Meadows/Earth vertical slice is playable and validated. Biome expansion must be data-driven and must not require changes to the refinement engine.
+Add biome geodes, elemental weight tables, staves, runes, Galdr, Seidr, wards, travel, ship attunement, resonance, totems, spirits, Fate, and boss-resonance systems only after the Meadows/Earth vertical slice has passed its dependency and runtime gates. Use the archived detailed design as recovery material, not as evidence of implementation.

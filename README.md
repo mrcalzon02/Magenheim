@@ -2,41 +2,31 @@
 
 **Magic begins as geology.**
 
-Magenheim is a Valheim mod built around biome geodes, elemental crystals, Crystal Shaping progression, increasingly risky crystal refinement, and later adaptive equipment socketing.
+Magenheim is a Valheim mod built around biome geodes, elemental crystals, the Crystal Shaping skill, risky refinement, and adaptive non-destructive equipment socketing.
 
 ## Verified implementation state
 
-The repository is currently at the restored foundation stage, not yet at a playable release.
+The repository is still a foundation, not a playable release. The authoritative branch is `main`.
 
-Implemented on `main`:
+Implemented in source:
 
-- authoritative project-state and design records;
-- canonical crystal tiers: Rough, Simple, Crystal, Advanced, Master;
-- elemental-alignment domain model;
-- definition-driven one-tier-at-a-time refinement validation;
-- canonical default refinement success curve of 90%, 80%, 70%, and 60%;
-- station and Crystal Shaping skill gates;
-- preservation of crystal element through refinement;
-- explicit success, preserved-failure, destroyed-failure, invalid-skill, invalid-station, invalid-roll, and no-rule outcomes;
-- a dependency-free `Magenheim.Core` project targeting `netstandard2.1`.
+- project authority, state, backlog, implementation, validation, and design records;
+- a dependency-free `Magenheim.Core` domain project;
+- canonical tiers Rough, Simple, Crystal, Advanced, and Master;
+- normal alignments Earth, Fire, Frost, Storm, Venom, Radiance, Seidr, and Spirit;
+- one-tier refinement rules with 10%, 20%, 30%, and 40% base failure;
+- Crystal Shaping skill reduction, workstation/upgrade gates, destructive failure, matching shard returns, and element preservation;
+- additive-only spawn-area validation and worldgen addition planning that snapshots foreign registrations rather than mutating them;
+- a standalone deterministic test harness covering refinement and worldgen planning.
 
-Not yet implemented or verified:
+A detailed pre-reconciliation design record is preserved under `docs/archive/` for provenance and future feature recovery. The current `docs/MAGENHEIM_DESIGN_SPEC.md` controls when archived material conflicts with current authority.
 
-- BepInEx/Jötunn runtime plugin bootstrap;
-- Crystal Shaping registration in Valheim;
-- geode prefabs or biome spawning;
-- item registration and inventory mutation;
-- multiplayer/RPC authority;
-- persistent sockets or equipment effects;
-- runtime configuration loading;
-- in-game validation.
+## Validation boundary
 
-The first repository commit contained only this README while describing source, tests, build scripts, and runtime integration that were not actually present. The current `main` branch corrects that discrepancy by treating only committed files as implemented.
+The current execution environment has no .NET SDK/compiler, so this reconciliation performs source-level and Git-object verification only. The test harness is present but has not been executed in this environment. No Valheim, BepInEx, Jötunn, world-generation, multiplayer, or persistence runtime acceptance is claimed.
 
-## Current vertical slice
+## Immediate playable target
 
-The immediate playable target remains:
+Meadows geode -> intact geode -> Geologist's Workstation -> Earth Rough crystal -> Crystal Shaping refinement -> persistent adaptive equipment integration.
 
-Meadows geode -> Earth-aligned Rough crystal -> Geologist's Workstation -> risky refinement -> later socket/equipment integration.
-
-See `PROJECT_STATE.md`, `docs/MAGENHEIM_DESIGN_SPEC.md`, `BACKLOG.md`, and `VALIDATION.md` for authoritative scope and next work.
+Runtime plugin bootstrap, asset/prefab registration, inventory transactions, server authority, sockets, and in-game validation remain open work. See `PROJECT_STATE.md`, `docs/MAGENHEIM_DESIGN_SPEC.md`, `BACKLOG.md`, `IMPLEMENTATION_PLAN.md`, and `VALIDATION.md`.

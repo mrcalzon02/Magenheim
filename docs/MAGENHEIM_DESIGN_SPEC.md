@@ -2,47 +2,21 @@
 
 ## Core premise
 
-Magenheim adds a geology-to-magic progression layer to Valheim. Geodes appear as biome-specific world resources. Geodes are opened into elemental crystals. Crystal Shaping is its own progression skill. Crystals are refined through increasingly valuable tiers and later socketed into weapons, armor, tools, and equipment through adaptive, non-destructive compatibility rules.
+Magenheim adds a geology-to-magic progression layer to Valheim. Magic begins with physical biome geodes, proceeds through a dedicated Crystal Shaping skill, and grows into equipment enhancement and later deliberate magical systems. It should feel like a survival-progression extension of Valheim rather than a disconnected spell menu.
 
-## Permanent progression model
+## Permanent progression identities
 
 Crystal tiers are ordered and stable:
 
 1. Rough
 2. Simple
-3. Refined
+3. Crystal
 4. Advanced
 5. Master
 
-Refinement always advances exactly one tier. A rule explicitly defines source tier, destination tier, base failure chance, station requirement, and failure shard return. Runtime code must not infer hidden tier jumps.
+Refinement always advances exactly one tier. Ordinary refinement preserves elemental alignment.
 
-The canonical failure curve is:
-
-- Rough -> Simple: 10% base failure, 1 matching shard on failure.
-- Simple -> Refined: 20% base failure, 2 matching shards on failure.
-- Refined -> Advanced: 30% base failure, 3 matching shards on failure.
-- Advanced -> Master: 40% base failure, 5 matching shards on failure.
-
-A failed valid refinement destroys the source crystal and returns element-matched shards. Failure is still practice, so a valid refinement attempt is experience-eligible whether it succeeds or fails. Invalid requests award no experience.
-
-Crystal Shaping reduces failure rather than imposing invented tier-level gates. The default maximum reduction is 75%, configurable from 50% through 100%. The authoritative calculation is:
-
-`skillReduction = (CrystalShapingSkill / 100) * MaximumFailureReduction`
-
-`effectiveFailure = BaseFailure * (1 - skillReduction)`
-
-At 100% configured reduction and skill 100, effective failure is zero.
-
-Station progression gates refinement:
-
-- Rough -> Simple: `Magenheim_GeologistWorkstation`
-- Simple -> Refined: `Magenheim_StationUpgrade_FracturingBlock`
-- Refined -> Advanced: `Magenheim_StationUpgrade_FacetingWheel`
-- Advanced -> Master: `Magenheim_StationUpgrade_ResonanceFrame`
-
-## Elemental alignment
-
-Every normal crystal carries exactly one stable elemental alignment. Canonical persistent identities are:
+Normal elemental alignments are:
 
 - Earth
 - Fire
@@ -53,41 +27,99 @@ Every normal crystal carries exactly one stable elemental alignment. Canonical p
 - Seidr
 - Spirit
 
-Fate and boss resonance are later special systems, not ordinary geode elemental alignments. Refinement preserves elemental alignment unless a future explicitly defined transmutation mechanic states otherwise.
+Fate crystals and boss resonance are later special systems, not ordinary geode alignments.
 
-The current bounded implementation remains the Meadows/Earth vertical slice. Additional biome tables are additive data definitions and must not require changing the refinement engine.
+Permanent Crystal Shaping skill identifier: `magenheim.crystal_shaping`.
+
+## Refinement
+
+Canonical base failure and shard return:
+
+- Rough -> Simple: 10% failure, 1 matching shard.
+- Simple -> Crystal: 20% failure, 2 matching shards.
+- Crystal -> Advanced: 30% failure, 3 matching shards.
+- Advanced -> Master: 40% failure, 5 matching shards.
+
+A valid failure destroys the source crystal. Failure is still practice, so a valid success or failure may award Crystal Shaping experience. Invalid attempts are non-mutating and award no experience.
+
+Crystal Shaping reduces failure:
+
+`skillReduction = (CrystalShapingSkill / 100) * MaximumFailureReduction`
+
+`effectiveFailure = BaseFailure * (1 - skillReduction)`
+
+Default maximum reduction is 75%, configurable from 50% through 100%. At 100% configured reduction and skill 100, effective failure reaches zero.
+
+Station progression gates the four steps:
+
+- `Magenheim_GeologistWorkstation`
+- `Magenheim_StationUpgrade_FracturingBlock`
+- `Magenheim_StationUpgrade_FacetingWheel`
+- `Magenheim_StationUpgrade_ResonanceFrame`
 
 ## Geodes
 
-Each biome owns one or more geode definitions. A geode definition contains its biome, weighted crystal outcome table, world-spawn parameters, item identity, and opening requirements. Outcome selection uses independent weighted rolls where multiple crystals may be produced unless the definition explicitly requests linked rolls.
+Every terrestrial biome may define its own naturally occurring geode family. Geodes appear as physical world objects, visually distinct from ordinary stones, larger than common ground stones but smaller than the player. Mining produces the intact geode; mining does not directly emit finished crystals.
 
-World-generation integration must be additive and non-destructive: register Magenheim resources without replacing biome vegetation tables, location lists, or third-party spawn definitions. Compatibility should prefer append/registration APIs and config-driven enable/disable controls.
+Geodes are opened at the Geologist's Workstation. The default opening transaction produces:
 
-## Crystal Shaping skill
+- one guaranteed Rough crystal;
+- an independent 35% chance for a second crystal;
+- an independent 10% chance for a third crystal.
 
-Crystal Shaping is a dedicated Valheim skill. Valid geode opening and valid refinement attempts can award experience even when refinement fails, provided all preconditions passed.
+Each produced crystal receives its elemental alignment from the geode/biome weighted table unless a definition explicitly specifies linked rolls. Weight tables must have a positive total and may be normalized mathematically rather than requiring an exact total of 100.
 
-Permanent skill identifier: `magenheim.crystal_shaping`.
+The first bounded content slice is Meadows/Earth. Additional biome tables are data additions and must not require a second refinement engine.
 
-## Equipment slotting
+## World-generation invariants
 
-Socketing is a later milestone and must be adaptive rather than based on hard-coded vanilla item lists. Eligible equipment is discovered from item metadata/category plus configurable inclusion and exclusion rules. Magenheim must attach socket data without overwriting another mod's item definition. Crystal effects are calculated from equipment category, crystal element, crystal tier, and configured scaling.
+Worldgen integration is additive and non-destructive. Magenheim may add its own prefabs, vegetation, locations, or clutter, but compatibility code must not delete, rewrite, disable, or reorder vanilla or third-party entries.
 
-Compatibility rules:
+Every Magenheim registration uses a stable `magenheim.` key. Before registration, integration code observes existing registrations and creates a plan. An occupied key is skipped or rejected according to conservative policy; the existing entry survives unchanged.
 
-- never replace another mod's prefab solely to add a socket;
-- never rewrite an external recipe when an additive recipe/upgrade path can be used;
-- preserve unknown metadata and custom-data keys;
-- namespace all persistent custom data under Magenheim-owned keys;
-- expose category, item, prefab, and mod-origin allow/deny configuration;
-- server-authoritative mutations must be designed before persistent sockets are enabled in multiplayer.
+Supported abstract spawn areas are Median, Edge, and All. None and unknown bits are invalid by default. Configuration may explicitly clamp known bits or fall back to All, but destructive foreign mutation can never be enabled through compatibility configuration.
 
-## Multiplayer and persistence boundary
+The pure planner validates definitions and collisions. A thin runtime adapter translates approved entries to current Jötunn/Valheim APIs and records what it attempted. Repeated lifecycle calls must be idempotent.
 
-Server gameplay rules are authoritative. Refinement chances, element definitions, geode weights, socket rules, and other gameplay data must not silently diverge between peers. The pure-domain engine makes deterministic decisions from explicit inputs; later runtime code owns inventory transactions, RPC authority, synchronized configuration, and persistence.
+## Adaptive equipment socketing
 
-Per-item state must never be represented by mutating a shared `ItemDrop` or prefab definition. Persistent item metadata uses Magenheim-owned keys and must survive save/load, drop/pickup, repair, chest storage, world transfer, and multiplayer transfer before socketing is admitted as production behavior.
+Socketing is per item instance and additive. It must never represent an individual socket by mutating a shared `ItemDrop` or prefab.
 
-## Current implementation boundary
+Eligible equipment is discovered from observable category/capabilities and configurable overrides rather than a fixed vanilla-only list. Supported effect profiles may include weapons, armor, shields, tools, and utility equipment. Each crystal element/tier can provide a different category-appropriate bonus.
 
-The current source slice is pure domain logic only. It owns canonical crystal identities, tier ordering, rule validation, skill-scaled refinement probability, destructive failure/shard outcomes, and deterministic results. It deliberately does not depend on Unity, Valheim, BepInEx, or Jötunn. Runtime adapters consume this layer later.
+Rules:
+
+- namespace persistent custom data under Magenheim-owned keys;
+- preserve unknown foreign metadata;
+- allow item/prefab/category/mod-origin include and exclude configuration;
+- do not replace another mod's prefab solely to add a socket;
+- refuse unsafe classification with a diagnostic instead of cloning or mutating foreign content;
+- apply effects through Magenheim-owned calculation/effect layers.
+
+## Multiplayer and transactions
+
+Server gameplay rules are authoritative. Gameplay-significant definitions must not silently diverge between peers.
+
+Geode opening, refinement, socket changes, inventory consumption, item grants, and skill experience are authoritative transactions. Client UI may preview, but persisted mutation requires server approval. Operations must defend against replay, reconnect duplication, inventory-full cases, and partial consumption.
+
+Before persistent socketing is production-admitted, metadata must survive save/load, drop/pickup, storage, repair, upgrade, player/world transfer, host/client, and dedicated-server flows.
+
+## Validation ladder
+
+A source file existing is not completion. Validate in increasing strength:
+
+1. source/schema review;
+2. deterministic pure-core tests;
+3. compilation against intended targets;
+4. plugin startup and dependency registration;
+5. disposable-world generation and repeated-load idempotence;
+6. server-authoritative multiplayer transactions;
+7. persistence and mod-removal safety.
+
+Do not use valuable worlds as first-test environments.
+
+## Later systems and archived design
+
+The earlier full design explored staves, runecarving, Galdr, Seidr rituals, wards, travel, ship attunement, elemental resonance, battlefield totems, spirit binding, Fate magic, and boss-resonant artifacts. That material remains useful and is preserved at `docs/archive/MAGENHEIM_DESIGN_SPEC_0.1.0_PRE_RECONCILIATION.md`.
+
+Archived material is a design reservoir, not automatic implementation authority. Each recovered feature must be reconciled against this live specification, current source, current APIs, and current user direction before implementation.

@@ -2,38 +2,44 @@
 
 ## Authority
 
-This file records verified repository state. Live committed repository state and the authoritative design specification outrank stale conversation or scheduled-task claims.
+This file records verified repository state. `INSTRUCTIONS.md`, live committed source on `main`, and directly observed Git state outrank stale branch documents or conversational claims.
 
-## Current branch
+## Reconciliation baseline — 2026-09-13
 
-Active development branch: `main`.
+Before consolidation the repository had two divergent branches:
 
-The repository was initially created with GitHub's `master` default. The first commit contained only `README.md`, even though that README described a much larger 0.0.2 foundation. The missing implementation is treated as an incomplete bootstrap, not as verified completed work.
+- `main`: `6282de796cf417edcd36bdc7f941e6e33f03a44f`
+- `master`: `78502cbdb922d1d42e1a33cb8c8207698ec43a53`
+- common ancestor: `7cef7452f2ded492772d79e1ddd290081a6c3a68`
 
-## Restored foundation
+`master` contained three commits not on `main`, while `main` contained eleven commits not on `master`. The head commit on `master` was a committed merge containing literal unresolved conflict markers in project documents. Its tree therefore was not safe to adopt as authority.
 
-The dependency-free `Magenheim.Core` slice now owns the crystal/refinement domain boundary. The advanced-code review identified and corrected semantic drift introduced during bootstrap: the third tier is `Refined`, the normal element catalog is Earth/Fire/Frost/Storm/Venom/Radiance/Seidr/Spirit, and refinement uses skill-scaled failure rather than fixed success chances or invented progression gates.
+Material work from the divergent history was reviewed individually. The additive worldgen spawn-area validator, addition planner, and their deterministic tests were retained. The large pre-reconciliation design specification was preserved as an archive record rather than replacing current authority.
 
-Canonical refinement behavior is now defined as:
+The live tree deliberately does not adopt bundled BepInEx/Jötunn runtime binaries, process/log files, unrelated third-party repair tooling, stale packaging claims, or duplicate legacy refinement/runtime implementations. Their history remains reachable through the merged ancestry for forensic recovery.
 
-- base failure 10/20/30/40 percent from Rough through Master progression;
-- Crystal Shaping reduction using the configured 50%-100% maximum-reduction range, default 75%;
-- workstation/upgrade progression as the tier gate;
-- valid failure destroys the source crystal and returns 1/2/3/5 matching shards;
-- valid success and failure attempts are experience-eligible;
-- invalid requests are non-mutating and award no experience;
-- elemental alignment is preserved through refinement.
+## Current domain authority
 
-The pure-domain service remains intentionally independent of Unity, Valheim, BepInEx, and Jötunn so later inventory/RPC code has one deterministic calculation authority.
+Crystal tiers are:
 
-No claim is made that Valheim runtime integration, BepInEx/Jötunn registration, world spawning, item registration, inventory mutation, RPC authority, sockets, equipment effects, save/load persistence, or multiplayer transaction handling are implemented until those files exist and are directly verified.
+`Rough -> Simple -> Crystal -> Advanced -> Master`
+
+Normal elemental alignments are Earth, Fire, Frost, Storm, Venom, Radiance, Seidr, and Spirit.
+
+Refinement uses base failure 10/20/30/40 percent. Crystal Shaping reduces that failure according to:
+
+`effectiveFailure = BaseFailure * (1 - (Skill / 100) * MaximumFailureReduction)`
+
+The default maximum reduction is 75%, configurable between 50% and 100%. Station/upgrade progression gates each refinement step. A valid failed attempt destroys the source crystal and returns 1/2/3/5 matching shards by tier. Valid success and failure attempts are experience-eligible; invalid attempts are non-mutating and award no experience.
+
+## Worldgen compatibility foundation
+
+`Magenheim.Core.Worldgen` validates Median/Edge/All area flags and plans only additions under `magenheim.` keys. Existing registrations are copied into read-only planning snapshots. Duplicate or occupied keys are skipped or errored according to policy without modifying foreign data. Destructive compatibility mode is rejected.
 
 ## Validation boundary
 
-This environment does not expose a .NET SDK/compiler, so this cycle can perform source-level and Git-object verification but cannot claim compilation or runtime validation. Runtime acceptance remains deferred.
+No compiler is available in the current execution environment. Compilation and runtime validation are therefore not claimed. Static source/Git reconciliation is the present admission level.
 
-## Current milestone
+## Next exact action
 
-Milestone 0: repository truth and pure-domain crystal progression foundation.
-
-Next dependency-valid advanced slice: add deterministic standalone tests/build execution for the corrected refinement engine, then bind validated static/config definitions into the BepInEx/Jötunn runtime bootstrap without enabling inventory mutation until server-authoritative transaction handling exists.
+Run `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj` in a .NET 8 SDK environment, resolve any compile/test defect at the authoritative source, then add the thin BepInEx/Jötunn bootstrap without enabling persistent gameplay mutations until server-authoritative transactions exist.
