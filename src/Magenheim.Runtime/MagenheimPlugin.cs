@@ -31,6 +31,10 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     {
         try
         {
+            // Origin-aware socket include/exclude rules depend on Jötunn's read-only mod
+            // registry. Jötunn requires this collector to be enabled before FejdStartup.Awake.
+            ModQuery.Enable();
+
             var assemblyDirectory = Path.GetDirectoryName(typeof(MagenheimPlugin).Assembly.Location)
                 ?? throw new InvalidOperationException("Unable to determine the Magenheim plugin directory.");
             var definitionPath = Path.Combine(assemblyDirectory, "default-data", "foundation.json");
@@ -72,7 +76,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
-                "Definition authority synchronization, adaptive socket eligibility configuration, session-scoped geode/refinement/socket/extraction replay protection, " +
+                "Definition authority synchronization, adaptive socket eligibility/configured mod-origin discovery, session-scoped geode/refinement/socket/extraction replay protection, " +
                 "definition-driven intact geode items, fingerprinted geode placement and socket-effect balance configuration, additive geode vegetation registration, " +
                 "local-host geology workshop operations, deterministic Earth shard recombination, and per-item socket damage/armor/block/carry/mining effect adapters are configured. " +
                 "Remote-client operation RPC, socket workstation mutation UI, knockback/stagger runtime channels, and persistence multiplayer validation remain gated pending implementation/validation.");
