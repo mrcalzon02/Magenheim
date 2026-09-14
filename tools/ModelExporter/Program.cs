@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
@@ -10,116 +9,112 @@ internal static class Program
     private static int Main(string[] args)
     {
         var output = GetArg(args, "--output") ?? Path.Combine(Directory.GetCurrentDirectory(), "exported-models");
-        Directory.CreateDirectory(output);
         var generated = Path.Combine(output, "procedural");
         var existing = Path.Combine(output, "existing-assets");
         Directory.CreateDirectory(generated);
         Directory.CreateDirectory(existing);
-
         CopyExistingObjAssets(existing);
 
         var manifest = new List<string>();
         var failures = new List<string>();
-        var assembly = Assembly.GetExecutingAssembly();
-        var visualTypes = assembly.GetTypes()
+        var visualTypes = Assembly.GetExecutingAssembly().GetTypes()
             .Where(t => t.Namespace == "Magenheim.Runtime" && t.Name.EndsWith("Visuals", StringComparison.Ordinal))
             .OrderBy(t => t.Name)
             .ToArray();
 
         foreach (var type in visualTypes)
         {
-            var stringModels = type.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
-                .Where(f => f.IsLiteral && !f.IsInitOnly && f.FieldType == typeof(string))
-                .Select(f => (Field: f.Name, Value: (string?)f.GetRawConstantValue()))
-                .Where(x => !string.IsNullOrWhiteSpace(x.Value))
-                .DistinctBy(x => x.Value)
-                .ToArray();
-
             var applies = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(m => m.Name == "Apply")
+                .OrderBy(m => m.GetParameters().Length)
                 .ToArray();
-
-            var stringApply = applies.FirstOrDefault(m =>
-            {
-                var p = m.GetParameters();
-                return p.Length >= 2 && p[0].ParameterType == typeof(GameObject) && p[1].ParameterType == typeof(string);
-            });
-
-            if (stringApply is not null && stringModels.Length > 0)
-            {
-                foreach (var model in stringModels)
-                {
-                    try
-                    {
-                        var host = CreateHost(type.Name + "." + model.Field);
-                        var result = InvokeWithDefaults(stringApply, host, model.Value!);
-                        var root = result as GameObject ?? host;
-                        var path = Path.Combine(generated, Safe(model.Value!) + ".obj");
-                        var meshes = ExportObj(root, path);
-                        if (meshes == 0) throw new InvalidOperationException("Apply produced no MeshFilter geometry.");
-                        manifest.Add($"PROCEDURAL\t{model.Value}\t{type.Name}\t{meshes}\t{Relative(output, path)}");
-                    }
-                    catch (Exception ex)
-                    {
-                        failures.Add($"{type.Name}.{model.Field} ({model.Value}): {Unwrap(ex).Message}");
-                    }
-                }
-                continue;
-            }
 
             foreach (var apply in applies)
             {
                 var p = apply.GetParameters();
-                if (p.Length < 2 || p[0].ParameterType != typeof(GameObject)) continue;
-                if (p[1].ParameterType == typeof(Color))
+                if (p.Length == 0 || p[0].ParameterType != typeof(GameObject)) continue;
+
+                if (p.Length >= 2 && p[1].ParameterType == typeof(string))
                 {
-                    try
+                    var ids = type.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+                        .Where(f => f.IsLiteral && !f.IsInitOnly && f.FieldType == typeof(string))
+                        .Select(f => (Field: f.Name, Id: (string?)f.GetRawConstantValue()))
+                        .Where(x => !string.IsNullOrWhiteSpace(x.Id))
+                        .DistinctBy(x => x.Id)
+                        .ToArray();
+                    foreach (var model in ids)
+                        ExportInvocation(type, apply, model.Id!, model.Field, model.Id!, output, generated, manifest, failures);
+                    continue;
+                }
+
+                if (p.Length >= 2 && p[1].ParameterType.IsEnum)
+                {
+                    foreach (var value in Enum.GetValues(p[1].ParameterType))
                     {
-                        var host = CreateHost(type.Name + ".sample");
-                        var argsForCall = BuildArguments(apply, host, new Color(.55f, .86f, .94f, 1f));
-                        apply.Invoke(null, argsForCall);
-                        var id = type.Name.Replace("Visuals", string.Empty, StringComparison.Ordinal).ToLowerInvariant() + "-sample";
-                        var path = Path.Combine(generated, Safe(id) + ".obj");
-                        var meshes = ExportObj(host, path);
-                        if (meshes == 0) throw new InvalidOperationException("Apply produced no MeshFilter geometry.");
-                        manifest.Add($"PROCEDURAL\t{id}\t{type.Name}\t{meshes}\t{Relative(output, path)}");
+                        var suffix = value!.ToString()!.ToLowerInvariant();
+                        var id = TypeId(type) + "-" + suffix;
+                        ExportInvocation(type, apply, id, suffix, value, output, generated, manifest, failures);
                     }
-                    catch (Exception ex)
-                    {
-                        failures.Add($"{type.Name}.{apply.Name}: {Unwrap(ex).Message}");
-                    }
+                    continue;
+                }
+
+                if (p.Length == 1)
+                {
+                    var id = TypeId(type);
+                    ExportInvocation(type, apply, id, "default", null, output, generated, manifest, failures);
+                    continue;
+                }
+
+                if (p.Length >= 2 && p[1].ParameterType == typeof(Color))
+                {
+                    var id = TypeId(type) + "-sample";
+                    ExportInvocation(type, apply, id, "sample", new Color(.55f, .86f, .94f, 1f), output, generated, manifest, failures);
                 }
             }
         }
 
         var existingObjs = Directory.EnumerateFiles(existing, "*.obj", SearchOption.AllDirectories).Count();
-        File.WriteAllLines(Path.Combine(output, "MODEL_MANIFEST.tsv"), new[]
-        {
-            "kind\tmodel_id\tsource\tmesh_parts\tfile"
-        }.Concat(manifest));
+        File.WriteAllLines(Path.Combine(output, "MODEL_MANIFEST.tsv"),
+            new[] { "kind\tmodel_id\tsource\tmesh_parts\tfile" }.Concat(manifest));
         File.WriteAllLines(Path.Combine(output, "EXPORT_FAILURES.txt"), failures.Count == 0 ? new[] { "none" } : failures);
         File.WriteAllText(Path.Combine(output, "README.txt"),
-            $"Magenheim model export\n\nExisting checked-in OBJ files copied: {existingObjs}\nProcedural models exported from runtime Visuals classes: {manifest.Count}\nFailures: {failures.Count}\n\nThe procedural OBJ files are generated by compiling and executing the actual *Visuals.cs geometry code against a lightweight Unity geometry shim.\n");
+            $"Magenheim model export\n\nExisting checked-in OBJ files copied: {existingObjs}\nProcedural OBJ files exported from runtime visual authority: {manifest.Count}\nFailures: {failures.Count}\n\nEach procedural OBJ is produced by compiling and executing the repository's actual visual geometry code against a lightweight geometry-only Unity/Valheim shim.\n");
 
         Console.WriteLine($"Existing OBJ: {existingObjs}");
         Console.WriteLine($"Procedural OBJ: {manifest.Count}");
         Console.WriteLine($"Failures: {failures.Count}");
         foreach (var failure in failures) Console.Error.WriteLine("EXPORT FAILURE: " + failure);
-
-        // A pipeline that silently exports nothing is worse than a failed build.
         if (manifest.Count == 0) return 2;
         return failures.Count == 0 ? 0 : 3;
     }
 
-    private static object? InvokeWithDefaults(MethodInfo method, GameObject host, string modelId) =>
-        method.Invoke(null, BuildArguments(method, host, modelId));
+    private static void ExportInvocation(
+        Type type, MethodInfo apply, string id, string label, object? second,
+        string output, string generated, List<string> manifest, List<string> failures)
+    {
+        try
+        {
+            var host = CreateHost(type.Name + "." + label);
+            var args = BuildArguments(apply, host, second);
+            var result = apply.Invoke(null, args);
+            var root = result as GameObject ?? host;
+            var path = Path.Combine(generated, Safe(id) + ".obj");
+            var meshes = ExportObj(root, path);
+            if (meshes == 0) throw new InvalidOperationException("Apply produced no MeshFilter geometry.");
+            manifest.Add($"PROCEDURAL\t{id}\t{type.Name}\t{meshes}\t{Relative(output, path)}");
+        }
+        catch (Exception ex)
+        {
+            failures.Add($"{type.Name}.{apply.Name} [{label}]: {Unwrap(ex).Message}");
+        }
+    }
 
-    private static object?[] BuildArguments(MethodInfo method, GameObject host, object second)
+    private static object?[] BuildArguments(MethodInfo method, GameObject host, object? second)
     {
         var p = method.GetParameters();
         var values = new object?[p.Length];
         values[0] = host;
-        values[1] = second;
+        if (p.Length >= 2) values[1] = second;
         for (var i = 2; i < p.Length; i++)
         {
             if (p[i].HasDefaultValue) values[i] = p[i].DefaultValue;
@@ -134,10 +129,12 @@ internal static class Program
     private static GameObject CreateHost(string name)
     {
         var host = new GameObject(name);
-        var renderer = host.AddComponent<MeshRenderer>();
-        renderer.sharedMaterial = new Material { name = "export-source", color = Color.white };
+        host.AddComponent<MeshRenderer>().sharedMaterial = new Material { name = "export-source", color = Color.white };
         var attach = new GameObject("attach");
         attach.transform.SetParent(host.transform, false);
+        var turretBody = new GameObject("turret-body");
+        turretBody.transform.SetParent(host.transform, false);
+        host.AddComponent<Turret>().m_turretBody = turretBody;
         return host;
     }
 
@@ -161,12 +158,7 @@ internal static class Program
                 writer.WriteLine(FormattableString.Invariant($"v {w.x:0.######} {w.y:0.######} {w.z:0.######}"));
             }
             for (var i = 0; i + 2 < mesh.triangles.Length; i += 3)
-            {
-                var a = vertexOffset + mesh.triangles[i];
-                var b = vertexOffset + mesh.triangles[i + 1];
-                var c = vertexOffset + mesh.triangles[i + 2];
-                writer.WriteLine($"f {a} {b} {c}");
-            }
+                writer.WriteLine($"f {vertexOffset + mesh.triangles[i]} {vertexOffset + mesh.triangles[i + 1]} {vertexOffset + mesh.triangles[i + 2]}");
             vertexOffset += mesh.vertices.Length;
         }
         return filters.Length;
@@ -194,6 +186,18 @@ internal static class Program
             current = current.Parent;
         }
         throw new DirectoryNotFoundException("Could not locate Magenheim repository root.");
+    }
+
+    private static string TypeId(Type type)
+    {
+        var name = type.Name.EndsWith("Visuals", StringComparison.Ordinal) ? type.Name[..^7] : type.Name;
+        var sb = new StringBuilder();
+        for (var i = 0; i < name.Length; i++)
+        {
+            if (i > 0 && char.IsUpper(name[i]) && !char.IsUpper(name[i - 1])) sb.Append('-');
+            sb.Append(char.ToLowerInvariant(name[i]));
+        }
+        return sb.ToString();
     }
 
     private static string? GetArg(string[] args, string name)
