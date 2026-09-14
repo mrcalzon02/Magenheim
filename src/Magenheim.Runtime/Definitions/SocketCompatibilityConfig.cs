@@ -26,10 +26,14 @@ internal static class SocketCompatibilityConfig
         var utility = config.Bind(limits, "UtilityMaxSlots", 1,
             "Maximum sockets on adaptively classified utility equipment. Supported range 0..3.");
         var explicitInclude = config.Bind(limits, "ExplicitIncludeMaxSlots", 1,
-            "Maximum sockets granted to otherwise-unknown equipment explicitly opted in by prefab or mod origin. Supported range 0..3.");
+            "Maximum sockets granted to otherwise-unknown equipment explicitly opted in by item, prefab, or mod origin. Supported range 0..3.");
 
         var identity = config.Bind(compatibility, "IdentityComparison", SocketIdentityComparison.Exact,
             "Comparison mode for socket include/exclude identities: Exact or CaseInsensitive.");
+        var includedItems = config.Bind(compatibility, "IncludedItemNames", string.Empty,
+            "Comma-separated shared item identities/localization tokens explicitly allowed for socketing. Exclusions still win.");
+        var excludedItems = config.Bind(compatibility, "ExcludedItemNames", string.Empty,
+            "Comma-separated shared item identities/localization tokens that Magenheim must never socket.");
         var includedPrefabs = config.Bind(compatibility, "IncludedPrefabNames", string.Empty,
             "Comma-separated prefab identities explicitly allowed for socketing. Exclusions still win.");
         var excludedPrefabs = config.Bind(compatibility, "ExcludedPrefabNames", string.Empty,
@@ -42,18 +46,20 @@ internal static class SocketCompatibilityConfig
             "Comma-separated equipment categories to exclude: Weapon, Armor, Shield, Tool, Utility.");
 
         return new SocketEligibilityPolicy(
-            weapon.Value,
-            armor.Value,
-            shield.Value,
-            tool.Value,
-            utility.Value,
-            explicitInclude.Value,
-            ParseCsv(includedPrefabs.Value),
-            ParseCsv(excludedPrefabs.Value),
-            ParseCsv(includedOrigins.Value),
-            ParseCsv(excludedOrigins.Value),
-            ParseCategories(excludedCategories.Value),
-            identity.Value);
+            weaponMaxSlots: weapon.Value,
+            armorMaxSlots: armor.Value,
+            shieldMaxSlots: shield.Value,
+            toolMaxSlots: tool.Value,
+            utilityMaxSlots: utility.Value,
+            explicitIncludeMaxSlots: explicitInclude.Value,
+            includedPrefabNames: ParseCsv(includedPrefabs.Value),
+            excludedPrefabNames: ParseCsv(excludedPrefabs.Value),
+            includedModOrigins: ParseCsv(includedOrigins.Value),
+            excludedModOrigins: ParseCsv(excludedOrigins.Value),
+            excludedCategories: ParseCategories(excludedCategories.Value),
+            identityComparison: identity.Value,
+            includedItemNames: ParseCsv(includedItems.Value),
+            excludedItemNames: ParseCsv(excludedItems.Value));
     }
 
     private static string[] ParseCsv(string? value)
