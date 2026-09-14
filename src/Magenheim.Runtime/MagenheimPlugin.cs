@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.28";
+    internal const string PluginVersion = "0.0.29";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -40,9 +40,6 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     {
         try
         {
-            // Socket compatibility can target foreign mod origins. Jotunn documents
-            // ModQuery as disabled by default, so enable it before FejdStartup before
-            // any equipment classification uses source-mod metadata.
             ModQuery.Enable();
 
             var assemblyDirectory = Path.GetDirectoryName(typeof(MagenheimPlugin).Assembly.Location)
@@ -78,6 +75,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _harmony.PatchAll(typeof(SocketBlockPowerPatch));
             _harmony.PatchAll(typeof(SocketCarryWeightPatch));
             _harmony.PatchAll(typeof(SocketTooltipPatch));
+            _harmony.PatchAll(typeof(EarthAbilityHitPatch));
 
             _earthContentRegistrar = new EarthContentRegistrar(Logger);
             _earthContentRegistrar.Register();
@@ -116,7 +114,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 "Player content includes eight biome geodes, eight five-tier elemental crystal families, elemental shard recombination, " +
                 "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and all eight four-tier elemental staff families. " +
                 "Radiance owns hard-light/flash/sanctuary payloads, Spirit owns spectral echo fields, Seidr owns movement-binding hexes, Venom owns persistent corrosion, " +
-                "and Storm now turns Arc Chain impacts into real secondary lightning discharges while Thunderhead seeds repeated electrical pulse fields.");
+                "Storm owns secondary impact discharges, and Earth now applies real Fractured Armor, Tremor, and Shattered Armor effects through landed seismic hits.");
         }
         catch (Exception exception)
         {
