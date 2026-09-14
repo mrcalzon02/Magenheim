@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net462</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AssemblyName>Magenheim</AssemblyName>
+    <RootNamespace>Magenheim.Runtime</RootNamespace>
+    <Version>0.0.3</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Magenheim.Core/Magenheim.Core.csproj" />
+    <PackageReference Include="JotunnLib" Version="2.30.0" />
+  </ItemGroup>
+</Project>
