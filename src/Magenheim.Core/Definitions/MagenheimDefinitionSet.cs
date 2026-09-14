@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Magenheim.Core.Socketing;
 using Magenheim.Core.Worldgen;
 
 namespace Magenheim.Core.Definitions;
@@ -28,11 +29,15 @@ public sealed record MagenheimDefinitionSet(
     IReadOnlyList<RefinementRule> RefinementRules,
     IReadOnlyList<GeodeDefinition> Geodes,
     WorldgenCompatibilityPolicy WorldgenCompatibility,
-    string Fingerprint);
+    string Fingerprint)
+{
+    public SocketEffectDefinitionSet SocketEffects { get; init; } =
+        new(Array.Empty<SocketEffectRule>());
+}
 
 public static class MagenheimDefinitionValidator
 {
-    public const int CurrentSchemaVersion = 3;
+    public const int CurrentSchemaVersion = 4;
 
     private static readonly HashSet<string> SupportedBiomes = new(StringComparer.Ordinal)
     {
@@ -50,7 +55,8 @@ public static class MagenheimDefinitionValidator
         int schemaVersion,
         IEnumerable<RefinementRule> refinementRules,
         IEnumerable<GeodeDefinition> geodes,
-        WorldgenCompatibilityPolicy worldgenCompatibility)
+        WorldgenCompatibilityPolicy worldgenCompatibility,
+        SocketEffectDefinitionSet? socketEffects = null)
     {
         if (schemaVersion != CurrentSchemaVersion)
             throw new InvalidOperationException($"Unsupported definition schema {schemaVersion}. Expected {CurrentSchemaVersion}.");
@@ -62,6 +68,8 @@ public static class MagenheimDefinitionValidator
             throw new ArgumentNullException(nameof(worldgenCompatibility));
 
         var frozenCompatibility = ValidateAndFreezeWorldgenCompatibility(worldgenCompatibility);
+        var frozenSocketEffects = new SocketEffectDefinitionSet(
+            socketEffects?.Rules ?? Array.Empty<SocketEffectRule>());
         var identityComparer = GetIdentityComparer(frozenCompatibility.IdentityComparison);
         var frozenRules = refinementRules.ToArray();
         var frozenGeodes = geodes
@@ -84,13 +92,21 @@ public static class MagenheimDefinitionValidator
         if (duplicatePrefab is not null)
             throw new InvalidOperationException($"Duplicate geode prefab '{duplicatePrefab.Key}' under {frozenCompatibility.IdentityComparison} identity comparison.");
 
-        var fingerprint = ComputeFingerprint(schemaVersion, frozenRules, frozenGeodes, frozenCompatibility);
+        var fingerprint = ComputeFingerprint(
+            schemaVersion,
+            frozenRules,
+            frozenGeodes,
+            frozenCompatibility,
+            frozenSocketEffects);
         return new MagenheimDefinitionSet(
             schemaVersion,
             Array.AsReadOnly(frozenRules),
             Array.AsReadOnly(frozenGeodes),
             frozenCompatibility,
-            fingerprint);
+            fingerprint)
+        {
+            SocketEffects = frozenSocketEffects,
+        };
     }
 
     private static void ValidateRefinementRules(IReadOnlyList<RefinementRule> rules)
@@ -252,7 +268,8 @@ public static class MagenheimDefinitionValidator
         int schemaVersion,
         IEnumerable<RefinementRule> rules,
         IEnumerable<GeodeDefinition> geodes,
-        WorldgenCompatibilityPolicy worldgenCompatibility)
+        WorldgenCompatibilityPolicy worldgenCompatibility,
+        SocketEffectDefinitionSet socketEffects)
     {
         var builder = new StringBuilder();
         builder.Append("schema=").Append(schemaVersion).Append('\n');
@@ -304,6 +321,19 @@ public static class MagenheimDefinitionValidator
             builder.Append('\n');
 
             AppendPlacementFingerprint(builder, geode.Id, geode.Placement);
+        }
+
+        foreach (var effect in socketEffects.Rules
+                     .OrderBy(rule => rule.Element)
+                     .ThenBy(rule => rule.Category)
+                     .ThenBy(rule => rule.Effect))
+        {
+            builder.Append("socket-effect|")
+                .Append(effect.Element).Append('|')
+                .Append(effect.Category).Append('|')
+                .Append(effect.Effect).Append('|')
+                .Append(effect.SimpleMagnitude.ToString("R", CultureInfo.InvariantCulture))
+                .Append('\n');
         }
 
         using var sha256 = SHA256.Create();
