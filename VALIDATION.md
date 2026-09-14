@@ -100,6 +100,24 @@ The shipped schema-2 compatibility defaults are conservative:
 
 The Meadows definition remains Earth-only at weight 100.0, one guaranteed crystal, and independent 0.35 / 0.10 additional-crystal probabilities. Definition presence is not evidence that random cracking or natural world generation is implemented.
 
+## Definition-authority deterministic coverage — 2026-09-14
+
+The standalone pure-core harness now includes explicit coverage for the authority comparison contract used by the runtime handshake:
+
+- pending state is non-authorizing;
+- identical schema and lowercase SHA-256 fingerprint authorizes mutation;
+- schema mismatch fails closed;
+- fingerprint mismatch fails closed;
+- invalid local descriptors fail closed before comparison;
+- invalid remote descriptors fail closed before comparison;
+- uppercase SHA-256 text is rejected as non-canonical;
+- null descriptors are invalid;
+- wrong-length fingerprints are invalid;
+- non-hexadecimal fingerprints are invalid;
+- a canonical descriptor validates with an empty error diagnostic.
+
+These assertions are committed to `tests/Magenheim.Core.Tests/DefinitionAuthorityTests.cs` and invoked by the existing console test harness. They have been statically reviewed against `DefinitionAuthorityHandshake`; they have not been executed in this environment because no .NET SDK/compiler is available.
+
 ## Repository/branch review
 
 `main` and `master` were observed at the same starting commit for this pass. `main` remains the only authoritative development branch; `master` is retained only as a synchronized compatibility/default-branch pointer because the available connector does not expose default-branch reassignment or branch deletion.
