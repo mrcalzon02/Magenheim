@@ -39,6 +39,9 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     {
         try
         {
+            // Socket compatibility can target foreign mod origins. Jotunn documents
+            // ModQuery as disabled by default, so enable it before FejdStartup before
+            // any equipment classification uses source-mod metadata.
             ModQuery.Enable();
 
             var assemblyDirectory = Path.GetDirectoryName(typeof(MagenheimPlugin).Assembly.Location)
@@ -51,6 +54,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _services = RuntimeServices.Create(effectiveDefinitions, socketPolicy);
             _authoritySynchronizer = new DefinitionAuthoritySynchronizer(
                 effectiveDefinitions,
+                socketPolicy,
                 _services.GeodeOpeningOperations,
                 _services.RefinementOperations,
                 _services.SocketOperations,
@@ -103,11 +107,13 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
-                $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
+                $"Baseline definition fingerprint {baselineDefinitions.Fingerprint}; effective definition fingerprint {effectiveDefinitions.Fingerprint}; " +
+                $"effective gameplay authority {_authoritySynchronizer.GameplayFingerprint}. " +
+                "Socket item/prefab/category/mod-origin compatibility rules participate in multiplayer mutation authority. " +
                 "Player content includes eight biome geodes, eight five-tier elemental crystal families, elemental shard recombination, " +
                 "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and seven complete four-tier staff families. " +
                 "Fire is direct destructive pressure, Frost is precision/slow saturation, Storm is electrical discharge geometry, Earth is short-range seismic control, " +
-                "Venom is persistent contamination, Radiance is concentrated light pressure, and Seidr now provides exact hexes, rune spears, witchweave fans, and Fate Loom barrages.");
+                "Venom is persistent contamination, Radiance is concentrated light pressure, and Seidr provides exact hexes, rune spears, witchweave fans, and Fate Loom barrages.");
         }
         catch (Exception exception)
         {
