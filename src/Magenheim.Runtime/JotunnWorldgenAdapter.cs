@@ -37,7 +37,7 @@ internal static class JotunnWorldgenAdapter
         {
             CoreSpawnArea.Median => ParseBiomeArea("Median"),
             CoreSpawnArea.Edge => ParseBiomeArea("Edge"),
-            CoreSpawnArea.All => ParseBiomeArea("Everything", "Everywhere"),
+            CoreSpawnArea.All => ParseAllBiomeArea(),
             _ => throw new InvalidOperationException(
                 $"Unsupported spawn area '{area}' at the Jotunn adapter boundary. " +
                 "Area values must be normalized by Magenheim.Core before runtime mapping."),
@@ -94,18 +94,47 @@ internal static class JotunnWorldgenAdapter
             $"None of the expected Valheim biome enum names [{string.Join(", ", candidates)}] exist in this runtime.");
     }
 
+    private static Heightmap.BiomeArea ParseAllBiomeArea()
+    {
+        // Prefer an explicit runtime alias when one exists. Jotunn/Valheim versions have exposed
+        // both Everything and Everywhere for the combined biome-area identity.
+        if (TryParseDefinedBiomeArea("Everything", out var combined) ||
+            TryParseDefinedBiomeArea("Everywhere", out combined))
+        {
+            return combined;
+        }
+
+        // A flags enum does not have to declare a named member for every valid combination.
+        // Compose All from the two authoritative component names so Magenheim remains compatible
+        // with runtimes that expose Median and Edge but no Everything/Everywhere alias.
+        var median = ParseBiomeArea("Median");
+        var edge = ParseBiomeArea("Edge");
+        var composed = median | edge;
+
+        if (composed.Equals(default(Heightmap.BiomeArea)))
+        {
+            throw new InvalidOperationException(
+                "The current Valheim biome-area enum resolved Median and Edge to an empty combined value.");
+        }
+
+        return composed;
+    }
+
     private static Heightmap.BiomeArea ParseBiomeArea(params string[] candidates)
     {
         foreach (var candidate in candidates)
         {
-            if (Enum.TryParse(candidate, ignoreCase: true, out Heightmap.BiomeArea parsed) &&
-                Enum.IsDefined(typeof(Heightmap.BiomeArea), parsed))
-            {
+            if (TryParseDefinedBiomeArea(candidate, out var parsed))
                 return parsed;
-            }
         }
 
         throw new InvalidOperationException(
             $"None of the expected Valheim biome-area enum names [{string.Join(", ", candidates)}] exist in this runtime.");
+    }
+
+    private static bool TryParseDefinedBiomeArea(string candidate, out Heightmap.BiomeArea parsed)
+    {
+        return Enum.TryParse(candidate, ignoreCase: true, out parsed) &&
+               Enum.IsDefined(typeof(Heightmap.BiomeArea), parsed);
     }
 }
