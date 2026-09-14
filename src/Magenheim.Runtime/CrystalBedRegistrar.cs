@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using Jotunn.Configs;
 using Jotunn.Entities;
@@ -15,15 +16,36 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal sealed class CrystalBedRegistrar : IDisposable
 {
-    internal const float SecondsPerRoughCrystal = 900f;
-    internal const int StoredCrystalLimit = 8;
+    internal const int DefaultGrowthSecondsPerRoughCrystal = 900;
+    internal const int DefaultStoredCrystalLimit = 8;
 
     private readonly ManualLogSource _log;
+    private readonly int _growthSecondsPerRoughCrystal;
+    private readonly int _storedCrystalLimit;
     private bool _subscribed;
     private bool _registered;
 
-    internal CrystalBedRegistrar(ManualLogSource log) =>
+    internal CrystalBedRegistrar(ManualLogSource log, ConfigFile config)
+    {
         _log = log ?? throw new ArgumentNullException(nameof(log));
+        if (config is null) throw new ArgumentNullException(nameof(config));
+
+        _growthSecondsPerRoughCrystal = config.Bind(
+            "Balance.CrystalBed",
+            "GrowthSecondsPerRoughCrystal",
+            DefaultGrowthSecondsPerRoughCrystal,
+            new ConfigDescription(
+                "Seconds required for each alignment-specific Crystal Bed to grow one matching Rough crystal. Requires restart because producer prefabs are configured during bootstrap.",
+                new AcceptableValueRange<int>(30, 86400))).Value;
+
+        _storedCrystalLimit = config.Bind(
+            "Balance.CrystalBed",
+            "MaxStoredRoughCrystals",
+            DefaultStoredCrystalLimit,
+            new ConfigDescription(
+                "Maximum matching Rough crystals a Crystal Bed can accumulate before harvesting is required. Requires restart because producer prefabs are configured during bootstrap.",
+                new AcceptableValueRange<int>(1, 100))).Value;
+    }
 
     internal void Register()
     {
@@ -51,7 +73,7 @@ internal sealed class CrystalBedRegistrar : IDisposable
 
             _registered = true;
             _log.LogInfo(
-                $"Registered {count} alignment-locked Crystal Beds; each grows one matching Rough crystal every {SecondsPerRoughCrystal / 60f:0} minutes and stores up to {StoredCrystalLimit}.");
+                $"Registered {count} alignment-locked Crystal Beds; each grows one matching Rough crystal every {_growthSecondsPerRoughCrystal / 60f:0.##} minutes and stores up to {_storedCrystalLimit}.");
         }
         catch (Exception exception)
         {
@@ -64,7 +86,7 @@ internal sealed class CrystalBedRegistrar : IDisposable
         }
     }
 
-    private static void RegisterBed(ElementalAlignment element)
+    private void RegisterBed(ElementalAlignment element)
     {
         var prefabName = $"Magenheim_CrystalBed_{element}";
         var roughPrefab = $"Magenheim_Crystal_{element}_Rough";
@@ -109,8 +131,8 @@ internal sealed class CrystalBedRegistrar : IDisposable
             ?? throw new InvalidOperationException($"Crystal Bed '{prefabName}' lost its persistent producer component.");
         producer.m_name = $"{element} Crystal Bed";
         producer.m_honeyItem = roughDrop;
-        producer.m_secPerUnit = SecondsPerRoughCrystal;
-        producer.m_maxHoney = StoredCrystalLimit;
+        producer.m_secPerUnit = _growthSecondsPerRoughCrystal;
+        producer.m_maxHoney = _storedCrystalLimit;
         producer.m_biome = Heightmap.Biome.All;
         producer.m_effectOnlyInDaylight = false;
         producer.m_maxCover = 0f;

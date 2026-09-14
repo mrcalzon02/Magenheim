@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.39";
+    internal const string PluginVersion = "0.0.40";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -100,7 +100,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _crystalBannerRegistrar.Register();
             _crystalSentinelRegistrar = new CrystalSentinelRegistrar(Logger, Config);
             _crystalSentinelRegistrar.Register();
-            _crystalBedRegistrar = new CrystalBedRegistrar(Logger);
+            _crystalBedRegistrar = new CrystalBedRegistrar(Logger, Config);
             _crystalBedRegistrar.Register();
             _crystalWeaponRegistrar = new CrystalWeaponRegistrar(Logger);
             _crystalWeaponRegistrar.Register();
