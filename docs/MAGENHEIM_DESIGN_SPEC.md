@@ -10,29 +10,62 @@ Crystal tiers are ordered and stable:
 
 1. Rough
 2. Simple
-3. Crystal
+3. Refined
 4. Advanced
 5. Master
 
-Refinement always advances exactly one tier. A rule must explicitly define source tier, destination tier, success chance, skill requirement, station requirement, and failure result. Runtime code must not infer hidden tier jumps.
+Refinement always advances exactly one tier. A rule explicitly defines source tier, destination tier, base failure chance, station requirement, and failure shard return. Runtime code must not infer hidden tier jumps.
 
-The intended risk curve increases by ten percentage points of failure per refinement step. For the current foundation the canonical default success rates are therefore 90%, 80%, 70%, and 60% for Rough→Simple, Simple→Crystal, Crystal→Advanced, and Advanced→Master. Balance values remain data/config driven so later tuning does not require rewriting progression code.
+The canonical failure curve is:
+
+- Rough -> Simple: 10% base failure, 1 matching shard on failure.
+- Simple -> Refined: 20% base failure, 2 matching shards on failure.
+- Refined -> Advanced: 30% base failure, 3 matching shards on failure.
+- Advanced -> Master: 40% base failure, 5 matching shards on failure.
+
+A failed valid refinement destroys the source crystal and returns element-matched shards. Failure is still practice, so a valid refinement attempt is experience-eligible whether it succeeds or fails. Invalid requests award no experience.
+
+Crystal Shaping reduces failure rather than imposing invented tier-level gates. The default maximum reduction is 75%, configurable from 50% through 100%. The authoritative calculation is:
+
+`skillReduction = (CrystalShapingSkill / 100) * MaximumFailureReduction`
+
+`effectiveFailure = BaseFailure * (1 - skillReduction)`
+
+At 100% configured reduction and skill 100, effective failure is zero.
+
+Station progression gates refinement:
+
+- Rough -> Simple: `Magenheim_GeologistWorkstation`
+- Simple -> Refined: `Magenheim_StationUpgrade_FracturingBlock`
+- Refined -> Advanced: `Magenheim_StationUpgrade_FacetingWheel`
+- Advanced -> Master: `Magenheim_StationUpgrade_ResonanceFrame`
 
 ## Elemental alignment
 
-Every crystal carries exactly one elemental alignment. Alignment is selected when the crystal is produced from a geode and remains stable through refinement unless a future explicitly defined transmutation mechanic says otherwise. Refinement never silently changes element.
+Every normal crystal carries exactly one stable elemental alignment. Canonical persistent identities are:
 
-The current bounded implementation restores the Meadows/Earth vertical slice only. Meadows geodes may therefore produce Earth crystals in the initial playable path. Additional biome tables are additive data definitions and must not require changing the refinement engine.
+- Earth
+- Fire
+- Frost
+- Storm
+- Venom
+- Radiance
+- Seidr
+- Spirit
+
+Fate and boss resonance are later special systems, not ordinary geode elemental alignments. Refinement preserves elemental alignment unless a future explicitly defined transmutation mechanic states otherwise.
+
+The current bounded implementation remains the Meadows/Earth vertical slice. Additional biome tables are additive data definitions and must not require changing the refinement engine.
 
 ## Geodes
 
-Each biome owns one or more geode definitions. A geode definition contains its biome, weighted crystal outcome table, world-spawn parameters, item identity, and opening requirements. Outcome selection must use independent weighted rolls where multiple crystals may be produced; one crystal's element roll must not implicitly determine every other crystal unless the definition explicitly requests linked rolls.
+Each biome owns one or more geode definitions. A geode definition contains its biome, weighted crystal outcome table, world-spawn parameters, item identity, and opening requirements. Outcome selection uses independent weighted rolls where multiple crystals may be produced unless the definition explicitly requests linked rolls.
 
-World-generation integration must be additive and non-destructive: register Magenheim locations/resources without replacing biome vegetation tables, location lists, or third-party spawn definitions. Compatibility should prefer append/patch registration APIs and config-driven enable/disable controls.
+World-generation integration must be additive and non-destructive: register Magenheim resources without replacing biome vegetation tables, location lists, or third-party spawn definitions. Compatibility should prefer append/registration APIs and config-driven enable/disable controls.
 
 ## Crystal Shaping skill
 
-Crystal Shaping is a dedicated skill. Valid geode opening and valid refinement attempts can award experience even when the refinement result fails, provided the attempt passed all preconditions. Invalid requests do not award experience.
+Crystal Shaping is a dedicated Valheim skill. Valid geode opening and valid refinement attempts can award experience even when refinement fails, provided all preconditions passed.
 
 Permanent skill identifier: `magenheim.crystal_shaping`.
 
@@ -49,6 +82,12 @@ Compatibility rules:
 - expose category, item, prefab, and mod-origin allow/deny configuration;
 - server-authoritative mutations must be designed before persistent sockets are enabled in multiplayer.
 
+## Multiplayer and persistence boundary
+
+Server gameplay rules are authoritative. Refinement chances, element definitions, geode weights, socket rules, and other gameplay data must not silently diverge between peers. The pure-domain engine makes deterministic decisions from explicit inputs; later runtime code owns inventory transactions, RPC authority, synchronized configuration, and persistence.
+
+Per-item state must never be represented by mutating a shared `ItemDrop` or prefab definition. Persistent item metadata uses Magenheim-owned keys and must survive save/load, drop/pickup, repair, chest storage, world transfer, and multiplayer transfer before socketing is admitted as production behavior.
+
 ## Current implementation boundary
 
-The first restored code slice is pure domain logic only. It owns crystal identities, tier ordering, validation, and refinement outcomes. It deliberately does not depend on Unity, Valheim, BepInEx, or Jötunn. Runtime adapters will consume this layer later.
+The current source slice is pure domain logic only. It owns canonical crystal identities, tier ordering, rule validation, skill-scaled refinement probability, destructive failure/shard outcomes, and deterministic results. It deliberately does not depend on Unity, Valheim, BepInEx, or Jötunn. Runtime adapters consume this layer later.

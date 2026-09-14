@@ -7,10 +7,12 @@ Priority is dependency order, with broken intended behavior repaired before new 
 - [x] Reconcile README claims against actual committed state.
 - [x] Establish authoritative project state and design documents.
 - [x] Restore pure-domain crystal tier/alignment/refinement foundation.
+- [x] Correct canonical tier/element identity drift and authoritative skill-scaled destructive failure/shard semantics.
+- [ ] Add deterministic standalone tests and a reproducible build path for the pure-domain refinement engine.
 - [ ] Add BepInEx/Jötunn plugin bootstrap on `main`.
-- [ ] Add config/data loading for refinement definitions with strict validation and safe fallback behavior.
+- [ ] Add config/data loading for refinement definitions with strict validation and explicit startup errors for unsupported schema/config values.
 - [ ] Register Crystal Shaping under permanent ID `magenheim.crystal_shaping`.
-- [ ] Add deterministic unit/standalone tests for the pure-domain refinement engine.
+- [ ] Add server-authoritative definition synchronization before gameplay mutations are enabled.
 
 ## P1 — Meadows/Earth vertical slice
 
@@ -19,8 +21,9 @@ Priority is dependency order, with broken intended behavior repaired before new 
 - [ ] Implement additive, non-destructive Meadows world placement with configurable spawn controls.
 - [ ] Implement Geologist's Workstation registration and crafting recipe.
 - [ ] Implement geode opening transaction with independent outcome rolls.
-- [ ] Register Earth Rough/Simple/Crystal/Advanced/Master items.
-- [ ] Bind valid refinement attempts to inventory transactions and Crystal Shaping XP.
+- [ ] Register Earth Rough/Simple/Refined/Advanced/Master items and Earth Crystal Shards.
+- [ ] Bind valid refinement attempts to atomic inventory transactions and Crystal Shaping XP.
+- [ ] Verify failure consumes exactly one source and returns exactly the configured matching shards.
 - [ ] Implement multiplayer/server authority before enabling persistent gameplay mutation.
 
 ## P2 — adaptive sockets
