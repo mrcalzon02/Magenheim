@@ -49,7 +49,8 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Add deterministic pure-core coverage for geode cracking: independent bonus rolls, chance boundaries, fixed RNG consumption, weighted element selection, Rough-tier output, and fail-closed malformed input/definitions.
 - [x] Add a pure authority-gated geode-opening transaction planner that consumes exactly one source only when definition authority is compatible, the source exists, cracking succeeds, and output capacity is sufficient; rejected plans remain non-mutating.
 - [x] Add session-scoped exact-once geode-opening admission keyed by peer/session generation/operation id, with duplicate-prepared, duplicate-applied, conflicting-replay, abort-and-retry, and reconnect-session handling.
-- [ ] Register an intact Meadows geode item/prefab.
+- [x] Add definition-driven Jötunn geode item registration source using canonical prefab identities and a temporary vanilla Stone visual base; no recipe or inventory mutation is introduced.
+- [ ] Validate intact Meadows geode item/prefab registration in a current Valheim/Jötunn runtime and replace the Stone placeholder only after the custom geode asset passes prefab/visual validation.
 - [ ] Bind the additive worldgen planner to a thin Jötunn registrar using the validated definition policy.
 - [ ] Explicitly map pure-core `SpawnArea.All` to current runtime `Heightmap.BiomeArea.Everywhere` rather than casting enum integers.
 - [ ] Implement configurable non-destructive Meadows world placement.
