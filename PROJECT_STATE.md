@@ -22,7 +22,7 @@ The live tree deliberately does not adopt bundled BepInEx/Jötunn runtime binari
 
 The divergent histories were reconciled by two-parent commit `7859a27462d4b0c7a4748d3760065df599c7a521`, with the previous `main` and `master` heads as parents. `main` was advanced without force, then `master` was fast-forwarded to the same commit. A direct branch comparison reported `identical`, ahead 0 / behind 0.
 
-`main` remains the authoritative development branch even though the repository's older GitHub default-branch metadata still names `master`. Because the branch tips are synchronized, that metadata no longer points at divergent content; future development must continue on `main` and any retained `master` pointer must not become an independent work line.
+`main` remains the authoritative development branch even though the repository's older GitHub default-branch metadata still names `master`. Because the branch tips were synchronized at consolidation, that metadata no longer represented divergent content; future development remains on `main` and any retained `master` pointer must not become an independent work line.
 
 ## Current domain authority
 
@@ -42,10 +42,31 @@ The default maximum reduction is 75%, configurable between 50% and 100%. Station
 
 `Magenheim.Core.Worldgen` validates Median/Edge/All area flags and plans only additions under `magenheim.` keys. Existing registrations are copied into read-only planning snapshots. Duplicate or occupied keys are skipped or errored according to policy without modifying foreign data. Destructive compatibility mode is rejected.
 
+## Runtime bootstrap — 2026-09-13
+
+A thin runtime project now exists at `src/Magenheim.Runtime` and consumes the authoritative pure-core project rather than recreating refinement rules.
+
+Runtime bootstrap properties:
+
+- target framework: .NET Framework 4.6.2;
+- Jötunn dependency: `JotunnLib` 2.30.0;
+- BepInEx plugin GUID: `mrcalzon02.magenheim`;
+- hard dependency on `Jotunn.Main.ModGuid`;
+- Jötunn network compatibility: `EveryoneMustHaveMod` with `VersionStrictness.Minor`;
+- runtime startup builds `CrystalRefinementService` from the canonical core defaults;
+- no world objects, items, sockets, inventory mutations, RPCs, or persistent gameplay state are enabled by this bootstrap.
+
+During dependency review, `Magenheim.Core` was found to target `netstandard2.1`, which cannot be consumed by a .NET Framework runtime. It was retargeted to `netstandard2.0`, which is compatible with both the net462 runtime and the net8.0 standalone test harness. This is an architectural compatibility repair, not a gameplay change.
+
 ## Validation boundary
 
-The active execution host was checked directly after reconciliation. `dotnet`, `csc`, and `mcs` are not installed or available on PATH. Compilation and test execution therefore cannot be claimed from this environment. Static source/Git reconciliation is the present admission level.
+The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compilation and test execution therefore remain unclaimed. Runtime source was checked against current Jötunn documentation and package metadata, but plugin startup has not been observed inside Valheim.
 
 ## Next exact action
 
-Run `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj` in a .NET 8 SDK environment, resolve any compile/test defect at the authoritative source, then add the thin BepInEx/Jötunn bootstrap without enabling persistent gameplay mutations until server-authoritative transactions exist.
+In a .NET 8 SDK / Valheim development environment:
+
+1. run `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`;
+2. compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` against Jötunn 2.30.0 and current Valheim dependencies;
+3. repair any compile defect at the authoritative source;
+4. then implement strict configuration/data loading before Crystal Shaping registration or gameplay mutations.
