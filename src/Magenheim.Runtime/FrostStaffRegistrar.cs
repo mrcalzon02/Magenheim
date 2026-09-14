@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using BepInEx.Logging;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
+using UnityEngine;
 
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Playable Frost staff family built on Valheim's native StaffIceShards projectile/status path.
-/// Each tier deliberately changes cast topology and carries its own original Magenheim geometry.
+/// Four-tier Frost staff family. Frost now owns explicit Magenheim projectile payloads, with
+/// precision shatter setup at Crystal tier and persistent Rime control at Advanced/Master tiers.
 /// </summary>
 internal sealed class FrostStaffRegistrar : IDisposable
 {
@@ -40,14 +42,68 @@ internal sealed class FrostStaffRegistrar : IDisposable
             if (PrefabManager.Instance.GetPrefab(WorkshopRegistrar.StationPrefab) is null)
                 throw new InvalidOperationException("Geologist's Workstation must exist before Magenheim Frost staff recipes are registered.");
 
+            var brittle = RegisterFrostEffect(
+                "Magenheim_SE_Brittle",
+                "Brittle",
+                "The target's frozen surface fractures under blunt impact. Blunt damage now strikes as Weak.",
+                ttl: 3.5f,
+                bluntWeakness: true,
+                speedModifier: 0f,
+                tint: new Color(.66f, .90f, 1f, 1f));
+            var deepRime = RegisterFrostEffect(
+                "Magenheim_SE_DeepRime",
+                "Deep Rime",
+                "Rime has accumulated around the target, reducing movement speed by twenty percent.",
+                ttl: 2.5f,
+                bluntWeakness: false,
+                speedModifier: -.20f,
+                tint: new Color(.78f, .96f, 1f, 1f));
+
+            var lanceShatter = StaffEffectPayloads.CreateField(
+                "Magenheim_Frost_LanceShatter",
+                new HitData.DamageTypes { m_frost = 2f },
+                radius: .85f,
+                ttl: .15f,
+                hitInterval: .15f,
+                attackForce: 2f,
+                tint: new Color(.56f, .86f, 1f, 1f),
+                emission: 1.50f,
+                statusEffect: brittle);
+            var rimePatch = StaffEffectPayloads.CreateField(
+                "Magenheim_Frost_RimePatch",
+                new HitData.DamageTypes { m_frost = 2.5f },
+                radius: 2.2f,
+                ttl: 2.5f,
+                hitInterval: .75f,
+                attackForce: 0f,
+                tint: new Color(.68f, .92f, 1f, 1f),
+                emission: 1.60f,
+                statusEffect: deepRime);
+            var torrentPatch = StaffEffectPayloads.CreateField(
+                "Magenheim_Frost_TorrentRime",
+                new HitData.DamageTypes { m_frost = 2f },
+                radius: 1.8f,
+                ttl: 1.8f,
+                hitInterval: .60f,
+                attackForce: 0f,
+                tint: new Color(.82f, .98f, 1f, 1f),
+                emission: 1.85f,
+                statusEffect: deepRime);
+
+            var payloads = new PayloadSet(
+                StaffEffectPayloads.CreateProjectile("Magenheim_Frost_WaterProjectile", new Color(.40f, .78f, 1f, 1f), 1.30f, sourceStaffPrefab: BaseStaffPrefab),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Frost_LanceProjectile", new Color(.58f, .88f, 1f, 1f), 1.55f, lanceShatter, BaseStaffPrefab),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Frost_VolleyProjectile", new Color(.68f, .93f, 1f, 1f), 1.68f, rimePatch, BaseStaffPrefab),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Frost_TorrentProjectile", new Color(.86f, .99f, 1f, 1f), 1.95f, torrentPatch, BaseStaffPrefab));
+
             foreach (var definition in Definitions())
             {
-                RegisterStaff(definition);
+                RegisterStaff(definition, payloads);
                 RegisterRecipe(definition);
             }
 
             _registered = true;
-            _log.LogInfo("Registered the four-tier Frost staff family with distinct Magenheim geometry and icons: Water Dart, Frost Lance, Ice Volley, and Rime Torrent.");
+            _log.LogInfo("Registered Frost abilities: Water Dart, Frost Lance with Brittle, Ice Volley Rime fields, and Rime Torrent control fields.");
         }
         catch (Exception exception)
         {
@@ -60,7 +116,52 @@ internal sealed class FrostStaffRegistrar : IDisposable
         }
     }
 
-    private static void RegisterStaff(FrostStaffDefinition definition)
+    private static StatusEffect RegisterFrostEffect(
+        string identity,
+        string displayName,
+        string tooltip,
+        float ttl,
+        bool bluntWeakness,
+        float speedModifier,
+        Color tint)
+    {
+        var effect = ScriptableObject.CreateInstance<SE_Stats>();
+        effect.name = identity;
+        effect.m_name = displayName;
+        effect.m_tooltip = tooltip;
+        effect.m_ttl = ttl;
+        effect.m_icon = EarthAssets.Icon("crystal", identity, tint);
+
+        if (bluntWeakness)
+        {
+            effect.m_mods = new List<HitData.DamageModPair>
+            {
+                new HitData.DamageModPair
+                {
+                    m_type = HitData.DamageType.Blunt,
+                    m_modifier = HitData.DamageModifier.Weak,
+                },
+            };
+        }
+
+        if (speedModifier != 0f)
+        {
+            var speedField = typeof(SE_Stats).GetField(
+                "m_speedModifier",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                ?? throw new InvalidOperationException("Current Valheim SE_Stats no longer exposes m_speedModifier required by Frost Rime effects.");
+            if (speedField.FieldType != typeof(float))
+                throw new InvalidOperationException($"SE_Stats.m_speedModifier has unexpected type '{speedField.FieldType.FullName}'.");
+            speedField.SetValue(effect, speedModifier);
+        }
+
+        var custom = new CustomStatusEffect(effect, fixReference: false);
+        if (!ItemManager.Instance.AddStatusEffect(custom))
+            throw new InvalidOperationException($"Jotunn refused Frost status effect '{identity}'.");
+        return custom.StatusEffect;
+    }
+
+    private static void RegisterStaff(FrostStaffDefinition definition, PayloadSet payloads)
     {
         if (PrefabManager.Instance.GetPrefab(definition.PrefabName) || CustomItem.IsCustomItem(definition.PrefabName))
             throw new InvalidOperationException($"Cannot replace occupied Frost staff identity '{definition.PrefabName}'.");
@@ -69,14 +170,16 @@ internal sealed class FrostStaffRegistrar : IDisposable
         var shared = item.ItemDrop.m_itemData.m_shared;
         shared.m_name = definition.DisplayName;
         shared.m_description = definition.Description;
+        shared.m_skillType = Skills.SkillType.ElementalMagic;
         shared.m_maxQuality = 1;
         shared.m_value = 0;
         shared.m_dlc = string.Empty;
+        shared.m_damages = new HitData.DamageTypes { m_frost = definition.FrostDamage };
+        shared.m_damagesPerLevel = new HitData.DamageTypes();
         shared.m_icons = new[] { EarthAssets.Icon(definition.AssetName) };
 
-        // Keep the native frost projectile and hit-status behavior, but reshape the cast itself.
-        // This preserves real frost buildup while giving every Magenheim tier a distinct combat role.
         var attack = shared.m_attack;
+        attack.m_attackProjectile = payloads.Resolve(definition.Payload);
         attack.m_attackStamina = definition.StaminaCost;
         attack.m_attackEitr = definition.EitrCost;
         attack.m_damageMultiplier = definition.DamageMultiplier;
@@ -92,7 +195,6 @@ internal sealed class FrostStaffRegistrar : IDisposable
         attack.m_perBurstResourceUsage = false;
 
         FrostStaffVisuals.Apply(item.ItemPrefab, definition.AssetName);
-
         if (!ItemManager.Instance.AddItem(item))
             throw new InvalidOperationException($"Jotunn refused Frost staff item '{definition.PrefabName}'.");
     }
@@ -108,10 +210,8 @@ internal sealed class FrostStaffRegistrar : IDisposable
             MinStationLevel = definition.MinimumStationLevel,
             Enabled = true,
         };
-
         foreach (var requirement in definition.Requirements)
             config.AddRequirement(requirement.PrefabName, requirement.Amount);
-
         if (!ItemManager.Instance.AddRecipe(new CustomRecipe(config)))
             throw new InvalidOperationException($"Jotunn refused Frost staff recipe '{config.Name}'.");
     }
@@ -119,87 +219,25 @@ internal sealed class FrostStaffRegistrar : IDisposable
     private static IReadOnlyList<FrostStaffDefinition> Definitions() => new[]
     {
         new FrostStaffDefinition(
-            "Magenheim_Staff_Frost_Simple",
-            "staff-frost-simple",
-            "Simple Staff of Frost",
-            "Water Dart: condenses a water-heavy shard and snaps it forward. The impact carries a weak but genuine freezing bite and costs only stamina.",
-            minimumStationLevel: 1,
-            staminaCost: 18f,
-            eitrCost: 0f,
-            damageMultiplier: 0.30f,
-            forceMultiplier: 0.35f,
-            staggerMultiplier: 0.50f,
-            projectileVelocity: 24f,
-            projectileAccuracy: 2.5f,
-            projectiles: 1,
-            bursts: 1,
-            burstInterval: 0f,
-            new StaffRequirement("FineWood", 8),
-            new StaffRequirement("FreezeGland", 2),
-            new StaffRequirement("Magenheim_Crystal_Frost_Simple", 1)),
-
+            "Magenheim_Staff_Frost_Simple", "staff-frost-simple", "Simple Staff of Frost",
+            "Water Dart: snaps one cold-heavy shard forward. It deals clean Frost damage without leaving additional terrain or debuffs beyond the element's ordinary chill pressure.",
+            1, 18f, 0f, 16f, 1f, .35f, .50f, 24f, 2.5f, 1, 1, 0f, PayloadKind.Water,
+            new StaffRequirement("FineWood", 8), new StaffRequirement("FreezeGland", 2), new StaffRequirement("Magenheim_Crystal_Frost_Simple", 1)),
         new FrostStaffDefinition(
-            "Magenheim_Staff_Frost_Crystal",
-            "staff-frost-crystal",
-            "Crystal Staff of Frost",
-            "Frost Lance: compresses the cast into one long, precise ice spike. It hits hard, travels exceptionally fast, and carries substantially more force and stagger.",
-            minimumStationLevel: 2,
-            staminaCost: 28f,
-            eitrCost: 0f,
-            damageMultiplier: 1.05f,
-            forceMultiplier: 1.60f,
-            staggerMultiplier: 1.35f,
-            projectileVelocity: 55f,
-            projectileAccuracy: 0.4f,
-            projectiles: 1,
-            bursts: 1,
-            burstInterval: 0f,
-            new StaffRequirement("ElderBark", 10),
-            new StaffRequirement("Silver", 3),
-            new StaffRequirement("Magenheim_Crystal_Frost_Crystal", 1)),
-
+            "Magenheim_Staff_Frost_Crystal", "staff-frost-crystal", "Crystal Staff of Frost",
+            "Frost Lance: compresses the cast into one precise spike. Its impact makes the target Brittle for three and a half seconds, causing Blunt damage to strike it as Weak.",
+            2, 28f, 0f, 35f, 1f, 1.60f, 1.35f, 55f, .4f, 1, 1, 0f, PayloadKind.Lance,
+            new StaffRequirement("ElderBark", 10), new StaffRequirement("Silver", 3), new StaffRequirement("Magenheim_Crystal_Frost_Crystal", 1)),
         new FrostStaffDefinition(
-            "Magenheim_Staff_Frost_Advanced",
-            "staff-frost-advanced",
-            "Advanced Staff of Frost",
-            "Ice Volley: breaks one shaping impulse into a five-shard fan. Individual shards are lighter, but the spread can blanket a target or freeze a clustered advance.",
-            minimumStationLevel: 3,
-            staminaCost: 12f,
-            eitrCost: 16f,
-            damageMultiplier: 0.34f,
-            forceMultiplier: 0.80f,
-            staggerMultiplier: 0.80f,
-            projectileVelocity: 36f,
-            projectileAccuracy: 12f,
-            projectiles: 5,
-            bursts: 1,
-            burstInterval: 0f,
-            new StaffRequirement("YggdrasilWood", 10),
-            new StaffRequirement("Silver", 4),
-            new StaffRequirement("FreezeGland", 4),
-            new StaffRequirement("Magenheim_Crystal_Frost_Advanced", 1)),
-
+            "Magenheim_Staff_Frost_Advanced", "staff-frost-advanced", "Advanced Staff of Frost",
+            "Ice Volley: throws five lighter shards across a fan. Each impact leaves a short Rime patch that deals Frost damage and applies Deep Rime, reducing movement by twenty percent.",
+            3, 12f, 16f, 8f, .85f, .80f, .80f, 36f, 12f, 5, 1, 0f, PayloadKind.Volley,
+            new StaffRequirement("YggdrasilWood", 10), new StaffRequirement("Silver", 4), new StaffRequirement("FreezeGland", 4), new StaffRequirement("Magenheim_Crystal_Frost_Advanced", 1)),
         new FrostStaffDefinition(
-            "Magenheim_Staff_Frost_Master",
-            "staff-frost-master",
-            "Master Staff of Frost",
-            "Rime Torrent: opens the crystal continuously for a heartbeat, pouring paired ice shards through eight rapid pulses. The stream sacrifices per-hit force for relentless frost pressure.",
-            minimumStationLevel: 4,
-            staminaCost: 0f,
-            eitrCost: 42f,
-            damageMultiplier: 0.16f,
-            forceMultiplier: 0.65f,
-            staggerMultiplier: 0.70f,
-            projectileVelocity: 40f,
-            projectileAccuracy: 7f,
-            projectiles: 2,
-            bursts: 8,
-            burstInterval: 0.09f,
-            new StaffRequirement("YggdrasilWood", 15),
-            new StaffRequirement("BlackMetal", 4),
-            new StaffRequirement("Eitr", 10),
-            new StaffRequirement("FreezeGland", 6),
-            new StaffRequirement("Magenheim_Crystal_Frost_Master", 1)),
+            "Magenheim_Staff_Frost_Master", "staff-frost-master", "Master Staff of Frost",
+            "Rime Torrent: pours paired shards through six rapid pulses. Every impact leaves a compact Rime field, creating a moving carpet of repeated Frost pressure and Deep Rime rather than only sixteen isolated projectiles.",
+            4, 0f, 44f, 5f, .75f, .65f, .70f, 40f, 7f, 2, 6, .09f, PayloadKind.Torrent,
+            new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("BlackMetal", 4), new StaffRequirement("Eitr", 10), new StaffRequirement("FreezeGland", 6), new StaffRequirement("Magenheim_Crystal_Frost_Master", 1)),
     };
 
     public void Dispose()
@@ -209,14 +247,33 @@ internal sealed class FrostStaffRegistrar : IDisposable
         _subscribed = false;
     }
 
-    private readonly struct StaffRequirement
+    private enum PayloadKind { Water, Lance, Volley, Torrent }
+
+    private sealed class PayloadSet
     {
-        internal StaffRequirement(string prefabName, int amount)
+        private readonly GameObject _water;
+        private readonly GameObject _lance;
+        private readonly GameObject _volley;
+        private readonly GameObject _torrent;
+
+        internal PayloadSet(GameObject water, GameObject lance, GameObject volley, GameObject torrent)
         {
-            PrefabName = prefabName;
-            Amount = amount;
+            _water = water; _lance = lance; _volley = volley; _torrent = torrent;
         }
 
+        internal GameObject Resolve(PayloadKind kind) => kind switch
+        {
+            PayloadKind.Water => _water,
+            PayloadKind.Lance => _lance,
+            PayloadKind.Volley => _volley,
+            PayloadKind.Torrent => _torrent,
+            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
+        };
+    }
+
+    private readonly struct StaffRequirement
+    {
+        internal StaffRequirement(string prefabName, int amount) { PrefabName = prefabName; Amount = amount; }
         internal string PrefabName { get; }
         internal int Amount { get; }
     }
@@ -224,39 +281,17 @@ internal sealed class FrostStaffRegistrar : IDisposable
     private sealed class FrostStaffDefinition
     {
         internal FrostStaffDefinition(
-            string prefabName,
-            string assetName,
-            string displayName,
-            string description,
-            int minimumStationLevel,
-            float staminaCost,
-            float eitrCost,
-            float damageMultiplier,
-            float forceMultiplier,
-            float staggerMultiplier,
-            float projectileVelocity,
-            float projectileAccuracy,
-            int projectiles,
-            int bursts,
-            float burstInterval,
-            params StaffRequirement[] requirements)
+            string prefabName, string assetName, string displayName, string description,
+            int minimumStationLevel, float staminaCost, float eitrCost, float frostDamage,
+            float damageMultiplier, float forceMultiplier, float staggerMultiplier,
+            float projectileVelocity, float projectileAccuracy, int projectiles, int bursts,
+            float burstInterval, PayloadKind payload, params StaffRequirement[] requirements)
         {
-            PrefabName = prefabName;
-            AssetName = assetName;
-            DisplayName = displayName;
-            Description = description;
-            MinimumStationLevel = minimumStationLevel;
-            StaminaCost = staminaCost;
-            EitrCost = eitrCost;
-            DamageMultiplier = damageMultiplier;
-            ForceMultiplier = forceMultiplier;
-            StaggerMultiplier = staggerMultiplier;
-            ProjectileVelocity = projectileVelocity;
-            ProjectileAccuracy = projectileAccuracy;
-            Projectiles = projectiles;
-            Bursts = bursts;
-            BurstInterval = burstInterval;
-            Requirements = requirements;
+            PrefabName = prefabName; AssetName = assetName; DisplayName = displayName; Description = description;
+            MinimumStationLevel = minimumStationLevel; StaminaCost = staminaCost; EitrCost = eitrCost;
+            FrostDamage = frostDamage; DamageMultiplier = damageMultiplier; ForceMultiplier = forceMultiplier;
+            StaggerMultiplier = staggerMultiplier; ProjectileVelocity = projectileVelocity; ProjectileAccuracy = projectileAccuracy;
+            Projectiles = projectiles; Bursts = bursts; BurstInterval = burstInterval; Payload = payload; Requirements = requirements;
         }
 
         internal string PrefabName { get; }
@@ -266,6 +301,7 @@ internal sealed class FrostStaffRegistrar : IDisposable
         internal int MinimumStationLevel { get; }
         internal float StaminaCost { get; }
         internal float EitrCost { get; }
+        internal float FrostDamage { get; }
         internal float DamageMultiplier { get; }
         internal float ForceMultiplier { get; }
         internal float StaggerMultiplier { get; }
@@ -274,6 +310,7 @@ internal sealed class FrostStaffRegistrar : IDisposable
         internal int Projectiles { get; }
         internal int Bursts { get; }
         internal float BurstInterval { get; }
+        internal PayloadKind Payload { get; }
         internal IReadOnlyList<StaffRequirement> Requirements { get; }
     }
 }

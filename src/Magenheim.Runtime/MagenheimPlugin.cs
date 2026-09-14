@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.29";
+    internal const string PluginVersion = "0.0.30";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -110,11 +110,10 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline definition fingerprint {baselineDefinitions.Fingerprint}; effective definition fingerprint {effectiveDefinitions.Fingerprint}; " +
                 $"effective gameplay authority {_authoritySynchronizer.GameplayFingerprint}. " +
-                "Socket item/prefab/category/mod-origin compatibility rules participate in multiplayer mutation authority. " +
-                "Player content includes eight biome geodes, eight five-tier elemental crystal families, elemental shard recombination, " +
-                "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and all eight four-tier elemental staff families. " +
-                "Radiance owns hard-light/flash/sanctuary payloads, Spirit owns spectral echo fields, Seidr owns movement-binding hexes, Venom owns persistent corrosion, " +
-                "Storm owns secondary impact discharges, and Earth now applies real Fractured Armor, Tremor, and Shattered Armor effects through landed seismic hits.");
+                "Player content includes eight biome geodes, eight five-tier elemental crystal families, the full geology workstation refinement ladder, " +
+                "resolved socket bonuses, and eight four-tier staff families with distinct runtime effects. Fire now owns fireburst/scorch/meteor burn terrain; " +
+                "Frost owns Brittle and Rime fields; Storm owns secondary discharges; Earth owns Fractured/Shattered Armor and Tremor; Venom owns corrosion; " +
+                "Radiance owns hard-light/flash/sanctuary payloads; Seidr owns binding hexes; and Spirit owns spectral echo fields.");
         }
         catch (Exception exception)
         {
