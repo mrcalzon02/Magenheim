@@ -4,133 +4,107 @@
 
 `INSTRUCTIONS.md`, committed source on the live `main` branch, and directly observed repository/runtime evidence are authoritative. Backlog, validation records, archived design, scheduled prompts, and conversation are subordinate when they disagree with verified live state.
 
-## Current delivery - 0.0.16 plus post-test source repair
+## Current source state — 2026-09-14
 
-The 0.0.16 content set contains eleven original models/texture atlases and twelve
-icons: geode, five Earth crystal tiers, shards, Crystal Shaping badge, Geologist's
-Workstation, and three station upgrades. Models have OBJ/MTL exports. Workshop pieces
-have build costs, collision shapes, distinct wear variants, and upgrade links to the
-Geologist's Workstation. Its crafting skill is Crystal Shaping.
+Current source/package identity is **0.0.23**. The most recently live-tested/installed package remains **0.0.16**; do not conflate later committed source with live acceptance.
 
-Valheim startup using the packaged assemblies registered all seven inventory items,
-Crystal Shaping, the four workshop pieces, and one Meadows geode vegetation addition
-without a Magenheim registration exception. The local 0.0.16 package was built with
-zero errors/warnings, passed 113 core assertions, and was installed/hash-verified in
-the active Central Fuckery profile before the first live world test.
+The repository has advanced substantially beyond the first live-world-test baseline. Current source includes:
 
-### Live world test 1 - 2026-09-14
+- eight biome geode definitions and additive natural-geode worldgen infrastructure;
+- eight five-tier elemental crystal families and shards;
+- Crystal Shaping skill/refinement authority;
+- Geologist's Workstation and three progression upgrades;
+- authority/replay-aware workshop transaction infrastructure;
+- per-item adaptive socket metadata, eligibility, effects, extraction, workstation UI, and rollback planning;
+- Fire, Frost, Storm, Earth, Venom, Radiance, and Seidr four-tier staff families;
+- patch-strict multiplayer gameplay-authority synchronization.
 
-Direct in-game testing materially advanced the evidence boundary. The Geologist's
-Workstation exists, opens its station UI, and all directly spawned Earth inventory
-items appeared correctly. The dedicated Meadows Earth world-geode prefab also spawned
-with the custom Magenheim geometry.
+Verified source presence is not runtime acceptance. Current 0.0.23 source has not been rebuilt or run in this execution environment.
 
-The same test exposed four distinct conditions:
+## Live runtime evidence retained from 0.0.16
 
-- the world geode custom mesh rendered translucent;
-- the world geode was substantially too large for the intended ground-stone role;
-- workstation tabletop/iron-band surface fighting is visible;
-- the workstation Craft panel has no mineral operations;
-- no adaptive equipment-slotting operation exists.
+The first disposable-world test confirmed that the Geologist's Workstation exists and opens its UI, directly spawned Earth inventory items appear, and the dedicated Meadows Earth world-geode prefab uses custom Magenheim geometry.
 
-The empty Craft panel and absent slotting action are confirmed implementation gaps,
-not hidden/discovery failures. Current runtime source registers the content but does
-not bind authoritative geode opening or crystal refinement inventory transactions to
-the station UI, and P2 socket metadata, eligibility, transaction, and persistence work
-is not yet exposed in the workstation.
+That test also exposed translucent/oversized world-geode presentation and workstation iron-band surface fighting. Subsequent source repairs normalized Magenheim-owned material render state and reduced/rebased the world-geode visual/collider, but those repairs still require a rebuilt in-game retest before they are accepted as closed.
 
-The translucent geode was traced to inherited render state on cloned source materials,
-not texture transparency: Magenheim atlases are opaque RGB images. `EarthAssets` now
-normalizes Magenheim-owned cloned materials to Opaque RenderType, opaque blend factors,
-ZWrite, non-alpha shader keywords, and geometry render queue. That source repair is not
-accepted as a live fix until a rebuilt package is installed and observed in Valheim.
+The permanent skill diagnostic remains `raiseskill magenheim.crystal_shaping 1`; the spaced display name is not a valid vanilla parser argument. Live confirmation remains open.
 
-The world geode visual scale has also been reduced from 3.5x to 1.2x, approximately a
-two-thirds reduction. World visual vertical offset and the replacement collider are
-now derived from the actual custom mesh bounds instead of fixed values from the old
-large nodule. The default Meadows ground offset was reduced from -0.10 to -0.04 so the
-smaller geode is not buried disproportionately. This change also requires rebuild and
-live confirmation.
-
-The workstation iron-band issue is traced to asset geometry: the generator places thick
-iron band cuboids through the tabletop boards and shares visible surface planes. The
-authoritative generator repair is being advanced separately; its checked-in derived
-mesh must remain synchronized before the defect can be called closed.
-
-The attempted console diagnostic `raiseskill Crystal Shaping 1` was rejected by the
-vanilla command parser. The permanent Jotunn custom-skill identifier is the required
-single-token diagnostic argument: `raiseskill magenheim.crystal_shaping 1`. That exact
-command still requires live confirmation and is not a substitute for earned gameplay XP.
-
-See `TESTING.md` and `docs/validation/2026-09-14-live-world-test-1.md`. Current development
-continues while the local Valheim instance is unavailable: scale/material corrections,
-workstation asset repair, transaction binding, and adaptive socket foundations are the
-active dependency-valid work.
-
-## Prior source-only snapshot — 2026-09-14
-
-Repository: `mrcalzon02/Magenheim`.
-
-GitHub reports `main` as the default branch and branch enumeration reports only `main`. The former `master` pointer is gone; there is no remaining parallel development branch to reconcile.
-
-Current worldgen implementation sequence:
-
-- `e1b530804591004717f20d6c361b7d150421eb9a` — one-time additive Jötunn geode vegetation registration, removal of the duplicate prefab-registration path, and runtime-safe `Everything`/`Everywhere` area resolution.
-- `19e8d3eecef2cac4af2c55003d3638ec81cb827e` — schema-3 fingerprinted geode placement authority and validated server placement overrides.
-- `1e41c263188599c5b1aad2c3be3f2f0c51e9b158` — removed the premature `ZoneSystem` vegetation lookup from prefab-availability collision observation and advanced runtime identity to 0.0.14.
+See `docs/validation/2026-09-14-live-world-test-1.md` and `TESTING.md` for the preserved test boundary.
 
 ## Stable domain authority
 
-Crystal tiers remain `Rough -> Simple -> Crystal -> Advanced -> Master`. Normal elemental alignments remain Earth, Fire, Frost, Storm, Venom, Radiance, Seidr, and Spirit. Ordinary refinement preserves alignment. Base failure remains 10/20/30/40 percent with Crystal Shaping reduction and workstation/upgrade progression. Valid failed attempts destroy the source and return 1/2/3/5 matching shards by tier.
+Crystal tiers remain `Rough -> Simple -> Crystal -> Advanced -> Master`. Normal elemental alignments remain Earth, Fire, Frost, Storm, Venom, Radiance, Seidr, and Spirit. Ordinary refinement preserves alignment. Base refinement failure remains 10/20/30/40 percent with Crystal Shaping reduction and workstation/upgrade progression. Valid failed attempts destroy the source and return matching shards according to tier.
 
-## Definition schema 3
+## Worldgen and area compatibility
 
-Definition schema 3 owns refinement, geodes, worldgen compatibility, and each geode's complete Jötunn-facing placement behavior in one validated/fingerprinted snapshot.
+Definition schema 3 owns refinement, geodes, worldgen compatibility, and complete geode placement behavior in one validated/fingerprinted snapshot.
 
-Compatibility authority includes invalid-area behavior, duplicate behavior, prefab-collision detection, exact/case-insensitive identity comparison, and exclusions limited to Magenheim-owned registration/prefab namespaces. Additive-only behavior cannot be disabled.
+Worldgen remains additive-only. Magenheim does not rewrite, delete, disable, reorder, or patch foreign/vanilla registrations to obtain compatibility. Collision observation feeds pure Add/Skip/Error planning; approved world objects use Magenheim-owned identities.
 
-Each geode placement record fingerprints block/force-placement flags, per-zone min/max, altitude and ocean-depth limits, terrain-delta range/radius, tilt range, forest thresholds, scale range, group size/radius, and ground offset. Values are validated in the pure core, including runtime-float representability.
+Spawn-area handling remains fail-closed. Negative numeric masks cannot clamp into All through sign extension. Unknown bits are governed by validated policy. Text configuration accepts the Magenheim `All` abstraction plus runtime-facing aliases. At the Valheim boundary, the adapter resolves current `Heightmap.BiomeArea` names dynamically and can compose the defined Median/Edge flags when a named combined member is absent, avoiding integer-cast assumptions.
 
-BepInEx placement overrides are server-side inputs only. They are converted back into pure placement records, passed through `MagenheimDefinitionOverrideApplier`, fully revalidated, and included in the effective definition fingerprint before any worldgen registration consumes them. Runtime code no longer owns independent placement constants.
+Geode placement density, altitude/depth, terrain delta, tilt, forest thresholds, scale, grouping, block checking, force placement, and offset are validated/fingerprinted authority and can be overridden only through revalidation before registration.
 
-## Area-generation safeguards
+## Adaptive socket authority — 0.0.23 source
 
-Abstract spawn areas remain Median, Edge, and All. Negative numeric flags fail closed under Reject/Clamp behavior; unknown bits are governed by the fingerprinted invalid-area policy. Text configuration accepts `Everywhere` as an All alias.
+Per-item socket persistence is namespaced under `magenheim.sockets.v1`. Socket writes operate on the individual `ItemDrop.ItemData.m_customData` dictionary and preserve unrelated foreign custom-data keys. Shared vanilla/foreign prefabs and shared item definitions are not the socket-state store.
 
-At the runtime boundary, Magenheim resolves the current `Heightmap.BiomeArea` enum by defined name rather than integer cast. The combined value is resolved from `Everything` or `Everywhere`, covering the naming difference visible across current Jötunn source/documentation. Unsupported runtime enum values fail closed.
+Eligibility is adaptive and conservative:
 
-## Additive worldgen execution
+- known weapon/armor/shield/tool/utility categories use configured slot limits;
+- unknown equipment is rejected unless explicitly opted in;
+- compatibility can include/exclude by shared item identity, prefab identity, equipment category, or mod origin;
+- exact and case-insensitive identity comparison are supported;
+- explicit exclusions win before category admission;
+- case-insensitive identity collections are de-duplicated with case-insensitive semantics;
+- unknown identity-comparison enum values fail closed.
 
-`GeodeWorldgenRegistrar` is the single runtime mutation path for natural geodes. It waits for Jötunn vanilla prefabs, derives desired additions from `DefinitionWorldgenPlanner`, performs read-only host collision observation, reruns pure Add/Skip/Error planning, preflights every approved addition, clones/configures the new Magenheim-owned world object, and registers it once through `ZoneManager.AddCustomVegetation`.
+Jötunn `ModQuery` is enabled during plugin startup before equipment classification so mod-origin rules can identify modded prefabs. Item identity is separately carried from Valheim `m_shared.m_name`, allowing compatibility rules that are finer-grained than prefab origin alone.
 
-The registrar never edits or removes host worldgen. Existing prefab identities are observations. Error decisions abort before mutation; Skip decisions leave the host entry untouched. Execution preflight also refuses an occupied prefab identity even if proactive prefab-collision reporting is disabled, so configurability cannot weaken the non-destructive invariant.
+### Gameplay-authority repair
 
-Host collision observation intentionally uses `PrefabManager.GetPrefab` during `OnVanillaPrefabsAvailable`. It does not call `ZoneManager.GetZoneVegetation` at that lifecycle point because current Jötunn source directly dereferences `ZoneSystem.instance` in that method, while a live ZoneSystem is not guaranteed by the prefab/ObjectDB availability event. Prefab occupancy remains the decisive collision boundary because Jötunn `AddCustomVegetation` itself claims the prefab through `PrefabManager.AddPrefab`.
+Socket compatibility previously lived outside `MagenheimDefinitionSet.Fingerprint`, allowing peers with identical content definitions but different socket limits/include/exclude rules to appear authority-compatible.
 
-The prior separate `GeodeWorldPrefabRegistrar` was removed because Jötunn `AddCustomVegetation` registers its prefab through `PrefabManager`; pre-registering the same world prefab created a self-collision risk.
+`GameplayAuthorityFingerprint` now combines the validated definition fingerprint with every gameplay-significant socket eligibility field: category slot limits, explicit-include limit, identity mode, item/prefab/mod-origin include/exclude sets, and excluded categories. Case-insensitive identities are canonicalized for hashing while exact mode preserves casing significance.
 
-The dedicated natural world object remains `<item prefab>_World` and is separate from the temporary Stone-derived intact inventory-item visual. It is configured for persistent network state, destructibility, and exactly one intact-geode destruction drop. Vanilla `Rock_4` is used only as a clone source and is not intentionally modified.
+`DefinitionAuthoritySynchronizer` now exchanges this composite gameplay fingerprint. Persistent gameplay mutation therefore fails authority admission when peers disagree on socket compatibility rules rather than silently diverging.
 
-## Meadows/Earth placement authority
+Source coverage for this pass is recorded in `SocketCompatibilityAuthorityTests` and `docs/validation/2026-09-14-socket-compatibility-gameplay-authority.md`.
 
-The shipped schema-3 Meadows definition currently specifies: block checking enabled, force placement disabled, `MinPerZone=0`, `MaxPerZone=0.35`, altitude 1–1000, ocean depth 0–0, terrain delta 0–2 measured over radius 2, tilt 0–35 degrees, forest filtering disabled with threshold range 0–1, scale 0.85–1.15, group size 1–1, group radius 0, and ground offset -0.04. The Meadows Earth custom world visual is 1.2x the source geode mesh before vegetation scale variance.
+## Socket workstation/runtime boundary
 
-These fields are legitimate server configuration because any effective change is revalidated and changes definition authority/fingerprint.
+The Geologist's Workstation source now includes a dedicated socket-management overlay. Local-host operations can plan/open sockets, install crystals, and extract crystals using per-item state, authority/replay guards, inventory snapshots, rollback, and Crystal Shaping XP. Remote-client socket mutation remains intentionally unadmitted until its server request/approval RPC path is bound and validated.
 
-## Runtime identity
+Socket effects are computed from Magenheim-owned per-item metadata and applied through runtime effect patches by equipment category. They do not require replacing another mod's item prefab or recipe.
 
-Installed/tested package identity remains 0.0.16. Target framework remains .NET Framework 4.6.2 with `JotunnLib` 2.30.0. BepInEx plugin GUID is `mrcalzon02.magenheim`; network compatibility remains `EveryoneMustHaveMod` with patch strictness. Definition-authority synchronization and session-scoped geode-operation replay protection remain in source.
+## Repository branch reconciliation
 
-## Validation boundary
+`main` remains the sole authoritative development branch by policy. Current branch enumeration nevertheless exposes three redundant refs: `radiance-content`, `tmp-radiance-content`, and `__delete_me__`.
 
-The 0.0.16 build/startup path has already been compiled and exercised locally, while the post-test material and scale source repairs have not yet been rebuilt in this execution context. Do not conflate source inspection with a compiled/runtime acceptance result.
+All three point to `a8b6947c696e4da71e4837ff1b731ac53e98a387`. Direct comparison proves current `main` contains that commit and is ahead of it, so those refs contain no unique material work and are safe to delete. The available GitHub connector in this session exposes branch create/update but not branch deletion, so their deletion is an explicit repository-cleanup blocker rather than a falsely claimed completion.
 
-Natural geode generation, exact mining/drop behavior, repeated-load idempotence, save/reload persistence, host/client replication, dedicated-server behavior, authority-gated geode opening/refinement, earned Crystal Shaping XP, and socket persistence remain runtime gates.
+## Build and validation boundary
 
-## Next exact action
+Earlier project revisions were successfully compiled and tested in the normal Valheim development environment, including a recorded zero-error/warning build and deterministic core run before later source expansion.
 
-1. continue dependency-valid source development while the local runtime is unavailable;
-2. synchronize the workstation banding generator and generated asset;
-3. advance per-item socket metadata and adaptive eligibility without mutating shared foreign prefabs;
-4. implement the Geologist's Workstation geode-opening/refinement transaction binding with atomic inventory mutation, station/upgrade gating, failure shard returns, and earned Crystal Shaping XP;
-5. when the local instance is available, build current `main`, rerun the deterministic core harness, install it, and retest geode opacity/size/collision, workstation banding, and `raiseskill magenheim.crystal_shaping 1`.
+This execution host currently exposes **no `dotnet`, `csc`, `mcs`, or `msbuild`**, so current 0.0.23 changes cannot be compiled or executed here. The source/remote read-back level is therefore the strongest admissible claim for this pass.
+
+Current live gates include:
+
+- rebuild 0.0.23 and rerun the full deterministic suite;
+- plugin startup with the composite gameplay-authority fingerprint;
+- client/server rejection when socket policies differ;
+- live item/prefab/mod-origin exclusion behavior on representative third-party equipment;
+- socket metadata persistence through save/load, drop/pickup, storage, repair, upgrade, transfer, death, and dedicated-server flows;
+- remote-client socket request/approval RPC;
+- world-geode opacity/scale/collision retest;
+- workstation iron-band geometry repair/retest;
+- repeated-load worldgen idempotence and natural geode generation acceptance.
+
+## Next dependency-valid action
+
+1. rebuild current 0.0.23 source in the normal .NET/Valheim development environment and execute the deterministic suite, including `SocketCompatibilityAuthorityTests`;
+2. repair any compile/test/API defect at its authoritative source;
+3. live-test socket compatibility on vanilla and representative modded equipment, including item/prefab/mod-origin exclusions and mismatched multiplayer policy;
+4. bind remote-client socket-management requests to the server-authoritative approval path;
+5. continue remaining live-world defect repairs before broadening content scope further.
