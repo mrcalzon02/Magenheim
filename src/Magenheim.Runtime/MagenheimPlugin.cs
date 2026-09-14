@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.36";
+    internal const string PluginVersion = "0.0.37";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -27,6 +27,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private GeologyDecorRegistrar? _geologyDecorRegistrar;
     private CrystalArchitectureRegistrar? _crystalArchitectureRegistrar;
     private CrystalWeaponRegistrar? _crystalWeaponRegistrar;
+    private CrystalAlchemyRegistrar? _crystalAlchemyRegistrar;
     private WorkshopOperationRegistrar? _workshopOperationRegistrar;
     private ShardRecipeRegistrar? _shardRecipeRegistrar;
     private FireStaffRegistrar? _fireStaffRegistrar;
@@ -101,6 +102,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _workshopOperationRegistrar.Register();
             _shardRecipeRegistrar = new ShardRecipeRegistrar(Logger);
             _shardRecipeRegistrar.Register();
+            _crystalAlchemyRegistrar = new CrystalAlchemyRegistrar(Logger);
+            _crystalAlchemyRegistrar.Register();
             _fireStaffRegistrar = new FireStaffRegistrar(Logger);
             _fireStaffRegistrar.Register();
             _frostStaffRegistrar = new FrostStaffRegistrar(Logger);
@@ -124,7 +127,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 $"effective gameplay authority {_authoritySynchronizer.GameplayFingerprint}. " +
                 "Player content includes eight biome geodes, eight five-tier elemental crystal families, the full geology workstation refinement ladder, " +
                 "20 geology/crystal furniture and decor pieces, a rainbow Crystal Hearth, three crystal beam sizes, three crystal foundation sizes, " +
-                "a 10-piece high-durability physical crystal weapon set, resolved socket bonuses, and eight four-tier staff families with distinct runtime effects. " +
+                "a 10-piece high-durability physical crystal weapon set, deliberate Rough-crystal/shard grinding, Crystal Dust, Prismatic Eitrwine fermentation, " +
+                "resolved socket bonuses, and eight four-tier staff families with distinct runtime effects. " +
                 "Fire owns fireburst/scorch/meteor burn terrain; Frost owns Brittle and Rime fields; Storm owns secondary discharges; " +
                 "Earth owns Fractured/Shattered Armor and Tremor; Venom owns corrosion; Radiance owns hard-light/flash/sanctuary payloads; " +
                 "Seidr owns binding hexes; and Spirit owns Haunted, Dissonance, and Soul Suppression attack-damage suppression through spectral echo fields.");
@@ -146,6 +150,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
         _stormStaffRegistrar?.Dispose();
         _frostStaffRegistrar?.Dispose();
         _fireStaffRegistrar?.Dispose();
+        _crystalAlchemyRegistrar?.Dispose();
         _shardRecipeRegistrar?.Dispose();
         _workshopOperationRegistrar?.Dispose();
         _crystalWeaponRegistrar?.Dispose();
