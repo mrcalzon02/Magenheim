@@ -39,29 +39,66 @@ internal sealed class EarthContentRegistrar : IDisposable
         if (_registered) return;
         try
         {
-            foreach (CrystalTier tier in Enum.GetValues(typeof(CrystalTier)))
+            var crystalCount = 0;
+            var shardCount = 0;
+            foreach (ElementalAlignment element in Enum.GetValues(typeof(ElementalAlignment)))
             {
-                AddItem("Magenheim_Crystal_Earth_" + tier, tier.ToString().ToLowerInvariant(),
-                    tier == CrystalTier.Crystal ? "Earth Crystal" : tier + " Earth Crystal",
-                    "An Earth-aligned crystal. Its warm ochre facets hold the quiet strength of stone.", .3f);
+                foreach (CrystalTier tier in Enum.GetValues(typeof(CrystalTier)))
+                {
+                    AddCrystal(element, tier);
+                    crystalCount++;
+                }
+
+                AddShard(element);
+                shardCount++;
             }
-            AddItem("Magenheim_Shard_Earth", "shards", "Earth Crystal Shards",
-                "Small fragments of Earth crystal, recovered when a larger mineral fractures.", .1f);
+
             _registered = true;
-            _log.LogInfo("Registered 5 Earth crystal tiers and Earth Crystal Shards with original meshes, textures, and icons.");
+            _log.LogInfo(
+                $"Registered {crystalCount} elemental crystal items across {Enum.GetValues(typeof(ElementalAlignment)).Length} alignments " +
+                $"plus {shardCount} matching shard items using the Magenheim crystal geometry family.");
         }
         catch (Exception exception)
         {
-            _log.LogError($"Earth content registration failed: {exception}");
+            _log.LogError($"Elemental crystal content registration failed: {exception}");
             throw;
         }
         finally { Dispose(); }
     }
 
-    private static void AddItem(string prefab, string asset, string name, string description, float weight)
+    private static void AddCrystal(ElementalAlignment element, CrystalTier tier)
+    {
+        var prefab = $"Magenheim_Crystal_{element}_{tier}";
+        var asset = tier.ToString().ToLowerInvariant();
+        var displayName = tier == CrystalTier.Crystal
+            ? $"{element} Crystal"
+            : $"{tier} {element} Crystal";
+        var description = $"A {element}-aligned {tier.ToString().ToLowerInvariant()} crystal. {ElementVisualPalette.Essence(element)}";
+        AddItem(prefab, asset, displayName, description, .3f, element);
+    }
+
+    private static void AddShard(ElementalAlignment element)
+    {
+        AddItem(
+            $"Magenheim_Shard_{element}",
+            "shards",
+            $"{element} Crystal Shards",
+            $"Fragments of {element}-aligned crystal recovered from a failed shaping attempt. {ElementVisualPalette.Essence(element)}",
+            .1f,
+            element);
+    }
+
+    private static void AddItem(
+        string prefab,
+        string asset,
+        string name,
+        string description,
+        float weight,
+        ElementalAlignment element)
     {
         if (PrefabManager.Instance.GetPrefab(prefab) || CustomItem.IsCustomItem(prefab))
-            throw new InvalidOperationException($"Cannot replace occupied Earth item identity '{prefab}'.");
+            throw new InvalidOperationException($"Cannot replace occupied elemental item identity '{prefab}'.");
+
         var item = new CustomItem(prefab, "Stone");
         var shared = item.ItemDrop.m_itemData.m_shared;
         shared.m_name = name;
@@ -71,10 +108,22 @@ internal sealed class EarthContentRegistrar : IDisposable
         shared.m_weight = weight;
         shared.m_value = 0;
         shared.m_dlc = string.Empty;
-        shared.m_icons = new[] { EarthAssets.Icon(asset) };
-        EarthAssets.ReplaceVisual(item.ItemPrefab, asset);
+
+        if (element == ElementalAlignment.Earth)
+        {
+            shared.m_icons = new[] { EarthAssets.Icon(asset) };
+            EarthAssets.ReplaceVisual(item.ItemPrefab, asset);
+        }
+        else
+        {
+            var variant = ElementVisualPalette.Variant(element);
+            var tint = ElementVisualPalette.Tint(element);
+            shared.m_icons = new[] { EarthAssets.Icon(asset, variant, tint) };
+            EarthAssets.ReplaceVisual(item.ItemPrefab, asset, variant: variant, tint: tint);
+        }
+
         if (!ItemManager.Instance.AddItem(item))
-            throw new InvalidOperationException($"Jotunn refused Earth item '{prefab}'.");
+            throw new InvalidOperationException($"Jotunn refused elemental item '{prefab}'.");
     }
 
     public void Dispose()
