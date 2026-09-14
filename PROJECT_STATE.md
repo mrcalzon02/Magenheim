@@ -6,7 +6,7 @@
 
 ## Current source state — 2026-09-14
 
-Current source/package identity is **0.0.32**. The most recently live-tested/installed package remains **0.0.16**; do not conflate later committed source with live acceptance.
+Current source/package identity is **0.0.37**. The most recently live-tested/installed package remains **0.0.16**; do not conflate later committed source with live acceptance.
 
 The repository has advanced substantially beyond the first live-world-test baseline. Current source includes:
 
@@ -20,11 +20,12 @@ The repository has advanced substantially beyond the first live-world-test basel
 - original world-artifact geometry for later wardstone, passage, totem, keelstone, lighting, runecraft, ritual, spirit-fetish, Fate, and boss-resonance systems without falsely registering unfinished gameplay;
 - a registered ten-piece geology/crystal furniture family under Hammer > Furniture;
 - ten dedicated generated Hammer icons so the furniture no longer masquerades as unrelated vanilla clone-source pieces;
+- later additive crystal architecture/weapon/alchemy content, including the current crystal-grinding and Prismatic Eitrwine source work;
 - patch-strict multiplayer gameplay-authority synchronization.
 
-Verified source presence is not runtime acceptance. Current 0.0.32 source has not been rebuilt or run in this connector-only execution cycle.
+Verified source presence is not runtime acceptance. Current 0.0.37 source has not been rebuilt or run in this connector-only execution cycle.
 
-## Geology/crystal furniture — 0.0.32 source
+## Geology/crystal furniture source
 
 The current furniture family is:
 
@@ -57,7 +58,7 @@ See `docs/validation/2026-09-14-live-world-test-1.md` and `TESTING.md` for the p
 
 Crystal tiers remain `Rough -> Simple -> Crystal -> Advanced -> Master`. Normal elemental alignments remain Earth, Fire, Frost, Storm, Venom, Radiance, Seidr, and Spirit. Ordinary refinement preserves alignment. Base refinement failure remains 10/20/30/40 percent with Crystal Shaping reduction and workstation/upgrade progression. Valid failed attempts destroy the source and return matching shards according to tier.
 
-Furniture and later artifact models do not alter this gameplay authority. They are additive Magenheim-owned content and presentation layers.
+Furniture, architecture, weapons, alchemy presentation, and later artifact models do not alter this core refinement authority unless explicitly admitted through validated gameplay definitions.
 
 ## Worldgen and area compatibility
 
@@ -65,9 +66,15 @@ Definition schema 3 owns refinement, geodes, worldgen compatibility, and complet
 
 Worldgen remains additive-only. Magenheim does not rewrite, delete, disable, reorder, or patch foreign/vanilla registrations to obtain compatibility. Collision observation feeds pure Add/Skip/Error planning; approved world objects use Magenheim-owned identities.
 
-Spawn-area handling remains fail-closed. Negative numeric masks cannot clamp into All through sign extension. Unknown bits are governed by validated policy. Text configuration accepts the Magenheim `All` abstraction plus runtime-facing aliases. At the Valheim boundary, the adapter resolves current `Heightmap.BiomeArea` names dynamically and can compose the defined Median/Edge flags when a named combined member is absent, avoiding integer-cast assumptions.
+Spawn-area handling remains fail-closed. Negative numeric masks cannot clamp into All through sign extension. Unknown bits are governed by validated policy. Text configuration accepts the Magenheim `All` abstraction plus runtime-facing aliases.
+
+At the Valheim boundary, `JotunnWorldgenAdapter` now resolves the runtime `Median` and `Edge` values first and requires them to be distinct and non-empty. `All` is composed from those components. A runtime alias named `Everything` or `Everywhere` is accepted only when its value is exactly equivalent to the composed `Median | Edge` value; aliases with missing or extra bits are rejected rather than silently broadening or narrowing placement. This avoids numeric-cast assumptions and familiar-name assumptions at the same time.
 
 Geode placement density, altitude/depth, terrain delta, tilt, forest thresholds, scale, grouping, block checking, force placement, and offset are validated/fingerprinted authority and can be overridden only through revalidation before registration.
+
+The additive runtime path remains `GeodeWorldgenRegistrar`: validated desired additions are planned in the pure core, host prefab occupancy is observed read-only, Add/Skip/Error policy is rerun against observed state, every approved addition is preflighted, and an occupied prefab identity is refused before Jötunn registration. Existing vanilla or foreign vegetation is not intentionally mutated for compatibility.
+
+See `docs/validation/2026-09-14-runtime-biome-area-semantic-guard.md` for the current area-mapping repair boundary.
 
 ## Adaptive socket authority
 
@@ -97,31 +104,34 @@ Socket effects are computed from Magenheim-owned per-item metadata and applied t
 
 ## Repository branch reconciliation
 
-`main` remains the sole authoritative development branch by policy. Historical redundant refs (`radiance-content`, `tmp-radiance-content`, and `__delete_me__`) were previously proven to contain no unique material work relative to `main`; deletion remains repository cleanup when branch-ref deletion capability is available.
+`main` remains the sole authoritative development branch by policy. Historical redundant refs `radiance-content`, `tmp-radiance-content`, and `__delete_me__` remain visible.
+
+The historical refs were previously observed at the same SHA `a8b6947c696e4da71e4837ff1b731ac53e98a387`. Fresh comparison of `radiance-content` against current `main` shows that SHA is still the merge base, `main` is 45 commits ahead and zero behind, and the side ref contains no unique material work. They are safe to prune when branch-ref deletion capability is available. The current connector does not expose branch deletion, so physical deletion is not claimed.
 
 ## Build and validation boundary
 
 Earlier project revisions were successfully compiled and tested in the normal Valheim development environment, including a recorded zero-error/warning build and deterministic core run before later source expansion.
 
-This connector-only execution cycle did not invoke the normal local .NET/Valheim build/runtime environment. For 0.0.32, remote source/read-back and static-source validation are therefore the strongest admissible claims from this cycle.
+This connector-only execution cycle did not invoke the normal local .NET/Valheim build/runtime environment. For 0.0.37, remote source/read-back and static-source validation are therefore the strongest admissible claims from this cycle.
 
 Current live gates include:
 
-- rebuild 0.0.32 and rerun the full deterministic suite;
+- rebuild 0.0.37 and rerun the full deterministic suite;
 - plugin startup with the composite gameplay-authority fingerprint;
-- verify all ten furniture entries appear under Hammer > Furniture with distinct Magenheim icons;
-- place all ten furniture pieces and validate collision/wear/refund behavior plus representative inherited chair/throne, bed, and cabinet interactions;
+- verify runtime `Median`, `Edge`, and `All` geode area mapping under the installed Valheim/Jötunn enum;
+- snapshot pre/post worldgen registrations and prove repeated-load idempotence;
+- verify current furniture, architecture, weapon, and alchemy additions in a disposable world;
 - client/server rejection when socket policies differ;
 - live item/prefab/mod-origin exclusion behavior on representative third-party equipment;
 - socket metadata persistence through save/load, drop/pickup, storage, repair, upgrade, transfer, death, and dedicated-server flows;
 - remote-client socket request/approval RPC;
 - world-geode opacity/scale/collision retest;
-- workstation iron-band geometry repair/retest;
-- repeated-load worldgen idempotence and natural geode generation acceptance.
+- workstation iron-band geometry repair/retest.
 
 ## Next dependency-valid action
 
-1. rebuild/install current 0.0.32 in the normal Valheim development profile and execute the deterministic suite;
-2. in a disposable world, validate the ten-piece furniture collection and its generated Hammer icons, then repair any source-prefab, interaction, collider, wear, or material defect at the authoritative source;
+1. rebuild/install current 0.0.37 in the normal Valheim development profile and execute the deterministic suite;
+2. validate runtime area semantics and repeated-load additive worldgen idempotence before broadening worldgen behavior;
 3. re-run the outstanding geode/workstation live visual gates in the same build;
-4. continue remote-client socket authority and representative mod-compatibility validation after the build is clean.
+4. exercise the newer furniture/architecture/weapon/alchemy registrations in a disposable world and repair any source-prefab, collider, material, recipe, or interaction defect at its authoritative source;
+5. continue remote-client socket authority and representative mod-compatibility validation after the build is clean.
