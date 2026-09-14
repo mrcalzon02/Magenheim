@@ -130,11 +130,21 @@ internal static class Program
     {
         var host = new GameObject(name);
         host.AddComponent<MeshRenderer>().sharedMaterial = new Material { name = "export-source", color = Color.white };
+
         var attach = new GameObject("attach");
         attach.transform.SetParent(host.transform, false);
+
         var turretBody = new GameObject("turret-body");
         turretBody.transform.SetParent(host.transform, false);
         host.AddComponent<Turret>().m_turretBody = turretBody;
+
+        // Some visual authorities preserve/tint behavior from their vanilla host.
+        // Supply the minimum non-geometric host components needed to let their geometry path execute.
+        var flame = new GameObject("flame");
+        flame.transform.SetParent(host.transform, false);
+        flame.AddComponent<ParticleSystem>();
+        flame.AddComponent<ParticleSystemRenderer>().sharedMaterial = new Material { name = "export-flame-source", color = Color.white };
+
         return host;
     }
 
