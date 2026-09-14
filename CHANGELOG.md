@@ -1,6 +1,18 @@
 # Magenheim Changelog
 
-## Unreleased — repository consolidation, runtime foundation, compatibility hardening, and definition authority
+## Unreleased — additive geode worldgen
+
+- Reconciled repository metadata to a single authoritative `main` branch; the legacy `master` ref is no longer present.
+- Added the one-time `GeodeWorldgenRegistrar` that consumes the validated/fingerprinted definition snapshot, performs read-only host observation, re-runs pure Add/Skip/Error planning, preflights all approved additions, and registers only new Magenheim-owned geode vegetation through Jötunn.
+- Removed the redundant `GeodeWorldPrefabRegistrar`. Jötunn `ZoneManager.AddCustomVegetation` already registers the supplied prefab through `PrefabManager`, so pre-registering the world prefab risked a self-collision.
+- Expanded host collision observation to include both ZoneManager vegetation and the broader PrefabManager namespace without mutating either.
+- Hardened runtime area mapping against the Jötunn/Valheim combined-area naming difference by resolving `Heightmap.BiomeArea` from `Everything` or `Everywhere` at runtime instead of compiling against one spelling or casting enum integers.
+- Added a centralized conservative Meadows geode placement profile as an implementation baseline; placement density/terrain settings remain non-user-configurable until moved into fingerprinted definition authority.
+- Advanced runtime source/package identity to 0.0.12.
+- Added `docs/validation/2026-09-14-additive-geode-vegetation-registration.md` documenting the registration contract, API reconciliation, and remaining runtime gates.
+- Compilation and in-game generation remain unclaimed until executed in a current .NET/Valheim/Jötunn environment.
+
+## Earlier unreleased foundation
 
 - Reconciled divergent `main` and `master` histories while preserving both ancestries.
 - Replaced a contaminated committed merge tree containing unresolved conflict markers with an explicitly resolved live tree.
@@ -11,34 +23,20 @@
 - Preserved the large pre-reconciliation design specification under `docs/archive/` for provenance and future recovery.
 - Retargeted `Magenheim.Core` from `netstandard2.1` to `netstandard2.0` so the pure rules remain consumable by both the .NET 8 test harness and Jötunn's .NET Framework 4.6.2 runtime.
 - Added `Magenheim.Runtime` targeting net462 with JötunnLib 2.30.0.
-- Added BepInEx plugin identity `mrcalzon02.magenheim`, hard Jötunn dependency, and everyone-must-have/minor-version network compatibility declaration.
-- Added a thin runtime service composition boundary that consumes the authoritative core refinement service without duplicating gameplay rules.
-- Added schema-versioned refinement/geode definition models and strict pure-core validation.
-- Added normalized SHA-256 definition fingerprinting for future multiplayer definition synchronization.
+- Added BepInEx plugin identity `mrcalzon02.magenheim`, hard Jötunn dependency, and everyone-must-have network compatibility declaration.
+- Added a thin runtime service composition boundary that consumes authoritative core services without duplicating gameplay rules.
+- Added schema-versioned refinement/geode/worldgen compatibility definition models, strict validation, and deterministic SHA-256 fingerprinting.
 - Added strict Newtonsoft.Json runtime loading that rejects unknown members, duplicate properties, missing required values, unsupported schemas, invalid enum/reference values, duplicate geode identities, invalid areas, and invalid weights.
-- Added `default-data/foundation.json` as the shipped static content authority and configured it to copy with the runtime build output.
-- Moved runtime refinement construction from hard-coded defaults to the validated definition snapshot; invalid definitions now fail startup instead of silently selecting a fallback ruleset.
+- Added `default-data/foundation.json` as the shipped static content authority and configured it to copy with runtime build output.
 - Added the initial Meadows/Earth definition with one guaranteed Earth crystal and independent 35% and 10% additional-crystal chances.
-- Added deterministic geode-cracking coverage for independent 35%/10% bonus rolls, exact chance boundaries, fixed three-roll element RNG consumption, weighted element selection, Rough-tier output, and fail-closed malformed requests/definitions.
-- Added a pure authority-gated geode-opening transaction planner that schedules exactly one source consumption only after compatible definition authority, source presence, successful deterministic cracking, and full output capacity are established; every rejected plan remains non-mutating.
-- Added deterministic coverage for pending/inconsistent authority, missing source, insufficient capacity, exact capacity, malformed cracking input, and complete multi-crystal grant planning.
-- Advanced the definition schema to version 2 and moved worldgen compatibility policy into the validated/fingerprinted definition snapshot.
-- Compatibility definitions now control invalid-area behavior, duplicate-registration behavior, prefab collision detection, identity comparison, and Magenheim-only registration/prefab exclusions.
-- Corrected loader ordering so configured invalid-area behavior actually governs geode area parsing rather than being ignored behind a hard-coded Reject pass.
-- Corrected pure snapshot validation so the same configured invalid-area policy governs geodes after loading and during any non-JSON definition construction; compatibility policy is now the single area-normalization authority.
-- Added fail-closed enum validation for worldgen compatibility policy both at definition admission and direct planner entry, preventing unknown enum values from silently behaving as another valid mode.
-- Restricted compatibility exclusions to `magenheim.` registration keys and `Magenheim_` prefabs, preventing configuration from targeting foreign content.
-- Added deterministic pure-core assertions proving compatibility settings affect the definition fingerprint and destructive/foreign exclusion policies are rejected.
-- Aligned definition duplicate detection and exclusion normalization with the configured exact/case-insensitive identity comparer.
-- Canonicalized compatibility exclusion casing during fingerprint hashing when case-insensitive identity matching is selected, preventing semantically identical exclusions from causing false multiplayer authority mismatches while preserving casing significance in exact mode.
-- Added deterministic dedicated world-object prefab identity derivation for geodes (`<item prefab>_World`) so worldgen can never accidentally register the temporary Stone-backed inventory geode as vegetation.
-- Updated definition-driven worldgen planning and deterministic coverage to use and collision-check the dedicated mineable world-object identity while leaving the inventory item identity unchanged.
-- Kept world objects, items, sockets, RPCs, inventory mutation, and persistent gameplay changes disabled pending validation and server-authoritative transaction work.
+- Added deterministic geode-cracking and authority-gated geode-opening transaction planning.
+- Added session-scoped exact-once geode operation admission and definition-authority synchronization source.
+- Moved worldgen compatibility policy into the validated/fingerprinted definition snapshot and aligned area/identity validation with that policy.
+- Restricted compatibility exclusions to Magenheim-owned registration/prefab namespaces.
+- Added dedicated geode world-object identity derivation (`<item prefab>_World`) so natural worldgen never registers the temporary Stone-backed intact item directly.
+- Added definition-driven Jötunn intact-geode item registration and dedicated mineable world-prefab source.
 - Hardened spawn-area handling so negative numeric flags cannot be clamped into `All` through sign extension.
-- Added textual area parsing for `Median`, `Edge`, `All`, and the runtime-facing `Everywhere` alias, with explicit reject/clamp/fallback policy.
+- Added textual area parsing for `Median`, `Edge`, `All`, and the runtime-facing `Everywhere` alias.
 - Extended additive worldgen compatibility planning to detect prefab collisions as well as registration-key collisions.
-- Added non-destructive compatibility controls for per-Magenheim key/prefab exclusions and optional case-insensitive identity comparison.
-- Kept collision/exclusion behavior observation-only: existing vanilla or foreign registrations are never rewritten, disabled, removed, or reordered.
-- Reconciled the runtime project package/assembly version with `MagenheimPlugin.PluginVersion` at 0.0.8 so network/version identity no longer advertises two different pre-release versions from the same source tree.
+- Added non-destructive compatibility controls for Magenheim-owned exclusions and optional case-insensitive identity comparison.
 - Did not admit bundled runtime/vendor binaries, runtime logs/process files, unrelated third-party repair utilities, duplicate legacy engines, or stale build/runtime claims into the live source tree.
-- Compilation and Valheim runtime validation remain unclaimed because the current execution environment does not provide the required compiler/runtime test environment.

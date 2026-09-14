@@ -2,136 +2,81 @@
 
 ## Authority
 
-This file records verified repository state. `INSTRUCTIONS.md`, live committed source on `main`, and directly observed Git state outrank stale branch documents or conversational claims.
+`INSTRUCTIONS.md`, committed source on the live `main` branch, and directly observed repository/runtime evidence are authoritative. Backlog, validation records, archived design, scheduled prompts, and conversation are subordinate when they disagree with verified live state.
 
-## Reconciliation baseline — 2026-09-13
+## Repository state — 2026-09-14
 
-Before consolidation the repository had two divergent branches:
+Repository: `mrcalzon02/Magenheim`.
 
-- `main`: `6282de796cf417edcd36bdc7f941e6e33f03a44f`
-- `master`: `78502cbdb922d1d42e1a33cb8c8207698ec43a53`
-- common ancestor: `7cef7452f2ded492772d79e1ddd290081a6c3a68`
+GitHub now reports `main` as the default branch and branch enumeration reports only `main`. The legacy `master` compatibility pointer has been removed, so there is no remaining parallel development branch to synchronize or prune.
 
-`master` contained three commits not on `main`, while `main` contained eleven commits not on `master`. The head commit on `master` was a committed merge containing literal unresolved conflict markers in project documents. Its tree therefore was not safe to adopt as authority.
+The additive geode vegetation implementation was committed to `main` as `e1b530804591004717f20d6c361b7d150421eb9a` (`Register geodes through additive Jotunn vegetation path`).
 
-Material work from the divergent history was reviewed individually. The additive worldgen spawn-area validator, addition planner, and their deterministic tests were retained. The large pre-reconciliation design specification was preserved as an archive record rather than replacing current authority.
+## Stable domain authority
 
-The live tree deliberately does not adopt bundled BepInEx/Jötunn runtime binaries, process/log files, unrelated third-party repair tooling, stale packaging claims, or duplicate legacy refinement/runtime implementations. Their history remains reachable through the merged ancestry for forensic recovery.
-
-## Verified consolidation result
-
-The divergent histories were reconciled by two-parent commit `7859a27462d4b0c7a4748d3760065df599c7a521`, with the previous `main` and `master` heads as parents. `main` was advanced without force and `master` was brought onto the same ancestry.
-
-`main` remains the authoritative development branch even though the repository's older GitHub default-branch metadata still names `master`. The available repository connector does not expose default-branch mutation or branch deletion. `master` is therefore treated only as a synchronized compatibility pointer and must not become an independent development line.
-
-## Current domain authority
-
-Crystal tiers are:
+Crystal tiers remain:
 
 `Rough -> Simple -> Crystal -> Advanced -> Master`
 
-Normal elemental alignments are Earth, Fire, Frost, Storm, Venom, Radiance, Seidr, and Spirit.
+Normal elemental alignments remain Earth, Fire, Frost, Storm, Venom, Radiance, Seidr, and Spirit. Ordinary refinement preserves alignment. Base failure remains 10/20/30/40 percent with Crystal Shaping reduction and workstation/upgrade progression. Valid failed attempts destroy the source and return 1/2/3/5 matching shards by tier.
 
-Refinement uses base failure 10/20/30/40 percent. Crystal Shaping reduces that failure according to:
+## Definition and compatibility authority
 
-`effectiveFailure = BaseFailure * (1 - (Skill / 100) * MaximumFailureReduction)`
+Definition schema 2 owns refinement, geodes, and worldgen compatibility in one validated/fingerprinted snapshot. Compatibility settings may control invalid-area behavior, duplicate behavior, prefab-collision detection, exact/case-insensitive identity comparison, and exclusions limited to Magenheim-owned identities.
 
-The default maximum reduction is 75%, configurable between 50% and 100%. Station/upgrade progression gates each refinement step. A valid failed attempt destroys the source crystal and returns 1/2/3/5 matching shards by tier. Valid success and failure attempts are experience-eligible; invalid attempts are non-mutating and award no experience.
+Worldgen remains structurally additive-only. Vanilla and foreign registrations are observations for collision planning; compatibility code cannot delete, rewrite, disable, reorder, or replace them.
 
-## Worldgen compatibility foundation
+Abstract spawn areas are Median, Edge, and All. Negative numeric flags fail closed under Reject/Clamp behavior, unknown bits are policy-governed, and textual configuration accepts `Everywhere` as an All alias. Runtime mapping does not cast enum integers.
 
-Current rules:
+## Additive geode worldgen path — runtime source 0.0.12
 
-- abstract areas remain Median, Edge, and All;
-- configuration also accepts `Everywhere` as the runtime-facing alias for All;
-- negative numeric flag values cannot be clamped into All through sign extension;
-- occupied Magenheim registration keys and prefab identities are collision-checked without changing observed host data;
-- specific Magenheim registration keys or prefabs may be excluded through compatibility policy;
-- identity matching is exact by default with optional case-insensitive comparison;
-- destructive compatibility mode remains structurally rejected.
+`GeodeWorldgenRegistrar` is now the single authoritative runtime mutation path for natural geode placement. The prior separate `GeodeWorldPrefabRegistrar` was removed because Jötunn `ZoneManager.AddCustomVegetation` already registers the supplied prefab through `PrefabManager`; pre-registering the same prefab created a self-collision risk.
 
-Definition schema 2 makes this compatibility policy part of the same validated gameplay snapshot as refinement and geodes. The fingerprint includes invalid-area behavior, duplicate-registration behavior, prefab collision detection, identity comparison, and Magenheim-only exclusion sets. Exclusions outside `magenheim.` registration keys or `Magenheim_` prefabs reject validation.
+The one-time registration flow is:
 
-Definition duplicate detection and exclusion de-duplication use the configured identity comparer. Case-insensitive exclusion identities are also canonicalized only for fingerprint hashing, so casing differences that do not change effective exclusion behavior no longer cause false server/client authority mismatches. Exact comparison retains casing as authority. Runtime-facing geode registration keys and prefab definition names remain case-preserving.
+1. wait for Jötunn vanilla prefabs;
+2. derive desired worldgen additions from the validated definition snapshot;
+3. observe only desired host vegetation/prefab identities without mutation;
+4. rebuild the pure `DefinitionWorldgenPlanner` against those observations and the effective compatibility policy;
+5. abort before mutation for Error decisions and log/leave host data untouched for Skip decisions;
+6. preflight all approved additions before the first registration;
+7. clone/configure the dedicated `<item prefab>_World` object from `Rock_4`;
+8. register that new Magenheim-owned object exactly once through `ZoneManager.AddCustomVegetation`;
+9. unsubscribe after the one-time registration pass.
 
-The runtime loader parses compatibility policy before geodes so configured invalid-area behavior governs geode area parsing. Pure definition-driven worldgen planning now carries the authoritative biome through `DesiredWorldgenAddition` rather than reconstructing biome placement later.
+The dedicated world object is separate from the temporary Stone-backed intact inventory-item visual and is configured for persistent network state, destructibility, and exactly one intact-geode destruction drop. No code edits vanilla `Rock_4` itself.
 
-## Jötunn worldgen adapter boundary — 2026-09-14
+Host observation now checks both ZoneManager vegetation and the broader PrefabManager namespace because a prefab occupied outside vegetation is still unsafe for `AddCustomVegetation` to claim. Even if configurable proactive prefab-collision reporting is disabled, the execution preflight still refuses replacement of an existing host prefab identity; configurability may reduce diagnostics but cannot weaken the non-destructive invariant.
 
-`src/Magenheim.Runtime/JotunnWorldgenAdapter.cs` now owns the runtime translation boundary without owning worldgen policy.
+## Area mapping repair
 
-It explicitly maps validated Magenheim biome names to defined `Heightmap.Biome` runtime values and maps `SpawnArea.Median`, `Edge`, and `All` to `Heightmap.BiomeArea.Median`, `Edge`, and `Everywhere`. Unsupported values throw rather than relying on enum integer coincidence. The Ashlands name path accepts the expected `Ashlands`/`AshLands` runtime-name variation while still requiring a defined enum value.
+Current Jötunn source uses `Heightmap.BiomeArea.Everything` in `VegetationConfig`, while other Jötunn documentation/API surfaces refer to the combined value as `Everywhere`. `JotunnWorldgenAdapter` now resolves the runtime combined enum dynamically from `Everything` or `Everywhere`; Median and Edge use the same defined-enum check. Unsupported runtime values fail closed.
 
-The adapter also provides read-only collision observation scoped to the vegetation prefab identities Magenheim intends to add. It uses `ZoneManager.GetZoneVegetation` only as a lookup and converts host presence into `ObservedWorldgenRegistration` input for the pure planner. It does not add, remove, disable, reorder, clone, or edit host vegetation.
+## Initial placement profile
 
-The adapter intentionally does not register the existing temporary geode item prefab as vegetation. That item currently clones vanilla `Stone` only as an inventory visual placeholder; the authoritative mineable world-object prefab remains a dependency before natural geode placement can be admitted.
+The first Meadows/Earth source implementation centralizes a conservative placement profile: block checking enabled, no force placement, one-object groups, 35% maximum single-group chance per zone, altitude 1–1000, terrain-delta maximum 2 over radius 2, maximum tilt 35 degrees, scale 0.85–1.15, and ground offset -0.10.
 
-## Runtime bootstrap
+These placement numbers are not yet exposed as free client configuration. Before density/terrain placement becomes user-configurable, it should move into the schema-versioned/fingerprinted definition authority so peers cannot silently disagree about generation behavior.
 
-A thin runtime project exists at `src/Magenheim.Runtime` and consumes the authoritative pure-core project rather than recreating refinement rules.
+## Other runtime authority
 
-Runtime bootstrap properties:
-
-- target framework: .NET Framework 4.6.2;
-- Jötunn dependency: `JotunnLib` 2.30.0;
-- BepInEx plugin GUID: `mrcalzon02.magenheim`;
-- hard dependency on `Jotunn.Main.ModGuid`;
-- Jötunn network compatibility: `EveryoneMustHaveMod` with `VersionStrictness.Patch`;
-- runtime startup consumes the validated core definition snapshot;
-- no world objects, sockets, inventory mutations, or persistent gameplay state are enabled by this bootstrap.
-
-`Magenheim.Core` targets `netstandard2.0` so it can remain consumable by both the net462 runtime and the net8.0 standalone test harness.
-
-## Strict definition pipeline
-
-The runtime loads `default-data/foundation.json`, converts it into pure-core definition records, validates the complete snapshot, computes a deterministic SHA-256 fingerprint, and only then creates runtime services.
-
-Definition schema is version 2. Version-1 files are intentionally rejected because they do not carry fingerprinted worldgen compatibility policy.
-
-The shipped foundation snapshot defines the Meadows Earth vertical slice: one guaranteed Earth crystal plus independent 35% and 10% additional-crystal probabilities. Default worldgen compatibility remains conservative: Reject invalid areas, Skip occupied additions, detect prefab collisions, exact identity comparison, and no exclusions.
-
-## Controlled runtime overrides
-
-Runtime balance and compatibility settings use the validated BepInEx override path.
-
-Permitted balance overrides remain limited to existing refinement/geode balance fields and cannot alter topology, ownership, prefab identity, guaranteed-crystal count, or elemental identity sets.
-
-Worldgen compatibility overrides may change only the validated policy fields: invalid-area behavior, duplicate handling, prefab collision detection, identity comparison, and Magenheim-owned exclusions. They cannot disable additive-only behavior or target foreign identities. The override applier rebuilds the effective snapshot through `MagenheimDefinitionValidator.ValidateAndFreeze`, so invalid settings fail admission and the effective fingerprint changes when compatibility policy changes.
-
-Plugin startup logs both baseline and effective fingerprints.
-
-## Definition-authority synchronization — runtime 0.0.8
-
-A two-way Jötunn `CustomRPC` definition-authority handshake is registered during initial synchronization. The server sends its effective schema and fingerprint before world admission. The client compares that authority against its own effective definition snapshot. The client then acknowledges by echoing the exact server descriptor it successfully parsed and by sending its own descriptor.
-
-The server admits a peer to future Magenheim gameplay mutation only when both conditions hold:
-
-1. the echoed server descriptor exactly matches the server's current authority;
-2. the client's own schema/fingerprint exactly matches the server authority.
-
-Malformed/unreadable server authority produces no acknowledgement, leaving server-side mutation admission false. Schema/fingerprint mismatch remains non-authorizing.
-
-No inventory, socket, geode-opening, refinement, or other persistent gameplay transaction consumes the admission gate yet; those mutations remain disabled.
-
-## Deterministic authority coverage — 2026-09-14
-
-The pure-core console harness invokes `DefinitionAuthorityTests`, covering pending/non-authorizing state, matching authority admission, schema mismatch, fingerprint mismatch, invalid local and remote descriptors, uppercase/non-canonical fingerprints, null descriptors, wrong-length fingerprints, non-hexadecimal fingerprints, and canonical validation.
-
-`DefinitionCompatibilityTests` also covers identity semantics that feed authority hashing: case-only duplicate identities are rejected under case-insensitive policy, exact-mode case distinctions remain valid, case-insensitive exclusion casing canonicalizes to one fingerprint, and exact-mode exclusion casing remains fingerprint-significant.
-
-The test source has been committed and statically reviewed, but execution remains pending because this host has no .NET SDK/compiler. No passing-test claim is made until the harness is actually run.
+Runtime target remains .NET Framework 4.6.2 with `JotunnLib` 2.30.0. BepInEx plugin GUID is `mrcalzon02.magenheim`; network compatibility is `EveryoneMustHaveMod` with patch strictness. Definition-authority synchronization and session-scoped geode-operation replay protection remain in source. Persistent socket/refinement/inventory mutation remains gated pending runtime validation and transaction binding.
 
 ## Validation boundary
 
-The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compilation and test execution therefore remain unclaimed. Current Jötunn documentation confirms that vegetation is the normal path for singular scattered objects including rocks/ore, that `BiomeArea` controls biome middle/edge placement, that `VegetationConfig.BiomeArea` uses `Everywhere`, and that custom vegetation additions should be registered once. Static API review is not a substitute for compilation or in-game execution.
+This execution host still exposes no `dotnet`, `csc`, or `mcs`, so compilation and deterministic test execution are not claimed. The Jötunn API surface used by the new registrar was checked against current Jötunn source, including the `CustomVegetation(GameObject, bool, VegetationConfig)` constructor, `VegetationConfig` fields, and `ZoneManager.AddCustomVegetation` registering the prefab through `PrefabManager`.
+
+Valheim startup, natural geode placement, repeated-world-load idempotence, multiplayer replication, destruction/drop behavior, and proof that the vanilla `Rock_4` runtime object remains unchanged are still runtime acceptance gates.
 
 ## Next exact action
 
-In a .NET 8 SDK / current Valheim development environment:
+In a current .NET/Valheim development environment:
 
-1. run `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`;
-2. compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` against Jötunn 2.30.0 and current Valheim dependencies, including `JotunnWorldgenAdapter`;
-3. repair any compile/API/enum-name defect at the authoritative source;
-4. create and validate a Magenheim-owned mineable geode world-object prefab rather than using the temporary Stone-backed inventory item as vegetation;
-5. feed validated desired additions through `DefinitionWorldgenPlanner` plus read-only host observation, then register only approved vegetation once through a thin Jötunn registrar;
-6. verify repeated world loads do not duplicate Magenheim vegetation and that occupied foreign prefab identities are skipped/errored according to the effective compatibility policy without host mutation.
+1. run the pure-core test harness;
+2. compile `Magenheim.Runtime` against Jötunn 2.30.0/current Valheim assemblies and repair any API defect at source;
+3. launch a disposable world and verify exactly one Magenheim custom vegetation definition is registered per geode identity;
+4. verify repeated world loads do not duplicate registrations;
+5. verify an occupied foreign prefab is skipped/errored by policy without mutation;
+6. mine a naturally generated Meadows geode and verify persistent network behavior plus exactly one intact-geode drop;
+7. verify vanilla `Rock_4` remains unchanged;
+8. then move placement density/terrain parameters into fingerprinted definition authority before exposing placement configurability.
