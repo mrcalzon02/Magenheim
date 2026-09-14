@@ -35,14 +35,38 @@ internal sealed class RadianceStaffRegistrar : IDisposable
             if (PrefabManager.Instance.GetPrefab(WorkshopRegistrar.StationPrefab) is null)
                 throw new InvalidOperationException("Geologist's Workstation must exist before Radiance staff recipes are registered.");
 
+            var flash = StaffEffectPayloads.CreateField(
+                "Magenheim_Radiance_Flash",
+                new HitData.DamageTypes { m_spirit = 2f },
+                radius: 2.2f,
+                ttl: .20f,
+                hitInterval: .20f,
+                attackForce: 28f,
+                tint: new Color(1f, .93f, .52f, 1f),
+                emission: 1.65f);
+            var sanctuary = StaffEffectPayloads.CreateField(
+                "Magenheim_Radiance_Sanctuary",
+                new HitData.DamageTypes { m_spirit = 6f },
+                radius: 5.5f,
+                ttl: 10f,
+                hitInterval: 1f,
+                attackForce: 0f,
+                tint: new Color(1f, .98f, .78f, 1f),
+                emission: 1.85f);
+
+            var payloads = new PayloadSet(
+                StaffEffectPayloads.CreateProjectile("Magenheim_Radiance_Projectile", new Color(1f, .90f, .38f, 1f), 1.45f),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Radiance_FlashProjectile", new Color(1f, .96f, .64f, 1f), 1.70f, flash),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Radiance_DaybreakProjectile", new Color(1f, .99f, .84f, 1f), 1.95f, sanctuary));
+
             foreach (var definition in Definitions())
             {
-                RegisterStaff(definition);
+                RegisterStaff(definition, payloads);
                 RegisterRecipe(definition);
             }
 
             _registered = true;
-            _log.LogInfo("Registered Radiance staffs: Prism Spark, Sun Lance, Corona Array, and Daybreak.");
+            _log.LogInfo("Registered Radiance abilities: Prism Spark, Sun Lance, Corona Flash, and Daybreak Sanctuary.");
         }
         catch (Exception exception)
         {
@@ -55,7 +79,7 @@ internal sealed class RadianceStaffRegistrar : IDisposable
         }
     }
 
-    private static void RegisterStaff(Definition definition)
+    private static void RegisterStaff(Definition definition, PayloadSet payloads)
     {
         if (PrefabManager.Instance.GetPrefab(definition.PrefabName) || CustomItem.IsCustomItem(definition.PrefabName))
             throw new InvalidOperationException($"Cannot replace occupied Radiance staff identity '{definition.PrefabName}'.");
@@ -64,12 +88,20 @@ internal sealed class RadianceStaffRegistrar : IDisposable
         var shared = item.ItemDrop.m_itemData.m_shared;
         shared.m_name = definition.DisplayName;
         shared.m_description = definition.Description;
+        shared.m_skillType = Skills.SkillType.ElementalMagic;
         shared.m_maxQuality = 1;
         shared.m_value = 0;
         shared.m_dlc = string.Empty;
+        shared.m_damages = new HitData.DamageTypes
+        {
+            m_pierce = definition.PierceDamage,
+            m_spirit = definition.SpiritDamage,
+        };
+        shared.m_damagesPerLevel = new HitData.DamageTypes();
         shared.m_icons = new[] { EarthAssets.Icon("crystal", definition.AssetName, definition.Tint) };
 
         var attack = shared.m_attack;
+        attack.m_attackProjectile = payloads.Resolve(definition.Payload);
         attack.m_attackStamina = definition.StaminaCost;
         attack.m_attackEitr = definition.EitrCost;
         attack.m_damageMultiplier = definition.DamageMultiplier;
@@ -109,21 +141,21 @@ internal sealed class RadianceStaffRegistrar : IDisposable
     private static IReadOnlyList<Definition> Definitions() => new[]
     {
         new Definition("Magenheim_Staff_Radiance_Simple", "staff-radiance-simple", "Simple Staff of Radiance",
-            "Prism Spark: a needle-bright single shot with almost no spread. Cheap, quick, and deliberately uncomplicated.",
-            1, 20f, 0f, .40f, .50f, .55f, 38f, .55f, 1, 1, 0f, new Color(.96f,.82f,.32f,1f),
+            "Prism Spark: fires a needle of white-gold hard light. Pierce harms ordinary flesh while Spirit damage naturally punishes undead and other spirit-vulnerable corruption.",
+            1, 20f, 0f, 8f, 10f, 1f, .35f, .85f, 45f, .35f, 1, 1, 0f, PayloadKind.Direct, new Color(.96f,.82f,.32f,1f),
             new Requirement("FineWood",8), new Requirement("Bronze",2), new Requirement("Magenheim_Crystal_Radiance_Simple",1)),
         new Definition("Magenheim_Staff_Radiance_Crystal", "staff-radiance-crystal", "Crystal Staff of Radiance",
-            "Sun Lance: compresses the crystal into a hard, straight lance of light. High velocity and force reward deliberate aim.",
-            2, 30f, 0f, 1.12f, 1.45f, 1.25f, 62f, .20f, 1, 1, 0f, new Color(1f,.90f,.48f,1f),
+            "Sun Lance: compresses Radiance into a nearly dispersionless line. High Pierce, heavy Spirit pressure, extreme velocity, and focused stagger reward deliberate aim.",
+            2, 30f, 0f, 18f, 30f, 1f, 1.10f, 1.55f, 72f, .10f, 1, 1, 0f, PayloadKind.Direct, new Color(1f,.90f,.48f,1f),
             new Requirement("ElderBark",10), new Requirement("Silver",3), new Requirement("Magenheim_Crystal_Radiance_Crystal",1)),
         new Definition("Magenheim_Staff_Radiance_Advanced", "staff-radiance-advanced", "Advanced Staff of Radiance",
-            "Corona Array: fractures one shaping pulse into a seven-ray crown. The center stays tight while the outer rays punish clustered targets.",
-            3, 12f, 18f, .31f, .72f, .78f, 44f, 8.5f, 7, 1, 0f, new Color(1f,.95f,.68f,1f),
+            "Corona Flash: fractures one cast into seven rays. Each impact blooms into a brief radiant flash, adding local Spirit pressure and violent interruption around clustered targets.",
+            3, 12f, 18f, 4f, 8f, .55f, .55f, 1.35f, 48f, 9f, 7, 1, 0f, PayloadKind.Flash, new Color(1f,.95f,.68f,1f),
             new Requirement("YggdrasilWood",10), new Requirement("Silver",4), new Requirement("BlackMetal",2), new Requirement("Magenheim_Crystal_Radiance_Advanced",1)),
         new Definition("Magenheim_Staff_Radiance_Master", "staff-radiance-master", "Master Staff of Radiance",
-            "Daybreak: opens the master crystal in repeated three-ray pulses, hammering a bright cone into the target zone with disciplined cadence.",
-            4, 0f, 48f, .38f, .90f, .90f, 48f, 5.2f, 3, 5, .11f, new Color(1f,.99f,.84f,1f),
-            new Requirement("YggdrasilWood",15), new Requirement("BlackMetal",4), new Requirement("Eitr",10), new Requirement("Magenheim_Crystal_Radiance_Master",1)),
+            "Daybreak Sanctuary: drives one sun-bright lance into the target point and leaves a wide sanctified field for ten seconds. The field deals pure Spirit damage, making corrupted ground lethal to spirit-vulnerable enemies rather than becoming another artillery barrage.",
+            4, 0f, 50f, 18f, 38f, 1f, 1.0f, 1.80f, 66f, .12f, 1, 1, 0f, PayloadKind.Sanctuary, new Color(1f,.99f,.84f,1f),
+            new Requirement("YggdrasilWood",15), new Requirement("BlackMetal",4), new Requirement("Eitr",12), new Requirement("Magenheim_Crystal_Radiance_Master",1)),
     };
 
     public void Dispose()
@@ -131,6 +163,30 @@ internal sealed class RadianceStaffRegistrar : IDisposable
         if (!_subscribed) return;
         PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent;
         _subscribed = false;
+    }
+
+    private enum PayloadKind { Direct, Flash, Sanctuary }
+
+    private sealed class PayloadSet
+    {
+        private readonly GameObject _direct;
+        private readonly GameObject _flash;
+        private readonly GameObject _sanctuary;
+
+        internal PayloadSet(GameObject direct, GameObject flash, GameObject sanctuary)
+        {
+            _direct = direct;
+            _flash = flash;
+            _sanctuary = sanctuary;
+        }
+
+        internal GameObject Resolve(PayloadKind kind) => kind switch
+        {
+            PayloadKind.Direct => _direct,
+            PayloadKind.Flash => _flash,
+            PayloadKind.Sanctuary => _sanctuary,
+            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
+        };
     }
 
     private readonly struct Requirement
@@ -143,14 +199,14 @@ internal sealed class RadianceStaffRegistrar : IDisposable
     private sealed class Definition
     {
         internal Definition(string prefabName, string assetName, string displayName, string description, int minimumStationLevel,
-            float staminaCost, float eitrCost, float damageMultiplier, float forceMultiplier, float staggerMultiplier,
-            float projectileVelocity, float projectileAccuracy, int projectiles, int bursts, float burstInterval, Color tint,
-            params Requirement[] requirements)
+            float staminaCost, float eitrCost, float pierceDamage, float spiritDamage, float damageMultiplier, float forceMultiplier,
+            float staggerMultiplier, float projectileVelocity, float projectileAccuracy, int projectiles, int bursts, float burstInterval,
+            PayloadKind payload, Color tint, params Requirement[] requirements)
         {
             PrefabName=prefabName; AssetName=assetName; DisplayName=displayName; Description=description; MinimumStationLevel=minimumStationLevel;
-            StaminaCost=staminaCost; EitrCost=eitrCost; DamageMultiplier=damageMultiplier; ForceMultiplier=forceMultiplier; StaggerMultiplier=staggerMultiplier;
-            ProjectileVelocity=projectileVelocity; ProjectileAccuracy=projectileAccuracy; Projectiles=projectiles; Bursts=bursts; BurstInterval=burstInterval;
-            Tint=tint; Requirements=requirements;
+            StaminaCost=staminaCost; EitrCost=eitrCost; PierceDamage=pierceDamage; SpiritDamage=spiritDamage; DamageMultiplier=damageMultiplier;
+            ForceMultiplier=forceMultiplier; StaggerMultiplier=staggerMultiplier; ProjectileVelocity=projectileVelocity; ProjectileAccuracy=projectileAccuracy;
+            Projectiles=projectiles; Bursts=bursts; BurstInterval=burstInterval; Payload=payload; Tint=tint; Requirements=requirements;
         }
         internal string PrefabName { get; }
         internal string AssetName { get; }
@@ -159,6 +215,8 @@ internal sealed class RadianceStaffRegistrar : IDisposable
         internal int MinimumStationLevel { get; }
         internal float StaminaCost { get; }
         internal float EitrCost { get; }
+        internal float PierceDamage { get; }
+        internal float SpiritDamage { get; }
         internal float DamageMultiplier { get; }
         internal float ForceMultiplier { get; }
         internal float StaggerMultiplier { get; }
@@ -167,6 +225,7 @@ internal sealed class RadianceStaffRegistrar : IDisposable
         internal int Projectiles { get; }
         internal int Bursts { get; }
         internal float BurstInterval { get; }
+        internal PayloadKind Payload { get; }
         internal Color Tint { get; }
         internal IReadOnlyList<Requirement> Requirements { get; }
     }

@@ -10,8 +10,8 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Four-tier Spirit staff family. Spirit magic is built around echoes and repeated spectral
-/// pressure. Every tier has its own original assembled model rather than reusing a vanilla mesh.
+/// Four-tier Spirit staff family. Spirit magic now owns spectral projectile payloads and short-lived
+/// echo fields; it no longer borrows Staff of Embers' fire impact behavior.
 /// </summary>
 internal sealed class SpiritStaffRegistrar : IDisposable
 {
@@ -40,14 +40,48 @@ internal sealed class SpiritStaffRegistrar : IDisposable
             if (PrefabManager.Instance.GetPrefab(WorkshopRegistrar.StationPrefab) is null)
                 throw new InvalidOperationException("Geologist's Workstation must exist before Spirit staff recipes are registered.");
 
+            var lanternEcho = StaffEffectPayloads.CreateField(
+                "Magenheim_Spirit_LanternEcho",
+                new HitData.DamageTypes { m_spirit = 3f },
+                radius: 2.4f,
+                ttl: 3f,
+                hitInterval: .75f,
+                attackForce: 4f,
+                tint: new Color(.28f, .92f, .80f, 1f),
+                emission: 1.35f);
+            var chorusEcho = StaffEffectPayloads.CreateField(
+                "Magenheim_Spirit_ChorusEcho",
+                new HitData.DamageTypes { m_spirit = 2f },
+                radius: 1.8f,
+                ttl: 1.2f,
+                hitInterval: .40f,
+                attackForce: 2f,
+                tint: new Color(.50f, 1f, .90f, 1f),
+                emission: 1.55f);
+            var reliquaryEcho = StaffEffectPayloads.CreateField(
+                "Magenheim_Spirit_ReliquaryEcho",
+                new HitData.DamageTypes { m_spirit = 3.5f },
+                radius: 2.6f,
+                ttl: 1.8f,
+                hitInterval: .45f,
+                attackForce: 3f,
+                tint: new Color(.74f, 1f, .94f, 1f),
+                emission: 1.75f);
+
+            var payloads = new PayloadSet(
+                StaffEffectPayloads.CreateProjectile("Magenheim_Spirit_Projectile", new Color(.24f, .88f, .76f, 1f), 1.35f),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Spirit_LanternProjectile", new Color(.34f, .96f, .84f, 1f), 1.50f, lanternEcho),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Spirit_ChorusProjectile", new Color(.55f, 1f, .91f, 1f), 1.65f, chorusEcho),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Spirit_ReliquaryProjectile", new Color(.78f, 1f, .95f, 1f), 1.85f, reliquaryEcho));
+
             foreach (var definition in Definitions())
             {
-                RegisterStaff(definition);
+                RegisterStaff(definition, payloads);
                 RegisterRecipe(definition);
             }
 
             _registered = true;
-            _log.LogInfo("Registered Spirit staffs: Whisper Rod, Wraith Lantern, Soul Chorus, and Reliquary of Echoes.");
+            _log.LogInfo("Registered Spirit abilities: Whisper Bolt, Wraith Lantern, Soul Chorus, and Reliquary of Echoes.");
         }
         catch (Exception exception)
         {
@@ -60,7 +94,7 @@ internal sealed class SpiritStaffRegistrar : IDisposable
         }
     }
 
-    private static void RegisterStaff(Definition definition)
+    private static void RegisterStaff(Definition definition, PayloadSet payloads)
     {
         if (PrefabManager.Instance.GetPrefab(definition.PrefabName) || CustomItem.IsCustomItem(definition.PrefabName))
             throw new InvalidOperationException($"Cannot replace occupied Spirit staff identity '{definition.PrefabName}'.");
@@ -74,12 +108,14 @@ internal sealed class SpiritStaffRegistrar : IDisposable
         shared.m_value = 0;
         shared.m_dlc = string.Empty;
         shared.m_damages = new HitData.DamageTypes { m_spirit = definition.SpiritDamage };
+        shared.m_damagesPerLevel = new HitData.DamageTypes();
         shared.m_icons = new[]
         {
             EarthAssets.Icon("crystal", definition.AssetName, new Color(.26f, .92f, .78f, 1f))
         };
 
         var attack = shared.m_attack;
+        attack.m_attackProjectile = payloads.Resolve(definition.Payload);
         attack.m_attackStamina = definition.StaminaCost;
         attack.m_attackEitr = definition.EitrCost;
         attack.m_damageMultiplier = definition.DamageMultiplier;
@@ -120,23 +156,23 @@ internal sealed class SpiritStaffRegistrar : IDisposable
     {
         new Definition(
             "Magenheim_Staff_Spirit_Simple", "staff-spirit-simple", "Simple Staff of Spirit",
-            "Whisper Rod: releases one quiet spirit bolt with little force but clean supernatural damage. It is a listening instrument turned into a weapon.",
-            1, 17f, 0f, 24f, .55f, .22f, .35f, 36f, 1.1f, 1, 1, 0f,
+            "Whisper Bolt: releases one quiet spectral shot. It carries only Spirit damage and leaves no borrowed flame or explosion behind.",
+            1, 17f, 0f, 22f, .95f, .18f, .30f, 40f, .85f, 1, 1, 0f, PayloadKind.Direct,
             new Requirement("FineWood", 8), new Requirement("BoneFragments", 8), new Requirement("Magenheim_Crystal_Spirit_Simple", 1)),
         new Definition(
             "Magenheim_Staff_Spirit_Crystal", "staff-spirit-crystal", "Crystal Staff of Spirit",
-            "Wraith Lantern: suspends a shaped Spirit crystal inside a binding cage and drives a dense spectral lance down one line.",
-            2, 27f, 0f, 48f, 1.08f, .62f, .80f, 48f, .45f, 1, 1, 0f,
+            "Wraith Lantern: drives a dense spectral lance into one target and leaves a three-second haunting echo around the impact point, repeatedly pressing nearby enemies with Spirit damage.",
+            2, 27f, 0f, 34f, 1f, .42f, .65f, 50f, .35f, 1, 1, 0f, PayloadKind.Lantern,
             new Requirement("ElderBark", 10), new Requirement("Chain", 2), new Requirement("Silver", 2), new Requirement("Magenheim_Crystal_Spirit_Crystal", 1)),
         new Definition(
             "Magenheim_Staff_Spirit_Advanced", "staff-spirit-advanced", "Advanced Staff of Spirit",
-            "Soul Chorus: four spectral voices answer the same cast, then echo once more. The pattern trades single-hit weight for overlapping spirit pressure.",
-            3, 10f, 18f, 30f, .40f, .38f, .50f, 39f, 7.5f, 4, 2, .17f,
+            "Soul Chorus: four spectral voices answer the cast twice. Every impact leaves a brief overlapping echo pulse, turning clustered enemies into a resonating field of repeated Spirit pressure.",
+            3, 10f, 18f, 14f, .45f, .28f, .42f, 42f, 7.5f, 4, 2, .17f, PayloadKind.Chorus,
             new Requirement("YggdrasilWood", 10), new Requirement("BlackCore", 2), new Requirement("Eitr", 6), new Requirement("Magenheim_Crystal_Spirit_Advanced", 1)),
         new Definition(
             "Magenheim_Staff_Spirit_Master", "staff-spirit-master", "Master Staff of Spirit",
-            "Reliquary of Echoes: a caged master crystal releases four spectral lines through four successive responses, filling a broad lane with returning shades.",
-            4, 0f, 48f, 36f, .43f, .42f, .58f, 42f, 10f, 4, 4, .12f,
+            "Reliquary of Echoes: releases four spectral lines through three successive responses. Each line leaves a larger short-lived echo field, so the battlefield keeps answering after the initial cast has passed.",
+            4, 0f, 50f, 16f, .40f, .32f, .50f, 44f, 10f, 4, 3, .13f, PayloadKind.Reliquary,
             new Requirement("YggdrasilWood", 15), new Requirement("BlackCore", 4), new Requirement("Eitr", 12), new Requirement("Magenheim_Crystal_Spirit_Master", 1)),
     };
 
@@ -145,6 +181,33 @@ internal sealed class SpiritStaffRegistrar : IDisposable
         if (!_subscribed) return;
         PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent;
         _subscribed = false;
+    }
+
+    private enum PayloadKind { Direct, Lantern, Chorus, Reliquary }
+
+    private sealed class PayloadSet
+    {
+        private readonly GameObject _direct;
+        private readonly GameObject _lantern;
+        private readonly GameObject _chorus;
+        private readonly GameObject _reliquary;
+
+        internal PayloadSet(GameObject direct, GameObject lantern, GameObject chorus, GameObject reliquary)
+        {
+            _direct = direct;
+            _lantern = lantern;
+            _chorus = chorus;
+            _reliquary = reliquary;
+        }
+
+        internal GameObject Resolve(PayloadKind kind) => kind switch
+        {
+            PayloadKind.Direct => _direct,
+            PayloadKind.Lantern => _lantern,
+            PayloadKind.Chorus => _chorus,
+            PayloadKind.Reliquary => _reliquary,
+            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
+        };
     }
 
     private readonly struct Requirement
@@ -160,7 +223,7 @@ internal sealed class SpiritStaffRegistrar : IDisposable
             string prefabName, string assetName, string displayName, string description, int minimumStationLevel,
             float staminaCost, float eitrCost, float spiritDamage, float damageMultiplier, float forceMultiplier,
             float staggerMultiplier, float projectileVelocity, float projectileAccuracy, int projectiles, int bursts,
-            float burstInterval, params Requirement[] requirements)
+            float burstInterval, PayloadKind payload, params Requirement[] requirements)
         {
             PrefabName = prefabName;
             AssetName = assetName;
@@ -178,6 +241,7 @@ internal sealed class SpiritStaffRegistrar : IDisposable
             Projectiles = projectiles;
             Bursts = bursts;
             BurstInterval = burstInterval;
+            Payload = payload;
             Requirements = requirements;
         }
 
@@ -197,6 +261,7 @@ internal sealed class SpiritStaffRegistrar : IDisposable
         internal int Projectiles { get; }
         internal int Bursts { get; }
         internal float BurstInterval { get; }
+        internal PayloadKind Payload { get; }
         internal IReadOnlyList<Requirement> Requirements { get; }
     }
 }
