@@ -8,7 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/Magenheim.Core/Magenheim.Core.csproj" />
-    <Compile Include="../../src/Magenheim.Runtime/*Visuals.cs" Link="Visuals/%(Filename)%(Extension)" />
+    <Compile Include="../../src/Magenheim.Runtime/*Visuals.cs" Exclude="../../src/Magenheim.Runtime/GeodeVisuals.cs" Link="Visuals/%(Filename)%(Extension)" />
     <Compile Include="../../src/Magenheim.Runtime/ElementVisualPalette.cs" Link="Runtime/ElementVisualPalette.cs" />
   </ItemGroup>
 </Project>
