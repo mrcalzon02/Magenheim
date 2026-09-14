@@ -14,10 +14,11 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.9";
+    internal const string PluginVersion = "0.0.10";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
+    private GeodeItemRegistrar? _geodeItemRegistrar;
 
     private void Awake()
     {
@@ -34,17 +35,24 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 effectiveDefinitions,
                 _services.GeodeOpeningOperations,
                 Logger);
+            _geodeItemRegistrar = new GeodeItemRegistrar(effectiveDefinitions, Logger);
+            _geodeItemRegistrar.Register();
 
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
-                "Definition authority synchronization and session-scoped geode replay protection are registered; " +
-                "inventory mutation remains disabled until a server transaction adapter executes plans atomically.");
+                "Definition authority synchronization, session-scoped geode replay protection, and definition-driven geode item registration are configured; " +
+                "geode item visuals currently clone the vanilla Stone resource and inventory mutation remains disabled until a server transaction adapter executes plans atomically.");
         }
         catch (Exception exception)
         {
             Logger.LogFatal($"{PluginName} definition bootstrap failed: {exception}");
             throw;
         }
+    }
+
+    private void OnDestroy()
+    {
+        _geodeItemRegistrar?.Dispose();
     }
 }
