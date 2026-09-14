@@ -142,6 +142,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _spiritStaffRegistrar = new SpiritStaffRegistrar(Logger);
             _spiritStaffRegistrar.Register();
 
+            ModelExportRuntime.EnableIfRequested(Logger);
+
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline definition fingerprint {baselineDefinitions.Fingerprint}; effective definition fingerprint {effectiveDefinitions.Fingerprint}; " +
