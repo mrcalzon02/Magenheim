@@ -18,6 +18,12 @@ Material work from the divergent history was reviewed individually. The additive
 
 The live tree deliberately does not adopt bundled BepInEx/Jötunn runtime binaries, process/log files, unrelated third-party repair tooling, stale packaging claims, or duplicate legacy refinement/runtime implementations. Their history remains reachable through the merged ancestry for forensic recovery.
 
+## Verified consolidation result
+
+The divergent histories were reconciled by two-parent commit `7859a27462d4b0c7a4748d3760065df599c7a521`, with the previous `main` and `master` heads as parents. `main` was advanced without force, then `master` was fast-forwarded to the same commit. A direct branch comparison reported `identical`, ahead 0 / behind 0.
+
+`main` remains the authoritative development branch even though the repository's older GitHub default-branch metadata still names `master`. Because the branch tips are synchronized, that metadata no longer points at divergent content; future development must continue on `main` and any retained `master` pointer must not become an independent work line.
+
 ## Current domain authority
 
 Crystal tiers are:
@@ -38,7 +44,7 @@ The default maximum reduction is 75%, configurable between 50% and 100%. Station
 
 ## Validation boundary
 
-No compiler is available in the current execution environment. Compilation and runtime validation are therefore not claimed. Static source/Git reconciliation is the present admission level.
+The active execution host was checked directly after reconciliation. `dotnet`, `csc`, and `mcs` are not installed or available on PATH. Compilation and test execution therefore cannot be claimed from this environment. Static source/Git reconciliation is the present admission level.
 
 ## Next exact action
 
