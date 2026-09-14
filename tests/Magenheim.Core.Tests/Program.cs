@@ -41,6 +41,7 @@ internal static class Program
 
         _assertions += DefinitionCompatibilityTests.Run();
         _assertions += DefinitionAuthorityTests.Run();
+        _assertions += SocketingTests.Run();
 
         Console.WriteLine($"Magenheim.Core.Tests: {_assertions} assertions passed.");
     }
