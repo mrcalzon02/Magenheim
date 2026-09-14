@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using BepInEx;
 using BepInEx.Logging;
 using Jotunn.Managers;
 using UnityEngine;
