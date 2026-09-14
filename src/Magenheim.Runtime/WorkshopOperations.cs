@@ -279,7 +279,7 @@ internal static class WorkshopOperationsRuntime
         if (!services.GeodeOpeningOperations.MarkApplied(key))
             throw new InvalidOperationException("Applied geode operation could not be committed to replay state.");
 
-        player.RaiseSkill(EarthContentRegistrar.CrystalShapingSkill, 1f);
+        player.RaiseSkill(EarthContentRegistrar.CrystalShapingSkill, CrystalShapingExperience.CrackGeode);
         player.Message(MessageHud.MessageType.Center,
             $"Opened geode: {decision.Plan.GrantCrystals.Count} Rough crystal(s).");
         gui.UpdateCraftingPanel();
@@ -360,7 +360,9 @@ internal static class WorkshopOperationsRuntime
             throw new InvalidOperationException("Applied refinement operation could not be committed to replay state.");
 
         if (decision.Plan.AwardExperience)
-            player.RaiseSkill(EarthContentRegistrar.CrystalShapingSkill, 1f);
+            player.RaiseSkill(
+                EarthContentRegistrar.CrystalShapingSkill,
+                CrystalShapingExperience.ForRefinementAttempt(operation.SourceTier.Value));
 
         player.Message(MessageHud.MessageType.Center, decision.Plan.Diagnostic);
         gui.UpdateCraftingPanel();
