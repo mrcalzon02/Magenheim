@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using BepInEx;
+using HarmonyLib;
 using Jotunn.Utils;
 using Magenheim.Runtime.Definitions;
 using Magenheim.Runtime.Networking;
@@ -22,6 +23,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private GeodeWorldgenRegistrar? _geodeWorldgenRegistrar;
     private EarthContentRegistrar? _earthContentRegistrar;
     private WorkshopRegistrar? _workshopRegistrar;
+    private WorkshopOperationRegistrar? _workshopOperationRegistrar;
+    private Harmony? _harmony;
 
     private void Awake()
     {
@@ -40,6 +43,10 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 _services.RefinementOperations,
                 Logger);
 
+            WorkshopOperationsRuntime.Configure(_services, _authoritySynchronizer, Logger);
+            _harmony = new Harmony(PluginGuid + ".workshop-operations");
+            _harmony.PatchAll(typeof(WorkshopCraftingPatch));
+
             _earthContentRegistrar = new EarthContentRegistrar(Logger);
             _earthContentRegistrar.Register();
             _workshopRegistrar = new WorkshopRegistrar(Logger);
@@ -48,13 +55,15 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _geodeItemRegistrar.Register();
             _geodeWorldgenRegistrar = new GeodeWorldgenRegistrar(effectiveDefinitions, Logger);
             _geodeWorldgenRegistrar.Register();
+            _workshopOperationRegistrar = new WorkshopOperationRegistrar(Logger);
+            _workshopOperationRegistrar.Register();
 
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
                 "Definition authority synchronization, session-scoped geode/refinement replay protection, definition-driven intact geode items, " +
-                "fingerprinted geode placement configuration, and additive geode vegetation registration are configured. " +
-                "Persistent inventory/socket mutations remain gated pending runtime validation.");
+                "fingerprinted geode placement configuration, additive geode vegetation registration, and local-host geology workshop operations are configured. " +
+                "Remote-client operation RPC and socket effect application remain gated pending implementation/validation.");
         }
         catch (Exception exception)
         {
@@ -65,9 +74,11 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
     private void OnDestroy()
     {
+        _workshopOperationRegistrar?.Dispose();
         _earthContentRegistrar?.Dispose();
         _workshopRegistrar?.Dispose();
         _geodeWorldgenRegistrar?.Dispose();
         _geodeItemRegistrar?.Dispose();
+        _harmony?.UnpatchSelf();
     }
 }

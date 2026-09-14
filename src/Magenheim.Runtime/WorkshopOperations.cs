@@ -1,0 +1,573 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using BepInEx.Logging;
+using HarmonyLib;
+using Jotunn.Configs;
+using Jotunn.Entities;
+using Jotunn.Managers;
+using Magenheim.Core;
+using Magenheim.Core.Transactions;
+using Magenheim.Runtime.Networking;
+using UnityEngine;
+
+namespace Magenheim.Runtime;
+
+internal enum WorkshopOperationKind
+{
+    OpenGeode = 0,
+    RefineCrystal = 1,
+}
+
+internal sealed class WorkshopOperationDefinition
+{
+    internal WorkshopOperationDefinition(
+        string recipeName,
+        WorkshopOperationKind kind,
+        string sourcePrefab,
+        string previewOutputPrefab,
+        int minimumStationLevel,
+        string requiredStationIdentity,
+        string? geodeId,
+        CrystalTier? sourceTier)
+    {
+        RecipeName = recipeName;
+        Kind = kind;
+        SourcePrefab = sourcePrefab;
+        PreviewOutputPrefab = previewOutputPrefab;
+        MinimumStationLevel = minimumStationLevel;
+        RequiredStationIdentity = requiredStationIdentity;
+        GeodeId = geodeId;
+        SourceTier = sourceTier;
+    }
+
+    internal string RecipeName { get; }
+    internal WorkshopOperationKind Kind { get; }
+    internal string SourcePrefab { get; }
+    internal string PreviewOutputPrefab { get; }
+    internal int MinimumStationLevel { get; }
+    internal string RequiredStationIdentity { get; }
+    internal string? GeodeId { get; }
+    internal CrystalTier? SourceTier { get; }
+}
+
+internal static class WorkshopOperationCatalog
+{
+    internal const string OpenMeadowsEarth = "Magenheim_Operation_Open_Meadows_Earth";
+
+    private static readonly WorkshopOperationDefinition[] Definitions =
+    {
+        new WorkshopOperationDefinition(OpenMeadowsEarth, WorkshopOperationKind.OpenGeode,
+            "Magenheim_Geode_Meadows_Earth", "Magenheim_Crystal_Earth_Rough", 1,
+            WorkshopRegistrar.StationPrefab, "magenheim.geode.meadows.earth", null),
+        new WorkshopOperationDefinition("Magenheim_Operation_Refine_Earth_Rough_Simple", WorkshopOperationKind.RefineCrystal,
+            "Magenheim_Crystal_Earth_Rough", "Magenheim_Crystal_Earth_Simple", 1,
+            WorkshopRegistrar.StationPrefab, null, CrystalTier.Rough),
+        new WorkshopOperationDefinition("Magenheim_Operation_Refine_Earth_Simple_Crystal", WorkshopOperationKind.RefineCrystal,
+            "Magenheim_Crystal_Earth_Simple", "Magenheim_Crystal_Earth_Crystal", 2,
+            WorkshopRegistrar.FracturingPrefab, null, CrystalTier.Simple),
+        new WorkshopOperationDefinition("Magenheim_Operation_Refine_Earth_Crystal_Advanced", WorkshopOperationKind.RefineCrystal,
+            "Magenheim_Crystal_Earth_Crystal", "Magenheim_Crystal_Earth_Advanced", 3,
+            WorkshopRegistrar.FacetingPrefab, null, CrystalTier.Crystal),
+        new WorkshopOperationDefinition("Magenheim_Operation_Refine_Earth_Advanced_Master", WorkshopOperationKind.RefineCrystal,
+            "Magenheim_Crystal_Earth_Advanced", "Magenheim_Crystal_Earth_Master", 4,
+            WorkshopRegistrar.ResonancePrefab, null, CrystalTier.Advanced),
+    };
+
+    internal static IReadOnlyList<WorkshopOperationDefinition> All => Definitions;
+
+    internal static bool TryGet(string recipeName, out WorkshopOperationDefinition definition)
+    {
+        var found = Definitions.FirstOrDefault(entry => string.Equals(entry.RecipeName, recipeName, StringComparison.Ordinal));
+        if (found is null)
+        {
+            definition = null!;
+            return false;
+        }
+        definition = found;
+        return true;
+    }
+}
+
+/// <summary>
+/// Registers UI-visible station operations. Vanilla recipes provide discovery and preview only;
+/// the Harmony craft boundary below always intercepts these names and executes the authority-
+/// gated transaction instead of vanilla deterministic crafting.
+/// </summary>
+internal sealed class WorkshopOperationRegistrar : IDisposable
+{
+    private readonly ManualLogSource _log;
+    private bool _subscribed;
+    private bool _registered;
+
+    internal WorkshopOperationRegistrar(ManualLogSource log) => _log = log ?? throw new ArgumentNullException(nameof(log));
+
+    internal void Register()
+    {
+        if (_subscribed || _registered) return;
+        PrefabManager.OnVanillaPrefabsAvailable += OnVanillaPrefabsAvailable;
+        _subscribed = true;
+    }
+
+    private void OnVanillaPrefabsAvailable()
+    {
+        if (_registered) return;
+        try
+        {
+            foreach (var operation in WorkshopOperationCatalog.All)
+            {
+                if (PrefabManager.Instance.GetPrefab(operation.SourcePrefab) is null)
+                    throw new InvalidOperationException($"Workshop operation source prefab '{operation.SourcePrefab}' is unavailable.");
+                if (PrefabManager.Instance.GetPrefab(operation.PreviewOutputPrefab) is null)
+                    throw new InvalidOperationException($"Workshop operation preview prefab '{operation.PreviewOutputPrefab}' is unavailable.");
+
+                var config = new RecipeConfig
+                {
+                    Name = operation.RecipeName,
+                    Item = operation.PreviewOutputPrefab,
+                    Amount = 1,
+                    CraftingStation = WorkshopRegistrar.StationPrefab,
+                    MinStationLevel = operation.MinimumStationLevel,
+                    Enabled = true,
+                };
+                config.AddRequirement(operation.SourcePrefab, 1);
+
+                if (!ItemManager.Instance.AddRecipe(new CustomRecipe(config)))
+                    throw new InvalidOperationException($"Jotunn refused workshop operation recipe '{operation.RecipeName}'.");
+            }
+
+            _registered = true;
+            _log.LogInfo($"Registered {WorkshopOperationCatalog.All.Count} Geologist's Workstation operation recipe(s). Craft execution is Magenheim-authoritative, not vanilla output crafting.");
+        }
+        catch (Exception exception)
+        {
+            _log.LogError($"Geologist's Workstation operation registration failed: {exception}");
+            throw;
+        }
+        finally
+        {
+            Dispose();
+        }
+    }
+
+    public void Dispose()
+    {
+        if (!_subscribed) return;
+        PrefabManager.OnVanillaPrefabsAvailable -= OnVanillaPrefabsAvailable;
+        _subscribed = false;
+    }
+}
+
+internal static class WorkshopOperationsRuntime
+{
+    private const long LocalPeerId = 0L;
+    private const long LocalSessionGeneration = 1L;
+    private static RuntimeServices? _services;
+    private static DefinitionAuthoritySynchronizer? _authority;
+    private static ManualLogSource? _log;
+
+    internal static void Configure(RuntimeServices services, DefinitionAuthoritySynchronizer authority, ManualLogSource log)
+    {
+        _services = services ?? throw new ArgumentNullException(nameof(services));
+        _authority = authority ?? throw new ArgumentNullException(nameof(authority));
+        _log = log ?? throw new ArgumentNullException(nameof(log));
+    }
+
+    internal static bool TryHandleCrafting(InventoryGui gui, Player player)
+    {
+        if (gui is null || player is null) return false;
+        var recipe = gui.m_craftRecipe;
+        if (recipe is null || !WorkshopOperationCatalog.TryGet(recipe.name, out var operation))
+            return false;
+
+        // Once a Magenheim operation recipe is recognized, never permit vanilla crafting as
+        // a fallback: that would bypass failure rolls, replay protection, station gates and XP.
+        try
+        {
+            if (_services is null || _authority is null || _log is null)
+                throw new InvalidOperationException("Workshop operation runtime was not configured before crafting.");
+
+            if (ZNet.instance is null || !ZNet.instance.IsServer())
+            {
+                player.Message(MessageHud.MessageType.Center,
+                    "Magenheim workstation transactions require server approval; client RPC execution is not active in this build.");
+                return true;
+            }
+
+            if (!TryGetCurrentMagenheimStation(player, out var station))
+            {
+                player.Message(MessageHud.MessageType.Center, "Use a Geologist's Workstation for this operation.");
+                return true;
+            }
+
+            var inventory = player.GetInventory();
+            var source = FindSource(inventory, operation.SourcePrefab);
+            if (source is null)
+            {
+                player.Message(MessageHud.MessageType.Center, "The required source item is no longer in your inventory.");
+                return true;
+            }
+
+            if (operation.Kind == WorkshopOperationKind.OpenGeode)
+                ExecuteLocalGeodeOpening(gui, player, inventory, source, operation);
+            else
+                ExecuteLocalRefinement(gui, player, inventory, source, station, operation);
+        }
+        catch (Exception exception)
+        {
+            _log?.LogError($"Geologist's Workstation operation '{operation.RecipeName}' failed before completion: {exception}");
+            player.Message(MessageHud.MessageType.Center, "Magenheim operation failed safely; source inventory was not intentionally consumed.");
+        }
+
+        return true;
+    }
+
+    private static void ExecuteLocalGeodeOpening(
+        InventoryGui gui,
+        Player player,
+        Inventory inventory,
+        ItemDrop.ItemData source,
+        WorkshopOperationDefinition operation)
+    {
+        var services = _services!;
+        var authority = _authority!;
+        var geode = services.Definitions.Geodes.Single(entry =>
+            string.Equals(entry.Id, operation.GeodeId, StringComparison.Ordinal));
+
+        var crackingRequest = new GeodeCrackingRequest(
+            geode,
+            ServerRandom.NextUnit(),
+            ServerRandom.NextUnit(),
+            new[] { ServerRandom.NextUnit(), ServerRandom.NextUnit(), ServerRandom.NextUnit() });
+        var preview = GeodeCrackingService.Crack(crackingRequest);
+        if (!preview.IsSuccess)
+        {
+            player.Message(MessageHud.MessageType.Center, preview.Reason);
+            return;
+        }
+
+        var grants = preview.Crystals
+            .GroupBy(CrystalPrefab)
+            .Select(group => new InventoryGrant(group.Key, group.Count()))
+            .ToArray();
+        var fits = WorkshopInventoryTransactions.CanApply(inventory, source, 1, grants, out var capacityReason);
+
+        var request = new GeodeOpeningTransactionRequest(
+            authority.LocalAuthorityResult,
+            source.m_stack,
+            fits ? preview.Crystals.Count : 0,
+            crackingRequest);
+        var key = new GeodeOpeningOperationKey(
+            LocalPeerId,
+            LocalSessionGeneration,
+            Guid.NewGuid().ToString("N"));
+        var decision = services.GeodeOpeningOperations.Begin(key, request);
+        if (!decision.MutationAuthorized)
+        {
+            player.Message(MessageHud.MessageType.Center,
+                fits ? decision.Diagnostic : capacityReason);
+            return;
+        }
+
+        if (!WorkshopInventoryTransactions.TryApply(inventory, source, decision.Plan.ConsumeGeodeCount, grants, out var mutationError))
+        {
+            services.GeodeOpeningOperations.AbortPrepared(key);
+            player.Message(MessageHud.MessageType.Center, mutationError);
+            return;
+        }
+
+        if (!services.GeodeOpeningOperations.MarkApplied(key))
+            throw new InvalidOperationException("Applied geode operation could not be committed to replay state.");
+
+        player.RaiseSkill(EarthContentRegistrar.CrystalShapingSkill, 1f);
+        player.Message(MessageHud.MessageType.Center,
+            $"Opened geode: {decision.Plan.GrantCrystals.Count} Rough crystal(s).");
+        gui.UpdateCraftingPanel();
+    }
+
+    private static void ExecuteLocalRefinement(
+        InventoryGui gui,
+        Player player,
+        Inventory inventory,
+        ItemDrop.ItemData source,
+        CraftingStation station,
+        WorkshopOperationDefinition operation)
+    {
+        var services = _services!;
+        var authority = _authority!;
+        if (operation.SourceTier is null)
+            throw new InvalidOperationException($"Refinement operation '{operation.RecipeName}' has no source tier.");
+
+        if (!HasRequiredStationIdentity(station, operation.RequiredStationIdentity))
+        {
+            player.Message(MessageHud.MessageType.Center,
+                $"This refinement requires {RequiredStationDisplay(operation.RequiredStationIdentity)}.");
+            return;
+        }
+
+        var skill = Mathf.Clamp(Mathf.FloorToInt(player.GetSkillLevel(EarthContentRegistrar.CrystalShapingSkill)), 0, 100);
+        var refinementRequest = new RefinementRequest(
+            new Crystal(ElementalAlignment.Earth, operation.SourceTier.Value),
+            skill,
+            operation.RequiredStationIdentity,
+            ServerRandom.NextUnit());
+        var preview = services.Refinement.Refine(refinementRequest);
+        if (preview.Outcome != RefinementOutcome.Success && preview.Outcome != RefinementOutcome.FailedDestroyed)
+        {
+            player.Message(MessageHud.MessageType.Center, preview.Reason);
+            return;
+        }
+
+        InventoryGrant[] grants;
+        if (preview.Outcome == RefinementOutcome.Success)
+        {
+            if (preview.Output is null) throw new InvalidOperationException("Successful refinement preview has no output.");
+            grants = new[] { new InventoryGrant(CrystalPrefab(preview.Output), 1) };
+        }
+        else
+        {
+            grants = preview.ShardReturnCount > 0
+                ? new[] { new InventoryGrant(ShardPrefab(refinementRequest.Input.Element), preview.ShardReturnCount) }
+                : Array.Empty<InventoryGrant>();
+        }
+
+        var fits = WorkshopInventoryTransactions.CanApply(inventory, source, 1, grants, out var capacityReason);
+        var request = new RefinementTransactionRequest(
+            authority.LocalAuthorityResult,
+            source.m_stack,
+            fits ? (grants.Length == 0 ? 0 : 1) : 0,
+            refinementRequest);
+        var key = new RefinementOperationKey(
+            LocalPeerId,
+            LocalSessionGeneration,
+            Guid.NewGuid().ToString("N"));
+        var decision = services.RefinementOperations.Begin(key, request);
+        if (!decision.MutationAuthorized)
+        {
+            player.Message(MessageHud.MessageType.Center,
+                fits ? decision.Diagnostic : capacityReason);
+            return;
+        }
+
+        if (!WorkshopInventoryTransactions.TryApply(inventory, source, decision.Plan.ConsumeSourceCount, grants, out var mutationError))
+        {
+            services.RefinementOperations.AbortPrepared(key);
+            player.Message(MessageHud.MessageType.Center, mutationError);
+            return;
+        }
+
+        if (!services.RefinementOperations.MarkApplied(key))
+            throw new InvalidOperationException("Applied refinement operation could not be committed to replay state.");
+
+        if (decision.Plan.AwardExperience)
+            player.RaiseSkill(EarthContentRegistrar.CrystalShapingSkill, 1f);
+
+        player.Message(MessageHud.MessageType.Center, decision.Plan.Diagnostic);
+        gui.UpdateCraftingPanel();
+    }
+
+    private static ItemDrop.ItemData? FindSource(Inventory inventory, string prefabName)
+    {
+        return inventory.GetAllItems().FirstOrDefault(item =>
+            item.m_dropPrefab && string.Equals(item.m_dropPrefab.name, prefabName, StringComparison.Ordinal));
+    }
+
+    private static bool TryGetCurrentMagenheimStation(Player player, out CraftingStation station)
+    {
+        station = player.GetCurrentCraftingStation();
+        return station && string.Equals(NormalizeCloneName(station.gameObject.name), WorkshopRegistrar.StationPrefab, StringComparison.Ordinal);
+    }
+
+    private static bool HasRequiredStationIdentity(CraftingStation station, string requiredIdentity)
+    {
+        if (string.Equals(requiredIdentity, WorkshopRegistrar.StationPrefab, StringComparison.Ordinal))
+            return true;
+
+        var extensions = new List<StationExtension>();
+        StationExtension.FindExtensions(station, station.transform.position, extensions);
+        return extensions.Any(extension =>
+            string.Equals(NormalizeCloneName(extension.gameObject.name), requiredIdentity, StringComparison.Ordinal));
+    }
+
+    private static string RequiredStationDisplay(string identity)
+    {
+        if (string.Equals(identity, WorkshopRegistrar.FracturingPrefab, StringComparison.Ordinal)) return "Fracturing Block";
+        if (string.Equals(identity, WorkshopRegistrar.FacetingPrefab, StringComparison.Ordinal)) return "Faceting Wheel";
+        if (string.Equals(identity, WorkshopRegistrar.ResonancePrefab, StringComparison.Ordinal)) return "Resonance Frame";
+        return "Geologist's Workstation";
+    }
+
+    private static string NormalizeCloneName(string name) =>
+        name.EndsWith("(Clone)", StringComparison.Ordinal)
+            ? name.Substring(0, name.Length - "(Clone)".Length)
+            : name;
+
+    private static string CrystalPrefab(Crystal crystal) =>
+        $"Magenheim_Crystal_{crystal.Element}_{crystal.Tier}";
+
+    private static string ShardPrefab(ElementalAlignment element) =>
+        $"Magenheim_Shard_{element}";
+}
+
+internal readonly struct InventoryGrant
+{
+    internal InventoryGrant(string prefabName, int amount)
+    {
+        PrefabName = prefabName;
+        Amount = amount;
+    }
+
+    internal string PrefabName { get; }
+    internal int Amount { get; }
+}
+
+internal static class WorkshopInventoryTransactions
+{
+    internal static bool CanApply(
+        Inventory inventory,
+        ItemDrop.ItemData source,
+        int consumeAmount,
+        IReadOnlyList<InventoryGrant> grants,
+        out string reason)
+    {
+        if (consumeAmount <= 0 || !inventory.ContainsItem(source) || source.m_stack < consumeAmount)
+        {
+            reason = "The source item is no longer available in the required amount.";
+            return false;
+        }
+
+        var emptySlots = inventory.GetEmptySlots() + (source.m_stack == consumeAmount ? 1 : 0);
+        var items = inventory.GetAllItems();
+        foreach (var grantGroup in grants.GroupBy(grant => grant.PrefabName, StringComparer.Ordinal))
+        {
+            var prefab = PrefabManager.Instance.GetPrefab(grantGroup.Key);
+            var drop = prefab ? prefab.GetComponent<ItemDrop>() : null;
+            if (!drop)
+            {
+                reason = $"Output prefab '{grantGroup.Key}' is unavailable; source was not consumed.";
+                return false;
+            }
+
+            var prototype = drop.m_itemData;
+            var needed = grantGroup.Sum(grant => grant.Amount);
+            if (needed < 0)
+            {
+                reason = "Output amount cannot be negative.";
+                return false;
+            }
+
+            var freeStackSpace = items
+                .Where(item => string.Equals(item.m_shared.m_name, prototype.m_shared.m_name, StringComparison.Ordinal) &&
+                               item.m_quality == prototype.m_quality)
+                .Sum(item => Math.Max(0, item.m_shared.m_maxStackSize - item.m_stack));
+            var remainder = Math.Max(0, needed - freeStackSpace);
+            if (remainder == 0) continue;
+
+            var stackSize = Math.Max(1, prototype.m_shared.m_maxStackSize);
+            var requiredSlots = (remainder + stackSize - 1) / stackSize;
+            emptySlots -= requiredSlots;
+            if (emptySlots < 0)
+            {
+                reason = "Not enough inventory capacity for the operation output; source was not consumed.";
+                return false;
+            }
+        }
+
+        reason = string.Empty;
+        return true;
+    }
+
+    internal static bool TryApply(
+        Inventory inventory,
+        ItemDrop.ItemData source,
+        int consumeAmount,
+        IReadOnlyList<InventoryGrant> grants,
+        out string error)
+    {
+        if (!CanApply(inventory, source, consumeAmount, grants, out error))
+            return false;
+
+        var beforeItems = inventory.GetAllItems().ToArray();
+        var beforeStacks = beforeItems.ToDictionary(item => item, item => item.m_stack);
+
+        try
+        {
+            if (!inventory.RemoveItem(source, consumeAmount))
+            {
+                error = "Source item changed before transaction application; nothing was granted.";
+                return false;
+            }
+
+            foreach (var grant in grants)
+            {
+                if (grant.Amount <= 0) continue;
+                var prefab = PrefabManager.Instance.GetPrefab(grant.PrefabName)
+                    ?? throw new InvalidOperationException($"Output prefab '{grant.PrefabName}' disappeared after capacity preflight.");
+                if (!inventory.AddItem(prefab, grant.Amount))
+                    throw new InvalidOperationException($"Inventory refused preflighted output '{grant.PrefabName}' x{grant.Amount}.");
+            }
+
+            error = string.Empty;
+            return true;
+        }
+        catch (Exception exception)
+        {
+            RollBack(inventory, beforeItems, beforeStacks, source);
+            error = $"Inventory transaction rolled back: {exception.Message}";
+            return false;
+        }
+    }
+
+    private static void RollBack(
+        Inventory inventory,
+        ItemDrop.ItemData[] beforeItems,
+        IReadOnlyDictionary<ItemDrop.ItemData, int> beforeStacks,
+        ItemDrop.ItemData source)
+    {
+        var originalSet = new HashSet<ItemDrop.ItemData>(beforeItems);
+        foreach (var current in inventory.GetAllItems().ToArray())
+        {
+            if (!originalSet.Contains(current))
+                inventory.RemoveItem(current);
+        }
+
+        foreach (var original in beforeItems)
+        {
+            if (inventory.ContainsItem(original))
+                original.m_stack = beforeStacks[original];
+        }
+
+        if (!inventory.ContainsItem(source))
+        {
+            source.m_stack = beforeStacks[source];
+            if (!inventory.AddItem(source))
+                throw new InvalidOperationException("Rollback could not restore the consumed source item.");
+        }
+
+        var changed = AccessTools.Method(typeof(Inventory), "Changed");
+        if (changed is not null)
+            changed.Invoke(inventory, Array.Empty<object>());
+    }
+}
+
+internal static class ServerRandom
+{
+    private static readonly System.Security.Cryptography.RandomNumberGenerator Generator =
+        System.Security.Cryptography.RandomNumberGenerator.Create();
+    private static readonly object Sync = new object();
+
+    internal static double NextUnit()
+    {
+        var bytes = new byte[4];
+        lock (Sync) Generator.GetBytes(bytes);
+        var value = BitConverter.ToUInt32(bytes, 0);
+        return value / ((double)uint.MaxValue + 1d);
+    }
+}
+
+[HarmonyPatch(typeof(InventoryGui), "DoCrafting")]
+internal static class WorkshopCraftingPatch
+{
+    private static bool Prefix(InventoryGui __instance, Player player) =>
+        !WorkshopOperationsRuntime.TryHandleCrafting(__instance, player);
+}

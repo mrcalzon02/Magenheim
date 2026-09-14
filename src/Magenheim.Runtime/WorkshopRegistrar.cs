@@ -11,6 +11,9 @@ namespace Magenheim.Runtime;
 internal sealed class WorkshopRegistrar : IDisposable
 {
     internal const string StationPrefab = "Magenheim_GeologistWorkstation";
+    internal const string FracturingPrefab = "Magenheim_StationUpgrade_FracturingBlock";
+    internal const string FacetingPrefab = "Magenheim_StationUpgrade_FacetingWheel";
+    internal const string ResonancePrefab = "Magenheim_StationUpgrade_ResonanceFrame";
     private readonly ManualLogSource _log;
     private bool _subscribed;
     private bool _registered;
@@ -44,13 +47,13 @@ internal sealed class WorkshopRegistrar : IDisposable
             craftingStation.m_useDistance = 2f;
             craftingStation.m_hoverOffset = 1.2f;
 
-            AddPiece("Magenheim_StationUpgrade_FracturingBlock", "piece_workbench_ext1", "fracturing-block", "Fracturing Block",
+            AddPiece(FracturingPrefab, "piece_workbench_ext1", "fracturing-block", "Fracturing Block",
                 "A banded stone block for controlled mineral fractures. Geologist's Workstation improvement.",
                 craftingStation, new[] { Cost("Wood", 10), Cost("Stone", 8), Cost("Flint", 4) });
-            AddPiece("Magenheim_StationUpgrade_FacetingWheel", "piece_workbench_ext1", "faceting-wheel", "Faceting Wheel",
+            AddPiece(FacetingPrefab, "piece_workbench_ext1", "faceting-wheel", "Faceting Wheel",
                 "A treadle-mounted stone wheel for shaping precise facets. Geologist's Workstation improvement.",
                 craftingStation, new[] { Cost("FineWood", 10), Cost("Stone", 10), Cost("Bronze", 4) });
-            AddPiece("Magenheim_StationUpgrade_ResonanceFrame", "piece_workbench_ext1", "resonance-frame", "Resonance Frame",
+            AddPiece(ResonancePrefab, "piece_workbench_ext1", "resonance-frame", "Resonance Frame",
                 "A suspended mineral within a metal frame. Geologist's Workstation improvement.",
                 craftingStation, new[] { Cost("FineWood", 10), Cost("Iron", 4), Cost("Crystal", 5) });
             _registered = true;
