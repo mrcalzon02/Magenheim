@@ -7,6 +7,7 @@ using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using Magenheim.Core;
+using Magenheim.Core.Definitions;
 using Magenheim.Core.Transactions;
 using Magenheim.Runtime.Networking;
 using UnityEngine;
@@ -29,6 +30,7 @@ internal sealed class WorkshopOperationDefinition
         int minimumStationLevel,
         string requiredStationIdentity,
         string? geodeId,
+        ElementalAlignment? element,
         CrystalTier? sourceTier)
     {
         RecipeName = recipeName;
@@ -38,6 +40,7 @@ internal sealed class WorkshopOperationDefinition
         MinimumStationLevel = minimumStationLevel;
         RequiredStationIdentity = requiredStationIdentity;
         GeodeId = geodeId;
+        Element = element;
         SourceTier = sourceTier;
     }
 
@@ -48,44 +51,98 @@ internal sealed class WorkshopOperationDefinition
     internal int MinimumStationLevel { get; }
     internal string RequiredStationIdentity { get; }
     internal string? GeodeId { get; }
+    internal ElementalAlignment? Element { get; }
     internal CrystalTier? SourceTier { get; }
 }
 
 internal static class WorkshopOperationCatalog
 {
-    internal const string OpenMeadowsEarth = "Magenheim_Operation_Open_Meadows_Earth";
+    private const string GeodePrefabPrefix = "Magenheim_Geode_";
+    private static IReadOnlyList<WorkshopOperationDefinition> _definitions = Array.Empty<WorkshopOperationDefinition>();
+    private static Dictionary<string, WorkshopOperationDefinition> _byRecipe =
+        new(StringComparer.Ordinal);
+    private static bool _configured;
 
-    private static readonly WorkshopOperationDefinition[] Definitions =
+    internal static void Configure(MagenheimDefinitionSet definitions)
     {
-        new WorkshopOperationDefinition(OpenMeadowsEarth, WorkshopOperationKind.OpenGeode,
-            "Magenheim_Geode_Meadows_Earth", "Magenheim_Crystal_Earth_Rough", 1,
-            WorkshopRegistrar.StationPrefab, "magenheim.geode.meadows.earth", null),
-        new WorkshopOperationDefinition("Magenheim_Operation_Refine_Earth_Rough_Simple", WorkshopOperationKind.RefineCrystal,
-            "Magenheim_Crystal_Earth_Rough", "Magenheim_Crystal_Earth_Simple", 1,
-            WorkshopRegistrar.StationPrefab, null, CrystalTier.Rough),
-        new WorkshopOperationDefinition("Magenheim_Operation_Refine_Earth_Simple_Crystal", WorkshopOperationKind.RefineCrystal,
-            "Magenheim_Crystal_Earth_Simple", "Magenheim_Crystal_Earth_Crystal", 2,
-            WorkshopRegistrar.FracturingPrefab, null, CrystalTier.Simple),
-        new WorkshopOperationDefinition("Magenheim_Operation_Refine_Earth_Crystal_Advanced", WorkshopOperationKind.RefineCrystal,
-            "Magenheim_Crystal_Earth_Crystal", "Magenheim_Crystal_Earth_Advanced", 3,
-            WorkshopRegistrar.FacetingPrefab, null, CrystalTier.Crystal),
-        new WorkshopOperationDefinition("Magenheim_Operation_Refine_Earth_Advanced_Master", WorkshopOperationKind.RefineCrystal,
-            "Magenheim_Crystal_Earth_Advanced", "Magenheim_Crystal_Earth_Master", 4,
-            WorkshopRegistrar.ResonancePrefab, null, CrystalTier.Advanced),
-    };
+        if (definitions is null) throw new ArgumentNullException(nameof(definitions));
+        if (_configured) return;
 
-    internal static IReadOnlyList<WorkshopOperationDefinition> All => Definitions;
+        var operations = new List<WorkshopOperationDefinition>();
+
+        foreach (var geode in definitions.Geodes)
+        {
+            var dominant = ElementVisualPalette.DominantElement(geode);
+            operations.Add(new WorkshopOperationDefinition(
+                BuildOpenRecipeName(geode.PrefabName),
+                WorkshopOperationKind.OpenGeode,
+                geode.PrefabName,
+                $"Magenheim_Crystal_{dominant}_Rough",
+                1,
+                WorkshopRegistrar.StationPrefab,
+                geode.Id,
+                null,
+                null));
+        }
+
+        foreach (ElementalAlignment element in Enum.GetValues(typeof(ElementalAlignment)))
+        {
+            foreach (var rule in definitions.RefinementRules.OrderBy(rule => (int)rule.SourceTier))
+            {
+                operations.Add(new WorkshopOperationDefinition(
+                    $"Magenheim_Operation_Refine_{element}_{rule.SourceTier}_{rule.DestinationTier}",
+                    WorkshopOperationKind.RefineCrystal,
+                    $"Magenheim_Crystal_{element}_{rule.SourceTier}",
+                    $"Magenheim_Crystal_{element}_{rule.DestinationTier}",
+                    (int)rule.SourceTier + 1,
+                    rule.RequiredStation,
+                    null,
+                    element,
+                    rule.SourceTier));
+            }
+        }
+
+        var duplicates = operations
+            .GroupBy(operation => operation.RecipeName, StringComparer.Ordinal)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key)
+            .ToArray();
+        if (duplicates.Length > 0)
+            throw new InvalidOperationException(
+                "Duplicate Magenheim workshop operation identity: " + string.Join(", ", duplicates));
+
+        _definitions = operations.AsReadOnly();
+        _byRecipe = operations.ToDictionary(operation => operation.RecipeName, StringComparer.Ordinal);
+        _configured = true;
+    }
+
+    internal static IReadOnlyList<WorkshopOperationDefinition> All
+    {
+        get
+        {
+            EnsureConfigured();
+            return _definitions;
+        }
+    }
 
     internal static bool TryGet(string recipeName, out WorkshopOperationDefinition definition)
     {
-        var found = Definitions.FirstOrDefault(entry => string.Equals(entry.RecipeName, recipeName, StringComparison.Ordinal));
-        if (found is null)
-        {
-            definition = null!;
-            return false;
-        }
-        definition = found;
-        return true;
+        EnsureConfigured();
+        return _byRecipe.TryGetValue(recipeName, out definition!);
+    }
+
+    private static string BuildOpenRecipeName(string prefabName)
+    {
+        if (!prefabName.StartsWith(GeodePrefabPrefix, StringComparison.Ordinal))
+            throw new InvalidOperationException(
+                $"Geode prefab '{prefabName}' does not use the required '{GeodePrefabPrefix}' identity prefix.");
+        return "Magenheim_Operation_Open_" + prefabName.Substring(GeodePrefabPrefix.Length);
+    }
+
+    private static void EnsureConfigured()
+    {
+        if (!_configured)
+            throw new InvalidOperationException("Workshop operation catalog was used before definition authority configured it.");
     }
 }
 
@@ -137,7 +194,11 @@ internal sealed class WorkshopOperationRegistrar : IDisposable
             }
 
             _registered = true;
-            _log.LogInfo($"Registered {WorkshopOperationCatalog.All.Count} Geologist's Workstation operation recipe(s). Craft execution is Magenheim-authoritative, not vanilla output crafting.");
+            var geodeOperations = WorkshopOperationCatalog.All.Count(operation => operation.Kind == WorkshopOperationKind.OpenGeode);
+            var refinementOperations = WorkshopOperationCatalog.All.Count(operation => operation.Kind == WorkshopOperationKind.RefineCrystal);
+            _log.LogInfo(
+                $"Registered {WorkshopOperationCatalog.All.Count} Geologist's Workstation operations: " +
+                $"{geodeOperations} biome geode openings and {refinementOperations} elemental refinement operations.");
         }
         catch (Exception exception)
         {
@@ -180,8 +241,6 @@ internal static class WorkshopOperationsRuntime
         if (recipe is null || !WorkshopOperationCatalog.TryGet(recipe.name, out var operation))
             return false;
 
-        // Once a Magenheim operation recipe is recognized, never permit vanilla crafting as
-        // a fallback: that would bypass failure rolls, replay protection, station gates and XP.
         try
         {
             if (_services is null || _authority is null || _log is null)
@@ -291,7 +350,7 @@ internal static class WorkshopOperationsRuntime
 
         player.RaiseSkill(EarthContentRegistrar.CrystalShapingSkill, CrystalShapingExperience.CrackGeode);
         player.Message(MessageHud.MessageType.Center,
-            $"Opened geode: {decision.Plan.GrantCrystals.Count} Rough crystal(s).");
+            $"Opened {ElementVisualPalette.DisplayBiome(geode.Biome)} geode: {decision.Plan.GrantCrystals.Count} Rough crystal(s).");
         gui.UpdateCraftingPanel();
     }
 
@@ -305,8 +364,8 @@ internal static class WorkshopOperationsRuntime
     {
         var services = _services!;
         var authority = _authority!;
-        if (operation.SourceTier is null)
-            throw new InvalidOperationException($"Refinement operation '{operation.RecipeName}' has no source tier.");
+        if (operation.SourceTier is null || operation.Element is null)
+            throw new InvalidOperationException($"Refinement operation '{operation.RecipeName}' has incomplete elemental/tier identity.");
 
         if (!HasRequiredStationIdentity(station, operation.RequiredStationIdentity))
         {
@@ -317,7 +376,7 @@ internal static class WorkshopOperationsRuntime
 
         var skill = Mathf.Clamp(Mathf.FloorToInt(player.GetSkillLevel(EarthContentRegistrar.CrystalShapingSkill)), 0, 100);
         var refinementRequest = new RefinementRequest(
-            new Crystal(ElementalAlignment.Earth, operation.SourceTier.Value),
+            new Crystal(operation.Element.Value, operation.SourceTier.Value),
             skill,
             operation.RequiredStationIdentity,
             ServerRandom.NextUnit());
