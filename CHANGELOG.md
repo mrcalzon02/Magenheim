@@ -1,6 +1,6 @@
 # Magenheim Changelog
 
-## Unreleased — repository consolidation
+## Unreleased — repository consolidation and runtime foundation
 
 - Reconciled divergent `main` and `master` histories while preserving both ancestries.
 - Replaced a contaminated committed merge tree containing unresolved conflict markers with an explicitly resolved live tree.
@@ -9,5 +9,10 @@
 - Added project-level repository and compatibility instructions.
 - Added a standalone combined pure-core test harness and `IsExternalInit` compatibility shim.
 - Preserved the large pre-reconciliation design specification under `docs/archive/` for provenance and future recovery.
+- Retargeted `Magenheim.Core` from `netstandard2.1` to `netstandard2.0` so the pure rules remain consumable by both the .NET 8 test harness and Jötunn's .NET Framework 4.6.2 runtime.
+- Added `Magenheim.Runtime` targeting net462 with JötunnLib 2.30.0.
+- Added BepInEx plugin identity `mrcalzon02.magenheim`, hard Jötunn dependency, and everyone-must-have/minor-version network compatibility declaration.
+- Added a thin runtime service composition boundary that consumes the authoritative core refinement service without duplicating gameplay rules.
+- Kept world objects, items, sockets, RPCs, inventory mutation, and persistent gameplay changes disabled pending validation and server-authoritative transaction work.
 - Did not admit bundled runtime/vendor binaries, runtime logs/process files, unrelated third-party repair utilities, duplicate legacy engines, or stale build/runtime claims into the live source tree.
 - Compilation and Valheim runtime validation remain unclaimed because the current execution environment does not provide the required compiler/runtime test environment.
