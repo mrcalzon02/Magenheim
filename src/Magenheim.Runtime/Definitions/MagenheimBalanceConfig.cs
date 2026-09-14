@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
 using Magenheim.Core.Definitions;
+using Magenheim.Core.Socketing;
 using Magenheim.Core.Worldgen;
 
 namespace Magenheim.Runtime.Definitions;
@@ -55,13 +56,35 @@ internal static class MagenheimBalanceConfig
             });
         }
 
+        var socketEffects = ReadSocketEffects(config, baseline.SocketEffects);
         var compatibility = ReadWorldgenCompatibility(config, baseline.WorldgenCompatibility);
 
         return MagenheimDefinitionOverrideApplier.Apply(
             baseline,
             refinementOverrides,
             geodeOverrides,
-            compatibility);
+            compatibility,
+            socketEffects);
+    }
+
+    private static SocketEffectDefinitionSet ReadSocketEffects(
+        ConfigFile config,
+        SocketEffectDefinitionSet baseline)
+    {
+        var rules = baseline.Rules
+            .Select(rule =>
+            {
+                var section = $"Balance.SocketEffect.{rule.Element}.{rule.Category}";
+                var magnitude = config.Bind(
+                    section,
+                    rule.Effect.ToString(),
+                    rule.SimpleMagnitude,
+                    "Server-authoritative Simple-tier socket magnitude for this effect channel. Crystal, Advanced, and Master scale from this value through the core tier curve.");
+                return rule with { SimpleMagnitude = magnitude.Value };
+            })
+            .ToArray();
+
+        return new SocketEffectDefinitionSet(rules);
     }
 
     private static GeodePlacementDefinition ReadGeodePlacement(ConfigFile config, GeodeDefinition geode)
