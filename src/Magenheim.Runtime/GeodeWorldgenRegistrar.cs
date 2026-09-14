@@ -5,6 +5,7 @@ using BepInEx.Logging;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
+using Magenheim.Core;
 using Magenheim.Core.Definitions;
 using Magenheim.Core.Worldgen;
 using UnityEngine;
@@ -21,9 +22,9 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
     private const string VanillaWorldBasePrefab = "Rock_4";
     private const float DefaultHealth = 20f;
     private const int DefaultMinToolTier = 0;
-    // Live test 1 showed the original 3.5x nodule was far too large. 1.2x is roughly
-    // a two-thirds reduction and returns the world object to a ground-stone scale.
-    private const float MeadowsEarthWorldVisualScale = 1.2f;
+    // Live test 1 showed the original 3.5x nodule was far too large. All biome geodes now use
+    // the corrected ground-stone scale while their elemental tint provides visual identity.
+    private const float WorldVisualScale = 1.2f;
 
     private readonly MagenheimDefinitionSet _definitions;
     private readonly ManualLogSource _log;
@@ -146,8 +147,7 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
         ConfigurePersistentNetworkState(worldPrefab, addition.Desired.PrefabName);
         ConfigureDestructible(worldPrefab, addition.Desired.PrefabName);
         ConfigureSingleIntactGeodeDrop(worldPrefab, intactGeodePrefab, addition.Desired.PrefabName);
-        if (geode.Id == "magenheim.geode.meadows.earth")
-            EarthAssets.ReplaceVisual(worldPrefab, "geode", MeadowsEarthWorldVisualScale, worldObject: true);
+        ApplyGeodeVisual(worldPrefab, geode);
 
         var vegetationConfig = new VegetationConfig
         {
@@ -187,6 +187,25 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
         _log.LogInfo(
             $"Added geode vegetation '{addition.Desired.PrefabName}' for biome '{addition.Desired.Biome}', " +
             $"area '{addition.NormalizedArea}', configured max-per-zone/chance {placement.MaxPerZone:0.###}.");
+    }
+
+    private static void ApplyGeodeVisual(GameObject worldPrefab, GeodeDefinition geode)
+    {
+        var dominant = ElementVisualPalette.DominantElement(geode);
+        if (dominant == ElementalAlignment.Earth && geode.ElementWeights.Count == 1)
+        {
+            EarthAssets.ReplaceVisual(worldPrefab, "geode", WorldVisualScale, worldObject: true);
+            return;
+        }
+
+        var variant = "geode-" + ElementVisualPalette.Variant(dominant);
+        EarthAssets.ReplaceVisual(
+            worldPrefab,
+            "geode",
+            WorldVisualScale,
+            worldObject: true,
+            variant: variant,
+            tint: ElementVisualPalette.Tint(dominant));
     }
 
     private GeodeDefinition FindGeode(string registrationKey)
@@ -237,8 +256,6 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
         var dropOnDestroyed = prefab.GetComponent<DropOnDestroyed>()
             ?? throw new InvalidOperationException($"Geode world prefab '{prefabName}' has no DropOnDestroyed component.");
 
-        // Own a fresh table and entry instead of mutating any table inherited from Rock_4.
-        // Current Valheim has m_oneOfEach, not the previously assumed m_onePerPlayer.
         dropOnDestroyed.m_dropWhenDestroyed = new DropTable
         {
             m_dropMin = 1,
