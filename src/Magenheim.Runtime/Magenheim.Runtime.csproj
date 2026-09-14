@@ -7,7 +7,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>Magenheim</AssemblyName>
     <RootNamespace>Magenheim.Runtime</RootNamespace>
-    <Version>0.0.21</Version>
+    <Version>0.0.22</Version>
     <ValheimManagedPath Condition="'$(ValheimManagedPath)' == ''">$(MSBuildThisFileDirectory)../../../valheim_Data/Managed</ValheimManagedPath>
   </PropertyGroup>
 
@@ -17,7 +17,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
-  <!-- Compile against the installed game without publicizing or modifying its assemblies. -->
   <ItemGroup>
     <Reference Include="$(ValheimManagedPath)/assembly_*.dll" Private="false" />
     <Reference Include="$(ValheimManagedPath)/UnityEngine*.dll" Private="false" />
