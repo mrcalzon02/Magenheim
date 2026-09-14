@@ -49,7 +49,10 @@ internal static class MagenheimBalanceConfig
                 geode.Id,
                 second.Value,
                 third.Value,
-                weights));
+                weights)
+            {
+                Placement = ReadGeodePlacement(config, geode),
+            });
         }
 
         var compatibility = ReadWorldgenCompatibility(config, baseline.WorldgenCompatibility);
@@ -59,6 +62,58 @@ internal static class MagenheimBalanceConfig
             refinementOverrides,
             geodeOverrides,
             compatibility);
+    }
+
+    private static GeodePlacementDefinition ReadGeodePlacement(ConfigFile config, GeodeDefinition geode)
+    {
+        var baseline = geode.Placement;
+        var section = $"Worldgen.Placement.{geode.Id}";
+
+        return new GeodePlacementDefinition(
+            config.Bind(section, "BlockCheck", baseline.BlockCheck,
+                "Reject placement when normal solid/piece layers already occupy the location.").Value,
+            config.Bind(section, "ForcePlacement", baseline.ForcePlacement,
+                "Use Valheim force-placement behavior. False is the conservative default.").Value,
+            config.Bind(section, "MinPerZone", baseline.MinPerZone,
+                "Minimum placements per zone. Must be non-negative and <= MaxPerZone.").Value,
+            config.Bind(section, "MaxPerZone", baseline.MaxPerZone,
+                "Maximum placements per zone; values between 0 and 1 behave as placement chance in Valheim/Jotunn.").Value,
+            config.Bind(section, "MinAltitude", baseline.MinAltitude,
+                "Minimum world altitude for this geode.").Value,
+            config.Bind(section, "MaxAltitude", baseline.MaxAltitude,
+                "Maximum world altitude for this geode.").Value,
+            config.Bind(section, "MinOceanDepth", baseline.MinOceanDepth,
+                "Minimum ocean depth accepted for placement.").Value,
+            config.Bind(section, "MaxOceanDepth", baseline.MaxOceanDepth,
+                "Maximum ocean depth accepted for placement.").Value,
+            config.Bind(section, "MinTerrainDelta", baseline.MinTerrainDelta,
+                "Minimum terrain height delta around the placement point.").Value,
+            config.Bind(section, "MaxTerrainDelta", baseline.MaxTerrainDelta,
+                "Maximum terrain height delta around the placement point.").Value,
+            config.Bind(section, "TerrainDeltaRadius", baseline.TerrainDeltaRadius,
+                "Radius used to measure terrain delta.").Value,
+            config.Bind(section, "MinTilt", baseline.MinTilt,
+                "Minimum terrain tilt in degrees.").Value,
+            config.Bind(section, "MaxTilt", baseline.MaxTilt,
+                "Maximum terrain tilt in degrees, validated within 0..90.").Value,
+            config.Bind(section, "InForest", baseline.InForest,
+                "When true, apply Valheim forest-fractal threshold checks.").Value,
+            config.Bind(section, "ForestThresholdMin", baseline.ForestThresholdMin,
+                "Minimum forest-fractal threshold when InForest is enabled.").Value,
+            config.Bind(section, "ForestThresholdMax", baseline.ForestThresholdMax,
+                "Maximum forest-fractal threshold when InForest is enabled.").Value,
+            config.Bind(section, "ScaleMin", baseline.ScaleMin,
+                "Minimum placed world-object scale; must remain positive.").Value,
+            config.Bind(section, "ScaleMax", baseline.ScaleMax,
+                "Maximum placed world-object scale; must be >= ScaleMin.").Value,
+            config.Bind(section, "GroupSizeMin", baseline.GroupSizeMin,
+                "Minimum objects per placement group; must be at least 1.").Value,
+            config.Bind(section, "GroupSizeMax", baseline.GroupSizeMax,
+                "Maximum objects per placement group; must be >= GroupSizeMin.").Value,
+            config.Bind(section, "GroupRadius", baseline.GroupRadius,
+                "Radius of a placement group; must be non-negative.").Value,
+            config.Bind(section, "GroundOffset", baseline.GroundOffset,
+                "Vertical placement offset; negative values bury the object slightly.").Value);
     }
 
     private static WorldgenCompatibilityPolicy ReadWorldgenCompatibility(

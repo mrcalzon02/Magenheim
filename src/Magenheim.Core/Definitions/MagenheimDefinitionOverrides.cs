@@ -15,7 +15,10 @@ public sealed record GeodeBalanceOverride(
     string GeodeId,
     double SecondCrystalChance,
     double ThirdCrystalChance,
-    IReadOnlyList<ElementWeight> ElementWeights);
+    IReadOnlyList<ElementWeight> ElementWeights)
+{
+    public GeodePlacementDefinition? Placement { get; init; }
+}
 
 public static class MagenheimDefinitionOverrideApplier
 {
@@ -88,6 +91,7 @@ public static class MagenheimDefinitionOverrideApplier
             SecondCrystalChance = balance.SecondCrystalChance,
             ThirdCrystalChance = balance.ThirdCrystalChance,
             ElementWeights = Array.AsReadOnly(weights),
+            Placement = balance.Placement ?? baseline.Placement,
         };
     }
 

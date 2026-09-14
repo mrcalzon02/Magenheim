@@ -23,19 +23,6 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
     private const float DefaultHealth = 20f;
     private const int DefaultMinToolTier = 0;
 
-    // Initial conservative placement profile. These values are intentionally centralized so the
-    // next schema/config pass can make density/terrain limits definition-authoritative without
-    // changing registration mechanics.
-    private const float DefaultMaxPerZone = 0.35f;
-    private const float DefaultMinAltitude = 1f;
-    private const float DefaultMaxAltitude = 1000f;
-    private const float DefaultMaxTerrainDelta = 2f;
-    private const float DefaultTerrainDeltaRadius = 2f;
-    private const float DefaultMaxTilt = 35f;
-    private const float DefaultScaleMin = 0.85f;
-    private const float DefaultScaleMax = 1.15f;
-    private const float DefaultGroundOffset = -0.10f;
-
     private readonly MagenheimDefinitionSet _definitions;
     private readonly ManualLogSource _log;
     private bool _subscribed;
@@ -72,8 +59,6 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
 
         try
         {
-            // Build the authoritative desired set without host observations, then observe only
-            // those identities and rerun the same core planner with real host evidence.
             var desiredPlan = DefinitionWorldgenPlanner.Build(
                 _definitions,
                 Array.Empty<ObservedWorldgenRegistration>());
@@ -112,7 +97,6 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
         }
         finally
         {
-            // Jotunn custom vegetation is added once and retained by ZoneManager across world loads.
             Dispose();
         }
     }
@@ -131,14 +115,13 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
                     $"Intact geode item prefab '{geode.PrefabName}' must be registered before worldgen addition '{addition.Desired.RegistrationKey}'.");
             }
 
-            // Even when proactive prefab collision detection is disabled by policy, the additive
-            // invariant still forbids replacing an existing host prefab identity.
             if (PrefabManager.Instance.GetPrefab(addition.Desired.PrefabName) is not null)
             {
                 throw new InvalidOperationException(
                     $"Worldgen addition '{addition.Desired.RegistrationKey}' cannot safely add prefab '{addition.Desired.PrefabName}' because that prefab identity already exists.");
             }
 
+            geode.Placement.Validate(geode.Id);
             _ = JotunnWorldgenAdapter.MapBiome(addition.Desired.Biome
                 ?? throw new InvalidOperationException($"Worldgen addition '{addition.Desired.RegistrationKey}' has no biome."));
             _ = JotunnWorldgenAdapter.MapArea(addition.NormalizedArea);
@@ -148,6 +131,7 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
     private void RegisterWorldVegetation(WorldgenPlanEntry addition)
     {
         var geode = FindGeode(addition.Desired.RegistrationKey);
+        var placement = geode.Placement;
         var intactGeodePrefab = PrefabManager.Instance.GetPrefab(geode.PrefabName)
             ?? throw new InvalidOperationException($"Intact geode item prefab '{geode.PrefabName}' disappeared after preflight.");
 
@@ -165,26 +149,28 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
         {
             Biome = JotunnWorldgenAdapter.MapBiome(addition.Desired.Biome!),
             BiomeArea = JotunnWorldgenAdapter.MapArea(addition.NormalizedArea),
-            BlockCheck = true,
-            ForcePlacement = false,
-            Min = 0f,
-            Max = DefaultMaxPerZone,
-            MinAltitude = DefaultMinAltitude,
-            MaxAltitude = DefaultMaxAltitude,
-            MinOceanDepth = 0f,
-            MaxOceanDepth = 0f,
-            MinTerrainDelta = 0f,
-            MaxTerrainDelta = DefaultMaxTerrainDelta,
-            TerrainDeltaRadius = DefaultTerrainDeltaRadius,
-            MinTilt = 0f,
-            MaxTilt = DefaultMaxTilt,
-            InForest = false,
-            ScaleMin = DefaultScaleMin,
-            ScaleMax = DefaultScaleMax,
-            GroupSizeMin = 1,
-            GroupSizeMax = 1,
-            GroupRadius = 0f,
-            GroundOffset = DefaultGroundOffset,
+            BlockCheck = placement.BlockCheck,
+            ForcePlacement = placement.ForcePlacement,
+            Min = ToRuntimeFloat(placement.MinPerZone, nameof(placement.MinPerZone)),
+            Max = ToRuntimeFloat(placement.MaxPerZone, nameof(placement.MaxPerZone)),
+            MinAltitude = ToRuntimeFloat(placement.MinAltitude, nameof(placement.MinAltitude)),
+            MaxAltitude = ToRuntimeFloat(placement.MaxAltitude, nameof(placement.MaxAltitude)),
+            MinOceanDepth = ToRuntimeFloat(placement.MinOceanDepth, nameof(placement.MinOceanDepth)),
+            MaxOceanDepth = ToRuntimeFloat(placement.MaxOceanDepth, nameof(placement.MaxOceanDepth)),
+            MinTerrainDelta = ToRuntimeFloat(placement.MinTerrainDelta, nameof(placement.MinTerrainDelta)),
+            MaxTerrainDelta = ToRuntimeFloat(placement.MaxTerrainDelta, nameof(placement.MaxTerrainDelta)),
+            TerrainDeltaRadius = ToRuntimeFloat(placement.TerrainDeltaRadius, nameof(placement.TerrainDeltaRadius)),
+            MinTilt = ToRuntimeFloat(placement.MinTilt, nameof(placement.MinTilt)),
+            MaxTilt = ToRuntimeFloat(placement.MaxTilt, nameof(placement.MaxTilt)),
+            InForest = placement.InForest,
+            ForestThresholdMin = ToRuntimeFloat(placement.ForestThresholdMin, nameof(placement.ForestThresholdMin)),
+            ForestThresholdMax = ToRuntimeFloat(placement.ForestThresholdMax, nameof(placement.ForestThresholdMax)),
+            ScaleMin = ToRuntimeFloat(placement.ScaleMin, nameof(placement.ScaleMin)),
+            ScaleMax = ToRuntimeFloat(placement.ScaleMax, nameof(placement.ScaleMax)),
+            GroupSizeMin = placement.GroupSizeMin,
+            GroupSizeMax = placement.GroupSizeMax,
+            GroupRadius = ToRuntimeFloat(placement.GroupRadius, nameof(placement.GroupRadius)),
+            GroundOffset = ToRuntimeFloat(placement.GroundOffset, nameof(placement.GroundOffset)),
         };
 
         var customVegetation = new CustomVegetation(worldPrefab, fixReference: false, vegetationConfig);
@@ -196,7 +182,7 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
 
         _log.LogInfo(
             $"Added geode vegetation '{addition.Desired.PrefabName}' for biome '{addition.Desired.Biome}', " +
-            $"area '{addition.NormalizedArea}', max-per-zone/chance {DefaultMaxPerZone:0.##}.");
+            $"area '{addition.NormalizedArea}', configured max-per-zone/chance {placement.MaxPerZone:0.###}.");
     }
 
     private GeodeDefinition FindGeode(string registrationKey)
@@ -213,6 +199,13 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
             .Where(entry => entry.Action == WorldgenPlanAction.Error)
             .Select(entry => $"{entry.Desired.RegistrationKey}: {entry.Diagnostic}");
         return prefix + ": " + string.Join("; ", diagnostics);
+    }
+
+    private static float ToRuntimeFloat(double value, string field)
+    {
+        if (double.IsNaN(value) || double.IsInfinity(value) || value < -float.MaxValue || value > float.MaxValue)
+            throw new InvalidOperationException($"Placement field '{field}' cannot be represented by Jotunn's float API.");
+        return (float)value;
     }
 
     private static void ConfigurePersistentNetworkState(GameObject prefab, string prefabName)

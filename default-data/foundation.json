@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "refinementRules": [
     {
       "sourceTier": "Rough",
@@ -48,7 +48,31 @@
           "element": "Earth",
           "weight": 100.0
         }
-      ]
+      ],
+      "placement": {
+        "blockCheck": true,
+        "forcePlacement": false,
+        "minPerZone": 0.0,
+        "maxPerZone": 0.35,
+        "minAltitude": 1.0,
+        "maxAltitude": 1000.0,
+        "minOceanDepth": 0.0,
+        "maxOceanDepth": 0.0,
+        "minTerrainDelta": 0.0,
+        "maxTerrainDelta": 2.0,
+        "terrainDeltaRadius": 2.0,
+        "minTilt": 0.0,
+        "maxTilt": 35.0,
+        "inForest": false,
+        "forestThresholdMin": 0.0,
+        "forestThresholdMax": 1.0,
+        "scaleMin": 0.85,
+        "scaleMax": 1.15,
+        "groupSizeMin": 1,
+        "groupSizeMax": 1,
+        "groupRadius": 0.0,
+        "groundOffset": -0.10
+      }
     }
   ],
   "worldgenCompatibility": {

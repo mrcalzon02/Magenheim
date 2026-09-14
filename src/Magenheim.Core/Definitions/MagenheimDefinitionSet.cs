@@ -18,7 +18,10 @@ public sealed record GeodeDefinition(
     int GuaranteedCrystalCount,
     double SecondCrystalChance,
     double ThirdCrystalChance,
-    IReadOnlyList<ElementWeight> ElementWeights);
+    IReadOnlyList<ElementWeight> ElementWeights)
+{
+    public GeodePlacementDefinition Placement { get; init; } = GeodePlacementDefinition.ConservativeMeadows;
+}
 
 public sealed record MagenheimDefinitionSet(
     int SchemaVersion,
@@ -29,7 +32,7 @@ public sealed record MagenheimDefinitionSet(
 
 public static class MagenheimDefinitionValidator
 {
-    public const int CurrentSchemaVersion = 2;
+    public const int CurrentSchemaVersion = 3;
 
     private static readonly HashSet<string> SupportedBiomes = new(StringComparer.Ordinal)
     {
@@ -51,7 +54,6 @@ public static class MagenheimDefinitionValidator
     {
         if (schemaVersion != CurrentSchemaVersion)
             throw new InvalidOperationException($"Unsupported definition schema {schemaVersion}. Expected {CurrentSchemaVersion}.");
-
         if (refinementRules is null)
             throw new ArgumentNullException(nameof(refinementRules));
         if (geodes is null)
@@ -160,6 +162,10 @@ public static class MagenheimDefinitionValidator
         if (duplicateElement is not null)
             throw new InvalidOperationException($"Geode '{id}' defines element {duplicateElement.Key} more than once.");
 
+        var placement = geode.Placement
+            ?? throw new InvalidOperationException($"Geode '{id}' requires a world-placement definition.");
+        placement.Validate(id);
+
         return geode with
         {
             Id = id,
@@ -167,6 +173,7 @@ public static class MagenheimDefinitionValidator
             PrefabName = prefabName,
             Area = area.Area,
             ElementWeights = Array.AsReadOnly(weights),
+            Placement = placement,
         };
     }
 
@@ -295,11 +302,43 @@ public static class MagenheimDefinitionValidator
                     .Append(weight.Weight.ToString("R", CultureInfo.InvariantCulture));
             }
             builder.Append('\n');
+
+            AppendPlacementFingerprint(builder, geode.Id, geode.Placement);
         }
 
         using var sha256 = SHA256.Create();
         var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
         return string.Concat(hash.Select(value => value.ToString("x2", CultureInfo.InvariantCulture)));
+    }
+
+    private static void AppendPlacementFingerprint(
+        StringBuilder builder,
+        string geodeId,
+        GeodePlacementDefinition placement)
+    {
+        builder.Append("geode-placement|").Append(geodeId).Append('|')
+            .Append(placement.BlockCheck ? "1" : "0").Append('|')
+            .Append(placement.ForcePlacement ? "1" : "0").Append('|')
+            .Append(placement.MinPerZone.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.MaxPerZone.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.MinAltitude.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.MaxAltitude.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.MinOceanDepth.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.MaxOceanDepth.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.MinTerrainDelta.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.MaxTerrainDelta.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.TerrainDeltaRadius.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.MinTilt.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.MaxTilt.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.InForest ? "1" : "0").Append('|')
+            .Append(placement.ForestThresholdMin.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.ForestThresholdMax.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.ScaleMin.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.ScaleMax.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.GroupSizeMin).Append('|')
+            .Append(placement.GroupSizeMax).Append('|')
+            .Append(placement.GroupRadius.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.GroundOffset.ToString("R", CultureInfo.InvariantCulture)).Append('\n');
     }
 
     private static string NormalizeIdentityForFingerprint(

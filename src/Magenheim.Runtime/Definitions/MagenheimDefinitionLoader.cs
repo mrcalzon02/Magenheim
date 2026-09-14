@@ -99,7 +99,40 @@ internal static class MagenheimDefinitionLoader
             document.GuaranteedCrystalCount,
             document.SecondCrystalChance,
             document.ThirdCrystalChance,
-            Array.AsReadOnly(weights));
+            Array.AsReadOnly(weights))
+        {
+            Placement = ToGeodePlacement(document.Placement),
+        };
+    }
+
+    private static GeodePlacementDefinition ToGeodePlacement(GeodePlacementDocument document)
+    {
+        if (document is null)
+            throw new InvalidDataException("Geode placement definition cannot be null.");
+
+        return new GeodePlacementDefinition(
+            document.BlockCheck,
+            document.ForcePlacement,
+            document.MinPerZone,
+            document.MaxPerZone,
+            document.MinAltitude,
+            document.MaxAltitude,
+            document.MinOceanDepth,
+            document.MaxOceanDepth,
+            document.MinTerrainDelta,
+            document.MaxTerrainDelta,
+            document.TerrainDeltaRadius,
+            document.MinTilt,
+            document.MaxTilt,
+            document.InForest,
+            document.ForestThresholdMin,
+            document.ForestThresholdMax,
+            document.ScaleMin,
+            document.ScaleMax,
+            document.GroupSizeMin,
+            document.GroupSizeMax,
+            document.GroupRadius,
+            document.GroundOffset);
     }
 
     private static WorldgenCompatibilityPolicy ToWorldgenCompatibility(WorldgenCompatibilityDocument document)
@@ -205,6 +238,78 @@ internal static class MagenheimDefinitionLoader
 
         [JsonProperty("elements", Required = Required.Always)]
         public List<ElementWeightDocument> Elements { get; set; } = null!;
+
+        [JsonProperty("placement", Required = Required.Always)]
+        public GeodePlacementDocument Placement { get; set; } = null!;
+    }
+
+    private sealed class GeodePlacementDocument
+    {
+        [JsonProperty("blockCheck", Required = Required.Always)]
+        public bool BlockCheck { get; set; }
+
+        [JsonProperty("forcePlacement", Required = Required.Always)]
+        public bool ForcePlacement { get; set; }
+
+        [JsonProperty("minPerZone", Required = Required.Always)]
+        public double MinPerZone { get; set; }
+
+        [JsonProperty("maxPerZone", Required = Required.Always)]
+        public double MaxPerZone { get; set; }
+
+        [JsonProperty("minAltitude", Required = Required.Always)]
+        public double MinAltitude { get; set; }
+
+        [JsonProperty("maxAltitude", Required = Required.Always)]
+        public double MaxAltitude { get; set; }
+
+        [JsonProperty("minOceanDepth", Required = Required.Always)]
+        public double MinOceanDepth { get; set; }
+
+        [JsonProperty("maxOceanDepth", Required = Required.Always)]
+        public double MaxOceanDepth { get; set; }
+
+        [JsonProperty("minTerrainDelta", Required = Required.Always)]
+        public double MinTerrainDelta { get; set; }
+
+        [JsonProperty("maxTerrainDelta", Required = Required.Always)]
+        public double MaxTerrainDelta { get; set; }
+
+        [JsonProperty("terrainDeltaRadius", Required = Required.Always)]
+        public double TerrainDeltaRadius { get; set; }
+
+        [JsonProperty("minTilt", Required = Required.Always)]
+        public double MinTilt { get; set; }
+
+        [JsonProperty("maxTilt", Required = Required.Always)]
+        public double MaxTilt { get; set; }
+
+        [JsonProperty("inForest", Required = Required.Always)]
+        public bool InForest { get; set; }
+
+        [JsonProperty("forestThresholdMin", Required = Required.Always)]
+        public double ForestThresholdMin { get; set; }
+
+        [JsonProperty("forestThresholdMax", Required = Required.Always)]
+        public double ForestThresholdMax { get; set; }
+
+        [JsonProperty("scaleMin", Required = Required.Always)]
+        public double ScaleMin { get; set; }
+
+        [JsonProperty("scaleMax", Required = Required.Always)]
+        public double ScaleMax { get; set; }
+
+        [JsonProperty("groupSizeMin", Required = Required.Always)]
+        public int GroupSizeMin { get; set; }
+
+        [JsonProperty("groupSizeMax", Required = Required.Always)]
+        public int GroupSizeMax { get; set; }
+
+        [JsonProperty("groupRadius", Required = Required.Always)]
+        public double GroupRadius { get; set; }
+
+        [JsonProperty("groundOffset", Required = Required.Always)]
+        public double GroundOffset { get; set; }
     }
 
     private sealed class WorldgenCompatibilityDocument

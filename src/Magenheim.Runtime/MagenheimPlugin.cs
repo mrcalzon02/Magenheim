@@ -14,7 +14,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.12";
+    internal const string PluginVersion = "0.0.13";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -37,8 +37,6 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 _services.GeodeOpeningOperations,
                 Logger);
 
-            // Registration order is intentional. Worldgen creation needs the intact geode item as
-            // its destruction drop, so the item registrar subscribes before the worldgen registrar.
             _geodeItemRegistrar = new GeodeItemRegistrar(effectiveDefinitions, Logger);
             _geodeItemRegistrar.Register();
             _geodeWorldgenRegistrar = new GeodeWorldgenRegistrar(effectiveDefinitions, Logger);
@@ -48,7 +46,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
                 "Definition authority synchronization, session-scoped geode replay protection, definition-driven intact geode items, " +
-                "and additive geode vegetation registration are configured. Persistent inventory/socket mutations remain gated pending runtime validation.");
+                "fingerprinted geode placement configuration, and additive geode vegetation registration are configured. " +
+                "Persistent inventory/socket mutations remain gated pending runtime validation.");
         }
         catch (Exception exception)
         {
