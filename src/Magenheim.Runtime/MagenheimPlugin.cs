@@ -13,7 +13,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.4";
+    internal const string PluginVersion = "0.0.5";
 
     private RuntimeServices? _services;
 
@@ -24,12 +24,14 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             var assemblyDirectory = Path.GetDirectoryName(typeof(MagenheimPlugin).Assembly.Location)
                 ?? throw new InvalidOperationException("Unable to determine the Magenheim plugin directory.");
             var definitionPath = Path.Combine(assemblyDirectory, "default-data", "foundation.json");
-            var definitions = MagenheimDefinitionLoader.LoadFromFile(definitionPath);
+            var baselineDefinitions = MagenheimDefinitionLoader.LoadFromFile(definitionPath);
+            var effectiveDefinitions = MagenheimBalanceConfig.Apply(Config, baselineDefinitions);
 
-            _services = RuntimeServices.Create(definitions);
+            _services = RuntimeServices.Create(effectiveDefinitions);
             Logger.LogInfo(
-                $"{PluginName} {PluginVersion} loaded definition schema {definitions.SchemaVersion} " +
-                $"with fingerprint {definitions.Fingerprint}. Gameplay mutation remains disabled until server-authoritative transactions are implemented.");
+                $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
+                $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
+                "Gameplay mutation remains disabled until server-authoritative synchronization and transactions are implemented.");
         }
         catch (Exception exception)
         {
