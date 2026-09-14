@@ -77,20 +77,51 @@ Additional static compatibility checks added to the pure core and deterministic 
 
 Current Jötunn documentation describes the runtime spawn enum default as `Heightmap.BiomeArea.Everywhere`, while generated vegetation data exposes Edge and Median area membership. The future runtime adapter therefore must map Magenheim's abstract All explicitly to the runtime Everywhere value rather than relying on integer coincidence.
 
+## Strict definition pipeline — 2026-09-13
+
+Source-level validation completed for the new definition authority introduced for runtime version `0.0.4`.
+
+Observed implementation:
+
+- `default-data/foundation.json` is the shipped static definition source and is copied into the runtime output under `default-data/foundation.json`;
+- runtime JSON parsing uses Newtonsoft.Json with `MissingMemberHandling.Error`;
+- duplicate JSON property names are rejected during `JObject` parsing;
+- required schema fields use `Required.Always` rather than accepting missing default values;
+- parsed refinement/geode records are passed into `MagenheimDefinitionValidator.ValidateAndFreeze` before `RuntimeServices` is constructed;
+- startup failure is logged as fatal and rethrown; no hard-coded refinement fallback is retained in the runtime composition path;
+- validated content receives a normalized deterministic SHA-256 fingerprint for later client/server authority comparison.
+
+Pure-core definition validation statically enforces:
+
+- exact schema version 1;
+- exactly one Rough, Simple, Crystal, and Advanced source refinement transition and no Master source transition;
+- existing `RefinementRule.Validate()` range, tier-order, station, and shard constraints;
+- `magenheim.geode.` registration identity namespace and `Magenheim_` prefab namespace;
+- supported terrestrial biome names only;
+- conservative spawn-area admission through `SpawnAreaValidator`;
+- exactly one guaranteed crystal in the current geode contract;
+- finite second/third crystal chances in [0,1];
+- at least one positive finite elemental weight with no duplicate element entries;
+- duplicate geode ids and duplicate geode prefab identities rejected.
+
+The shipped Meadows definition contains only Earth at weight 100.0 and uses one guaranteed result plus independent 0.35 and 0.10 additional-crystal probabilities. This is definition presence and static-schema evidence only; the actual random selection/cracking transaction is not yet implemented and is not claimed.
+
+Static readback confirmed the runtime project, loader, plugin startup path, core definition validator, foundation JSON, backlog, project state, and README are all present on `main` after the changes. No generated DLL or vendor binary was committed.
+
 ## Repository/branch review
 
-During this pass, concurrent authorized work advanced `main` twice. Each advancement was detected before ref mutation and reconciled without force-pushing. A first prepared commit was intentionally not published after GitHub rejected it as non-fast-forward. The final compatibility implementation was rebuilt on top of the newer authoritative runtime-foundation history and then fast-forwarded normally.
+During the earlier compatibility pass, concurrent authorized work advanced `main` twice. Each advancement was detected before ref mutation and reconciled without force-pushing. A first prepared commit was intentionally not published after GitHub rejected it as non-fast-forward. The final compatibility implementation was rebuilt on top of the newer authoritative runtime-foundation history and then fast-forwarded normally.
 
 `master` was subsequently fast-forwarded to the same implementation commit so the legacy default-branch pointer did not become a divergent development line. The available connector does not expose branch deletion or default-branch reassignment, so remote pruning beyond synchronization is deferred rather than falsely claimed.
 
 ## Compile/test boundary
 
-The current execution environment exposes no `dotnet`, `csc`, or `mcs`. Therefore no compilation, package restore, deterministic test execution, Valheim startup, Jötunn registration, or fresh-world generation success is claimed.
+The current execution environment exposes no `dotnet`, `csc`, or `mcs`. Therefore no compilation, package restore, deterministic test execution, Valheim startup, definition-loader execution, Jötunn registration, or fresh-world generation success is claimed.
 
 Required next validation commands/environment:
 
 `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`
 
-Then compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` from a development environment with .NET Framework 4.6.2 targeting support and current Valheim/Jötunn development dependencies available. Any resulting defect must be repaired at the authoritative source before config loading, worldgen registration, or skill registration is admitted.
+Then compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` from a development environment with .NET Framework 4.6.2 targeting support and current Valheim/Jötunn development dependencies available. Any resulting defect must be repaired at the authoritative source before server configuration overrides, skill registration, worldgen registration, or gameplay mutation is admitted.
 
 Runtime startup, natural geode generation, repeated-load idempotence, multiplayer authority, save/load, and persistence remain unverified until directly observed.
