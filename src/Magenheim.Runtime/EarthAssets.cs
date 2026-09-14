@@ -7,12 +7,13 @@ using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>Loads original checked-in assets. No Unity editor or asset bundle is required.</summary>
+/// <summary>Loads original checked-in assets and derives elemental color variants at runtime.</summary>
 internal static class EarthAssets
 {
     private static readonly Dictionary<string, Mesh> Meshes = new();
     private static readonly Dictionary<string, Sprite> Icons = new();
     private static readonly Dictionary<string, Material> Materials = new();
+    private static readonly Dictionary<string, Texture2D> Textures = new();
     private static string DirectoryPath => Path.Combine(
         Path.GetDirectoryName(typeof(EarthAssets).Assembly.Location)!, "assets", "earth");
 
@@ -26,7 +27,27 @@ internal static class EarthAssets
         return icon;
     }
 
-    internal static GameObject ReplaceVisual(GameObject prefab, string asset, float scale = 1f, bool worldObject = false, bool buildingPiece = false)
+    internal static Sprite Icon(string name, string variant, Color tint)
+    {
+        if (string.IsNullOrWhiteSpace(variant)) throw new ArgumentException("Variant is required.", nameof(variant));
+        var key = name + "|" + variant;
+        if (Icons.TryGetValue(key, out var icon)) return icon;
+
+        var texture = TintedTexture(name + ".icon.png", variant, tint);
+        icon = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 128f);
+        icon.name = "magenheim." + name + "." + variant + ".icon";
+        Icons.Add(key, icon);
+        return icon;
+    }
+
+    internal static GameObject ReplaceVisual(
+        GameObject prefab,
+        string asset,
+        float scale = 1f,
+        bool worldObject = false,
+        bool buildingPiece = false,
+        string? variant = null,
+        Color? tint = null)
     {
         if (scale <= 0f || float.IsNaN(scale) || float.IsInfinity(scale))
             throw new ArgumentOutOfRangeException(nameof(scale), "Visual scale must be finite and greater than zero.");
@@ -40,10 +61,13 @@ internal static class EarthAssets
         var sourceMaterial = originalRenderers.Select(renderer => renderer.sharedMaterial).FirstOrDefault(material => material);
         if (!sourceMaterial) throw new InvalidOperationException($"No material source on {prefab.name}.");
 
-        if (!Materials.TryGetValue(asset, out var material))
+        var materialKey = string.IsNullOrWhiteSpace(variant) ? asset : asset + "|" + variant;
+        if (!Materials.TryGetValue(materialKey, out var material))
         {
-            material = new Material(sourceMaterial) { name = "magenheim." + asset + ".material" };
-            material.mainTexture = Texture(asset + ".png");
+            material = new Material(sourceMaterial) { name = "magenheim." + materialKey + ".material" };
+            material.mainTexture = tint.HasValue
+                ? TintedTexture(asset + ".png", variant ?? "tint", tint.Value)
+                : Texture(asset + ".png");
             material.mainTextureScale = Vector2.one;
             material.mainTextureOffset = Vector2.zero;
             if (material.HasProperty("_Color")) material.SetColor("_Color", Color.white);
@@ -54,14 +78,14 @@ internal static class EarthAssets
             material.DisableKeyword("_NORMALMAP");
             material.DisableKeyword("_EMISSION");
             ConfigureOpaqueMaterial(material);
-            Materials.Add(asset, material);
+            Materials.Add(materialKey, material);
         }
 
         var mesh = LoadMesh(asset);
         var worldOffset = worldObject
             ? new Vector3(0f, -mesh.bounds.min.y * scale, 0f)
             : Vector3.zero;
-        var visual = new GameObject("magenheim." + asset + ".visual");
+        var visual = new GameObject("magenheim." + materialKey + ".visual");
         // Preserve the inventory attachment hierarchy used by item stands and dropped items.
         visual.transform.SetParent(worldObject || buildingPiece ? prefab.transform : prefab.transform.Find("attach") ?? prefab.transform, false);
         visual.layer = prefab.layer;
@@ -88,9 +112,6 @@ internal static class EarthAssets
 
     private static void ConfigureOpaqueMaterial(Material material)
     {
-        // Clone sources such as Rock_4 can carry shader/render-state settings that are
-        // inappropriate for Magenheim's fully opaque RGB atlases. Normalize the cloned
-        // material instead of inheriting transparency/blending from the source prefab.
         material.SetOverrideTag("RenderType", "Opaque");
         if (material.HasProperty("_Mode")) material.SetFloat("_Mode", 0f);
         if (material.HasProperty("_Surface")) material.SetFloat("_Surface", 0f);
@@ -107,15 +128,47 @@ internal static class EarthAssets
 
     private static Texture2D Texture(string filename)
     {
+        if (Textures.TryGetValue(filename, out var existing)) return existing;
+
         var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false) { name = "magenheim." + filename };
-        // Select the byte[] API explicitly: Unity 6 also exposes a Span overload whose
-        // reference type is absent from net462. Do not ship a second runtime corlib.
         var loadImage = typeof(ImageConversion).GetMethod("LoadImage", new[] { typeof(Texture2D), typeof(byte[]), typeof(bool) })
             ?? throw new MissingMethodException("Unity ImageConversion.LoadImage(Texture2D, byte[], bool)");
         if (!(bool)loadImage.Invoke(null, new object[] { texture, File.ReadAllBytes(Path.Combine(DirectoryPath, filename)), false }))
             throw new InvalidDataException($"Cannot decode Earth asset {filename}.");
         texture.wrapMode = TextureWrapMode.Clamp;
         texture.filterMode = FilterMode.Bilinear;
+        Textures.Add(filename, texture);
+        return texture;
+    }
+
+    private static Texture2D TintedTexture(string filename, string variant, Color tint)
+    {
+        var key = filename + "|" + variant;
+        if (Textures.TryGetValue(key, out var existing)) return existing;
+
+        var source = Texture(filename);
+        var pixels = source.GetPixels();
+        for (var index = 0; index < pixels.Length; index++)
+        {
+            var sourcePixel = pixels[index];
+            var luminance = sourcePixel.grayscale;
+            var value = Mathf.Clamp01(0.24f + luminance * 1.08f);
+            pixels[index] = new Color(
+                Mathf.Clamp01(tint.r * value),
+                Mathf.Clamp01(tint.g * value),
+                Mathf.Clamp01(tint.b * value),
+                sourcePixel.a);
+        }
+
+        var texture = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false)
+        {
+            name = "magenheim." + filename + "." + variant
+        };
+        texture.SetPixels(pixels);
+        texture.Apply(false, false);
+        texture.wrapMode = TextureWrapMode.Clamp;
+        texture.filterMode = FilterMode.Bilinear;
+        Textures.Add(key, texture);
         return texture;
     }
 
