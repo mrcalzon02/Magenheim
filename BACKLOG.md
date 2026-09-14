@@ -21,6 +21,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Move worldgen compatibility policy into schema-versioned definition authority and include it in the deterministic fingerprint.
 - [x] Make configured invalid-area behavior govern geode area parsing rather than hard-coding Reject before policy admission.
 - [x] Restrict compatibility exclusions to Magenheim-owned registration/prefab namespaces so configuration cannot target foreign content.
+- [x] Make definition duplicate detection and exclusion normalization obey the configured exact/case-insensitive identity comparer, preventing definitions that the runtime planner would later collapse into collisions.
 - [ ] Execute the standalone tests with a .NET 8 SDK and record the observed result.
 - [ ] Compile `Magenheim.Core` with warnings as errors.
 - [x] Add the thin BepInEx/Jötunn plugin bootstrap on `main`, with hard Jötunn dependency and everyone-must-have network declaration.

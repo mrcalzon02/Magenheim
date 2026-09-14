@@ -60,6 +60,7 @@ public static class MagenheimDefinitionValidator
             throw new ArgumentNullException(nameof(worldgenCompatibility));
 
         var frozenCompatibility = ValidateAndFreezeWorldgenCompatibility(worldgenCompatibility);
+        var identityComparer = GetIdentityComparer(frozenCompatibility.IdentityComparison);
         var frozenRules = refinementRules.ToArray();
         var frozenGeodes = geodes
             .Select(geode => ValidateAndFreezeGeode(geode, frozenCompatibility.InvalidAreaBehavior))
@@ -70,16 +71,16 @@ public static class MagenheimDefinitionValidator
             throw new InvalidOperationException("At least one geode definition is required.");
 
         var duplicateGeodeId = frozenGeodes
-            .GroupBy(geode => geode.Id, StringComparer.Ordinal)
+            .GroupBy(geode => geode.Id, identityComparer)
             .FirstOrDefault(group => group.Count() > 1);
         if (duplicateGeodeId is not null)
-            throw new InvalidOperationException($"Duplicate geode id '{duplicateGeodeId.Key}'.");
+            throw new InvalidOperationException($"Duplicate geode id '{duplicateGeodeId.Key}' under {frozenCompatibility.IdentityComparison} identity comparison.");
 
         var duplicatePrefab = frozenGeodes
-            .GroupBy(geode => geode.PrefabName, StringComparer.Ordinal)
+            .GroupBy(geode => geode.PrefabName, identityComparer)
             .FirstOrDefault(group => group.Count() > 1);
         if (duplicatePrefab is not null)
-            throw new InvalidOperationException($"Duplicate geode prefab '{duplicatePrefab.Key}'.");
+            throw new InvalidOperationException($"Duplicate geode prefab '{duplicatePrefab.Key}' under {frozenCompatibility.IdentityComparison} identity comparison.");
 
         var fingerprint = ComputeFingerprint(schemaVersion, frozenRules, frozenGeodes, frozenCompatibility);
         return new MagenheimDefinitionSet(
@@ -180,17 +181,20 @@ public static class MagenheimDefinitionValidator
         if (!Enum.IsDefined(typeof(RegistrationIdentityComparison), policy.IdentityComparison))
             throw new InvalidOperationException($"Unknown registration identity comparison '{policy.IdentityComparison}'.");
 
+        var identityComparer = GetIdentityComparer(policy.IdentityComparison);
         var excludedKeys = NormalizeDistinct(
             policy.ExcludedRegistrationKeys,
             "worldgen compatibility registration-key exclusion",
             value => value.StartsWith("magenheim.", StringComparison.Ordinal),
-            "Excluded registration keys must use the 'magenheim.' namespace.");
+            "Excluded registration keys must use the 'magenheim.' namespace.",
+            identityComparer);
 
         var excludedPrefabs = NormalizeDistinct(
             policy.ExcludedPrefabNames,
             "worldgen compatibility prefab exclusion",
             value => value.StartsWith("Magenheim_", StringComparison.Ordinal),
-            "Excluded prefab names must use the 'Magenheim_' namespace.");
+            "Excluded prefab names must use the 'Magenheim_' namespace.",
+            identityComparer);
 
         return policy with
         {
@@ -200,11 +204,20 @@ public static class MagenheimDefinitionValidator
         };
     }
 
+    private static StringComparer GetIdentityComparer(RegistrationIdentityComparison comparison) =>
+        comparison switch
+        {
+            RegistrationIdentityComparison.Exact => StringComparer.Ordinal,
+            RegistrationIdentityComparison.CaseInsensitive => StringComparer.OrdinalIgnoreCase,
+            _ => throw new InvalidOperationException($"Unknown registration identity comparison '{comparison}'."),
+        };
+
     private static string[] NormalizeDistinct(
         IEnumerable<string>? values,
         string field,
         Func<string, bool> validator,
-        string validationMessage)
+        string validationMessage,
+        IEqualityComparer<string> comparer)
     {
         if (values is null)
             return Array.Empty<string>();
@@ -215,9 +228,9 @@ public static class MagenheimDefinitionValidator
         if (normalized.Any(value => !validator(value)))
             throw new InvalidOperationException(validationMessage);
 
-        var duplicate = normalized.GroupBy(value => value, StringComparer.Ordinal).FirstOrDefault(group => group.Count() > 1);
+        var duplicate = normalized.GroupBy(value => value, comparer).FirstOrDefault(group => group.Count() > 1);
         if (duplicate is not null)
-            throw new InvalidOperationException($"Duplicate {field} '{duplicate.Key}'.");
+            throw new InvalidOperationException($"Duplicate {field} '{duplicate.Key}' under configured identity comparison.");
 
         return normalized;
     }
