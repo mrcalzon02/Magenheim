@@ -36,8 +36,6 @@ internal static class JotunnWorldgenAdapter
         {
             SpawnArea.Median => ParseBiomeArea("Median"),
             SpawnArea.Edge => ParseBiomeArea("Edge"),
-            // Valheim/Jotunn builds have used both names for the combined value. Resolve the
-            // actual runtime enum instead of compiling against one spelling and guessing.
             SpawnArea.All => ParseBiomeArea("Everything", "Everywhere"),
             _ => throw new InvalidOperationException(
                 $"Unsupported spawn area '{area}' at the Jotunn adapter boundary. " +
@@ -45,9 +43,12 @@ internal static class JotunnWorldgenAdapter
         };
 
     /// <summary>
-    /// Observes only host identities Magenheim intends to add. Both ZoneManager vegetation and
-    /// the broader PrefabManager namespace are checked because AddCustomVegetation registers the
-    /// prefab itself. No host entry is mutated.
+    /// Observes only prefab identities Magenheim intends to claim. PrefabManager is deliberately
+    /// used instead of ZoneManager.GetZoneVegetation here: the registrar runs from
+    /// OnVanillaPrefabsAvailable, while Jotunn's GetZoneVegetation directly dereferences
+    /// ZoneSystem.instance and is not safe to call before a ZoneSystem exists. AddCustomVegetation
+    /// itself claims the prefab through PrefabManager, so prefab occupancy is the decisive
+    /// non-destructive collision boundary at this lifecycle stage.
     /// </summary>
     internal static IReadOnlyList<ObservedWorldgenRegistration> ObserveDesiredHostIdentities(
         IEnumerable<DesiredWorldgenAddition> desired)
@@ -64,16 +65,6 @@ internal static class JotunnWorldgenAdapter
                 continue;
             if (!seenPrefabs.Add(addition.PrefabName))
                 continue;
-
-            var existingVegetation = ZoneManager.Instance.GetZoneVegetation(addition.PrefabName);
-            if (existingVegetation is not null)
-            {
-                observed.Add(new ObservedWorldgenRegistration(
-                    string.Empty,
-                    "host-existing-vegetation",
-                    addition.PrefabName));
-                continue;
-            }
 
             if (PrefabManager.Instance.GetPrefab(addition.PrefabName) is not null)
             {

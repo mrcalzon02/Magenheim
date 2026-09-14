@@ -7,7 +7,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>Magenheim</AssemblyName>
     <RootNamespace>Magenheim.Runtime</RootNamespace>
-    <Version>0.0.13</Version>
+    <Version>0.0.14</Version>
   </PropertyGroup>
 
   <ItemGroup>
