@@ -30,6 +30,18 @@ public static class MagenheimDefinitionValidator
 {
     public const int CurrentSchemaVersion = 1;
 
+    private static readonly HashSet<string> SupportedBiomes = new(StringComparer.Ordinal)
+    {
+        "Meadows",
+        "BlackForest",
+        "Swamp",
+        "Mountain",
+        "Plains",
+        "Mistlands",
+        "Ashlands",
+        "DeepNorth",
+    };
+
     public static MagenheimDefinitionSet ValidateAndFreeze(
         int schemaVersion,
         IEnumerable<RefinementRule> refinementRules,
@@ -98,45 +110,50 @@ public static class MagenheimDefinitionValidator
     {
         if (geode is null)
             throw new InvalidOperationException("Geode definitions cannot contain null entries.");
-        if (string.IsNullOrWhiteSpace(geode.Id) || !geode.Id.StartsWith("magenheim.geode.", StringComparison.Ordinal))
+
+        var id = geode.Id?.Trim() ?? string.Empty;
+        var biome = geode.Biome?.Trim() ?? string.Empty;
+        var prefabName = geode.PrefabName?.Trim() ?? string.Empty;
+
+        if (!id.StartsWith("magenheim.geode.", StringComparison.Ordinal))
             throw new InvalidOperationException("Geode ids must use the 'magenheim.geode.' namespace.");
-        if (string.IsNullOrWhiteSpace(geode.Biome))
-            throw new InvalidOperationException($"Geode '{geode.Id}' requires a biome.");
-        if (string.IsNullOrWhiteSpace(geode.PrefabName))
-            throw new InvalidOperationException($"Geode '{geode.Id}' requires a prefab name.");
+        if (!SupportedBiomes.Contains(biome))
+            throw new InvalidOperationException($"Geode '{id}' references unsupported biome '{biome}'.");
+        if (!prefabName.StartsWith("Magenheim_", StringComparison.Ordinal))
+            throw new InvalidOperationException($"Geode '{id}' prefab '{prefabName}' must use the Magenheim_ namespace.");
 
         var area = SpawnAreaValidator.Normalize(geode.Area, InvalidAreaBehavior.Reject);
         if (!area.IsValid)
-            throw new InvalidOperationException($"Geode '{geode.Id}' has invalid area: {area.Diagnostic}");
+            throw new InvalidOperationException($"Geode '{id}' has invalid area: {area.Diagnostic}");
 
         if (geode.GuaranteedCrystalCount != 1)
-            throw new InvalidOperationException($"Geode '{geode.Id}' must currently produce exactly one guaranteed crystal.");
-        ValidateChance(geode.SecondCrystalChance, geode.Id, nameof(geode.SecondCrystalChance));
-        ValidateChance(geode.ThirdCrystalChance, geode.Id, nameof(geode.ThirdCrystalChance));
+            throw new InvalidOperationException($"Geode '{id}' must currently produce exactly one guaranteed crystal.");
+        ValidateChance(geode.SecondCrystalChance, id, nameof(geode.SecondCrystalChance));
+        ValidateChance(geode.ThirdCrystalChance, id, nameof(geode.ThirdCrystalChance));
 
         if (geode.ElementWeights is null || geode.ElementWeights.Count == 0)
-            throw new InvalidOperationException($"Geode '{geode.Id}' requires at least one elemental weight.");
+            throw new InvalidOperationException($"Geode '{id}' requires at least one elemental weight.");
 
         var weights = geode.ElementWeights.ToArray();
         foreach (var weight in weights)
         {
             if (weight is null)
-                throw new InvalidOperationException($"Geode '{geode.Id}' contains a null elemental weight.");
+                throw new InvalidOperationException($"Geode '{id}' contains a null elemental weight.");
             if (double.IsNaN(weight.Weight) || double.IsInfinity(weight.Weight) || weight.Weight <= 0d)
-                throw new InvalidOperationException($"Geode '{geode.Id}' has non-positive or non-finite weight for {weight.Element}.");
+                throw new InvalidOperationException($"Geode '{id}' has non-positive or non-finite weight for {weight.Element}.");
         }
 
         var duplicateElement = weights
             .GroupBy(weight => weight.Element)
             .FirstOrDefault(group => group.Count() > 1);
         if (duplicateElement is not null)
-            throw new InvalidOperationException($"Geode '{geode.Id}' defines element {duplicateElement.Key} more than once.");
+            throw new InvalidOperationException($"Geode '{id}' defines element {duplicateElement.Key} more than once.");
 
         return geode with
         {
-            Id = geode.Id.Trim(),
-            Biome = geode.Biome.Trim(),
-            PrefabName = geode.PrefabName.Trim(),
+            Id = id,
+            Biome = biome,
+            PrefabName = prefabName,
             Area = area.Area,
             ElementWeights = Array.AsReadOnly(weights),
         };
