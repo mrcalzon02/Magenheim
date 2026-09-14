@@ -28,6 +28,7 @@ internal sealed class DefinitionAuthoritySynchronizer
 
     internal DefinitionAuthoritySynchronizer(
         MagenheimDefinitionSet definitions,
+        SocketEligibilityPolicy socketPolicy,
         GeodeOpeningOperationGuard geodeOpeningOperations,
         RefinementOperationGuard refinementOperations,
         SocketOperationGuard socketOperations,
@@ -35,15 +36,17 @@ internal sealed class DefinitionAuthoritySynchronizer
         ManualLogSource logger)
     {
         if (definitions is null) throw new ArgumentNullException(nameof(definitions));
+        if (socketPolicy is null) throw new ArgumentNullException(nameof(socketPolicy));
         _geodeOpeningOperations = geodeOpeningOperations ?? throw new ArgumentNullException(nameof(geodeOpeningOperations));
         _refinementOperations = refinementOperations ?? throw new ArgumentNullException(nameof(refinementOperations));
         _socketOperations = socketOperations ?? throw new ArgumentNullException(nameof(socketOperations));
         _socketExtractionOperations = socketExtractionOperations ?? throw new ArgumentNullException(nameof(socketExtractionOperations));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        _localAuthority = new DefinitionAuthorityDescriptor(definitions.SchemaVersion, definitions.Fingerprint);
+        var gameplayFingerprint = GameplayAuthorityFingerprint.Compute(definitions.Fingerprint, socketPolicy);
+        _localAuthority = new DefinitionAuthorityDescriptor(definitions.SchemaVersion, gameplayFingerprint);
         if (!DefinitionAuthorityHandshake.IsValid(_localAuthority, out var validationError))
-            throw new InvalidOperationException($"Cannot register definition synchronization with invalid local authority: {validationError}");
+            throw new InvalidOperationException($"Cannot register gameplay synchronization with invalid local authority: {validationError}");
 
         _rpc = NetworkManager.Instance.AddRPC(
             "DefinitionAuthority",
@@ -52,6 +55,8 @@ internal sealed class DefinitionAuthoritySynchronizer
 
         SynchronizationManager.Instance.AddInitialSynchronization(_rpc, BuildServerAuthorityPackage);
     }
+
+    internal string GameplayFingerprint => _localAuthority.Fingerprint;
 
     internal DefinitionAuthorityResult LocalAuthorityResult =>
         DefinitionAuthorityHandshake.Compare(_localAuthority, _localAuthority);
@@ -110,7 +115,7 @@ internal sealed class DefinitionAuthoritySynchronizer
         {
             var messageType = package.ReadInt();
             if (messageType != ServerAuthorityMessage)
-                throw new InvalidOperationException($"Unexpected definition authority message type {messageType} on client.");
+                throw new InvalidOperationException($"Unexpected gameplay authority message type {messageType} on client.");
 
             serverAuthority = ReadDescriptor(package);
             ClientAuthorityResult = DefinitionAuthorityHandshake.Compare(_localAuthority, serverAuthority);
@@ -120,7 +125,7 @@ internal sealed class DefinitionAuthoritySynchronizer
             ClientAuthorityResult = new DefinitionAuthorityResult(
                 DefinitionAuthorityStatus.InvalidDescriptor,
                 false,
-                $"Failed to read server definition authority: {exception.Message}");
+                $"Failed to read server gameplay authority: {exception.Message}");
         }
 
         if (ClientAuthorityResult.MutationAuthorized)
@@ -147,7 +152,7 @@ internal sealed class DefinitionAuthoritySynchronizer
         {
             var messageType = package.ReadInt();
             if (messageType != ClientAcknowledgementMessage)
-                throw new InvalidOperationException($"Unexpected definition authority message type {messageType} on server.");
+                throw new InvalidOperationException($"Unexpected gameplay authority message type {messageType} on server.");
 
             var echoedServerAuthority = ReadDescriptor(package);
             var clientAuthority = ReadDescriptor(package);
@@ -158,7 +163,7 @@ internal sealed class DefinitionAuthoritySynchronizer
                 result = new DefinitionAuthorityResult(
                     echoResult.Status,
                     false,
-                    $"Client did not acknowledge this server's definition authority. {echoResult.Diagnostic}");
+                    $"Client did not acknowledge this server's gameplay authority. {echoResult.Diagnostic}");
             }
             else
             {
@@ -170,7 +175,7 @@ internal sealed class DefinitionAuthoritySynchronizer
             result = new DefinitionAuthorityResult(
                 DefinitionAuthorityStatus.InvalidDescriptor,
                 false,
-                $"Failed to read client definition authority acknowledgement: {exception.Message}");
+                $"Failed to read client gameplay authority acknowledgement: {exception.Message}");
         }
 
         _peerResults[sender] = result;
