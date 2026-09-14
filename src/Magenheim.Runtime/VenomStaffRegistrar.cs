@@ -9,8 +9,8 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Playable Venom staff family built around Valheim's native Ooze Bomb poison-field projectile.
-/// Venom's combat language is contamination: low impact, repeated poison exposure, overlapping
-/// lingering fields, and increasingly aggressive area denial rather than direct burst damage.
+/// Each tier carries original Magenheim geometry/iconography while escalating from a single toxic
+/// glob to broad persistent contamination rather than direct burst damage.
 /// </summary>
 internal sealed class VenomStaffRegistrar : IDisposable
 {
@@ -55,7 +55,7 @@ internal sealed class VenomStaffRegistrar : IDisposable
             }
 
             _registered = true;
-            _log.LogInfo("Registered the four-tier Venom staff family: Toxic Glob, Caustic Pool, Miasma Bloom, and Plaguefield.");
+            _log.LogInfo("Registered the four-tier Venom staff family with original geometry/icons: Toxic Glob, Caustic Pool, Miasma Bloom, and Plaguefield.");
         }
         catch (Exception exception)
         {
@@ -82,10 +82,11 @@ internal sealed class VenomStaffRegistrar : IDisposable
         shared.m_value = 0;
         shared.m_dlc = string.Empty;
         shared.m_damages = new HitData.DamageTypes { m_poison = definition.PoisonDamage };
+        shared.m_icons = new[] { EarthAssets.Icon(definition.AssetName) };
 
         // Keep a proper staff animation/handling surface, but replace the fireball payload with
-        // BombOoze's native poison-field projectile. That carrier creates the real persistent
-        // contamination zone; this family changes how many zones are deployed and where.
+        // BombOoze's native poison-field projectile. That carrier creates the persistent field;
+        // each Magenheim tier changes how many zones are deployed and where.
         var attack = shared.m_attack;
         attack.m_attackProjectile = poisonAttack.m_attackProjectile;
         attack.m_attackStamina = definition.StaminaCost;
@@ -101,6 +102,8 @@ internal sealed class VenomStaffRegistrar : IDisposable
         attack.m_projectileBursts = definition.Bursts;
         attack.m_burstInterval = definition.BurstInterval;
         attack.m_perBurstResourceUsage = false;
+
+        VenomStaffVisuals.Apply(item.ItemPrefab, definition.AssetName);
 
         if (!ItemManager.Instance.AddItem(item))
             throw new InvalidOperationException($"Jotunn refused Venom staff item '{definition.PrefabName}'.");
@@ -128,88 +131,28 @@ internal sealed class VenomStaffRegistrar : IDisposable
     private static IReadOnlyList<VenomStaffDefinition> Definitions() => new[]
     {
         new VenomStaffDefinition(
-            "Magenheim_Staff_Venom_Simple",
-            "Simple Staff of Venom",
-            "Toxic Glob: hurls one unstable mass that ruptures into a lingering poison field. The impact itself is weak; controlling a doorway or forcing movement is the real weapon.",
-            minimumStationLevel: 1,
-            staminaCost: 20f,
-            eitrCost: 0f,
-            poisonDamage: 16f,
-            damageMultiplier: 0.55f,
-            forceMultiplier: 0.25f,
-            staggerMultiplier: 0.30f,
-            projectileVelocity: 22f,
-            projectileAccuracy: 2f,
-            projectiles: 1,
-            bursts: 1,
-            burstInterval: 0f,
-            new StaffRequirement("FineWood", 8),
-            new StaffRequirement("Ooze", 4),
-            new StaffRequirement("Magenheim_Crystal_Venom_Simple", 1)),
+            "Magenheim_Staff_Venom_Simple", "staff-venom-simple", "Simple Staff of Venom",
+            "Toxic Glob: hurls one unstable mass that ruptures into a lingering poison field. The forked green crystal is crude, cheap, and built to deny a doorway rather than burst a target down.",
+            1, 20f, 0f, 16f, .55f, .25f, .30f, 22f, 2f, 1, 1, 0f,
+            new StaffRequirement("FineWood", 8), new StaffRequirement("Ooze", 4), new StaffRequirement("Magenheim_Crystal_Venom_Simple", 1)),
 
         new VenomStaffDefinition(
-            "Magenheim_Staff_Venom_Crystal",
-            "Crystal Staff of Venom",
-            "Caustic Pool: fires two closely timed globules down the same lane. Repeated contamination does not invent a new poison stack; it refreshes pressure and keeps the target area dangerous longer.",
-            minimumStationLevel: 2,
-            staminaCost: 30f,
-            eitrCost: 0f,
-            poisonDamage: 24f,
-            damageMultiplier: 0.72f,
-            forceMultiplier: 0.20f,
-            staggerMultiplier: 0.25f,
-            projectileVelocity: 28f,
-            projectileAccuracy: 1.2f,
-            projectiles: 1,
-            bursts: 2,
-            burstInterval: 0.28f,
-            new StaffRequirement("ElderBark", 10),
-            new StaffRequirement("Guck", 4),
-            new StaffRequirement("Ooze", 6),
-            new StaffRequirement("Magenheim_Crystal_Venom_Crystal", 1)),
+            "Magenheim_Staff_Venom_Crystal", "staff-venom-crystal", "Crystal Staff of Venom",
+            "Caustic Pool: a silver-bound Venom crystal fires two closely timed globules down one lane, refreshing poison pressure and keeping contested ground dangerous longer.",
+            2, 30f, 0f, 24f, .72f, .20f, .25f, 28f, 1.2f, 1, 2, .28f,
+            new StaffRequirement("ElderBark", 10), new StaffRequirement("Guck", 4), new StaffRequirement("Ooze", 6), new StaffRequirement("Magenheim_Crystal_Venom_Crystal", 1)),
 
         new VenomStaffDefinition(
-            "Magenheim_Staff_Venom_Advanced",
-            "Advanced Staff of Venom",
-            "Miasma Bloom: throws three contamination globes across a broad fan. Each impact seeds a separate poison field, turning clustered ground into a corrosive attrition zone instead of chasing immediate burst damage.",
-            minimumStationLevel: 3,
-            staminaCost: 12f,
-            eitrCost: 18f,
-            poisonDamage: 30f,
-            damageMultiplier: 0.46f,
-            forceMultiplier: 0.15f,
-            staggerMultiplier: 0.20f,
-            projectileVelocity: 24f,
-            projectileAccuracy: 11f,
-            projectiles: 3,
-            bursts: 1,
-            burstInterval: 0f,
-            new StaffRequirement("YggdrasilWood", 10),
-            new StaffRequirement("Guck", 6),
-            new StaffRequirement("Bilebag", 2),
-            new StaffRequirement("Magenheim_Crystal_Venom_Advanced", 1)),
+            "Magenheim_Staff_Venom_Advanced", "staff-venom-advanced", "Advanced Staff of Venom",
+            "Miasma Bloom: a black-metal thorn crown throws three contamination globes across a broad fan, turning clustered ground into a corrosive attrition zone.",
+            3, 12f, 18f, 30f, .46f, .15f, .20f, 24f, 11f, 3, 1, 0f,
+            new StaffRequirement("YggdrasilWood", 10), new StaffRequirement("Guck", 6), new StaffRequirement("Bilebag", 2), new StaffRequirement("Magenheim_Crystal_Venom_Advanced", 1)),
 
         new VenomStaffDefinition(
-            "Magenheim_Staff_Venom_Master",
-            "Master Staff of Venom",
-            "Plaguefield: saturates a wide front with three waves of three poison globes. Nine lingering fields overlap into hostile terrain that punishes anything attempting to hold or cross the contaminated space.",
-            minimumStationLevel: 4,
-            staminaCost: 0f,
-            eitrCost: 48f,
-            poisonDamage: 34f,
-            damageMultiplier: 0.30f,
-            forceMultiplier: 0.10f,
-            staggerMultiplier: 0.15f,
-            projectileVelocity: 26f,
-            projectileAccuracy: 16f,
-            projectiles: 3,
-            bursts: 3,
-            burstInterval: 0.22f,
-            new StaffRequirement("YggdrasilWood", 15),
-            new StaffRequirement("Guck", 10),
-            new StaffRequirement("Bilebag", 4),
-            new StaffRequirement("Eitr", 10),
-            new StaffRequirement("Magenheim_Crystal_Venom_Master", 1)),
+            "Magenheim_Staff_Venom_Master", "staff-venom-master", "Master Staff of Venom",
+            "Plaguefield: six black-metal ribs cage a Master Venom crystal and release three waves of three poison globes. Nine lingering fields convert open ground into hostile terrain.",
+            4, 0f, 48f, 34f, .30f, .10f, .15f, 26f, 16f, 3, 3, .22f,
+            new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("Guck", 10), new StaffRequirement("Bilebag", 4), new StaffRequirement("Eitr", 10), new StaffRequirement("Magenheim_Crystal_Venom_Master", 1)),
     };
 
     public void Dispose()
@@ -221,12 +164,7 @@ internal sealed class VenomStaffRegistrar : IDisposable
 
     private readonly struct StaffRequirement
     {
-        internal StaffRequirement(string prefabName, int amount)
-        {
-            PrefabName = prefabName;
-            Amount = amount;
-        }
-
+        internal StaffRequirement(string prefabName, int amount) { PrefabName = prefabName; Amount = amount; }
         internal string PrefabName { get; }
         internal int Amount { get; }
     }
@@ -234,42 +172,21 @@ internal sealed class VenomStaffRegistrar : IDisposable
     private sealed class VenomStaffDefinition
     {
         internal VenomStaffDefinition(
-            string prefabName,
-            string displayName,
-            string description,
-            int minimumStationLevel,
-            float staminaCost,
-            float eitrCost,
-            float poisonDamage,
-            float damageMultiplier,
-            float forceMultiplier,
-            float staggerMultiplier,
-            float projectileVelocity,
-            float projectileAccuracy,
-            int projectiles,
-            int bursts,
-            float burstInterval,
-            params StaffRequirement[] requirements)
+            string prefabName, string assetName, string displayName, string description,
+            int minimumStationLevel, float staminaCost, float eitrCost, float poisonDamage,
+            float damageMultiplier, float forceMultiplier, float staggerMultiplier,
+            float projectileVelocity, float projectileAccuracy, int projectiles, int bursts,
+            float burstInterval, params StaffRequirement[] requirements)
         {
-            PrefabName = prefabName;
-            DisplayName = displayName;
-            Description = description;
-            MinimumStationLevel = minimumStationLevel;
-            StaminaCost = staminaCost;
-            EitrCost = eitrCost;
-            PoisonDamage = poisonDamage;
-            DamageMultiplier = damageMultiplier;
-            ForceMultiplier = forceMultiplier;
-            StaggerMultiplier = staggerMultiplier;
-            ProjectileVelocity = projectileVelocity;
-            ProjectileAccuracy = projectileAccuracy;
-            Projectiles = projectiles;
-            Bursts = bursts;
-            BurstInterval = burstInterval;
-            Requirements = requirements;
+            PrefabName = prefabName; AssetName = assetName; DisplayName = displayName; Description = description;
+            MinimumStationLevel = minimumStationLevel; StaminaCost = staminaCost; EitrCost = eitrCost; PoisonDamage = poisonDamage;
+            DamageMultiplier = damageMultiplier; ForceMultiplier = forceMultiplier; StaggerMultiplier = staggerMultiplier;
+            ProjectileVelocity = projectileVelocity; ProjectileAccuracy = projectileAccuracy;
+            Projectiles = projectiles; Bursts = bursts; BurstInterval = burstInterval; Requirements = requirements;
         }
 
         internal string PrefabName { get; }
+        internal string AssetName { get; }
         internal string DisplayName { get; }
         internal string Description { get; }
         internal int MinimumStationLevel { get; }
