@@ -1,0 +1,136 @@
+name: Export Registered Magenheim Runtime Models
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/Magenheim.Runtime/**'
+      - 'assets/**'
+      - '.github/workflows/export-runtime-models.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  export-runtime-models:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install SteamCMD and build prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository -y multiverse
+          sudo apt-get update
+          echo steam steam/question select "I AGREE" | sudo debconf-set-selections
+          echo steam steam/license note '' | sudo debconf-set-selections
+          sudo apt-get install -y steamcmd lib32gcc-s1 lib32stdc++6 unzip curl jq zip mono-devel
+
+      - name: Install Valheim dedicated server
+        shell: bash
+        run: |
+          set -euo pipefail
+          SERVER="$RUNNER_TEMP/valheim-server"
+          mkdir -p "$SERVER"
+          /usr/games/steamcmd +force_install_dir "$SERVER" +login anonymous +app_update 896660 validate +quit
+          echo "VALHEIM_SERVER=$SERVER" >> "$GITHUB_ENV"
+
+      - name: Install BepInEx and Jotunn
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL -o "$RUNNER_TEMP/bepinex.zip" https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.2350/
+          unzip -q "$RUNNER_TEMP/bepinex.zip" -d "$RUNNER_TEMP/bepinex"
+          ROOT="$(find "$RUNNER_TEMP/bepinex" -name start_server_bepinex.sh -printf '%h\n' | head -n 1)"
+          test -n "$ROOT"
+          cp -a "$ROOT"/. "$VALHEIM_SERVER"/
+          chmod +x "$VALHEIM_SERVER/start_server_bepinex.sh"
+
+          curl -fsSL -o "$RUNNER_TEMP/jotunn.zip" https://thunderstore.io/package/download/ValheimModding/Jotunn/2.30.0/
+          unzip -q "$RUNNER_TEMP/jotunn.zip" -d "$RUNNER_TEMP/jotunn"
+          mkdir -p "$VALHEIM_SERVER/BepInEx/plugins/Jotunn"
+          cp "$(find "$RUNNER_TEMP/jotunn" -name Jotunn.dll | head -n 1)" "$VALHEIM_SERVER/BepInEx/plugins/Jotunn/Jotunn.dll"
+
+      - name: Build Magenheim against the installed game
+        shell: bash
+        run: |
+          set -euo pipefail
+          MANAGED="$(find "$VALHEIM_SERVER" -name assembly_valheim.dll -printf '%h\n' | head -n 1)"
+          test -n "$MANAGED"
+          dotnet restore src/Magenheim.Runtime/Magenheim.Runtime.csproj
+          dotnet build src/Magenheim.Runtime/Magenheim.Runtime.csproj -c Release --no-restore \
+            -p:ValheimManagedPath="$MANAGED" \
+            -p:BepInExPath="$VALHEIM_SERVER/BepInEx"
+          mkdir -p "$VALHEIM_SERVER/BepInEx/plugins/Magenheim"
+          cp -a src/Magenheim.Runtime/bin/Release/net462/. "$VALHEIM_SERVER/BepInEx/plugins/Magenheim"/
+
+      - name: Instantiate and export registered meshes
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPORT="$RUNNER_TEMP/magenheim-model-export"
+          SAVE="$RUNNER_TEMP/magenheim-model-save"
+          mkdir -p "$EXPORT" "$SAVE"
+          export MAGENHEIM_EXPORT_MODELS=1
+          export MAGENHEIM_EXPORT_EXIT=1
+          export MAGENHEIM_EXPORT_DIR="$EXPORT"
+          export SteamAppId=892970
+          cd "$VALHEIM_SERVER"
+          timeout 12m ./start_server_bepinex.sh \
+            -nographics -batchmode \
+            -name MagenheimModelExport \
+            -port 2456 \
+            -world MagenheimModelExport \
+            -password model-export-only \
+            -public 0 \
+            -savedir "$SAVE" \
+            > "$RUNNER_TEMP/model-export.log" 2>&1 || true
+          if [[ -f "$EXPORT/FAILED" ]]; then cat "$EXPORT/FAILED"; exit 1; fi
+          test -f "$EXPORT/SUCCESS"
+          test -f "$EXPORT/manifest.json"
+          test "$(find "$EXPORT" -name '*.obj' | wc -l)" -gt 0
+          jq . "$EXPORT/manifest.json" >/dev/null
+          cp "$RUNNER_TEMP/model-export.log" "$EXPORT/runtime-export.log"
+
+      - name: Include existing standalone mesh assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPORT="$RUNNER_TEMP/magenheim-model-export"
+          mkdir -p "$EXPORT/existing-assets"
+          cp -a assets/. "$EXPORT/existing-assets"/
+          find "$EXPORT/existing-assets" -type f ! \( -name '*.obj' -o -name '*.mtl' -o -name '*.mesh.json' \) -delete
+
+      - name: Package exported models
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/magenheim-model-export"
+          zip -q -r "$GITHUB_WORKSPACE/Magenheim-All-3D-Models-${GITHUB_SHA}.zip" .
+
+      - name: Upload actual model files
+        uses: actions/upload-artifact@v4
+        with:
+          name: Magenheim-All-3D-Models-${{ github.sha }}
+          path: Magenheim-All-3D-Models-${{ github.sha }}.zip
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload runtime log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Magenheim-Model-Export-Diagnostics-${{ github.sha }}
+          path: ${{ runner.temp }}/model-export.log
+          if-no-files-found: ignore
+          retention-days: 14
