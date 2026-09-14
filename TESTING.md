@@ -13,13 +13,13 @@ does not use this profile. Exit the game before rebuilding or installing.
 - Definition-driven Meadows geode world generation and intact-geode destruction drops.
 - Geologist's Workstation plus Fracturing Block, Faceting Wheel, and Resonance Frame,
   all with original models, icons, build costs, collision shapes, and wear variants.
+- Local-host workstation operation source for geode opening and Earth refinement, including
+  authority/replay/capacity admission, atomic inventory mutation, failure shard returns,
+  and Crystal Shaping XP awards. This source still requires a rebuilt live-world retest.
 
-This is still a content/vertical-slice test. Geode opening, refinement inventory
-transactions, earned skill XP, and adaptive equipment socketing are not connected
-to the workstation yet. The empty workstation Craft panel and absence of a slotting
-operation are therefore confirmed implementation gaps, not recipe-discovery failures.
-Do not consume geodes expecting an opening action. All crystal tiers can be inspected
-using console spawns.
+This remains a vertical-slice test. Remote-client workstation operation RPC, socket-management
+UI, and full persistence/multiplayer admission are not complete. Do not use a valuable world
+for first-pass testing of newly rebuilt operation code.
 
 ## Build the workshop
 
@@ -83,38 +83,56 @@ is not a valid diagnostic command.
 raiseskill magenheim.crystal_shaping 1
 ```
 
-This is only a diagnostic for the registered skill. It does not substitute for the
-still-unimplemented XP award on valid geode/refinement transactions.
+After rebuilding/installing current source, use the Geologist's Workstation Craft panel
+on a local-host world to test the Magenheim operation recipes. Opening a Meadows Earth
+geode should consume exactly one intact geode, grant one to three Rough Earth crystals,
+and award Crystal Shaping XP. Earth refinement recipes should consume exactly one source
+crystal; success grants the next tier, while a destructive failure returns the configured
+matching shards. These operation paths are source-implemented but remain unaccepted until
+observed in the live disposable world.
 
 ## Live world test 1 - 2026-09-14
 
-Observed in the disposable world:
+Observed in the disposable world before the later workstation-operation implementation:
 
 - the Geologist's Workstation exists and opens its Craft panel;
-- the Craft panel contains no Magenheim mineral operations yet;
-- no equipment-slotting operation is exposed yet;
+- the Craft panel contained no Magenheim mineral operations in that build;
+- no equipment-slotting operation was exposed;
 - all directly spawned Earth inventory items appeared correctly;
 - the spawned world geode used the custom mesh but rendered translucent;
 - visible workstation surface fighting was observed around the iron tabletop bands;
 - `raiseskill Crystal Shaping 1` was rejected by the command parser.
 
-The translucent geode has been traced to cloned source-material render state rather
-than texture alpha: Magenheim's checked-in atlases are opaque RGB images. Source now
-normalizes Magenheim custom materials to opaque blend/depth state; that repair requires
-a rebuild/install and live retest before it is accepted. The workstation banding issue,
-refinement/geode-opening operations, and socketing operation remain open until their
-runtime implementations are changed and retested.
+The translucent geode was traced to cloned source-material render state rather than
+texture alpha: Magenheim's checked-in atlases are opaque RGB images. Source now normalizes
+Magenheim custom materials to opaque blend/depth state; that repair requires a rebuild/install
+and live retest before it is accepted. The workstation banding issue and socketing operation
+remain open. Geode-opening/refinement operations have since been implemented for local-host
+execution and now also require the rebuilt live retest.
 
 ## Build and install
 
-Run `./build.ps1`, then `./install-local.ps1` with Valheim closed. Both accept
-`-ProfileRoot` for another existing mod profile. Building requires .NET SDK 8,
-the installed game, BepInEx, and NuGet restore. The local SDK is in the ignored
-`dist/toolchain/dotnet` folder; system dotnet is the fallback.
+With Valheim closed, run one command from the repository root:
 
-The installer archives the previous Local-Magenheim folder under `backups`, refuses
-duplicate Magenheim DLL installations, and verifies every copied file by SHA-256.
-It does not install bundled Unity, framework, or third-party runtime DLLs.
+```powershell
+./install-local.ps1
+```
+
+The installer now runs `build.ps1` itself before touching the active profile. The build runs
+the core test harness, compiles the runtime against the selected BepInEx/Valheim installation,
+derives the package version directly from `MagenheimPlugin.PluginVersion`, creates a clean
+versioned package, and only then installs it. Use `-SkipBuild` only when deliberately reinstalling
+a package that was already built from the same current source.
+
+Both scripts accept `-ProfileRoot`; the installer also forwards `-GameRoot` to the build.
+Building requires .NET SDK 8, the installed game, BepInEx, and NuGet restore. The local SDK is
+in the ignored `dist/toolchain/dotnet` folder; system dotnet is the fallback.
+
+The installer archives the previous `Local-Magenheim` folder under `backups`, refuses duplicate
+Magenheim DLL installations, validates package/source version agreement, verifies every copied
+file by SHA-256, prints the installed `Magenheim.dll` hash, and prints the exact plugin version
+expected in the BepInEx startup diagnostic. This closes the old failure mode where Git source
+was current while the active profile silently continued loading an obsolete DLL.
 
 ## Evidence boundaries
 
