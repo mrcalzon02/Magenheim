@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "worldgen": {
+    "mode": "additiveOnly",
+    "invalidAreaBehavior": "reject",
+    "duplicateRegistrationBehavior": "skip",
+    "mutateVanillaRegistrations": false,
+    "mutateForeignRegistrations": false,
+    "diagnosticsEnabled": true
+  },
+  "geodes": {
+    "meadows": {
+      "registrationKey": "magenheim.geode.meadows.earth",
+      "prefabName": "Magenheim_Geode_Meadows_Earth",
+      "areas": ["Median", "Edge"],
+      "enabled": true
+    }
+  }
+}
