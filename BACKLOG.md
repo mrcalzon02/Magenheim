@@ -27,11 +27,12 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [ ] Delete redundant `radiance-content`, `tmp-radiance-content`, and `__delete_me__` refs. All three point to `a8b6947c696e4da71e4837ff1b731ac53e98a387`, which is already contained in `main`; the current connector cannot delete branch refs.
 - [x] Advance definition schema to 3 so geode placement behavior is validated, fingerprinted, and synchronized with the rest of gameplay/worldgen authority.
 - [x] Add server-side BepInEx overrides for fingerprinted geode placement fields and route them through full definition revalidation before use.
+- [x] Harden runtime `All` area mapping so `Everything` / `Everywhere` aliases are admitted only when semantically identical to distinct non-empty `Median | Edge` runtime components.
 - [x] Execute the standalone tests with a .NET 8 SDK and record the observed result for the earlier admitted build.
 - [x] Compile `Magenheim.Core` with warnings as errors for the earlier admitted build.
 - [x] Add the thin BepInEx/Jötunn plugin bootstrap on `main`, with hard Jötunn dependency and everyone-must-have network declaration.
 - [x] Compile the runtime project against Jötunn 2.30.0 and a current Valheim development environment for the earlier admitted build.
-- [ ] Rebuild current 0.0.23 source and rerun the full deterministic suite after socket gameplay-authority changes.
+- [ ] Rebuild current 0.0.37 source and rerun the full deterministic suite after the accumulated socket/worldgen/content changes.
 - [x] Add strict schema-validated static definition loading with deterministic definition fingerprinting and hard failure on malformed/unknown content.
 - [x] Add controlled balance/compatibility/world-placement overrides on top of the validated static definition snapshot; effective authority is always revalidated and re-fingerprinted.
 - [ ] Add deterministic tests for runtime JSON loader failure cases once a compilable runtime test environment is available.
