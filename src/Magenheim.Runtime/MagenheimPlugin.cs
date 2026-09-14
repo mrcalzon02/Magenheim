@@ -32,8 +32,6 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     {
         try
         {
-            // Origin-aware socket include/exclude rules depend on Jötunn's read-only mod
-            // registry. Jötunn requires this collector to be enabled before FejdStartup.Awake.
             ModQuery.Enable();
 
             var assemblyDirectory = Path.GetDirectoryName(typeof(MagenheimPlugin).Assembly.Location)
@@ -56,10 +54,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             WorkshopOperationsRuntime.Configure(_services, _authoritySynchronizer, Logger);
             WorkshopOperationRpc.Register(_services, _authoritySynchronizer, Logger);
             SocketEffectsRuntime.Configure(effectiveDefinitions, Logger);
+            SocketTooltipRuntime.Configure(effectiveDefinitions);
 
-            // The socket management implementation is a real workstation surface, not merely
-            // dormant source. Attach it to the plugin GameObject so Unity invokes OnGUI while
-            // the local player is actively using the Geologist's Workstation.
             _socketWorkstationOverlay = gameObject.AddComponent<SocketWorkstationOverlay>();
             _socketWorkstationOverlay.Configure(_services, _authoritySynchronizer, Logger);
 
@@ -69,6 +65,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _harmony.PatchAll(typeof(SocketArmorPatch));
             _harmony.PatchAll(typeof(SocketBlockPowerPatch));
             _harmony.PatchAll(typeof(SocketCarryWeightPatch));
+            _harmony.PatchAll(typeof(SocketTooltipPatch));
 
             _earthContentRegistrar = new EarthContentRegistrar(Logger);
             _earthContentRegistrar.Register();
@@ -89,7 +86,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 "Definition authority synchronization, adaptive socket eligibility/configured mod-origin discovery, session-scoped geode/refinement/socket/extraction replay protection, " +
                 "eight-biome geode progression, eight elemental crystal families, fingerprinted geode placement and socket-effect balance configuration, additive geode vegetation registration, " +
                 "host-local and remote-client server-resolved geology workshop operations, elemental shard recombination, active local-host socket workstation management, " +
-                "and per-item socket damage/armor/block/carry/mining effect adapters are configured. " +
+                "resolved per-item elemental socket bonuses, and socket-aware inventory tooltips are configured. " +
                 "Remote socket mutation RPC, knockback/stagger runtime channels, and persistence multiplayer validation remain gated pending implementation/validation.");
         }
         catch (Exception exception)
