@@ -28,14 +28,16 @@ with the custom Magenheim geometry.
 The same test exposed four distinct conditions:
 
 - the world geode custom mesh rendered translucent;
+- the world geode was substantially too large for the intended ground-stone role;
 - workstation tabletop/iron-band surface fighting is visible;
 - the workstation Craft panel has no mineral operations;
 - no adaptive equipment-slotting operation exists.
 
-The last two are confirmed implementation gaps, not hidden/discovery failures. Current
-runtime source registers the content but does not bind authoritative geode opening or
-crystal refinement inventory transactions to the station UI, and P2 socket metadata,
-eligibility, transaction, and persistence work is not implemented yet.
+The empty Craft panel and absent slotting action are confirmed implementation gaps,
+not hidden/discovery failures. Current runtime source registers the content but does
+not bind authoritative geode opening or crystal refinement inventory transactions to
+the station UI, and P2 socket metadata, eligibility, transaction, and persistence work
+is not yet exposed in the workstation.
 
 The translucent geode was traced to inherited render state on cloned source materials,
 not texture transparency: Magenheim atlases are opaque RGB images. `EarthAssets` now
@@ -43,21 +45,27 @@ normalizes Magenheim-owned cloned materials to Opaque RenderType, opaque blend f
 ZWrite, non-alpha shader keywords, and geometry render queue. That source repair is not
 accepted as a live fix until a rebuilt package is installed and observed in Valheim.
 
+The world geode visual scale has also been reduced from 3.5x to 1.2x, approximately a
+two-thirds reduction. World visual vertical offset and the replacement collider are
+now derived from the actual custom mesh bounds instead of fixed values from the old
+large nodule. The default Meadows ground offset was reduced from -0.10 to -0.04 so the
+smaller geode is not buried disproportionately. This change also requires rebuild and
+live confirmation.
+
 The workstation iron-band issue is traced to asset geometry: the generator places thick
-iron band cuboids through the tabletop boards and shares visible surface planes. That
-repair remains open because the generator and checked-in derived mesh must be changed
-together rather than patched at runtime.
+iron band cuboids through the tabletop boards and shares visible surface planes. The
+authoritative generator repair is being advanced separately; its checked-in derived
+mesh must remain synchronized before the defect can be called closed.
 
 The attempted console diagnostic `raiseskill Crystal Shaping 1` was rejected by the
 vanilla command parser. The permanent Jotunn custom-skill identifier is the required
 single-token diagnostic argument: `raiseskill magenheim.crystal_shaping 1`. That exact
 command still requires live confirmation and is not a substitute for earned gameplay XP.
 
-See `TESTING.md` and `docs/validation/2026-09-14-live-world-test-1.md`. The highest-priority
-next work is to rebuild/retest the opaque material repair, then repair/bake the workstation
-band geometry, then bind authority-gated geode opening/refinement transactions and earned
-Crystal Shaping XP to the Geologist's Workstation. Adaptive socketing remains P2 and must
-use per-item persistent metadata rather than shared prefab mutation.
+See `TESTING.md` and `docs/validation/2026-09-14-live-world-test-1.md`. Current development
+continues while the local Valheim instance is unavailable: scale/material corrections,
+workstation asset repair, transaction binding, and adaptive socket foundations are the
+active dependency-valid work.
 
 ## Prior source-only snapshot — 2026-09-14
 
@@ -105,7 +113,7 @@ The dedicated natural world object remains `<item prefab>_World` and is separate
 
 ## Meadows/Earth placement authority
 
-The shipped schema-3 Meadows definition currently specifies: block checking enabled, force placement disabled, `MinPerZone=0`, `MaxPerZone=0.35`, altitude 1–1000, ocean depth 0–0, terrain delta 0–2 measured over radius 2, tilt 0–35 degrees, forest filtering disabled with threshold range 0–1, scale 0.85–1.15, group size 1–1, group radius 0, and ground offset -0.10.
+The shipped schema-3 Meadows definition currently specifies: block checking enabled, force placement disabled, `MinPerZone=0`, `MaxPerZone=0.35`, altitude 1–1000, ocean depth 0–0, terrain delta 0–2 measured over radius 2, tilt 0–35 degrees, forest filtering disabled with threshold range 0–1, scale 0.85–1.15, group size 1–1, group radius 0, and ground offset -0.04. The Meadows Earth custom world visual is 1.2x the source geode mesh before vegetation scale variance.
 
 These fields are legitimate server configuration because any effective change is revalidated and changes definition authority/fingerprint.
 
@@ -115,15 +123,14 @@ Installed/tested package identity remains 0.0.16. Target framework remains .NET 
 
 ## Validation boundary
 
-The 0.0.16 build/startup path has already been compiled and exercised locally, while the post-test material-state source repair has not yet been rebuilt in this execution context. Do not conflate source inspection with a compiled/runtime acceptance result.
+The 0.0.16 build/startup path has already been compiled and exercised locally, while the post-test material and scale source repairs have not yet been rebuilt in this execution context. Do not conflate source inspection with a compiled/runtime acceptance result.
 
 Natural geode generation, exact mining/drop behavior, repeated-load idempotence, save/reload persistence, host/client replication, dedicated-server behavior, authority-gated geode opening/refinement, earned Crystal Shaping XP, and socket persistence remain runtime gates.
 
 ## Next exact action
 
-1. build the current `main` source and rerun the deterministic core harness;
-2. install the rebuilt package and spawn `Magenheim_Geode_Meadows_Earth_World` to confirm opaque rendering;
-3. test `raiseskill magenheim.crystal_shaping 1` and verify the skill value changes;
-4. repair the workstation iron-band generator geometry and checked-in generated mesh together, then retest placement/lighting;
-5. implement the Geologist's Workstation geode-opening/refinement transaction binding with atomic inventory mutation, station/upgrade gating, failure shard returns, and earned Crystal Shaping XP;
-6. only after that P1 transaction path is validated, begin adaptive per-item socket metadata and the station slot-management operation.
+1. continue dependency-valid source development while the local runtime is unavailable;
+2. synchronize the workstation banding generator and generated asset;
+3. advance per-item socket metadata and adaptive eligibility without mutating shared foreign prefabs;
+4. implement the Geologist's Workstation geode-opening/refinement transaction binding with atomic inventory mutation, station/upgrade gating, failure shard returns, and earned Crystal Shaping XP;
+5. when the local instance is available, build current `main`, rerun the deterministic core harness, install it, and retest geode opacity/size/collision, workstation banding, and `raiseskill magenheim.crystal_shaping 1`.
