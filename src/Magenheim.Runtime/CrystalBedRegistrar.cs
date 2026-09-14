@@ -61,8 +61,8 @@ internal sealed class CrystalBedRegistrar : IDisposable
         {
             if (PrefabManager.Instance.GetPrefab("piece_beehive") is null)
                 throw new InvalidOperationException("Vanilla persistent producer source 'piece_beehive' is unavailable.");
-            if (PrefabManager.Instance.GetPrefab("piece_magetable") is null)
-                throw new InvalidOperationException("Galdr Table is unavailable for high-tier Crystal Bed construction.");
+            if (PrefabManager.Instance.GetPrefab(CrystalEnchantingDaisRegistrar.PrefabName) is null)
+                throw new InvalidOperationException("Crystal Enchanting Dais must be registered before Crystal Bed construction is enabled.");
 
             var count = 0;
             foreach (ElementalAlignment element in Enum.GetValues(typeof(ElementalAlignment)))
@@ -73,7 +73,7 @@ internal sealed class CrystalBedRegistrar : IDisposable
 
             _registered = true;
             _log.LogInfo(
-                $"Registered {count} alignment-locked Crystal Beds; each grows one matching Rough crystal every {_growthSecondsPerRoughCrystal / 60f:0.##} minutes and stores up to {_storedCrystalLimit}.");
+                $"Registered {count} alignment-locked Crystal Beds; each requires the Crystal Enchanting Dais, grows one matching Rough crystal every {_growthSecondsPerRoughCrystal / 60f:0.##} minutes, and stores up to {_storedCrystalLimit}.");
         }
         catch (Exception exception)
         {
@@ -107,10 +107,10 @@ internal sealed class CrystalBedRegistrar : IDisposable
             Name = $"{element} Crystal Bed",
             Description =
                 $"A high-tier mineral cultivation basin filled with {element}-aligned solution and seeded crystal growths. " +
-                $"It slowly grows only {element} Rough crystals.",
+                $"It is focused through a Crystal Enchanting Dais and slowly grows only {element} Rough crystals.",
             PieceTable = "Hammer",
             Category = "Crafting",
-            CraftingStation = "piece_magetable",
+            CraftingStation = CrystalEnchantingDaisRegistrar.PrefabName,
             Icon = CrystalBedIcons.Icon(element),
             Requirements = new[]
             {
