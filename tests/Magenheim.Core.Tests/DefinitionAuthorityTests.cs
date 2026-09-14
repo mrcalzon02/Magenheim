@@ -52,6 +52,7 @@ internal static class DefinitionAuthorityTests
         Assert(DefinitionAuthorityHandshake.IsValid(local, out var validError) && validError.Length == 0, "Canonical descriptor must validate without an error diagnostic.");
 
         assertions += GeodeCrackingTests.Run();
+        assertions += GeodeOpeningTransactionTests.Run();
         return assertions;
     }
 }
