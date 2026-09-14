@@ -24,7 +24,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Make definition duplicate detection and exclusion normalization obey the configured exact/case-insensitive identity comparer, preventing definitions that the runtime planner would later collapse into collisions.
 - [x] Canonicalize case-insensitive compatibility exclusions in the definition fingerprint so semantically identical casing cannot cause false server/client authority mismatches; exact mode remains casing-sensitive.
 - [x] Flatten singleton Core Networking/Transactions and Runtime Networking source directories while preserving their namespaces and single authorities.
-- [ ] Change the GitHub repository default branch from legacy `master` to `main`, then delete the redundant `master` ref when an authorized repository-settings/ref-deletion path is available. Until then keep both refs identical and perform development only on `main`.
+- [x] Reconcile GitHub repository metadata to authoritative `main`; the redundant legacy `master` ref is no longer present.
 - [ ] Execute the standalone tests with a .NET 8 SDK and record the observed result.
 - [ ] Compile `Magenheim.Core` with warnings as errors.
 - [x] Add the thin BepInEx/Jötunn plugin bootstrap on `main`, with hard Jötunn dependency and everyone-must-have network declaration.
