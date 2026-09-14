@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.18";
+    internal const string PluginVersion = "0.0.19";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -27,6 +27,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private ShardRecipeRegistrar? _shardRecipeRegistrar;
     private FireStaffRegistrar? _fireStaffRegistrar;
     private FrostStaffRegistrar? _frostStaffRegistrar;
+    private StormStaffRegistrar? _stormStaffRegistrar;
     private SocketWorkstationOverlay? _socketWorkstationOverlay;
     private Harmony? _harmony;
 
@@ -85,14 +86,16 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _fireStaffRegistrar.Register();
             _frostStaffRegistrar = new FrostStaffRegistrar(Logger);
             _frostStaffRegistrar.Register();
+            _stormStaffRegistrar = new StormStaffRegistrar(Logger);
+            _stormStaffRegistrar.Register();
 
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
-                "Player content now includes eight biome geodes, eight five-tier elemental crystal families, elemental shard recombination, " +
-                "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and two complete four-tier staff families. " +
-                "Fire provides Ember Dart, Firebolt, Flameburst, and Meteorfall. Frost provides Water Dart, Frost Lance, Ice Volley, and Rime Torrent, " +
-                "with native frost buildup preserved while each tier changes projectile velocity, spread, force, stagger, burst count, and resource economy.");
+                "Player content includes eight biome geodes, eight five-tier elemental crystal families, elemental shard recombination, " +
+                "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and three complete four-tier staff families. " +
+                "Fire is direct destructive pressure, Frost is precision/slow saturation, and Storm now uses Dundr's native lightning carrier for " +
+                "knockback sparks, focused charge, sequential forked arc pressure, and broad repeated thunderhead discharge geometry.");
         }
         catch (Exception exception)
         {
@@ -103,6 +106,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
     private void OnDestroy()
     {
+        _stormStaffRegistrar?.Dispose();
         _frostStaffRegistrar?.Dispose();
         _fireStaffRegistrar?.Dispose();
         _shardRecipeRegistrar?.Dispose();
