@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.16";
+    internal const string PluginVersion = "0.0.17";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -25,6 +25,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private WorkshopRegistrar? _workshopRegistrar;
     private WorkshopOperationRegistrar? _workshopOperationRegistrar;
     private ShardRecipeRegistrar? _shardRecipeRegistrar;
+    private FireStaffRegistrar? _fireStaffRegistrar;
     private SocketWorkstationOverlay? _socketWorkstationOverlay;
     private Harmony? _harmony;
 
@@ -79,15 +80,16 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _workshopOperationRegistrar.Register();
             _shardRecipeRegistrar = new ShardRecipeRegistrar(Logger);
             _shardRecipeRegistrar.Register();
+            _fireStaffRegistrar = new FireStaffRegistrar(Logger);
+            _fireStaffRegistrar.Register();
 
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
-                "Definition authority synchronization, adaptive socket eligibility/configured mod-origin discovery, session-scoped geode/refinement/socket/extraction replay protection, " +
-                "eight-biome geode progression, eight elemental crystal families, fingerprinted geode placement and socket-effect balance configuration, additive geode vegetation registration, " +
-                "host-local and remote-client server-resolved geology workshop operations, elemental shard recombination, active local-host socket workstation management, " +
-                "resolved per-item elemental socket bonuses, and socket-aware inventory tooltips are configured. " +
-                "Remote socket mutation RPC, knockback/stagger runtime channels, and persistence multiplayer validation remain gated pending implementation/validation.");
+                "Player content now includes eight biome geodes, eight five-tier elemental crystal families, elemental shard recombination, " +
+                "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and the first four-tier usable staff family: " +
+                "Fire Ember Dart, Firebolt, Flameburst, and Meteorfall barrage. " +
+                "The Fire staff family progresses from stamina-only casting through mixed stamina/Eitr into a Master Eitr barrage; remaining elemental staff families are the next content expansion.");
         }
         catch (Exception exception)
         {
@@ -98,6 +100,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
     private void OnDestroy()
     {
+        _fireStaffRegistrar?.Dispose();
         _shardRecipeRegistrar?.Dispose();
         _workshopOperationRegistrar?.Dispose();
         _earthContentRegistrar?.Dispose();
