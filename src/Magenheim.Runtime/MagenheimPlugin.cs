@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.19";
+    internal const string PluginVersion = "0.0.20";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -28,6 +28,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private FireStaffRegistrar? _fireStaffRegistrar;
     private FrostStaffRegistrar? _frostStaffRegistrar;
     private StormStaffRegistrar? _stormStaffRegistrar;
+    private EarthStaffRegistrar? _earthStaffRegistrar;
     private SocketWorkstationOverlay? _socketWorkstationOverlay;
     private Harmony? _harmony;
 
@@ -88,14 +89,16 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _frostStaffRegistrar.Register();
             _stormStaffRegistrar = new StormStaffRegistrar(Logger);
             _stormStaffRegistrar.Register();
+            _earthStaffRegistrar = new EarthStaffRegistrar(Logger);
+            _earthStaffRegistrar.Register();
 
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
                 "Player content includes eight biome geodes, eight five-tier elemental crystal families, elemental shard recombination, " +
-                "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and three complete four-tier staff families. " +
-                "Fire is direct destructive pressure, Frost is precision/slow saturation, and Storm now uses Dundr's native lightning carrier for " +
-                "knockback sparks, focused charge, sequential forked arc pressure, and broad repeated thunderhead discharge geometry.");
+                "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and four complete four-tier staff families. " +
+                "Fire is direct destructive pressure, Frost is precision/slow saturation, Storm is electrical discharge geometry, and Earth now uses " +
+                "radial sledge shockwaves for short-range interruption, posture breaking, crowd displacement, and Master-tier seismic control.");
         }
         catch (Exception exception)
         {
@@ -106,6 +109,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
     private void OnDestroy()
     {
+        _earthStaffRegistrar?.Dispose();
         _stormStaffRegistrar?.Dispose();
         _frostStaffRegistrar?.Dispose();
         _fireStaffRegistrar?.Dispose();
