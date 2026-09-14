@@ -9,7 +9,7 @@ internal static class CrystallineIceBoxIcons
 
     internal static Sprite Icon()
     {
-        if (_cached) return _cached;
+        if (_cached is not null) return _cached;
 
         var texture = new Texture2D(Size, Size, TextureFormat.RGBA32, false)
         {
@@ -45,9 +45,10 @@ internal static class CrystallineIceBoxIcons
         texture.filterMode = FilterMode.Bilinear;
         texture.wrapMode = TextureWrapMode.Clamp;
 
-        _cached = Sprite.Create(texture, new Rect(0, 0, Size, Size), new Vector2(.5f, .5f), 96f);
-        _cached.name = texture.name;
-        return _cached;
+        var sprite = Sprite.Create(texture, new Rect(0, 0, Size, Size), new Vector2(.5f, .5f), 96f);
+        sprite.name = texture.name;
+        _cached = sprite;
+        return sprite;
     }
 
     private static void FillRect(Color[] pixels, int x0, int y0, int x1, int y1, Color color)
