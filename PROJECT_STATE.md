@@ -50,9 +50,9 @@ Current rules:
 - identity matching is exact by default with optional case-insensitive comparison;
 - destructive compatibility mode remains structurally rejected.
 
-Definition schema 2 makes this compatibility policy part of the same validated gameplay snapshot as refinement and geodes. The fingerprint now includes invalid-area behavior, duplicate-registration behavior, prefab collision detection, identity comparison, and Magenheim-only exclusion sets. Exclusions outside `magenheim.` registration keys or `Magenheim_` prefabs reject validation.
+Definition schema 2 makes this compatibility policy part of the same validated gameplay snapshot as refinement and geodes. The fingerprint includes invalid-area behavior, duplicate-registration behavior, prefab collision detection, identity comparison, and Magenheim-only exclusion sets. Exclusions outside `magenheim.` registration keys or `Magenheim_` prefabs reject validation.
 
-The runtime loader parses compatibility policy before geodes so configured invalid-area behavior actually governs geode area parsing. The eventual Jötunn adapter must still map pure `SpawnArea` values explicitly to current `Heightmap.BiomeArea` values rather than casting enum integers.
+The runtime loader parses compatibility policy before geodes so configured invalid-area behavior governs geode area parsing. The eventual Jötunn adapter must still map pure `SpawnArea` values explicitly to current `Heightmap.BiomeArea` values rather than casting enum integers.
 
 ## Runtime bootstrap
 
@@ -64,9 +64,9 @@ Runtime bootstrap properties:
 - Jötunn dependency: `JotunnLib` 2.30.0;
 - BepInEx plugin GUID: `mrcalzon02.magenheim`;
 - hard dependency on `Jotunn.Main.ModGuid`;
-- Jötunn network compatibility: `EveryoneMustHaveMod` with `VersionStrictness.Minor`;
+- Jötunn network compatibility: `EveryoneMustHaveMod` with `VersionStrictness.Patch`;
 - runtime startup consumes the validated core definition snapshot;
-- no world objects, items, sockets, inventory mutations, RPCs, or persistent gameplay state are enabled by this bootstrap.
+- no world objects, items, sockets, inventory mutations, or persistent gameplay state are enabled by this bootstrap.
 
 `Magenheim.Core` targets `netstandard2.0` so it can remain consumable by both the net462 runtime and the net8.0 standalone test harness.
 
@@ -78,27 +78,40 @@ Definition schema is version 2. Version-1 files are intentionally rejected becau
 
 The shipped foundation snapshot defines the Meadows Earth vertical slice: one guaranteed Earth crystal plus independent 35% and 10% additional-crystal probabilities. Default worldgen compatibility remains conservative: Reject invalid areas, Skip occupied additions, detect prefab collisions, exact identity comparison, and no exclusions.
 
-## Controlled runtime overrides — 2026-09-13
+## Controlled runtime overrides
 
-Runtime version `0.0.6` uses the existing validated BepInEx override path for both balance and worldgen compatibility settings.
+Runtime balance and compatibility settings use the validated BepInEx override path.
 
 Permitted balance overrides remain limited to existing refinement/geode balance fields and cannot alter topology, ownership, prefab identity, guaranteed-crystal count, or elemental identity sets.
 
 Worldgen compatibility overrides may change only the validated policy fields: invalid-area behavior, duplicate handling, prefab collision detection, identity comparison, and Magenheim-owned exclusions. They cannot disable additive-only behavior or target foreign identities. The override applier rebuilds the effective snapshot through `MagenheimDefinitionValidator.ValidateAndFreeze`, so invalid settings fail admission and the effective fingerprint changes when compatibility policy changes.
 
-Plugin startup logs both baseline and effective fingerprints. Gameplay mutation remains disabled until server/client fingerprint enforcement exists.
+Plugin startup logs both baseline and effective fingerprints.
+
+## Definition-authority synchronization — runtime 0.0.8
+
+A two-way Jötunn `CustomRPC` definition-authority handshake is registered during initial synchronization. The server sends its effective schema and fingerprint before world admission. The client compares that authority against its own effective definition snapshot. The client then acknowledges by echoing the exact server descriptor it successfully parsed and by sending its own descriptor.
+
+The server admits a peer to future Magenheim gameplay mutation only when both conditions hold:
+
+1. the echoed server descriptor exactly matches the server's current authority;
+2. the client's own schema/fingerprint exactly matches the server authority.
+
+This closes a fail-closed defect in the earlier 0.0.7 protocol, where the client sent an acknowledgement even after failing to parse the server package and the server could authorize solely from the client's self-reported descriptor. In 0.0.8 malformed/unreadable server authority produces no acknowledgement, leaving server-side mutation admission false. Schema/fingerprint mismatch remains non-authorizing.
+
+No inventory, socket, geode-opening, refinement, or other persistent gameplay transaction consumes the admission gate yet; those mutations remain disabled.
 
 ## Validation boundary
 
-The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compilation and test execution therefore remain unclaimed. Static source assertions were expanded for compatibility-policy freezing, fingerprint variance, foreign-exclusion rejection, and destructive-policy rejection, but they have not executed here.
+The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compilation and test execution therefore remain unclaimed. Jötunn 2.30.0 documentation was checked for the current `SynchronizationManager.AddInitialSynchronization(CustomRPC, Func<ZPackage>)` contract and `CustomRPC` coroutine receive model; the source shape remains consistent with those documented interfaces, but that is not a substitute for compilation or in-game execution.
 
 ## Next exact action
 
-In a .NET 8 SDK / Valheim development environment:
+In a .NET 8 SDK / current Valheim development environment:
 
 1. run `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`;
 2. compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` against Jötunn 2.30.0 and current Valheim dependencies;
-3. repair any compile/test defect at the authoritative source;
-4. implement server-authoritative definition fingerprint synchronization/enforcement before gameplay mutation;
-5. register Crystal Shaping under permanent ID `magenheim.crystal_shaping` only after the runtime project passes its compile gate;
+3. execute the 0.0.8 authority synchronization on host/client and dedicated server, including malformed, schema-mismatch, fingerprint-mismatch, and matching-authority cases;
+4. repair any compile/API/serialization defect at the authoritative source;
+5. register Crystal Shaping under permanent ID `magenheim.crystal_shaping` only after the runtime compile gate passes;
 6. then bind the pure worldgen plan to a thin Jötunn registrar using the effective compatibility policy, explicit `Heightmap.BiomeArea` mapping, and repeated-load idempotence checks.
