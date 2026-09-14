@@ -66,14 +66,35 @@ Runtime bootstrap properties:
 - BepInEx plugin GUID: `mrcalzon02.magenheim`;
 - hard dependency on `Jotunn.Main.ModGuid`;
 - Jötunn network compatibility: `EveryoneMustHaveMod` with `VersionStrictness.Minor`;
-- runtime startup builds `CrystalRefinementService` from the canonical core defaults;
+- runtime startup consumes the validated core definition snapshot;
 - no world objects, items, sockets, inventory mutations, RPCs, or persistent gameplay state are enabled by this bootstrap.
 
 `Magenheim.Core` targets `netstandard2.0` so it can remain consumable by both the net462 runtime and the net8.0 standalone test harness.
 
+## Strict definition pipeline — 2026-09-13
+
+The runtime no longer constructs refinement rules from hard-coded defaults at startup. It loads `default-data/foundation.json`, converts the document into pure-core definition records, validates the complete snapshot, computes a deterministic SHA-256 fingerprint, and only then creates runtime services.
+
+Definition admission rules now include:
+
+- exact schema version match;
+- unknown JSON members rejected;
+- duplicate JSON properties rejected;
+- required fields cannot be omitted or null;
+- exactly four canonical one-tier refinement transitions must exist;
+- geode ids must use `magenheim.geode.` and prefab names must use `Magenheim_`;
+- biome references are restricted to Meadows, BlackForest, Swamp, Mountain, Plains, Mistlands, Ashlands, and DeepNorth;
+- spawn areas must validate through the conservative pure-core area validator;
+- geode output currently requires one guaranteed crystal plus finite 0..1 second/third crystal probabilities;
+- elemental weights must be positive, finite, non-empty, and unique per element;
+- duplicate geode ids and duplicate prefab identities reject the snapshot;
+- invalid definitions fail plugin bootstrap rather than falling back silently to a second hard-coded ruleset.
+
+The shipped foundation snapshot defines the Meadows Earth vertical slice: one guaranteed Earth crystal plus independent 35% and 10% additional-crystal probabilities. Its fingerprint is intentionally produced from normalized validated definitions so future server/client synchronization can compare gameplay authority independent of JSON ordering.
+
 ## Validation boundary
 
-The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compilation and test execution therefore remain unclaimed. Runtime source and worldgen compatibility assumptions were checked against current Jötunn documentation, but plugin startup and actual world generation have not been observed inside Valheim.
+The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compilation and test execution therefore remain unclaimed. Runtime source and worldgen compatibility assumptions were checked against current Jötunn documentation, but plugin startup, static-definition loading inside Valheim, and actual world generation have not been observed inside Valheim.
 
 ## Next exact action
 
@@ -82,5 +103,7 @@ In a .NET 8 SDK / Valheim development environment:
 1. run `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`;
 2. compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` against Jötunn 2.30.0 and current Valheim dependencies;
 3. repair any compile/test defect at the authoritative source;
-4. implement strict configuration/data loading that feeds the validated compatibility policy;
-5. then bind the pure worldgen plan to a thin Jötunn registrar with explicit `Heightmap.BiomeArea` mapping and repeated-load idempotence checks.
+4. add deterministic tests for definition validation/loading failure cases;
+5. implement controlled server configuration overrides that revalidate and regenerate the definition fingerprint;
+6. register Crystal Shaping under permanent ID `magenheim.crystal_shaping` only after the runtime project passes its compile gate;
+7. then bind the pure worldgen plan to a thin Jötunn registrar with explicit `Heightmap.BiomeArea` mapping and repeated-load idempotence checks.
