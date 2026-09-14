@@ -10,8 +10,8 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Four-tier Spirit staff family. Spirit magic now owns spectral projectile payloads and short-lived
-/// echo fields; it no longer borrows Staff of Embers' fire impact behavior.
+/// Four-tier Spirit staff family. Spirit magic uses spectral projectiles and echo fields to haunt
+/// enemies, suppress their outgoing attacks, and keep pressure lingering after the initial hit.
 /// </summary>
 internal sealed class SpiritStaffRegistrar : IDisposable
 {
@@ -40,6 +40,28 @@ internal sealed class SpiritStaffRegistrar : IDisposable
             if (PrefabManager.Instance.GetPrefab(WorkshopRegistrar.StationPrefab) is null)
                 throw new InvalidOperationException("Geologist's Workstation must exist before Spirit staff recipes are registered.");
 
+            var haunted = RegisterSuppressionEffect(
+                "Magenheim_SE_Haunted",
+                "Haunted",
+                "A spectral presence clings to the target, reducing all outgoing attack damage by twelve percent.",
+                ttl: 3.5f,
+                damageMultiplier: .88f,
+                new Color(.30f, .90f, .80f, 1f));
+            var dissonance = RegisterSuppressionEffect(
+                "Magenheim_SE_SpiritDissonance",
+                "Spirit Dissonance",
+                "Overlapping voices disrupt the target's intent, reducing all outgoing attack damage by twenty percent.",
+                ttl: 3f,
+                damageMultiplier: .80f,
+                new Color(.52f, 1f, .91f, 1f));
+            var soulSuppression = RegisterSuppressionEffect(
+                "Magenheim_SE_SoulSuppression",
+                "Soul Suppression",
+                "The reliquary smothers hostile intent, reducing all outgoing attack damage by thirty percent.",
+                ttl: 5f,
+                damageMultiplier: .70f,
+                new Color(.78f, 1f, .95f, 1f));
+
             var lanternEcho = StaffEffectPayloads.CreateField(
                 "Magenheim_Spirit_LanternEcho",
                 new HitData.DamageTypes { m_spirit = 3f },
@@ -48,25 +70,28 @@ internal sealed class SpiritStaffRegistrar : IDisposable
                 hitInterval: .75f,
                 attackForce: 4f,
                 tint: new Color(.28f, .92f, .80f, 1f),
-                emission: 1.35f);
+                emission: 1.35f,
+                statusEffect: haunted);
             var chorusEcho = StaffEffectPayloads.CreateField(
                 "Magenheim_Spirit_ChorusEcho",
                 new HitData.DamageTypes { m_spirit = 2f },
                 radius: 1.8f,
-                ttl: 1.2f,
+                ttl: 1.4f,
                 hitInterval: .40f,
                 attackForce: 2f,
                 tint: new Color(.50f, 1f, .90f, 1f),
-                emission: 1.55f);
+                emission: 1.55f,
+                statusEffect: dissonance);
             var reliquaryEcho = StaffEffectPayloads.CreateField(
                 "Magenheim_Spirit_ReliquaryEcho",
                 new HitData.DamageTypes { m_spirit = 3.5f },
-                radius: 2.6f,
-                ttl: 1.8f,
+                radius: 2.8f,
+                ttl: 2.2f,
                 hitInterval: .45f,
                 attackForce: 3f,
                 tint: new Color(.74f, 1f, .94f, 1f),
-                emission: 1.75f);
+                emission: 1.75f,
+                statusEffect: soulSuppression);
 
             var payloads = new PayloadSet(
                 StaffEffectPayloads.CreateProjectile("Magenheim_Spirit_Projectile", new Color(.24f, .88f, .76f, 1f), 1.35f),
@@ -81,7 +106,7 @@ internal sealed class SpiritStaffRegistrar : IDisposable
             }
 
             _registered = true;
-            _log.LogInfo("Registered Spirit abilities: Whisper Bolt, Wraith Lantern, Soul Chorus, and Reliquary of Echoes.");
+            _log.LogInfo("Registered Spirit abilities: Whisper Bolt, Wraith Lantern with Haunted suppression, Soul Chorus with Dissonance, and Reliquary of Echoes with Soul Suppression.");
         }
         catch (Exception exception)
         {
@@ -92,6 +117,32 @@ internal sealed class SpiritStaffRegistrar : IDisposable
         {
             Dispose();
         }
+    }
+
+    private static StatusEffect RegisterSuppressionEffect(
+        string identity,
+        string displayName,
+        string tooltip,
+        float ttl,
+        float damageMultiplier,
+        Color tint)
+    {
+        if (damageMultiplier <= 0f || damageMultiplier > 1f)
+            throw new ArgumentOutOfRangeException(nameof(damageMultiplier), damageMultiplier, "Spirit suppression must reduce outgoing damage without inverting it.");
+
+        var effect = ScriptableObject.CreateInstance<SE_Stats>();
+        effect.name = identity;
+        effect.m_name = displayName;
+        effect.m_tooltip = tooltip;
+        effect.m_ttl = ttl;
+        effect.m_icon = EarthAssets.Icon("crystal", identity, tint);
+        effect.m_modifyAttackSkill = Skills.SkillType.All;
+        effect.m_damageModifier = damageMultiplier;
+
+        var custom = new CustomStatusEffect(effect, fixReference: false);
+        if (!ItemManager.Instance.AddStatusEffect(custom))
+            throw new InvalidOperationException($"Jotunn refused Spirit status effect '{identity}'.");
+        return custom.StatusEffect;
     }
 
     private static void RegisterStaff(Definition definition, PayloadSet payloads)
@@ -156,22 +207,22 @@ internal sealed class SpiritStaffRegistrar : IDisposable
     {
         new Definition(
             "Magenheim_Staff_Spirit_Simple", "staff-spirit-simple", "Simple Staff of Spirit",
-            "Whisper Bolt: releases one quiet spectral shot. It carries only Spirit damage and leaves no borrowed flame or explosion behind.",
+            "Whisper Bolt: releases one quiet spectral shot. It carries only Spirit damage and leaves no borrowed flame, suppression field, or explosion behind.",
             1, 17f, 0f, 22f, .95f, .18f, .30f, 40f, .85f, 1, 1, 0f, PayloadKind.Direct,
             new Requirement("FineWood", 8), new Requirement("BoneFragments", 8), new Requirement("Magenheim_Crystal_Spirit_Simple", 1)),
         new Definition(
             "Magenheim_Staff_Spirit_Crystal", "staff-spirit-crystal", "Crystal Staff of Spirit",
-            "Wraith Lantern: drives a dense spectral lance into one target and leaves a three-second haunting echo around the impact point, repeatedly pressing nearby enemies with Spirit damage.",
+            "Wraith Lantern: drives a dense spectral lance into one target and leaves a three-second haunting echo. Enemies touched by the echo become Haunted, reducing outgoing attack damage by twelve percent for three and a half seconds.",
             2, 27f, 0f, 34f, 1f, .42f, .65f, 50f, .35f, 1, 1, 0f, PayloadKind.Lantern,
             new Requirement("ElderBark", 10), new Requirement("Chain", 2), new Requirement("Silver", 2), new Requirement("Magenheim_Crystal_Spirit_Crystal", 1)),
         new Definition(
             "Magenheim_Staff_Spirit_Advanced", "staff-spirit-advanced", "Advanced Staff of Spirit",
-            "Soul Chorus: four spectral voices answer the cast twice. Every impact leaves a brief overlapping echo pulse, turning clustered enemies into a resonating field of repeated Spirit pressure.",
+            "Soul Chorus: four spectral voices answer the cast twice. Their overlapping echo fields inflict Spirit Dissonance, cutting outgoing attack damage by twenty percent while the chorus continues to haunt a clustered group.",
             3, 10f, 18f, 14f, .45f, .28f, .42f, 42f, 7.5f, 4, 2, .17f, PayloadKind.Chorus,
             new Requirement("YggdrasilWood", 10), new Requirement("BlackCore", 2), new Requirement("Eitr", 6), new Requirement("Magenheim_Crystal_Spirit_Advanced", 1)),
         new Definition(
             "Magenheim_Staff_Spirit_Master", "staff-spirit-master", "Master Staff of Spirit",
-            "Reliquary of Echoes: releases four spectral lines through three successive responses. Each line leaves a larger short-lived echo field, so the battlefield keeps answering after the initial cast has passed.",
+            "Reliquary of Echoes: releases four spectral lines through three successive responses. Each impact opens a larger echo field that inflicts Soul Suppression, reducing outgoing attack damage by thirty percent for five seconds after exposure.",
             4, 0f, 50f, 16f, .40f, .32f, .50f, 44f, 10f, 4, 3, .13f, PayloadKind.Reliquary,
             new Requirement("YggdrasilWood", 15), new Requirement("BlackCore", 4), new Requirement("Eitr", 12), new Requirement("Magenheim_Crystal_Spirit_Master", 1)),
     };
