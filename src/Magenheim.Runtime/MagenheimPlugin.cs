@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.33";
+    internal const string PluginVersion = "0.0.34";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -25,6 +25,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private WorkshopRegistrar? _workshopRegistrar;
     private FurnitureRegistrar? _furnitureRegistrar;
     private GeologyDecorRegistrar? _geologyDecorRegistrar;
+    private CrystalArchitectureRegistrar? _crystalArchitectureRegistrar;
     private WorkshopOperationRegistrar? _workshopOperationRegistrar;
     private ShardRecipeRegistrar? _shardRecipeRegistrar;
     private FireStaffRegistrar? _fireStaffRegistrar;
@@ -87,6 +88,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _furnitureRegistrar.Register();
             _geologyDecorRegistrar = new GeologyDecorRegistrar(Logger);
             _geologyDecorRegistrar.Register();
+            _crystalArchitectureRegistrar = new CrystalArchitectureRegistrar(Logger);
+            _crystalArchitectureRegistrar.Register();
             _geodeItemRegistrar = new GeodeItemRegistrar(effectiveDefinitions, Logger);
             _geodeItemRegistrar.Register();
             _geodeWorldgenRegistrar = new GeodeWorldgenRegistrar(effectiveDefinitions, Logger);
@@ -117,7 +120,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 $"Baseline definition fingerprint {baselineDefinitions.Fingerprint}; effective definition fingerprint {effectiveDefinitions.Fingerprint}; " +
                 $"effective gameplay authority {_authoritySynchronizer.GameplayFingerprint}. " +
                 "Player content includes eight biome geodes, eight five-tier elemental crystal families, the full geology workstation refinement ladder, " +
-                "20 geology/crystal furniture and decor pieces with dedicated Hammer icons, resolved socket bonuses, and eight four-tier staff families with distinct runtime effects. " +
+                "20 geology/crystal furniture and decor pieces, a rainbow Crystal Hearth, three crystal beam sizes, three crystal foundation sizes, " +
+                "resolved socket bonuses, and eight four-tier staff families with distinct runtime effects. " +
                 "Fire owns fireburst/scorch/meteor burn terrain; Frost owns Brittle and Rime fields; Storm owns secondary discharges; " +
                 "Earth owns Fractured/Shattered Armor and Tremor; Venom owns corrosion; Radiance owns hard-light/flash/sanctuary payloads; " +
                 "Seidr owns binding hexes; and Spirit owns spectral echo fields.");
@@ -141,6 +145,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
         _fireStaffRegistrar?.Dispose();
         _shardRecipeRegistrar?.Dispose();
         _workshopOperationRegistrar?.Dispose();
+        _crystalArchitectureRegistrar?.Dispose();
         _geologyDecorRegistrar?.Dispose();
         _furnitureRegistrar?.Dispose();
         _earthContentRegistrar?.Dispose();
