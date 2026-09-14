@@ -34,7 +34,7 @@ public sealed class CrystalRefinementService
                 "Roll must be in the range [0,1).");
 
         if (!_rules.TryGetValue(request.Input.Tier, out var rule))
-            return new RefinementResult(RefinementOutcome.InvalidStation, request.Input, false,
+            return new RefinementResult(RefinementOutcome.NoRule, request.Input, false,
                 $"No refinement rule exists for {request.Input.Tier}.");
 
         if (request.CrystalShapingSkillLevel < rule.MinimumSkillLevel)
