@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "refinementRules": [
+    {
+      "sourceTier": "Rough",
+      "destinationTier": "Simple",
+      "baseFailureChance": 0.10,
+      "minimumSkillLevel": 0,
+      "requiredStation": "Magenheim_GeologistWorkstation",
+      "failureShardCount": 1
+    },
+    {
+      "sourceTier": "Simple",
+      "destinationTier": "Crystal",
+      "baseFailureChance": 0.20,
+      "minimumSkillLevel": 0,
+      "requiredStation": "Magenheim_StationUpgrade_FracturingBlock",
+      "failureShardCount": 2
+    },
+    {
+      "sourceTier": "Crystal",
+      "destinationTier": "Advanced",
+      "baseFailureChance": 0.30,
+      "minimumSkillLevel": 0,
+      "requiredStation": "Magenheim_StationUpgrade_FacetingWheel",
+      "failureShardCount": 3
+    },
+    {
+      "sourceTier": "Advanced",
+      "destinationTier": "Master",
+      "baseFailureChance": 0.40,
+      "minimumSkillLevel": 0,
+      "requiredStation": "Magenheim_StationUpgrade_ResonanceFrame",
+      "failureShardCount": 5
+    }
+  ],
+  "geodes": [
+    {
+      "id": "magenheim.geode.meadows.earth",
+      "biome": "Meadows",
+      "prefabName": "Magenheim_Geode_Meadows_Earth",
+      "area": "Everywhere",
+      "guaranteedCrystalCount": 1,
+      "secondCrystalChance": 0.35,
+      "thirdCrystalChance": 0.10,
+      "elements": [
+        {
+          "element": "Earth",
+          "weight": 100.0
+        }
+      ]
+    }
+  ]
+}
