@@ -1,0 +1,251 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using BepInEx.Logging;
+using Jotunn.Configs;
+using Jotunn.Entities;
+using Jotunn.Managers;
+using UnityEngine;
+
+namespace Magenheim.Runtime;
+
+internal sealed class RadianceStaffRegistrar : IDisposable
+{
+    private const string BaseStaffPrefab = "StaffFireball";
+    private readonly ManualLogSource _log;
+    private bool _subscribed;
+    private bool _registered;
+
+    internal RadianceStaffRegistrar(ManualLogSource log) => _log = log ?? throw new ArgumentNullException(nameof(log));
+
+    internal void Register()
+    {
+        if (_subscribed || _registered) return;
+        PrefabManager.OnVanillaPrefabsAvailable += RegisterContent;
+        _subscribed = true;
+    }
+
+    private void RegisterContent()
+    {
+        if (_registered) return;
+        try
+        {
+            if (PrefabManager.Instance.GetPrefab(BaseStaffPrefab) is null)
+                throw new InvalidOperationException($"Required vanilla staff prefab '{BaseStaffPrefab}' is unavailable.");
+            if (PrefabManager.Instance.GetPrefab(WorkshopRegistrar.StationPrefab) is null)
+                throw new InvalidOperationException("Geologist's Workstation must exist before Radiance staff recipes are registered.");
+
+            foreach (var definition in Definitions())
+            {
+                RegisterStaff(definition);
+                RegisterRecipe(definition);
+            }
+
+            _registered = true;
+            _log.LogInfo("Registered Radiance staffs: Prism Spark, Sun Lance, Corona Array, and Daybreak.");
+        }
+        catch (Exception exception)
+        {
+            _log.LogError($"Radiance staff content registration failed: {exception}");
+            throw;
+        }
+        finally
+        {
+            Dispose();
+        }
+    }
+
+    private static void RegisterStaff(Definition definition)
+    {
+        if (PrefabManager.Instance.GetPrefab(definition.PrefabName) || CustomItem.IsCustomItem(definition.PrefabName))
+            throw new InvalidOperationException($"Cannot replace occupied Radiance staff identity '{definition.PrefabName}'.");
+
+        var item = new CustomItem(definition.PrefabName, BaseStaffPrefab);
+        var shared = item.ItemDrop.m_itemData.m_shared;
+        shared.m_name = definition.DisplayName;
+        shared.m_description = definition.Description;
+        shared.m_maxQuality = 1;
+        shared.m_value = 0;
+        shared.m_dlc = string.Empty;
+        shared.m_icons = new[] { EarthAssets.Icon("crystal", definition.AssetName, definition.Tint) };
+
+        var attack = shared.m_attack;
+        attack.m_attackStamina = definition.StaminaCost;
+        attack.m_attackEitr = definition.EitrCost;
+        attack.m_damageMultiplier = definition.DamageMultiplier;
+        attack.m_forceMultiplier = definition.ForceMultiplier;
+        attack.m_staggerMultiplier = definition.StaggerMultiplier;
+        attack.m_projectileVel = definition.ProjectileVelocity;
+        attack.m_projectileVelMin = definition.ProjectileVelocity;
+        attack.m_projectileAccuracy = definition.ProjectileAccuracy;
+        attack.m_projectileAccuracyMin = definition.ProjectileAccuracy;
+        attack.m_projectiles = definition.Projectiles;
+        attack.m_projectileBursts = definition.Bursts;
+        attack.m_burstInterval = definition.BurstInterval;
+        attack.m_perBurstResourceUsage = false;
+
+        RadianceVisuals.Apply(item.ItemPrefab, definition.AssetName);
+        if (!ItemManager.Instance.AddItem(item))
+            throw new InvalidOperationException($"Jotunn refused Radiance staff item '{definition.PrefabName}'.");
+    }
+
+    private static void RegisterRecipe(Definition definition)
+    {
+        var config = new RecipeConfig
+        {
+            Name = "Magenheim_Recipe_" + definition.PrefabName,
+            Item = definition.PrefabName,
+            Amount = 1,
+            CraftingStation = WorkshopRegistrar.StationPrefab,
+            MinStationLevel = definition.MinimumStationLevel,
+            Enabled = true,
+        };
+        foreach (var requirement in definition.Requirements)
+            config.AddRequirement(requirement.PrefabName, requirement.Amount);
+        if (!ItemManager.Instance.AddRecipe(new CustomRecipe(config)))
+            throw new InvalidOperationException($"Jotunn refused Radiance staff recipe '{config.Name}'.");
+    }
+
+    private static IReadOnlyList<Definition> Definitions() => new[]
+    {
+        new Definition("Magenheim_Staff_Radiance_Simple", "staff-radiance-simple", "Simple Staff of Radiance",
+            "Prism Spark: a needle-bright single shot with almost no spread. Cheap, quick, and deliberately uncomplicated.",
+            1, 20f, 0f, .40f, .50f, .55f, 38f, .55f, 1, 1, 0f, new Color(.96f,.82f,.32f,1f),
+            new Requirement("FineWood",8), new Requirement("Bronze",2), new Requirement("Magenheim_Crystal_Radiance_Simple",1)),
+        new Definition("Magenheim_Staff_Radiance_Crystal", "staff-radiance-crystal", "Crystal Staff of Radiance",
+            "Sun Lance: compresses the crystal into a hard, straight lance of light. High velocity and force reward deliberate aim.",
+            2, 30f, 0f, 1.12f, 1.45f, 1.25f, 62f, .20f, 1, 1, 0f, new Color(1f,.90f,.48f,1f),
+            new Requirement("ElderBark",10), new Requirement("Silver",3), new Requirement("Magenheim_Crystal_Radiance_Crystal",1)),
+        new Definition("Magenheim_Staff_Radiance_Advanced", "staff-radiance-advanced", "Advanced Staff of Radiance",
+            "Corona Array: fractures one shaping pulse into a seven-ray crown. The center stays tight while the outer rays punish clustered targets.",
+            3, 12f, 18f, .31f, .72f, .78f, 44f, 8.5f, 7, 1, 0f, new Color(1f,.95f,.68f,1f),
+            new Requirement("YggdrasilWood",10), new Requirement("Silver",4), new Requirement("BlackMetal",2), new Requirement("Magenheim_Crystal_Radiance_Advanced",1)),
+        new Definition("Magenheim_Staff_Radiance_Master", "staff-radiance-master", "Master Staff of Radiance",
+            "Daybreak: opens the master crystal in repeated three-ray pulses, hammering a bright cone into the target zone with disciplined cadence.",
+            4, 0f, 48f, .38f, .90f, .90f, 48f, 5.2f, 3, 5, .11f, new Color(1f,.99f,.84f,1f),
+            new Requirement("YggdrasilWood",15), new Requirement("BlackMetal",4), new Requirement("Eitr",10), new Requirement("Magenheim_Crystal_Radiance_Master",1)),
+    };
+
+    public void Dispose()
+    {
+        if (!_subscribed) return;
+        PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent;
+        _subscribed = false;
+    }
+
+    private readonly struct Requirement
+    {
+        internal Requirement(string prefabName, int amount) { PrefabName = prefabName; Amount = amount; }
+        internal string PrefabName { get; }
+        internal int Amount { get; }
+    }
+
+    private sealed class Definition
+    {
+        internal Definition(string prefabName, string assetName, string displayName, string description, int minimumStationLevel,
+            float staminaCost, float eitrCost, float damageMultiplier, float forceMultiplier, float staggerMultiplier,
+            float projectileVelocity, float projectileAccuracy, int projectiles, int bursts, float burstInterval, Color tint,
+            params Requirement[] requirements)
+        {
+            PrefabName=prefabName; AssetName=assetName; DisplayName=displayName; Description=description; MinimumStationLevel=minimumStationLevel;
+            StaminaCost=staminaCost; EitrCost=eitrCost; DamageMultiplier=damageMultiplier; ForceMultiplier=forceMultiplier; StaggerMultiplier=staggerMultiplier;
+            ProjectileVelocity=projectileVelocity; ProjectileAccuracy=projectileAccuracy; Projectiles=projectiles; Bursts=bursts; BurstInterval=burstInterval;
+            Tint=tint; Requirements=requirements;
+        }
+        internal string PrefabName { get; }
+        internal string AssetName { get; }
+        internal string DisplayName { get; }
+        internal string Description { get; }
+        internal int MinimumStationLevel { get; }
+        internal float StaminaCost { get; }
+        internal float EitrCost { get; }
+        internal float DamageMultiplier { get; }
+        internal float ForceMultiplier { get; }
+        internal float StaggerMultiplier { get; }
+        internal float ProjectileVelocity { get; }
+        internal float ProjectileAccuracy { get; }
+        internal int Projectiles { get; }
+        internal int Bursts { get; }
+        internal float BurstInterval { get; }
+        internal Color Tint { get; }
+        internal IReadOnlyList<Requirement> Requirements { get; }
+    }
+}
+
+internal static class RadianceVisuals
+{
+    private static readonly Mesh Box = MakeBox();
+    private static readonly Dictionary<int, Mesh> Cylinders = new();
+    private static readonly Dictionary<int, Mesh> Prisms = new();
+
+    internal static void Apply(GameObject prefab, string assetName)
+    {
+        var original = prefab.GetComponentsInChildren<Renderer>(true);
+        var source = original.Select(x => x.sharedMaterial).FirstOrDefault(x => x)
+            ?? throw new InvalidOperationException($"No material source exists on Radiance staff prefab '{prefab.name}'.");
+        var attach = prefab.transform.Find("attach") ?? prefab.transform;
+        var root = new GameObject("magenheim." + assetName + ".visual") { layer = prefab.layer };
+        root.transform.SetParent(attach, false);
+
+        var wood = Mat(source,"wood",new Color(.24f,.17f,.12f,1f),0f,.13f);
+        var ivory = Mat(source,"ivory",new Color(.78f,.72f,.58f,1f),.03f,.23f);
+        var bronze = Mat(source,"bronze",new Color(.62f,.43f,.19f,1f),.46f,.28f);
+        var gold = Mat(source,"gold",new Color(.90f,.65f,.18f,1f),.68f,.43f);
+        var light = Mat(source,"light",new Color(1f,.91f,.48f,1f),.02f,.78f,.42f);
+        var white = Mat(source,"white",new Color(1f,.99f,.86f,1f),.01f,.88f,.60f);
+
+        if (assetName == "staff-radiance-simple")
+        {
+            Shaft(root,wood,bronze,.034f); Part(root,"cross",Box,new Vector3(0,.69f,0),new Vector3(.26f,.036f,.038f),Quaternion.identity,bronze);
+            Prism(root,"spark",new Vector3(0,.88f,0),.075f,.24f,6,light);
+        }
+        else if (assetName == "staff-radiance-crystal")
+        {
+            Shaft(root,ivory,gold,.038f); Cylinder(root,"ring",new Vector3(0,.64f,0),.12f,.04f,16,gold);
+            for (var i=0;i<4;i++){ var a=i*Mathf.PI/2f; Part(root,"ray"+i,Box,new Vector3(.13f*Mathf.Cos(a),.78f,.13f*Mathf.Sin(a)),new Vector3(.03f,.30f,.03f),Quaternion.Euler(0,0,i%2==0?11f:-11f),gold); }
+            Prism(root,"focus",new Vector3(0,.90f,0),.095f,.42f,6,light);
+        }
+        else if (assetName == "staff-radiance-advanced")
+        {
+            Shaft(root,wood,gold,.041f); Cylinder(root,"hub",new Vector3(0,.76f,0),.095f,.065f,14,gold);
+            for (var i=0;i<8;i++){ var a=i*Mathf.PI/4f; var p=new Vector3(.19f*Mathf.Cos(a),.83f,.19f*Mathf.Sin(a)); Part(root,"corona"+i,Box,p,new Vector3(.028f,.34f,.028f),Quaternion.Euler(0,0,14f*Mathf.Cos(a)),gold); Prism(root,"tip"+i,p+Vector3.up*.17f,.025f,.11f,5,i%2==0?light:white); }
+            Prism(root,"core",new Vector3(0,.91f,0),.105f,.36f,6,white);
+        }
+        else if (assetName == "staff-radiance-master")
+        {
+            Shaft(root,ivory,gold,.044f); foreach(var y in new[]{-.46f,-.10f,.26f,.53f}) Cylinder(root,"band"+y,new Vector3(0,y,0),.064f,.042f,14,gold);
+            for (var i=0;i<12;i++){ var a=i*Mathf.PI/6f; Part(root,"daybreak"+i,Box,new Vector3(.23f*Mathf.Cos(a),.82f,.23f*Mathf.Sin(a)),new Vector3(.026f,.38f,.026f),Quaternion.Euler(0,0,18f*Mathf.Cos(a)),gold); }
+            Cylinder(root,"halo",new Vector3(0,.78f,0),.24f,.045f,20,gold); Prism(root,"core",new Vector3(0,.95f,0),.135f,.52f,8,white); Prism(root,"heart",new Vector3(0,1.08f,0),.07f,.22f,6,light);
+        }
+        else throw new InvalidOperationException($"Unknown Radiance geometry '{assetName}'.");
+
+        foreach (var renderer in original) renderer.enabled = false;
+        foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled = false;
+    }
+
+    private static void Shaft(GameObject root, Material body, Material metal, float radius)
+    {
+        Cylinder(root,"shaft",new Vector3(0,-.08f,0),radius,1.48f,10,body);
+        Cylinder(root,"pommel",new Vector3(0,-.77f,0),radius*1.38f,.10f,12,metal);
+        Cylinder(root,"neck",new Vector3(0,.53f,0),radius*1.38f,.06f,12,metal);
+    }
+    private static void Cylinder(GameObject root,string name,Vector3 pos,float radius,float height,int sides,Material material)
+    {
+        if(!Cylinders.TryGetValue(sides,out var mesh)){mesh=MakeCylinder(sides);Cylinders.Add(sides,mesh);} Part(root,name,mesh,pos,new Vector3(radius*2f,height,radius*2f),Quaternion.identity,material);
+    }
+    private static void Prism(GameObject root,string name,Vector3 pos,float radius,float height,int sides,Material material)
+    {
+        if(!Prisms.TryGetValue(sides,out var mesh)){mesh=MakePrism(sides);Prisms.Add(sides,mesh);} Part(root,name,mesh,pos,new Vector3(radius*2f,height,radius*2f),Quaternion.identity,material);
+    }
+    private static void Part(GameObject root,string name,Mesh mesh,Vector3 pos,Vector3 scale,Quaternion rot,Material mat)
+    {
+        var go=new GameObject(name){layer=root.layer}; go.transform.SetParent(root.transform,false); go.transform.localPosition=pos; go.transform.localRotation=rot; go.transform.localScale=scale; go.AddComponent<MeshFilter>().sharedMesh=mesh; go.AddComponent<MeshRenderer>().sharedMaterial=mat;
+    }
+    private static Material Mat(Material source,string name,Color color,float metallic,float gloss,float emission=0f)
+    {
+        var m=new Material(source){name="magenheim.radiance."+name}; m.mainTexture=Texture2D.whiteTexture; if(m.HasProperty("_Color"))m.SetColor("_Color",color); if(m.HasProperty("_Metallic"))m.SetFloat("_Metallic",metallic); if(m.HasProperty("_Glossiness"))m.SetFloat("_Glossiness",gloss); if(m.HasProperty("_BumpMap"))m.SetTexture("_BumpMap",null); m.DisableKeyword("_NORMALMAP"); if(m.HasProperty("_EmissionColor")&&emission>0f){m.SetColor("_EmissionColor",color*emission);m.EnableKeyword("_EMISSION");} else m.DisableKeyword("_EMISSION"); m.SetOverrideTag("RenderType","Opaque"); if(m.HasProperty("_ZWrite"))m.SetFloat("_ZWrite",1f); m.renderQueue=2000; return m;
+    }
+    private static Mesh MakeBox(){var m=new Mesh{name="magenheim.radiance.box"};m.vertices=new[]{new Vector3(-.5f,-.5f,-.5f),new Vector3(.5f,-.5f,-.5f),new Vector3(.5f,.5f,-.5f),new Vector3(-.5f,.5f,-.5f),new Vector3(-.5f,-.5f,.5f),new Vector3(.5f,-.5f,.5f),new Vector3(.5f,.5f,.5f),new Vector3(-.5f,.5f,.5f)};m.triangles=new[]{0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2};m.RecalculateNormals();m.RecalculateBounds();return m;}
+    private static Mesh MakeCylinder(int sides){var v=new List<Vector3>();var t=new List<int>();for(var r=0;r<2;r++){var y=r==0?-.5f:.5f;for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.5f*Mathf.Cos(a),y,.5f*Mathf.Sin(a)));}}var b=v.Count;v.Add(new Vector3(0,-.5f,0));var top=v.Count;v.Add(new Vector3(0,.5f,0));for(var i=0;i<sides;i++){var n=(i+1)%sides;t.AddRange(new[]{i,n,sides+i,n,sides+n,sides+i,b,n,i,top,sides+i,sides+n});}var m=new Mesh{name="magenheim.radiance.cylinder."+sides,vertices=v.ToArray(),triangles=t.ToArray()};m.RecalculateNormals();m.RecalculateBounds();return m;}
+    private static Mesh MakePrism(int sides){var v=new List<Vector3>();var t=new List<int>();for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.34f*Mathf.Cos(a),-.45f,.34f*Mathf.Sin(a)));}for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.5f*Mathf.Cos(a),.18f,.5f*Mathf.Sin(a)));}var top=v.Count;v.Add(new Vector3(0,.68f,0));var bottom=v.Count;v.Add(new Vector3(0,-.5f,0));for(var i=0;i<sides;i++){var n=(i+1)%sides;t.AddRange(new[]{bottom,n,i,i,n,sides+i,n,sides+n,sides+i,sides+i,sides+n,top});}var m=new Mesh{name="magenheim.radiance.prism."+sides,vertices=v.ToArray(),triangles=t.ToArray()};m.RecalculateNormals();m.RecalculateBounds();return m;}
+}
