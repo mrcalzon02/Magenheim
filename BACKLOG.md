@@ -23,6 +23,8 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Restrict compatibility exclusions to Magenheim-owned registration/prefab namespaces so configuration cannot target foreign content.
 - [x] Make definition duplicate detection and exclusion normalization obey the configured exact/case-insensitive identity comparer, preventing definitions that the runtime planner would later collapse into collisions.
 - [x] Canonicalize case-insensitive compatibility exclusions in the definition fingerprint so semantically identical casing cannot cause false server/client authority mismatches; exact mode remains casing-sensitive.
+- [x] Flatten singleton Core Networking/Transactions and Runtime Networking source directories while preserving their namespaces and single authorities.
+- [ ] Change the GitHub repository default branch from legacy `master` to `main`, then delete the redundant `master` ref when an authorized repository-settings/ref-deletion path is available. Until then keep both refs identical and perform development only on `main`.
 - [ ] Execute the standalone tests with a .NET 8 SDK and record the observed result.
 - [ ] Compile `Magenheim.Core` with warnings as errors.
 - [x] Add the thin BepInEx/Jötunn plugin bootstrap on `main`, with hard Jötunn dependency and everyone-must-have network declaration.
@@ -37,6 +39,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Harden the authority acknowledgement so the client must echo the exact server descriptor it successfully parsed; malformed server authority now produces no acknowledgement and cannot yield server-side mutation admission.
 - [x] Tighten pre-release network version enforcement to patch strictness when the authority RPC was introduced, preventing older 0.0.x clients without the current RPC contract from passing version admission.
 - [x] Reset cached peer mutation admission at the start of every Jötunn initial-sync session so reconnects or reused peer IDs cannot inherit prior authorization.
+- [x] Assign a strictly increasing server-local session generation at each initial sync and retire prior geode operation replay records for that routed peer id.
 - [ ] Compile and execute the definition-authority synchronization path in a current Valheim/Jötunn environment and repair any API/serialization defect before runtime admission.
 - [ ] Register Crystal Shaping under permanent ID `magenheim.crystal_shaping`.
 
@@ -45,6 +48,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Define the initial Meadows geode data with one guaranteed Earth crystal and independent 35%/10% additional-crystal chances.
 - [x] Add deterministic pure-core coverage for geode cracking: independent bonus rolls, chance boundaries, fixed RNG consumption, weighted element selection, Rough-tier output, and fail-closed malformed input/definitions.
 - [x] Add a pure authority-gated geode-opening transaction planner that consumes exactly one source only when definition authority is compatible, the source exists, cracking succeeds, and output capacity is sufficient; rejected plans remain non-mutating.
+- [x] Add session-scoped exact-once geode-opening admission keyed by peer/session generation/operation id, with duplicate-prepared, duplicate-applied, conflicting-replay, abort-and-retry, and reconnect-session handling.
 - [ ] Register an intact Meadows geode item/prefab.
 - [ ] Bind the additive worldgen planner to a thin Jötunn registrar using the validated definition policy.
 - [ ] Explicitly map pure-core `SpawnArea.All` to current runtime `Heightmap.BiomeArea.Everywhere` rather than casting enum integers.
