@@ -3,6 +3,7 @@ using BepInEx.Logging;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
+using Magenheim.Core;
 
 namespace Magenheim.Runtime;
 
@@ -13,9 +14,6 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal sealed class ShardRecipeRegistrar : IDisposable
 {
-    private const string EarthShardPrefab = "Magenheim_Shard_Earth";
-    private const string EarthSimplePrefab = "Magenheim_Crystal_Earth_Simple";
-    private const string EarthShardRecipe = "Magenheim_Recipe_EarthShards_To_Simple";
     internal const int ShardsPerSimpleCrystal = 5;
 
     private readonly ManualLogSource _log;
@@ -37,29 +35,40 @@ internal sealed class ShardRecipeRegistrar : IDisposable
         if (_registered) return;
         try
         {
-            if (PrefabManager.Instance.GetPrefab(EarthShardPrefab) is null)
-                throw new InvalidOperationException($"Shard recipe source prefab '{EarthShardPrefab}' is unavailable.");
-            if (PrefabManager.Instance.GetPrefab(EarthSimplePrefab) is null)
-                throw new InvalidOperationException($"Shard recipe output prefab '{EarthSimplePrefab}' is unavailable.");
             if (PrefabManager.Instance.GetPrefab(WorkshopRegistrar.StationPrefab) is null)
                 throw new InvalidOperationException("Geologist's Workstation must be registered before shard recombination recipes.");
 
-            var config = new RecipeConfig
+            var count = 0;
+            foreach (ElementalAlignment element in Enum.GetValues(typeof(ElementalAlignment)))
             {
-                Name = EarthShardRecipe,
-                Item = EarthSimplePrefab,
-                Amount = 1,
-                CraftingStation = WorkshopRegistrar.StationPrefab,
-                MinStationLevel = 1,
-                Enabled = true,
-            };
-            config.AddRequirement(EarthShardPrefab, ShardsPerSimpleCrystal);
+                var shardPrefab = $"Magenheim_Shard_{element}";
+                var simplePrefab = $"Magenheim_Crystal_{element}_Simple";
+                var recipeName = $"Magenheim_Recipe_{element}Shards_To_Simple";
 
-            if (!ItemManager.Instance.AddRecipe(new CustomRecipe(config)))
-                throw new InvalidOperationException($"Jotunn refused shard recombination recipe '{EarthShardRecipe}'.");
+                if (PrefabManager.Instance.GetPrefab(shardPrefab) is null)
+                    throw new InvalidOperationException($"Shard recipe source prefab '{shardPrefab}' is unavailable.");
+                if (PrefabManager.Instance.GetPrefab(simplePrefab) is null)
+                    throw new InvalidOperationException($"Shard recipe output prefab '{simplePrefab}' is unavailable.");
+
+                var config = new RecipeConfig
+                {
+                    Name = recipeName,
+                    Item = simplePrefab,
+                    Amount = 1,
+                    CraftingStation = WorkshopRegistrar.StationPrefab,
+                    MinStationLevel = 1,
+                    Enabled = true,
+                };
+                config.AddRequirement(shardPrefab, ShardsPerSimpleCrystal);
+
+                if (!ItemManager.Instance.AddRecipe(new CustomRecipe(config)))
+                    throw new InvalidOperationException($"Jotunn refused shard recombination recipe '{recipeName}'.");
+                count++;
+            }
 
             _registered = true;
-            _log.LogInfo($"Registered Earth shard recombination: {ShardsPerSimpleCrystal} Earth Crystal Shards -> 1 Simple Earth Crystal.");
+            _log.LogInfo(
+                $"Registered {count} elemental shard recombination recipes: {ShardsPerSimpleCrystal} matching shards -> 1 Simple crystal.");
         }
         catch (Exception exception)
         {
