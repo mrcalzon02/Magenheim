@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.38";
+    internal const string PluginVersion = "0.0.39";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -26,6 +26,9 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private FurnitureRegistrar? _furnitureRegistrar;
     private GeologyDecorRegistrar? _geologyDecorRegistrar;
     private CrystalArchitectureRegistrar? _crystalArchitectureRegistrar;
+    private CrystalBannerRegistrar? _crystalBannerRegistrar;
+    private CrystalSentinelRegistrar? _crystalSentinelRegistrar;
+    private CrystalBedRegistrar? _crystalBedRegistrar;
     private CrystalWeaponRegistrar? _crystalWeaponRegistrar;
     private CrystalAlchemyRegistrar? _crystalAlchemyRegistrar;
     private WorkshopOperationRegistrar? _workshopOperationRegistrar;
@@ -93,6 +96,12 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _geologyDecorRegistrar.Register();
             _crystalArchitectureRegistrar = new CrystalArchitectureRegistrar(Logger);
             _crystalArchitectureRegistrar.Register();
+            _crystalBannerRegistrar = new CrystalBannerRegistrar(Logger);
+            _crystalBannerRegistrar.Register();
+            _crystalSentinelRegistrar = new CrystalSentinelRegistrar(Logger, Config);
+            _crystalSentinelRegistrar.Register();
+            _crystalBedRegistrar = new CrystalBedRegistrar(Logger);
+            _crystalBedRegistrar.Register();
             _crystalWeaponRegistrar = new CrystalWeaponRegistrar(Logger);
             _crystalWeaponRegistrar.Register();
             _geodeItemRegistrar = new GeodeItemRegistrar(effectiveDefinitions, Logger);
@@ -128,6 +137,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 $"effective gameplay authority {_authoritySynchronizer.GameplayFingerprint}. " +
                 "Player content includes eight biome geodes, eight five-tier elemental crystal families, the full geology workstation refinement ladder, " +
                 "20 geology/crystal furniture and decor pieces, a rainbow Crystal Hearth, three crystal beam sizes, three crystal foundation sizes, " +
+                "24 elemental crystal banners, a floating Crystal Sentinel with eight shard-refined elemental munition types, eight alignment-locked water-filled Crystal Beds, " +
                 "a 10-piece high-durability physical crystal weapon set, deliberate Rough-crystal/shard grinding, Crystal Dust, Prismatic Eitrwine fermentation, " +
                 "resolved socket bonuses with server-authoritative remote socket/install/extraction requests, and eight four-tier staff families with distinct runtime effects. " +
                 "Fire owns fireburst/scorch/meteor burn terrain; Frost owns Brittle and Rime fields; Storm owns secondary discharges; " +
@@ -154,14 +164,17 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
         _crystalAlchemyRegistrar?.Dispose();
         _shardRecipeRegistrar?.Dispose();
         _workshopOperationRegistrar?.Dispose();
+        _geodeWorldgenRegistrar?.Dispose();
+        _geodeItemRegistrar?.Dispose();
         _crystalWeaponRegistrar?.Dispose();
+        _crystalBedRegistrar?.Dispose();
+        _crystalSentinelRegistrar?.Dispose();
+        _crystalBannerRegistrar?.Dispose();
         _crystalArchitectureRegistrar?.Dispose();
         _geologyDecorRegistrar?.Dispose();
         _furnitureRegistrar?.Dispose();
         _earthContentRegistrar?.Dispose();
         _workshopRegistrar?.Dispose();
-        _geodeWorldgenRegistrar?.Dispose();
-        _geodeItemRegistrar?.Dispose();
         if (_socketWorkstationOverlay is not null)
             Destroy(_socketWorkstationOverlay);
         _harmony?.UnpatchSelf();
