@@ -40,8 +40,6 @@ The default maximum reduction is 75%, configurable between 50% and 100%. Station
 
 ## Worldgen compatibility foundation
 
-Implementation commit `22c4a6dd8a0400d8f53a888af7a1d50da422df6f` hardens the pure worldgen compatibility layer.
-
 Current rules:
 
 - abstract areas remain Median, Edge, and All;
@@ -55,7 +53,7 @@ Current rules:
 
 The eventual Jötunn adapter must map these abstract values explicitly to current `Heightmap.BiomeArea` values rather than casting enum integers.
 
-## Runtime bootstrap — 2026-09-13
+## Runtime bootstrap
 
 A thin runtime project exists at `src/Magenheim.Runtime` and consumes the authoritative pure-core project rather than recreating refinement rules.
 
@@ -71,30 +69,34 @@ Runtime bootstrap properties:
 
 `Magenheim.Core` targets `netstandard2.0` so it can remain consumable by both the net462 runtime and the net8.0 standalone test harness.
 
-## Strict definition pipeline — 2026-09-13
+## Strict definition pipeline
 
-The runtime no longer constructs refinement rules from hard-coded defaults at startup. It loads `default-data/foundation.json`, converts the document into pure-core definition records, validates the complete snapshot, computes a deterministic SHA-256 fingerprint, and only then creates runtime services.
+The runtime loads `default-data/foundation.json`, converts it into pure-core definition records, validates the complete snapshot, computes a deterministic SHA-256 fingerprint, and only then creates runtime services.
 
-Definition admission rules now include:
+Definition admission rules include exact schema matching, strict JSON member handling, canonical four-step refinement topology, namespaced geode IDs/prefabs, supported biome validation, conservative spawn-area validation, fixed one-guaranteed-crystal geode contract, finite 0..1 additional-crystal probabilities, positive finite elemental weights, and duplicate identity rejection.
 
-- exact schema version match;
-- unknown JSON members rejected;
-- duplicate JSON properties rejected;
-- required fields cannot be omitted or null;
-- exactly four canonical one-tier refinement transitions must exist;
-- geode ids must use `magenheim.geode.` and prefab names must use `Magenheim_`;
-- biome references are restricted to Meadows, BlackForest, Swamp, Mountain, Plains, Mistlands, Ashlands, and DeepNorth;
-- spawn areas must validate through the conservative pure-core area validator;
-- geode output currently requires one guaranteed crystal plus finite 0..1 second/third crystal probabilities;
-- elemental weights must be positive, finite, non-empty, and unique per element;
-- duplicate geode ids and duplicate prefab identities reject the snapshot;
-- invalid definitions fail plugin bootstrap rather than falling back silently to a second hard-coded ruleset.
+The shipped foundation snapshot defines the Meadows Earth vertical slice: one guaranteed Earth crystal plus independent 35% and 10% additional-crystal probabilities.
 
-The shipped foundation snapshot defines the Meadows Earth vertical slice: one guaranteed Earth crystal plus independent 35% and 10% additional-crystal probabilities. Its fingerprint is intentionally produced from normalized validated definitions so future server/client synchronization can compare gameplay authority independent of JSON ordering.
+## Controlled balance overrides — 2026-09-13
+
+Runtime version `0.0.5` adds a constrained BepInEx configuration layer over the validated baseline snapshot.
+
+Permitted runtime balance overrides are limited to:
+
+- refinement base failure chance;
+- refinement minimum Crystal Shaping skill;
+- refinement failure shard return count;
+- geode second-crystal probability;
+- geode third-crystal probability;
+- relative weights of elemental identities already present in that geode definition.
+
+The override layer cannot alter crystal tier topology, refinement source/destination identities, required stations, geode IDs, biome ownership, prefab identities, guaranteed-crystal count, or add/remove/replace elemental identities. Unknown refinement/geode override targets reject. Effective definitions are rebuilt through `MagenheimDefinitionValidator.ValidateAndFreeze`, so invalid configured values fail admission and the effective gameplay fingerprint is regenerated from normalized validated data.
+
+Plugin startup now logs both baseline and effective fingerprints. Gameplay mutation remains disabled, so client/server fingerprint enforcement can be implemented before any divergent configuration is allowed to affect inventory, sockets, or world state.
 
 ## Validation boundary
 
-The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compilation and test execution therefore remain unclaimed. Runtime source and worldgen compatibility assumptions were checked against current Jötunn documentation, but plugin startup, static-definition loading inside Valheim, and actual world generation have not been observed inside Valheim.
+The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compilation and test execution therefore remain unclaimed. Plugin startup, BepInEx config binding, definition override execution inside Valheim, and actual world generation have not been directly observed in Valheim.
 
 ## Next exact action
 
@@ -103,7 +105,7 @@ In a .NET 8 SDK / Valheim development environment:
 1. run `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`;
 2. compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` against Jötunn 2.30.0 and current Valheim dependencies;
 3. repair any compile/test defect at the authoritative source;
-4. add deterministic tests for definition validation/loading failure cases;
-5. implement controlled server configuration overrides that revalidate and regenerate the definition fingerprint;
+4. add deterministic tests covering definition-validation failures and override admission/rejection/fingerprint changes;
+5. implement server-authoritative definition fingerprint synchronization/enforcement before gameplay mutation;
 6. register Crystal Shaping under permanent ID `magenheim.crystal_shaping` only after the runtime project passes its compile gate;
 7. then bind the pure worldgen plan to a thin Jötunn registrar with explicit `Heightmap.BiomeArea` mapping and repeated-load idempotence checks.
