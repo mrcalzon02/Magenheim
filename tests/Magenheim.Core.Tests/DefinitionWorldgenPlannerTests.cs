@@ -33,8 +33,10 @@ internal static class DefinitionWorldgenPlannerTests
 
         Assert(ref assertions, addition.Desired.RegistrationKey == "magenheim.geode.meadows.earth",
             "Definition-derived plan must preserve the authoritative registration key.");
-        Assert(ref assertions, addition.Desired.PrefabName == "Magenheim_Geode_Meadows_Earth",
-            "Definition-derived plan must preserve the authoritative prefab name.");
+        Assert(ref assertions, addition.Desired.PrefabName == "Magenheim_Geode_Meadows_Earth_World",
+            "Definition-derived worldgen plan must use the dedicated mineable world-object prefab identity rather than the inventory item prefab.");
+        Assert(ref assertions, addition.Desired.PrefabName != baseline.Geodes.Single().PrefabName,
+            "Inventory and world-object prefab identities must remain distinct.");
         Assert(ref assertions, addition.Desired.Biome == "Meadows",
             "Definition-derived plan must carry the authoritative biome into the registration plan.");
         Assert(ref assertions, addition.NormalizedArea == SpawnArea.All,
@@ -59,10 +61,10 @@ internal static class DefinitionWorldgenPlannerTests
                 new ObservedWorldgenRegistration(
                     "foreign.registration",
                     "ForeignMod",
-                    "Magenheim_Geode_Meadows_Earth"),
+                    "Magenheim_Geode_Meadows_Earth_World"),
             });
         Assert(ref assertions, collisionPlan.Entries.Single().Action == WorldgenPlanAction.Skip,
-            "Observed prefab collisions must remain non-destructive when planning from definitions.");
+            "Observed world-object prefab collisions must remain non-destructive when planning from definitions.");
 
         var caseInsensitive = CreateDefinitions(
             WorldgenCompatibilityPolicy.Conservative with
@@ -93,6 +95,18 @@ internal static class DefinitionWorldgenPlannerTests
             Array.Empty<ObservedWorldgenRegistration>());
         Assert(ref assertions, fallbackPlan.Additions.Single().NormalizedArea == SpawnArea.All,
             "Area normalization admitted by the definition snapshot must remain authoritative in the worldgen plan.");
+
+        var reservedSuffixRejected = false;
+        try
+        {
+            GeodeWorldPrefabIdentity.FromItemPrefabName("Magenheim_Geode_Test_World");
+        }
+        catch (ArgumentException)
+        {
+            reservedSuffixRejected = true;
+        }
+        Assert(ref assertions, reservedSuffixRejected,
+            "Inventory prefab identities must not be allowed to consume the reserved world-object suffix.");
 
         return assertions;
     }
