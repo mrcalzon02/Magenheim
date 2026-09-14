@@ -14,14 +14,23 @@ internal static class Program
         RefinementFailureDestroysSourceAndReturnsShards();
         SkillReductionScalesFailure();
         InvalidStationDoesNotAwardExperience();
+
         AreaValidationRejectsNone();
         AreaValidationRejectsUnknownBits();
+        AreaValidationRejectsNegativeClamp();
         AreaValidationClampsKnownBits();
         AreaValidationFallsBackOnlyWhenConfigured();
+        AreaParserAcceptsEverywhereAlias();
+        AreaParserRejectsUnknownTokenByDefault();
+        AreaParserClampsRecognizedTokensWhenConfigured();
+
         PlannerAddsNamespacedEntry();
         PlannerSkipsOccupiedForeignKeyWithoutMutation();
+        PlannerSkipsOccupiedPrefabWithoutMutation();
         PlannerRejectsUnownedKeys();
         PlannerRejectsDuplicateDesiredKeys();
+        PlannerCanExcludeSpecificAddition();
+        PlannerSupportsOptionalCaseInsensitiveIdentityComparison();
         PlannerCannotDisableAdditiveOnly();
 
         Console.WriteLine($"Magenheim.Core.Tests: {_assertions} assertions passed.");
@@ -99,10 +108,16 @@ internal static class Program
         Assert(!result.IsValid, "Unknown area bits must be rejected by default.");
     }
 
+    private static void AreaValidationRejectsNegativeClamp()
+    {
+        var result = SpawnAreaValidator.Normalize((SpawnArea)(-1), InvalidAreaBehavior.ClampKnownBits);
+        Assert(!result.IsValid, "Negative flag values must not sign-extend into All when clamping.");
+    }
+
     private static void AreaValidationClampsKnownBits()
     {
         var result = SpawnAreaValidator.Normalize(SpawnArea.Median | (SpawnArea)8, InvalidAreaBehavior.ClampKnownBits);
-        Assert(result.IsValid, "ClampKnownBits should retain valid bits.");
+        Assert(result.IsValid, "ClampKnownBits should retain valid positive bits.");
         Assert(result.Area == SpawnArea.Median, "ClampKnownBits retained wrong area.");
     }
 
@@ -110,6 +125,24 @@ internal static class Program
     {
         var result = SpawnAreaValidator.Normalize(SpawnArea.None, InvalidAreaBehavior.FallbackToAll);
         Assert(result.IsValid && result.Area == SpawnArea.All, "FallbackToAll should explicitly produce All.");
+    }
+
+    private static void AreaParserAcceptsEverywhereAlias()
+    {
+        var result = SpawnAreaValidator.ParseConfiguredArea("Everywhere");
+        Assert(result.IsValid && result.Area == SpawnArea.All, "Everywhere should map to the abstract All area.");
+    }
+
+    private static void AreaParserRejectsUnknownTokenByDefault()
+    {
+        var result = SpawnAreaValidator.ParseConfiguredArea("Median,banana");
+        Assert(!result.IsValid, "Unknown textual area tokens must fail under conservative policy.");
+    }
+
+    private static void AreaParserClampsRecognizedTokensWhenConfigured()
+    {
+        var result = SpawnAreaValidator.ParseConfiguredArea("Median,banana", InvalidAreaBehavior.ClampKnownBits);
+        Assert(result.IsValid && result.Area == SpawnArea.Median, "Configured textual clamping should keep only recognized areas.");
     }
 
     private static void PlannerAddsNamespacedEntry()
@@ -130,6 +163,16 @@ internal static class Program
         Assert(Equals(before, observed[0]), "Observed foreign registration must remain unchanged.");
     }
 
+    private static void PlannerSkipsOccupiedPrefabWithoutMutation()
+    {
+        var observed = new[] { new ObservedWorldgenRegistration("other.key", "OtherMod", "Magenheim_Geode_Meadows_Earth") };
+        var desired = new[] { new DesiredWorldgenAddition("magenheim.geode.meadows.earth", "Magenheim_Geode_Meadows_Earth", SpawnArea.All) };
+        var before = observed[0];
+        var plan = WorldgenAdditionPlanner.Build(desired, observed);
+        Assert(plan.Entries.Single().Action == WorldgenPlanAction.Skip, "Occupied prefab should be skipped under conservative policy.");
+        Assert(Equals(before, observed[0]), "Prefab collision detection must remain observation-only.");
+    }
+
     private static void PlannerRejectsUnownedKeys()
     {
         var plan = WorldgenAdditionPlanner.Build(
@@ -148,6 +191,29 @@ internal static class Program
         var plan = WorldgenAdditionPlanner.Build(desired, Array.Empty<ObservedWorldgenRegistration>());
         Assert(plan.Entries.Count == 2, "Both desired entries should remain represented in diagnostics.");
         Assert(plan.Entries[1].Action == WorldgenPlanAction.Skip, "Second duplicate should be skipped by conservative policy.");
+    }
+
+    private static void PlannerCanExcludeSpecificAddition()
+    {
+        var policy = WorldgenCompatibilityPolicy.Conservative with
+        {
+            ExcludedRegistrationKeys = new[] { "magenheim.geode.meadows.earth" },
+        };
+        var desired = new[] { new DesiredWorldgenAddition("magenheim.geode.meadows.earth", "Magenheim_Geode_Meadows_Earth", SpawnArea.All) };
+        var plan = WorldgenAdditionPlanner.Build(desired, Array.Empty<ObservedWorldgenRegistration>(), policy);
+        Assert(plan.Entries.Single().Action == WorldgenPlanAction.Skip, "Configured exclusion should skip only the Magenheim addition.");
+    }
+
+    private static void PlannerSupportsOptionalCaseInsensitiveIdentityComparison()
+    {
+        var policy = WorldgenCompatibilityPolicy.Conservative with
+        {
+            IdentityComparison = RegistrationIdentityComparison.CaseInsensitive,
+        };
+        var observed = new[] { new ObservedWorldgenRegistration("MAGENHEIM.GEODE.MEADOWS.EARTH", "OtherMod", "OtherPrefab") };
+        var desired = new[] { new DesiredWorldgenAddition("magenheim.geode.meadows.earth", "Magenheim_Geode_Meadows_Earth", SpawnArea.All) };
+        var plan = WorldgenAdditionPlanner.Build(desired, observed, policy);
+        Assert(plan.Entries.Single().Action == WorldgenPlanAction.Skip, "Case-insensitive compatibility mode should detect differently-cased occupied identities.");
     }
 
     private static void PlannerCannotDisableAdditiveOnly()

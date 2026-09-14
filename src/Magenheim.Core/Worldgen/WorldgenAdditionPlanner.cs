@@ -11,11 +11,22 @@ public enum DuplicateRegistrationBehavior
     Error = 1,
 }
 
+public enum RegistrationIdentityComparison
+{
+    Exact = 0,
+    CaseInsensitive = 1,
+}
+
 public sealed record WorldgenCompatibilityPolicy(
     InvalidAreaBehavior InvalidAreaBehavior,
     DuplicateRegistrationBehavior DuplicateRegistrationBehavior,
     bool AdditiveOnly = true)
 {
+    public bool DetectPrefabCollisions { get; init; } = true;
+    public RegistrationIdentityComparison IdentityComparison { get; init; } = RegistrationIdentityComparison.Exact;
+    public IReadOnlyCollection<string> ExcludedRegistrationKeys { get; init; } = Array.Empty<string>();
+    public IReadOnlyCollection<string> ExcludedPrefabNames { get; init; } = Array.Empty<string>();
+
     public static WorldgenCompatibilityPolicy Conservative { get; } = new(
         InvalidAreaBehavior.Reject,
         DuplicateRegistrationBehavior.Skip,
@@ -77,12 +88,41 @@ public static class WorldgenAdditionPlanner
                 "Magenheim compatibility policy cannot disable additive-only worldgen behavior.");
         }
 
-        var observedSnapshot = observed.ToArray();
-        var occupiedKeys = new HashSet<string>(
-            observedSnapshot.Select(item => item.RegistrationKey),
-            StringComparer.Ordinal);
+        var comparer = policy.IdentityComparison == RegistrationIdentityComparison.CaseInsensitive
+            ? StringComparer.OrdinalIgnoreCase
+            : StringComparer.Ordinal;
 
-        var plannedKeys = new HashSet<string>(StringComparer.Ordinal);
+        var observedSnapshot = observed.Where(item => item is not null).ToArray();
+        var occupiedKeys = new HashSet<string>(comparer);
+        var occupiedPrefabs = new HashSet<string>(comparer);
+
+        foreach (var item in observedSnapshot)
+        {
+            if (!string.IsNullOrWhiteSpace(item.RegistrationKey))
+            {
+                occupiedKeys.Add(item.RegistrationKey.Trim());
+            }
+
+            if (policy.DetectPrefabCollisions && !string.IsNullOrWhiteSpace(item.PrefabName))
+            {
+                occupiedPrefabs.Add(item.PrefabName.Trim());
+            }
+        }
+
+        var excludedKeys = new HashSet<string>(
+            (policy.ExcludedRegistrationKeys ?? Array.Empty<string>())
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Select(value => value.Trim()),
+            comparer);
+
+        var excludedPrefabs = new HashSet<string>(
+            (policy.ExcludedPrefabNames ?? Array.Empty<string>())
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Select(value => value.Trim()),
+            comparer);
+
+        var plannedKeys = new HashSet<string>(comparer);
+        var plannedPrefabs = new HashSet<string>(comparer);
         var results = new List<WorldgenPlanEntry>();
 
         foreach (var addition in desired.ToArray())
@@ -103,6 +143,16 @@ public static class WorldgenAdditionPlanner
                 continue;
             }
 
+            if (!string.Equals(addition.RegistrationKey, addition.RegistrationKey.Trim(), StringComparison.Ordinal))
+            {
+                results.Add(new WorldgenPlanEntry(
+                    addition,
+                    WorldgenPlanAction.Error,
+                    SpawnArea.None,
+                    "Registration key cannot contain leading or trailing whitespace."));
+                continue;
+            }
+
             if (string.IsNullOrWhiteSpace(addition.PrefabName))
             {
                 results.Add(new WorldgenPlanEntry(
@@ -110,6 +160,16 @@ public static class WorldgenAdditionPlanner
                     WorldgenPlanAction.Error,
                     SpawnArea.None,
                     "Prefab name cannot be empty."));
+                continue;
+            }
+
+            if (!string.Equals(addition.PrefabName, addition.PrefabName.Trim(), StringComparison.Ordinal))
+            {
+                results.Add(new WorldgenPlanEntry(
+                    addition,
+                    WorldgenPlanAction.Error,
+                    SpawnArea.None,
+                    "Prefab name cannot contain leading or trailing whitespace."));
                 continue;
             }
 
@@ -124,21 +184,47 @@ public static class WorldgenAdditionPlanner
                 continue;
             }
 
-            var duplicate = occupiedKeys.Contains(addition.RegistrationKey) ||
-                            !plannedKeys.Add(addition.RegistrationKey);
+            if (excludedKeys.Contains(addition.RegistrationKey) || excludedPrefabs.Contains(addition.PrefabName))
+            {
+                results.Add(new WorldgenPlanEntry(
+                    addition,
+                    WorldgenPlanAction.Skip,
+                    area.Area,
+                    "Addition was disabled by compatibility configuration; no host registration was modified."));
+                continue;
+            }
 
-            if (duplicate)
+            var keyCollision = occupiedKeys.Contains(addition.RegistrationKey) ||
+                               plannedKeys.Contains(addition.RegistrationKey);
+
+            var prefabCollision = policy.DetectPrefabCollisions &&
+                                  (occupiedPrefabs.Contains(addition.PrefabName) ||
+                                   plannedPrefabs.Contains(addition.PrefabName));
+
+            if (keyCollision || prefabCollision)
             {
                 var action = policy.DuplicateRegistrationBehavior == DuplicateRegistrationBehavior.Skip
                     ? WorldgenPlanAction.Skip
                     : WorldgenPlanAction.Error;
 
+                var collisionKind = keyCollision && prefabCollision
+                    ? "registration key and prefab"
+                    : keyCollision
+                        ? "registration key"
+                        : "prefab";
+
                 results.Add(new WorldgenPlanEntry(
                     addition,
                     action,
                     area.Area,
-                    $"Registration key '{addition.RegistrationKey}' is already occupied; foreign/previous data was not modified."));
+                    $"The {collisionKind} for '{addition.RegistrationKey}' / '{addition.PrefabName}' is already occupied; existing data was not modified."));
                 continue;
+            }
+
+            plannedKeys.Add(addition.RegistrationKey);
+            if (policy.DetectPrefabCollisions)
+            {
+                plannedPrefabs.Add(addition.PrefabName);
             }
 
             results.Add(new WorldgenPlanEntry(

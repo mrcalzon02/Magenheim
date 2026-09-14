@@ -14,7 +14,9 @@ Add a thin BepInEx/Jötunn plugin entry point and explicit dependency/network de
 
 ## 4. Additive world generation
 
-Translate the validated pure `SpawnArea` and approved `WorldgenAdditionPlan` entries into current Jötunn/Valheim types. Snapshot existing registrations before and after registration. Add only Magenheim-owned entries. Repeated lifecycle events must not duplicate additions.
+Translate the validated pure `SpawnArea` and approved `WorldgenAdditionPlan` entries into current Jötunn/Valheim types. Explicitly map Magenheim `All` to the runtime `Heightmap.BiomeArea.Everywhere` concept; do not rely on enum integer coincidence. Snapshot existing registrations before and after registration. Add only Magenheim-owned entries. Repeated lifecycle events must not duplicate additions.
+
+The compatibility pass must remain configurable without becoming destructive: reject or explicitly normalize invalid areas, detect occupied registration keys and prefabs, allow per-Magenheim-key/prefab exclusions, and optionally use case-insensitive identity matching for interoperability. Negative area integers must fail closed unless the operator explicitly selects fallback-to-All behavior.
 
 ## 5. Meadows/Earth geological loop
 

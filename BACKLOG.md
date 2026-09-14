@@ -14,6 +14,10 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Add deterministic standalone tests for refinement and worldgen planning.
 - [x] Add an `IsExternalInit` compatibility shim for record-based core models.
 - [x] Align `Magenheim.Core` to `netstandard2.0` so it can be consumed by the .NET Framework 4.6.2 Valheim/Jötunn runtime while remaining consumable by the .NET 8 test harness.
+- [x] Reject negative spawn-area integers from clamping so sign extension cannot silently become All.
+- [x] Add configuration parsing for Median/Edge/All plus the Jötunn-facing `Everywhere` alias.
+- [x] Detect prefab collisions as well as registration-key collisions without mutating observed data.
+- [x] Add compatibility exclusions by Magenheim registration key/prefab and optional case-insensitive identity matching.
 - [ ] Execute the standalone tests with a .NET 8 SDK and record the observed result.
 - [ ] Compile `Magenheim.Core` with warnings as errors.
 - [x] Add the thin BepInEx/Jötunn plugin bootstrap on `main`, with hard Jötunn dependency and everyone-must-have/minor-version network declaration.
@@ -27,7 +31,9 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [ ] Define the Meadows geode data and Earth-dominant initial outcome table.
 - [ ] Register an intact Meadows geode item/prefab.
 - [ ] Bind the additive worldgen planner to a thin Jötunn registrar.
+- [ ] Explicitly map pure-core `SpawnArea.All` to current runtime `Heightmap.BiomeArea.Everywhere` rather than casting enum integers.
 - [ ] Implement configurable non-destructive Meadows world placement.
+- [ ] Snapshot pre/post worldgen registrations and prove repeated-load idempotence.
 - [ ] Implement Geologist's Workstation registration and crafting recipe.
 - [ ] Implement authoritative geode opening: one guaranteed crystal, independent 35% second-crystal roll, independent 10% third-crystal roll.
 - [ ] Register Earth Rough/Simple/Crystal/Advanced/Master items and Earth Crystal Shards.
