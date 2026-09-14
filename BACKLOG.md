@@ -23,14 +23,17 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Restrict compatibility exclusions to Magenheim-owned registration/prefab namespaces so configuration cannot target foreign content.
 - [ ] Execute the standalone tests with a .NET 8 SDK and record the observed result.
 - [ ] Compile `Magenheim.Core` with warnings as errors.
-- [x] Add the thin BepInEx/Jötunn plugin bootstrap on `main`, with hard Jötunn dependency and everyone-must-have/minor-version network declaration.
+- [x] Add the thin BepInEx/Jötunn plugin bootstrap on `main`, with hard Jötunn dependency and everyone-must-have network declaration.
 - [ ] Compile the runtime project against Jötunn 2.30.0 and a current Valheim development environment.
 - [x] Add strict schema-validated static definition loading for refinement and geode definitions, including deterministic definition fingerprinting and hard failure on malformed/unknown content.
 - [x] Add controlled balance overrides on top of the validated static definition snapshot; only existing rule/geode balance fields may change, elemental identity sets remain fixed, and the effective snapshot is revalidated and fingerprinted before use.
 - [x] Extend the same validated override path to worldgen compatibility policy so server-side compatibility settings are revalidated and re-fingerprinted before use.
 - [ ] Add deterministic tests for runtime JSON loader failure cases once a compilable runtime test environment is available.
+- [x] Add deterministic schema/fingerprint authority comparison with fail-closed mutation admission.
+- [x] Register a two-way Jötunn definition-authority handshake: server sends effective schema/fingerprint during initial synchronization, client compares and acknowledges its own authority, server records per-peer admission.
+- [x] Tighten pre-release network version enforcement to patch strictness when the authority RPC was introduced, preventing older 0.0.x clients without the RPC contract from passing version admission.
+- [ ] Compile and execute the definition-authority synchronization path in a current Valheim/Jötunn environment and repair any API/serialization defect before runtime admission.
 - [ ] Register Crystal Shaping under permanent ID `magenheim.crystal_shaping`.
-- [ ] Add server-authoritative definition synchronization/fingerprint enforcement before gameplay mutations are enabled.
 
 ## P1 — Meadows/Earth vertical slice
 
@@ -43,7 +46,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [ ] Implement Geologist's Workstation registration and crafting recipe.
 - [ ] Implement authoritative geode opening: one guaranteed crystal, independent 35% second-crystal roll, independent 10% third-crystal roll.
 - [ ] Register Earth Rough/Simple/Crystal/Advanced/Master items and Earth Crystal Shards.
-- [ ] Bind valid refinement attempts to atomic inventory transactions and Crystal Shaping XP.
+- [ ] Bind valid refinement attempts to atomic inventory transactions and Crystal Shaping XP; every server mutation must require successful definition-authority admission for the requesting peer.
 - [ ] Verify a failed transaction consumes exactly one source and returns exactly the configured matching shards.
 - [ ] Verify disposable-world generation, save/load, host/client, and dedicated-server behavior before production admission.
 
