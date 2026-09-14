@@ -9,6 +9,7 @@ internal sealed class RuntimeServices
 {
     private RuntimeServices(
         MagenheimDefinitionSet definitions,
+        SocketEligibilityPolicy socketPolicy,
         CrystalRefinementService refinement,
         RefinementTransactionPlanner refinementTransactions,
         RefinementOperationGuard refinementOperations,
@@ -17,6 +18,7 @@ internal sealed class RuntimeServices
         SocketExtractionOperationGuard socketExtractionOperations)
     {
         Definitions = definitions;
+        SocketPolicy = socketPolicy;
         Refinement = refinement;
         RefinementTransactions = refinementTransactions;
         RefinementOperations = refinementOperations;
@@ -26,6 +28,7 @@ internal sealed class RuntimeServices
     }
 
     internal MagenheimDefinitionSet Definitions { get; }
+    internal SocketEligibilityPolicy SocketPolicy { get; }
     internal CrystalRefinementService Refinement { get; }
     internal RefinementTransactionPlanner RefinementTransactions { get; }
     internal RefinementOperationGuard RefinementOperations { get; }
@@ -33,8 +36,13 @@ internal sealed class RuntimeServices
     internal SocketOperationGuard SocketOperations { get; }
     internal SocketExtractionOperationGuard SocketExtractionOperations { get; }
 
-    internal static RuntimeServices Create(MagenheimDefinitionSet definitions)
+    internal static RuntimeServices Create(
+        MagenheimDefinitionSet definitions,
+        SocketEligibilityPolicy socketPolicy)
     {
+        if (definitions is null) throw new System.ArgumentNullException(nameof(definitions));
+        if (socketPolicy is null) throw new System.ArgumentNullException(nameof(socketPolicy));
+
         var refinement = new CrystalRefinementService(definitions.RefinementRules);
         var refinementTransactions = new RefinementTransactionPlanner(refinement);
         var refinementOperations = new RefinementOperationGuard(refinementTransactions);
@@ -43,6 +51,7 @@ internal sealed class RuntimeServices
         var socketExtractionOperations = new SocketExtractionOperationGuard();
         return new RuntimeServices(
             definitions,
+            socketPolicy,
             refinement,
             refinementTransactions,
             refinementOperations,
