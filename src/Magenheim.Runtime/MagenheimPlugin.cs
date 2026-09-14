@@ -36,8 +36,9 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             var definitionPath = Path.Combine(assemblyDirectory, "default-data", "foundation.json");
             var baselineDefinitions = MagenheimDefinitionLoader.LoadFromFile(definitionPath);
             var effectiveDefinitions = MagenheimBalanceConfig.Apply(Config, baselineDefinitions);
+            var socketPolicy = SocketCompatibilityConfig.Read(Config);
 
-            _services = RuntimeServices.Create(effectiveDefinitions);
+            _services = RuntimeServices.Create(effectiveDefinitions, socketPolicy);
             _authoritySynchronizer = new DefinitionAuthoritySynchronizer(
                 effectiveDefinitions,
                 _services.GeodeOpeningOperations,
@@ -71,9 +72,9 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
-                "Definition authority synchronization, session-scoped geode/refinement/socket/extraction replay protection, definition-driven intact geode items, " +
-                "fingerprinted geode placement configuration, additive geode vegetation registration, local-host geology workshop operations, " +
-                "deterministic Earth shard recombination, and per-item socket damage/armor/block/carry/mining effect adapters are configured. " +
+                "Definition authority synchronization, adaptive socket eligibility configuration, session-scoped geode/refinement/socket/extraction replay protection, " +
+                "definition-driven intact geode items, fingerprinted geode placement and socket-effect balance configuration, additive geode vegetation registration, " +
+                "local-host geology workshop operations, deterministic Earth shard recombination, and per-item socket damage/armor/block/carry/mining effect adapters are configured. " +
                 "Remote-client operation RPC, socket workstation mutation UI, knockback/stagger runtime channels, and persistence multiplayer validation remain gated pending implementation/validation.");
         }
         catch (Exception exception)
