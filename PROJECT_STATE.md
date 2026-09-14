@@ -101,6 +101,12 @@ This closes a fail-closed defect in the earlier 0.0.7 protocol, where the client
 
 No inventory, socket, geode-opening, refinement, or other persistent gameplay transaction consumes the admission gate yet; those mutations remain disabled.
 
+## Deterministic authority coverage — 2026-09-14
+
+The pure-core console harness now invokes `DefinitionAuthorityTests`, covering pending/non-authorizing state, matching authority admission, schema mismatch, fingerprint mismatch, invalid local and remote descriptors, uppercase/non-canonical fingerprints, null descriptors, wrong-length fingerprints, non-hexadecimal fingerprints, and canonical validation. These tests directly exercise `DefinitionAuthorityHandshake` without introducing Jötunn or Valheim dependencies.
+
+The test source has been committed and statically reviewed, but execution remains pending because this host has no .NET SDK/compiler. No passing-test claim is made until the harness is actually run.
+
 ## Validation boundary
 
 The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compilation and test execution therefore remain unclaimed. Jötunn 2.30.0 documentation was checked for the current `SynchronizationManager.AddInitialSynchronization(CustomRPC, Func<ZPackage>)` contract and `CustomRPC` coroutine receive model; the source shape remains consistent with those documented interfaces, but that is not a substitute for compilation or in-game execution.
@@ -109,7 +115,7 @@ The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compi
 
 In a .NET 8 SDK / current Valheim development environment:
 
-1. run `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`;
+1. run `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`, including the new definition-authority assertions;
 2. compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` against Jötunn 2.30.0 and current Valheim dependencies;
 3. execute the 0.0.8 authority synchronization on host/client and dedicated server, including malformed, schema-mismatch, fingerprint-mismatch, and matching-authority cases;
 4. repair any compile/API/serialization defect at the authoritative source;
