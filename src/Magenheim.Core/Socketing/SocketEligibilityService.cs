@@ -18,8 +18,13 @@ public sealed class SocketEligibilityPolicy
         IEnumerable<string>? includedModOrigins = null,
         IEnumerable<string>? excludedModOrigins = null,
         IEnumerable<EquipmentCategory>? excludedCategories = null,
-        SocketIdentityComparison identityComparison = SocketIdentityComparison.Exact)
+        SocketIdentityComparison identityComparison = SocketIdentityComparison.Exact,
+        IEnumerable<string>? includedItemNames = null,
+        IEnumerable<string>? excludedItemNames = null)
     {
+        if (!Enum.IsDefined(typeof(SocketIdentityComparison), identityComparison))
+            throw new InvalidOperationException($"Unknown socket identity comparison value '{(int)identityComparison}'.");
+
         WeaponMaxSlots = ValidateLimit(weaponMaxSlots, nameof(weaponMaxSlots));
         ArmorMaxSlots = ValidateLimit(armorMaxSlots, nameof(armorMaxSlots));
         ShieldMaxSlots = ValidateLimit(shieldMaxSlots, nameof(shieldMaxSlots));
@@ -28,10 +33,16 @@ public sealed class SocketEligibilityPolicy
         ExplicitIncludeMaxSlots = ValidateLimit(explicitIncludeMaxSlots, nameof(explicitIncludeMaxSlots));
         IdentityComparison = identityComparison;
 
-        IncludedPrefabNames = NormalizeIdentities(includedPrefabNames);
-        ExcludedPrefabNames = NormalizeIdentities(excludedPrefabNames);
-        IncludedModOrigins = NormalizeIdentities(includedModOrigins);
-        ExcludedModOrigins = NormalizeIdentities(excludedModOrigins);
+        var comparer = identityComparison == SocketIdentityComparison.CaseInsensitive
+            ? StringComparer.OrdinalIgnoreCase
+            : StringComparer.Ordinal;
+
+        IncludedItemNames = NormalizeIdentities(includedItemNames, comparer);
+        ExcludedItemNames = NormalizeIdentities(excludedItemNames, comparer);
+        IncludedPrefabNames = NormalizeIdentities(includedPrefabNames, comparer);
+        ExcludedPrefabNames = NormalizeIdentities(excludedPrefabNames, comparer);
+        IncludedModOrigins = NormalizeIdentities(includedModOrigins, comparer);
+        ExcludedModOrigins = NormalizeIdentities(excludedModOrigins, comparer);
         ExcludedCategories = (excludedCategories ?? Array.Empty<EquipmentCategory>()).Distinct().ToArray();
 
         foreach (var category in ExcludedCategories)
@@ -48,6 +59,8 @@ public sealed class SocketEligibilityPolicy
     public int UtilityMaxSlots { get; }
     public int ExplicitIncludeMaxSlots { get; }
     public SocketIdentityComparison IdentityComparison { get; }
+    public IReadOnlyList<string> IncludedItemNames { get; }
+    public IReadOnlyList<string> ExcludedItemNames { get; }
     public IReadOnlyList<string> IncludedPrefabNames { get; }
     public IReadOnlyList<string> ExcludedPrefabNames { get; }
     public IReadOnlyList<string> IncludedModOrigins { get; }
@@ -72,12 +85,14 @@ public sealed class SocketEligibilityPolicy
         return value;
     }
 
-    private static IReadOnlyList<string> NormalizeIdentities(IEnumerable<string>? values)
+    private static IReadOnlyList<string> NormalizeIdentities(
+        IEnumerable<string>? values,
+        StringComparer comparer)
     {
         return (values ?? Array.Empty<string>())
             .Where(value => !string.IsNullOrWhiteSpace(value))
             .Select(value => value.Trim())
-            .Distinct(StringComparer.Ordinal)
+            .Distinct(comparer)
             .ToArray();
     }
 }
@@ -89,7 +104,8 @@ public enum SocketEligibilityOutcome
     CategoryDisabled = 2,
     ExcludedPrefab = 3,
     ExcludedModOrigin = 4,
-    ExcludedCategory = 5
+    ExcludedCategory = 5,
+    ExcludedItem = 6
 }
 
 public sealed record SocketEligibilityResult(
@@ -116,6 +132,11 @@ public static class SocketEligibilityService
             return Ineligible(SocketEligibilityOutcome.ExcludedPrefab,
                 $"Prefab '{equipment.PrefabName}' is explicitly excluded from Magenheim socketing.");
 
+        if (!string.IsNullOrWhiteSpace(equipment.ItemName) &&
+            Contains(policy.ExcludedItemNames, equipment.ItemName, comparer))
+            return Ineligible(SocketEligibilityOutcome.ExcludedItem,
+                $"Item identity '{equipment.ItemName}' is explicitly excluded from Magenheim socketing.");
+
         if (!string.IsNullOrWhiteSpace(equipment.ModOrigin) &&
             Contains(policy.ExcludedModOrigins, equipment.ModOrigin, comparer))
             return Ineligible(SocketEligibilityOutcome.ExcludedModOrigin,
@@ -126,6 +147,8 @@ public static class SocketEligibilityService
                 $"Equipment category '{equipment.Category}' is excluded from Magenheim socketing.");
 
         var explicitInclude = Contains(policy.IncludedPrefabNames, equipment.PrefabName, comparer) ||
+            (!string.IsNullOrWhiteSpace(equipment.ItemName) &&
+             Contains(policy.IncludedItemNames, equipment.ItemName, comparer)) ||
             (!string.IsNullOrWhiteSpace(equipment.ModOrigin) &&
              Contains(policy.IncludedModOrigins, equipment.ModOrigin, comparer));
 
@@ -140,7 +163,7 @@ public static class SocketEligibilityService
 
         if (equipment.Category == EquipmentCategory.Unknown)
             return Ineligible(SocketEligibilityOutcome.UnknownCategory,
-                "Equipment could not be classified safely; add an explicit include rule to opt it in.");
+                "Equipment could not be classified safely; add an explicit item, prefab, or mod-origin include rule to opt it in.");
 
         return Ineligible(SocketEligibilityOutcome.CategoryDisabled,
             $"Equipment category '{equipment.Category}' has a configured socket limit of zero.");
