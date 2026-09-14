@@ -87,8 +87,6 @@ internal sealed class CrystallineIceBoxRegistrar : IDisposable
                 {
                     Cost("BlackMarble", 12),
                     Cost("Iron", 8),
-                    Cost("Silver", 8),
-                    Cost("Crystal", 12),
                     Cost("RefinedEitr", 5),
                     Cost("Magenheim_Crystal_Frost_Master", 1),
                 }
