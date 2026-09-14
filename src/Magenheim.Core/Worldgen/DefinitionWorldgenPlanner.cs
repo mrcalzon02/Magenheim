@@ -26,7 +26,7 @@ public static class DefinitionWorldgenPlanner
         var desired = definitions.Geodes
             .Select(geode => new DesiredWorldgenAddition(
                 geode.Id,
-                geode.PrefabName,
+                GeodeWorldPrefabIdentity.FromItemPrefabName(geode.PrefabName),
                 geode.Area)
             {
                 Biome = geode.Biome,
