@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.22";
+    internal const string PluginVersion = "0.0.23";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -31,6 +31,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private EarthStaffRegistrar? _earthStaffRegistrar;
     private VenomStaffRegistrar? _venomStaffRegistrar;
     private RadianceStaffRegistrar? _radianceStaffRegistrar;
+    private SeidrStaffRegistrar? _seidrStaffRegistrar;
     private SocketWorkstationOverlay? _socketWorkstationOverlay;
     private Harmony? _harmony;
 
@@ -97,14 +98,16 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _venomStaffRegistrar.Register();
             _radianceStaffRegistrar = new RadianceStaffRegistrar(Logger);
             _radianceStaffRegistrar.Register();
+            _seidrStaffRegistrar = new SeidrStaffRegistrar(Logger);
+            _seidrStaffRegistrar.Register();
 
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline fingerprint {baselineDefinitions.Fingerprint}; effective fingerprint {effectiveDefinitions.Fingerprint}. " +
                 "Player content includes eight biome geodes, eight five-tier elemental crystal families, elemental shard recombination, " +
-                "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and six complete four-tier staff families. " +
+                "the full geology workstation refinement ladder, resolved elemental socket bonuses/tooltips, and seven complete four-tier staff families. " +
                 "Fire is direct destructive pressure, Frost is precision/slow saturation, Storm is electrical discharge geometry, Earth is short-range seismic control, " +
-                "Venom is persistent contamination, and Radiance now delivers focused precision, radiant lance pressure, corona spread, and master-tier Daybreak barrages.");
+                "Venom is persistent contamination, Radiance is concentrated light pressure, and Seidr now provides exact hexes, rune spears, witchweave fans, and Fate Loom barrages.");
         }
         catch (Exception exception)
         {
@@ -115,6 +118,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
     private void OnDestroy()
     {
+        _seidrStaffRegistrar?.Dispose();
         _radianceStaffRegistrar?.Dispose();
         _venomStaffRegistrar?.Dispose();
         _earthStaffRegistrar?.Dispose();
