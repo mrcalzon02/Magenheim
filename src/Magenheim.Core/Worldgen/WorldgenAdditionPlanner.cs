@@ -36,7 +36,10 @@ public sealed record WorldgenCompatibilityPolicy(
 public sealed record DesiredWorldgenAddition(
     string RegistrationKey,
     string PrefabName,
-    SpawnArea Area);
+    SpawnArea Area)
+{
+    public string? Biome { get; init; }
+}
 
 public sealed record ObservedWorldgenRegistration(
     string RegistrationKey,
@@ -160,6 +163,26 @@ public static class WorldgenAdditionPlanner
                     WorldgenPlanAction.Error,
                     SpawnArea.None,
                     "Prefab name cannot contain leading or trailing whitespace."));
+                continue;
+            }
+
+            if (addition.Biome is not null && string.IsNullOrWhiteSpace(addition.Biome))
+            {
+                results.Add(new WorldgenPlanEntry(
+                    addition,
+                    WorldgenPlanAction.Error,
+                    SpawnArea.None,
+                    "Biome cannot be empty when supplied."));
+                continue;
+            }
+
+            if (addition.Biome is not null && !string.Equals(addition.Biome, addition.Biome.Trim(), StringComparison.Ordinal))
+            {
+                results.Add(new WorldgenPlanEntry(
+                    addition,
+                    WorldgenPlanAction.Error,
+                    SpawnArea.None,
+                    "Biome cannot contain leading or trailing whitespace."));
                 continue;
             }
 
