@@ -8,8 +8,8 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Player-facing elemental presentation shared by crystal items and biome geodes.
-/// The palette deliberately reuses the proven Magenheim crystal/geode geometry while
-/// giving every ordinary elemental alignment a distinct readable identity.
+/// Crystal families use strong element colors; geodes blend the actual weighted biome
+/// distribution so mixed geodes communicate their local mineral character at a glance.
 /// </summary>
 internal static class ElementVisualPalette
 {
@@ -54,6 +54,31 @@ internal static class ElementVisualPalette
             .First()
             .Element;
     }
+
+    internal static Color GeodeTint(GeodeDefinition geode)
+    {
+        if (geode is null) throw new ArgumentNullException(nameof(geode));
+        var total = geode.ElementWeights.Sum(weight => weight.Weight);
+        if (total <= 0d || double.IsNaN(total) || double.IsInfinity(total))
+            throw new InvalidOperationException($"Geode '{geode.Id}' has no positive finite elemental weight total.");
+
+        var red = 0d;
+        var green = 0d;
+        var blue = 0d;
+        foreach (var weight in geode.ElementWeights)
+        {
+            var color = Tint(weight.Element);
+            var fraction = weight.Weight / total;
+            red += color.r * fraction;
+            green += color.g * fraction;
+            blue += color.b * fraction;
+        }
+
+        return new Color((float)red, (float)green, (float)blue, 1f);
+    }
+
+    internal static string GeodeVariant(GeodeDefinition geode) =>
+        "geode-" + geode.Biome.ToLowerInvariant().Replace(" ", string.Empty);
 
     internal static string DisplayBiome(string biome) => biome switch
     {
