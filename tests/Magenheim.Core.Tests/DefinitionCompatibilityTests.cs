@@ -12,6 +12,8 @@ internal static class DefinitionCompatibilityTests
         CaseInsensitivePolicyRejectsCaseOnlyPrefabCollision(ref assertions);
         CaseInsensitivePolicyRejectsCaseOnlyExclusionDuplicate(ref assertions);
         ExactPolicyAllowsCaseDistinctOwnedExclusions(ref assertions);
+        CaseInsensitiveFingerprintCanonicalizesExclusionCase(ref assertions);
+        ExactFingerprintPreservesExclusionCase(ref assertions);
         return assertions;
     }
 
@@ -104,6 +106,52 @@ internal static class DefinitionCompatibilityTests
 
         Assert(snapshot.WorldgenCompatibility.ExcludedRegistrationKeys.Count == 2, ref assertions,
             "Exact identity policy should preserve case-distinct owned exclusions.");
+    }
+
+    private static void CaseInsensitiveFingerprintCanonicalizesExclusionCase(ref int assertions)
+    {
+        var geodes = new[] { CreateGeode("magenheim.geode.meadows.earth", "Magenheim_Geode_Meadows_Earth") };
+        var lower = CreateSnapshot(
+            geodes,
+            WorldgenCompatibilityPolicy.Conservative with
+            {
+                IdentityComparison = RegistrationIdentityComparison.CaseInsensitive,
+                ExcludedRegistrationKeys = new[] { "magenheim.compatibility.foo" },
+                ExcludedPrefabNames = new[] { "Magenheim_Compatibility_Foo" },
+            });
+        var mixed = CreateSnapshot(
+            geodes,
+            WorldgenCompatibilityPolicy.Conservative with
+            {
+                IdentityComparison = RegistrationIdentityComparison.CaseInsensitive,
+                ExcludedRegistrationKeys = new[] { "magenheim.compatibility.FOO" },
+                ExcludedPrefabNames = new[] { "Magenheim_Compatibility_FOO" },
+            });
+
+        Assert(string.Equals(lower.Fingerprint, mixed.Fingerprint, StringComparison.Ordinal), ref assertions,
+            "Case-insensitive exclusion identity must produce one canonical authority fingerprint regardless of configured suffix casing.");
+    }
+
+    private static void ExactFingerprintPreservesExclusionCase(ref int assertions)
+    {
+        var geodes = new[] { CreateGeode("magenheim.geode.meadows.earth", "Magenheim_Geode_Meadows_Earth") };
+        var lower = CreateSnapshot(
+            geodes,
+            WorldgenCompatibilityPolicy.Conservative with
+            {
+                IdentityComparison = RegistrationIdentityComparison.Exact,
+                ExcludedRegistrationKeys = new[] { "magenheim.compatibility.foo" },
+            });
+        var upper = CreateSnapshot(
+            geodes,
+            WorldgenCompatibilityPolicy.Conservative with
+            {
+                IdentityComparison = RegistrationIdentityComparison.Exact,
+                ExcludedRegistrationKeys = new[] { "magenheim.compatibility.FOO" },
+            });
+
+        Assert(!string.Equals(lower.Fingerprint, upper.Fingerprint, StringComparison.Ordinal), ref assertions,
+            "Exact exclusion identity must retain casing as part of definition authority.");
     }
 
     private static GeodeDefinition CreateGeode(string id, string prefabName) =>

@@ -26,6 +26,8 @@
 - Added fail-closed enum validation for worldgen compatibility policy both at definition admission and direct planner entry, preventing unknown enum values from silently behaving as another valid mode.
 - Restricted compatibility exclusions to `magenheim.` registration keys and `Magenheim_` prefabs, preventing configuration from targeting foreign content.
 - Added deterministic pure-core assertions proving compatibility settings affect the definition fingerprint and destructive/foreign exclusion policies are rejected.
+- Aligned definition duplicate detection and exclusion normalization with the configured exact/case-insensitive identity comparer.
+- Canonicalized compatibility exclusion casing during fingerprint hashing when case-insensitive identity matching is selected, preventing semantically identical exclusions from causing false multiplayer authority mismatches while preserving casing significance in exact mode.
 - Kept world objects, items, sockets, RPCs, inventory mutation, and persistent gameplay changes disabled pending validation and server-authoritative transaction work.
 - Hardened spawn-area handling so negative numeric flags cannot be clamped into `All` through sign extension.
 - Added textual area parsing for `Median`, `Edge`, `All`, and the runtime-facing `Everywhere` alias, with explicit reject/clamp/fallback policy.

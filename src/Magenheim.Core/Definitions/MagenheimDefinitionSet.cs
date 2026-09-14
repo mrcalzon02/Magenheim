@@ -257,10 +257,15 @@ public static class MagenheimDefinitionValidator
             .Append(worldgenCompatibility.DetectPrefabCollisions ? "1" : "0").Append('|')
             .Append(worldgenCompatibility.IdentityComparison).Append('\n');
 
-        foreach (var excludedKey in worldgenCompatibility.ExcludedRegistrationKeys.OrderBy(value => value, StringComparer.Ordinal))
-            builder.Append("worldgen-exclude-key|").Append(excludedKey).Append('\n');
-        foreach (var excludedPrefab in worldgenCompatibility.ExcludedPrefabNames.OrderBy(value => value, StringComparer.Ordinal))
-            builder.Append("worldgen-exclude-prefab|").Append(excludedPrefab).Append('\n');
+        var fingerprintIdentityComparer = GetIdentityComparer(worldgenCompatibility.IdentityComparison);
+        foreach (var excludedKey in worldgenCompatibility.ExcludedRegistrationKeys.OrderBy(value => value, fingerprintIdentityComparer))
+            builder.Append("worldgen-exclude-key|")
+                .Append(NormalizeIdentityForFingerprint(excludedKey, worldgenCompatibility.IdentityComparison))
+                .Append('\n');
+        foreach (var excludedPrefab in worldgenCompatibility.ExcludedPrefabNames.OrderBy(value => value, fingerprintIdentityComparer))
+            builder.Append("worldgen-exclude-prefab|")
+                .Append(NormalizeIdentityForFingerprint(excludedPrefab, worldgenCompatibility.IdentityComparison))
+                .Append('\n');
 
         foreach (var rule in rules.OrderBy(rule => rule.SourceTier))
         {
@@ -296,4 +301,11 @@ public static class MagenheimDefinitionValidator
         var hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(builder.ToString()));
         return string.Concat(hash.Select(value => value.ToString("x2", CultureInfo.InvariantCulture)));
     }
+
+    private static string NormalizeIdentityForFingerprint(
+        string value,
+        RegistrationIdentityComparison comparison) =>
+        comparison == RegistrationIdentityComparison.CaseInsensitive
+            ? value.ToUpperInvariant()
+            : value;
 }

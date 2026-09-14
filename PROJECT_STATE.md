@@ -52,6 +52,8 @@ Current rules:
 
 Definition schema 2 makes this compatibility policy part of the same validated gameplay snapshot as refinement and geodes. The fingerprint includes invalid-area behavior, duplicate-registration behavior, prefab collision detection, identity comparison, and Magenheim-only exclusion sets. Exclusions outside `magenheim.` registration keys or `Magenheim_` prefabs reject validation.
 
+Definition duplicate detection and exclusion de-duplication use the configured identity comparer. Case-insensitive exclusion identities are also canonicalized only for fingerprint hashing, so casing differences that do not change effective exclusion behavior no longer cause false server/client authority mismatches. Exact comparison retains casing as authority. Runtime-facing geode registration keys and prefab definition names remain case-preserving.
+
 The runtime loader parses compatibility policy before geodes so configured invalid-area behavior governs geode area parsing. The eventual Jötunn adapter must still map pure `SpawnArea` values explicitly to current `Heightmap.BiomeArea` values rather than casting enum integers.
 
 ## Runtime bootstrap
@@ -103,7 +105,9 @@ No inventory, socket, geode-opening, refinement, or other persistent gameplay tr
 
 ## Deterministic authority coverage — 2026-09-14
 
-The pure-core console harness now invokes `DefinitionAuthorityTests`, covering pending/non-authorizing state, matching authority admission, schema mismatch, fingerprint mismatch, invalid local and remote descriptors, uppercase/non-canonical fingerprints, null descriptors, wrong-length fingerprints, non-hexadecimal fingerprints, and canonical validation. These tests directly exercise `DefinitionAuthorityHandshake` without introducing Jötunn or Valheim dependencies.
+The pure-core console harness invokes `DefinitionAuthorityTests`, covering pending/non-authorizing state, matching authority admission, schema mismatch, fingerprint mismatch, invalid local and remote descriptors, uppercase/non-canonical fingerprints, null descriptors, wrong-length fingerprints, non-hexadecimal fingerprints, and canonical validation. These tests directly exercise `DefinitionAuthorityHandshake` without introducing Jötunn or Valheim dependencies.
+
+`DefinitionCompatibilityTests` now also covers the identity semantics that feed authority hashing: case-only duplicate identities are rejected under case-insensitive policy, exact-mode case distinctions remain valid, case-insensitive exclusion casing canonicalizes to one fingerprint, and exact-mode exclusion casing remains fingerprint-significant.
 
 The test source has been committed and statically reviewed, but execution remains pending because this host has no .NET SDK/compiler. No passing-test claim is made until the harness is actually run.
 
@@ -115,9 +119,9 @@ The active execution host still does not expose `dotnet`, `csc`, or `mcs`. Compi
 
 In a .NET 8 SDK / current Valheim development environment:
 
-1. run `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`, including the new definition-authority assertions;
+1. run `dotnet run --project tests/Magenheim.Core.Tests/Magenheim.Core.Tests.csproj`, including the definition-authority and compatibility-fingerprint assertions;
 2. compile `src/Magenheim.Runtime/Magenheim.Runtime.csproj` against Jötunn 2.30.0 and current Valheim dependencies;
-3. execute the 0.0.8 authority synchronization on host/client and dedicated server, including malformed, schema-mismatch, fingerprint-mismatch, and matching-authority cases;
+3. execute the 0.0.8 authority synchronization on host/client and dedicated server, including malformed, schema-mismatch, fingerprint-mismatch, matching-authority, and case-insensitive exclusion-casing equivalence cases;
 4. repair any compile/API/serialization defect at the authoritative source;
 5. register Crystal Shaping under permanent ID `magenheim.crystal_shaping` only after the runtime compile gate passes;
 6. then bind the pure worldgen plan to a thin Jötunn registrar using the effective compatibility policy, explicit `Heightmap.BiomeArea` mapping, and repeated-load idempotence checks.
