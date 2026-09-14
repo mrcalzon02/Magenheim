@@ -62,7 +62,8 @@ public static class MagenheimDefinitionOverrideApplier
             baseline.SchemaVersion,
             refinementRules,
             geodes,
-            worldgenCompatibilityOverride ?? baseline.WorldgenCompatibility);
+            worldgenCompatibilityOverride ?? baseline.WorldgenCompatibility,
+            baseline.SocketEffects);
     }
 
     private static GeodeDefinition ApplyGeodeBalance(

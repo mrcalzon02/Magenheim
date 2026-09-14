@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "refinementRules": [
     {
       "sourceTier": "Rough",
@@ -73,6 +73,62 @@
         "groupRadius": 0.0,
         "groundOffset": -0.04
       }
+    }
+  ],
+  "socketEffects": [
+    {
+      "element": "Earth",
+      "category": "Weapon",
+      "effect": "BluntDamage",
+      "simpleMagnitude": 2.0
+    },
+    {
+      "element": "Earth",
+      "category": "Weapon",
+      "effect": "Knockback",
+      "simpleMagnitude": 0.05
+    },
+    {
+      "element": "Earth",
+      "category": "Weapon",
+      "effect": "Stagger",
+      "simpleMagnitude": 0.03
+    },
+    {
+      "element": "Earth",
+      "category": "Armor",
+      "effect": "Armor",
+      "simpleMagnitude": 1.5
+    },
+    {
+      "element": "Earth",
+      "category": "Armor",
+      "effect": "KnockbackResistance",
+      "simpleMagnitude": 0.03
+    },
+    {
+      "element": "Earth",
+      "category": "Shield",
+      "effect": "Armor",
+      "simpleMagnitude": 1.0
+    },
+    {
+      "element": "Earth",
+      "category": "Shield",
+      "effect": "KnockbackResistance",
+      "simpleMagnitude": 0.04
+    },
+    {
+      "element": "Earth",
+      "category": "Tool",
+      "effect": "MiningEfficiency",
+      "simpleMagnitude": 0.03
+    },
+    {
+      "element": "Earth",
+      "category": "Utility",
+      "effect": "CarryWeight",
+      "simpleMagnitude": 10.0
     }
   ],
   "worldgenCompatibility": {

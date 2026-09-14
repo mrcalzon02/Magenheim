@@ -1,6 +1,7 @@
 using System;
 using Magenheim.Core;
 using Magenheim.Core.Definitions;
+using Magenheim.Core.Socketing;
 using Magenheim.Core.Worldgen;
 
 internal static class DefinitionCompatibilityTests
@@ -14,6 +15,8 @@ internal static class DefinitionCompatibilityTests
         ExactPolicyAllowsCaseDistinctOwnedExclusions(ref assertions);
         CaseInsensitiveFingerprintCanonicalizesExclusionCase(ref assertions);
         ExactFingerprintPreservesExclusionCase(ref assertions);
+        SocketEffectFingerprintChangesWithMagnitude(ref assertions);
+        OverridesPreserveSocketEffects(ref assertions);
         return assertions;
     }
 
@@ -154,6 +157,50 @@ internal static class DefinitionCompatibilityTests
             "Exact exclusion identity must retain casing as part of definition authority.");
     }
 
+    private static void SocketEffectFingerprintChangesWithMagnitude(ref int assertions)
+    {
+        var geodes = new[] { CreateGeode("magenheim.geode.meadows.earth", "Magenheim_Geode_Meadows_Earth") };
+        var firstEffects = new SocketEffectDefinitionSet(new[]
+        {
+            new SocketEffectRule(ElementalAlignment.Earth, EquipmentCategory.Weapon, SocketEffectKind.BluntDamage, 2d),
+        });
+        var secondEffects = new SocketEffectDefinitionSet(new[]
+        {
+            new SocketEffectRule(ElementalAlignment.Earth, EquipmentCategory.Weapon, SocketEffectKind.BluntDamage, 2.5d),
+        });
+
+        var first = CreateSnapshot(geodes, WorldgenCompatibilityPolicy.Conservative, firstEffects);
+        var second = CreateSnapshot(geodes, WorldgenCompatibilityPolicy.Conservative, secondEffects);
+
+        Assert(!string.Equals(first.Fingerprint, second.Fingerprint, StringComparison.Ordinal), ref assertions,
+            "Socket-effect magnitude must participate in synchronized definition authority fingerprinting.");
+    }
+
+    private static void OverridesPreserveSocketEffects(ref int assertions)
+    {
+        var effects = new SocketEffectDefinitionSet(new[]
+        {
+            new SocketEffectRule(ElementalAlignment.Earth, EquipmentCategory.Utility, SocketEffectKind.CarryWeight, 10d),
+        });
+        var baseline = CreateSnapshot(
+            new[] { CreateGeode("magenheim.geode.meadows.earth", "Magenheim_Geode_Meadows_Earth") },
+            WorldgenCompatibilityPolicy.Conservative,
+            effects);
+
+        var effective = MagenheimDefinitionOverrideApplier.Apply(
+            baseline,
+            Array.Empty<RefinementBalanceOverride>(),
+            Array.Empty<GeodeBalanceOverride>());
+
+        Assert(effective.SocketEffects.Rules.Count == 1 &&
+               effective.SocketEffects.Rules[0].Effect == SocketEffectKind.CarryWeight &&
+               Math.Abs(effective.SocketEffects.Rules[0].SimpleMagnitude - 10d) < 0.0000001d,
+            ref assertions,
+            "Balance/worldgen override application must preserve socket-effect authority instead of silently erasing it.");
+        Assert(string.Equals(effective.Fingerprint, baseline.Fingerprint, StringComparison.Ordinal), ref assertions,
+            "A no-op override pass must preserve the full schema-four authority fingerprint including socket effects.");
+    }
+
     private static GeodeDefinition CreateGeode(string id, string prefabName) =>
         new(
             id,
@@ -167,12 +214,14 @@ internal static class DefinitionCompatibilityTests
 
     private static MagenheimDefinitionSet CreateSnapshot(
         GeodeDefinition[] geodes,
-        WorldgenCompatibilityPolicy policy) =>
+        WorldgenCompatibilityPolicy policy,
+        SocketEffectDefinitionSet? socketEffects = null) =>
         MagenheimDefinitionValidator.ValidateAndFreeze(
             MagenheimDefinitionValidator.CurrentSchemaVersion,
             CrystalRefinementService.CreateCanonicalDefaults(),
             geodes,
-            policy);
+            policy,
+            socketEffects);
 
     private static void Assert(bool condition, ref int assertions, string message)
     {
