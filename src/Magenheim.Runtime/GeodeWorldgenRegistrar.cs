@@ -21,6 +21,9 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
     private const string VanillaWorldBasePrefab = "Rock_4";
     private const float DefaultHealth = 20f;
     private const int DefaultMinToolTier = 0;
+    // Live test 1 showed the original 3.5x nodule was far too large. 1.2x is roughly
+    // a two-thirds reduction and returns the world object to a ground-stone scale.
+    private const float MeadowsEarthWorldVisualScale = 1.2f;
 
     private readonly MagenheimDefinitionSet _definitions;
     private readonly ManualLogSource _log;
@@ -144,7 +147,7 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
         ConfigureDestructible(worldPrefab, addition.Desired.PrefabName);
         ConfigureSingleIntactGeodeDrop(worldPrefab, intactGeodePrefab, addition.Desired.PrefabName);
         if (geode.Id == "magenheim.geode.meadows.earth")
-            EarthAssets.ReplaceVisual(worldPrefab, "geode", 3.5f, worldObject: true);
+            EarthAssets.ReplaceVisual(worldPrefab, "geode", MeadowsEarthWorldVisualScale, worldObject: true);
 
         var vegetationConfig = new VegetationConfig
         {

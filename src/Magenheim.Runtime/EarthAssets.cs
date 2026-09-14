@@ -28,6 +28,9 @@ internal static class EarthAssets
 
     internal static GameObject ReplaceVisual(GameObject prefab, string asset, float scale = 1f, bool worldObject = false, bool buildingPiece = false)
     {
+        if (scale <= 0f || float.IsNaN(scale) || float.IsInfinity(scale))
+            throw new ArgumentOutOfRangeException(nameof(scale), "Visual scale must be finite and greater than zero.");
+
         var wear = prefab.GetComponent<WearNTear>();
         var variants = buildingPiece && wear ? new[] { wear.m_new, wear.m_worn, wear.m_broken }.Where(obj => obj).Distinct().ToArray() : Array.Empty<GameObject>();
         // Keep workbench radius markers, connection effects, and trigger visuals intact.
@@ -55,12 +58,15 @@ internal static class EarthAssets
         }
 
         var mesh = LoadMesh(asset);
+        var worldOffset = worldObject
+            ? new Vector3(0f, -mesh.bounds.min.y * scale, 0f)
+            : Vector3.zero;
         var visual = new GameObject("magenheim." + asset + ".visual");
         // Preserve the inventory attachment hierarchy used by item stands and dropped items.
         visual.transform.SetParent(worldObject || buildingPiece ? prefab.transform : prefab.transform.Find("attach") ?? prefab.transform, false);
         visual.layer = prefab.layer;
         visual.transform.localScale = Vector3.one * scale;
-        visual.transform.localPosition = worldObject ? new Vector3(0, .53f, 0) : Vector3.zero;
+        visual.transform.localPosition = worldOffset;
         visual.AddComponent<MeshFilter>().sharedMesh = mesh;
         visual.AddComponent<MeshRenderer>().sharedMaterial = material;
         foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled = false;
@@ -68,12 +74,14 @@ internal static class EarthAssets
 
         if (worldObject)
         {
-            // The new nodule is much smaller than Rock_4. Give only this clone a matching collider.
+            // Match the collision envelope to the actual custom mesh and requested scale instead
+            // of keeping Rock_4's collision or a hard-coded collider from an older visual size.
             foreach (var collider in prefab.GetComponentsInChildren<Collider>(true))
                 if (!collider.isTrigger) collider.enabled = false;
             var noduleCollider = prefab.AddComponent<SphereCollider>();
-            noduleCollider.center = new Vector3(0, .53f, 0);
-            noduleCollider.radius = .65f;
+            noduleCollider.center = worldOffset + (mesh.bounds.center * scale);
+            var extents = mesh.bounds.extents * scale;
+            noduleCollider.radius = Mathf.Max(extents.x, Mathf.Max(extents.y, extents.z)) * 1.05f;
         }
         return visual;
     }
