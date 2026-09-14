@@ -18,7 +18,10 @@ internal static class ItemSocketAdapter
         var origin = string.IsNullOrWhiteSpace(modOrigin)
             ? ResolveModOrigin(prefabName)
             : modOrigin.Trim();
-        return new EquipmentDescriptor(prefabName, origin, Classify(item));
+        return new EquipmentDescriptor(prefabName, origin, Classify(item))
+        {
+            ItemName = item.m_shared.m_name ?? string.Empty,
+        };
     }
 
     internal static bool TryRead(ItemDrop.ItemData item, out SocketState state, out string diagnostic)
