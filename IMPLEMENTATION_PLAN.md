@@ -37,3 +37,15 @@ Validate plugin startup, disposable-world worldgen, repeated world loads, save/l
 ## 9. Expansion
 
 Only after the Earth vertical slice is playable and admitted should biome catalogs and later magic systems expand. Recover detailed feature intent from `docs/archive/MAGENHEIM_DESIGN_SPEC_0.1.0_PRE_RECONCILIATION.md`, reconciling each feature against current authority before implementation.
+
+## 10. The Underworld expansion track
+
+`docs/UNDERWORLD_DESIGN.md` is the durable design authority for The Underworld. `docs/UNDERWORLD_IMPLEMENTATION_PLAN.md` is the execution-grade plan that decomposes that design into framework, world-layer, biome, creature, boss, Deepstone, progression, traversal, building, portal, persistence, multiplayer and validation phases.
+
+The Underworld remains inside Magenheim for the foreseeable development horizon. It must extend Magenheim's existing definition validation, fingerprints, progression, multiplayer authority and persistence boundaries rather than creating a duplicate mod/repository or second implementation stack.
+
+The first Underworld code work is not biome decoration. After higher-priority broken behavior and runtime validation gates are resolved, begin with the authority/schema skeleton, derived-world feasibility proof and cavern-illusion framework defined in Phases U0-U4 of `docs/UNDERWORLD_IMPLEMENTATION_PLAN.md`.
+
+## 11. Underworld content production order
+
+Once the Underworld framework is proven, production proceeds through the complete Fungal Forest vertical slice and the shared boss/Deepstone loop before multiplying biomes. The intended major progression is Fungal Forest -> Blackwater -> Sulfurous Wastes and Frozen Caverns in either order -> Fracture Zones -> Great Decay. Each biome must satisfy its full package gate, including ecology, structures, resources, unique boss, trophy and Deepstone boon, before the next dependent layer is considered complete.

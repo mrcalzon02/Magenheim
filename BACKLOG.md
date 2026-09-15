@@ -92,8 +92,29 @@ Priority is dependency order. Broken intended behavior and repository divergence
 
 Continue remaining elemental/magic content only when it does not outrank broken intended behavior or validation gates above. The archived detailed design remains recovery material, not evidence of implementation. Current source already contains substantial elemental staff work beyond the original Earth vertical-slice baseline; live source and validation records outrank this historical phase label.
 
+## P4 — The Underworld expansion track
+
+Durable authorities: `docs/UNDERWORLD_DESIGN.md` and `docs/UNDERWORLD_IMPLEMENTATION_PLAN.md`.
+
+This is expansion scope and remains subordinate to broken intended behavior and unresolved runtime acceptance in P0-P2. Do not allow exciting new world content to hide failures in the existing Magenheim baseline.
+
+- [x] Commit the durable Underworld design and heightfield cavern-illusion architecture.
+- [x] Commit the detailed Underworld implementation program, including biome framework, creature ecology, six-boss progression, Deepstone Conclave and milestone gates.
+- [ ] U0: reconcile live definition, fingerprint, world-state, network and Nowhere King completion authorities and record the exact extension map.
+- [ ] U1: implement Underworld Core definition/schema/fingerprint skeleton with deterministic tests and no false world registration.
+- [ ] U2: prove the derived-world transition architecture in a disposable environment before biome production.
+- [ ] U3: harden persistent world/map/multiplayer transition state.
+- [ ] U4: prove Macro Basin + Wall Mass + inaccessible Roof Shelf + cavern-sky/fog illusion.
+- [ ] U5-U7: implement generic biome, ecology, boss and Deepstone frameworks.
+- [ ] U8-U9: complete Fungal Forest vertical slice and The First Bloom progression loop.
+- [ ] U10-U11: complete Blackwater Deep and The Blackwater Maw.
+- [ ] U12-U15: complete Sulfurous Wastes/Furnace Heart and Frozen Caverns/White Silence parallel progression branches.
+- [ ] U16-U18: implement traversal framework, Fracture Zones and The Rift Titan.
+- [ ] U19-U20: implement Great Decay and The Carrion Crown.
+- [ ] U21: complete all six Deepstones and Deepbound Portal unlock using the authoritative transition service.
+- [ ] U22-U25: expand civilizations, building, events/audio/music, configuration and compatibility.
+- [ ] U26: execute expansion-scale validation across transition, generation, persistence, multiplayer, bosses, structures, building and performance.
+
 ## Closeout follow-through
 
-Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the 0.0.45
-TESTING.md matrix before enabling Deep Fracture surface generation or adding later
-model-only gameplay. Historical unchecked runtime gates above remain open.
+Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the current TESTING.md matrix before enabling later world-generation scope or adding model-only gameplay. Historical unchecked runtime gates above remain open.
