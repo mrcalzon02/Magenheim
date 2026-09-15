@@ -11,11 +11,11 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Four-tier Spirit staff family. Spirit magic uses spectral projectiles and echo fields to haunt
-/// enemies, suppress their outgoing attacks, and keep pressure lingering after the initial hit.
+/// enemies, suppress outgoing attacks, and keep pressure lingering after the initial hit.
 /// </summary>
 internal sealed class SpiritStaffRegistrar : IDisposable
 {
-    private const string BaseStaffPrefab = "StaffFireball";
+    private const string BaseStaffPrefab = "StaffIceShards";
     private readonly ManualLogSource _log;
     private bool _subscribed;
     private bool _registered;
@@ -36,7 +36,7 @@ internal sealed class SpiritStaffRegistrar : IDisposable
         try
         {
             if (PrefabManager.Instance.GetPrefab(BaseStaffPrefab) is null)
-                throw new InvalidOperationException($"Required vanilla staff prefab '{BaseStaffPrefab}' is unavailable.");
+                throw new InvalidOperationException($"Required hidden staff carrier '{BaseStaffPrefab}' is unavailable.");
             if (PrefabManager.Instance.GetPrefab(WorkshopRegistrar.StationPrefab) is null)
                 throw new InvalidOperationException("Geologist's Workstation must exist before Spirit staff recipes are registered.");
 
@@ -44,60 +44,60 @@ internal sealed class SpiritStaffRegistrar : IDisposable
                 "Magenheim_SE_Haunted",
                 "Haunted",
                 "A spectral presence clings to the target, reducing all outgoing attack damage by twelve percent.",
-                ttl: 3.5f,
-                damageMultiplier: .88f,
+                3.5f,
+                .88f,
                 new Color(.30f, .90f, .80f, 1f));
             var dissonance = RegisterSuppressionEffect(
                 "Magenheim_SE_SpiritDissonance",
                 "Spirit Dissonance",
                 "Overlapping voices disrupt the target's intent, reducing all outgoing attack damage by twenty percent.",
-                ttl: 3f,
-                damageMultiplier: .80f,
+                3f,
+                .80f,
                 new Color(.52f, 1f, .91f, 1f));
             var soulSuppression = RegisterSuppressionEffect(
                 "Magenheim_SE_SoulSuppression",
                 "Soul Suppression",
                 "The reliquary smothers hostile intent, reducing all outgoing attack damage by thirty percent.",
-                ttl: 5f,
-                damageMultiplier: .70f,
+                5f,
+                .70f,
                 new Color(.78f, 1f, .95f, 1f));
 
             var lanternEcho = StaffEffectPayloads.CreateField(
                 "Magenheim_Spirit_LanternEcho",
                 new HitData.DamageTypes { m_spirit = 3f },
-                radius: 2.4f,
-                ttl: 3f,
-                hitInterval: .75f,
-                attackForce: 4f,
-                tint: new Color(.28f, .92f, .80f, 1f),
-                emission: 1.35f,
-                statusEffect: haunted);
+                2.4f,
+                3f,
+                .75f,
+                4f,
+                new Color(.28f, .92f, .80f, 1f),
+                1.35f,
+                haunted);
             var chorusEcho = StaffEffectPayloads.CreateField(
                 "Magenheim_Spirit_ChorusEcho",
                 new HitData.DamageTypes { m_spirit = 2f },
-                radius: 1.8f,
-                ttl: 1.4f,
-                hitInterval: .40f,
-                attackForce: 2f,
-                tint: new Color(.50f, 1f, .90f, 1f),
-                emission: 1.55f,
-                statusEffect: dissonance);
+                1.8f,
+                1.4f,
+                .40f,
+                2f,
+                new Color(.50f, 1f, .90f, 1f),
+                1.55f,
+                dissonance);
             var reliquaryEcho = StaffEffectPayloads.CreateField(
                 "Magenheim_Spirit_ReliquaryEcho",
                 new HitData.DamageTypes { m_spirit = 3.5f },
-                radius: 2.8f,
-                ttl: 2.2f,
-                hitInterval: .45f,
-                attackForce: 3f,
-                tint: new Color(.74f, 1f, .94f, 1f),
-                emission: 1.75f,
-                statusEffect: soulSuppression);
+                2.8f,
+                2.2f,
+                .45f,
+                3f,
+                new Color(.74f, 1f, .94f, 1f),
+                1.75f,
+                soulSuppression);
 
             var payloads = new PayloadSet(
-                StaffEffectPayloads.CreateProjectile("Magenheim_Spirit_Projectile", new Color(.24f, .88f, .76f, 1f), 1.35f),
-                StaffEffectPayloads.CreateProjectile("Magenheim_Spirit_LanternProjectile", new Color(.34f, .96f, .84f, 1f), 1.50f, lanternEcho),
-                StaffEffectPayloads.CreateProjectile("Magenheim_Spirit_ChorusProjectile", new Color(.55f, 1f, .91f, 1f), 1.65f, chorusEcho),
-                StaffEffectPayloads.CreateProjectile("Magenheim_Spirit_ReliquaryProjectile", new Color(.78f, 1f, .95f, 1f), 1.85f, reliquaryEcho));
+                StaffEffectPayloads.CreateProjectile("Magenheim_Spirit_Projectile", new Color(.24f, .88f, .76f, 1f), 1.35f, null, BaseStaffPrefab),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Spirit_LanternProjectile", new Color(.34f, .96f, .84f, 1f), 1.50f, lanternEcho, BaseStaffPrefab),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Spirit_ChorusProjectile", new Color(.55f, 1f, .91f, 1f), 1.65f, chorusEcho, BaseStaffPrefab),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Spirit_ReliquaryProjectile", new Color(.78f, 1f, .95f, 1f), 1.85f, reliquaryEcho, BaseStaffPrefab));
 
             foreach (var definition in Definitions())
             {
@@ -106,7 +106,7 @@ internal sealed class SpiritStaffRegistrar : IDisposable
             }
 
             _registered = true;
-            _log.LogInfo("Registered Spirit abilities: Whisper Bolt, Wraith Lantern with Haunted suppression, Soul Chorus with Dissonance, and Reliquary of Echoes with Soul Suppression.");
+            _log.LogInfo("Registered Spirit abilities with owned Spirit staff bodies, non-fire projectile carriers, and stamina-only casting.");
         }
         catch (Exception exception)
         {
@@ -160,15 +160,12 @@ internal sealed class SpiritStaffRegistrar : IDisposable
         shared.m_dlc = string.Empty;
         shared.m_damages = new HitData.DamageTypes { m_spirit = definition.SpiritDamage };
         shared.m_damagesPerLevel = new HitData.DamageTypes();
-        shared.m_icons = new[]
-        {
-            EarthAssets.Icon("crystal", definition.AssetName, new Color(.26f, .92f, .78f, 1f))
-        };
+        shared.m_icons = new[] { EarthAssets.Icon("crystal", definition.AssetName, new Color(.26f, .92f, .78f, 1f)) };
 
         var attack = shared.m_attack;
         attack.m_attackProjectile = payloads.Resolve(definition.Payload);
         attack.m_attackStamina = definition.StaminaCost;
-        attack.m_attackEitr = definition.EitrCost;
+        attack.m_attackEitr = 0f;
         attack.m_damageMultiplier = definition.DamageMultiplier;
         attack.m_forceMultiplier = definition.ForceMultiplier;
         attack.m_staggerMultiplier = definition.StaggerMultiplier;
@@ -208,23 +205,23 @@ internal sealed class SpiritStaffRegistrar : IDisposable
         new Definition(
             "Magenheim_Staff_Spirit_Simple", "staff-spirit-simple", "Simple Staff of Spirit",
             "Whisper Bolt: releases one quiet spectral shot. It carries only Spirit damage and leaves no borrowed flame, suppression field, or explosion behind.",
-            1, 17f, 0f, 22f, .95f, .18f, .30f, 40f, .85f, 1, 1, 0f, PayloadKind.Direct,
+            1, 17f, 22f, .95f, .18f, .30f, 40f, .85f, 1, 1, 0f, PayloadKind.Direct,
             new Requirement("FineWood", 8), new Requirement("BoneFragments", 8), new Requirement("Magenheim_Crystal_Spirit_Simple", 1)),
         new Definition(
             "Magenheim_Staff_Spirit_Crystal", "staff-spirit-crystal", "Crystal Staff of Spirit",
             "Wraith Lantern: drives a dense spectral lance into one target and leaves a three-second haunting echo. Enemies touched by the echo become Haunted, reducing outgoing attack damage by twelve percent for three and a half seconds.",
-            2, 27f, 0f, 34f, 1f, .42f, .65f, 50f, .35f, 1, 1, 0f, PayloadKind.Lantern,
+            2, 27f, 34f, 1f, .42f, .65f, 50f, .35f, 1, 1, 0f, PayloadKind.Lantern,
             new Requirement("ElderBark", 10), new Requirement("Chain", 2), new Requirement("Silver", 2), new Requirement("Magenheim_Crystal_Spirit_Crystal", 1)),
         new Definition(
             "Magenheim_Staff_Spirit_Advanced", "staff-spirit-advanced", "Advanced Staff of Spirit",
             "Soul Chorus: four spectral voices answer the cast twice. Their overlapping echo fields inflict Spirit Dissonance, cutting outgoing attack damage by twenty percent while the chorus continues to haunt a clustered group.",
-            3, 10f, 18f, 14f, .45f, .28f, .42f, 42f, 7.5f, 4, 2, .17f, PayloadKind.Chorus,
-            new Requirement("YggdrasilWood", 10), new Requirement("BlackCore", 2), new Requirement("Eitr", 6), new Requirement("Magenheim_Crystal_Spirit_Advanced", 1)),
+            3, 28f, 14f, .45f, .28f, .42f, 42f, 7.5f, 4, 2, .17f, PayloadKind.Chorus,
+            new Requirement("YggdrasilWood", 10), new Requirement("BlackCore", 2), new Requirement("Magenheim_Crystal_Spirit_Advanced", 1)),
         new Definition(
             "Magenheim_Staff_Spirit_Master", "staff-spirit-master", "Master Staff of Spirit",
             "Reliquary of Echoes: releases four spectral lines through three successive responses. Each impact opens a larger echo field that inflicts Soul Suppression, reducing outgoing attack damage by thirty percent for five seconds after exposure.",
-            4, 0f, 50f, 16f, .40f, .32f, .50f, 44f, 10f, 4, 3, .13f, PayloadKind.Reliquary,
-            new Requirement("YggdrasilWood", 15), new Requirement("BlackCore", 4), new Requirement("Eitr", 12), new Requirement("Magenheim_Crystal_Spirit_Master", 1)),
+            4, 52f, 16f, .40f, .32f, .50f, 44f, 10f, 4, 3, .13f, PayloadKind.Reliquary,
+            new Requirement("YggdrasilWood", 15), new Requirement("BlackCore", 4), new Requirement("Magenheim_Crystal_Spirit_Master", 1)),
     };
 
     public void Dispose()
@@ -263,7 +260,12 @@ internal sealed class SpiritStaffRegistrar : IDisposable
 
     private readonly struct Requirement
     {
-        internal Requirement(string prefabName, int amount) { PrefabName = prefabName; Amount = amount; }
+        internal Requirement(string prefabName, int amount)
+        {
+            PrefabName = prefabName;
+            Amount = amount;
+        }
+
         internal string PrefabName { get; }
         internal int Amount { get; }
     }
@@ -271,10 +273,23 @@ internal sealed class SpiritStaffRegistrar : IDisposable
     private sealed class Definition
     {
         internal Definition(
-            string prefabName, string assetName, string displayName, string description, int minimumStationLevel,
-            float staminaCost, float eitrCost, float spiritDamage, float damageMultiplier, float forceMultiplier,
-            float staggerMultiplier, float projectileVelocity, float projectileAccuracy, int projectiles, int bursts,
-            float burstInterval, PayloadKind payload, params Requirement[] requirements)
+            string prefabName,
+            string assetName,
+            string displayName,
+            string description,
+            int minimumStationLevel,
+            float staminaCost,
+            float spiritDamage,
+            float damageMultiplier,
+            float forceMultiplier,
+            float staggerMultiplier,
+            float projectileVelocity,
+            float projectileAccuracy,
+            int projectiles,
+            int bursts,
+            float burstInterval,
+            PayloadKind payload,
+            params Requirement[] requirements)
         {
             PrefabName = prefabName;
             AssetName = assetName;
@@ -282,7 +297,6 @@ internal sealed class SpiritStaffRegistrar : IDisposable
             Description = description;
             MinimumStationLevel = minimumStationLevel;
             StaminaCost = staminaCost;
-            EitrCost = eitrCost;
             SpiritDamage = spiritDamage;
             DamageMultiplier = damageMultiplier;
             ForceMultiplier = forceMultiplier;
@@ -302,7 +316,6 @@ internal sealed class SpiritStaffRegistrar : IDisposable
         internal string Description { get; }
         internal int MinimumStationLevel { get; }
         internal float StaminaCost { get; }
-        internal float EitrCost { get; }
         internal float SpiritDamage { get; }
         internal float DamageMultiplier { get; }
         internal float ForceMultiplier { get; }
@@ -329,10 +342,10 @@ internal static class SpiritVisuals
         root.transform.SetParent(attach, false);
 
         var bone = MakeMaterial(source, "bone", new Color(.66f, .70f, .65f, 1f), .02f, .18f);
-        var dark = MakeMaterial(source, "dark", new Color(.08f, .12f, .13f, 1f), .18f, .16f);
+        var dark = MakeMaterial(source, "dark-wood", new Color(.08f, .12f, .13f, 1f), .18f, .16f);
         var silver = MakeMaterial(source, "silver", new Color(.42f, .55f, .55f, 1f), .56f, .38f);
-        var spirit = MakeMaterial(source, "spirit", new Color(.24f, .88f, .76f, 1f), .01f, .74f, .58f);
-        var pale = MakeMaterial(source, "pale", new Color(.72f, 1f, .92f, 1f), .01f, .84f, .78f);
+        var spirit = MakeMaterial(source, "spirit-crystal", new Color(.24f, .88f, .76f, 1f), .01f, .74f, .58f);
+        var pale = MakeMaterial(source, "spirit-pale-crystal", new Color(.72f, 1f, .92f, 1f), .01f, .84f, .78f);
 
         switch (assetName)
         {
@@ -435,7 +448,7 @@ internal static class SpiritVisuals
     private static Material MakeMaterial(Material source, string name, Color color, float metallic, float gloss, float emission = 0f)
     {
         var material = new Material(source) { name = "magenheim.spirit." + name };
-        material.mainTexture = Texture2D.whiteTexture;
+        GeneratedSurfaceTextures.Apply(material, name);
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", gloss);
