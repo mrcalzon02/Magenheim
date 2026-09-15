@@ -96,6 +96,7 @@ internal sealed class CrystallineIceBoxRegistrar : IDisposable
             custom.Piece.m_dlc = string.Empty;
             var prefab = custom.PiecePrefab;
             var visual = CrystallineIceBoxVisuals.Apply(prefab);
+            InheritedPrefabSanitizer.DisableInheritedAudio(prefab);
 
             var producer = prefab.GetComponent<Beehive>()
                 ?? throw new InvalidOperationException("Crystalline Ice Box lost its persistent producer component.");
