@@ -17,7 +17,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.47";
+    internal const string PluginVersion = "0.0.48";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -47,6 +47,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private SeidrStaffRegistrar? _seidrStaffRegistrar;
     private SpiritStaffRegistrar? _spiritStaffRegistrar;
     private DeepFractureRoomRegistrar? _deepFractureRoomRegistrar;
+    private DeepFractureLocationRegistrar? _deepFractureLocationRegistrar;
     private SocketWorkstationOverlay? _socketWorkstationOverlay;
     private Harmony? _harmony;
 
@@ -87,8 +88,6 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             WorkshopOperationsRuntime.Configure(_services, _authoritySynchronizer, Logger);
             WorkshopOperationRpc.Register(_services, _authoritySynchronizer, Logger);
 
-            // Equipment socket storage/UI has exactly one owner. Native mutation remains disabled
-            // under Jewelcrafting, while Magenheim's effect reader consumes Jewelcrafting state.
             if (nativeSocketRuntimeEnabled)
             {
                 SocketOperationRpc.Register(_services, _authoritySynchronizer, Logger);
@@ -127,6 +126,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
             _deepFractureRoomRegistrar = new DeepFractureRoomRegistrar(Logger);
             _deepFractureRoomRegistrar.Register();
+            _deepFractureLocationRegistrar = new DeepFractureLocationRegistrar(new DeepFractureInteriorBinder(), Logger);
+            _deepFractureLocationRegistrar.Register();
 
             _earthContentRegistrar = new EarthContentRegistrar(Logger);
             _earthContentRegistrar.Register();
@@ -197,7 +198,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 "a configurable persistent Crystalline Ice Box, a dedicated Crystal Enchanting Dais that gates Crystal Bed and Ice Box construction, " +
                 "a 10-piece high-durability physical crystal weapon set, deliberate Rough-crystal/shard grinding, Crystal Dust, Prismatic Eitrwine fermentation, " +
                 "provider-routed equipment socketing, and eight four-tier staff families with distinct runtime effects. " +
-                "Deep Fracture runtime room authority now includes twenty canonical district families plus passage/traversal templates; surface Deep Fracture worldgen remains gated behind collision-safe physical route projection. " +
+                "Deep Fracture runtime authority now registers twenty canonical district families, collision-safe passages, traversal links, and additive surface fracture entrances backed by deterministic isolated interiors with paired return travel. " +
                 "Fire owns fireburst/scorch/meteor burn terrain; Frost owns Brittle and Rime fields; Storm owns secondary discharges; " +
                 "Earth owns Fractured/Shattered Armor and Tremor; Venom owns corrosion; Radiance owns hard-light/flash/sanctuary payloads; " +
                 "Seidr owns binding hexes; and Spirit owns Haunted, Dissonance, and Soul Suppression attack-damage suppression through spectral echo fields.");
@@ -236,6 +237,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
         _workshopRegistrar?.Dispose();
         _jewelcraftingCrystalRegistrar?.Dispose();
         _earthContentRegistrar?.Dispose();
+        _deepFractureLocationRegistrar?.Dispose();
         _deepFractureRoomRegistrar?.Dispose();
         if (_socketWorkstationOverlay is not null)
             Destroy(_socketWorkstationOverlay);
