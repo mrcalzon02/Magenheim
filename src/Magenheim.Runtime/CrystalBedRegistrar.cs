@@ -149,6 +149,7 @@ internal sealed class CrystalBedRegistrar : IDisposable
         producer.m_beeEffect = ambient;
 
         ConfigureCollider(prefab);
+        PlacementSnapAuthority.FitRectangle(prefab, 3.10f, 2.20f);
         var wear = prefab.GetComponent<WearNTear>();
         if (wear)
         {
