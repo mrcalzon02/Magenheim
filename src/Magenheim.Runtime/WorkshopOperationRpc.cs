@@ -214,7 +214,7 @@ internal static class WorkshopOperationRpc
 
         ServerOperationRecord record;
         if (operation.Kind == WorkshopOperationKind.OpenGeode)
-            record = PrepareServerGeodeOpening(sender, generation, operationId, operation);
+            record = PrepareServerGeodeOpening(sender, generation, operationId, operation, clientSkill);
         else
             record = PrepareServerRefinement(sender, generation, operationId, operation, clientSkill);
 
@@ -242,7 +242,8 @@ internal static class WorkshopOperationRpc
         long peerId,
         long generation,
         string operationId,
-        WorkshopOperationDefinition operation)
+        WorkshopOperationDefinition operation,
+        int clientSkill)
     {
         var services = _services!;
         var authority = _authority!;
@@ -254,7 +255,8 @@ internal static class WorkshopOperationRpc
                 geode,
                 ServerRandom.NextUnit(),
                 ServerRandom.NextUnit(),
-                new[] { ServerRandom.NextUnit(), ServerRandom.NextUnit(), ServerRandom.NextUnit() });
+                new[] { ServerRandom.NextUnit(), ServerRandom.NextUnit(), ServerRandom.NextUnit() },
+                clientSkill);
             var preview = GeodeCrackingService.Crack(crackingRequest);
             if (!preview.IsSuccess)
                 return ServerOperationRecord.Rejected(operation.RecipeName, preview.Reason);
@@ -278,7 +280,7 @@ internal static class WorkshopOperationRpc
                 guardKey,
                 decision.Plan.ConsumeGeodeCount,
                 grants,
-                CrystalShapingExperience.CrackGeode,
+                CrystalShapingExperience.ForGeodeCracking(decision.Plan.GrantCrystals.Count),
                 decision.Plan.Diagnostic);
         }
         catch (Exception exception)
