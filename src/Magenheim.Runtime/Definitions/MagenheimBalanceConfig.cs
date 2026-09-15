@@ -107,6 +107,32 @@ internal static class MagenheimBalanceConfig
         var effectiveMin = guaranteeSurfaceSpawn ? Math.Max(1.0, configuredMin) : configuredMin;
         var effectiveMax = guaranteeSurfaceSpawn ? Math.Max(effectiveMin, configuredMax) : configuredMax;
 
+        var configuredGroupMin = config.Bind(section, "GroupSizeMin", baseline.GroupSizeMin,
+            "Minimum objects per placement group; must be at least 1.").Value;
+        var configuredGroupMax = config.Bind(section, "GroupSizeMax", baseline.GroupSizeMax,
+            "Maximum objects per placement group; must be >= GroupSizeMin.").Value;
+        var configuredGroupRadius = config.Bind(section, "GroupRadius", baseline.GroupRadius,
+            "Radius of a placement group; must be non-negative.").Value;
+        var migrateLegacyClusterDefaults = config.Bind(section, "MigrateLegacyClusterDefaults", true,
+            "When true, only the former Magenheim 1/1/0 geode cluster defaults are upgraded to the current foundation cluster. Custom cluster values remain untouched.").Value;
+
+        // BepInEx preserves old values forever. The pre-cluster Magenheim release wrote exactly
+        // 1/1/0 for every geode, so recognize only that complete legacy tuple. This avoids treating
+        // a user's deliberate custom values as stale defaults while allowing existing installs to
+        // receive the current foundation grouping automatically.
+        var legacyClusterTuple = configuredGroupMin == 1
+            && configuredGroupMax == 1
+            && Math.Abs(configuredGroupRadius) < 0.000001d;
+        var effectiveGroupMin = migrateLegacyClusterDefaults && legacyClusterTuple
+            ? baseline.GroupSizeMin
+            : configuredGroupMin;
+        var effectiveGroupMax = migrateLegacyClusterDefaults && legacyClusterTuple
+            ? baseline.GroupSizeMax
+            : configuredGroupMax;
+        var effectiveGroupRadius = migrateLegacyClusterDefaults && legacyClusterTuple
+            ? baseline.GroupRadius
+            : configuredGroupRadius;
+
         return new GeodePlacementDefinition(
             config.Bind(section, "BlockCheck", baseline.BlockCheck,
                 "Reject placement when normal solid/piece layers already occupy the location.").Value,
@@ -142,12 +168,9 @@ internal static class MagenheimBalanceConfig
                 "Minimum placed world-object scale; must remain positive.").Value,
             config.Bind(section, "ScaleMax", baseline.ScaleMax,
                 "Maximum placed world-object scale; must be >= ScaleMin.").Value,
-            config.Bind(section, "GroupSizeMin", baseline.GroupSizeMin,
-                "Minimum objects per placement group; must be at least 1.").Value,
-            config.Bind(section, "GroupSizeMax", baseline.GroupSizeMax,
-                "Maximum objects per placement group; must be >= GroupSizeMin.").Value,
-            config.Bind(section, "GroupRadius", baseline.GroupRadius,
-                "Radius of a placement group; must be non-negative.").Value,
+            effectiveGroupMin,
+            effectiveGroupMax,
+            effectiveGroupRadius,
             config.Bind(section, "GroundOffset", baseline.GroundOffset,
                 "Vertical placement offset; negative values bury the object slightly.").Value);
     }
