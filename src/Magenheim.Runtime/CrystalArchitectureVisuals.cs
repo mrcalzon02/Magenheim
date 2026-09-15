@@ -29,10 +29,7 @@ internal static class CrystalArchitectureVisuals
         if (string.IsNullOrWhiteSpace(modelId)) throw new ArgumentException("Architecture model id is required.", nameof(modelId));
 
         var original = prefab.GetComponentsInChildren<Renderer>(true);
-        var source = original
-            .Where(renderer => !(renderer is ParticleSystemRenderer))
-            .Select(renderer => renderer.sharedMaterial)
-            .FirstOrDefault(material => material)
+        var source = original.Where(renderer => !(renderer is ParticleSystemRenderer)).Select(renderer => renderer.sharedMaterial).FirstOrDefault(material => material)
             ?? original.Select(renderer => renderer.sharedMaterial).FirstOrDefault(material => material)
             ?? throw new InvalidOperationException($"No material source exists on architecture host '{prefab.name}'.");
 
@@ -46,30 +43,14 @@ internal static class CrystalArchitectureVisuals
 
         switch (modelId)
         {
-            case CrystalHearth:
-                BuildHearth(root, darkStone, stone, iron, rainbow);
-                TintVanillaFlame(prefab);
-                break;
-            case CrystalBeam2:
-                BuildBeam(root, 2f, iron, rainbow);
-                break;
-            case CrystalBeam4:
-                BuildBeam(root, 4f, iron, rainbow);
-                break;
-            case CrystalBeam8:
-                BuildBeam(root, 8f, iron, rainbow);
-                break;
-            case CrystalFoundation2:
-                BuildFoundation(root, 2f, iron, darkStone, rainbow);
-                break;
-            case CrystalFoundation4:
-                BuildFoundation(root, 4f, iron, darkStone, rainbow);
-                break;
-            case CrystalFoundation8:
-                BuildFoundation(root, 8f, iron, darkStone, rainbow);
-                break;
-            default:
-                throw new InvalidOperationException($"Unknown Magenheim crystal architecture model '{modelId}'.");
+            case CrystalHearth: BuildHearth(root, darkStone, stone, iron, rainbow); TintVanillaFlame(prefab); break;
+            case CrystalBeam2: BuildBeam(root, 2f, iron, rainbow); break;
+            case CrystalBeam4: BuildBeam(root, 4f, iron, rainbow); break;
+            case CrystalBeam8: BuildBeam(root, 8f, iron, rainbow); break;
+            case CrystalFoundation2: BuildFoundation(root, 2f, iron, darkStone, rainbow); break;
+            case CrystalFoundation4: BuildFoundation(root, 4f, iron, darkStone, rainbow); break;
+            case CrystalFoundation8: BuildFoundation(root, 8f, iron, darkStone, rainbow); break;
+            default: throw new InvalidOperationException($"Unknown Magenheim crystal architecture model '{modelId}'.");
         }
 
         foreach (var renderer in original)
@@ -90,17 +71,14 @@ internal static class CrystalArchitectureVisuals
         Box(root, "right-cheek", new Vector3(.93f, .53f, .05f), new Vector3(.30f, .84f, 1.20f), stone);
         Box(root, "front-band", new Vector3(0f, .43f, -.61f), new Vector3(1.88f, .09f, .09f), iron);
         Box(root, "rear-band", new Vector3(0f, .43f, .60f), new Vector3(1.88f, .09f, .09f), iron);
-
         for (var i = 0; i < rainbow.Count; i++)
         {
             var x = -0.72f + i * .24f;
             var height = .48f + .07f * (i % 3);
-            Prism(root, "rainbow-crystal-" + i,
-                new Vector3(x, .46f + height * .33f, .48f),
+            Prism(root, "rainbow-crystal-" + i, new Vector3(x, .46f + height * .33f, .48f),
                 new Vector3(.13f, height, .13f), 6, rainbow[i],
                 new Vector3(3f * (i % 2 == 0 ? 1 : -1), i * 11f, (i - 3) * 2.4f));
         }
-
         for (var i = 0; i < rainbow.Count; i++)
         {
             var angle = Mathf.PI * 2f * i / rainbow.Count;
@@ -117,11 +95,9 @@ internal static class CrystalArchitectureVisuals
         for (var i = 0; i < rainbow.Count; i++)
         {
             var y = segmentHeight * (.5f + i);
-            Prism(root, "segment-" + i, new Vector3(0f, y, 0f),
-                new Vector3(.46f, segmentHeight * 1.06f, .46f), 8, rainbow[i],
+            Prism(root, "segment-" + i, new Vector3(0f, y, 0f), new Vector3(.46f, segmentHeight * 1.06f, .46f), 8, rainbow[i],
                 new Vector3(i % 2 == 0 ? 1.5f : -1.5f, i * 9f, i % 3 - 1));
         }
-
         Box(root, "base-collar", new Vector3(0f, .07f, 0f), new Vector3(.58f, .14f, .58f), iron);
         Box(root, "top-collar", new Vector3(0f, height - .07f, 0f), new Vector3(.58f, .14f, .58f), iron);
         for (var quarter = 1; quarter < 4; quarter++)
@@ -137,22 +113,16 @@ internal static class CrystalArchitectureVisuals
         var cells = Mathf.Max(1, Mathf.RoundToInt(size / 2f));
         var cell = size / cells;
         var start = -size * .5f + cell * .5f;
-
         Box(root, "shadow-bed", new Vector3(0f, .07f, 0f), new Vector3(size, .14f, size), darkStone);
-
         for (var x = 0; x < cells; x++)
+        for (var z = 0; z < cells; z++)
         {
-            for (var z = 0; z < cells; z++)
-            {
-                var px = start + x * cell;
-                var pz = start + z * cell;
-                var colorIndex = (x * 2 + z * 3) % rainbow.Count;
-                Prism(root, $"facet-{x}-{z}", new Vector3(px, .19f, pz),
-                    new Vector3(cell * .92f, .30f, cell * .92f), 8, rainbow[colorIndex],
-                    new Vector3(0f, (x + z) * 11.25f, 0f));
-            }
+            var px = start + x * cell;
+            var pz = start + z * cell;
+            var colorIndex = (x * 2 + z * 3) % rainbow.Count;
+            Prism(root, $"facet-{x}-{z}", new Vector3(px, .19f, pz), new Vector3(cell * .92f, .30f, cell * .92f), 8,
+                rainbow[colorIndex], new Vector3(0f, (x + z) * 11.25f, 0f));
         }
-
         var edgeThickness = .10f;
         var edgeHeight = .16f;
         Box(root, "edge-north", new Vector3(0f, .20f, size * .5f - edgeThickness * .5f), new Vector3(size, edgeHeight, edgeThickness), iron);
@@ -167,20 +137,12 @@ internal static class CrystalArchitectureVisuals
         gradient.SetKeys(
             new[]
             {
-                new GradientColorKey(new Color(1f, .12f, .08f), 0f),
-                new GradientColorKey(new Color(1f, .78f, .08f), .16f),
-                new GradientColorKey(new Color(.35f, 1f, .20f), .33f),
-                new GradientColorKey(new Color(.10f, .90f, 1f), .50f),
-                new GradientColorKey(new Color(.20f, .36f, 1f), .67f),
-                new GradientColorKey(new Color(.72f, .18f, 1f), .84f),
+                new GradientColorKey(new Color(1f, .12f, .08f), 0f), new GradientColorKey(new Color(1f, .78f, .08f), .16f),
+                new GradientColorKey(new Color(.35f, 1f, .20f), .33f), new GradientColorKey(new Color(.10f, .90f, 1f), .50f),
+                new GradientColorKey(new Color(.20f, .36f, 1f), .67f), new GradientColorKey(new Color(.72f, .18f, 1f), .84f),
                 new GradientColorKey(new Color(1f, .16f, .62f), 1f)
             },
-            new[]
-            {
-                new GradientAlphaKey(1f, 0f),
-                new GradientAlphaKey(1f, .75f),
-                new GradientAlphaKey(0f, 1f)
-            });
+            new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, .75f), new GradientAlphaKey(0f, 1f) });
 
         var tinted = 0;
         foreach (var system in prefab.GetComponentsInChildren<ParticleSystem>(true))
@@ -188,7 +150,6 @@ internal static class CrystalArchitectureVisuals
             var name = system.gameObject.name;
             if (name.IndexOf("smoke", StringComparison.OrdinalIgnoreCase) >= 0) continue;
             if (name.IndexOf("sparks", StringComparison.OrdinalIgnoreCase) >= 0) continue;
-
             var colorOverLifetime = system.colorOverLifetime;
             colorOverLifetime.enabled = true;
             colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
@@ -196,39 +157,26 @@ internal static class CrystalArchitectureVisuals
             main.startColor = new ParticleSystem.MinMaxGradient(Color.white);
             tinted++;
         }
-
-        var lightColors = new[]
-        {
-            new Color(1f, .22f, .12f),
-            new Color(.16f, .72f, 1f),
-            new Color(.78f, .22f, 1f)
-        };
+        var lightColors = new[] { new Color(1f, .22f, .12f), new Color(.16f, .72f, 1f), new Color(.78f, .22f, 1f) };
         var lights = prefab.GetComponentsInChildren<Light>(true);
         for (var i = 0; i < lights.Length; i++)
         {
             lights[i].color = lightColors[i % lightColors.Length];
             lights[i].intensity = Mathf.Max(lights[i].intensity, 1.35f);
         }
-
-        if (tinted == 0)
-            throw new InvalidOperationException("Crystal Hearth source contains no non-smoke flame particle system to recolor.");
+        if (tinted == 0) throw new InvalidOperationException("Crystal Hearth source contains no non-smoke flame particle system to recolor.");
     }
 
     private static Material[] RainbowMaterials(Material source, string modelId)
     {
         var colors = new[]
         {
-            new Color(1.00f, .16f, .12f, 1f),
-            new Color(1.00f, .55f, .10f, 1f),
-            new Color(1.00f, .90f, .16f, 1f),
-            new Color(.30f, .95f, .28f, 1f),
-            new Color(.14f, .88f, 1.00f, 1f),
-            new Color(.28f, .38f, 1.00f, 1f),
+            new Color(1.00f, .16f, .12f, 1f), new Color(1.00f, .55f, .10f, 1f), new Color(1.00f, .90f, .16f, 1f),
+            new Color(.30f, .95f, .28f, 1f), new Color(.14f, .88f, 1.00f, 1f), new Color(.28f, .38f, 1.00f, 1f),
             new Color(.78f, .22f, 1.00f, 1f)
         };
         var materials = new Material[colors.Length];
-        for (var i = 0; i < colors.Length; i++)
-            materials[i] = Material(source, modelId + ".rainbow." + i, colors[i], .02f, .78f, .48f);
+        for (var i = 0; i < colors.Length; i++) materials[i] = Material(source, modelId + ".rainbow." + i, colors[i], .02f, .78f, .48f);
         return materials;
     }
 
@@ -237,11 +185,7 @@ internal static class CrystalArchitectureVisuals
 
     private static void Prism(GameObject root, string name, Vector3 position, Vector3 scale, int sides, Material material, Vector3? euler = null)
     {
-        if (!PrismMeshes.TryGetValue(sides, out var mesh))
-        {
-            mesh = CreatePrismMesh(sides);
-            PrismMeshes.Add(sides, mesh);
-        }
+        if (!PrismMeshes.TryGetValue(sides, out var mesh)) { mesh = CreatePrismMesh(sides); PrismMeshes.Add(sides, mesh); }
         Add(root, name, mesh, position, scale, Quaternion.Euler(euler ?? Vector3.zero), material);
     }
 
@@ -259,6 +203,8 @@ internal static class CrystalArchitectureVisuals
     private static Material Material(Material source, string suffix, Color color, float metallic, float glossiness, float emission = 0f)
     {
         var material = new Material(source) { name = "magenheim.architecture." + suffix, mainTexture = Texture2D.whiteTexture };
+        material.mainTextureScale = Vector2.one;
+        material.mainTextureOffset = Vector2.zero;
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", glossiness);
@@ -285,9 +231,7 @@ internal static class CrystalArchitectureVisuals
             new Vector3(-.5f,-.5f,.5f), new Vector3(.5f,-.5f,.5f), new Vector3(.5f,.5f,.5f), new Vector3(-.5f,.5f,.5f)
         };
         mesh.triangles = new[] { 0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2 };
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        return mesh;
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 
     private static Mesh CreatePrismMesh(int sides)
@@ -304,29 +248,20 @@ internal static class CrystalArchitectureVisuals
             var angle = Mathf.PI * 2f * i / sides;
             vertices.Add(new Vector3(.50f * Mathf.Cos(angle), .34f, .50f * Mathf.Sin(angle)));
         }
-        var top = vertices.Count;
-        vertices.Add(new Vector3(0f, .58f, 0f));
-        var bottom = vertices.Count;
-        vertices.Add(new Vector3(0f, -.52f, 0f));
+        var top = vertices.Count; vertices.Add(new Vector3(0f, .58f, 0f));
+        var bottom = vertices.Count; vertices.Add(new Vector3(0f, -.52f, 0f));
         for (var i = 0; i < sides; i++)
         {
             var next = (i + 1) % sides;
             triangles.AddRange(new[]
             {
-                bottom, next, i,
-                i, next, sides + i,
-                next, sides + next, sides + i,
-                sides + i, sides + next, top
+                bottom, i, next,
+                i, sides + i, next,
+                next, sides + i, sides + next,
+                top, sides + next, sides + i
             });
         }
-        var mesh = new Mesh
-        {
-            name = "magenheim.architecture.prism." + sides,
-            vertices = vertices.ToArray(),
-            triangles = triangles.ToArray()
-        };
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        return mesh;
+        var mesh = new Mesh { name = "magenheim.architecture.prism." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 }
