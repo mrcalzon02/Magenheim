@@ -91,7 +91,8 @@ The gate therefore fails on the exact defect it was written for and passes once 
 
 Supporting checks at the same revision:
 
-- core harness: 36,859 deterministic assertions passed;
+- core harness: 36,868 deterministic assertions passed, re-run after rebasing onto the
+  incoming Underworld authority composition commits (36,859 before that merge);
 - Release runtime build against the installed game assemblies and Jotunn 2.30.0: zero warnings, zero errors;
 - `verify-patch-targets.ps1`: 20 Harmony patch targets and named argument bindings verified;
 - `LauncherMetadata.Tests.ps1`: passed.

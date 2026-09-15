@@ -16,7 +16,11 @@ Valheim 1.0.12 API pass that the remote did not. Both intents were merged rather
 either being overwritten; `Character.SetPos` was confirmed absent from the installed
 assembly, so the local replacement was a required repair.
 
-36,859 deterministic assertions pass; runtime builds with zero warnings/errors; 20 Harmony
+Reconciled a second time at close-out: origin/main advanced by four more commits adding the
+Underworld authority composition slice while this work was in progress. The two local commits
+were rebased onto it and the combined tree re-verified rather than assumed compatible.
+
+36,868 deterministic assertions pass; runtime builds with zero warnings/errors; 20 Harmony
 patch targets and 7 literal reflection bindings verify against installed assemblies.
 0.0.49 is packaged but NOT installed: Valheim was running (PID 28028) and project
 instructions forbid terminating the user's game. Underworld world transitions and live
