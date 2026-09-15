@@ -111,7 +111,7 @@ internal static class WorkshopOperationRpc
         package.Write(operationId);
         package.Write(operation.RecipeName);
         package.Write(skill);
-        _rpc.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
+        _rpc.SendPackage(RuntimeGameApi.ServerPeerId, package);
 
         diagnostic = "Sent workstation operation to the server for authoritative resolution.";
         return true;
@@ -448,7 +448,7 @@ internal static class WorkshopOperationRpc
             if (experience > 0f)
                 player.RaiseSkill(EarthContentRegistrar.CrystalShapingSkill, experience);
             player.Message(MessageHud.MessageType.Center, diagnostic);
-            InventoryGui.instance?.UpdateCraftingPanel();
+            RuntimeGameApi.RefreshCraftingPanel(InventoryGui.instance);
             SendAcknowledgement(operationId, recipeName, true);
         }
         catch (Exception exception)
@@ -537,7 +537,7 @@ internal static class WorkshopOperationRpc
         package.Write(operationId);
         package.Write(recipeName);
         package.Write(applied);
-        _rpc.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
+        _rpc.SendPackage(RuntimeGameApi.ServerPeerId, package);
     }
 
     private static bool TryResolvePeerPlayer(long peerId, out Player player, out string diagnostic)

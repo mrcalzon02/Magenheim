@@ -46,4 +46,20 @@ Live verified repository state outranks stale conversation, scheduled prompts, o
 
 ## Validation and claims
 
+### Required testing closeout and live delivery
+
+- The user authorizes installing each testing closeout into the active Central Fuckery
+  r2modman profile. Delivering only a ZIP is incomplete unless explicitly requested.
+- Use `closeout.ps1` (or `closeout.ps1 -Offline` with cached dependencies) to test,
+  build, package, back up, install and verify the active profile.
+- Maintain `release.json` with the exact plugin version and a short description of
+  that version's changes. Package manifest, assembly version, installed DLLs and
+  r2modman's `mods.yml` version/description/dependencies must agree.
+- Closeout must verify the launcher catalog as well as all installed file hashes.
+  Preserve other mods, profile settings and enablement; back up the prior catalog.
+- If Valheim or r2modman is running, prepare the package, ask the user to close it,
+  and finish installation afterward. Do not terminate the user's game or launcher.
+- Report the installed version and launcher description. Distinguish verified catalog
+  data from a visually observed launcher and from actual game startup or world tests.
+
 Keep source review, compilation, deterministic tests, plugin startup, disposable-world generation, multiplayer validation, and persistence validation distinct. Never claim a stronger state than was directly observed. Repair root causes in the authoritative source rather than stacking bypasses, mutators, or duplicate implementations.

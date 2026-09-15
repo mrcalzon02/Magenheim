@@ -123,14 +123,15 @@ internal static class SocketEffectsRuntime
     }
 }
 
-[HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetDamage))]
+// Patch the shared calculation overload once: the parameterless wrapper calls it.
+[HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetDamage), typeof(int), typeof(float))]
 internal static class SocketDamagePatch
 {
     private static void Postfix(ItemDrop.ItemData __instance, ref HitData.DamageTypes __result) =>
         SocketEffectsRuntime.ApplyDamage(__instance, ref __result);
 }
 
-[HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetArmor))]
+[HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetArmor), typeof(int), typeof(float))]
 internal static class SocketArmorPatch
 {
     private static void Postfix(ItemDrop.ItemData __instance, ref float __result) =>

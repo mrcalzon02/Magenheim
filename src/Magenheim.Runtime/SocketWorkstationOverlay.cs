@@ -513,7 +513,7 @@ internal sealed class SocketWorkstationOverlay : MonoBehaviour
     private static string DisplayName(ItemDrop.ItemData item)
     {
         var localized = Localization.instance?.Localize(item.m_shared.m_name);
-        if (!string.IsNullOrWhiteSpace(localized) && localized != item.m_shared.m_name)
+        if (localized is not null && !string.IsNullOrWhiteSpace(localized) && localized != item.m_shared.m_name)
             return localized;
         return item.m_dropPrefab ? item.m_dropPrefab.name : item.m_shared.m_name;
     }

@@ -1,6 +1,18 @@
-# Magenheim 0.0.16 - Earth minerals and workshop
+# Magenheim 0.0.47 - test acceptance
 
-Launch **Modded** from r2modman's **Central Fuckery** profile. The installed plugin
+## Required delivery check before launching
+
+Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
+r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
+show **Magenheim v0.0.47 by Local** and start its description with
+**0.0.47: Fixes startup failure from socket damage/armor patch overloads**.
+
+The closeout verifies the catalog version/description and the installed DLL hashes.
+If either differs, installation is incomplete. After Launch Modded, confirm the
+BepInEx startup log says `Loading [Magenheim 0.0.47]` before reporting game results.
+Future versions must update `release.json` and this expected version together.
+
+Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
 is under `BepInEx/plugins/Local-Magenheim/Magenheim`. Launching vanilla Steam
 does not use this profile. Exit the game before rebuilding or installing.
 
@@ -17,9 +29,37 @@ does not use this profile. Exit the game before rebuilding or installing.
   authority/replay/capacity admission, atomic inventory mutation, failure shard returns,
   and Crystal Shaping XP awards. This source still requires a rebuilt live-world retest.
 
-This remains a vertical-slice test. Remote-client workstation operation RPC, socket-management
-UI, and full persistence/multiplayer admission are not complete. Do not use a valuable world
-for first-pass testing of newly rebuilt operation code.
+Remote-client workstation RPC and socket-management UI/transport are source-implemented.
+Full persistence and multiplayer acceptance remain open. Use a disposable world and character.
+
+
+## Crystal Shaping visibility regression
+
+Open Skills immediately after loading an existing or new character, before using
+the workstation. Crystal Shaping must appear at level 0 if untrained, with its
+custom icon. Reopen the panel and reload the character: no duplicate entry or free
+XP should appear. Previously earned Crystal Shaping level/XP must stay unchanged.
+
+## Candidate acceptance matrix
+
+Confirm the startup log reports **0.0.47** and has no Magenheim bootstrap or registration
+errors. Keep logs and screenshots with each result. Mark checks PASS / FAIL / NOT RUN;
+record game version, mod list, host/client role, seed, steps, expected/actual result.
+
+| Area | Required acceptance |
+| --- | --- |
+| Geology | Mine each biome geode; exactly one intact drop; opening output follows definitions; no mutation of vanilla rocks; reload without duplicate registrations. |
+| Workshop | Place all upgrades; verify station levels, all eight refinement families, success/failure shard returns, XP, full-inventory rejection and repaired iron straps. |
+| Sockets | Host and remote client open/install/extract; Dais permission boundary; stale item, duplicate response, reconnect, mismatch and spoofed descriptor rejection without loss/duplication. |
+| Persistence | Save/reload, drop/pickup, chest, repair, upgrade, transfer, death and dedicated server for socketed items and new pieces. |
+| Staffs/weapons | All eight four-tier staff families: recipe, icon, held appearance, projectile, hit/status effect and damage; all ten physical crystal weapons. |
+| Construction | Furniture/decor, hearth, beams/foundations, 24 banners, eight beds, Dais, Ice Box: placement, collisions, wear, removal/refunds, comfort, interaction and persisted state. |
+| Sentinel/alchemy | Sentinel targeting and all eight munition types; grinding returns; Dust recipes; Eitrwine fermentation and effects. |
+| Compatibility | Representative third-party equipment and exclusions; unknown-item rejection; identical host/client authority; unchanged foreign prefab behavior. |
+| Disabled scope | No surface Deep Fracture locations or model-only artifact recipes should appear. |
+
+Do not promote this candidate to production until the multiplayer and persistence
+checks pass. Detailed unfinished scope is in [CLOSEOUT.md](CLOSEOUT.md).
 
 ## Build the workshop
 

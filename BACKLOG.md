@@ -32,7 +32,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Compile `Magenheim.Core` with warnings as errors for the earlier admitted build.
 - [x] Add the thin BepInEx/Jötunn plugin bootstrap on `main`, with hard Jötunn dependency and everyone-must-have network declaration.
 - [x] Compile the runtime project against Jötunn 2.30.0 and a current Valheim development environment for the earlier admitted build.
-- [ ] Rebuild current 0.0.38 source and rerun the full deterministic suite after the accumulated socket/worldgen/content changes.
+- [x] Rebuild accumulated source as 0.0.45; full core harness passes 13,974 assertions and runtime compiles without warnings/errors. See CLOSEOUT.md.
 - [x] Add strict schema-validated static definition loading with deterministic definition fingerprinting and hard failure on malformed/unknown content.
 - [x] Add controlled balance/compatibility/world-placement overrides on top of the validated static definition snapshot; effective authority is always revalidated and re-fingerprinted.
 - [ ] Add deterministic tests for runtime JSON loader failure cases once a compilable runtime test environment is available.
@@ -65,7 +65,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Record live-world test 1 confirming station UI access, direct Earth inventory-item spawning, and direct custom world-geode geometry.
 - [x] Normalize Magenheim-owned cloned materials to opaque blend/depth state at the authoritative visual-loading boundary after the live world geode rendered translucent.
 - [ ] Rebuild/install and confirm the spawned world geode is opaque under live Valheim lighting after the material-state repair.
-- [ ] Repair the Geologist's Workstation iron-band geometry in the generator and checked-in generated mesh together; current bands intersect the tabletop and share visible planes.
+- [x] Synchronize the repaired workstation strap generator with the shipped mesh, OBJ, icon and preview. Live visual acceptance remains open.
 - [ ] Revalidate the current authority-gated geode-opening/refinement workstation operation binding in live Valheim after the source advanced beyond the first-world-test baseline.
 - [x] Register Earth Rough/Simple/Crystal/Advanced/Master items and Earth Crystal Shards.
 - [ ] Verify a failed refinement transaction consumes exactly one source and returns exactly the configured matching shards in live runtime.
@@ -91,3 +91,9 @@ Priority is dependency order. Broken intended behavior and repository divergence
 ## P3 — biome and magic expansion
 
 Continue remaining elemental/magic content only when it does not outrank broken intended behavior or validation gates above. The archived detailed design remains recovery material, not evidence of implementation. Current source already contains substantial elemental staff work beyond the original Earth vertical-slice baseline; live source and validation records outrank this historical phase label.
+
+## Closeout follow-through
+
+Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the 0.0.45
+TESTING.md matrix before enabling Deep Fracture surface generation or adding later
+model-only gameplay. Historical unchecked runtime gates above remain open.

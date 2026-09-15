@@ -2,56 +2,47 @@
 
 **Magic begins as geology.**
 
-## Installed content test: 0.0.16
+## 0.0.47 testing candidate
 
-Eleven original low-poly models, eleven 512px texture atlases, and twelve icons
-are now connected to game content:
+Eight biome geodes, eight five-tier crystal families and shards, Crystal Shaping,
+workstation opening/refinement, sockets, eight four-tier staff families, crystal
+weapons, furniture, architecture, banners, Sentinel, elemental beds, Ice Box,
+Enchanting Dais and alchemy are connected in runtime source.
 
-- Meadows Earth geode and its larger mineable world object.
-- Rough, Simple, Crystal, Advanced, and Master Earth crystals; Earth Crystal Shards.
-- Crystal Shaping with permanent identity `magenheim.crystal_shaping`.
-- Geologist's Workstation, Fracturing Block, Faceting Wheel, and Resonance Frame.
+This package is for disposable-world testing. Compilation and deterministic tests
+do not establish multiplayer, persistence, balance or visual acceptance.
 
-![Workshop models](assets/earth/workshop-preview.png)
+## Install and test
 
-## Try the content
+Import `dist/Local-Magenheim-0.0.47.zip` as a local mod in a disposable r2modman
+profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
+Use the identical package on host and clients: patch versions must match.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.47]` in the BepInEx log.
+Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
-Launch Modded from r2modman's **Central Fuckery** profile. Use **Hammer > Crafting**
-for the workshop. The main bench requires a nearby vanilla Workbench; its three
-upgrades connect to the Geologist's Workstation within five meters. Build costs,
-spawn commands, and placement checks are in [TESTING.md](TESTING.md).
+See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.
+See [CLOSEOUT.md](CLOSEOUT.md) for unfinished features, fixes and validation limits.
 
-The main bench costs 10 Wood, 10 Stone, and 2 Flint. It works outdoors. Each upgrade
-has its own original model, icon, collision shape, and wear appearance. Different
-upgrades raise its station level; duplicate copies of one upgrade do not stack.
+## Build
 
-This is a content test. Mineral opening/refinement actions, mineral crafting
-recipes, and earned skill XP are not connected yet. The workstation's crafting
-panel currently has no mineral recipes. Placement, mining/drop behavior,
-save/reload, and multiplayer require disposable-world tests.
+For testing closeout, run `./closeout.ps1` (or `./closeout.ps1 -Offline` with cached
+dependencies). This tests, packages and installs into the active Central Fuckery
+profile, backs up the prior installation/catalog, verifies installed hashes, and
+updates r2modman's visible version and latest-change description. Close Valheim
+and r2modman first, then reopen r2modman to see the refreshed entry.
 
-## Verified
+`release.json` supplies the version-specific description. Packaging fails if its
+version differs from the plugin. A ZIP alone does not complete testing closeout.
 
-The core harness reports 113 assertions passed. Runtime compilation has zero
-warnings/errors against installed Valheim and Jotunn 2.30.0. All eleven models
-pass closed-surface, outward-winding, UV, atlas, and transparent-icon checks.
+Run `./build.ps1` to run the core suite, compile and package. On a disconnected
+machine with cached dependencies, use `./build.ps1 -Offline`; this explicitly
+skips the online dependency vulnerability audit. Package contents include only
+Magenheim assemblies, runtime assets, definitions, test instructions and checksums.
 
-An isolated Valheim startup using the packaged DLLs registered all mineral items,
-the skill, the four workshop pieces, and one Meadows geode vegetation addition.
-No Magenheim registration error was recorded. This startup check did not load a
-world or establish in-game visual, placement, mining, or persistence correctness.
+With Valheim closed, `./install-local.ps1` builds, backs up and installs into the
+selected profile. To install an already verified package, use `-SkipBuild`.
 
-Version 0.0.16 is installed and hash-verified in the active profile. See the
-[workshop validation record](docs/validation/2026-09-14-workshop-content.md).
-
-## Source and package
-
-Editable OBJ/MTL files, mesh JSON, PNG atlases/icons, and original art generators
-are included under `assets/earth` and `tools`. Players need no art tools or editor.
-
-Run `build.ps1` to test, compile, and create `dist/Local-Magenheim-0.0.16.zip`.
-With Valheim closed, `install-local.ps1` backs up and installs into the selected
-r2modman profile, then verifies file hashes. Third-party and framework DLLs are
-not included in the package. The local SDK is under ignored `dist/toolchain`.
-
-Development remains on `main`; follow `INSTRUCTIONS.md` for project authority.
+Original editable art and generators are under `assets/earth` and `tools` in the
+source repository. Procedural furniture, weapons and other models are built by
+runtime source. Players require no art tools. Development follows `INSTRUCTIONS.md`
+on `main`.

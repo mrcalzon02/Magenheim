@@ -699,7 +699,7 @@ public static class DeepFractureEncounterValidator
 
         var representedAlignments = district.Encounters
             .Where(encounter => encounter.Definition.Alignment.HasValue)
-            .Select(encounter => encounter.Definition.Alignment.Value)
+            .Select(encounter => encounter.Definition.Alignment.GetValueOrDefault())
             .Distinct()
             .Count();
         if (representedAlignments < 2 || representedAlignments > module.ElementalStates.Count)

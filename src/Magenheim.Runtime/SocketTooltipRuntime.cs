@@ -115,7 +115,7 @@ internal static class SocketTooltipRuntime
 }
 
 [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetTooltip),
-    typeof(ItemDrop.ItemData), typeof(int), typeof(bool), typeof(float))]
+    typeof(ItemDrop.ItemData), typeof(int), typeof(bool), typeof(float), typeof(int), typeof(bool))]
 internal static class SocketTooltipPatch
 {
     private static void Postfix(ItemDrop.ItemData item, ref string __result) =>

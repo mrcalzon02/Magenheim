@@ -2,7 +2,8 @@
 param(
     [string]$ProfileRoot = (Join-Path $env:APPDATA 'r2modmanPlus-local/Valheim/profiles/Central Fuckery'),
     [string]$GameRoot = (Split-Path $PSScriptRoot -Parent),
-    [string]$DotNet = (Join-Path $PSScriptRoot 'dist/toolchain/dotnet/dotnet.exe')
+    [string]$DotNet = (Join-Path $PSScriptRoot 'dist/toolchain/dotnet/dotnet.exe'),
+    [switch]$Offline
 )
 $ErrorActionPreference = 'Stop'
 if (!(Test-Path -LiteralPath $DotNet)) { $DotNet = (Get-Command dotnet -ErrorAction Stop).Source }
@@ -17,16 +18,38 @@ if (!$pluginVersionLine -or $pluginVersionLine.Matches.Count -eq 0) {
 }
 $pluginVersion = $pluginVersionLine.Matches[0].Groups[1].Value
 if ([string]::IsNullOrWhiteSpace($pluginVersion)) { throw 'Resolved Magenheim plugin version is empty.' }
+if ($pluginVersion -notmatch '^\d+\.\d+\.\d+$') { throw 'Invalid package version.' }
+$release = Get-Content -LiteralPath "$PSScriptRoot/release.json" -Raw | ConvertFrom-Json
+if ([string]$release.version -ne $pluginVersion) { throw 'Update release.json for the current plugin version before packaging.' }
+if ([string]::IsNullOrWhiteSpace($release.description) -or $release.description.Length -gt 250) {
+    throw 'Release description must contain 1-250 characters describing this version.'
+}
+[xml]$runtimeProject = Get-Content -LiteralPath "$PSScriptRoot/src/Magenheim.Runtime/Magenheim.Runtime.csproj"
+if ([string]$runtimeProject.Project.PropertyGroup.Version -ne $pluginVersion) { throw 'Assembly/plugin version mismatch.' }
+$restoreOptions = @()
+if ($Offline) {
+    # Explicit offline mode uses cached dependencies; it does not claim a vulnerability audit.
+    $restoreOptions = @('-p:NuGetAudit=false', '-p:RestoreIgnoreFailedSources=true')
+    Write-Warning 'Offline build: online dependency vulnerability audit is unavailable.'
+}
 
 Push-Location $PSScriptRoot
 try {
-    & $DotNet run --project tests/Magenheim.Core.Tests -c Release
+    & "$PSScriptRoot/tests/LauncherMetadata.Tests.ps1"
+    & $DotNet run --project tests/Magenheim.Core.Tests -c Release @restoreOptions
     if ($LASTEXITCODE -ne 0) { throw 'Core tests failed.' }
-    & $DotNet build src/Magenheim.Runtime -c Release "-p:BepInExPath=$ProfileRoot/BepInEx" "-p:ValheimManagedPath=$GameRoot/valheim_Data/Managed"
+    & $DotNet build src/Magenheim.Runtime -c Release @restoreOptions "-p:BepInExPath=$ProfileRoot/BepInEx" "-p:ValheimManagedPath=$GameRoot/valheim_Data/Managed"
     if ($LASTEXITCODE -ne 0) { throw 'Runtime build failed.' }
+    & "$PSScriptRoot/tools/verify-patch-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
 
     $package = Join-Path $PSScriptRoot "dist/Local-Magenheim-$pluginVersion"
     if (Test-Path -LiteralPath $package) {
+        $resolvedPackage = (Resolve-Path -LiteralPath $package).Path
+        $distRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'dist'))
+        if ([IO.Path]::GetDirectoryName($resolvedPackage) -ne $distRoot -or
+            (Get-Item -LiteralPath $package).Attributes -band [IO.FileAttributes]::ReparsePoint) {
+            throw 'Package cleanup target must be a direct, non-linked child of project dist.'
+        }
         Remove-Item -LiteralPath $package -Recurse -Force
     }
     $plugin = Join-Path $package 'Magenheim'
@@ -42,20 +65,25 @@ try {
     Copy-Item -LiteralPath (Join-Path $output 'default-data') -Destination $plugin -Recurse -Force
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TESTING.md') -Destination $package -Force
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'README.md') -Destination $package -Force
+    Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'CLOSEOUT.md') -Destination $package -Force
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'icon.png') -Destination $package -Force
     New-Item -ItemType Directory -Force -Path "$package/assets/earth", "$package/docs/validation" | Out-Null
     Copy-Item -Path "$PSScriptRoot/assets/earth/*preview.png" -Destination "$package/assets/earth" -Force
-    foreach ($record in @('2026-09-14-earth-content-package.md', '2026-09-14-workshop-content.md')) {
+    foreach ($record in @('2026-09-14-earth-content-package.md', '2026-09-14-workshop-content.md', '2026-09-14-0.0.47-startup-repair.md')) {
         Copy-Item -LiteralPath "$PSScriptRoot/docs/validation/$record" -Destination "$package/docs/validation" -Force
     }
 
     $manifest = @{
         name = 'Magenheim'; version_number = $pluginVersion;
         website_url = 'https://github.com/mrcalzon02/Magenheim';
-        description = 'Earth minerals and geology workshop: original assets, items, Crystal Shaping, and four buildable pieces.';
-        dependencies = @('ValheimModding-Jotunn-2.30.0', 'ValheimModding-JsonDotNET-13.0.4')
+        description = [string]$release.description;
+        dependencies = @('denikson-BepInExPack_Valheim-5.4.2350', 'ValheimModding-Jotunn-2.30.0', 'ValheimModding-JsonDotNET-13.0.4')
     }
     $manifest | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $package 'manifest.json')
+    $hashes = @(Get-ChildItem -LiteralPath $package -File -Recurse | Sort-Object FullName | ForEach-Object {
+        [ordered]@{ path = $_.FullName.Substring($package.Length + 1).Replace('\', '/'); sha256 = (Get-FileHash -LiteralPath $_.FullName).Hash }
+    })
+    ConvertTo-Json -InputObject $hashes -Depth 3 | Set-Content -LiteralPath (Join-Path $package 'checksums.json')
     Compress-Archive -Path "$package/*" -DestinationPath "$package.zip" -Force
 
     Get-FileHash -LiteralPath (Join-Path $plugin 'Magenheim.dll'),(Join-Path $plugin 'Magenheim.Core.dll')

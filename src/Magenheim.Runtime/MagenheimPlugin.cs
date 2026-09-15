@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.44";
+    internal const string PluginVersion = "0.0.47";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -82,6 +82,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
             _harmony = new Harmony(PluginGuid + ".gameplay");
             _harmony.PatchAll(typeof(WorkshopCraftingPatch));
+            _harmony.PatchAll(typeof(CrystalShapingSkillVisibility));
             _harmony.PatchAll(typeof(SocketDamagePatch));
             _harmony.PatchAll(typeof(SocketArmorPatch));
             _harmony.PatchAll(typeof(SocketBlockPowerPatch));

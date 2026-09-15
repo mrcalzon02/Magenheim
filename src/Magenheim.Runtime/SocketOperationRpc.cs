@@ -172,7 +172,7 @@ internal static class SocketOperationRpc
         package.Write(crystalItem?.m_stack ?? 0);
         package.Write(crystalIndex);
         package.Write(skill);
-        _rpc.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
+        _rpc.SendPackage(RuntimeGameApi.ServerPeerId, package);
 
         diagnostic = "Sent socket operation to the server for authoritative resolution.";
         return true;
@@ -517,8 +517,9 @@ internal static class SocketOperationRpc
                     "Selected equipment changed before the server response; operation was cancelled without mutation.");
                 yield break;
             }
+            var staleReason = string.Empty;
             if (!StatesMatch(pending.OriginalState, originalState) ||
-                !SocketStatesStillMatch(pending.Equipment, originalState, out var staleReason))
+                !SocketStatesStillMatch(pending.Equipment, originalState, out staleReason))
             {
                 SendAcknowledgement(operationId, kind, false);
                 ClientOperations.Remove(operationId);
@@ -688,7 +689,7 @@ internal static class SocketOperationRpc
         package.Write(operationId);
         package.Write((int)kind);
         package.Write(applied);
-        _rpc.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
+        _rpc.SendPackage(RuntimeGameApi.ServerPeerId, package);
     }
 
     private static bool TryResolveCanonicalDescriptor(
@@ -946,7 +947,7 @@ internal static class SocketOperationRpc
     private static string DisplayName(ItemDrop.ItemData item)
     {
         var localized = Localization.instance?.Localize(item.m_shared.m_name);
-        if (!string.IsNullOrWhiteSpace(localized) && localized != item.m_shared.m_name)
+        if (localized is not null && !string.IsNullOrWhiteSpace(localized) && localized != item.m_shared.m_name)
             return localized;
         return item.m_dropPrefab ? item.m_dropPrefab.name : item.m_shared.m_name;
     }

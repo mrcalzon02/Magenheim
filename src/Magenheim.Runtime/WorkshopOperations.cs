@@ -237,7 +237,7 @@ internal static class WorkshopOperationsRuntime
     internal static bool TryHandleCrafting(InventoryGui gui, Player player)
     {
         if (gui is null || player is null) return false;
-        var recipe = gui.m_craftRecipe;
+        var recipe = RuntimeGameApi.GetCraftRecipe(gui);
         if (recipe is null || !WorkshopOperationCatalog.TryGet(recipe.name, out var operation))
             return false;
 
@@ -351,7 +351,7 @@ internal static class WorkshopOperationsRuntime
         player.RaiseSkill(EarthContentRegistrar.CrystalShapingSkill, CrystalShapingExperience.CrackGeode);
         player.Message(MessageHud.MessageType.Center,
             $"Opened {ElementVisualPalette.DisplayBiome(geode.Biome)} geode: {decision.Plan.GrantCrystals.Count} Rough crystal(s).");
-        gui.UpdateCraftingPanel();
+        RuntimeGameApi.RefreshCraftingPanel(gui);
     }
 
     private static void ExecuteLocalRefinement(
@@ -391,7 +391,7 @@ internal static class WorkshopOperationsRuntime
         if (preview.Outcome == RefinementOutcome.Success)
         {
             if (preview.Output is null) throw new InvalidOperationException("Successful refinement preview has no output.");
-            grants = new[] { new InventoryGrant(CrystalPrefab(preview.Output), 1) };
+            grants = new[] { new InventoryGrant(CrystalPrefab(preview.Output.Value), 1) };
         }
         else
         {
@@ -437,7 +437,7 @@ internal static class WorkshopOperationsRuntime
                 CrystalShapingExperience.ForRefinementAttempt(operation.SourceTier.Value));
 
         player.Message(MessageHud.MessageType.Center, decision.Plan.Diagnostic);
-        gui.UpdateCraftingPanel();
+        RuntimeGameApi.RefreshCraftingPanel(gui);
     }
 
     private static ItemDrop.ItemData? FindSource(Inventory inventory, string prefabName)

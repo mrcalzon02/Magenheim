@@ -34,6 +34,8 @@ internal sealed class DeepFractureTraversalPortal : MonoBehaviour, Hoverable, In
 
     public string GetHoverName() => _label;
 
+    public float GetHoverOffset() => 0f;
+
     public bool Interact(Humanoid character, bool hold, bool alt)
     {
         if (hold || !_configured || character is null)

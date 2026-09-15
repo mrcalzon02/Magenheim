@@ -102,8 +102,8 @@ internal static class GeodeVisuals
 
         if (worldObject)
         {
-            foreach (var collider in prefab.GetComponentsInChildren<Collider>(true))
-                if (!collider.isTrigger) collider.enabled = false;
+            foreach (var inheritedCollider in prefab.GetComponentsInChildren<Collider>(true))
+                if (!inheritedCollider.isTrigger) inheritedCollider.enabled = false;
 
             var collider = prefab.AddComponent<SphereCollider>();
             collider.center = new Vector3(0f, 0.50f * scale, 0f);

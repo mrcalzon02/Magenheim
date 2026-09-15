@@ -1,5 +1,53 @@
 # Magenheim Project State
 
+## Current installed build: 0.0.47 startup repair
+
+On 2026-09-14, fixed fatal ambiguous GetDamage patch selection, the latent GetArmor
+ambiguity, and obsolete GetTooltip signature. The core harness passes 13,974
+assertions; runtime compilation has zero warnings/errors; all 11 patch declarations
+pass an installed-assembly signature/binding gate that rejects the old 0.0.46 DLL.
+Isolated startup observed Crystal Shaping registration and completed Magenheim
+bootstrap. Steam initialization errors prevent claiming world acceptance there.
+
+`closeout.ps1 -Offline` installed and hash-verified 0.0.47 in Central Fuckery and
+updated its enabled launcher catalog entry and startup-repair description. Payload
+backup: `backups/Local-Magenheim-20260914-183916.zip`; catalog backup:
+`backups/mods-20260914-183917-412.yml`. Full-profile/world retesting remains pending.
+See `docs/validation/2026-09-14-0.0.47-startup-repair.md`.
+
+## Launcher catalog closeout repaired
+
+On 2026-09-14, `closeout.ps1 -Offline` completed against the active Central Fuckery
+profile: tests, package build, backup, payload verification and r2modman `mods.yml`
+update/read-back. The enabled entry now reports 0.0.46 and its Crystal Shaping
+level-zero visibility release description. Foreign launcher records are unchanged.
+Catalog backup: `backups/mods-20260914-182354-135.yml`. `release.json` now supplies
+version-specific descriptions, and INSTRUCTIONS.md requires live installation plus
+catalog verification for every testing closeout. Reopen r2modman to refresh its UI.
+
+## Installed skill visibility fix: 0.0.46
+
+On 2026-09-14, inspection confirmed the active Central Fuckery profile still loaded
+0.0.16 and registered Crystal Shaping without initializing an untrained character's
+skills-list entry. The new SkillsDialog prefix requests the registered skill's
+normal level lookup before the list is captured, creating level zero without XP.
+Existing progress is preserved. Core tests pass (13,974 assertions); runtime builds
+with zero warnings/errors. Version 0.0.46 is now installed and SHA-256 verified in
+the active profile; the prior installation was backed up under
+`backups/Local-Magenheim-20260914-181731.zip`. In-game panel confirmation awaits launch.
+
+## Local closeout update: 0.0.45
+
+On 2026-09-14 the local source was repaired and built as testing candidate 0.0.45.
+The core harness passes 13,974 assertions; runtime compilation has zero warnings
+and errors. Regenerated workstation assets now match the repaired generator.
+See `CLOSEOUT.md` and `TESTING.md` for the current inventory and acceptance matrix.
+The active profile was not updated. An isolated startup attempt encountered Steam
+initialization errors without establishing plugin registration. Live acceptance
+remains limited to the historical 0.0.16 observations.
+
+The state below is retained as historical context from the earlier connector cycle.
+
 ## Authority
 
 `INSTRUCTIONS.md`, committed source on the live `main` branch, and directly observed repository/runtime evidence are authoritative. Backlog, validation records, archived design, scheduled prompts, and conversation are subordinate when they disagree with verified live state.

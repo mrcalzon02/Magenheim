@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Magenheim.Core.Networking;
+using Magenheim.Core;
 using Magenheim.Core.Socketing;
 
 internal static class SocketingTests
