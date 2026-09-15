@@ -134,6 +134,7 @@ internal sealed class CrystalSentinelRegistrar : IDisposable
             PieceTable = "Hammer",
             Category = "Defence",
             CraftingStation = "piece_artisanstation",
+            Icon = CrystalSentinelIcons.Icon(),
             Requirements = new[]
             {
                 Cost("BlackMetal", 20),
@@ -192,6 +193,7 @@ internal sealed class CrystalSentinelRegistrar : IDisposable
                 var source = sources[i];
                 if (!source) continue;
                 var material = new Material(source) { name = $"magenheim.munition.{element}.{i}" };
+                GeneratedSurfaceTextures.Apply(material, "crystal-munition");
                 if (material.HasProperty("_Color")) material.SetColor("_Color", tint);
                 if (material.HasProperty("_EmissionColor"))
                 {
