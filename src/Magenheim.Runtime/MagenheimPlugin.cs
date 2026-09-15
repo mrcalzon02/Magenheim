@@ -3,6 +3,8 @@ using System.IO;
 using BepInEx;
 using HarmonyLib;
 using Jotunn.Utils;
+using Magenheim.Core.Socketing;
+using Magenheim.Runtime.Compatibility;
 using Magenheim.Runtime.Definitions;
 using Magenheim.Runtime.Networking;
 
@@ -59,6 +61,15 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             var baselineDefinitions = MagenheimDefinitionLoader.LoadFromFile(definitionPath);
             var effectiveDefinitions = MagenheimBalanceConfig.Apply(Config, baselineDefinitions);
             var socketPolicy = SocketCompatibilityConfig.Read(Config);
+            var socketIntegration = SocketCompatibilityConfig.ReadEquipmentIntegration(Config);
+            var socketProvider = JewelcraftingCompatibility.SelectProvider(
+                socketIntegration.JewelcraftingIntegrationEnabled,
+                socketIntegration.PreferJewelcrafting,
+                socketIntegration.FailClosedOnInteropError);
+            var nativeSocketRuntimeEnabled = socketProvider.Backend == EquipmentSocketBackend.Magenheim
+                && socketProvider.MayMutateEquipmentSockets;
+
+            Logger.LogInfo($"Equipment socket provider: {socketProvider.Backend}. {socketProvider.Diagnostic}");
 
             _services = RuntimeServices.Create(effectiveDefinitions, socketPolicy);
             _authoritySynchronizer = new DefinitionAuthoritySynchronizer(
@@ -73,23 +84,34 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             WorkshopOperationCatalog.Configure(effectiveDefinitions);
             WorkshopOperationsRuntime.Configure(_services, _authoritySynchronizer, Logger);
             WorkshopOperationRpc.Register(_services, _authoritySynchronizer, Logger);
-            SocketOperationRpc.Register(_services, _authoritySynchronizer, Logger);
-            SocketEffectsRuntime.Configure(effectiveDefinitions, Logger);
-            SocketTooltipRuntime.Configure(effectiveDefinitions);
 
-            _socketWorkstationOverlay = gameObject.AddComponent<SocketWorkstationOverlay>();
-            _socketWorkstationOverlay.Configure(_services, _authoritySynchronizer, Logger);
+            // Equipment socket runtime has exactly one owner. When Jewelcrafting is selected,
+            // Magenheim keeps crystal production/refinement and every non-equipment crystal
+            // consumer alive but does not register a competing socket RPC, UI or effect path.
+            if (nativeSocketRuntimeEnabled)
+            {
+                SocketOperationRpc.Register(_services, _authoritySynchronizer, Logger);
+                SocketEffectsRuntime.Configure(effectiveDefinitions, Logger);
+                SocketTooltipRuntime.Configure(effectiveDefinitions);
+
+                _socketWorkstationOverlay = gameObject.AddComponent<SocketWorkstationOverlay>();
+                _socketWorkstationOverlay.Configure(_services, _authoritySynchronizer, Logger);
+            }
 
             _harmony = new Harmony(PluginGuid + ".gameplay");
             _harmony.PatchAll(typeof(WorkshopCraftingPatch));
             _harmony.PatchAll(typeof(CrystalShapingSkillVisibility));
-            _harmony.PatchAll(typeof(SocketDamagePatch));
-            _harmony.PatchAll(typeof(SocketArmorPatch));
-            _harmony.PatchAll(typeof(SocketBlockPowerPatch));
-            _harmony.PatchAll(typeof(SocketCarryWeightPatch));
-            _harmony.PatchAll(typeof(SocketTooltipPatch));
             _harmony.PatchAll(typeof(EarthAbilityHitPatch));
-            _harmony.PatchAll(typeof(CrystalEnchantingDaisSocketPatch));
+
+            if (nativeSocketRuntimeEnabled)
+            {
+                _harmony.PatchAll(typeof(SocketDamagePatch));
+                _harmony.PatchAll(typeof(SocketArmorPatch));
+                _harmony.PatchAll(typeof(SocketBlockPowerPatch));
+                _harmony.PatchAll(typeof(SocketCarryWeightPatch));
+                _harmony.PatchAll(typeof(SocketTooltipPatch));
+                _harmony.PatchAll(typeof(CrystalEnchantingDaisSocketPatch));
+            }
 
             // Register the private Deep Fracture room/theme authority at Jotunn's supported
             // OnVanillaRoomsAvailable boundary. Surface Deep Fracture worldgen remains gated until
@@ -155,13 +177,13 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             Logger.LogInfo(
                 $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
                 $"Baseline definition fingerprint {baselineDefinitions.Fingerprint}; effective definition fingerprint {effectiveDefinitions.Fingerprint}; " +
-                $"effective gameplay authority {_authoritySynchronizer.GameplayFingerprint}. " +
+                $"effective gameplay authority {_authoritySynchronizer.GameplayFingerprint}; equipment socket backend {socketProvider.Backend}. " +
                 "Player content includes eight biome geodes, eight five-tier elemental crystal families, the full geology workstation refinement ladder, " +
                 "20 geology/crystal furniture and decor pieces, a rainbow Crystal Hearth, three crystal beam sizes, three crystal foundation sizes, " +
                 "24 elemental crystal banners, a floating Crystal Sentinel with eight shard-refined elemental munition types, eight alignment-locked water-filled Crystal Beds, " +
                 "a configurable persistent Crystalline Ice Box, a dedicated Crystal Enchanting Dais that gates Crystal Bed and Ice Box construction, " +
                 "a 10-piece high-durability physical crystal weapon set, deliberate Rough-crystal/shard grinding, Crystal Dust, Prismatic Eitrwine fermentation, " +
-                "resolved socket bonuses with server-authoritative remote socket/install/extraction requests, and eight four-tier staff families with distinct runtime effects. " +
+                "provider-routed equipment socketing, and eight four-tier staff families with distinct runtime effects. " +
                 "Deep Fracture runtime room authority now includes twenty canonical district families plus passage/traversal templates; surface Deep Fracture worldgen remains gated behind collision-safe physical route projection. " +
                 "Fire owns fireburst/scorch/meteor burn terrain; Frost owns Brittle and Rime fields; Storm owns secondary discharges; " +
                 "Earth owns Fractured/Shattered Armor and Tremor; Venom owns corrosion; Radiance owns hard-light/flash/sanctuary payloads; " +
