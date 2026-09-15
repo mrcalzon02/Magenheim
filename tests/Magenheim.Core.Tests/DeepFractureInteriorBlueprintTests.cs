@@ -36,16 +36,27 @@ internal static class DeepFractureInteriorBlueprintTests
                 Assert(blueprint.Modules[blueprint.Modules.Count - 1].PieceFamilyId == "DF-20", "Interior projection must end with the Confluence Heart.");
                 Assert(blueprint.InteriorRadius > 0d, "Interior projection must expose a positive containing radius.");
 
-                Assert(
-                    blueprint.Connections
-                        .Where(connection => connection.Role == DungeonConnectionRole.MainRoute || connection.Role == DungeonConnectionRole.Branch)
-                        .All(connection => connection.RuntimeMode == DeepFractureRuntimeConnectionMode.PhysicalPassage),
+                var physicalConnections = blueprint.Connections
+                    .Where(connection => connection.Role == DungeonConnectionRole.MainRoute || connection.Role == DungeonConnectionRole.Branch)
+                    .ToArray();
+                Assert(physicalConnections.All(connection => connection.RuntimeMode == DeepFractureRuntimeConnectionMode.PhysicalPassage),
                     "Main-route and branch edges must compile to physical passages.");
                 Assert(
                     blueprint.Connections
                         .Where(connection => connection.Role == DungeonConnectionRole.Loop || connection.Role == DungeonConnectionRole.Shortcut)
                         .All(connection => connection.RuntimeMode == DeepFractureRuntimeConnectionMode.TraversalLink),
                     "Loop and shortcut edges must compile to explicit traversal links rather than asking vanilla room placement to solve cycles.");
+
+                var routes = DeepFracturePassageRouter.Build(blueprint, policy);
+                Assert(routes.Count == physicalConnections.Length, "Every physical graph edge must receive exactly one authored passage route.");
+                Assert(routes.Select(route => route.ConnectionId).OrderBy(id => id).SequenceEqual(physicalConnections.Select(connection => connection.Id).OrderBy(id => id)),
+                    "Authored passage routes must preserve physical connection identity exactly.");
+                foreach (var route in routes)
+                {
+                    Assert(route.Points.Count >= 2, $"Physical route {route.ConnectionId} must contain at least two points.");
+                    Assert(route.Points.All(point => !double.IsNaN(point.X) && !double.IsInfinity(point.X) && !double.IsNaN(point.Z) && !double.IsInfinity(point.Z)),
+                        $"Physical route {route.ConnectionId} must contain finite coordinates.");
+                }
 
                 var moduleIds = blueprint.Modules.Select(module => module.ModuleInstanceId).ToArray();
                 Assert(moduleIds.SequenceEqual(dungeon.Modules.Select(module => module.InstanceId)), "Interior projection must preserve authoritative module order.");
@@ -75,6 +86,9 @@ internal static class DeepFractureInteriorBlueprintTests
         var deterministicA = DeepFractureInteriorBlueprintCompiler.Build(deterministicDungeon, deterministicEncounters);
         var deterministicB = DeepFractureInteriorBlueprintCompiler.Build(deterministicDungeon, deterministicEncounters);
         Assert(BlueprintsEquivalent(deterministicA, deterministicB), "Equal dungeon and encounter authority must compile to an identical interior blueprint.");
+        Assert(
+            DeepFracturePassageRouter.Build(deterministicA).SequenceEqual(DeepFracturePassageRouter.Build(deterministicB)),
+            "Equal interior authority must compile to identical collision-safe physical routes.");
 
         var invalidEncounterPlan = deterministicEncounters with { DungeonSeed = deterministicEncounters.DungeonSeed + 1 };
         var invalidEncounterThrew = false;
