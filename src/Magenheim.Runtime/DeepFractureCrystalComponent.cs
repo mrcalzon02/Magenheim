@@ -12,7 +12,8 @@ namespace Magenheim.Runtime
         Resistance,
         WorldCore,
         Movement,
-        Burrow
+        Burrow,
+        ElementalFocus
     }
 
     internal sealed class DeepFractureCrystalComponent : MonoBehaviour, IDestructible
