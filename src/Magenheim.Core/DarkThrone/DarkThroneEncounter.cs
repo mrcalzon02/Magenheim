@@ -32,10 +32,10 @@ public sealed record DarkThroneEncounterSnapshot(
             throw new InvalidOperationException($"Unsupported Dark Throne encounter schema {SchemaVersion}.");
         if (string.IsNullOrWhiteSpace(EncounterId))
             throw new InvalidOperationException("Dark Throne encounter identity is required.");
-        if (!float.IsFinite(ThroneAnchor.X) || !float.IsFinite(ThroneAnchor.Y) || !float.IsFinite(ThroneAnchor.Z))
+        if (!IsFinite(ThroneAnchor.X) || !IsFinite(ThroneAnchor.Y) || !IsFinite(ThroneAnchor.Z))
             throw new InvalidOperationException("Dark Throne throne anchor must be finite.");
-        if (BossHealthFraction < 0d || BossHealthFraction > 1d || double.IsNaN(BossHealthFraction))
-            throw new InvalidOperationException("Dark Throne boss health fraction must be between zero and one.");
+        if (BossHealthFraction < 0d || BossHealthFraction > 1d || double.IsNaN(BossHealthFraction) || double.IsInfinity(BossHealthFraction))
+            throw new InvalidOperationException("Dark Throne boss health fraction must be finite and between zero and one.");
         if (Lifecycle != DarkThroneEncounterLifecycle.Defeated && RewardsCompleted)
             throw new InvalidOperationException("An undefeated Dark Throne encounter cannot have completed rewards.");
         if (Lifecycle == DarkThroneEncounterLifecycle.Defeated && BossHealthFraction != 0d)
@@ -43,6 +43,8 @@ public sealed record DarkThroneEncounterSnapshot(
     }
 
     public bool RequiresLivingKing => Lifecycle != DarkThroneEncounterLifecycle.Defeated;
+
+    private static bool IsFinite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
 }
 
 public sealed record DarkThroneEncounterPolicy(
@@ -62,54 +64,41 @@ public static class DarkThroneEncounterTransitions
 {
     public static DarkThroneEncounterSnapshot Engage(DarkThroneEncounterSnapshot current)
     {
-        ArgumentNullException.ThrowIfNull(current);
+        if (current is null) throw new ArgumentNullException(nameof(current));
         current.Validate();
         if (current.Lifecycle == DarkThroneEncounterLifecycle.Defeated)
             throw new InvalidOperationException("A defeated Dark Throne encounter cannot be re-engaged.");
-
         return current with { Lifecycle = DarkThroneEncounterLifecycle.Engaged };
     }
 
-    public static DarkThroneEncounterSnapshot Disengage(
-        DarkThroneEncounterSnapshot current,
-        DarkThroneEncounterPolicy policy)
+    public static DarkThroneEncounterSnapshot Disengage(DarkThroneEncounterSnapshot current, DarkThroneEncounterPolicy policy)
     {
-        ArgumentNullException.ThrowIfNull(current);
-        ArgumentNullException.ThrowIfNull(policy);
+        if (current is null) throw new ArgumentNullException(nameof(current));
+        if (policy is null) throw new ArgumentNullException(nameof(policy));
         current.Validate();
         policy.Validate();
-        if (current.Lifecycle == DarkThroneEncounterLifecycle.Defeated)
-            return current;
-
-        var health = policy.ResetHealthOnDisengage ? 1d : current.BossHealthFraction;
+        if (current.Lifecycle == DarkThroneEncounterLifecycle.Defeated) return current;
         return current with
         {
             Lifecycle = DarkThroneEncounterLifecycle.Disengaged,
-            BossHealthFraction = health,
+            BossHealthFraction = policy.ResetHealthOnDisengage ? 1d : current.BossHealthFraction,
         };
     }
 
     public static DarkThroneEncounterSnapshot Defeat(DarkThroneEncounterSnapshot current)
     {
-        ArgumentNullException.ThrowIfNull(current);
+        if (current is null) throw new ArgumentNullException(nameof(current));
         current.Validate();
-        if (current.Lifecycle == DarkThroneEncounterLifecycle.Defeated)
-            return current;
-
-        return current with
-        {
-            Lifecycle = DarkThroneEncounterLifecycle.Defeated,
-            BossHealthFraction = 0d,
-        };
+        if (current.Lifecycle == DarkThroneEncounterLifecycle.Defeated) return current;
+        return current with { Lifecycle = DarkThroneEncounterLifecycle.Defeated, BossHealthFraction = 0d };
     }
 
     public static DarkThroneEncounterSnapshot CompleteRewards(DarkThroneEncounterSnapshot current)
     {
-        ArgumentNullException.ThrowIfNull(current);
+        if (current is null) throw new ArgumentNullException(nameof(current));
         current.Validate();
         if (current.Lifecycle != DarkThroneEncounterLifecycle.Defeated)
             throw new InvalidOperationException("Dark Throne rewards cannot complete before defeat.");
-
         return current with { RewardsCompleted = true };
     }
 }
