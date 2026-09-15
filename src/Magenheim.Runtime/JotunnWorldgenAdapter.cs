@@ -96,9 +96,8 @@ internal static class JotunnWorldgenAdapter
 
     private static Heightmap.BiomeArea ParseAllBiomeArea()
     {
-        // Resolve the authoritative components first. A runtime alias is only acceptable if it
-        // demonstrably contains both distinct component bits; trusting a familiar enum name alone
-        // could silently map Magenheim's All intent onto a changed or malformed runtime value.
+        // Resolve the two authoritative area components. Their bitwise composition is the exact
+        // semantic value Magenheim needs and remains valid even when a runtime has no named alias.
         var median = ParseBiomeArea("Median");
         var edge = ParseBiomeArea("Edge");
 
@@ -121,23 +120,17 @@ internal static class JotunnWorldgenAdapter
                 $"(Median={median}, Edge={edge}, composed={composed}).");
         }
 
-        // Prefer a named runtime alias only when it is semantically equivalent to the composed
-        // components. Extra bits are rejected so a future broader 'Everything' value cannot make
-        // Magenheim geodes appear in an area category that the validated core did not request.
-        if (TryParseDefinedBiomeArea("Everything", out var alias) ||
-            TryParseDefinedBiomeArea("Everywhere", out alias))
+        // A named alias is optional. Use it only when it is exactly equivalent to the validated
+        // composition. If a future/runtime-specific Everything or Everywhere contains extra bits,
+        // ignore that broader alias instead of failing registration: the precise Median|Edge flags
+        // remain safe and preserve Magenheim's additive placement intent without touching host data.
+        if ((TryParseDefinedBiomeArea("Everything", out var alias) ||
+             TryParseDefinedBiomeArea("Everywhere", out alias)) &&
+            alias.Equals(composed))
         {
-            if (!alias.Equals(composed))
-            {
-                throw new InvalidOperationException(
-                    $"The current Valheim biome-area alias '{alias}' is not equivalent to Median|Edge '{composed}'. " +
-                    "Magenheim will fail closed rather than broaden or narrow placement semantics.");
-            }
-
             return alias;
         }
 
-        // Flags enums do not need a named value for every valid combination.
         return composed;
     }
 
