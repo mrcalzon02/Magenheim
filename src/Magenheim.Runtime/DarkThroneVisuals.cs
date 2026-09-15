@@ -34,18 +34,22 @@ internal static class DarkThroneVisuals
         Block(locationContainer.transform, "Dais_Step_2", new Vector3(0f, 0.28f, 10.4f), new Vector3(20f, 0.35f, 2.2f), basalt);
 
         for (var side = -1; side <= 1; side += 2)
-        {
             for (var row = 0; row < 4; row++)
-            {
-                var z = -18f + row * 11.5f;
-                Column(locationContainer.transform, $"BrokenColumn_{side}_{row}", new Vector3(side * 20.5f, 2.2f, z), row % 2 == 0 ? 5.8f : 4.4f, basalt);
-            }
-        }
+                Column(locationContainer.transform, $"BrokenColumn_{side}_{row}", new Vector3(side * 20.5f, 2.2f, -18f + row * 11.5f), row % 2 == 0 ? 5.8f : 4.4f, basalt);
 
         BuildThrone(locationContainer.transform, basalt, voidStone);
-        Anchor(locationContainer.transform, EncounterAnchorName, new Vector3(0f, 0f, 0f));
+        BuildEncounterAuthority(locationContainer.transform);
         Anchor(locationContainer.transform, KingAnchorName, new Vector3(0f, 1.2f, 13.5f));
         BuildCrystalEcology(locationContainer.transform);
+    }
+
+    private static void BuildEncounterAuthority(Transform parent)
+    {
+        var anchor = new GameObject(EncounterAnchorName);
+        anchor.transform.SetParent(parent, false);
+        anchor.transform.localPosition = Vector3.zero;
+        anchor.AddComponent<ZNetView>();
+        anchor.AddComponent<DarkThroneEncounterRuntime>();
     }
 
     private static void BuildCrystalEcology(Transform parent)
@@ -73,9 +77,7 @@ internal static class DarkThroneVisuals
     private static void Column(Transform parent, string name, Vector3 position, float height, Material material)
     {
         var column = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        column.name = name;
-        column.transform.SetParent(parent, false);
-        column.transform.localPosition = position;
+        column.name = name; column.transform.SetParent(parent, false); column.transform.localPosition = position;
         column.transform.localScale = new Vector3(1.7f, height * 0.5f, 1.7f);
         column.transform.localRotation = Quaternion.Euler(0f, 0f, name.GetHashCode() % 7 - 3);
         column.GetComponent<Renderer>().sharedMaterial = material;
@@ -84,24 +86,15 @@ internal static class DarkThroneVisuals
     private static GameObject Block(Transform parent, string name, Vector3 position, Vector3 scale, Material material, Quaternion? rotation = null)
     {
         var block = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        block.name = name;
-        block.transform.SetParent(parent, false);
-        block.transform.localPosition = position;
-        block.transform.localScale = scale;
-        block.transform.localRotation = rotation ?? Quaternion.identity;
-        block.GetComponent<Renderer>().sharedMaterial = material;
-        return block;
+        block.name = name; block.transform.SetParent(parent, false); block.transform.localPosition = position;
+        block.transform.localScale = scale; block.transform.localRotation = rotation ?? Quaternion.identity;
+        block.GetComponent<Renderer>().sharedMaterial = material; return block;
     }
 
     private static void Anchor(Transform parent, string name, Vector3 position)
     {
-        var anchor = new GameObject(name);
-        anchor.transform.SetParent(parent, false);
-        anchor.transform.localPosition = position;
+        var anchor = new GameObject(name); anchor.transform.SetParent(parent, false); anchor.transform.localPosition = position;
     }
 
-    private static void Tint(Material material, Color color)
-    {
-        if (material.HasProperty("_Color")) material.color = color;
-    }
+    private static void Tint(Material material, Color color) { if (material.HasProperty("_Color")) material.color = color; }
 }
