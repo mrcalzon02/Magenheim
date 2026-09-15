@@ -8,7 +8,8 @@ public sealed record GeodeCrackingRequest(
     GeodeDefinition Geode,
     double SecondCrystalRoll,
     double ThirdCrystalRoll,
-    IReadOnlyList<double> ElementRolls);
+    IReadOnlyList<double> ElementRolls,
+    int CrystalShapingSkillLevel = 0);
 
 public enum GeodeCrackingOutcome
 {
@@ -26,14 +27,15 @@ public sealed record GeodeCrackingResult(
 }
 
 /// <summary>
-/// Pure deterministic geode outcome authority. Randomness is supplied explicitly by the caller so
-/// multiplayer/runtime code can keep RNG ownership server-side and replay/verify the same decision.
-/// The current schema always consumes both bonus rolls and all three possible element rolls even
-/// when a bonus crystal does not materialize. Fixed consumption prevents hidden RNG-stream drift.
+/// Pure deterministic geode outcome authority. Randomness and the player's authoritative Crystal
+/// Shaping skill snapshot are supplied by the caller so multiplayer/runtime code can keep RNG and
+/// progression ownership server-side and replay/verify the same decision.
 /// </summary>
 public static class GeodeCrackingService
 {
     public const int CurrentSchemaElementRollCount = 3;
+    public const double MaximumSecondCrystalSkillBonus = 0.50d;
+    public const double MaximumThirdCrystalSkillBonus = 0.40d;
 
     public static GeodeCrackingResult Crack(GeodeCrackingRequest request)
     {
@@ -43,6 +45,8 @@ public static class GeodeCrackingService
             return InvalidRequest("Geode definition is required.");
         if (request.ElementRolls is null)
             return InvalidRequest("Element rolls are required.");
+        if (request.CrystalShapingSkillLevel < 0 || request.CrystalShapingSkillLevel > 100)
+            return InvalidRequest("Crystal Shaping skill must be between 0 and 100 inclusive.");
 
         var geode = request.Geode;
         if (geode.GuaranteedCrystalCount != 1)
@@ -75,10 +79,19 @@ public static class GeodeCrackingService
         if (double.IsInfinity(totalWeight) || totalWeight <= 0d)
             return InvalidDefinition("Element weight total must be finite and greater than zero.");
 
+        var secondChance = CalculateSkillAdjustedBonusChance(
+            geode.SecondCrystalChance,
+            request.CrystalShapingSkillLevel,
+            MaximumSecondCrystalSkillBonus);
+        var thirdChance = CalculateSkillAdjustedBonusChance(
+            geode.ThirdCrystalChance,
+            request.CrystalShapingSkillLevel,
+            MaximumThirdCrystalSkillBonus);
+
         var crystalCount = 1;
-        if (request.SecondCrystalRoll < geode.SecondCrystalChance)
+        if (request.SecondCrystalRoll < secondChance)
             crystalCount++;
-        if (request.ThirdCrystalRoll < geode.ThirdCrystalChance)
+        if (request.ThirdCrystalRoll < thirdChance)
             crystalCount++;
 
         var crystals = new Crystal[crystalCount];
@@ -91,7 +104,19 @@ public static class GeodeCrackingService
         return new GeodeCrackingResult(
             GeodeCrackingOutcome.Success,
             Array.AsReadOnly(crystals),
-            $"Cracked '{geode.Id}' into {crystalCount} Rough crystal(s).");
+            $"Cracked '{geode.Id}' into {crystalCount} Rough crystal(s) at Crystal Shaping {request.CrystalShapingSkillLevel}.");
+    }
+
+    public static double CalculateSkillAdjustedBonusChance(double baseChance, int skillLevel, double maximumSkillBonus)
+    {
+        if (!IsChance(baseChance))
+            throw new ArgumentOutOfRangeException(nameof(baseChance), "Base chance must be finite and between 0 and 1 inclusive.");
+        if (skillLevel < 0 || skillLevel > 100)
+            throw new ArgumentOutOfRangeException(nameof(skillLevel), "Crystal Shaping skill must be between 0 and 100 inclusive.");
+        if (!IsChance(maximumSkillBonus))
+            throw new ArgumentOutOfRangeException(nameof(maximumSkillBonus), "Maximum skill bonus must be finite and between 0 and 1 inclusive.");
+
+        return Math.Min(1d, baseChance + ((skillLevel / 100d) * maximumSkillBonus));
     }
 
     private static ElementalAlignment SelectElement(

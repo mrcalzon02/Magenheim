@@ -32,28 +32,23 @@ public sealed class CrystalRefinementService
     public RefinementResult Refine(RefinementRequest request)
     {
         if (request.Roll < 0d || request.Roll >= 1d || double.IsNaN(request.Roll) || double.IsInfinity(request.Roll))
-            return Invalid(RefinementOutcome.InvalidRoll, request.Input,
-                "Roll must be finite and in the range [0,1).");
+            return Invalid(RefinementOutcome.InvalidRoll, request.Input, "Roll must be finite and in the range [0,1).");
 
         if (request.CrystalShapingSkillLevel < 0 || request.CrystalShapingSkillLevel > 100)
-            return Invalid(RefinementOutcome.InvalidSkill, request.Input,
-                "Crystal Shaping skill must be between 0 and 100 inclusive.");
+            return Invalid(RefinementOutcome.InvalidSkill, request.Input, "Crystal Shaping skill must be between 0 and 100 inclusive.");
 
         if (!IsValidMaximumFailureReduction(request.MaximumFailureReduction))
             return Invalid(RefinementOutcome.InvalidConfiguration, request.Input,
                 $"MaximumFailureReduction must be between {MinimumMaximumFailureReduction:0.00} and {MaximumMaximumFailureReduction:0.00} inclusive.");
 
         if (!_rules.TryGetValue(request.Input.Tier, out var rule))
-            return Invalid(RefinementOutcome.NoRule, request.Input,
-                $"No refinement rule exists for {request.Input.Tier}.");
+            return Invalid(RefinementOutcome.NoRule, request.Input, $"No refinement rule exists for {request.Input.Tier}.");
 
         if (request.CrystalShapingSkillLevel < rule.MinimumSkillLevel)
-            return Invalid(RefinementOutcome.InvalidSkill, request.Input,
-                $"Crystal Shaping {rule.MinimumSkillLevel} is required.");
+            return Invalid(RefinementOutcome.InvalidSkill, request.Input, $"Crystal Shaping {rule.MinimumSkillLevel} is required.");
 
         if (!string.Equals(request.StationId, rule.RequiredStation, StringComparison.Ordinal))
-            return Invalid(RefinementOutcome.InvalidStation, request.Input,
-                $"Station '{rule.RequiredStation}' is required.");
+            return Invalid(RefinementOutcome.InvalidStation, request.Input, $"Station '{rule.RequiredStation}' is required.");
 
         var effectiveFailureChance = CalculateEffectiveFailureChance(
             rule.BaseFailureChance,
@@ -65,10 +60,10 @@ public sealed class CrystalRefinementService
             return new RefinementResult(
                 RefinementOutcome.FailedDestroyed,
                 null,
-                true,
+                false,
                 rule.FailureShardCount,
                 effectiveFailureChance,
-                $"Refinement failed; the {request.Input.Tier} crystal was destroyed and returned {rule.FailureShardCount} matching shard(s).");
+                $"Refinement failed; the {request.Input.Tier} crystal was destroyed and returned {rule.FailureShardCount} matching shard(s). No success experience was awarded.");
         }
 
         var output = new Crystal(request.Input.Element, rule.DestinationTier);
@@ -110,10 +105,7 @@ public sealed class CrystalRefinementService
         };
 
     private static bool IsValidMaximumFailureReduction(double value) =>
-        !double.IsNaN(value) &&
-        !double.IsInfinity(value) &&
-        value >= MinimumMaximumFailureReduction &&
-        value <= MaximumMaximumFailureReduction;
+        !double.IsNaN(value) && !double.IsInfinity(value) && value >= MinimumMaximumFailureReduction && value <= MaximumMaximumFailureReduction;
 
     private static RefinementResult Invalid(RefinementOutcome outcome, Crystal input, string reason) =>
         new(outcome, input, false, 0, 0d, reason);
