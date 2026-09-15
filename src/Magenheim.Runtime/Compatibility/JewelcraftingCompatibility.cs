@@ -46,16 +46,18 @@ internal static class JewelcraftingCompatibility
         }
     }
 
-    internal static EquipmentSocketProviderSelection SelectProvider(
+    internal static EquipmentSocketProviderResolution SelectProvider(
         bool integrationEnabled,
+        bool preferJewelcrafting,
         bool failClosedOnInteropError)
     {
         JewelcraftingRuntimeState state = Detect();
-        return EquipmentSocketProviderRouter.Select(
-            integrationEnabled,
+        return EquipmentSocketProviderRouter.Resolve(new EquipmentSocketProviderContext(
             state.IsDetected,
             state.IsApiAvailable,
-            failClosedOnInteropError);
+            integrationEnabled,
+            preferJewelcrafting,
+            failClosedOnInteropError));
     }
 
     private static Type? FindApiType()
