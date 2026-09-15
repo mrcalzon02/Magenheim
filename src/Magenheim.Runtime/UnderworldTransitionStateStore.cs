@@ -42,7 +42,6 @@ internal sealed class UnderworldTransitionStateStore
         {
             WriteDurable(temporary, payload);
 
-            // Do not promote bytes that the canonical decoder cannot read back against this world pair.
             var verified = UnderworldTransitionStateCodec.Decode(File.ReadAllText(temporary, Encoding.UTF8), identity);
             if (!string.Equals(verified.PlayerId, state.PlayerId, StringComparison.Ordinal))
                 throw new InvalidOperationException("Underworld transition-state read-back changed player identity.");
@@ -68,10 +67,43 @@ internal sealed class UnderworldTransitionStateStore
             throw new ArgumentException("Underworld transition-state player identity is required.", nameof(playerId));
 
         var path = RecordPath(playerId, identity);
-        if (!File.Exists(path))
+        var backup = path + ".bak";
+        if (!File.Exists(path) && !File.Exists(backup))
         {
             state = null;
             diagnostic = "No persisted Underworld transition state exists for this player/world pair.";
+            return false;
+        }
+
+        if (TryRead(path, playerId, identity, out state, out diagnostic))
+            return true;
+
+        var primaryDiagnostic = diagnostic;
+        if (TryRead(backup, playerId, identity, out state, out diagnostic))
+        {
+            diagnostic = "Recovered Underworld transition state from atomic-write backup after primary read failed: " + primaryDiagnostic;
+            _log.LogWarning(diagnostic);
+            return true;
+        }
+
+        state = null;
+        diagnostic = "Persisted Underworld transition state is invalid and was not admitted. Primary: " +
+            primaryDiagnostic + " Backup: " + diagnostic;
+        _log.LogError(diagnostic);
+        return false;
+    }
+
+    private static bool TryRead(
+        string path,
+        string playerId,
+        UnderworldWorldIdentity identity,
+        out UnderworldPlayerLayerState? state,
+        out string diagnostic)
+    {
+        if (!File.Exists(path))
+        {
+            state = null;
+            diagnostic = "candidate missing";
             return false;
         }
 
@@ -87,15 +119,14 @@ internal sealed class UnderworldTransitionStateStore
         catch (Exception exception)
         {
             state = null;
-            diagnostic = "Persisted Underworld transition state is invalid and was not admitted: " + exception.Message;
-            _log.LogError(diagnostic);
+            diagnostic = exception.Message;
             return false;
         }
     }
 
     private string RecordPath(string playerId, UnderworldWorldIdentity identity)
     {
-        var pairKey = Hash(identity.ParentWorldId + "\n" + identity.DerivedWorldId + "\n" + identity.DerivedSeed);
+        var pairKey = Hash(identity.ParentWorldId + "\n" + identity.DerivedWorldId + "\n" + identity.DerivedSeedFingerprint);
         var playerKey = Hash(playerId.Trim());
         return Path.Combine(_rootDirectory, pairKey, playerKey + ".uwstate");
     }
