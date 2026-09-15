@@ -5,10 +5,7 @@ using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>
-/// Original geometry for late-game Boss Resonance and Fate artifacts. Models only; this class
-/// intentionally does not implement trophy consumption, Fate intervention, rituals, or resonance gameplay.
-/// </summary>
+/// <summary>Original geometry for late-game Boss Resonance and Fate artifacts.</summary>
 internal static class CapstoneArtifactVisuals
 {
     internal const string EikthyrStormheart = "boss-eikthyr-stormheart";
@@ -32,7 +29,6 @@ internal static class CapstoneArtifactVisuals
         if (prefab is null) throw new ArgumentNullException(nameof(prefab));
         if (string.IsNullOrWhiteSpace(modelId)) throw new ArgumentException("Model id is required.", nameof(modelId));
         if (scale <= 0f || float.IsNaN(scale) || float.IsInfinity(scale)) throw new ArgumentOutOfRangeException(nameof(scale));
-
         var original = prefab.GetComponentsInChildren<Renderer>(true);
         var source = original.Select(renderer => renderer.sharedMaterial).FirstOrDefault(material => material)
             ?? throw new InvalidOperationException($"No material source exists on capstone model host '{prefab.name}'.");
@@ -96,8 +92,7 @@ internal static class CapstoneArtifactVisuals
         Prism(root,"earth-core",new Vector3(0f,.28f,0f),new Vector3(.31f,.66f,.31f),7,earth);
         for (var i=0;i<6;i++)
         {
-            var a=i*Mathf.PI*2f/6f;
-            var x=.23f*Mathf.Cos(a); var z=.23f*Mathf.Sin(a);
+            var a=i*Mathf.PI*2f/6f; var x=.23f*Mathf.Cos(a); var z=.23f*Mathf.Sin(a);
             Box(root,"root-"+i,new Vector3(x,.28f,z),new Vector3(.075f,.72f,.075f),wood,new Vector3(10f*Mathf.Sin(a),0f,-14f*Mathf.Cos(a)));
             Box(root,"root-foot-"+i,new Vector3(x*1.35f,-.06f,z*1.35f),new Vector3(.06f,.28f,.06f),wood,new Vector3(18f*Mathf.Sin(a),0f,-25f*Mathf.Cos(a)));
         }
@@ -202,8 +197,7 @@ internal static class CapstoneArtifactVisuals
         var span=endDegrees-startDegrees;
         for(var i=0;i<segments;i++)
         {
-            var a=startDegrees+span*(i+.5f)/segments;
-            var rad=a*Mathf.Deg2Rad;
+            var a=startDegrees+span*(i+.5f)/segments; var rad=a*Mathf.Deg2Rad;
             var segmentLength=radius*Mathf.Abs(span)*Mathf.Deg2Rad/segments*.96f;
             Box(root,name+"-"+i,new Vector3(center.x+radius*Mathf.Cos(rad),center.y+radius*Mathf.Sin(rad),center.z+zOffset),new Vector3(segmentLength,.045f,.055f),material,new Vector3(0f,0f,a+90f));
         }
@@ -239,6 +233,8 @@ internal static class CapstoneArtifactVisuals
     {
         var material=new Material(source){name="magenheim.capstone."+suffix};
         material.mainTexture=Texture2D.whiteTexture;
+        material.mainTextureScale=Vector2.one;
+        material.mainTextureOffset=Vector2.zero;
         if(material.HasProperty("_Color")) material.SetColor("_Color",color);
         if(material.HasProperty("_Metallic")) material.SetFloat("_Metallic",metallic);
         if(material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness",gloss);
@@ -265,7 +261,11 @@ internal static class CapstoneArtifactVisuals
         var vertices=new List<Vector3>();var triangles=new List<int>();
         for(var ring=0;ring<2;ring++){var y=ring==0?-.5f:.5f;for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;vertices.Add(new Vector3(.5f*Mathf.Cos(a),y,.5f*Mathf.Sin(a)));}}
         var bottom=vertices.Count;vertices.Add(new Vector3(0,-.5f,0));var top=vertices.Count;vertices.Add(new Vector3(0,.5f,0));
-        for(var i=0;i<sides;i++){var n=(i+1)%sides;triangles.AddRange(new[]{i,n,sides+i,n,sides+n,sides+i,bottom,n,i,top,sides+i,sides+n});}
+        for(var i=0;i<sides;i++)
+        {
+            var n=(i+1)%sides;
+            triangles.AddRange(new[]{i,sides+i,n,n,sides+i,sides+n,bottom,i,n,top,sides+n,sides+i});
+        }
         var mesh=new Mesh{name="magenheim.capstone.cylinder."+sides,vertices=vertices.ToArray(),triangles=triangles.ToArray()};mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
     }
 
@@ -275,7 +275,11 @@ internal static class CapstoneArtifactVisuals
         for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;vertices.Add(new Vector3(.40f*Mathf.Cos(a),-.50f,.40f*Mathf.Sin(a)));}
         for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;vertices.Add(new Vector3(.50f*Mathf.Cos(a),.18f,.50f*Mathf.Sin(a)));}
         var top=vertices.Count;vertices.Add(new Vector3(0,.70f,0));var bottom=vertices.Count;vertices.Add(new Vector3(0,-.50f,0));
-        for(var i=0;i<sides;i++){var n=(i+1)%sides;triangles.AddRange(new[]{bottom,n,i,i,n,sides+i,n,sides+n,sides+i,sides+i,sides+n,top});}
+        for(var i=0;i<sides;i++)
+        {
+            var n=(i+1)%sides;
+            triangles.AddRange(new[]{bottom,i,n,i,sides+i,n,n,sides+i,sides+n,top,sides+n,sides+i});
+        }
         var mesh=new Mesh{name="magenheim.capstone.prism."+sides,vertices=vertices.ToArray(),triangles=triangles.ToArray()};mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
     }
 }
