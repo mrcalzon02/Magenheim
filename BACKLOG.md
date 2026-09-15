@@ -55,6 +55,23 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Repair `install-local.ps1` checksum verification. Windows PowerShell emits a top-level JSON array as one pipeline item, so `@(... | ConvertFrom-Json)` produced a single nested entry and every package failed integrity. Semantics unchanged; empty manifests now rejected explicitly.
 - [ ] Live-confirm that a failed workshop transaction rolls back without an unhandled exception and that socket install/extract refreshes the inventory.
 
+## P0.4 — Rendering and content drift (raised from live play 2026-09-15)
+
+Full evidence and root causes: `docs/RENDERING_AND_CONTENT_DEFECTS.md`. This outranks all new
+content. Reported from live play with screenshots; every item confirmed in source.
+
+- [ ] R1: replace `Texture2D.whiteTexture` in all eighteen visual files with an owned surface-texture authority. Every runtime-generated object is currently untextured; this is the single largest visual defect.
+- [x] R2a: give `Magenheim.Core` correctly wound `Box`/`Cylinder`/`Prism` primitives plus deterministic closed-surface, signed-volume and outward-normal checks, with a regression test that rejects the exact winding shipped in eleven visual files.
+- [ ] R2b: migrate the eleven visual files onto the shared primitives and delete the duplicated inside-out builders.
+- [ ] C1: give Fire, Storm, Earth, Radiance, Seidr and Spirit owned staff geometry, and remove the vanilla Eitr cost and Eitr recipe requirement inherited from the `StaffFireball`/`StaffIceShards` clones. `EarthStaffRegistrar` currently references `SledgeIron`. BLOCKED: needs the replacement resource model.
+- [ ] C2: strip vanilla `Beehive` audio from the `piece_beehive` clones used by Crystal Beds and the Ice Box.
+- [ ] C3: own snap points per piece. Columns float, foundations snap above floor level, beds snap ~0.6m below themselves.
+- [ ] C4: generate a Crystal Sentinel icon and give the piece a readable front.
+- [ ] C5: collapse the eight elemental Crystal Munition variants into one crystal munition refined from any crystal.
+- [ ] C6: rebuild the Crystal Dais as a flat raised platform rather than stacked prisms with an apex.
+- [ ] C7: rebuild the socket interface on the game's crafting UI; `SocketWorkstationOverlay` is currently raw `OnGUI`/`GUILayout`.
+- [ ] C8: trace the vanilla "Raven Throne" name appearing on an owned white platform chair.
+
 ## P1 — Meadows/Earth vertical slice
 
 - [x] Define the initial Meadows geode data with one guaranteed Earth crystal and independent 35%/10% additional-crystal chances.
