@@ -21,6 +21,9 @@ internal static class VenomStaffVisuals
         var attach = prefab.transform.Find("attach") ?? prefab.transform;
         var root = new GameObject("magenheim." + assetName + ".visual") { layer = prefab.layer };
         root.transform.SetParent(attach, false);
+        root.transform.localPosition = Vector3.zero;
+        root.transform.localRotation = Quaternion.identity;
+        root.transform.localScale = Vector3.one;
 
         var wood = MakeMaterial(sourceMaterial, "wood", new Color(.25f,.17f,.10f,1f), 0f, .10f);
         var elder = MakeMaterial(sourceMaterial, "elder", new Color(.20f,.14f,.11f,1f), 0f, .11f);
@@ -123,6 +126,8 @@ internal static class VenomStaffVisuals
     {
         var material=new Material(source){name="magenheim.venom-staff."+suffix};
         material.mainTexture=Texture2D.whiteTexture;
+        material.mainTextureScale=Vector2.one;
+        material.mainTextureOffset=Vector2.zero;
         if(material.HasProperty("_Color")) material.SetColor("_Color",color);
         if(material.HasProperty("_Metallic")) material.SetFloat("_Metallic",metallic);
         if(material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness",glossiness);
@@ -147,7 +152,11 @@ internal static class VenomStaffVisuals
         var vertices=new List<Vector3>(); var triangles=new List<int>();
         for(var ring=0;ring<2;ring++){var y=ring==0?-.5f:.5f; for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides; vertices.Add(new Vector3(.5f*Mathf.Cos(a),y,.5f*Mathf.Sin(a)));}}
         var bottom=vertices.Count; vertices.Add(new Vector3(0,-.5f,0)); var top=vertices.Count; vertices.Add(new Vector3(0,.5f,0));
-        for(var i=0;i<sides;i++){var n=(i+1)%sides; triangles.AddRange(new[]{i,n,sides+i,n,sides+n,sides+i,bottom,n,i,top,sides+i,sides+n});}
+        for(var i=0;i<sides;i++)
+        {
+            var n=(i+1)%sides;
+            triangles.AddRange(new[]{i,sides+i,n, n,sides+i,sides+n, bottom,i,n, top,sides+n,sides+i});
+        }
         var mesh=new Mesh{name="magenheim.venom.cylinder."+sides,vertices=vertices.ToArray(),triangles=triangles.ToArray()}; mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 
@@ -157,7 +166,11 @@ internal static class VenomStaffVisuals
         for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides; vertices.Add(new Vector3(.36f*Mathf.Cos(a),-.45f,.36f*Mathf.Sin(a)));}
         for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides; vertices.Add(new Vector3(.5f*Mathf.Cos(a),.20f,.5f*Mathf.Sin(a)));}
         var top=vertices.Count; vertices.Add(new Vector3(0,.68f,0)); var bottom=vertices.Count; vertices.Add(new Vector3(0,-.50f,0));
-        for(var i=0;i<sides;i++){var n=(i+1)%sides; triangles.AddRange(new[]{bottom,n,i,i,n,sides+i,n,sides+n,sides+i,sides+i,sides+n,top});}
+        for(var i=0;i<sides;i++)
+        {
+            var n=(i+1)%sides;
+            triangles.AddRange(new[]{bottom,i,n, i,sides+i,n, n,sides+i,sides+n, top,sides+n,sides+i});
+        }
         var mesh=new Mesh{name="magenheim.venom.prism."+sides,vertices=vertices.ToArray(),triangles=triangles.ToArray()}; mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 }
