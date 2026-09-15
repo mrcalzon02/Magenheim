@@ -19,9 +19,9 @@ namespace Magenheim.Runtime
             var source = original.Select(x => x.sharedMaterial).FirstOrDefault(x => x != null)
                 ?? throw new InvalidOperationException("No creature material source: " + prefab.name);
             var tint = ElementVisualPalette.Tint(alignment);
-            var stone = Material(source, Color.Lerp(tint, new Color(.18f, .19f, .22f), .76f), .18f);
-            var core = Material(source, Color.Lerp(tint, Color.white, .68f), 1.75f);
-            var shard = Material(source, tint, 1.05f);
+            var stone = Material(source, "stone", Color.Lerp(tint, new Color(.18f, .19f, .22f), .76f), .18f);
+            var core = Material(source, "crystal-core", Color.Lerp(tint, Color.white, .68f), 1.75f);
+            var shard = Material(source, "crystal-shard", tint, 1.05f);
             var root = new GameObject("magenheim.fracture.creature.obelisk-warden.visual") { layer = prefab.layer };
             root.transform.SetParent(prefab.transform, false);
             root.transform.localPosition = new Vector3(0f, 2.65f, 0f);
@@ -53,11 +53,18 @@ namespace Magenheim.Runtime
             foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled = false;
         }
 
-        private static Material Material(Material source, Color color, float emission)
+        private static Material Material(Material source, string semantic, Color color, float emission)
         {
-            var material = new Material(source);
+            var material = new Material(source) { name = "magenheim.fracture.obelisk-warden." + semantic };
+            GeneratedSurfaceTextures.Apply(material, semantic);
             if (material.HasProperty("_Color")) material.SetColor("_Color", color);
-            if (material.HasProperty("_EmissionColor")) { material.SetColor("_EmissionColor", color * emission); material.EnableKeyword("_EMISSION"); }
+            if (material.HasProperty("_BumpMap")) material.SetTexture("_BumpMap", null);
+            material.DisableKeyword("_NORMALMAP");
+            if (material.HasProperty("_EmissionColor"))
+            {
+                material.SetColor("_EmissionColor", color * emission);
+                material.EnableKeyword("_EMISSION");
+            }
             if (material.HasProperty("_ZWrite")) material.SetFloat("_ZWrite", 1f);
             material.SetOverrideTag("RenderType", "Opaque");
             material.renderQueue = 2000;
@@ -82,13 +89,33 @@ namespace Magenheim.Runtime
         {
             var vertices = new List<Vector3>();
             var triangles = new List<int>();
-            for (var i = 0; i < sides; i++) { var a = 2f * Mathf.PI * i / sides; vertices.Add(new Vector3(.36f * Mathf.Cos(a), -.45f, .36f * Mathf.Sin(a))); }
-            for (var i = 0; i < sides; i++) { var a = 2f * Mathf.PI * i / sides; vertices.Add(new Vector3(.5f * Mathf.Cos(a), .2f, .5f * Mathf.Sin(a))); }
+            for (var i = 0; i < sides; i++)
+            {
+                var a = 2f * Mathf.PI * i / sides;
+                vertices.Add(new Vector3(.36f * Mathf.Cos(a), -.45f, .36f * Mathf.Sin(a)));
+            }
+            for (var i = 0; i < sides; i++)
+            {
+                var a = 2f * Mathf.PI * i / sides;
+                vertices.Add(new Vector3(.5f * Mathf.Cos(a), .2f, .5f * Mathf.Sin(a)));
+            }
             var top = vertices.Count; vertices.Add(new Vector3(0f, .68f, 0f));
             var bottom = vertices.Count; vertices.Add(new Vector3(0f, -.5f, 0f));
-            for (var i = 0; i < sides; i++) { var n = (i + 1) % sides; triangles.AddRange(new[] { bottom, n, i, i, n, sides + i, n, sides + n, sides + i, sides + i, sides + n, top }); }
+            for (var i = 0; i < sides; i++)
+            {
+                var n = (i + 1) % sides;
+                triangles.AddRange(new[]
+                {
+                    bottom, i, n,
+                    i, sides + i, n,
+                    n, sides + i, sides + n,
+                    top, sides + n, sides + i,
+                });
+            }
             var mesh = new Mesh { name = "magenheim.fracture.obelisk-warden.prism." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-            mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
+            mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
+            return mesh;
         }
     }
 }
