@@ -193,7 +193,7 @@ internal static class WorkshopInventoryTransactions
     {
         var originalSet = new HashSet<ItemDrop.ItemData>(beforeItems); foreach (var current in inventory.GetAllItems().ToArray()) if (!originalSet.Contains(current)) inventory.RemoveItem(current); foreach (var original in beforeItems) if (inventory.ContainsItem(original)) original.m_stack = beforeStacks[original];
         if (!inventory.ContainsItem(source)) { source.m_stack = beforeStacks[source]; if (!inventory.AddItem(source)) throw new InvalidOperationException("Rollback could not restore the consumed source item."); }
-        var changed = AccessTools.Method(typeof(Inventory), "Changed"); if (changed is not null) changed.Invoke(inventory, Array.Empty<object>());
+        RuntimeGameApi.NotifyInventoryChanged(inventory);
     }
 }
 internal static class ServerRandom { private static readonly System.Security.Cryptography.RandomNumberGenerator Generator = System.Security.Cryptography.RandomNumberGenerator.Create(); private static readonly object Sync = new object(); internal static double NextUnit() { var bytes = new byte[4]; lock (Sync) Generator.GetBytes(bytes); var value = BitConverter.ToUInt32(bytes, 0); return value / ((double)uint.MaxValue + 1d); } }

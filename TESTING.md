@@ -1,15 +1,15 @@
-# Magenheim 0.0.48 - test acceptance
+# Magenheim 0.0.49 - test acceptance
 
 ## Required delivery check before launching
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.48 by Local** and start its description with
-**0.0.48: Integrates Underworld and Rootforged definition authority**.
+show **Magenheim v0.0.49 by Local** and start its description with
+**0.0.49: Repairs the Inventory.Changed binding broken by Valheim 1.0.12**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.48]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.49]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
@@ -42,13 +42,14 @@ XP should appear. Previously earned Crystal Shaping level/XP must stay unchanged
 
 ## Candidate acceptance matrix
 
-Confirm the startup log reports **0.0.48** and has no Magenheim bootstrap or registration
+Confirm the startup log reports **0.0.49** and has no Magenheim bootstrap or registration
 errors. Keep logs and screenshots with each result. Mark checks PASS / FAIL / NOT RUN;
 record game version, mod list, host/client role, seed, steps, expected/actual result.
 
 | Area | Required acceptance |
 | --- | --- |
 | Geology | Mine each biome geode; exactly one intact drop; opening output follows definitions; no mutation of vanilla rocks; reload without duplicate registrations. |
+| Inventory notification | 0.0.49 repair. Force a workshop transaction to fail (full inventory) and confirm the rollback completes with no `TargetParameterCountException` and no lost or duplicated items. Install and extract a socket, host and remote client, and confirm the inventory view refreshes immediately after each mutation. |
 | Workshop | Place all upgrades; verify station levels, all eight refinement families, success/failure shard returns, XP, full-inventory rejection and repaired iron straps. |
 | Sockets | Host and remote client open/install/extract; Dais permission boundary; stale item, duplicate response, reconnect, mismatch and spoofed descriptor rejection without loss/duplication. |
 | Persistence | Save/reload, drop/pickup, chest, repair, upgrade, transfer, death and dedicated server for socketed items and new pieces. |

@@ -1,4 +1,4 @@
 {
-  "version": "0.0.48",
-  "description": "0.0.48: Integrates Underworld and Rootforged definition authority; repairs build, Deep Fracture routing and throne offering loss. Testing build; world transitions and multiplayer/persistence acceptance remain pending."
+  "version": "0.0.49",
+  "description": "0.0.49: Repairs the Inventory.Changed binding broken by Valheim 1.0.12; workshop rollback and socket install/extract threw mid-transaction. Adds a static reflection-binding build gate. Testing build; multiplayer acceptance still pending."
 }

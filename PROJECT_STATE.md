@@ -1,4 +1,30 @@
-# Current source candidate — 0.0.48 / schema 5
+# Current source candidate — 0.0.49 / schema 5
+
+Repaired the `Inventory.Changed` reflection binding that Valheim 1.0.12 broke: the game
+now declares `Changed(bool success, bool cheatedStateChanged)`, and three Magenheim call
+sites still invoked it with no arguments, raising `TargetParameterCountException` inside
+workshop rollback and both local and remote socket mutations. The binding moved to the
+declared `RuntimeGameApi` boundary with a pinned signature. A new
+`tools/verify-reflection-targets.ps1` gate reads compiled IL, resolves every literal
+reflection binding against the installed assemblies, and fails the build on arity drift;
+it is proven to fail on the pre-repair 0.0.48 DLL and pass on 0.0.49. See
+docs/validation/2026-09-15-inventory-changed-reflection-repair.md.
+
+Repository divergence reconciled: origin/main carried two Broken Crown encounter-reset
+commits that the local 0.0.48 worktree did not contain, while the worktree carried a
+Valheim 1.0.12 API pass that the remote did not. Both intents were merged rather than
+either being overwritten; `Character.SetPos` was confirmed absent from the installed
+assembly, so the local replacement was a required repair.
+
+36,859 deterministic assertions pass; runtime builds with zero warnings/errors; 20 Harmony
+patch targets and 7 literal reflection bindings verify against installed assemblies.
+0.0.49 is packaged but NOT installed: Valheim was running (PID 28028) and project
+instructions forbid terminating the user's game. Underworld world transitions and live
+multiplayer/persistence acceptance remain open.
+
+---
+
+# Historical — 0.0.48 / schema 5
 
 Underworld six-boss progression and eleven Rootforged definitions now share canonical Magenheim JSON and gameplay fingerprint authority. Baseline compilation and Deep Fracture route generation repaired. 36,859 deterministic assertions pass; runtime builds without warnings/errors. Installation/startup status is recorded in docs/validation/2026-09-15-underworld-authority-integration.md. Underworld world transitions and live multiplayer/persistence acceptance remain open.
 

@@ -928,8 +928,7 @@ internal static class SocketOperationRpc
 
     private static void NotifyInventoryChanged(Inventory inventory)
     {
-        var changed = HarmonyLib.AccessTools.Method(typeof(Inventory), "Changed");
-        changed?.Invoke(inventory, Array.Empty<object>());
+        RuntimeGameApi.NotifyInventoryChanged(inventory);
         InventoryGui.instance?.m_playerGrid?.UpdateInventory(inventory, Player.m_localPlayer, null);
     }
 

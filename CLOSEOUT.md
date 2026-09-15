@@ -1,3 +1,19 @@
+# Development closeout — 0.0.49 testing candidate
+
+Repairs the `Inventory.Changed` binding broken by Valheim 1.0.12 and adds a static
+reflection-binding gate that catches this defect class. Evidence, including the proven
+negative test against the pre-repair DLL, is in
+docs/validation/2026-09-15-inventory-changed-reflection-repair.md. Tests: 36,859
+assertions; runtime: zero warnings/errors; 20 patch targets and 7 literal reflection
+bindings verified.
+
+Package built: `dist/Local-Magenheim-0.0.49.zip`. Installation into the active Central
+Fuckery profile is PENDING because Valheim was running during closeout. The profile still
+holds 0.0.48, which contains the defect. Run `./closeout.ps1 -Offline` with Valheim and
+r2modman closed to finish delivery.
+
+## Historical closeouts
+
 # Development closeout — 0.0.48 testing candidate
 
 Underworld U0/U1 authority integration and baseline repairs are detailed in docs/validation/2026-09-15-underworld-authority-integration.md. Schema 5 ships validated catalogs only; no Underworld world transition or runtime construction is enabled. Tests: 36,859 assertions; runtime: zero warnings/errors.

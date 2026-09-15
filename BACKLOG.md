@@ -44,6 +44,16 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Register Crystal Shaping under permanent ID `magenheim.crystal_shaping`.
 - [ ] Confirm the live console diagnostic `raiseskill magenheim.crystal_shaping 1`; the spaced display name is not a valid `raiseskill` argument.
 
+## P0.5 — Valheim 1.0.12 compatibility repair
+
+- [x] Reconcile origin/main's Broken Crown encounter-reset commits with the local 1.0.12 API pass without overwriting either intent.
+- [x] Replace `Character.SetPos` and `Rigidbody.velocity`, both removed or superseded by Valheim 1.0.12, with the installed API.
+- [x] Repair the `Inventory.Changed` binding: 1.0.12 declares `Changed(bool, bool)` and three call sites invoked it with zero arguments, throwing `TargetParameterCountException` in workshop rollback and local/remote socket mutation. Bound at the `RuntimeGameApi` boundary with a pinned signature.
+- [x] Add `tools/verify-reflection-targets.ps1` so literal reflection bindings are resolved against installed assemblies at build time; proven to fail on the pre-repair 0.0.48 DLL.
+- [ ] Extend reflection verification to the helper-wrapper bindings whose member names are passed as arguments (`Aoe`, `Projectile`, `Destructible`, `ZNetView`, `SE_Stats` fields). All resolve correctly at this revision, but they are checked manually rather than by the gate.
+- [ ] Install 0.0.49 into the active Central Fuckery profile. Blocked during this cycle: Valheim was running and project instructions forbid terminating the user's game.
+- [ ] Live-confirm that a failed workshop transaction rolls back without an unhandled exception and that socket install/extract refreshes the inventory.
+
 ## P1 — Meadows/Earth vertical slice
 
 - [x] Define the initial Meadows geode data with one guaranteed Earth crystal and independent 35%/10% additional-crystal chances.
