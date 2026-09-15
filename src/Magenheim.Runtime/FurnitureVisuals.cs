@@ -38,15 +38,15 @@ internal static class FurnitureVisuals
             root.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
 
         var wood = Material(source, modelId + ".wood", new Color(.24f, .15f, .085f, 1f), 0f, .10f);
-        var darkWood = Material(source, modelId + ".darkwood", new Color(.13f, .075f, .045f, 1f), 0f, .08f);
+        var darkWood = Material(source, modelId + ".dark-wood", new Color(.13f, .075f, .045f, 1f), 0f, .08f);
         var stone = Material(source, modelId + ".stone", new Color(.33f, .32f, .30f, 1f), .02f, .09f);
-        var darkStone = Material(source, modelId + ".darkstone", new Color(.16f, .17f, .18f, 1f), .02f, .08f);
+        var darkStone = Material(source, modelId + ".dark-stone", new Color(.16f, .17f, .18f, 1f), .02f, .08f);
         var iron = Material(source, modelId + ".iron", new Color(.27f, .30f, .31f, 1f), .58f, .24f);
         var bronze = Material(source, modelId + ".bronze", new Color(.44f, .29f, .14f, 1f), .48f, .28f);
         var hide = Material(source, modelId + ".hide", new Color(.31f, .22f, .15f, 1f), 0f, .06f);
         var accent = AccentFor(modelId);
         var crystal = Material(source, modelId + ".crystal", accent, .02f, .72f, .32f);
-        var bright = Material(source, modelId + ".crystalbright", Color.Lerp(accent, Color.white, .30f), .01f, .82f, .52f);
+        var bright = Material(source, modelId + ".crystal-bright", Color.Lerp(accent, Color.white, .30f), .01f, .82f, .52f);
 
         switch (modelId)
         {
@@ -260,9 +260,8 @@ internal static class FurnitureVisuals
 
     private static Material Material(Material source, string suffix, Color color, float metallic, float glossiness, float emission = 0f)
     {
-        var material = new Material(source) { name = "magenheim.furniture." + suffix, mainTexture = Texture2D.whiteTexture };
-        material.mainTextureScale = Vector2.one;
-        material.mainTextureOffset = Vector2.zero;
+        var material = new Material(source) { name = "magenheim.furniture." + suffix };
+        GeneratedSurfaceTextures.Apply(material, suffix);
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", glossiness);
