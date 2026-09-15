@@ -24,6 +24,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private GeodeItemRegistrar? _geodeItemRegistrar;
     private GeodeWorldgenRegistrar? _geodeWorldgenRegistrar;
     private EarthContentRegistrar? _earthContentRegistrar;
+    private JewelcraftingCrystalRegistrar? _jewelcraftingCrystalRegistrar;
     private WorkshopRegistrar? _workshopRegistrar;
     private FurnitureRegistrar? _furnitureRegistrar;
     private GeologyDecorRegistrar? _geologyDecorRegistrar;
@@ -119,8 +120,16 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _deepFractureRoomRegistrar = new DeepFractureRoomRegistrar(Logger);
             _deepFractureRoomRegistrar.Register();
 
+            // Magenheim remains the sole crystal item authority. Subscribe its crystal registrar
+            // first, then add the Jewelcrafting bridge so both consumers resolve the same prefabs.
             _earthContentRegistrar = new EarthContentRegistrar(Logger);
             _earthContentRegistrar.Register();
+            if (socketProvider.Backend == EquipmentSocketBackend.Jewelcrafting)
+            {
+                _jewelcraftingCrystalRegistrar = new JewelcraftingCrystalRegistrar(Logger);
+                _jewelcraftingCrystalRegistrar.Register();
+            }
+
             _workshopRegistrar = new WorkshopRegistrar(Logger);
             _workshopRegistrar.Register();
             _furnitureRegistrar = new FurnitureRegistrar(Logger);
@@ -220,8 +229,9 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
         _crystalArchitectureRegistrar?.Dispose();
         _geologyDecorRegistrar?.Dispose();
         _furnitureRegistrar?.Dispose();
-        _earthContentRegistrar?.Dispose();
         _workshopRegistrar?.Dispose();
+        _jewelcraftingCrystalRegistrar?.Dispose();
+        _earthContentRegistrar?.Dispose();
         _deepFractureRoomRegistrar?.Dispose();
         if (_socketWorkstationOverlay is not null)
             Destroy(_socketWorkstationOverlay);
