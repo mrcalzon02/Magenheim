@@ -9,12 +9,12 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Four-tier Fire staff family. Fire now owns explicit Magenheim projectile payloads and escalates
-/// from direct ignition to impact burst, scorch terrain, and persistent meteor burn zones.
+/// Four-tier Fire staff family. Fire owns explicit Magenheim projectile payloads and owned staff
+/// bodies, escalating from direct ignition to impact burst, scorch terrain, and meteor burn zones.
 /// </summary>
 internal sealed class FireStaffRegistrar : IDisposable
 {
-    private const string BaseStaffPrefab = "StaffFireball";
+    private const string BaseStaffPrefab = "StaffIceShards";
 
     private readonly ManualLogSource _log;
     private bool _subscribed;
@@ -37,7 +37,7 @@ internal sealed class FireStaffRegistrar : IDisposable
         try
         {
             if (PrefabManager.Instance.GetPrefab(BaseStaffPrefab) is null)
-                throw new InvalidOperationException($"Required vanilla staff prefab '{BaseStaffPrefab}' is unavailable.");
+                throw new InvalidOperationException($"Required hidden staff carrier '{BaseStaffPrefab}' is unavailable.");
             if (PrefabManager.Instance.GetPrefab(WorkshopRegistrar.StationPrefab) is null)
                 throw new InvalidOperationException("Geologist's Workstation must exist before Magenheim Fire staff recipes are registered.");
 
@@ -82,7 +82,7 @@ internal sealed class FireStaffRegistrar : IDisposable
             }
 
             _registered = true;
-            _log.LogInfo("Registered Fire abilities: Ember Dart, Firebolt Burst, Flameburst scorch fields, and Meteorfall burning ground.");
+            _log.LogInfo("Registered Fire abilities and four owned Magenheim Fire staff bodies.");
         }
         catch (Exception exception)
         {
@@ -114,7 +114,7 @@ internal sealed class FireStaffRegistrar : IDisposable
         var attack = shared.m_attack;
         attack.m_attackProjectile = payloads.Resolve(definition.Payload);
         attack.m_attackStamina = definition.StaminaCost;
-        attack.m_attackEitr = definition.EitrCost;
+        attack.m_attackEitr = 0f;
         attack.m_damageMultiplier = definition.DamageMultiplier;
         attack.m_projectileVel = definition.ProjectileVelocity;
         attack.m_projectileVelMin = definition.ProjectileVelocity;
@@ -124,6 +124,8 @@ internal sealed class FireStaffRegistrar : IDisposable
         attack.m_projectileBursts = definition.Bursts;
         attack.m_burstInterval = definition.BurstInterval;
         attack.m_perBurstResourceUsage = false;
+
+        FireStaffVisuals.Apply(item.ItemPrefab, definition.PrefabName);
 
         if (!ItemManager.Instance.AddItem(item))
             throw new InvalidOperationException($"Jotunn refused Fire staff item '{definition.PrefabName}'.");
@@ -151,23 +153,23 @@ internal sealed class FireStaffRegistrar : IDisposable
         new FireStaffDefinition(
             "Magenheim_Staff_Fire_Simple", "Simple Staff of Fire",
             "Ember Dart: fires one compact Magenheim ember with no secondary blast. It is the clean stamina-only introduction to direct Fire crystal damage.",
-            1, 24f, 0f, 20f, 1f, 28f, 1.5f, 1, 1, 0f, PayloadKind.Ember,
+            1, 24f, 20f, 1f, 28f, 1.5f, 1, 1, 0f, PayloadKind.Ember,
             new StaffRequirement("FineWood", 10), new StaffRequirement("Bronze", 2), new StaffRequirement("Magenheim_Crystal_Fire_Simple", 1)),
         new FireStaffDefinition(
             "Magenheim_Staff_Fire_Crystal", "Crystal Staff of Fire",
             "Firebolt: drives a dense bolt into one target and blooms into a compact 1.8-meter fireburst on impact, rewarding accurate shots against clustered enemies.",
-            2, 34f, 0f, 36f, 1f, 38f, .8f, 1, 1, 0f, PayloadKind.Firebolt,
+            2, 34f, 36f, 1f, 38f, .8f, 1, 1, 0f, PayloadKind.Firebolt,
             new StaffRequirement("ElderBark", 10), new StaffRequirement("Iron", 2), new StaffRequirement("Magenheim_Crystal_Fire_Crystal", 1)),
         new FireStaffDefinition(
             "Magenheim_Staff_Fire_Advanced", "Advanced Staff of Fire",
             "Flameburst: throws three unstable bolts across a fan. Every impact leaves three seconds of burning ground, so the spell pressures movement rather than ending at the initial hit.",
-            3, 14f, 18f, 14f, .78f, 31f, 7f, 3, 1, 0f, PayloadKind.Flameburst,
+            3, 32f, 14f, .78f, 31f, 7f, 3, 1, 0f, PayloadKind.Flameburst,
             new StaffRequirement("FineWood", 12), new StaffRequirement("Silver", 3), new StaffRequirement("BlackMetal", 2), new StaffRequirement("Magenheim_Crystal_Fire_Advanced", 1)),
         new FireStaffDefinition(
             "Magenheim_Staff_Fire_Master", "Master Staff of Fire",
             "Meteorfall: releases three waves of three meteoric bolts. Every impact leaves a wide four-and-a-half-second burn zone, turning the barrage into persistent incendiary terrain instead of nine disconnected fireballs.",
-            4, 0f, 48f, 9f, .70f, 34f, 9f, 3, 3, .18f, PayloadKind.Meteor,
-            new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("BlackMetal", 4), new StaffRequirement("Eitr", 10), new StaffRequirement("Magenheim_Crystal_Fire_Master", 1)),
+            4, 48f, 9f, .70f, 34f, 9f, 3, 3, .18f, PayloadKind.Meteor,
+            new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("BlackMetal", 4), new StaffRequirement("Magenheim_Crystal_Fire_Master", 1)),
     };
 
     public void Dispose()
@@ -212,12 +214,12 @@ internal sealed class FireStaffRegistrar : IDisposable
     {
         internal FireStaffDefinition(
             string prefabName, string displayName, string description, int minimumStationLevel,
-            float staminaCost, float eitrCost, float fireDamage, float damageMultiplier,
+            float staminaCost, float fireDamage, float damageMultiplier,
             float projectileVelocity, float projectileAccuracy, int projectiles, int bursts,
             float burstInterval, PayloadKind payload, params StaffRequirement[] requirements)
         {
             PrefabName = prefabName; DisplayName = displayName; Description = description; MinimumStationLevel = minimumStationLevel;
-            StaminaCost = staminaCost; EitrCost = eitrCost; FireDamage = fireDamage; DamageMultiplier = damageMultiplier;
+            StaminaCost = staminaCost; FireDamage = fireDamage; DamageMultiplier = damageMultiplier;
             ProjectileVelocity = projectileVelocity; ProjectileAccuracy = projectileAccuracy; Projectiles = projectiles;
             Bursts = bursts; BurstInterval = burstInterval; Payload = payload; Requirements = requirements;
         }
@@ -227,7 +229,6 @@ internal sealed class FireStaffRegistrar : IDisposable
         internal string Description { get; }
         internal int MinimumStationLevel { get; }
         internal float StaminaCost { get; }
-        internal float EitrCost { get; }
         internal float FireDamage { get; }
         internal float DamageMultiplier { get; }
         internal float ProjectileVelocity { get; }
