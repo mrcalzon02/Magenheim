@@ -5,11 +5,7 @@ using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>
-/// Original procedural geometry for Magenheim's compact geology/crystal decor collection.
-/// These models deliberately reuse the same stone, dark timber, iron/bronze binding, geode,
-/// and faceted-crystal language as the workstation and primary furniture family.
-/// </summary>
+/// <summary>Original procedural geometry for Magenheim's compact geology/crystal decor collection.</summary>
 internal static class GeologyDecorVisuals
 {
     internal const string GeodeBowl = "decor-geode-bowl";
@@ -31,11 +27,9 @@ internal static class GeologyDecorVisuals
     {
         if (prefab is null) throw new ArgumentNullException(nameof(prefab));
         if (string.IsNullOrWhiteSpace(modelId)) throw new ArgumentException("Decor model id is required.", nameof(modelId));
-
         var original = prefab.GetComponentsInChildren<Renderer>(true);
         var source = original.Select(renderer => renderer.sharedMaterial).FirstOrDefault(material => material)
             ?? throw new InvalidOperationException($"No material source exists on decor host '{prefab.name}'.");
-
         var root = new GameObject("magenheim." + modelId + ".visual") { layer = prefab.layer };
         root.transform.SetParent(prefab.transform, false);
 
@@ -53,38 +47,17 @@ internal static class GeologyDecorVisuals
 
         switch (modelId)
         {
-            case GeodeBowl:
-                BuildGeodeBowl(root, stone, darkStone, iron, crystal, bright);
-                break;
-            case CutGeodePlaque:
-                BuildCutGeodePlaque(root, darkWood, stone, darkStone, iron, crystal, bright);
-                break;
-            case CrystalEndTable:
-                BuildEndTable(root, wood, stone, darkStone, iron, crystal);
-                break;
-            case GeologistStool:
-                BuildStool(root, wood, stone, iron, crystal);
-                break;
-            case MineralDisplayCase:
-                BuildDisplayCase(root, darkWood, stone, iron, bronze, crystal, bright, secondary);
-                break;
-            case CrystalWallSconce:
-                BuildWallSconce(root, darkStone, iron, bronze, crystal, bright);
-                break;
-            case StrataMapTable:
-                BuildStrataMapTable(root, wood, stone, warmStone, darkStone, iron, bronze, crystal, secondary);
-                break;
-            case SpecimenSideboard:
-                BuildSideboard(root, wood, darkWood, stone, iron, bronze, crystal, bright, secondary);
-                break;
-            case CrystalCoatRack:
-                BuildCoatRack(root, wood, darkStone, iron, bronze, crystal);
-                break;
-            case GeodeHearthMantel:
-                BuildHearthMantel(root, stone, darkStone, warmStone, iron, bronze, crystal, bright);
-                break;
-            default:
-                throw new InvalidOperationException($"Unknown Magenheim geology decor model '{modelId}'.");
+            case GeodeBowl: BuildGeodeBowl(root, stone, darkStone, iron, crystal, bright); break;
+            case CutGeodePlaque: BuildCutGeodePlaque(root, darkWood, stone, darkStone, iron, crystal, bright); break;
+            case CrystalEndTable: BuildEndTable(root, wood, stone, darkStone, iron, crystal); break;
+            case GeologistStool: BuildStool(root, wood, stone, iron, crystal); break;
+            case MineralDisplayCase: BuildDisplayCase(root, darkWood, stone, iron, bronze, crystal, bright, secondary); break;
+            case CrystalWallSconce: BuildWallSconce(root, darkStone, iron, bronze, crystal, bright); break;
+            case StrataMapTable: BuildStrataMapTable(root, wood, stone, warmStone, darkStone, iron, bronze, crystal, secondary); break;
+            case SpecimenSideboard: BuildSideboard(root, wood, darkWood, stone, iron, bronze, crystal, bright, secondary); break;
+            case CrystalCoatRack: BuildCoatRack(root, wood, darkStone, iron, bronze, crystal); break;
+            case GeodeHearthMantel: BuildHearthMantel(root, stone, darkStone, warmStone, iron, bronze, crystal, bright); break;
+            default: throw new InvalidOperationException($"Unknown Magenheim geology decor model '{modelId}'.");
         }
 
         foreach (var renderer in original) renderer.enabled = false;
@@ -94,25 +67,18 @@ internal static class GeologyDecorVisuals
 
     private static Color AccentFor(string modelId) => modelId switch
     {
-        GeodeBowl => new Color(.70f, .48f, .24f, 1f),
-        CutGeodePlaque => new Color(.53f, .82f, .90f, 1f),
-        CrystalEndTable => new Color(.66f, .50f, .84f, 1f),
-        GeologistStool => new Color(.56f, .80f, .70f, 1f),
-        MineralDisplayCase => new Color(.54f, .82f, .88f, 1f),
-        CrystalWallSconce => new Color(.78f, .88f, .96f, 1f),
-        StrataMapTable => new Color(.78f, .58f, .29f, 1f),
-        SpecimenSideboard => new Color(.62f, .84f, .73f, 1f),
-        CrystalCoatRack => new Color(.48f, .75f, .88f, 1f),
-        GeodeHearthMantel => new Color(.86f, .52f, .22f, 1f),
+        GeodeBowl => new Color(.70f, .48f, .24f, 1f), CutGeodePlaque => new Color(.53f, .82f, .90f, 1f),
+        CrystalEndTable => new Color(.66f, .50f, .84f, 1f), GeologistStool => new Color(.56f, .80f, .70f, 1f),
+        MineralDisplayCase => new Color(.54f, .82f, .88f, 1f), CrystalWallSconce => new Color(.78f, .88f, .96f, 1f),
+        StrataMapTable => new Color(.78f, .58f, .29f, 1f), SpecimenSideboard => new Color(.62f, .84f, .73f, 1f),
+        CrystalCoatRack => new Color(.48f, .75f, .88f, 1f), GeodeHearthMantel => new Color(.86f, .52f, .22f, 1f),
         _ => new Color(.52f, .82f, .90f, 1f),
     };
 
     private static Color SecondaryFor(string modelId) => modelId switch
     {
-        MineralDisplayCase => new Color(.76f, .47f, .25f, 1f),
-        StrataMapTable => new Color(.46f, .68f, .58f, 1f),
-        SpecimenSideboard => new Color(.74f, .52f, .25f, 1f),
-        _ => new Color(.62f, .48f, .72f, 1f),
+        MineralDisplayCase => new Color(.76f, .47f, .25f, 1f), StrataMapTable => new Color(.46f, .68f, .58f, 1f),
+        SpecimenSideboard => new Color(.74f, .52f, .25f, 1f), _ => new Color(.62f, .48f, .72f, 1f),
     };
 
     private static void BuildGeodeBowl(GameObject root, Material stone, Material darkStone, Material iron, Material crystal, Material bright)
@@ -122,8 +88,7 @@ internal static class GeologyDecorVisuals
         for (var i = 0; i < 10; i++)
         {
             var a = Mathf.PI * 2f * i / 10f;
-            var x = .34f * Mathf.Cos(a);
-            var z = .34f * Mathf.Sin(a);
+            var x = .34f * Mathf.Cos(a); var z = .34f * Mathf.Sin(a);
             Box(root, "rim-stone-" + i, new Vector3(x, .30f, z), new Vector3(.24f, .18f, .18f), stone,
                 new Vector3(0f, -a * Mathf.Rad2Deg, 12f * Mathf.Sin(a)));
         }
@@ -140,18 +105,14 @@ internal static class GeologyDecorVisuals
         Box(root, "bottom-band", new Vector3(0f, .17f, -.045f), new Vector3(.98f, .055f, .055f), iron);
         for (var i = 0; i < 9; i++)
         {
-            var angle = 140f + i * 32.5f;
-            var rad = angle * Mathf.Deg2Rad;
-            var x = .31f * Mathf.Cos(rad);
-            var y = .74f + .31f * Mathf.Sin(rad);
-            Box(root, "shell-" + i, new Vector3(x, y, -.10f), new Vector3(.22f, .18f, .14f), stone,
-                new Vector3(0f, 0f, angle + 90f));
+            var angle = 140f + i * 32.5f; var rad = angle * Mathf.Deg2Rad;
+            var x = .31f * Mathf.Cos(rad); var y = .74f + .31f * Mathf.Sin(rad);
+            Box(root, "shell-" + i, new Vector3(x, y, -.10f), new Vector3(.22f, .18f, .14f), stone, new Vector3(0f, 0f, angle + 90f));
         }
         Cylinder(root, "geode-shadow", new Vector3(0f, .74f, -.075f), new Vector3(.51f, .045f, .51f), 12, darkStone, new Vector3(90f, 0f, 0f));
         for (var i = -2; i <= 2; i++)
             Prism(root, "interior-" + i, new Vector3(i * .10f, .75f + .025f * Math.Abs(i), -.18f),
-                new Vector3(.10f, .30f - .025f * Math.Abs(i), .10f), 5, i == 0 ? bright : crystal,
-                new Vector3(90f, 0f, i * 8f));
+                new Vector3(.10f, .30f - .025f * Math.Abs(i), .10f), 5, i == 0 ? bright : crystal, new Vector3(90f, 0f, i * 8f));
     }
 
     private static void BuildEndTable(GameObject root, Material wood, Material stone, Material darkStone, Material iron, Material crystal)
@@ -163,8 +124,7 @@ internal static class GeologyDecorVisuals
         for (var i = 0; i < 4; i++)
         {
             var angle = Mathf.PI * 2f * i / 4f;
-            Prism(root, "under-crystal-" + i,
-                new Vector3(.24f * Mathf.Cos(angle), .49f, .24f * Mathf.Sin(angle)),
+            Prism(root, "under-crystal-" + i, new Vector3(.24f * Mathf.Cos(angle), .49f, .24f * Mathf.Sin(angle)),
                 new Vector3(.08f, .22f, .08f), 5, crystal, new Vector3(0f, -angle * Mathf.Rad2Deg, 18f));
         }
     }
@@ -176,10 +136,8 @@ internal static class GeologyDecorVisuals
         for (var i = 0; i < 3; i++)
         {
             var angle = Mathf.PI * 2f * i / 3f;
-            Box(root, "leg-" + i,
-                new Vector3(.19f * Mathf.Cos(angle), .27f, .19f * Mathf.Sin(angle)),
-                new Vector3(.11f, .52f, .11f), wood,
-                new Vector3(5f * Mathf.Sin(angle), -angle * Mathf.Rad2Deg, -5f * Mathf.Cos(angle)));
+            Box(root, "leg-" + i, new Vector3(.19f * Mathf.Cos(angle), .27f, .19f * Mathf.Sin(angle)),
+                new Vector3(.11f, .52f, .11f), wood, new Vector3(5f * Mathf.Sin(angle), -angle * Mathf.Rad2Deg, -5f * Mathf.Cos(angle)));
         }
         Prism(root, "underslung-crystal", new Vector3(0f, .38f, 0f), new Vector3(.11f, .25f, .11f), 6, crystal, new Vector3(180f, 0f, 0f));
     }
@@ -188,11 +146,9 @@ internal static class GeologyDecorVisuals
     {
         Box(root, "base", new Vector3(0f, .11f, 0f), new Vector3(1.32f, .22f, .62f), stone);
         Box(root, "top", new Vector3(0f, 1.46f, 0f), new Vector3(1.32f, .13f, .62f), stone);
-        foreach (var x in new[] { -.57f, .57f })
-            foreach (var z in new[] { -.25f, .25f })
-                Box(root, "post-" + x + "-" + z, new Vector3(x, .80f, z), new Vector3(.075f, 1.28f, .075f), iron);
-        foreach (var y in new[] { .49f, .95f })
-            Box(root, "shelf-" + y, new Vector3(0f, y, 0f), new Vector3(1.12f, .055f, .50f), wood);
+        foreach (var x in new[] { -.57f, .57f }) foreach (var z in new[] { -.25f, .25f })
+            Box(root, "post-" + x + "-" + z, new Vector3(x, .80f, z), new Vector3(.075f, 1.28f, .075f), iron);
+        foreach (var y in new[] { .49f, .95f }) Box(root, "shelf-" + y, new Vector3(0f, y, 0f), new Vector3(1.12f, .055f, .50f), wood);
         Box(root, "lower-trim", new Vector3(0f, .26f, -.30f), new Vector3(1.18f, .055f, .055f), bronze);
         Box(root, "upper-trim", new Vector3(0f, 1.31f, -.30f), new Vector3(1.18f, .055f, .055f), bronze);
         Prism(root, "specimen-a", new Vector3(-.33f, .69f, 0f), new Vector3(.12f, .33f, .12f), 5, crystal, new Vector3(4f, 10f, -8f));
@@ -214,9 +170,8 @@ internal static class GeologyDecorVisuals
     private static void BuildStrataMapTable(GameObject root, Material wood, Material stone, Material warmStone, Material darkStone, Material iron, Material bronze, Material crystal, Material secondary)
     {
         Box(root, "top", new Vector3(0f, .84f, 0f), new Vector3(1.72f, .15f, 1.00f), stone);
-        foreach (var x in new[] { -.68f, .68f })
-            foreach (var z in new[] { -.34f, .34f })
-                Box(root, "leg-" + x + "-" + z, new Vector3(x, .40f, z), new Vector3(.14f, .80f, .14f), wood);
+        foreach (var x in new[] { -.68f, .68f }) foreach (var z in new[] { -.34f, .34f })
+            Box(root, "leg-" + x + "-" + z, new Vector3(x, .40f, z), new Vector3(.14f, .80f, .14f), wood);
         Box(root, "edge-band-front", new Vector3(0f, .78f, -.47f), new Vector3(1.55f, .075f, .055f), iron);
         Box(root, "edge-band-back", new Vector3(0f, .78f, .47f), new Vector3(1.55f, .075f, .055f), iron);
         var layers = new[] { darkStone, warmStone, secondary, warmStone, darkStone };
@@ -250,9 +205,7 @@ internal static class GeologyDecorVisuals
         for (var i = 0; i < 6; i++)
         {
             var angle = Mathf.PI * 2f * i / 6f;
-            var x = .27f * Mathf.Cos(angle);
-            var z = .27f * Mathf.Sin(angle);
-            Box(root, "hook-" + i, new Vector3(x, 1.56f, z), new Vector3(.075f, .075f, .52f), iron,
+            Box(root, "hook-" + i, new Vector3(.27f * Mathf.Cos(angle), 1.56f, .27f * Mathf.Sin(angle)), new Vector3(.075f, .075f, .52f), iron,
                 new Vector3(0f, -angle * Mathf.Rad2Deg + 90f, -18f));
             Prism(root, "hook-crystal-" + i, new Vector3(.44f * Mathf.Cos(angle), 1.66f, .44f * Mathf.Sin(angle)),
                 new Vector3(.07f, .20f, .07f), 5, crystal, new Vector3(0f, -angle * Mathf.Rad2Deg, 16f));
@@ -287,8 +240,7 @@ internal static class GeologyDecorVisuals
                 new Vector3(radius * .62f, radius * .46f, radius * .50f), shell,
                 new Vector3(0f, -angle * Mathf.Rad2Deg, 7f * Mathf.Sin(angle)));
         }
-        Prism(root, "geode-heart-" + position, position + new Vector3(0f, radius * .22f, 0f),
-            new Vector3(radius * .55f, radius * 1.10f, radius * .55f), 6, bright);
+        Prism(root, "geode-heart-" + position, position + new Vector3(0f, radius * .22f, 0f), new Vector3(radius * .55f, radius * 1.10f, radius * .55f), 6, bright);
         Prism(root, "geode-heart-side-" + position, position + new Vector3(radius * .28f, radius * .12f, -.03f),
             new Vector3(radius * .35f, radius * .72f, radius * .35f), 5, crystal, new Vector3(5f, 12f, 8f));
     }
@@ -298,21 +250,13 @@ internal static class GeologyDecorVisuals
 
     private static void Cylinder(GameObject root, string name, Vector3 position, Vector3 scale, int sides, Material material, Vector3? euler = null)
     {
-        if (!CylinderMeshes.TryGetValue(sides, out var mesh))
-        {
-            mesh = CreateCylinderMesh(sides);
-            CylinderMeshes.Add(sides, mesh);
-        }
+        if (!CylinderMeshes.TryGetValue(sides, out var mesh)) { mesh = CreateCylinderMesh(sides); CylinderMeshes.Add(sides, mesh); }
         Add(root, name, mesh, position, scale, Quaternion.Euler(euler ?? Vector3.zero), material);
     }
 
     private static void Prism(GameObject root, string name, Vector3 position, Vector3 scale, int sides, Material material, Vector3? euler = null)
     {
-        if (!PrismMeshes.TryGetValue(sides, out var mesh))
-        {
-            mesh = CreatePrismMesh(sides);
-            PrismMeshes.Add(sides, mesh);
-        }
+        if (!PrismMeshes.TryGetValue(sides, out var mesh)) { mesh = CreatePrismMesh(sides); PrismMeshes.Add(sides, mesh); }
         Add(root, name, mesh, position, scale, Quaternion.Euler(euler ?? Vector3.zero), material);
     }
 
@@ -329,11 +273,9 @@ internal static class GeologyDecorVisuals
 
     private static Material MakeMaterial(Material source, string suffix, Color color, float metallic, float glossiness, float emission = 0f)
     {
-        var material = new Material(source)
-        {
-            name = "magenheim.geology-decor." + suffix,
-            mainTexture = Texture2D.whiteTexture,
-        };
+        var material = new Material(source) { name = "magenheim.geology-decor." + suffix, mainTexture = Texture2D.whiteTexture };
+        material.mainTextureScale = Vector2.one;
+        material.mainTextureOffset = Vector2.zero;
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", glossiness);
@@ -360,9 +302,7 @@ internal static class GeologyDecorVisuals
             new Vector3(-.5f,-.5f,.5f), new Vector3(.5f,-.5f,.5f), new Vector3(.5f,.5f,.5f), new Vector3(-.5f,.5f,.5f)
         };
         mesh.triangles = new[] { 0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2 };
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        return mesh;
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 
     private static Mesh CreateCylinderMesh(int sides)
@@ -383,17 +323,10 @@ internal static class GeologyDecorVisuals
         for (var i = 0; i < sides; i++)
         {
             var next = (i + 1) % sides;
-            triangles.AddRange(new[] { i,next,sides+i, next,sides+next,sides+i, bottom,next,i, top,sides+i,sides+next });
+            triangles.AddRange(new[] { i,sides+i,next, next,sides+i,sides+next, bottom,i,next, top,sides+next,sides+i });
         }
-        var mesh = new Mesh
-        {
-            name = "magenheim.geology-decor.cylinder." + sides,
-            vertices = vertices.ToArray(),
-            triangles = triangles.ToArray(),
-        };
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        return mesh;
+        var mesh = new Mesh { name = "magenheim.geology-decor.cylinder." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 
     private static Mesh CreatePrismMesh(int sides)
@@ -415,16 +348,9 @@ internal static class GeologyDecorVisuals
         for (var i = 0; i < sides; i++)
         {
             var next = (i + 1) % sides;
-            triangles.AddRange(new[] { bottom,next,i, i,next,sides+i, next,sides+next,sides+i, sides+i,sides+next,top });
+            triangles.AddRange(new[] { bottom,i,next, i,sides+i,next, next,sides+i,sides+next, top,sides+next,sides+i });
         }
-        var mesh = new Mesh
-        {
-            name = "magenheim.geology-decor.prism." + sides,
-            vertices = vertices.ToArray(),
-            triangles = triangles.ToArray(),
-        };
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        return mesh;
+        var mesh = new Mesh { name = "magenheim.geology-decor.prism." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 }
