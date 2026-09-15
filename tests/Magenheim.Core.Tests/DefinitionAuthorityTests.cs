@@ -62,6 +62,7 @@ internal static class DefinitionAuthorityTests
         assertions += GeodeOpeningTransactionTests.Run();
         assertions += UnderworldDefinitionTests.Run();
         assertions += UnderworldArchitectureTests.Run();
+        assertions += UnderworldAuthorityCompositionTests.Run();
         return assertions;
     }
 }
