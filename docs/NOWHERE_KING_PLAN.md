@@ -171,9 +171,20 @@ Prefab identity: `Magenheim_NullMantle`.
 
 The direct unique equipment drop is the King's **black crown**, named **The Null Mantle**. It should be based on/retextured from the appropriate base endgame crown asset where technically/licensing-compatible within the game runtime, using extremely dark damaged metal, old-gold remnants, and the King's visual language.
 
-It is wearable head equipment. Wearing it grants a player-scale version of adaptive elemental resistance through the same `AdaptiveResistanceRuntime` used by the boss. The player version is deliberately weaker/shorter-lived than the King's version and remains resistance rather than immunity. Configuration owns thresholds, maximum resistance, observation window, and decay rate.
+The Null Mantle is not merely a resistance helmet. **Equipping it visually makes the wearer the new Nowhere King.** While worn, a presentation controller applies the King's inherited appearance to the player without destructively modifying the underlying player prefab or equipment assets:
 
-Suggested runtime authority: `NullMantleStatusEffect.cs`. Do not duplicate the adaptation mathematics inside it.
+- a localized **Nowhere black fog** follows/envelops the wearer, using a restrained near-body volume/particle treatment rather than globally replacing biome fog or weather;
+- the visible player body/armor receives a **darkened Nowhere material treatment**, driving the silhouette toward the King's black/void appearance while preserving enough equipment form to remain readable;
+- the player's eyes become unmistakable **glowing red eyes**, visible through the dark treatment and readable in fog and low light;
+- the black crown remains the defining head silhouette, so the transformation reads as succession rather than a generic shadow status effect.
+
+This presentation is equipment-state-driven and reversible. Unequipping the crown restores the player's normal renderer/material state and removes the fog/eye effects. It must never permanently rewrite shared player, armor, or foreign equipment materials. Renderer/material overrides should be instance-local, cached, restored safely on unequip/death/respawn, and rebuilt after model/equipment refreshes where Valheim recreates renderers.
+
+The transformation must replicate correctly in multiplayer: remote players should see the wearer as the new Nowhere King, while the local wearer must not receive a full-screen black-fog obstruction. Presentation may be client-rendered from synchronized equipment state; gameplay resistance remains authoritative through the normal status/equipment authority.
+
+Wearing the Null Mantle also grants a player-scale version of adaptive elemental resistance through the same `AdaptiveResistanceRuntime` used by the boss. The player version is deliberately weaker/shorter-lived than the King's version and remains resistance rather than immunity. Configuration owns thresholds, maximum resistance, observation window, and decay rate.
+
+Suggested authorities are `NullMantleStatusEffect.cs` for gameplay and `NullMantlePresentationRuntime.cs` for the reversible visual inheritance. Do not duplicate adaptation mathematics or mutate shared materials inside either implementation.
 
 ### Trophy — The Blackened King
 
@@ -207,7 +218,7 @@ Do not copy the boss implementation into a second player implementation. The sha
 9. Implement Phase Three, shared Gravity Inversion runtime/profiles, and No Kingdom Remains.
 10. Implement final-state behavior and multiplayer behavioral scaling.
 11. Implement death transaction and unique reward guard.
-12. Implement `Magenheim_NullMantle` using the shared adaptive-resistance authority.
+12. Implement `Magenheim_NullMantle` using the shared adaptive-resistance authority plus reversible `NullMantlePresentationRuntime` for Nowhere black fog, dark player rendering, glowing red eyes, and crown-driven succession appearance.
 13. Implement `Magenheim_TrophyNowhereKing`, trophy knowledge unlock, and cosmetic placed behavior.
 14. Implement `Magenheim_ScepterOfInversion` using the shared Gravity Inversion authority.
 15. Complete audio/VFX/crown/mantle polish only after mechanics are authoritative and multiplayer-safe.
@@ -218,6 +229,6 @@ A fresh eligible world can generate the rare Dark Throne without replacing vanil
 
 The Nowhere King persists correctly, transitions at the intended health boundaries, retains one authoritative AI/attack director, and cannot duplicate rewards through reconnect/reload/death callback races. All core attacks remain readable and preserve player agency. Null Mantle resistance is adaptive resistance, not immunity. Royal Stagger cannot become a permanent stun-lock. Gravity Inversion uses physical launch behavior where practical and is server-authoritative in multiplayer.
 
-Defeating the King produces the wearable `Magenheim_NullMantle` black crown and `Magenheim_TrophyNowhereKing` blackened head/crown trophy exactly once under the intended reward policy. Trophy acquisition unlocks the Scepter of Inversion recipe. Wearing the Null Mantle grants the player-scale adaptive resistance. The Scepter produces the player-scale Gravity Inversion behavior through the shared runtime rather than copied boss code.
+Defeating the King produces the wearable `Magenheim_NullMantle` black crown and `Magenheim_TrophyNowhereKing` blackened head/crown trophy exactly once under the intended reward policy. Trophy acquisition unlocks the Scepter of Inversion recipe. Wearing the Null Mantle grants the player-scale adaptive resistance **and visibly transforms the wearer into the successor Nowhere King through localized black fog, darkened/void-like player materials, glowing red eyes, and the black crown silhouette**. Unequipping it completely and safely restores normal presentation, including after death/respawn and equipment renderer refresh. Other multiplayer clients see the transformation without the wearer suffering an obstructive first-person/local fog treatment. The Scepter produces the player-scale Gravity Inversion behavior through the shared runtime rather than copied boss code.
 
-Final acceptance requires compile/runtime registration verification plus disposable-world generation, boss fight, death/reward, save/reload, reconnect, and dedicated-server multiplayer testing when the environment permits.
+Final acceptance requires compile/runtime registration verification plus disposable-world generation, boss fight, death/reward, Null Mantle equip/unequip/respawn/multiplayer visual tests, save/reload, reconnect, and dedicated-server multiplayer testing when the environment permits.
