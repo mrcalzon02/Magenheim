@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Jotunn.Managers;
+using Magenheim.Core.DarkThrone;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
@@ -49,15 +50,13 @@ internal static class DarkThroneVisuals
 
     private static void BuildCrystalEcology(Transform parent)
     {
-        // Lesser nodes make the court visibly infested before the player commits to the dais.
-        DarkThroneCrystalSpawnerFactory.Create(parent, "CrystalSpawner_Lesser_West", new Vector3(-18f, 0.2f, -13f), false, 2, 7f, 90f);
-        DarkThroneCrystalSpawnerFactory.Create(parent, "CrystalSpawner_Lesser_East", new Vector3(18f, 0.2f, -13f), false, 2, 7f, 90f);
-        DarkThroneCrystalSpawnerFactory.Create(parent, "CrystalSpawner_Lesser_Approach", new Vector3(0f, 0.2f, -22f), false, 2, 8f, 105f);
-
-        // Guardian nodes defend the upper court. Encounter authority can suspend every node through
-        // DarkThroneCrystalSpawner.SetEncounterSuspended when the King takes control of the arena.
-        DarkThroneCrystalSpawnerFactory.Create(parent, "CrystalSpawner_Guardian_West", new Vector3(-13f, 0.8f, 12f), true, 1, 5f, 150f);
-        DarkThroneCrystalSpawnerFactory.Create(parent, "CrystalSpawner_Guardian_East", new Vector3(13f, 0.8f, 12f), true, 1, 5f, 150f);
+        var lesser = CrystalCreatureSpawnProfiles.DarkThroneLesser;
+        var guardian = CrystalCreatureSpawnProfiles.DarkThroneGuardian;
+        DarkThroneCrystalSpawnerFactory.Create(parent, "CrystalSpawner_Lesser_West", new Vector3(-18f, 0.2f, -13f), lesser);
+        DarkThroneCrystalSpawnerFactory.Create(parent, "CrystalSpawner_Lesser_East", new Vector3(18f, 0.2f, -13f), lesser);
+        DarkThroneCrystalSpawnerFactory.Create(parent, "CrystalSpawner_Lesser_Approach", new Vector3(0f, 0.2f, -22f), lesser);
+        DarkThroneCrystalSpawnerFactory.Create(parent, "CrystalSpawner_Guardian_West", new Vector3(-13f, 0.8f, 12f), guardian);
+        DarkThroneCrystalSpawnerFactory.Create(parent, "CrystalSpawner_Guardian_East", new Vector3(13f, 0.8f, 12f), guardian);
     }
 
     private static void BuildThrone(Transform parent, Material basalt, Material voidStone)
