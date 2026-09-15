@@ -4,65 +4,19 @@ using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>Persistent server-owned authority for the unique Dark Throne lifecycle.</summary>
 internal sealed class DarkThroneEncounterRuntime : MonoBehaviour
 {
-    private const string DefeatedKey="magenheim.darkthrone.defeated";
-    private const string EngagedKey="magenheim.darkthrone.engaged";
-    private const string RewardedKey="magenheim.darkthrone.rewarded";
-    private const string KingIdentityKey="magenheim.darkthrone.king.id";
-    private const string KingEncounterKey="magenheim.darkthrone.king.encounter";
-    private const string EncounterIdentityKey="magenheim.darkthrone.id";
-    private const float DisengageGraceSeconds=12f;
-    private ZNetView _view; private Transform _kingAnchor; private float _noParticipantsSince=-1f;
-
+    private const string DefeatedKey="magenheim.darkthrone.defeated",EngagedKey="magenheim.darkthrone.engaged",RewardedKey="magenheim.darkthrone.rewarded",KingIdentityKey="magenheim.darkthrone.king.id",KingEncounterKey="magenheim.darkthrone.king.encounter",EncounterIdentityKey="magenheim.darkthrone.id";
+    private const float DisengageGraceSeconds=12f; private ZNetView _view; private Transform _kingAnchor; private float _noParticipantsSince=-1f;
     private void Awake()=>_view=GetComponent<ZNetView>();
     private void Start(){_kingAnchor=transform.parent!=null?transform.parent.Find(DarkThroneVisuals.KingAnchorName):null;if(_kingAnchor==null){Debug.LogError("Dark Throne encounter has no Nowhere King anchor and will remain inert.");enabled=false;}}
-
-    private void Update()
-    {
-        if(!HasAuthority())return;var zdo=_view.GetZDO();
-        if(zdo.GetBool(DefeatedKey,false)){SuspendEcology(false);return;}
-        var king=FindOwnedKing();if(king==null){king=SpawnKing();if(king==null)return;}
-        BindRuntime(king);
-        var participants=CountLivingParticipants();var engaged=zdo.GetBool(EngagedKey,false);
-        if(participants>0){_noParticipantsSince=-1f;if(!engaged){zdo.Set(EngagedKey,true);SuspendEcology(true);}return;}
-        if(!engaged)return;if(_noParticipantsSince<0f)_noParticipantsSince=Time.time;if(Time.time-_noParticipantsSince<DisengageGraceSeconds)return;ResetEncounter(king);
-    }
-
-    internal void MarkDefeated(ZDO kingZdo)
-    {
-        if(!HasAuthority()||kingZdo==null)return;
-        var encounterId=EnsureEncounterIdentity();
-        if(!string.Equals(kingZdo.GetString(KingEncounterKey,string.Empty),encounterId,StringComparison.Ordinal))return;
-        var zdo=_view.GetZDO();
-        if(zdo.GetBool(DefeatedKey,false))return;
-        zdo.Set(DefeatedKey,true);zdo.Set(EngagedKey,false);zdo.Set(KingIdentityKey,string.Empty);
-        // Rewarded is deliberately a separate durable guard: reward content can atomically set it when
-        // Null Mantle/trophy drops are implemented without ever making boss reconstruction depend on loot.
-        if(!zdo.GetBool(RewardedKey,false))zdo.Set(RewardedKey,false);
-        _noParticipantsSince=-1f;SuspendEcology(false);
-    }
-
+    private void Update(){if(!HasAuthority())return;var zdo=_view.GetZDO();if(zdo.GetBool(DefeatedKey,false)){SuspendEcology(false);return;}var king=FindOwnedKing();if(king==null){king=SpawnKing();if(king==null)return;}BindRuntime(king);var participants=CountLivingParticipants();var engaged=zdo.GetBool(EngagedKey,false);if(participants>0){_noParticipantsSince=-1f;if(!engaged){zdo.Set(EngagedKey,true);SuspendEcology(true);}return;}if(!engaged)return;if(_noParticipantsSince<0f)_noParticipantsSince=Time.time;if(Time.time-_noParticipantsSince<DisengageGraceSeconds)return;ResetEncounter(king);}
+    internal void MarkDefeated(ZDO kingZdo){if(!HasAuthority()||kingZdo==null)return;var encounterId=EnsureEncounterIdentity();if(!string.Equals(kingZdo.GetString(KingEncounterKey,string.Empty),encounterId,StringComparison.Ordinal))return;var zdo=_view.GetZDO();if(zdo.GetBool(DefeatedKey,false))return;zdo.Set(DefeatedKey,true);zdo.Set(EngagedKey,false);zdo.Set(KingIdentityKey,string.Empty);if(!zdo.GetBool(RewardedKey,false))zdo.Set(RewardedKey,false);_noParticipantsSince=-1f;SuspendEcology(false);}
     private bool HasAuthority()=>_view!=null&&_view.IsValid()&&_view.IsOwner()&&ZNet.instance!=null;
-    private int CountLivingParticipants(){var center=transform.position;var count=0;foreach(var player in Player.GetAllPlayers()){if(player==null||player.IsDead())continue;var d=player.transform.position-center;if(Mathf.Abs(d.x)<=34f&&Mathf.Abs(d.z)<=38f)count++;}return count;}
-
-    private Character FindOwnedKing(){var encounterId=EnsureEncounterIdentity();foreach(var character in Character.GetAllCharacters()){if(character==null||character.IsDead())continue;var nview=character.GetComponent<ZNetView>();if(nview==null||!nview.IsValid())continue;if(string.Equals(nview.GetZDO().GetString(KingEncounterKey,string.Empty),encounterId,StringComparison.Ordinal))return character;}return null;}
-
-    private Character SpawnKing()
-    {
-        var prefab=PrefabManager.Instance.GetPrefab(NowhereKingRegistrar.PrefabName);if(prefab==null)return null;
-        var instance=Instantiate(prefab,_kingAnchor.position,_kingAnchor.rotation);var character=instance.GetComponent<Character>();var nview=instance.GetComponent<ZNetView>();
-        if(character==null||nview==null||!nview.IsValid()){Destroy(instance);return null;}
-        nview.GetZDO().Set(KingEncounterKey,EnsureEncounterIdentity());_view.GetZDO().Set(KingIdentityKey,nview.GetZDO().m_uid.ToString());BindRuntime(character);return character;
-    }
-
-    private void BindRuntime(Character king)
-    {
-        var leash=king.GetComponent<NowhereKingArenaLeash>();if(leash!=null)leash.Configure(transform.position);
-        var link=king.GetComponent<NowhereKingEncounterLink>()??king.gameObject.AddComponent<NowhereKingEncounterLink>();link.Bind(this);
-    }
-
+    private int CountLivingParticipants(){var center=transform.position,count=0f;foreach(var player in Player.GetAllPlayers()){if(player==null||player.IsDead())continue;var d=player.transform.position-center;if(Mathf.Abs(d.x)<=34f&&Mathf.Abs(d.z)<=38f)count++;}return Mathf.RoundToInt(count);}
+    private Character FindOwnedKing(){var encounterId=EnsureEncounterIdentity();foreach(var character in Character.GetAllCharacters()){if(character==null||character.IsDead())continue;var nview=character.GetComponent<ZNetView>();if(nview!=null&&nview.IsValid()&&string.Equals(nview.GetZDO().GetString(KingEncounterKey,string.Empty),encounterId,StringComparison.Ordinal))return character;}return null;}
+    private Character SpawnKing(){var prefab=PrefabManager.Instance.GetPrefab(NowhereKingRegistrar.PrefabName);if(prefab==null)return null;var instance=Instantiate(prefab,_kingAnchor.position,_kingAnchor.rotation);var character=instance.GetComponent<Character>();var nview=instance.GetComponent<ZNetView>();if(character==null||nview==null||!nview.IsValid()){Destroy(instance);return null;}nview.GetZDO().Set(KingEncounterKey,EnsureEncounterIdentity());_view.GetZDO().Set(KingIdentityKey,nview.GetZDO().m_uid.ToString());BindRuntime(character);return character;}
+    private void BindRuntime(Character king){var leash=king.GetComponent<NowhereKingArenaLeash>();if(leash!=null)leash.Configure(transform.position);var link=king.GetComponent<NowhereKingEncounterLink>()??king.gameObject.AddComponent<NowhereKingEncounterLink>();link.Bind(this);var combat=king.GetComponent<NowhereKingPhaseOneCombat>()??king.gameObject.AddComponent<NowhereKingPhaseOneCombat>();combat.Configure(transform.position);}
     private string EnsureEncounterIdentity(){var zdo=_view.GetZDO();var id=zdo.GetString(EncounterIdentityKey,string.Empty);if(!string.IsNullOrWhiteSpace(id))return id;var p=transform.position;id=string.Concat("darkthrone:",Mathf.RoundToInt(p.x),":",Mathf.RoundToInt(p.y),":",Mathf.RoundToInt(p.z));zdo.Set(EncounterIdentityKey,id);return id;}
     private void ResetEncounter(Character king){var zdo=_view.GetZDO();zdo.Set(EngagedKey,false);_noParticipantsSince=-1f;SuspendEcology(false);if(king==null)return;king.Heal(king.GetMaxHealth(),true);king.SetPos(_kingAnchor.position);var body=king.GetComponent<Rigidbody>();if(body!=null){body.velocity=Vector3.zero;body.angularVelocity=Vector3.zero;}}
     private void SuspendEcology(bool suspended){var root=transform.parent!=null?transform.parent:transform;foreach(var spawner in root.GetComponentsInChildren<DarkThroneCrystalSpawner>(true))spawner.SetEncounterSuspended(suspended);}
