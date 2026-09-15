@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BepInEx.Logging;
+using Magenheim.Core;
 using Magenheim.Core.Socketing;
 using Magenheim.Runtime.Compatibility;
 
