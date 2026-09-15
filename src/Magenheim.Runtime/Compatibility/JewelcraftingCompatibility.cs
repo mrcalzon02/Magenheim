@@ -60,6 +60,16 @@ internal static class JewelcraftingCompatibility
             failClosedOnInteropError));
     }
 
+    internal static Type RequireApiType()
+    {
+        Type apiType = FindApiType()
+            ?? throw new InvalidOperationException("Jewelcrafting public API type is unavailable after provider selection.");
+        MethodInfo? isLoaded = apiType.GetMethod("IsLoaded", BindingFlags.Public | BindingFlags.Static, null, Type.EmptyTypes, null);
+        if (isLoaded is null || isLoaded.ReturnType != typeof(bool) || !(bool)isLoaded.Invoke(null, null))
+            throw new InvalidOperationException("Jewelcrafting public API boundary is no longer available after provider selection.");
+        return apiType;
+    }
+
     private static Type? FindApiType()
     {
         foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
