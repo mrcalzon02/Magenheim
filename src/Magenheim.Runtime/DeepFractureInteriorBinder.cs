@@ -68,9 +68,7 @@ internal sealed class DeepFractureInteriorRuntime : MonoBehaviour
         var instances = new Dictionary<string, GameObject>(StringComparer.Ordinal);
         foreach (var placement in blueprint.Modules.OrderBy(module => module.SequenceIndex))
         {
-            var roomData = DeepFractureRoomRegistrar.ResolveDistrict(placement.PieceFamilyId);
-            var source = roomData.m_loadedRoom
-                ?? throw new InvalidOperationException($"Registered Deep Fracture district '{placement.PieceFamilyId}' has no loaded Room prefab.");
+            var source = DeepFractureRoomRegistrar.ResolveDistrict(placement.PieceFamilyId);
 
             var instance = Instantiate(source.gameObject, transform, false);
             instance.name = $"{DeepFractureRoomVisuals.RoomPrefabName(placement.PieceFamilyId)}_{placement.ModuleInstanceId}";
@@ -91,9 +89,7 @@ internal sealed class DeepFractureInteriorRuntime : MonoBehaviour
     private void BuildTraversalLinks(DeepFractureInteriorBlueprint blueprint)
     {
         var modules = blueprint.Modules.ToDictionary(module => module.ModuleInstanceId, StringComparer.Ordinal);
-        var sourceData = DeepFractureRoomRegistrar.ResolveTraversalNode();
-        var source = sourceData.m_loadedRoom
-            ?? throw new InvalidOperationException($"Registered Deep Fracture traversal node '{DeepFractureRoomVisuals.TraversalNodePrefabName}' has no loaded Room prefab.");
+        var source = DeepFractureRoomRegistrar.ResolveTraversalNode();
 
         foreach (var connection in blueprint.Connections.Where(connection => connection.RuntimeMode == DeepFractureRuntimeConnectionMode.TraversalLink))
         {
