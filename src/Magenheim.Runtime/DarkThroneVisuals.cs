@@ -26,8 +26,6 @@ internal static class DarkThroneVisuals
         Tint(basalt, new Color(0.105f, 0.115f, 0.13f, 1f));
         Tint(voidStone, new Color(0.025f, 0.027f, 0.035f, 1f));
 
-        // Broad, readable royal dais. It is intentionally open: columns frame the fight without
-        // becoming permanent line-of-sight bunkers.
         Block(locationContainer.transform, "Arena_Foundation", new Vector3(0f, -0.65f, 0f), new Vector3(52f, 1.3f, 60f), basalt);
         Block(locationContainer.transform, "Dais_Lower", new Vector3(0f, 0.35f, 18f), new Vector3(30f, 0.7f, 16f), basalt);
         Block(locationContainer.transform, "Dais_Upper", new Vector3(0f, 0.9f, 22f), new Vector3(20f, 0.55f, 9f), basalt);
@@ -46,6 +44,20 @@ internal static class DarkThroneVisuals
         BuildThrone(locationContainer.transform, basalt, voidStone);
         Anchor(locationContainer.transform, EncounterAnchorName, new Vector3(0f, 0f, 0f));
         Anchor(locationContainer.transform, KingAnchorName, new Vector3(0f, 1.2f, 13.5f));
+        BuildCrystalEcology(locationContainer.transform);
+    }
+
+    private static void BuildCrystalEcology(Transform parent)
+    {
+        // Lesser nodes make the court visibly infested before the player commits to the dais.
+        DarkThroneCrystalSpawnerFactory.Create(parent, "CrystalSpawner_Lesser_West", new Vector3(-18f, 0.2f, -13f), false, 2, 7f, 90f);
+        DarkThroneCrystalSpawnerFactory.Create(parent, "CrystalSpawner_Lesser_East", new Vector3(18f, 0.2f, -13f), false, 2, 7f, 90f);
+        DarkThroneCrystalSpawnerFactory.Create(parent, "CrystalSpawner_Lesser_Approach", new Vector3(0f, 0.2f, -22f), false, 2, 8f, 105f);
+
+        // Guardian nodes defend the upper court. Encounter authority can suspend every node through
+        // DarkThroneCrystalSpawner.SetEncounterSuspended when the King takes control of the arena.
+        DarkThroneCrystalSpawnerFactory.Create(parent, "CrystalSpawner_Guardian_West", new Vector3(-13f, 0.8f, 12f), true, 1, 5f, 150f);
+        DarkThroneCrystalSpawnerFactory.Create(parent, "CrystalSpawner_Guardian_East", new Vector3(13f, 0.8f, 12f), true, 1, 5f, 150f);
     }
 
     private static void BuildThrone(Transform parent, Material basalt, Material voidStone)
