@@ -63,22 +63,16 @@ internal static class CrystalSentinelVisuals
             if (renderer.transform.IsChildOf(root.transform)) continue;
             renderer.enabled = false;
         }
-        foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true))
-            lod.enabled = false;
-
+        foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled = false;
         return root;
     }
 
     internal static GameObject CreateAmmoVisual(Turret turret, ElementalAlignment element, Material source)
     {
         if (turret is null) throw new ArgumentNullException(nameof(turret));
-        var root = new GameObject("magenheim.sentinel.ammo." + element.ToString().ToLowerInvariant())
-        {
-            layer = turret.gameObject.layer
-        };
+        var root = new GameObject("magenheim.sentinel.ammo." + element.ToString().ToLowerInvariant()) { layer = turret.gameObject.layer };
         root.transform.SetParent(turret.m_turretBody ? turret.m_turretBody.transform : turret.transform, false);
         root.transform.localPosition = new Vector3(0f, .90f, -.52f);
-
         var tint = ElementVisualPalette.Tint(element);
         var material = Material(source, "ammo-" + element.ToString().ToLowerInvariant(), tint, .02f, .90f, .60f);
         Prism(root, "loaded-rough-crystal", Vector3.zero, .13f, .42f, 7, material, new Vector3(90f, 0f, 0f));
@@ -108,7 +102,6 @@ internal static class CrystalSentinelVisuals
             }
             renderer.sharedMaterials = materials;
         }
-
         foreach (var particles in projectile.GetComponentsInChildren<ParticleSystem>(true))
         {
             var main = particles.main;
@@ -156,21 +149,13 @@ internal static class CrystalSentinelVisuals
 
     private static void Cylinder(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material, Vector3? rotation = null)
     {
-        if (!CylinderMeshes.TryGetValue(sides, out var mesh))
-        {
-            mesh = CreateCylinderMesh(sides);
-            CylinderMeshes.Add(sides, mesh);
-        }
+        if (!CylinderMeshes.TryGetValue(sides, out var mesh)) { mesh = CreateCylinderMesh(sides); CylinderMeshes.Add(sides, mesh); }
         AddPart(root, name, mesh, position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.Euler(rotation ?? Vector3.zero), material);
     }
 
     private static void Prism(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material, Vector3? rotation = null)
     {
-        if (!PrismMeshes.TryGetValue(sides, out var mesh))
-        {
-            mesh = CreatePrismMesh(sides);
-            PrismMeshes.Add(sides, mesh);
-        }
+        if (!PrismMeshes.TryGetValue(sides, out var mesh)) { mesh = CreatePrismMesh(sides); PrismMeshes.Add(sides, mesh); }
         AddPart(root, name, mesh, position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.Euler(rotation ?? Vector3.zero), material);
     }
 
@@ -193,9 +178,8 @@ internal static class CrystalSentinelVisuals
             new Vector3(-.5f,-.5f,-.5f), new Vector3(.5f,-.5f,-.5f), new Vector3(.5f,.5f,-.5f), new Vector3(-.5f,.5f,-.5f),
             new Vector3(-.5f,-.5f,.5f), new Vector3(.5f,-.5f,.5f), new Vector3(.5f,.5f,.5f), new Vector3(-.5f,.5f,.5f),
         };
-        mesh.triangles = new[] { 0,3,2, 0,2,1, 4,5,6, 4,6,7, 0,4,7, 0,7,3, 1,2,6, 1,6,5, 0,1,5, 0,5,4, 3,7,6, 3,6,2 };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        return mesh;
+        mesh.triangles = new[] { 0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2 };
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 
     private static Mesh CreateCylinderMesh(int sides)
@@ -216,11 +200,10 @@ internal static class CrystalSentinelVisuals
         for (var i = 0; i < sides; i++)
         {
             var next = (i + 1) % sides;
-            triangles.AddRange(new[] { i, next, sides + i, next, sides + next, sides + i, bottom, next, i, top, sides + i, sides + next });
+            triangles.AddRange(new[] { i, sides + i, next, next, sides + i, sides + next, bottom, i, next, top, sides + next, sides + i });
         }
         var mesh = new Mesh { name = "magenheim.sentinel.cylinder." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        return mesh;
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 
     private static Mesh CreatePrismMesh(int sides)
@@ -242,10 +225,9 @@ internal static class CrystalSentinelVisuals
         for (var i = 0; i < sides; i++)
         {
             var next = (i + 1) % sides;
-            triangles.AddRange(new[] { bottom, next, i, i, next, sides + i, next, sides + next, sides + i, sides + i, sides + next, top });
+            triangles.AddRange(new[] { bottom, i, next, i, sides + i, next, next, sides + i, sides + next, top, sides + next, sides + i });
         }
         var mesh = new Mesh { name = "magenheim.sentinel.prism." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        return mesh;
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 }
