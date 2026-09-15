@@ -66,14 +66,9 @@ internal static class CrystalBedVisuals
     private static Material Material(Material source, string suffix, Color color, float metallic, float gloss, float emission = 0f)
     {
         var material = new Material(source) { name = "magenheim.crystal-bed." + suffix };
-        material.mainTexture = Texture2D.whiteTexture;
-        material.mainTextureScale = Vector2.one;
-        material.mainTextureOffset = Vector2.zero;
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", gloss);
-        if (material.HasProperty("_BumpMap")) material.SetTexture("_BumpMap", null);
-        material.DisableKeyword("_NORMALMAP");
         if (material.HasProperty("_EmissionColor") && emission > 0f)
         {
             material.SetColor("_EmissionColor", color * emission);
