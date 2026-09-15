@@ -49,3 +49,11 @@ The first Underworld code work is not biome decoration. After higher-priority br
 ## 11. Underworld content production order
 
 Once the Underworld framework is proven, production proceeds through the complete Fungal Forest vertical slice and the shared boss/Deepstone loop before multiplying biomes. The intended major progression is Fungal Forest -> Blackwater -> Sulfurous Wastes and Frozen Caverns in either order -> Fracture Zones -> Great Decay. Each biome must satisfy its full package gate, including ecology, structures, resources, unique boss, trophy and Deepstone boon, before the next dependent layer is considered complete.
+
+## 12. Parallel Underworld architecture and Rootforged construction
+
+`docs/UNDERWORLD_ARCHITECTURE_IMPLEMENTATION_PLAN.md` is the durable execution authority for the player/civilization construction language that runs in parallel with the world-layer Underworld program.
+
+This track may advance through pure definitions, deterministic catalogs, asset prototypes and additive build-piece implementation whenever its dependencies are satisfied, without creating a second Underworld runtime or bypassing higher-priority Magenheim validation gates. It reuses the current architecture registration pattern and eventually contributes gameplay-significant unlock/catalog data to the canonical Magenheim/Underworld fingerprint authority.
+
+The first bounded slice is A0: eleven structural identities comprising an Understone foundation and great plinth, 2/4/8m Worldroot beams, 2/4/8m Worldroot pillars, one iron-banded beam, and 4/8m Rootforged arch ribs. A0 is pure Core catalog/validation/test work only. Runtime registration follows after Core compile/test and resource-authority integration.
