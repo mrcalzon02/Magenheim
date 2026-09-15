@@ -6,11 +6,6 @@ using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>
-/// Concrete interior binder for the Deep Fracture location. It attaches generation authority to
-/// the existing entrance anchor without registering the surface location itself. Surface worldgen
-/// remains gated until the entrance/exit persistence boundary is complete.
-/// </summary>
 internal sealed class DeepFractureInteriorBinder : IDeepFractureInteriorBinder
 {
     internal const string InteriorRootName = "Magenheim_DeepFracture_InteriorRoot";
@@ -31,6 +26,8 @@ internal sealed class DeepFractureInteriorBinder : IDeepFractureInteriorBinder
         if (existing is not null)
             throw new InvalidOperationException("Deep Fracture interior authority is already attached to this entrance; duplicate binders are refused.");
 
+        DeepFractureSurfaceTravel.AttachSurfacePortal(anchor);
+
         var root = new GameObject(InteriorRootName);
         root.transform.SetParent(anchor, worldPositionStays: false);
         root.transform.localPosition = Vector3.zero;
@@ -44,11 +41,6 @@ internal sealed class DeepFractureInteriorBinder : IDeepFractureInteriorBinder
     }
 }
 
-/// <summary>
-/// Realizes one deterministic expedition from a spawned location's stable world position. The
-/// generated layout contains district Rooms, collision-safe physical passage Rooms and paired
-/// traversal nodes. Encounter spawning and surface travel are deliberately separate gates.
-/// </summary>
 internal sealed class DeepFractureInteriorRuntime : MonoBehaviour
 {
     private bool _built;
@@ -60,14 +52,20 @@ internal sealed class DeepFractureInteriorRuntime : MonoBehaviour
 
         var seed = StableLocationSeed(transform.position);
         var expedition = DeepFractureExpeditionPlanner.Build(seed);
-        BuildDistricts(expedition.Interior);
+        var districts = BuildDistricts(expedition.Interior);
         DeepFracturePassageAssembler.Assemble(transform, expedition.Interior);
         BuildTraversalLinks(expedition.Interior);
+
+        var descent = districts.TryGetValue("DF-01", out var descentDistrict)
+            ? descentDistrict
+            : throw new InvalidOperationException("Deep Fracture expedition did not place required DF-01 Fracture Descent district.");
+        DeepFractureSurfaceTravel.Bind(transform, descent);
         _built = true;
     }
 
-    private void BuildDistricts(DeepFractureInteriorBlueprint blueprint)
+    private Dictionary<string, GameObject> BuildDistricts(DeepFractureInteriorBlueprint blueprint)
     {
+        var instances = new Dictionary<string, GameObject>(StringComparer.Ordinal);
         foreach (var placement in blueprint.Modules.OrderBy(module => module.SequenceIndex))
         {
             var roomData = DeepFractureRoomRegistrar.ResolveDistrict(placement.PieceFamilyId);
@@ -83,7 +81,10 @@ internal sealed class DeepFractureInteriorRuntime : MonoBehaviour
             var room = instance.GetComponent<Room>()
                 ?? throw new InvalidOperationException($"Instantiated Deep Fracture district '{instance.name}' has no Room component.");
             DeepFractureRoomVisuals.ApplyElementalState(room, placement.ElementalStates);
+            if (!instances.TryAdd(placement.PieceFamilyId, instance))
+                throw new InvalidOperationException($"Deep Fracture expedition placed duplicate district family '{placement.PieceFamilyId}', so a unique travel anchor cannot be selected.");
         }
+        return instances;
     }
 
     private void BuildTraversalLinks(DeepFractureInteriorBlueprint blueprint)
@@ -154,8 +155,6 @@ internal sealed class DeepFractureInteriorRuntime : MonoBehaviour
 
     internal static int StableLocationSeed(Vector3 worldPosition)
     {
-        // Quantize to centimetres so every peer derives the same seed from the persisted location
-        // transform without relying on randomized string hashing or client-local RNG state.
         var x = (int)Math.Round(worldPosition.x * 100f, MidpointRounding.AwayFromZero);
         var y = (int)Math.Round(worldPosition.y * 100f, MidpointRounding.AwayFromZero);
         var z = (int)Math.Round(worldPosition.z * 100f, MidpointRounding.AwayFromZero);
