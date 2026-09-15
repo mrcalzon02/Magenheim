@@ -27,30 +27,19 @@ internal static class CrystallineIceBoxVisuals
         var blackStone = Material(source, "black-stone", new Color(.075f, .095f, .12f, 1f), .08f, .20f);
         var iron = Material(source, "iron", new Color(.25f, .29f, .34f, 1f), .76f, .38f);
         var silver = Material(source, "silver", new Color(.58f, .68f, .76f, 1f), .78f, .58f);
-        var crystal = Material(
-            source,
-            "frost-crystal",
-            new Color(Mathf.Min(1f, frost.r + .14f), Mathf.Min(1f, frost.g + .12f), 1f, 1f),
-            .04f,
-            .92f,
-            .72f);
+        var crystal = Material(source, "frost-crystal", new Color(Mathf.Min(1f, frost.r + .14f), Mathf.Min(1f, frost.g + .12f), 1f, 1f), .04f, .92f, .72f);
         var ice = IceMaterial(source, frost);
 
-        // The body is built as an actual shell rather than a recolored vanilla beehive.
         Box(root, "floor", new Vector3(0f, .17f, 0f), new Vector3(2.45f, .28f, 1.54f), blackStone);
         Box(root, "back-wall", new Vector3(0f, .72f, .68f), new Vector3(2.45f, 1.06f, .18f), blackStone);
         Box(root, "left-wall", new Vector3(-1.13f, .72f, 0f), new Vector3(.20f, 1.06f, 1.28f), blackStone);
         Box(root, "right-wall", new Vector3(1.13f, .72f, 0f), new Vector3(.20f, 1.06f, 1.28f), blackStone);
         Box(root, "front-plinth", new Vector3(0f, .36f, -.68f), new Vector3(2.45f, .36f, .18f), blackStone);
         Box(root, "lid", new Vector3(0f, 1.30f, 0f), new Vector3(2.55f, .22f, 1.62f), blackStone);
-
-        // A translucent reservoir window makes the box visibly cold rather than just dark furniture.
         Box(root, "ice-window", new Vector3(0f, .82f, -.705f), new Vector3(1.82f, .58f, .055f), ice);
         Box(root, "ice-mass-left", new Vector3(-.53f, .72f, -.48f), new Vector3(.58f, .52f, .72f), ice);
         Box(root, "ice-mass-right", new Vector3(.45f, .66f, -.46f), new Vector3(.72f, .42f, .68f), ice);
         Box(root, "ice-mass-high", new Vector3(.05f, .93f, -.42f), new Vector3(.70f, .32f, .62f), ice);
-
-        // Heavy iron framing keeps the design tied to the Magenheim workstation and Sentinel language.
         Box(root, "front-top-band", new Vector3(0f, 1.16f, -.72f), new Vector3(2.48f, .09f, .10f), iron);
         Box(root, "front-bottom-band", new Vector3(0f, .50f, -.72f), new Vector3(2.48f, .09f, .10f), iron);
         Box(root, "back-top-band", new Vector3(0f, 1.16f, .72f), new Vector3(2.48f, .09f, .10f), iron);
@@ -64,27 +53,15 @@ internal static class CrystallineIceBoxVisuals
 
         var crown = new[]
         {
-            new Vector3(-.78f, 1.48f, .26f),
-            new Vector3(-.36f, 1.50f, .08f),
-            new Vector3(.06f, 1.52f, .30f),
-            new Vector3(.48f, 1.48f, .06f),
-            new Vector3(.83f, 1.47f, .25f),
+            new Vector3(-.78f, 1.48f, .26f), new Vector3(-.36f, 1.50f, .08f), new Vector3(.06f, 1.52f, .30f),
+            new Vector3(.48f, 1.48f, .06f), new Vector3(.83f, 1.47f, .25f),
         };
         for (var i = 0; i < crown.Length; i++)
         {
             var height = .42f + (i % 3) * .10f;
-            Prism(
-                root,
-                "frost-crown-" + i,
-                crown[i],
-                .11f + (i % 2) * .025f,
-                height,
-                6,
-                crystal,
+            Prism(root, "frost-crown-" + i, crown[i], .11f + (i % 2) * .025f, height, 6, crystal,
                 new Vector3((i % 2 == 0 ? -8f : 7f), i * 37f, (i % 3 - 1) * 6f));
         }
-
-        // Small corner growths sell the idea that the Frost lattice is actively freezing the housing.
         Prism(root, "corner-growth-left", new Vector3(-1.05f, .88f, -.66f), .10f, .38f, 6, crystal, new Vector3(-15f, 18f, 7f));
         Prism(root, "corner-growth-right", new Vector3(1.05f, .84f, -.66f), .10f, .34f, 6, crystal, new Vector3(14f, -22f, -6f));
 
@@ -96,21 +73,12 @@ internal static class CrystallineIceBoxVisuals
         light.range = 3.6f;
         light.intensity = .72f;
 
-        foreach (var renderer in original)
-            renderer.enabled = false;
-        foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true))
-            lod.enabled = false;
-
+        foreach (var renderer in original) renderer.enabled = false;
+        foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled = false;
         return root;
     }
 
-    private static Material Material(
-        Material source,
-        string suffix,
-        Color color,
-        float metallic,
-        float gloss,
-        float emission = 0f)
+    private static Material Material(Material source, string suffix, Color color, float metallic, float gloss, float emission = 0f)
     {
         var material = new Material(source) { name = "magenheim.crystalline-ice-box." + suffix };
         material.mainTexture = Texture2D.whiteTexture;
@@ -126,10 +94,7 @@ internal static class CrystallineIceBoxVisuals
             material.SetColor("_EmissionColor", color * emission);
             material.EnableKeyword("_EMISSION");
         }
-        else
-        {
-            material.DisableKeyword("_EMISSION");
-        }
+        else material.DisableKeyword("_EMISSION");
         material.SetOverrideTag("RenderType", "Opaque");
         if (material.HasProperty("_ZWrite")) material.SetFloat("_ZWrite", 1f);
         material.renderQueue = 2000;
@@ -138,11 +103,7 @@ internal static class CrystallineIceBoxVisuals
 
     private static Material IceMaterial(Material source, Color frost)
     {
-        var color = new Color(
-            frost.r * .56f + .24f,
-            frost.g * .66f + .24f,
-            Mathf.Min(1f, frost.b * .82f + .22f),
-            .62f);
+        var color = new Color(frost.r * .56f + .24f, frost.g * .66f + .24f, Mathf.Min(1f, frost.b * .82f + .22f), .62f);
         var material = Material(source, "ice", color, .02f, .97f, .22f);
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Mode")) material.SetFloat("_Mode", 3f);
@@ -160,40 +121,13 @@ internal static class CrystallineIceBoxVisuals
     private static void Box(GameObject root, string name, Vector3 position, Vector3 size, Material material) =>
         AddPart(root, name, BoxMesh, position, size, Quaternion.identity, material);
 
-    private static void Prism(
-        GameObject root,
-        string name,
-        Vector3 position,
-        float radius,
-        float height,
-        int sides,
-        Material material,
-        Vector3 rotation)
+    private static void Prism(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material, Vector3 rotation)
     {
-        if (!PrismMeshes.TryGetValue(sides, out var mesh))
-        {
-            mesh = CreatePrismMesh(sides);
-            PrismMeshes.Add(sides, mesh);
-        }
-
-        AddPart(
-            root,
-            name,
-            mesh,
-            position,
-            new Vector3(radius * 2f, height, radius * 2f),
-            Quaternion.Euler(rotation),
-            material);
+        if (!PrismMeshes.TryGetValue(sides, out var mesh)) { mesh = CreatePrismMesh(sides); PrismMeshes.Add(sides, mesh); }
+        AddPart(root, name, mesh, position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.Euler(rotation), material);
     }
 
-    private static void AddPart(
-        GameObject root,
-        string name,
-        Mesh mesh,
-        Vector3 position,
-        Vector3 scale,
-        Quaternion rotation,
-        Material material)
+    private static void AddPart(GameObject root, string name, Mesh mesh, Vector3 position, Vector3 scale, Quaternion rotation, Material material)
     {
         var part = new GameObject(name) { layer = root.layer };
         part.transform.SetParent(root.transform, false);
@@ -212,25 +146,14 @@ internal static class CrystallineIceBoxVisuals
             new Vector3(-.5f,-.5f,-.5f), new Vector3(.5f,-.5f,-.5f), new Vector3(.5f,.5f,-.5f), new Vector3(-.5f,.5f,-.5f),
             new Vector3(-.5f,-.5f,.5f), new Vector3(.5f,-.5f,.5f), new Vector3(.5f,.5f,.5f), new Vector3(-.5f,.5f,.5f),
         };
-        mesh.triangles = new[]
-        {
-            0,3,2, 0,2,1,
-            4,5,6, 4,6,7,
-            0,4,7, 0,7,3,
-            1,2,6, 1,6,5,
-            0,1,5, 0,5,4,
-            3,7,6, 3,6,2,
-        };
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        return mesh;
+        mesh.triangles = new[] { 0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2 };
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 
     private static Mesh CreatePrismMesh(int sides)
     {
         var vertices = new List<Vector3>(sides * 2 + 2);
         var triangles = new List<int>(sides * 12);
-
         for (var i = 0; i < sides; i++)
         {
             var angle = 2f * Mathf.PI * i / sides;
@@ -241,32 +164,20 @@ internal static class CrystallineIceBoxVisuals
             var angle = 2f * Mathf.PI * i / sides;
             vertices.Add(new Vector3(.5f * Mathf.Cos(angle), .20f, .5f * Mathf.Sin(angle)));
         }
-
-        var top = vertices.Count;
-        vertices.Add(new Vector3(0f, .68f, 0f));
-        var bottom = vertices.Count;
-        vertices.Add(new Vector3(0f, -.50f, 0f));
-
+        var top = vertices.Count; vertices.Add(new Vector3(0f, .68f, 0f));
+        var bottom = vertices.Count; vertices.Add(new Vector3(0f, -.50f, 0f));
         for (var i = 0; i < sides; i++)
         {
             var next = (i + 1) % sides;
             triangles.AddRange(new[]
             {
-                bottom, next, i,
-                i, next, sides + i,
-                next, sides + next, sides + i,
-                sides + i, sides + next, top,
+                bottom, i, next,
+                i, sides + i, next,
+                next, sides + i, sides + next,
+                top, sides + next, sides + i,
             });
         }
-
-        var mesh = new Mesh
-        {
-            name = "magenheim.crystalline-ice-box.prism." + sides,
-            vertices = vertices.ToArray(),
-            triangles = triangles.ToArray(),
-        };
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        return mesh;
+        var mesh = new Mesh { name = "magenheim.crystalline-ice-box.prism." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 }
