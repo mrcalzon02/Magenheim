@@ -176,7 +176,8 @@ internal static class CrystalArchitectureVisuals
             new Color(.78f, .22f, 1.00f, 1f)
         };
         var materials = new Material[colors.Length];
-        for (var i = 0; i < colors.Length; i++) materials[i] = Material(source, modelId + ".rainbow." + i, colors[i], .02f, .78f, .48f);
+        for (var i = 0; i < colors.Length; i++)
+            materials[i] = Material(source, modelId + ".rainbow-crystal." + i, colors[i], .02f, .78f, .48f);
         return materials;
     }
 
@@ -202,9 +203,8 @@ internal static class CrystalArchitectureVisuals
 
     private static Material Material(Material source, string suffix, Color color, float metallic, float glossiness, float emission = 0f)
     {
-        var material = new Material(source) { name = "magenheim.architecture." + suffix, mainTexture = Texture2D.whiteTexture };
-        material.mainTextureScale = Vector2.one;
-        material.mainTextureOffset = Vector2.zero;
+        var material = new Material(source) { name = "magenheim.architecture." + suffix };
+        GeneratedSurfaceTextures.Apply(material, suffix);
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", glossiness);
