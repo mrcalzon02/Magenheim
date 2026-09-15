@@ -29,6 +29,9 @@ internal static class FrostStaffVisuals
         var attach = prefab.transform.Find("attach") ?? prefab.transform;
         var root = new GameObject("magenheim." + assetName + ".visual") { layer = prefab.layer };
         root.transform.SetParent(attach, false);
+        root.transform.localPosition = Vector3.zero;
+        root.transform.localRotation = Quaternion.identity;
+        root.transform.localScale = Vector3.one;
 
         var wood = Material(sourceMaterial, "wood", new Color(.29f, .21f, .16f, 1f), 0f, .14f);
         var paleWood = Material(sourceMaterial, "pale-wood", new Color(.46f, .36f, .27f, 1f), 0f, .16f);
@@ -40,27 +43,15 @@ internal static class FrostStaffVisuals
 
         switch (assetName)
         {
-            case "staff-frost-simple":
-                BuildSimple(root, wood, paleWood, iron, frost);
-                break;
-            case "staff-frost-crystal":
-                BuildCrystal(root, paleWood, silver, frostBright);
-                break;
-            case "staff-frost-advanced":
-                BuildAdvanced(root, wood, silver, frostBright, frostDeep);
-                break;
-            case "staff-frost-master":
-                BuildMaster(root, wood, silver, frost, frostBright, frostDeep);
-                break;
-            default:
-                throw new InvalidOperationException($"Unknown Frost staff geometry '{assetName}'.");
+            case "staff-frost-simple": BuildSimple(root, wood, paleWood, iron, frost); break;
+            case "staff-frost-crystal": BuildCrystal(root, paleWood, silver, frostBright); break;
+            case "staff-frost-advanced": BuildAdvanced(root, wood, silver, frostBright, frostDeep); break;
+            case "staff-frost-master": BuildMaster(root, wood, silver, frost, frostBright, frostDeep); break;
+            default: throw new InvalidOperationException($"Unknown Frost staff geometry '{assetName}'.");
         }
 
-        foreach (var renderer in originalRenderers)
-            renderer.enabled = false;
-        foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true))
-            lod.enabled = false;
-
+        foreach (var renderer in originalRenderers) renderer.enabled = false;
+        foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled = false;
         return root;
     }
 
@@ -88,7 +79,6 @@ internal static class FrostStaffVisuals
         Shaft(root, wood, silver, .041f);
         Cylinder(root, "lower-band", new Vector3(0, .28f, 0), .058f, .050f, 12, silver);
         Cylinder(root, "upper-band", new Vector3(0, .58f, 0), .073f, .075f, 12, silver);
-
         const float radius = .22f;
         for (var index = 0; index < 6; index++)
         {
@@ -97,35 +87,24 @@ internal static class FrostStaffVisuals
                 new Vector3(radius * .62f * Mathf.Cos(angle), .81f + radius * .62f * Mathf.Sin(angle), 0),
                 new Vector3(.20f, .034f, .044f), silver, angle * Mathf.Rad2Deg + 90f);
         }
-
         Prism(root, "advanced-focus", new Vector3(0, .84f, 0), .105f, .45f, 6, frost);
         Prism(root, "left-satellite", new Vector3(-.16f, .72f, .02f), .036f, .17f, 6, frostDeep);
         Prism(root, "right-satellite", new Vector3(.16f, .72f, -.02f), .036f, .17f, 6, frostDeep);
     }
 
-    private static void BuildMaster(
-        GameObject root,
-        Material wood,
-        Material silver,
-        Material frost,
-        Material frostBright,
-        Material frostDeep)
+    private static void BuildMaster(GameObject root, Material wood, Material silver, Material frost, Material frostBright, Material frostDeep)
     {
         Shaft(root, wood, silver, .043f);
         foreach (var y in new[] { -.48f, -.05f, .37f, .58f })
             Cylinder(root, "shaft-band-" + y, new Vector3(0, y, 0), .062f, .045f, 12, silver);
-
         for (var index = 0; index < 6; index++)
         {
             var angle = Mathf.PI / 3f * index;
             var x = .155f * Mathf.Cos(angle);
             var z = .155f * Mathf.Sin(angle);
-            Box(root, "master-tine-" + index, new Vector3(x, .83f, z), new Vector3(.035f, .34f, .035f), silver,
-                10.31f * Mathf.Cos(angle));
-            Prism(root, "master-satellite-" + index, new Vector3(x, .99f, z), .030f, .15f, 6,
-                index % 2 == 0 ? frost : frostDeep);
+            Box(root, "master-tine-" + index, new Vector3(x, .83f, z), new Vector3(.035f, .34f, .035f), silver, 10.31f * Mathf.Cos(angle));
+            Prism(root, "master-satellite-" + index, new Vector3(x, .99f, z), .030f, .15f, 6, index % 2 == 0 ? frost : frostDeep);
         }
-
         Cylinder(root, "master-halo", new Vector3(0, .70f, 0), .18f, .045f, 14, silver);
         Prism(root, "master-focus", new Vector3(0, .91f, 0), .125f, .54f, 6, frostBright);
     }
@@ -137,39 +116,22 @@ internal static class FrostStaffVisuals
         Cylinder(root, "neck-band", new Vector3(0, .50f, 0), radius * 1.30f, .055f, 10, metal);
     }
 
-    private static void Box(GameObject root, string name, Vector3 position, Vector3 size, Material material, float zDegrees = 0f)
-    {
+    private static void Box(GameObject root, string name, Vector3 position, Vector3 size, Material material, float zDegrees = 0f) =>
         AddPart(root, name, BoxMesh, position, size, Quaternion.Euler(0, 0, zDegrees), material);
-    }
 
     private static void Cylinder(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material)
     {
-        if (!CylinderMeshes.TryGetValue(sides, out var mesh))
-        {
-            mesh = CreateCylinderMesh(sides);
-            CylinderMeshes.Add(sides, mesh);
-        }
+        if (!CylinderMeshes.TryGetValue(sides, out var mesh)) { mesh = CreateCylinderMesh(sides); CylinderMeshes.Add(sides, mesh); }
         AddPart(root, name, mesh, position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.identity, material);
     }
 
     private static void Prism(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material)
     {
-        if (!PrismMeshes.TryGetValue(sides, out var mesh))
-        {
-            mesh = CreatePrismMesh(sides);
-            PrismMeshes.Add(sides, mesh);
-        }
+        if (!PrismMeshes.TryGetValue(sides, out var mesh)) { mesh = CreatePrismMesh(sides); PrismMeshes.Add(sides, mesh); }
         AddPart(root, name, mesh, position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.identity, material);
     }
 
-    private static void AddPart(
-        GameObject root,
-        string name,
-        Mesh mesh,
-        Vector3 position,
-        Vector3 scale,
-        Quaternion rotation,
-        Material material)
+    private static void AddPart(GameObject root, string name, Mesh mesh, Vector3 position, Vector3 scale, Quaternion rotation, Material material)
     {
         var part = new GameObject(name) { layer = root.layer };
         part.transform.SetParent(root.transform, false);
@@ -180,13 +142,7 @@ internal static class FrostStaffVisuals
         part.AddComponent<MeshRenderer>().sharedMaterial = material;
     }
 
-    private static Material Material(
-        Material source,
-        string suffix,
-        Color color,
-        float metallic,
-        float glossiness,
-        float emission = 0f)
+    private static Material Material(Material source, string suffix, Color color, float metallic, float glossiness, float emission = 0f)
     {
         var material = new Material(source) { name = "magenheim.frost-staff." + suffix };
         material.mainTexture = Texture2D.whiteTexture;
@@ -202,10 +158,7 @@ internal static class FrostStaffVisuals
             material.SetColor("_EmissionColor", color * emission);
             material.EnableKeyword("_EMISSION");
         }
-        else
-        {
-            material.DisableKeyword("_EMISSION");
-        }
+        else material.DisableKeyword("_EMISSION");
         material.SetOverrideTag("RenderType", "Opaque");
         if (material.HasProperty("_ZWrite")) material.SetFloat("_ZWrite", 1f);
         material.renderQueue = 2000;
@@ -220,14 +173,8 @@ internal static class FrostStaffVisuals
             new Vector3(-.5f,-.5f,-.5f), new Vector3(.5f,-.5f,-.5f), new Vector3(.5f,.5f,-.5f), new Vector3(-.5f,.5f,-.5f),
             new Vector3(-.5f,-.5f,.5f), new Vector3(.5f,-.5f,.5f), new Vector3(.5f,.5f,.5f), new Vector3(-.5f,.5f,.5f),
         };
-        mesh.triangles = new[]
-        {
-            0,3,2, 0,2,1, 4,5,6, 4,6,7, 0,4,7, 0,7,3,
-            1,2,6, 1,6,5, 0,1,5, 0,5,4, 3,7,6, 3,6,2,
-        };
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        return mesh;
+        mesh.triangles = new[] { 0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2 };
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 
     private static Mesh CreateCylinderMesh(int sides)
@@ -250,15 +197,14 @@ internal static class FrostStaffVisuals
             var next = (index + 1) % sides;
             triangles.AddRange(new[]
             {
-                index, next, sides + index,
-                next, sides + next, sides + index,
-                bottom, next, index,
-                top, sides + index, sides + next,
+                index, sides + index, next,
+                next, sides + index, sides + next,
+                bottom, index, next,
+                top, sides + next, sides + index,
             });
         }
         var mesh = new Mesh { name = "magenheim.staff.cylinder." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        return mesh;
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 
     private static Mesh CreatePrismMesh(int sides)
@@ -282,14 +228,13 @@ internal static class FrostStaffVisuals
             var next = (index + 1) % sides;
             triangles.AddRange(new[]
             {
-                bottom, next, index,
-                index, next, sides + index,
-                next, sides + next, sides + index,
-                sides + index, sides + next, top,
+                bottom, index, next,
+                index, sides + index, next,
+                next, sides + index, sides + next,
+                top, sides + next, sides + index,
             });
         }
         var mesh = new Mesh { name = "magenheim.staff.prism." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        return mesh;
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 }
