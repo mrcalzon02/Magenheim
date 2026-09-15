@@ -91,16 +91,29 @@ internal static class MagenheimBalanceConfig
     {
         var baseline = geode.Placement;
         var section = $"Worldgen.Placement.{geode.Id}";
+        var configuredMin = config.Bind(section, "MinPerZone", baseline.MinPerZone,
+            "Minimum placements per zone. Must be non-negative and <= MaxPerZone.").Value;
+        var configuredMax = config.Bind(section, "MaxPerZone", baseline.MaxPerZone,
+            "Maximum placements per zone; values between 0 and 1 behave as placement chance in Valheim/Jotunn.").Value;
+        var guaranteeSurfaceSpawn = config.Bind(section, "GuaranteeSurfaceSpawn", true,
+            "When true, Magenheim raises this geode to at least one placement attempt per eligible newly-generated zone. Disable to restore purely chance-based sparse placement.").Value;
+
+        // Earlier Magenheim defaults used MinPerZone=0 and MaxPerZone<1, which made every biome
+        // geode a low-probability vegetation roll. Existing BepInEx configs retain those old values
+        // even after mod updates, so merely changing foundation.json would not repair live installs.
+        // This new opt-out key migrates existing installs non-destructively: newly generated eligible
+        // zones receive at least one geode placement attempt without touching already-generated zones
+        // or any vanilla/foreign vegetation registration.
+        var effectiveMin = guaranteeSurfaceSpawn ? Math.Max(1.0, configuredMin) : configuredMin;
+        var effectiveMax = guaranteeSurfaceSpawn ? Math.Max(effectiveMin, configuredMax) : configuredMax;
 
         return new GeodePlacementDefinition(
             config.Bind(section, "BlockCheck", baseline.BlockCheck,
                 "Reject placement when normal solid/piece layers already occupy the location.").Value,
             config.Bind(section, "ForcePlacement", baseline.ForcePlacement,
                 "Use Valheim force-placement behavior. False is the conservative default.").Value,
-            config.Bind(section, "MinPerZone", baseline.MinPerZone,
-                "Minimum placements per zone. Must be non-negative and <= MaxPerZone.").Value,
-            config.Bind(section, "MaxPerZone", baseline.MaxPerZone,
-                "Maximum placements per zone; values between 0 and 1 behave as placement chance in Valheim/Jotunn.").Value,
+            effectiveMin,
+            effectiveMax,
             config.Bind(section, "MinAltitude", baseline.MinAltitude,
                 "Minimum world altitude for this geode.").Value,
             config.Bind(section, "MaxAltitude", baseline.MaxAltitude,
