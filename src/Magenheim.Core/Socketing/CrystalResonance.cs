@@ -56,18 +56,11 @@ public static class CrystalResonance
     }
 
     /// <summary>
-    /// Tier power is deliberately ordinal and independent of any individual combat statistic.
-    /// Effect definitions convert this normalized progression power into their own magnitude.
+    /// Resonance uses the same tier scalar authority as ordinary Magenheim socket effects so a
+    /// single crystal is mathematically identical in native and Jewelcrafting-backed equipment.
+    /// Rough crystals remain non-socketable and are rejected rather than assigned effect power.
     /// </summary>
-    public static double TierPower(CrystalTier tier) => tier switch
-    {
-        CrystalTier.Rough => 1d,
-        CrystalTier.Simple => 2d,
-        CrystalTier.Crystal => 3d,
-        CrystalTier.Advanced => 4d,
-        CrystalTier.Master => 5d,
-        _ => throw new ArgumentOutOfRangeException(nameof(tier), tier, "Unknown crystal tier."),
-    };
+    public static double TierPower(CrystalTier tier) => SocketEffectDefinitionSet.TierScalar(tier);
 
     private static void ValidateMultipliers(IReadOnlyList<float> multipliers)
     {
