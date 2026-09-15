@@ -63,6 +63,7 @@ internal static class DefinitionAuthorityTests
         assertions += UnderworldDefinitionTests.Run();
         assertions += UnderworldArchitectureTests.Run();
         assertions += UnderworldAuthorityCompositionTests.Run();
+        assertions += UnderworldTransitionTests.Run();
         return assertions;
     }
 }
