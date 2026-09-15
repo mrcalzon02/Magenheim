@@ -56,13 +56,8 @@ namespace Magenheim.Runtime
         private static Material Material(Material source, Color color, float emission)
         {
             var material = new Material(source);
-            material.mainTexture = Texture2D.whiteTexture;
-            material.mainTextureScale = Vector2.one;
-            material.mainTextureOffset = Vector2.zero;
             if (material.HasProperty("_Color")) material.SetColor("_Color", color);
             if (material.HasProperty("_EmissionColor")) { material.SetColor("_EmissionColor", color * emission); material.EnableKeyword("_EMISSION"); }
-            if (material.HasProperty("_BumpMap")) material.SetTexture("_BumpMap", null);
-            material.DisableKeyword("_NORMALMAP");
             if (material.HasProperty("_ZWrite")) material.SetFloat("_ZWrite", 1f);
             material.SetOverrideTag("RenderType", "Opaque");
             material.renderQueue = 2000;
