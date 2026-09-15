@@ -7,10 +7,15 @@ docs/validation/2026-09-15-inventory-changed-reflection-repair.md. Rebased onto 
 incoming Underworld authority composition slice and re-verified. Tests: 36,868 assertions;
 runtime: zero warnings/errors; 20 patch targets and 7 literal reflection bindings verified.
 
-Package built: `dist/Local-Magenheim-0.0.49.zip`. Installation into the active Central
-Fuckery profile is PENDING because Valheim was running during closeout. The profile still
-holds 0.0.48, which contains the defect. Run `./closeout.ps1 -Offline` with Valheim and
-r2modman closed to finish delivery.
+Also repairs `install-local.ps1`, whose checksum verification collapsed the JSON manifest
+into a single entry under Windows PowerShell and failed every package. That defect blocked
+this delivery until fixed; it never affected gameplay.
+
+Delivered: `closeout.ps1 -Offline` installed and SHA-256 verified 0.0.49 in Central Fuckery
+and updated its enabled launcher entry. Installed DLL 0.0.49.0, hash
+`1566007F...534211E9` matching the built artifact. Payload backup
+`backups/Local-Magenheim-20260915-112600.zip`; catalog backup
+`backups/mods-20260915-112601-497.yml`. Startup and world acceptance remain unclaimed.
 
 ## Historical closeouts
 

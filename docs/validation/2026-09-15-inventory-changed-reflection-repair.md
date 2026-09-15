@@ -102,6 +102,51 @@ A full sweep of the other reflected game members used through helper wrappers
 `ImageConversion`) resolved against the installed assemblies at this revision; no other
 missing member was found.
 
+## Installer checksum verification defect, found during delivery
+
+The first `closeout.ps1 -Offline` run of 0.0.49 failed its package integrity check naming
+every file in the package at once. The payload was correct; the verifier was not.
+
+`install-local.ps1` parsed the checksum manifest as:
+
+```powershell
+$entries = @(Get-Content -LiteralPath $checksumPath -Raw | ConvertFrom-Json)
+```
+
+Windows PowerShell writes a top-level JSON array to the pipeline as a single item, so the
+surrounding `@(...)` produced a one-element array containing the whole array. `$entries.Count`
+was 1 instead of 55, `$entry.path` member-enumerated to every path at once, and the single
+comparison failed. Observed directly:
+
+```
+entries.Count = 1
+entries[0] type = System.Object[]
+entries[0].path type = System.Object[]
+```
+
+Binding the parse result before wrapping it yields `entries.Count = 55`, and all 55 recorded
+hashes match their files. The repair keeps the verification semantics unchanged and adds an
+explicit empty-manifest rejection so a truncated manifest cannot verify nothing.
+
+This defect gated delivery, not gameplay, and would recur on any host whose PowerShell has
+these pipeline semantics.
+
+## Delivered
+
+`closeout.ps1 -Offline` completed against the active Central Fuckery profile after the
+repair. Independent readback of the destination:
+
+- installed `Magenheim.dll` FileVersion `0.0.49.0`;
+- installed SHA-256 `1566007F39B809DBED07E3DDD7C6664E98F2191C8CE8CEB671A06A53D5CCDA2B`,
+  identical to the built artifact;
+- launcher catalog entry `Magenheim v0.0.49 by Local (enabled)` carrying the 0.0.49
+  description;
+- payload backup `backups/Local-Magenheim-20260915-112600.zip`;
+- catalog backup `backups/mods-20260915-112601-497.yml`.
+
+Installation is verified. Startup, world and gameplay acceptance are not: the game has not
+been launched against this build.
+
 ## Not claimed
 
 No disposable-world, startup, multiplayer, persistence or visual acceptance is claimed for

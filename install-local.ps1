@@ -41,7 +41,13 @@ if ([string]$manifest.version_number -ne $pluginVersion) {
 # Validate the completed package before backing up or writing any profile files.
 $checksumPath = Join-Path $source 'checksums.json'
 if (!(Test-Path -LiteralPath $checksumPath)) { throw 'Package checksums are missing; rebuild the package.' }
-$entries = @(Get-Content -LiteralPath $checksumPath -Raw | ConvertFrom-Json)
+# Windows PowerShell writes a top-level JSON array to the pipeline as a single item, so
+# wrapping the pipeline in @(...) yields one nested array instead of one entry per file.
+# Every $entry.path then member-enumerates to all paths at once and the whole package fails
+# verification. Bind the parse result to a variable first, then wrap that.
+$parsedChecksums = Get-Content -LiteralPath $checksumPath -Raw | ConvertFrom-Json
+$entries = @($parsedChecksums)
+if ($entries.Count -eq 0) { throw 'Package checksums are empty; rebuild the package.' }
 $seenPaths = @{}
 foreach ($entry in $entries) {
     $relativePath = [string]$entry.path

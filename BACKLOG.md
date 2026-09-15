@@ -51,7 +51,8 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Repair the `Inventory.Changed` binding: 1.0.12 declares `Changed(bool, bool)` and three call sites invoked it with zero arguments, throwing `TargetParameterCountException` in workshop rollback and local/remote socket mutation. Bound at the `RuntimeGameApi` boundary with a pinned signature.
 - [x] Add `tools/verify-reflection-targets.ps1` so literal reflection bindings are resolved against installed assemblies at build time; proven to fail on the pre-repair 0.0.48 DLL.
 - [ ] Extend reflection verification to the helper-wrapper bindings whose member names are passed as arguments (`Aoe`, `Projectile`, `Destructible`, `ZNetView`, `SE_Stats` fields). All resolve correctly at this revision, but they are checked manually rather than by the gate.
-- [ ] Install 0.0.49 into the active Central Fuckery profile. Blocked during this cycle: Valheim was running and project instructions forbid terminating the user's game.
+- [x] Install 0.0.49 into the active Central Fuckery profile. Installed and SHA-256 verified after the user closed Valheim; launcher catalog entry and description verified by read-back.
+- [x] Repair `install-local.ps1` checksum verification. Windows PowerShell emits a top-level JSON array as one pipeline item, so `@(... | ConvertFrom-Json)` produced a single nested entry and every package failed integrity. Semantics unchanged; empty manifests now rejected explicitly.
 - [ ] Live-confirm that a failed workshop transaction rolls back without an unhandled exception and that socket install/extract refreshes the inventory.
 
 ## P1 — Meadows/Earth vertical slice
