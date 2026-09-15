@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Magenheim.Core;
 using Magenheim.Core.DeepFractures;
 
 internal static class DeepFractureInteriorBlueprintTests
@@ -19,6 +20,31 @@ internal static class DeepFractureInteriorBlueprintTests
         policy.Validate();
         Assert(policy.SmallColumns == 4 && policy.FullColumns == 6 && policy.GrandColumns == 8, "Default projection columns must scale with expedition size.");
         Assert(policy.GridSpacing > policy.ModuleFootprint, "Default projection must reserve physical clearance between major districts.");
+
+        // Regression: a direct center-to-center passage that only touches the expanded
+        // footprint boundary is still unsafe because the passage itself has width.
+        // The exact slab test must reject the tangent direct segment and choose a bend.
+        var tangentPolicy = policy with { ModuleFootprint = 8d, GridSpacing = 40d };
+        tangentPolicy.Validate();
+        var tangentBlueprint = new DeepFractureInteriorBlueprint(
+            DeepFractureScale.Small,
+            1,
+            100d,
+            new[]
+            {
+                Placement("from", new DeepFractureInteriorPoint(0d, 0d, 0d)),
+                Placement("to", new DeepFractureInteriorPoint(40d, 0d, 40d)),
+                Placement("blocker", new DeepFractureInteriorPoint(20d, 0d, 28d)),
+            },
+            new[]
+            {
+                new DeepFractureInteriorConnectionPlacement(
+                    "tangent", "from", "to", DungeonConnectionRole.MainRoute,
+                    DungeonConnectorKind.FaultCorridor, DungeonConnectionState.Open,
+                    DeepFractureRuntimeConnectionMode.PhysicalPassage, true, true),
+            });
+        var tangentRoute = DeepFracturePassageRouter.Build(tangentBlueprint, tangentPolicy).Single();
+        Assert(tangentRoute.Points.Count == 3, "A passage tangent to an expanded district footprint must bend instead of grazing the district boundary.");
 
         foreach (var scale in new[] { DeepFractureScale.Small, DeepFractureScale.Full, DeepFractureScale.Grand })
         {
@@ -133,6 +159,19 @@ internal static class DeepFractureInteriorBlueprintTests
 
         return assertions;
     }
+
+    private static DeepFractureInteriorModulePlacement Placement(string id, DeepFractureInteriorPoint center)
+        => new(
+            0,
+            id,
+            "DF-01",
+            DungeonDepthBand.UpperFracture,
+            center,
+            0,
+            Array.Empty<ElementalAlignment>(),
+            OccupationProfile.Empty,
+            ResourceState.Sparse,
+            Array.Empty<PlannedEnemyEncounter>());
 
     private static bool BlueprintsEquivalent(DeepFractureInteriorBlueprint left, DeepFractureInteriorBlueprint right)
     {

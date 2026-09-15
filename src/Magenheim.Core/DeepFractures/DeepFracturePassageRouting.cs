@@ -120,13 +120,56 @@ public static class DeepFracturePassageRouter
         DeepFractureInteriorPoint center,
         double halfExtent)
     {
-        var dx = b.X - a.X;
-        var dz = b.Z - a.Z;
-        var lengthSquared = dx * dx + dz * dz;
-        var t = lengthSquared <= 0d ? 0d : ((center.X - a.X) * dx + (center.Z - a.Z) * dz) / lengthSquared;
-        t = Math.Max(0d, Math.Min(1d, t));
-        var x = a.X + dx * t;
-        var z = a.Z + dz * t;
-        return Math.Abs(x - center.X) < halfExtent && Math.Abs(z - center.Z) < halfExtent;
+        if (a is null)
+            throw new ArgumentNullException(nameof(a));
+        if (b is null)
+            throw new ArgumentNullException(nameof(b));
+        if (center is null)
+            throw new ArgumentNullException(nameof(center));
+        if (double.IsNaN(halfExtent) || double.IsInfinity(halfExtent) || halfExtent < 0d)
+            throw new ArgumentOutOfRangeException(nameof(halfExtent), halfExtent, "Passage footprint clearance must be finite and non-negative.");
+
+        // Exact 2D slab test against the expanded district footprint.  The previous
+        // closest-point-to-center approximation could admit a segment that merely
+        // grazed a footprint edge/corner.  A passage has width, so boundary contact
+        // is a collision and is intentionally treated inclusively here.
+        var minX = center.X - halfExtent;
+        var maxX = center.X + halfExtent;
+        var minZ = center.Z - halfExtent;
+        var maxZ = center.Z + halfExtent;
+        var tMin = 0d;
+        var tMax = 1d;
+
+        return ClipAxis(a.X, b.X - a.X, minX, maxX, ref tMin, ref tMax)
+            && ClipAxis(a.Z, b.Z - a.Z, minZ, maxZ, ref tMin, ref tMax);
+    }
+
+    private static bool ClipAxis(
+        double origin,
+        double delta,
+        double minimum,
+        double maximum,
+        ref double tMin,
+        ref double tMax)
+    {
+        const double epsilon = 1e-12d;
+        if (Math.Abs(delta) <= epsilon)
+            return origin >= minimum && origin <= maximum;
+
+        var inverse = 1d / delta;
+        var enter = (minimum - origin) * inverse;
+        var exit = (maximum - origin) * inverse;
+        if (enter > exit)
+        {
+            var swap = enter;
+            enter = exit;
+            exit = swap;
+        }
+
+        if (enter > tMin)
+            tMin = enter;
+        if (exit < tMax)
+            tMax = exit;
+        return tMin <= tMax;
     }
 }
