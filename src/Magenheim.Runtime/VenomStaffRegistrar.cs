@@ -15,7 +15,9 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal sealed class VenomStaffRegistrar : IDisposable
 {
-    private const string BaseStaffPrefab = "StaffFireball";
+    // StaffIceShards is used only as the hidden animation/attachment carrier. Its visible hierarchy
+    // is disabled by VenomStaffVisuals, and all Magenheim combat/resource values are replaced below.
+    private const string BaseStaffPrefab = "StaffIceShards";
 
     private readonly ManualLogSource _log;
     private bool _subscribed;
@@ -38,7 +40,7 @@ internal sealed class VenomStaffRegistrar : IDisposable
         try
         {
             if (PrefabManager.Instance.GetPrefab(BaseStaffPrefab) is null)
-                throw new InvalidOperationException($"Required staff carrier prefab '{BaseStaffPrefab}' is unavailable.");
+                throw new InvalidOperationException($"Required hidden staff carrier prefab '{BaseStaffPrefab}' is unavailable.");
             if (PrefabManager.Instance.GetPrefab(WorkshopRegistrar.StationPrefab) is null)
                 throw new InvalidOperationException("Geologist's Workstation must exist before Magenheim Venom staff recipes are registered.");
 
@@ -179,7 +181,7 @@ internal sealed class VenomStaffRegistrar : IDisposable
         var attack = shared.m_attack;
         attack.m_attackProjectile = payloads.Resolve(definition.Payload);
         attack.m_attackStamina = definition.StaminaCost;
-        attack.m_attackEitr = definition.EitrCost;
+        attack.m_attackEitr = 0f;
         attack.m_damageMultiplier = definition.DamageMultiplier;
         attack.m_forceMultiplier = definition.ForceMultiplier;
         attack.m_staggerMultiplier = definition.StaggerMultiplier;
@@ -222,26 +224,26 @@ internal sealed class VenomStaffRegistrar : IDisposable
         new VenomStaffDefinition(
             "Magenheim_Staff_Venom_Simple", "staff-venom-simple", "Simple Staff of Venom",
             "Toxic Glob: hurls one unstable mass that ruptures into an eight-second poison field. This tier teaches contamination and area denial without adding a second debuff.",
-            1, 20f, 0f, 10f, .70f, .15f, .20f, 23f, 2f, 1, 1, 0f, PayloadKind.Toxic,
+            1, 20f, 10f, .70f, .15f, .20f, 23f, 2f, 1, 1, 0f, PayloadKind.Toxic,
             new StaffRequirement("FineWood", 8), new StaffRequirement("Ooze", 4), new StaffRequirement("Magenheim_Crystal_Venom_Simple", 1)),
 
         new VenomStaffDefinition(
             "Magenheim_Staff_Venom_Crystal", "staff-venom-crystal", "Crystal Staff of Venom",
             "Caustic Pool: fires two closely timed globules into the same lane. Its ten-second pools poison exposed targets and apply Corrosion, which continues eating health for four seconds after they escape.",
-            2, 30f, 0f, 12f, .60f, .12f, .18f, 28f, 1.2f, 1, 2, .28f, PayloadKind.Caustic,
+            2, 30f, 12f, .60f, .12f, .18f, 28f, 1.2f, 1, 2, .28f, PayloadKind.Caustic,
             new StaffRequirement("ElderBark", 10), new StaffRequirement("Guck", 4), new StaffRequirement("Ooze", 6), new StaffRequirement("Magenheim_Crystal_Venom_Crystal", 1)),
 
         new VenomStaffDefinition(
             "Magenheim_Staff_Venom_Advanced", "staff-venom-advanced", "Advanced Staff of Venom",
             "Miasma Bloom: throws three contamination globes across a broad fan. Every field repeatedly reapplies poison and Corrosion, creating overlapping attrition zones rather than chasing burst damage.",
-            3, 12f, 18f, 10f, .48f, .08f, .12f, 24f, 11f, 3, 1, 0f, PayloadKind.Miasma,
+            3, 30f, 10f, .48f, .08f, .12f, 24f, 11f, 3, 1, 0f, PayloadKind.Miasma,
             new StaffRequirement("YggdrasilWood", 10), new StaffRequirement("Guck", 6), new StaffRequirement("Bilebag", 2), new StaffRequirement("Magenheim_Crystal_Venom_Advanced", 1)),
 
         new VenomStaffDefinition(
             "Magenheim_Staff_Venom_Master", "staff-venom-master", "Master Staff of Venom",
             "Plaguefield: releases three waves of three globes. Nine ten-second fields saturate the front with poison while Deep Corrosion persists for six seconds after exposure, making retreat necessary but not immediately sufficient.",
-            4, 0f, 50f, 8f, .35f, .05f, .10f, 26f, 16f, 3, 3, .22f, PayloadKind.Plague,
-            new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("Guck", 10), new StaffRequirement("Bilebag", 4), new StaffRequirement("Eitr", 12), new StaffRequirement("Magenheim_Crystal_Venom_Master", 1)),
+            4, 42f, 8f, .35f, .05f, .10f, 26f, 16f, 3, 3, .22f, PayloadKind.Plague,
+            new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("Guck", 10), new StaffRequirement("Bilebag", 4), new StaffRequirement("Magenheim_Crystal_Venom_Master", 1)),
     };
 
     public void Dispose()
@@ -289,13 +291,13 @@ internal sealed class VenomStaffRegistrar : IDisposable
     {
         internal VenomStaffDefinition(
             string prefabName, string assetName, string displayName, string description,
-            int minimumStationLevel, float staminaCost, float eitrCost, float poisonDamage,
+            int minimumStationLevel, float staminaCost, float poisonDamage,
             float damageMultiplier, float forceMultiplier, float staggerMultiplier,
             float projectileVelocity, float projectileAccuracy, int projectiles, int bursts,
             float burstInterval, PayloadKind payload, params StaffRequirement[] requirements)
         {
             PrefabName = prefabName; AssetName = assetName; DisplayName = displayName; Description = description;
-            MinimumStationLevel = minimumStationLevel; StaminaCost = staminaCost; EitrCost = eitrCost; PoisonDamage = poisonDamage;
+            MinimumStationLevel = minimumStationLevel; StaminaCost = staminaCost; PoisonDamage = poisonDamage;
             DamageMultiplier = damageMultiplier; ForceMultiplier = forceMultiplier; StaggerMultiplier = staggerMultiplier;
             ProjectileVelocity = projectileVelocity; ProjectileAccuracy = projectileAccuracy;
             Projectiles = projectiles; Bursts = bursts; BurstInterval = burstInterval; Payload = payload; Requirements = requirements;
@@ -307,7 +309,6 @@ internal sealed class VenomStaffRegistrar : IDisposable
         internal string Description { get; }
         internal int MinimumStationLevel { get; }
         internal float StaminaCost { get; }
-        internal float EitrCost { get; }
         internal float PoisonDamage { get; }
         internal float DamageMultiplier { get; }
         internal float ForceMultiplier { get; }
