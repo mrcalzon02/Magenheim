@@ -52,7 +52,7 @@ internal sealed class CrystalEnchantingDaisRegistrar : IDisposable
                 Name = "Crystal Enchanting Dais",
                 Description =
                     "A low ritual altar patterned after the ancient central standing-stone dais. " +
-                    "Iron channels and elemental crystal nodes focus the central prism for socketing and crystal enchantment.",
+                    "Iron channels and elemental crystal nodes focus the recessed central crystal for socketing and crystal enchantment.",
                 PieceTable = "Hammer",
                 Category = "Crafting",
                 CraftingStation = WorkshopRegistrar.StationPrefab,
@@ -81,9 +81,10 @@ internal sealed class CrystalEnchantingDaisRegistrar : IDisposable
             station.m_canRepair = false;
             station.m_craftingSkill = EarthContentRegistrar.CrystalShapingSkill;
             station.m_useDistance = 2.8f;
-            station.m_hoverOffset = .95f;
+            station.m_hoverOffset = .62f;
 
             ConfigureCollider(prefab);
+            PlacementSnapAuthority.FitRadialBase(prefab, 1.82f);
             ConfigureWear(prefab, visual);
 
             if (!PieceManager.Instance.AddPiece(custom))
@@ -115,14 +116,8 @@ internal sealed class CrystalEnchantingDaisRegistrar : IDisposable
         collisionRoot.transform.SetParent(prefab.transform, false);
 
         var baseCollider = collisionRoot.AddComponent<BoxCollider>();
-        baseCollider.center = new Vector3(0f, .27f, 0f);
-        baseCollider.size = new Vector3(3.36f, .54f, 3.36f);
-
-        var focusCollider = collisionRoot.AddComponent<CapsuleCollider>();
-        focusCollider.direction = 1;
-        focusCollider.center = new Vector3(0f, .94f, 0f);
-        focusCollider.radius = .34f;
-        focusCollider.height = 1.18f;
+        baseCollider.center = new Vector3(0f, .23f, 0f);
+        baseCollider.size = new Vector3(3.64f, .46f, 3.64f);
     }
 
     private static void ConfigureWear(GameObject prefab, GameObject visual)
