@@ -13,6 +13,8 @@ namespace Magenheim.Runtime
         internal static void Apply(GameObject prefab, ElementalAlignment alignment)
         {
             if (prefab == null) throw new ArgumentNullException(nameof(prefab));
+            var character = prefab.GetComponent<Character>() ?? throw new InvalidOperationException("Obelisk Warden requires Character.");
+            var view = prefab.GetComponent<ZNetView>() ?? throw new InvalidOperationException("Obelisk Warden requires ZNetView.");
             var original = prefab.GetComponentsInChildren<Renderer>(true);
             var source = original.Select(x => x.sharedMaterial).FirstOrDefault(x => x != null)
                 ?? throw new InvalidOperationException("No creature material source: " + prefab.name);
@@ -25,17 +27,17 @@ namespace Magenheim.Runtime
             root.transform.localPosition = new Vector3(0f, 2.65f, 0f);
 
             Prism(root, "central-obelisk", new Vector3(0f, .65f, 0f), .88f, 3.7f, 8, stone);
-            Prism(root, "control-core", new Vector3(0f, 1.15f, .72f), .38f, .82f, 7, core, new Vector3(82f, 0f, 0f));
-            Prism(root, "death-anchor", new Vector3(0f, -.15f, -.82f), .46f, 1.08f, 8, core, new Vector3(84f, 0f, 0f));
+            var controlCore = Prism(root, "control-core", new Vector3(0f, 1.15f, .72f), .38f, .82f, 7, core, new Vector3(82f, 0f, 0f));
+            var deathAnchor = Prism(root, "death-anchor", new Vector3(0f, -.15f, -.82f), .46f, 1.08f, 8, core, new Vector3(84f, 0f, 0f));
+            DeepFractureCrystalComponent.Attach(controlCore, character, view, "warden_control", DeepFractureCrystalFunction.EnvironmentalControl, 180f);
+            DeepFractureCrystalComponent.Attach(deathAnchor, character, view, "warden_death_anchor", DeepFractureCrystalFunction.DeathAnchor, 260f);
             Prism(root, "crown-spire", new Vector3(0f, 2.85f, 0f), .46f, 1.65f, 6, shard);
             Prism(root, "base-left", new Vector3(-.72f, -1.25f, 0f), .42f, 1.35f, 8, stone, new Vector3(0f, 0f, -16f));
             Prism(root, "base-right", new Vector3(.72f, -1.25f, 0f), .42f, 1.35f, 8, stone, new Vector3(0f, 0f, 16f));
             for (var i = 0; i < 4; i++)
             {
                 var angle = Mathf.PI * .5f * i;
-                var x = Mathf.Cos(angle) * 1.18f;
-                var z = Mathf.Sin(angle) * 1.18f;
-                Prism(root, "secondary-crystal-" + i, new Vector3(x, .62f, z), .19f, 1.28f, 6, shard, new Vector3(-18f, -angle * Mathf.Rad2Deg, 0f));
+                Prism(root, "secondary-crystal-" + i, new Vector3(Mathf.Cos(angle) * 1.18f, .62f, Mathf.Sin(angle) * 1.18f), .19f, 1.28f, 6, shard, new Vector3(-18f, -angle * Mathf.Rad2Deg, 0f));
             }
             for (var i = 0; i < 8; i++)
             {
@@ -67,7 +69,7 @@ namespace Magenheim.Runtime
             return material;
         }
 
-        private static void Prism(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material, Vector3? rotation = null)
+        private static GameObject Prism(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material, Vector3? rotation = null)
         {
             Mesh mesh;
             if (!PrismMeshes.TryGetValue(sides, out mesh)) { mesh = CreatePrism(sides); PrismMeshes.Add(sides, mesh); }
@@ -78,6 +80,7 @@ namespace Magenheim.Runtime
             part.transform.localScale = new Vector3(radius * 2f, height, radius * 2f);
             part.AddComponent<MeshFilter>().sharedMesh = mesh;
             part.AddComponent<MeshRenderer>().sharedMaterial = material;
+            return part;
         }
 
         private static Mesh CreatePrism(int sides)
