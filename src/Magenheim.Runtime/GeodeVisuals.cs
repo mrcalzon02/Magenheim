@@ -6,14 +6,14 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// One shared geode visual for every biome. The basalt/granite shell geometry never changes;
-/// only the exposed cutaway interior and inventory reference palette change by biome.
+/// One shared geode visual for every biome. The stone shell is a continuous cutaway solid;
+/// only the recessed crystal interior palette changes by biome.
 /// </summary>
 internal static class GeodeVisuals
 {
     private const int OpeningFace = 8;
     private const float ShellRadius = 0.56f;
-    private const float InnerRadius = 0.47f;
+    private const float InnerRadius = 0.45f;
     private const float VerticalScale = 0.88f;
 
     private static readonly Vector3[] BaseVertices =
@@ -44,21 +44,9 @@ internal static class GeodeVisuals
         new[] { 7,15,13,3,11 }
     };
 
-    // Small deterministic differences stop the shell reading as a perfect mathematical die.
-    private static readonly float[] FaceScale =
-    {
-        0.98f, 1.03f, 0.96f, 1.05f, 0.99f, 1.02f,
-        0.97f, 1.04f, 1f, 0.95f, 1.03f, 0.98f
-    };
-
-    private static readonly float[] FaceLift =
-    {
-        0.000f, 0.016f,-0.006f, 0.022f, 0.006f,-0.010f,
-        0.013f,-0.004f, 0f, 0.019f,-0.008f, 0.010f
-    };
-
-    private static readonly Dictionary<int, Mesh> PlateMeshes = new();
-    private static Mesh? _innerShell;
+    private static Mesh? _outerShell;
+    private static Mesh? _innerCavity;
+    private static Mesh? _openingRim;
     private static Mesh? _crystalShard;
     private static readonly Dictionary<string, Sprite> Icons = new(StringComparer.Ordinal);
 
@@ -78,23 +66,19 @@ internal static class GeodeVisuals
         root.transform.localPosition = worldObject ? new Vector3(0f, 0.50f * scale, 0f) : Vector3.zero;
         root.transform.localRotation = Quaternion.Euler(-7f, 18f, 3f);
 
-        var crack = Material(source, "crack", new Color(0.055f, 0.050f, 0.047f, 1f), 0f, 0.08f);
-        var shellA = Material(source, "shell-a", new Color(0.25f, 0.235f, 0.22f, 1f), 0.02f, 0.10f);
-        var shellB = Material(source, "shell-b", new Color(0.31f, 0.29f, 0.265f, 1f), 0.02f, 0.12f);
-        var shellC = Material(source, "shell-c", new Color(0.205f, 0.195f, 0.185f, 1f), 0.01f, 0.08f);
+        var crack = Material(source, "cavity", new Color(0.055f, 0.050f, 0.047f, 1f), 0f, 0.08f);
+        var shell = Material(source, "shell", new Color(0.265f, 0.248f, 0.228f, 1f), 0.02f, 0.10f);
+        var rim = Material(source, "rim", new Color(0.205f, 0.195f, 0.185f, 1f), 0.01f, 0.08f);
         var interior = Material(source, "interior-" + ColorUtility.ToHtmlStringRGB(interiorTint), interiorTint, 0.03f, 0.58f, 0.22f);
         var interiorBright = Material(source, "interior-bright-" + ColorUtility.ToHtmlStringRGB(interiorTint),
             Color.Lerp(interiorTint, Color.white, 0.28f), 0.02f, 0.72f, 0.34f);
 
-        Part(root, "dark-interior", InnerShell(), Vector3.zero, Quaternion.identity, crack);
-
-        for (var face = 0; face < Faces.Length; face++)
-        {
-            if (face == OpeningFace) continue;
-            var material = face % 3 == 0 ? shellB : face % 3 == 1 ? shellA : shellC;
-            Part(root, "shell-plate-" + face, Plate(face), Vector3.zero, Quaternion.identity, material);
-        }
-
+        // These three meshes form one coherent cutaway stone body: continuous outer skin,
+        // inward-facing cavity wall, and a solid stone lip between them. There are no shrunken
+        // independent face plates and therefore no seams into empty space.
+        Part(root, "stone-shell", OuterShell(), Vector3.zero, Quaternion.identity, shell);
+        Part(root, "stone-cavity", InnerCavity(), Vector3.zero, Quaternion.identity, crack);
+        Part(root, "stone-opening-rim", OpeningRim(), Vector3.zero, Quaternion.identity, rim);
         AddInteriorCluster(root, interior, interiorBright);
 
         foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled = false;
@@ -153,7 +137,6 @@ internal static class GeodeVisuals
         };
         FillPolygon(pixels, size, cutawayInner, interiorTint);
 
-        // Interior facets remain the only biome-colored region.
         FillPolygon(pixels, size, new[] { new Vector2(71,58), new Vector2(80,40), new Vector2(86,61), new Vector2(77,76) }, Color.Lerp(interiorTint, Color.white, .24f));
         FillPolygon(pixels, size, new[] { new Vector2(84,59), new Vector2(94,45), new Vector2(99,62), new Vector2(90,77) }, Color.Lerp(interiorTint, Color.white, .10f));
         FillPolygon(pixels, size, new[] { new Vector2(66,59), new Vector2(74,47), new Vector2(77,62), new Vector2(72,73) }, Color.Lerp(interiorTint, Color.black, .14f));
@@ -178,97 +161,113 @@ internal static class GeodeVisuals
     private static void AddInteriorCluster(GameObject root, Material interior, Material bright)
     {
         var face = Faces[OpeningFace];
-        var center = Vector3.zero;
-        foreach (var index in face) center += Vertex(index, InnerRadius * 0.93f);
-        center /= face.Length;
-        var normal = center.normalized;
+        var openingCenter = Vector3.zero;
+        foreach (var index in face) openingCenter += Vertex(index, InnerRadius);
+        openingCenter /= face.Length;
+        var normal = openingCenter.normalized;
         var orientation = Quaternion.FromToRotation(Vector3.up, normal);
 
+        // Crystal bases sit well behind the stone lip. Because CrystalShard is base-anchored,
+        // every point grows outward from actual cavity stone rather than straddling the opening plane.
+        var baseCenter = openingCenter - normal * .18f;
         var offsets = new[]
         {
-            new Vector3(-.08f,-.02f,-.01f), new Vector3(.055f,-.045f,.025f),
-            new Vector3(.005f,.07f,-.02f), new Vector3(-.035f,.11f,.025f),
-            new Vector3(.09f,.055f,-.01f)
+            new Vector3(-.075f,-.035f,-.010f), new Vector3(.060f,-.055f,.020f),
+            new Vector3(.000f,.055f,-.018f), new Vector3(-.040f,.095f,.020f),
+            new Vector3(.080f,.045f,-.012f)
         };
         var scales = new[]
         {
-            new Vector3(.075f,.23f,.075f), new Vector3(.060f,.18f,.060f),
-            new Vector3(.068f,.26f,.068f), new Vector3(.050f,.15f,.050f),
-            new Vector3(.055f,.19f,.055f)
+            new Vector3(.070f,.22f,.070f), new Vector3(.058f,.17f,.058f),
+            new Vector3(.065f,.25f,.065f), new Vector3(.048f,.14f,.048f),
+            new Vector3(.052f,.18f,.052f)
         };
 
         for (var i = 0; i < offsets.Length; i++)
         {
             var local = orientation * offsets[i];
-            var rotation = orientation * Quaternion.Euler(0f, i * 31f, i % 2 == 0 ? 7f : -9f);
-            Part(root, "interior-crystal-" + i, CrystalShard(), center + normal * .055f + local, rotation,
+            var rotation = orientation * Quaternion.Euler(0f, i * 31f, i % 2 == 0 ? 6f : -7f);
+            Part(root, "interior-crystal-" + i, CrystalShard(), baseCenter + local, rotation,
                 i % 2 == 0 ? bright : interior, scales[i]);
         }
     }
 
-    private static Mesh Plate(int faceIndex)
+    private static Mesh OuterShell()
     {
-        if (PlateMeshes.TryGetValue(faceIndex, out var cached)) return cached;
-        var face = Faces[faceIndex];
-        var raw = face.Select(index => Vertex(index, ShellRadius)).ToArray();
-        var centroid = raw.Aggregate(Vector3.zero, (sum, value) => sum + value) / raw.Length;
-        var normal = centroid.normalized;
-        var shrink = faceIndex == 11 ? 0.80f : 0.865f;
-        var outer = raw.Select(point => centroid + (point - centroid) * shrink).ToArray();
-        var lift = FaceLift[faceIndex];
-        for (var i = 0; i < outer.Length; i++)
-            outer[i] = outer[i] * FaceScale[faceIndex] + normal * lift;
-        var inner = outer.Select(point => point - normal * .065f).ToArray();
-
-        var vertices = outer.Concat(inner).ToArray();
-        var triangles = new List<int>();
-        for (var i = 1; i < 4; i++)
-        {
-            triangles.Add(0); triangles.Add(i); triangles.Add(i + 1);
-        }
-        for (var i = 0; i < 5; i++)
-        {
-            var next = (i + 1) % 5;
-            triangles.Add(i); triangles.Add(5 + i); triangles.Add(5 + next);
-            triangles.Add(i); triangles.Add(5 + next); triangles.Add(next);
-        }
-
-        var mesh = new Mesh
-        {
-            name = "magenheim.geode.shell.plate." + faceIndex,
-            vertices = vertices,
-            triangles = triangles.ToArray()
-        };
-        mesh.RecalculateNormals();
-        mesh.RecalculateBounds();
-        PlateMeshes.Add(faceIndex, mesh);
-        return mesh;
-    }
-
-    private static Mesh InnerShell()
-    {
-        if (_innerShell) return _innerShell;
-        var vertices = new List<Vector3>();
+        if (_outerShell) return _outerShell;
+        var vertices = BaseVertices.Select((_, index) => Vertex(index, ShellRadius)).ToArray();
         var triangles = new List<int>();
         for (var faceIndex = 0; faceIndex < Faces.Length; faceIndex++)
         {
             if (faceIndex == OpeningFace) continue;
-            var start = vertices.Count;
-            foreach (var index in Faces[faceIndex]) vertices.Add(Vertex(index, InnerRadius));
-            for (var i = 1; i < 4; i++)
-            {
-                triangles.Add(start); triangles.Add(start + i); triangles.Add(start + i + 1);
-            }
+            AddPentagon(triangles, vertices, Faces[faceIndex], outwardFromOrigin: true);
         }
-        _innerShell = new Mesh
+        _outerShell = BuildMesh("magenheim.geode.outer-shell", vertices, triangles);
+        return _outerShell;
+    }
+
+    private static Mesh InnerCavity()
+    {
+        if (_innerCavity) return _innerCavity;
+        var vertices = BaseVertices.Select((_, index) => Vertex(index, InnerRadius)).ToArray();
+        var triangles = new List<int>();
+        for (var faceIndex = 0; faceIndex < Faces.Length; faceIndex++)
         {
-            name = "magenheim.geode.inner-shell",
-            vertices = vertices.ToArray(),
-            triangles = triangles.ToArray()
-        };
-        _innerShell.RecalculateNormals();
-        _innerShell.RecalculateBounds();
-        return _innerShell;
+            if (faceIndex == OpeningFace) continue;
+            // The visible cavity surface must face the hollow center, the opposite of the outer skin.
+            AddPentagon(triangles, vertices, Faces[faceIndex], outwardFromOrigin: false);
+        }
+        _innerCavity = BuildMesh("magenheim.geode.inner-cavity", vertices, triangles);
+        return _innerCavity;
+    }
+
+    private static Mesh OpeningRim()
+    {
+        if (_openingRim) return _openingRim;
+        var face = Faces[OpeningFace];
+        var vertices = new List<Vector3>(10);
+        foreach (var index in face) vertices.Add(Vertex(index, ShellRadius));
+        foreach (var index in face) vertices.Add(Vertex(index, InnerRadius));
+
+        var triangles = new List<int>(30);
+        for (var i = 0; i < 5; i++)
+        {
+            var next = (i + 1) % 5;
+            var outerA = i;
+            var outerB = next;
+            var innerA = 5 + i;
+            var innerB = 5 + next;
+
+            // Rim quads are deliberately emitted on both sides. They are a narrow cut surface,
+            // and both the exterior and cavity camera angles must see solid stone rather than void.
+            triangles.Add(outerA); triangles.Add(innerA); triangles.Add(innerB);
+            triangles.Add(outerA); triangles.Add(innerB); triangles.Add(outerB);
+            triangles.Add(outerA); triangles.Add(innerB); triangles.Add(innerA);
+            triangles.Add(outerA); triangles.Add(outerB); triangles.Add(innerB);
+        }
+
+        _openingRim = BuildMesh("magenheim.geode.opening-rim", vertices.ToArray(), triangles);
+        return _openingRim;
+    }
+
+    private static void AddPentagon(List<int> triangles, IReadOnlyList<Vector3> vertices, IReadOnlyList<int> face, bool outwardFromOrigin)
+    {
+        var ordered = face.ToArray();
+        var a = vertices[ordered[0]];
+        var b = vertices[ordered[1]];
+        var c = vertices[ordered[2]];
+        var centroid = Vector3.zero;
+        foreach (var index in ordered) centroid += vertices[index];
+        centroid /= ordered.Length;
+        var pointsOutward = Vector3.Dot(Vector3.Cross(b - a, c - a), centroid) > 0f;
+        if (pointsOutward != outwardFromOrigin) Array.Reverse(ordered);
+
+        for (var i = 1; i < ordered.Length - 1; i++)
+        {
+            triangles.Add(ordered[0]);
+            triangles.Add(ordered[i]);
+            triangles.Add(ordered[i + 1]);
+        }
     }
 
     private static Mesh CrystalShard()
@@ -279,29 +278,37 @@ internal static class GeodeVisuals
         for (var i = 0; i < sides; i++)
         {
             var angle = Mathf.PI * 2f * i / sides;
-            vertices.Add(new Vector3(Mathf.Cos(angle) * .5f, -.5f, Mathf.Sin(angle) * .5f));
-            vertices.Add(new Vector3(Mathf.Cos(angle) * .42f, .22f, Mathf.Sin(angle) * .42f));
+            vertices.Add(new Vector3(Mathf.Cos(angle) * .5f, 0f, Mathf.Sin(angle) * .5f));
+            vertices.Add(new Vector3(Mathf.Cos(angle) * .42f, .72f, Mathf.Sin(angle) * .42f));
         }
-        vertices.Add(new Vector3(0f,.5f,0f));
+        vertices.Add(new Vector3(0f,1f,0f));
         var tip = vertices.Count - 1;
         var triangles = new List<int>();
         for (var i = 0; i < sides; i++)
         {
             var next = (i + 1) % sides;
             var b0 = i * 2; var t0 = b0 + 1; var b1 = next * 2; var t1 = b1 + 1;
-            triangles.Add(b0); triangles.Add(t0); triangles.Add(t1);
-            triangles.Add(b0); triangles.Add(t1); triangles.Add(b1);
-            triangles.Add(t0); triangles.Add(tip); triangles.Add(t1);
+            triangles.Add(b0); triangles.Add(b1); triangles.Add(t0);
+            triangles.Add(b1); triangles.Add(t1); triangles.Add(t0);
+            triangles.Add(t0); triangles.Add(t1); triangles.Add(tip);
         }
-        _crystalShard = new Mesh
+        // Close the base so a crystal can never expose an empty underside.
+        for (var i = 1; i < sides - 1; i++)
         {
-            name = "magenheim.geode.interior-crystal",
-            vertices = vertices.ToArray(),
-            triangles = triangles.ToArray()
-        };
-        _crystalShard.RecalculateNormals();
-        _crystalShard.RecalculateBounds();
+            triangles.Add(0);
+            triangles.Add(i * 2);
+            triangles.Add((i + 1) * 2);
+        }
+        _crystalShard = BuildMesh("magenheim.geode.interior-crystal", vertices.ToArray(), triangles);
         return _crystalShard;
+    }
+
+    private static Mesh BuildMesh(string name, Vector3[] vertices, List<int> triangles)
+    {
+        var mesh = new Mesh { name = name, vertices = vertices, triangles = triangles.ToArray() };
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+        return mesh;
     }
 
     private static Vector3 Vertex(int index, float radius)
@@ -326,6 +333,8 @@ internal static class GeodeVisuals
     {
         var material = new Material(source) { name = "magenheim.geode." + key };
         material.mainTexture = Texture2D.whiteTexture;
+        material.mainTextureScale = Vector2.one;
+        material.mainTextureOffset = Vector2.zero;
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", gloss);
