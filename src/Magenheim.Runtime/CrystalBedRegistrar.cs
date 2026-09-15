@@ -126,6 +126,7 @@ internal sealed class CrystalBedRegistrar : IDisposable
         custom.Piece.m_dlc = string.Empty;
         var prefab = custom.PiecePrefab;
         var visual = CrystalBedVisuals.Apply(prefab, element);
+        InheritedPrefabSanitizer.DisableInheritedAudio(prefab);
 
         var producer = prefab.GetComponent<Beehive>()
             ?? throw new InvalidOperationException($"Crystal Bed '{prefabName}' lost its persistent producer component.");
