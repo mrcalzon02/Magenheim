@@ -31,9 +31,9 @@ internal static class FireStaffVisuals
         var bronze = Material(source, "bronze", new Color(.54f,.31f,.12f,1f), .48f, .28f);
         var iron = Material(source, "iron", new Color(.34f,.31f,.29f,1f), .52f, .24f);
         var blackMetal = Material(source, "blackmetal", new Color(.11f,.10f,.095f,1f), .76f, .32f);
-        var ember = Material(source, "ember", new Color(1f,.30f,.035f,1f), .02f, .70f, .48f);
-        var flame = Material(source, "flame", new Color(1f,.58f,.08f,1f), .02f, .78f, .62f);
-        var hot = Material(source, "white-hot", new Color(1f,.90f,.48f,1f), .01f, .86f, .78f);
+        var ember = Material(source, "ember-crystal", new Color(1f,.30f,.035f,1f), .02f, .70f, .48f);
+        var flame = Material(source, "flame-crystal", new Color(1f,.58f,.08f,1f), .02f, .78f, .62f);
+        var hot = Material(source, "white-hot-crystal", new Color(1f,.90f,.48f,1f), .01f, .86f, .78f);
 
         switch (prefabName)
         {
@@ -135,9 +135,7 @@ internal static class FireStaffVisuals
     private static Material Material(Material source,string suffix,Color color,float metallic,float gloss,float emission=0f)
     {
         var material=new Material(source){name="magenheim.fire-staff."+suffix};
-        material.mainTexture=Texture2D.whiteTexture;
-        material.mainTextureScale=Vector2.one;
-        material.mainTextureOffset=Vector2.zero;
+        GeneratedSurfaceTextures.Apply(material, suffix);
         if(material.HasProperty("_Color"))material.SetColor("_Color",color);
         if(material.HasProperty("_Metallic"))material.SetFloat("_Metallic",metallic);
         if(material.HasProperty("_Glossiness"))material.SetFloat("_Glossiness",gloss);
