@@ -11,7 +11,7 @@ namespace Magenheim.Runtime;
 
 internal sealed class RadianceStaffRegistrar : IDisposable
 {
-    private const string BaseStaffPrefab = "StaffFireball";
+    private const string BaseStaffPrefab = "StaffIceShards";
     private readonly ManualLogSource _log;
     private bool _subscribed;
     private bool _registered;
@@ -31,33 +31,21 @@ internal sealed class RadianceStaffRegistrar : IDisposable
         try
         {
             if (PrefabManager.Instance.GetPrefab(BaseStaffPrefab) is null)
-                throw new InvalidOperationException($"Required vanilla staff prefab '{BaseStaffPrefab}' is unavailable.");
+                throw new InvalidOperationException($"Required hidden staff carrier '{BaseStaffPrefab}' is unavailable.");
             if (PrefabManager.Instance.GetPrefab(WorkshopRegistrar.StationPrefab) is null)
                 throw new InvalidOperationException("Geologist's Workstation must exist before Radiance staff recipes are registered.");
 
             var flash = StaffEffectPayloads.CreateField(
-                "Magenheim_Radiance_Flash",
-                new HitData.DamageTypes { m_spirit = 2f },
-                radius: 2.2f,
-                ttl: .20f,
-                hitInterval: .20f,
-                attackForce: 28f,
-                tint: new Color(1f, .93f, .52f, 1f),
-                emission: 1.65f);
+                "Magenheim_Radiance_Flash", new HitData.DamageTypes { m_spirit = 2f },
+                2.2f, .20f, .20f, 28f, new Color(1f, .93f, .52f, 1f), 1.65f);
             var sanctuary = StaffEffectPayloads.CreateField(
-                "Magenheim_Radiance_Sanctuary",
-                new HitData.DamageTypes { m_spirit = 6f },
-                radius: 5.5f,
-                ttl: 10f,
-                hitInterval: 1f,
-                attackForce: 0f,
-                tint: new Color(1f, .98f, .78f, 1f),
-                emission: 1.85f);
+                "Magenheim_Radiance_Sanctuary", new HitData.DamageTypes { m_spirit = 6f },
+                5.5f, 10f, 1f, 0f, new Color(1f, .98f, .78f, 1f), 1.85f);
 
             var payloads = new PayloadSet(
-                StaffEffectPayloads.CreateProjectile("Magenheim_Radiance_Projectile", new Color(1f, .90f, .38f, 1f), 1.45f),
-                StaffEffectPayloads.CreateProjectile("Magenheim_Radiance_FlashProjectile", new Color(1f, .96f, .64f, 1f), 1.70f, flash),
-                StaffEffectPayloads.CreateProjectile("Magenheim_Radiance_DaybreakProjectile", new Color(1f, .99f, .84f, 1f), 1.95f, sanctuary));
+                StaffEffectPayloads.CreateProjectile("Magenheim_Radiance_Projectile", new Color(1f, .90f, .38f, 1f), 1.45f, sourceStaffPrefab: BaseStaffPrefab),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Radiance_FlashProjectile", new Color(1f, .96f, .64f, 1f), 1.70f, flash, BaseStaffPrefab),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Radiance_DaybreakProjectile", new Color(1f, .99f, .84f, 1f), 1.95f, sanctuary, BaseStaffPrefab));
 
             foreach (var definition in Definitions())
             {
@@ -66,17 +54,14 @@ internal sealed class RadianceStaffRegistrar : IDisposable
             }
 
             _registered = true;
-            _log.LogInfo("Registered Radiance abilities: Prism Spark, Sun Lance, Corona Flash, and Daybreak Sanctuary.");
+            _log.LogInfo("Registered Radiance abilities with owned Radiance staff bodies and stamina-only casting.");
         }
         catch (Exception exception)
         {
             _log.LogError($"Radiance staff content registration failed: {exception}");
             throw;
         }
-        finally
-        {
-            Dispose();
-        }
+        finally { Dispose(); }
     }
 
     private static void RegisterStaff(Definition definition, PayloadSet payloads)
@@ -92,18 +77,14 @@ internal sealed class RadianceStaffRegistrar : IDisposable
         shared.m_maxQuality = 1;
         shared.m_value = 0;
         shared.m_dlc = string.Empty;
-        shared.m_damages = new HitData.DamageTypes
-        {
-            m_pierce = definition.PierceDamage,
-            m_spirit = definition.SpiritDamage,
-        };
+        shared.m_damages = new HitData.DamageTypes { m_pierce = definition.PierceDamage, m_spirit = definition.SpiritDamage };
         shared.m_damagesPerLevel = new HitData.DamageTypes();
         shared.m_icons = new[] { EarthAssets.Icon("crystal", definition.AssetName, definition.Tint) };
 
         var attack = shared.m_attack;
         attack.m_attackProjectile = payloads.Resolve(definition.Payload);
         attack.m_attackStamina = definition.StaminaCost;
-        attack.m_attackEitr = definition.EitrCost;
+        attack.m_attackEitr = 0f;
         attack.m_damageMultiplier = definition.DamageMultiplier;
         attack.m_forceMultiplier = definition.ForceMultiplier;
         attack.m_staggerMultiplier = definition.StaggerMultiplier;
@@ -132,8 +113,7 @@ internal sealed class RadianceStaffRegistrar : IDisposable
             MinStationLevel = definition.MinimumStationLevel,
             Enabled = true,
         };
-        foreach (var requirement in definition.Requirements)
-            config.AddRequirement(requirement.PrefabName, requirement.Amount);
+        foreach (var requirement in definition.Requirements) config.AddRequirement(requirement.PrefabName, requirement.Amount);
         if (!ItemManager.Instance.AddRecipe(new CustomRecipe(config)))
             throw new InvalidOperationException($"Jotunn refused Radiance staff recipe '{config.Name}'.");
     }
@@ -142,20 +122,20 @@ internal sealed class RadianceStaffRegistrar : IDisposable
     {
         new Definition("Magenheim_Staff_Radiance_Simple", "staff-radiance-simple", "Simple Staff of Radiance",
             "Prism Spark: fires a needle of white-gold hard light. Pierce harms ordinary flesh while Spirit damage naturally punishes undead and other spirit-vulnerable corruption.",
-            1, 20f, 0f, 8f, 10f, 1f, .35f, .85f, 45f, .35f, 1, 1, 0f, PayloadKind.Direct, new Color(.96f,.82f,.32f,1f),
+            1, 20f, 8f, 10f, 1f, .35f, .85f, 45f, .35f, 1, 1, 0f, PayloadKind.Direct, new Color(.96f,.82f,.32f,1f),
             new Requirement("FineWood",8), new Requirement("Bronze",2), new Requirement("Magenheim_Crystal_Radiance_Simple",1)),
         new Definition("Magenheim_Staff_Radiance_Crystal", "staff-radiance-crystal", "Crystal Staff of Radiance",
             "Sun Lance: compresses Radiance into a nearly dispersionless line. High Pierce, heavy Spirit pressure, extreme velocity, and focused stagger reward deliberate aim.",
-            2, 30f, 0f, 18f, 30f, 1f, 1.10f, 1.55f, 72f, .10f, 1, 1, 0f, PayloadKind.Direct, new Color(1f,.90f,.48f,1f),
+            2, 30f, 18f, 30f, 1f, 1.10f, 1.55f, 72f, .10f, 1, 1, 0f, PayloadKind.Direct, new Color(1f,.90f,.48f,1f),
             new Requirement("ElderBark",10), new Requirement("Silver",3), new Requirement("Magenheim_Crystal_Radiance_Crystal",1)),
         new Definition("Magenheim_Staff_Radiance_Advanced", "staff-radiance-advanced", "Advanced Staff of Radiance",
             "Corona Flash: fractures one cast into seven rays. Each impact blooms into a brief radiant flash, adding local Spirit pressure and violent interruption around clustered targets.",
-            3, 12f, 18f, 4f, 8f, .55f, .55f, 1.35f, 48f, 9f, 7, 1, 0f, PayloadKind.Flash, new Color(1f,.95f,.68f,1f),
+            3, 30f, 4f, 8f, .55f, .55f, 1.35f, 48f, 9f, 7, 1, 0f, PayloadKind.Flash, new Color(1f,.95f,.68f,1f),
             new Requirement("YggdrasilWood",10), new Requirement("Silver",4), new Requirement("BlackMetal",2), new Requirement("Magenheim_Crystal_Radiance_Advanced",1)),
         new Definition("Magenheim_Staff_Radiance_Master", "staff-radiance-master", "Master Staff of Radiance",
             "Daybreak Sanctuary: drives one sun-bright lance into the target point and leaves a wide sanctified field for ten seconds. The field deals pure Spirit damage, making corrupted ground lethal to spirit-vulnerable enemies rather than becoming another artillery barrage.",
-            4, 0f, 50f, 18f, 38f, 1f, 1.0f, 1.80f, 66f, .12f, 1, 1, 0f, PayloadKind.Sanctuary, new Color(1f,.99f,.84f,1f),
-            new Requirement("YggdrasilWood",15), new Requirement("BlackMetal",4), new Requirement("Eitr",12), new Requirement("Magenheim_Crystal_Radiance_Master",1)),
+            4, 50f, 18f, 38f, 1f, 1.0f, 1.80f, 66f, .12f, 1, 1, 0f, PayloadKind.Sanctuary, new Color(1f,.99f,.84f,1f),
+            new Requirement("YggdrasilWood",15), new Requirement("BlackMetal",4), new Requirement("Magenheim_Crystal_Radiance_Master",1)),
     };
 
     public void Dispose()
@@ -169,29 +149,18 @@ internal sealed class RadianceStaffRegistrar : IDisposable
 
     private sealed class PayloadSet
     {
-        private readonly GameObject _direct;
-        private readonly GameObject _flash;
-        private readonly GameObject _sanctuary;
-
-        internal PayloadSet(GameObject direct, GameObject flash, GameObject sanctuary)
-        {
-            _direct = direct;
-            _flash = flash;
-            _sanctuary = sanctuary;
-        }
-
+        private readonly GameObject _direct, _flash, _sanctuary;
+        internal PayloadSet(GameObject direct, GameObject flash, GameObject sanctuary) { _direct=direct; _flash=flash; _sanctuary=sanctuary; }
         internal GameObject Resolve(PayloadKind kind) => kind switch
         {
-            PayloadKind.Direct => _direct,
-            PayloadKind.Flash => _flash,
-            PayloadKind.Sanctuary => _sanctuary,
+            PayloadKind.Direct => _direct, PayloadKind.Flash => _flash, PayloadKind.Sanctuary => _sanctuary,
             _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
         };
     }
 
     private readonly struct Requirement
     {
-        internal Requirement(string prefabName, int amount) { PrefabName = prefabName; Amount = amount; }
+        internal Requirement(string prefabName, int amount) { PrefabName=prefabName; Amount=amount; }
         internal string PrefabName { get; }
         internal int Amount { get; }
     }
@@ -199,12 +168,12 @@ internal sealed class RadianceStaffRegistrar : IDisposable
     private sealed class Definition
     {
         internal Definition(string prefabName, string assetName, string displayName, string description, int minimumStationLevel,
-            float staminaCost, float eitrCost, float pierceDamage, float spiritDamage, float damageMultiplier, float forceMultiplier,
+            float staminaCost, float pierceDamage, float spiritDamage, float damageMultiplier, float forceMultiplier,
             float staggerMultiplier, float projectileVelocity, float projectileAccuracy, int projectiles, int bursts, float burstInterval,
             PayloadKind payload, Color tint, params Requirement[] requirements)
         {
             PrefabName=prefabName; AssetName=assetName; DisplayName=displayName; Description=description; MinimumStationLevel=minimumStationLevel;
-            StaminaCost=staminaCost; EitrCost=eitrCost; PierceDamage=pierceDamage; SpiritDamage=spiritDamage; DamageMultiplier=damageMultiplier;
+            StaminaCost=staminaCost; PierceDamage=pierceDamage; SpiritDamage=spiritDamage; DamageMultiplier=damageMultiplier;
             ForceMultiplier=forceMultiplier; StaggerMultiplier=staggerMultiplier; ProjectileVelocity=projectileVelocity; ProjectileAccuracy=projectileAccuracy;
             Projectiles=projectiles; Bursts=bursts; BurstInterval=burstInterval; Payload=payload; Tint=tint; Requirements=requirements;
         }
@@ -214,7 +183,6 @@ internal sealed class RadianceStaffRegistrar : IDisposable
         internal string Description { get; }
         internal int MinimumStationLevel { get; }
         internal float StaminaCost { get; }
-        internal float EitrCost { get; }
         internal float PierceDamage { get; }
         internal float SpiritDamage { get; }
         internal float DamageMultiplier { get; }
@@ -245,6 +213,9 @@ internal static class RadianceVisuals
         var attach = prefab.transform.Find("attach") ?? prefab.transform;
         var root = new GameObject("magenheim." + assetName + ".visual") { layer = prefab.layer };
         root.transform.SetParent(attach, false);
+        root.transform.localPosition = Vector3.zero;
+        root.transform.localRotation = Quaternion.identity;
+        root.transform.localScale = Vector3.one;
 
         var wood = Mat(source,"wood",new Color(.24f,.17f,.12f,1f),0f,.13f);
         var ivory = Mat(source,"ivory",new Color(.78f,.72f,.58f,1f),.03f,.23f);
@@ -302,9 +273,9 @@ internal static class RadianceVisuals
     }
     private static Material Mat(Material source,string name,Color color,float metallic,float gloss,float emission=0f)
     {
-        var m=new Material(source){name="magenheim.radiance."+name}; m.mainTexture=Texture2D.whiteTexture; if(m.HasProperty("_Color"))m.SetColor("_Color",color); if(m.HasProperty("_Metallic"))m.SetFloat("_Metallic",metallic); if(m.HasProperty("_Glossiness"))m.SetFloat("_Glossiness",gloss); if(m.HasProperty("_BumpMap"))m.SetTexture("_BumpMap",null); m.DisableKeyword("_NORMALMAP"); if(m.HasProperty("_EmissionColor")&&emission>0f){m.SetColor("_EmissionColor",color*emission);m.EnableKeyword("_EMISSION");} else m.DisableKeyword("_EMISSION"); m.SetOverrideTag("RenderType","Opaque"); if(m.HasProperty("_ZWrite"))m.SetFloat("_ZWrite",1f); m.renderQueue=2000; return m;
+        var m=new Material(source){name="magenheim.radiance."+name}; m.mainTexture=Texture2D.whiteTexture; m.mainTextureScale=Vector2.one; m.mainTextureOffset=Vector2.zero; if(m.HasProperty("_Color"))m.SetColor("_Color",color); if(m.HasProperty("_Metallic"))m.SetFloat("_Metallic",metallic); if(m.HasProperty("_Glossiness"))m.SetFloat("_Glossiness",gloss); if(m.HasProperty("_BumpMap"))m.SetTexture("_BumpMap",null); m.DisableKeyword("_NORMALMAP"); if(m.HasProperty("_EmissionColor")&&emission>0f){m.SetColor("_EmissionColor",color*emission);m.EnableKeyword("_EMISSION");} else m.DisableKeyword("_EMISSION"); m.SetOverrideTag("RenderType","Opaque"); if(m.HasProperty("_ZWrite"))m.SetFloat("_ZWrite",1f); m.renderQueue=2000; return m;
     }
     private static Mesh MakeBox(){var m=new Mesh{name="magenheim.radiance.box"};m.vertices=new[]{new Vector3(-.5f,-.5f,-.5f),new Vector3(.5f,-.5f,-.5f),new Vector3(.5f,.5f,-.5f),new Vector3(-.5f,.5f,-.5f),new Vector3(-.5f,-.5f,.5f),new Vector3(.5f,-.5f,.5f),new Vector3(.5f,.5f,.5f),new Vector3(-.5f,.5f,.5f)};m.triangles=new[]{0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2};m.RecalculateNormals();m.RecalculateBounds();return m;}
-    private static Mesh MakeCylinder(int sides){var v=new List<Vector3>();var t=new List<int>();for(var r=0;r<2;r++){var y=r==0?-.5f:.5f;for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.5f*Mathf.Cos(a),y,.5f*Mathf.Sin(a)));}}var b=v.Count;v.Add(new Vector3(0,-.5f,0));var top=v.Count;v.Add(new Vector3(0,.5f,0));for(var i=0;i<sides;i++){var n=(i+1)%sides;t.AddRange(new[]{i,n,sides+i,n,sides+n,sides+i,b,n,i,top,sides+i,sides+n});}var m=new Mesh{name="magenheim.radiance.cylinder."+sides,vertices=v.ToArray(),triangles=t.ToArray()};m.RecalculateNormals();m.RecalculateBounds();return m;}
-    private static Mesh MakePrism(int sides){var v=new List<Vector3>();var t=new List<int>();for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.34f*Mathf.Cos(a),-.45f,.34f*Mathf.Sin(a)));}for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.5f*Mathf.Cos(a),.18f,.5f*Mathf.Sin(a)));}var top=v.Count;v.Add(new Vector3(0,.68f,0));var bottom=v.Count;v.Add(new Vector3(0,-.5f,0));for(var i=0;i<sides;i++){var n=(i+1)%sides;t.AddRange(new[]{bottom,n,i,i,n,sides+i,n,sides+n,sides+i,sides+i,sides+n,top});}var m=new Mesh{name="magenheim.radiance.prism."+sides,vertices=v.ToArray(),triangles=t.ToArray()};m.RecalculateNormals();m.RecalculateBounds();return m;}
+    private static Mesh MakeCylinder(int sides){var v=new List<Vector3>();var t=new List<int>();for(var r=0;r<2;r++){var y=r==0?-.5f:.5f;for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.5f*Mathf.Cos(a),y,.5f*Mathf.Sin(a)));}}var b=v.Count;v.Add(new Vector3(0,-.5f,0));var top=v.Count;v.Add(new Vector3(0,.5f,0));for(var i=0;i<sides;i++){var n=(i+1)%sides;t.AddRange(new[]{i,sides+i,n,n,sides+i,sides+n,b,i,n,top,sides+n,sides+i});}var m=new Mesh{name="magenheim.radiance.cylinder."+sides,vertices=v.ToArray(),triangles=t.ToArray()};m.RecalculateNormals();m.RecalculateBounds();return m;}
+    private static Mesh MakePrism(int sides){var v=new List<Vector3>();var t=new List<int>();for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.34f*Mathf.Cos(a),-.45f,.34f*Mathf.Sin(a)));}for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.5f*Mathf.Cos(a),.18f,.5f*Mathf.Sin(a)));}var top=v.Count;v.Add(new Vector3(0,.68f,0));var bottom=v.Count;v.Add(new Vector3(0,-.5f,0));for(var i=0;i<sides;i++){var n=(i+1)%sides;t.AddRange(new[]{bottom,i,n,i,sides+i,n,n,sides+i,sides+n,top,sides+n,sides+i});}var m=new Mesh{name="magenheim.radiance.prism."+sides,vertices=v.ToArray(),triangles=t.ToArray()};m.RecalculateNormals();m.RecalculateBounds();return m;}
 }
