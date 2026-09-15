@@ -16,6 +16,11 @@ namespace Magenheim.Runtime.Compatibility;
 internal static class JewelcraftingSocketReader
 {
     private const string CrystalPrefix = "Magenheim_Crystal_";
+    private static readonly object ReflectionSync = new();
+    private static Type? _cachedApiType;
+    private static MethodInfo? _cachedGetGems;
+    private static Type? _cachedGemInfoType;
+    private static FieldInfo? _cachedGemPrefabField;
 
     internal static bool TryReadMagenheimCrystals(
         ItemDrop.ItemData item,
@@ -29,15 +34,7 @@ internal static class JewelcraftingSocketReader
 
         try
         {
-            Type apiType = JewelcraftingCompatibility.RequireApiType();
-            MethodInfo getGems = apiType.GetMethod(
-                "GetGems",
-                BindingFlags.Public | BindingFlags.Static,
-                null,
-                new[] { typeof(ItemDrop.ItemData) },
-                null)
-                ?? throw new MissingMethodException(apiType.FullName, "GetGems(ItemDrop.ItemData)");
-
+            MethodInfo getGems = ResolveGetGems();
             if (getGems.Invoke(null, new object[] { item }) is not IEnumerable gems)
                 throw new InvalidOperationException("Jewelcrafting GetGems returned a non-enumerable result.");
 
@@ -47,8 +44,8 @@ internal static class JewelcraftingSocketReader
                 if (gem is null)
                     continue;
 
-                FieldInfo? prefabField = gem.GetType().GetField("gemPrefab", BindingFlags.Public | BindingFlags.Instance);
-                if (prefabField?.GetValue(gem) is not string prefabName || string.IsNullOrWhiteSpace(prefabName))
+                FieldInfo prefabField = ResolveGemPrefabField(gem.GetType());
+                if (prefabField.GetValue(gem) is not string prefabName || string.IsNullOrWhiteSpace(prefabName))
                     continue;
 
                 if (!prefabName.StartsWith(CrystalPrefix, StringComparison.Ordinal))
@@ -76,13 +73,68 @@ internal static class JewelcraftingSocketReader
         }
         catch (TargetInvocationException exception) when (exception.InnerException is not null)
         {
+            InvalidateReflectionCache();
             log.LogWarning($"Unable to read Jewelcrafting socket state: {exception.InnerException.Message}");
             return false;
         }
         catch (Exception exception)
         {
+            InvalidateReflectionCache();
             log.LogWarning($"Unable to read Jewelcrafting socket state: {exception.Message}");
             return false;
+        }
+    }
+
+    private static MethodInfo ResolveGetGems()
+    {
+        Type apiType = JewelcraftingCompatibility.RequireApiType();
+        lock (ReflectionSync)
+        {
+            if (_cachedGetGems is not null && ReferenceEquals(_cachedApiType, apiType))
+                return _cachedGetGems;
+
+            MethodInfo getGems = apiType.GetMethod(
+                "GetGems",
+                BindingFlags.Public | BindingFlags.Static,
+                null,
+                new[] { typeof(ItemDrop.ItemData) },
+                null)
+                ?? throw new MissingMethodException(apiType.FullName, "GetGems(ItemDrop.ItemData)");
+
+            _cachedApiType = apiType;
+            _cachedGetGems = getGems;
+            _cachedGemInfoType = null;
+            _cachedGemPrefabField = null;
+            return getGems;
+        }
+    }
+
+    private static FieldInfo ResolveGemPrefabField(Type gemInfoType)
+    {
+        lock (ReflectionSync)
+        {
+            if (_cachedGemPrefabField is not null && ReferenceEquals(_cachedGemInfoType, gemInfoType))
+                return _cachedGemPrefabField;
+
+            FieldInfo prefabField = gemInfoType.GetField("gemPrefab", BindingFlags.Public | BindingFlags.Instance)
+                ?? throw new MissingFieldException(gemInfoType.FullName, "gemPrefab");
+            if (prefabField.FieldType != typeof(string))
+                throw new InvalidOperationException($"Jewelcrafting GemInfo.gemPrefab has incompatible type '{prefabField.FieldType.FullName}'.");
+
+            _cachedGemInfoType = gemInfoType;
+            _cachedGemPrefabField = prefabField;
+            return prefabField;
+        }
+    }
+
+    private static void InvalidateReflectionCache()
+    {
+        lock (ReflectionSync)
+        {
+            _cachedApiType = null;
+            _cachedGetGems = null;
+            _cachedGemInfoType = null;
+            _cachedGemPrefabField = null;
         }
     }
 
