@@ -58,7 +58,10 @@ internal static class SocketBehaviorRuntime
         return activations.Count != 0;
     }
 
-    internal static bool TryResolveStorm(ItemDrop.ItemData item, out BehavioralResonanceActivation activation)
+    internal static bool TryResolve(
+        ItemDrop.ItemData item,
+        ElementalAlignment element,
+        out BehavioralResonanceActivation activation)
     {
         activation = null!;
         if (!TryPlan(item, out var activations))
@@ -66,7 +69,7 @@ internal static class SocketBehaviorRuntime
 
         for (var index = 0; index < activations.Count; index++)
         {
-            if (activations[index].Element != ElementalAlignment.Storm)
+            if (activations[index].Element != element)
                 continue;
             activation = activations[index];
             return true;
@@ -74,6 +77,12 @@ internal static class SocketBehaviorRuntime
 
         return false;
     }
+
+    internal static bool TryResolveStorm(ItemDrop.ItemData item, out BehavioralResonanceActivation activation) =>
+        TryResolve(item, ElementalAlignment.Storm, out activation);
+
+    internal static bool TryResolveEarth(ItemDrop.ItemData item, out BehavioralResonanceActivation activation) =>
+        TryResolve(item, ElementalAlignment.Earth, out activation);
 
     private static string ItemIdentity(ItemDrop.ItemData item) =>
         item.m_dropPrefab ? item.m_dropPrefab.name : item.m_shared.m_name;
