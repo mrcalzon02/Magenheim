@@ -7,13 +7,28 @@ namespace Magenheim.Runtime
     {
         internal static void BindStoneGuardian(GameObject prefab)
         {
+            BindDefensiveTriad(prefab, "Stone Guardian", "magenheim.fracture.creature.stone-guardian.visual", "resistance-core", "armor-core-left", "armor-core-right", 260f, 220f);
+        }
+
+        internal static void BindStoneSentinel(GameObject prefab)
+        {
+            BindDefensiveTriad(prefab, "Stone Sentinel", "magenheim.fracture.creature.stone-sentinel.visual", "resistance-core", "armor-core-left", "armor-core-right", 190f, 165f);
+        }
+
+        internal static void BindCrystalRevenant(GameObject prefab)
+        {
+            BindDefensiveTriad(prefab, "Crystal Revenant", "magenheim.fracture.creature.crystal-revenant.visual", "resistance-core", "armor-core-l", "armor-core-r", 115f, 90f);
+        }
+
+        private static void BindDefensiveTriad(GameObject prefab, string displayName, string rootName, string resistanceName, string leftArmorName, string rightArmorName, float resistanceHealth, float armorHealth)
+        {
             if (prefab == null) throw new ArgumentNullException(nameof(prefab));
-            var owner = prefab.GetComponent<Character>() ?? throw new InvalidOperationException("Stone Guardian host has no Character.");
-            var view = prefab.GetComponent<ZNetView>() ?? throw new InvalidOperationException("Stone Guardian host has no ZNetView.");
-            var root = Find(prefab.transform, "magenheim.fracture.creature.stone-guardian.visual");
-            Attach(root, "resistance-core", owner, view, "resistance", DeepFractureCrystalFunction.Resistance, 260f);
-            Attach(root, "armor-core-left", owner, view, "armor_left", DeepFractureCrystalFunction.Armor, 220f);
-            Attach(root, "armor-core-right", owner, view, "armor_right", DeepFractureCrystalFunction.Armor, 220f);
+            var owner = prefab.GetComponent<Character>() ?? throw new InvalidOperationException(displayName + " host has no Character.");
+            var view = prefab.GetComponent<ZNetView>() ?? throw new InvalidOperationException(displayName + " host has no ZNetView.");
+            var root = Find(prefab.transform, rootName);
+            Attach(root, resistanceName, owner, view, "resistance", DeepFractureCrystalFunction.Resistance, resistanceHealth);
+            Attach(root, leftArmorName, owner, view, "armor_left", DeepFractureCrystalFunction.Armor, armorHealth);
+            Attach(root, rightArmorName, owner, view, "armor_right", DeepFractureCrystalFunction.Armor, armorHealth);
         }
 
         private static void Attach(Transform root, string name, Character owner, ZNetView view, string id, DeepFractureCrystalFunction function, float health)
