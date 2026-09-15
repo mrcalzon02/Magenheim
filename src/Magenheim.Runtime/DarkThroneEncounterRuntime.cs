@@ -19,6 +19,25 @@ internal sealed class DarkThroneEncounterRuntime : MonoBehaviour
     private void BindRuntime(Character king){var leash=king.GetComponent<NowhereKingArenaLeash>();if(leash!=null)leash.Configure(transform.position);var link=king.GetComponent<NowhereKingEncounterLink>()??king.gameObject.AddComponent<NowhereKingEncounterLink>();link.Bind(this);var p1=king.GetComponent<NowhereKingPhaseOneCombat>()??king.gameObject.AddComponent<NowhereKingPhaseOneCombat>();p1.Configure(transform.position);var p2=king.GetComponent<NowhereKingPhaseTwoCombat>()??king.gameObject.AddComponent<NowhereKingPhaseTwoCombat>();p2.Configure(transform.position);var p3=king.GetComponent<NowhereKingPhaseThreeCombat>()??king.gameObject.AddComponent<NowhereKingPhaseThreeCombat>();p3.Configure(transform.position);if(king.GetComponent<NowhereKingPhaseTransition>()==null)king.gameObject.AddComponent<NowhereKingPhaseTransition>();if(king.GetComponent<NowhereKingAdaptiveResistance>()==null)king.gameObject.AddComponent<NowhereKingAdaptiveResistance>();if(king.GetComponent<NowhereKingRoyalStagger>()==null)king.gameObject.AddComponent<NowhereKingRoyalStagger>();}
     private string EnsureEncounterIdentity(){var zdo=_view.GetZDO();var id=zdo.GetString(EncounterIdentityKey,string.Empty);if(!string.IsNullOrWhiteSpace(id))return id;var p=transform.position;id=string.Concat("darkthrone:",Mathf.RoundToInt(p.x),":",Mathf.RoundToInt(p.y),":",Mathf.RoundToInt(p.z));zdo.Set(EncounterIdentityKey,id);return id;}
     private void ResetEncounter(Character king){var zdo=_view.GetZDO();zdo.Set(EngagedKey,false);_noParticipantsSince=-1f;SuspendEcology(false);if(king==null)return;king.Heal(king.GetMaxHealth(),true);king.SetPos(_kingAnchor.position);var resistance=king.GetComponent<NowhereKingAdaptiveResistance>();if(resistance!=null)resistance.ResetAdaptation();var stagger=king.GetComponent<NowhereKingRoyalStagger>();if(stagger!=null)stagger.ResetState();var body=king.GetComponent<Rigidbody>();if(body!=null){body.velocity=Vector3.zero;body.angularVelocity=Vector3.zero;}}
-    private void TryReleaseRewards(ZDO zdo){if(zdo.GetBool(RewardedKey,false))return;var mantle=PrefabManager.Instance.GetPrefab(NowhereKingRewardRegistrar.NullMantlePrefabName);var trophy=PrefabManager.Instance.GetPrefab(NowhereKingRewardRegistrar.TrophyPrefabName);if(mantle==null||trophy==null)return;var origin=_kingAnchor!=null?_kingAnchor.position:transform.position;Instantiate(mantle,origin+new Vector3(-1.2f,1.1f,0f),Quaternion.identity);Instantiate(trophy,origin+new Vector3(1.2f,1.1f,0f),Quaternion.identity);zdo.Set(RewardedKey,true);}
+    private void TryReleaseRewards(ZDO zdo)
+    {
+        if(zdo.GetBool(RewardedKey,false))return;
+        var mantle=PrefabManager.Instance.GetPrefab(NowhereKingRewardRegistrar.NullMantlePrefabName);
+        var trophy=PrefabManager.Instance.GetPrefab(NowhereKingRewardRegistrar.TrophyPrefabName);
+        if(mantle==null||trophy==null)return;
+        // Reserve the one-shot before spawning. A crash may conservatively lose an unspawned reward,
+        // but can no longer duplicate a unique boss reward after one item has entered the world.
+        zdo.Set(RewardedKey,true);
+        try
+        {
+            var origin=_kingAnchor!=null?_kingAnchor.position:transform.position;
+            Instantiate(mantle,origin+new Vector3(-1.2f,1.1f,0f),Quaternion.identity);
+            Instantiate(trophy,origin+new Vector3(1.2f,1.1f,0f),Quaternion.identity);
+        }
+        catch(Exception exception)
+        {
+            Debug.LogError($"Dark Throne reward release failed after durable reservation: {exception}");
+        }
+    }
     private void SuspendEcology(bool suspended){var root=transform.parent!=null?transform.parent:transform;foreach(var spawner in root.GetComponentsInChildren<DarkThroneCrystalSpawner>(true))spawner.SetEncounterSuspended(suspended);}
 }
