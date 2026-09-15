@@ -153,39 +153,19 @@ internal sealed class CrystalArchitectureRegistrar : IDisposable
 
     private static void ConfigureSnapPoints(GameObject prefab, ArchitectureDefinition definition)
     {
-        var snaps = prefab.GetComponentsInChildren<Transform>(true)
-            .Where(transform => transform != prefab.transform &&
-                transform.name.IndexOf("snap", StringComparison.OrdinalIgnoreCase) >= 0)
-            .ToArray();
-        if (snaps.Length == 0) return;
-
-        if (definition.Kind == ArchitectureKind.Beam)
+        switch (definition.Kind)
         {
-            var min = snaps.Min(transform => transform.localPosition.y);
-            var max = snaps.Max(transform => transform.localPosition.y);
-            var range = max - min;
-            if (range <= .01f) return;
-            foreach (var snap in snaps)
-            {
-                var position = snap.localPosition;
-                var normalized = (position.y - min) / range;
-                position.y = normalized * definition.Size;
-                snap.localPosition = position;
-            }
-        }
-        else if (definition.Kind == ArchitectureKind.Foundation)
-        {
-            var maxAbs = snaps.Max(transform => Mathf.Max(Mathf.Abs(transform.localPosition.x), Mathf.Abs(transform.localPosition.z)));
-            if (maxAbs <= .01f) return;
-            var targetHalf = definition.Size * .5f;
-            var scale = targetHalf / maxAbs;
-            foreach (var snap in snaps)
-            {
-                var position = snap.localPosition;
-                position.x *= scale;
-                position.z *= scale;
-                snap.localPosition = position;
-            }
+            case ArchitectureKind.Beam:
+                PlacementSnapAuthority.FitVerticalBeam(prefab, definition.Size);
+                break;
+            case ArchitectureKind.Foundation:
+                PlacementSnapAuthority.FitFoundation(prefab, definition.Size);
+                break;
+            case ArchitectureKind.Hearth:
+                PlacementSnapAuthority.AlignToBase(prefab);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 
