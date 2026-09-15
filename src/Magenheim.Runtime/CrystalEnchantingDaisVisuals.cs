@@ -7,9 +7,8 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Procedural ritual geometry for the Crystal Enchanting Dais. The silhouette deliberately stays
-/// low and circular like an ancient central standing-stone altar while Magenheim materials make
-/// the function unmistakably crystalline.
+/// Procedural ritual geometry for the Crystal Enchanting Dais. It is a broad, low working
+/// platform with inset elemental channels rather than a crystal monument occupying the workspace.
 /// </summary>
 internal static class CrystalEnchantingDaisVisuals
 {
@@ -32,11 +31,13 @@ internal static class CrystalEnchantingDaisVisuals
         var iron = Material(source, "iron", new Color(.24f, .27f, .31f, 1f), .76f, .36f);
         var paleCrystal = Material(source, "central-crystal", new Color(.82f, .91f, 1f, 1f), .03f, .95f, .86f);
 
-        Cylinder(root, "lower-course", new Vector3(0f, .12f, 0f), 1.72f, .24f, 16, darkStone);
-        Cylinder(root, "middle-course", new Vector3(0f, .29f, 0f), 1.47f, .18f, 16, faceStone);
-        Cylinder(root, "working-face", new Vector3(0f, .43f, 0f), 1.24f, .14f, 16, darkStone);
-        Ring(root, "outer-band", 1.53f, .31f, 16, .33f, .075f, iron);
-        Ring(root, "inner-band", .88f, .52f, 12, .34f, .055f, iron);
+        // Broad stepped stone courses create a usable raised floor. Nothing at the centre rises
+        // high enough to read as a monument or obstruct the player's view across the platform.
+        Cylinder(root, "lower-course", new Vector3(0f, .10f, 0f), 1.82f, .20f, 16, darkStone);
+        Cylinder(root, "middle-course", new Vector3(0f, .24f, 0f), 1.58f, .12f, 16, faceStone);
+        Cylinder(root, "working-face", new Vector3(0f, .35f, 0f), 1.36f, .10f, 16, darkStone);
+        Ring(root, "outer-band", 1.55f, .32f, 16, .34f, .070f, iron);
+        Ring(root, "inner-band", .91f, .425f, 12, .35f, .050f, iron);
 
         var elements = (ElementalAlignment[])Enum.GetValues(typeof(ElementalAlignment));
         for (var i = 0; i < elements.Length; i++)
@@ -45,31 +46,34 @@ internal static class CrystalEnchantingDaisVisuals
             var radians = angle * Mathf.Deg2Rad;
             var direction = new Vector3(Mathf.Sin(radians), 0f, Mathf.Cos(radians));
             AddPart(root, "channel-" + elements[i].ToString().ToLowerInvariant(), BoxMesh,
-                direction * .68f + Vector3.up * .515f,
-                new Vector3(.095f, .045f, .78f), Quaternion.Euler(0f, angle, 0f), iron);
+                direction * .68f + Vector3.up * .425f,
+                new Vector3(.095f, .035f, .76f), Quaternion.Euler(0f, angle, 0f), iron);
 
             var tint = ElementVisualPalette.Tint(elements[i]);
-            var crystalMaterial = Material(source, "node-" + elements[i].ToString().ToLowerInvariant(),
+            var crystalMaterial = Material(source, "node-crystal-" + elements[i].ToString().ToLowerInvariant(),
                 new Color(Mathf.Min(1f, tint.r + .10f), Mathf.Min(1f, tint.g + .10f), Mathf.Min(1f, tint.b + .10f), 1f),
                 .02f, .93f, .62f);
+
+            // Low perimeter markers identify each alignment without turning the dais into a forest
+            // of spikes. Their tips sit only slightly above the working surface.
             Prism(root, "node-" + elements[i].ToString().ToLowerInvariant(),
-                direction * 1.12f + Vector3.up * .61f, .115f, .42f, 6, crystalMaterial,
-                new Vector3(i % 2 == 0 ? -7f : 7f, angle, i % 3 - 1));
+                direction * 1.13f + Vector3.up * .49f, .095f, .22f, 6, crystalMaterial,
+                new Vector3(i % 2 == 0 ? -4f : 4f, angle, 0f));
         }
 
-        Cylinder(root, "focus-plinth", new Vector3(0f, .62f, 0f), .48f, .32f, 8, faceStone);
-        Cylinder(root, "focus-collar", new Vector3(0f, .79f, 0f), .38f, .10f, 12, iron);
-        Prism(root, "central-focus", new Vector3(0f, 1.04f, 0f), .27f, 1.02f, 8, paleCrystal, new Vector3(0f, 22.5f, 0f));
-        Ring(root, "focus-band-low", .34f, .98f, 12, .17f, .055f, iron);
-        Ring(root, "focus-band-high", .30f, 1.20f, 12, .15f, .050f, iron);
+        // Recessed central focus: a shallow metal socket and luminous crystal disk, not an apex.
+        Cylinder(root, "focus-plinth", new Vector3(0f, .435f, 0f), .47f, .07f, 12, faceStone);
+        Cylinder(root, "focus-collar", new Vector3(0f, .475f, 0f), .39f, .045f, 16, iron);
+        Cylinder(root, "central-focus", new Vector3(0f, .505f, 0f), .30f, .035f, 16, paleCrystal);
+        Ring(root, "focus-runes", .34f, .505f, 12, .17f, .035f, iron);
 
         var lightHolder = new GameObject("magenheim.crystal-enchanting-dais.light") { layer = prefab.layer };
         lightHolder.transform.SetParent(root.transform, false);
-        lightHolder.transform.localPosition = new Vector3(0f, 1.12f, 0f);
+        lightHolder.transform.localPosition = new Vector3(0f, .62f, 0f);
         var light = lightHolder.AddComponent<Light>();
         light.color = new Color(.68f, .82f, 1f, 1f);
-        light.range = 4.1f;
-        light.intensity = .82f;
+        light.range = 3.8f;
+        light.intensity = .68f;
 
         foreach (var renderer in original) renderer.enabled = false;
         foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled = false;
@@ -91,9 +95,7 @@ internal static class CrystalEnchantingDaisVisuals
     private static Material Material(Material source, string suffix, Color color, float metallic, float gloss, float emission = 0f)
     {
         var material = new Material(source) { name = "magenheim.crystal-enchanting-dais." + suffix };
-        material.mainTexture = Texture2D.whiteTexture;
-        material.mainTextureScale = Vector2.one;
-        material.mainTextureOffset = Vector2.zero;
+        GeneratedSurfaceTextures.Apply(material, suffix);
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", gloss);
