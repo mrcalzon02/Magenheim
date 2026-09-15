@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Magenheim.Core;
 using Magenheim.Core.DeepFractures;
 using UnityEngine;
@@ -8,6 +9,8 @@ namespace Magenheim.Runtime;
 
 internal static class DeepFractureEncounterSpawner
 {
+    private const string AnchorPrefix = "magenheim.fracture.spawn.";
+
     internal static void Populate(GameObject district, DeepFractureInteriorModulePlacement placement)
     {
         if (district is null) throw new ArgumentNullException(nameof(district));
@@ -22,10 +25,18 @@ internal static class DeepFractureEncounterSpawner
 
             for (var unitIndex = 0; unitIndex < encounter.SpawnCount; unitIndex++)
             {
-                var instance = UnityEngine.Object.Instantiate(source, district.transform, false);
+                var identity = $"{AnchorPrefix}{placement.ModuleInstanceId}.{encounter.Id}.{unitIndex + 1:00}";
+                if (district.GetComponentsInChildren<Transform>(true).Any(t => string.Equals(t.name, identity, StringComparison.Ordinal)))
+                    continue;
+
+                var anchor = new GameObject(identity);
+                anchor.transform.SetParent(district.transform, false);
+                anchor.transform.localPosition = SpawnOffset(groupIndex, unitIndex);
+                anchor.transform.localRotation = Quaternion.Euler(0f, FacingYaw(groupIndex, unitIndex), 0f);
+
+                var instance = UnityEngine.Object.Instantiate(source, anchor.transform.position, anchor.transform.rotation);
                 instance.name = $"{prefabName}_{encounter.Id}_{unitIndex + 1:00}";
-                instance.transform.localPosition = SpawnOffset(groupIndex, unitIndex);
-                instance.transform.localRotation = Quaternion.Euler(0f, FacingYaw(groupIndex, unitIndex), 0f);
+                instance.transform.SetParent(anchor.transform, true);
                 instance.SetActive(true);
             }
         }
@@ -35,7 +46,6 @@ internal static class DeepFractureEncounterSpawner
     {
         if (!alignment.HasValue)
             throw new InvalidOperationException($"Deep Fracture runtime creature '{chassis}' has no elemental alignment, but registered runtime families are alignment-specific.");
-
         var prefix = chassis switch
         {
             CreatureChassis.AnnoyanceWisp => DeepFractureCreatureRegistrar.AnnoyanceWispPrefix,
@@ -63,6 +73,5 @@ internal static class DeepFractureEncounterSpawner
         return new Vector3(Mathf.Cos(angle) * radius, 0.35f, Mathf.Sin(angle) * radius);
     }
 
-    private static float FacingYaw(int groupIndex, int unitIndex)
-        => (groupIndex * 73f + unitIndex * 47f) % 360f;
+    private static float FacingYaw(int groupIndex, int unitIndex) => (groupIndex * 73f + unitIndex * 47f) % 360f;
 }
