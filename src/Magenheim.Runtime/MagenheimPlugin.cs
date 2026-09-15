@@ -69,6 +69,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 socketIntegration.FailClosedOnInteropError);
             var nativeSocketRuntimeEnabled = socketProvider.Backend == EquipmentSocketBackend.Magenheim
                 && socketProvider.MayMutateEquipmentSockets;
+            var socketEffectsEnabled = socketProvider.MayMutateEquipmentSockets;
 
             Logger.LogInfo($"Equipment socket provider: {socketProvider.Backend}. {socketProvider.Diagnostic}");
 
@@ -86,17 +87,23 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             WorkshopOperationsRuntime.Configure(_services, _authoritySynchronizer, Logger);
             WorkshopOperationRpc.Register(_services, _authoritySynchronizer, Logger);
 
-            // Equipment socket runtime has exactly one owner. When Jewelcrafting is selected,
-            // Magenheim keeps crystal production/refinement and every non-equipment crystal
-            // consumer alive but does not register a competing socket RPC, UI or effect path.
+            // Equipment socket storage/UI has exactly one owner. Native mutation remains disabled
+            // under Jewelcrafting, while Magenheim's effect reader consumes Jewelcrafting state.
             if (nativeSocketRuntimeEnabled)
             {
                 SocketOperationRpc.Register(_services, _authoritySynchronizer, Logger);
-                SocketEffectsRuntime.Configure(effectiveDefinitions, Logger);
                 SocketTooltipRuntime.Configure(effectiveDefinitions);
-
                 _socketWorkstationOverlay = gameObject.AddComponent<SocketWorkstationOverlay>();
                 _socketWorkstationOverlay.Configure(_services, _authoritySynchronizer, Logger);
+            }
+
+            if (socketEffectsEnabled)
+            {
+                SocketEffectsRuntime.Configure(
+                    effectiveDefinitions,
+                    Logger,
+                    socketProvider.Backend,
+                    socketIntegration.MagenheimResonanceMultipliers);
             }
 
             _harmony = new Harmony(PluginGuid + ".gameplay");
@@ -104,24 +111,23 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _harmony.PatchAll(typeof(CrystalShapingSkillVisibility));
             _harmony.PatchAll(typeof(EarthAbilityHitPatch));
 
-            if (nativeSocketRuntimeEnabled)
+            if (socketEffectsEnabled)
             {
                 _harmony.PatchAll(typeof(SocketDamagePatch));
                 _harmony.PatchAll(typeof(SocketArmorPatch));
                 _harmony.PatchAll(typeof(SocketBlockPowerPatch));
                 _harmony.PatchAll(typeof(SocketCarryWeightPatch));
+            }
+
+            if (nativeSocketRuntimeEnabled)
+            {
                 _harmony.PatchAll(typeof(SocketTooltipPatch));
                 _harmony.PatchAll(typeof(CrystalEnchantingDaisSocketPatch));
             }
 
-            // Register the private Deep Fracture room/theme authority at Jotunn's supported
-            // OnVanillaRoomsAvailable boundary. Surface Deep Fracture worldgen remains gated until
-            // collision-safe physical passage routing is authoritative.
             _deepFractureRoomRegistrar = new DeepFractureRoomRegistrar(Logger);
             _deepFractureRoomRegistrar.Register();
 
-            // Magenheim remains the sole crystal item authority. Subscribe its crystal registrar
-            // first, then add the Jewelcrafting bridge so both consumers resolve the same prefabs.
             _earthContentRegistrar = new EarthContentRegistrar(Logger);
             _earthContentRegistrar.Register();
             if (socketProvider.Backend == EquipmentSocketBackend.Jewelcrafting)
@@ -153,8 +159,6 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _shardRecipeRegistrar = new ShardRecipeRegistrar(Logger);
             _shardRecipeRegistrar.Register();
 
-            // Dependency chain: crystal processing creates Crystal Dust; the Dais consumes it;
-            // Crystal Beds and the Ice Box then require the registered Dais as their Hammer focus.
             _crystalAlchemyRegistrar = new CrystalAlchemyRegistrar(Logger);
             _crystalAlchemyRegistrar.Register();
             _crystalEnchantingDaisRegistrar = new CrystalEnchantingDaisRegistrar(Logger);
