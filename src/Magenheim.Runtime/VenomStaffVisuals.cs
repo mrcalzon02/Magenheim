@@ -26,12 +26,12 @@ internal static class VenomStaffVisuals
         root.transform.localScale = Vector3.one;
 
         var wood = MakeMaterial(sourceMaterial, "wood", new Color(.25f,.17f,.10f,1f), 0f, .10f);
-        var elder = MakeMaterial(sourceMaterial, "elder", new Color(.20f,.14f,.11f,1f), 0f, .11f);
+        var elder = MakeMaterial(sourceMaterial, "elder-wood", new Color(.20f,.14f,.11f,1f), 0f, .11f);
         var iron = MakeMaterial(sourceMaterial, "iron", new Color(.29f,.34f,.30f,1f), .42f, .20f);
         var black = MakeMaterial(sourceMaterial, "blackmetal", new Color(.12f,.16f,.13f,1f), .72f, .30f);
-        var venom = MakeMaterial(sourceMaterial, "venom", new Color(.37f,.80f,.20f,1f), .04f, .55f, .20f);
-        var venomBright = MakeMaterial(sourceMaterial, "venom-bright", new Color(.63f,.94f,.35f,1f), .03f, .65f, .32f);
-        var venomDeep = MakeMaterial(sourceMaterial, "venom-deep", new Color(.16f,.43f,.13f,1f), .05f, .35f, .10f);
+        var venom = MakeMaterial(sourceMaterial, "venom-crystal", new Color(.37f,.80f,.20f,1f), .04f, .55f, .20f);
+        var venomBright = MakeMaterial(sourceMaterial, "venom-bright-crystal", new Color(.63f,.94f,.35f,1f), .03f, .65f, .32f);
+        var venomDeep = MakeMaterial(sourceMaterial, "venom-deep-crystal", new Color(.16f,.43f,.13f,1f), .05f, .35f, .10f);
 
         switch (assetName)
         {
@@ -125,9 +125,7 @@ internal static class VenomStaffVisuals
     private static Material MakeMaterial(Material source,string suffix,Color color,float metallic,float glossiness,float emission=0f)
     {
         var material=new Material(source){name="magenheim.venom-staff."+suffix};
-        material.mainTexture=Texture2D.whiteTexture;
-        material.mainTextureScale=Vector2.one;
-        material.mainTextureOffset=Vector2.zero;
+        GeneratedSurfaceTextures.Apply(material,suffix);
         if(material.HasProperty("_Color")) material.SetColor("_Color",color);
         if(material.HasProperty("_Metallic")) material.SetFloat("_Metallic",metallic);
         if(material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness",glossiness);
