@@ -94,6 +94,9 @@ internal static class StormSocketHitRuntime
 [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
 internal static class StormSocketHitPatch
 {
-    private static void Postfix(Character __instance, HitData hit) =>
+    private static void Postfix(Character __instance, HitData hit)
+    {
         StormSocketHitRuntime.ApplyOnHit(__instance, hit);
+        VenomSocketHitRuntime.ApplyOnHit(__instance, hit);
+    }
 }
