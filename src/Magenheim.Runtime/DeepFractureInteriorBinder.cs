@@ -1,0 +1,171 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Magenheim.Core.DeepFractures;
+using UnityEngine;
+
+namespace Magenheim.Runtime;
+
+/// <summary>
+/// Concrete interior binder for the Deep Fracture location. It attaches generation authority to
+/// the existing entrance anchor without registering the surface location itself. Surface worldgen
+/// remains gated until the entrance/exit persistence boundary is complete.
+/// </summary>
+internal sealed class DeepFractureInteriorBinder : IDeepFractureInteriorBinder
+{
+    internal const string InteriorRootName = "Magenheim_DeepFracture_InteriorRoot";
+    internal const string InteriorEnvironment = "Crypt";
+
+    public DeepFractureInteriorBinding AttachInterior(GameObject locationContainer)
+    {
+        if (locationContainer is null)
+            throw new ArgumentNullException(nameof(locationContainer));
+
+        var anchor = locationContainer.GetComponentsInChildren<Transform>(includeInactive: true)
+            .SingleOrDefault(transform => string.Equals(transform.name, DeepFractureEntranceVisuals.InteriorAnchorName, StringComparison.Ordinal))
+            ?? throw new InvalidOperationException(
+                $"Deep Fracture location '{locationContainer.name}' has no authoritative interior anchor '{DeepFractureEntranceVisuals.InteriorAnchorName}'.");
+
+        var existing = anchor.Cast<Transform>()
+            .SingleOrDefault(transform => string.Equals(transform.name, InteriorRootName, StringComparison.Ordinal));
+        if (existing is not null)
+            throw new InvalidOperationException("Deep Fracture interior authority is already attached to this entrance; duplicate binders are refused.");
+
+        var root = new GameObject(InteriorRootName);
+        root.transform.SetParent(anchor, worldPositionStays: false);
+        root.transform.localPosition = Vector3.zero;
+        root.transform.localRotation = Quaternion.identity;
+        root.AddComponent<DeepFractureInteriorRuntime>();
+
+        return new DeepFractureInteriorBinding(
+            hasInterior: true,
+            interiorRadius: checked((float)DeepFractureExpeditionPlanner.MaximumSupportedInteriorRadius()),
+            interiorEnvironment: InteriorEnvironment);
+    }
+}
+
+/// <summary>
+/// Realizes one deterministic expedition from a spawned location's stable world position. The
+/// generated layout contains district Rooms, collision-safe physical passage Rooms and paired
+/// traversal nodes. Encounter spawning and surface travel are deliberately separate gates.
+/// </summary>
+internal sealed class DeepFractureInteriorRuntime : MonoBehaviour
+{
+    private bool _built;
+
+    private void Start()
+    {
+        if (_built)
+            return;
+
+        var seed = StableLocationSeed(transform.position);
+        var expedition = DeepFractureExpeditionPlanner.Build(seed);
+        BuildDistricts(expedition.Interior);
+        DeepFracturePassageAssembler.Assemble(transform, expedition.Interior);
+        BuildTraversalLinks(expedition.Interior);
+        _built = true;
+    }
+
+    private void BuildDistricts(DeepFractureInteriorBlueprint blueprint)
+    {
+        foreach (var placement in blueprint.Modules.OrderBy(module => module.SequenceIndex))
+        {
+            var roomData = DeepFractureRoomRegistrar.ResolveDistrict(placement.PieceFamilyId);
+            var source = roomData.m_room
+                ?? throw new InvalidOperationException($"Registered Deep Fracture district '{placement.PieceFamilyId}' has no Room prefab.");
+
+            var instance = Instantiate(source.gameObject, transform, false);
+            instance.name = $"{DeepFractureRoomVisuals.RoomPrefabName(placement.PieceFamilyId)}_{placement.ModuleInstanceId}";
+            instance.transform.localPosition = ToVector3(placement.Center);
+            instance.transform.localRotation = Quaternion.Euler(0f, placement.YawDegrees, 0f);
+            instance.SetActive(true);
+
+            var room = instance.GetComponent<Room>()
+                ?? throw new InvalidOperationException($"Instantiated Deep Fracture district '{instance.name}' has no Room component.");
+            DeepFractureRoomVisuals.ApplyElementalState(room, placement.ElementalStates);
+        }
+    }
+
+    private void BuildTraversalLinks(DeepFractureInteriorBlueprint blueprint)
+    {
+        var modules = blueprint.Modules.ToDictionary(module => module.ModuleInstanceId, StringComparer.Ordinal);
+        var sourceData = DeepFractureRoomRegistrar.ResolveTraversalNode();
+        var source = sourceData.m_room
+            ?? throw new InvalidOperationException($"Registered Deep Fracture traversal node '{DeepFractureRoomVisuals.TraversalNodePrefabName}' has no Room prefab.");
+
+        foreach (var connection in blueprint.Connections.Where(connection => connection.RuntimeMode == DeepFractureRuntimeConnectionMode.TraversalLink))
+        {
+            if (!modules.TryGetValue(connection.FromModuleId, out var from)
+                || !modules.TryGetValue(connection.ToModuleId, out var to))
+                throw new InvalidOperationException($"Traversal link '{connection.Id}' references an unplaced Deep Fracture district.");
+
+            var fromPosition = PortalPosition(from.Center, to.Center);
+            var toPosition = PortalPosition(to.Center, from.Center);
+            var fromNode = CreateTraversalNode(source, connection.Id, "A", fromPosition);
+            var toNode = CreateTraversalNode(source, connection.Id, "B", toPosition);
+
+            var fromPortal = fromNode.GetComponent<DeepFractureTraversalPortal>()
+                ?? throw new InvalidOperationException($"Traversal node '{fromNode.name}' has no portal component.");
+            var toPortal = toNode.GetComponent<DeepFractureTraversalPortal>()
+                ?? throw new InvalidOperationException($"Traversal node '{toNode.name}' has no portal component.");
+
+            var fromFacing = Facing(fromPosition, toPosition);
+            var toFacing = Facing(toPosition, fromPosition);
+            fromPortal.Configure(toNode.transform.position + Vector3.up, toFacing, connection.Id);
+            toPortal.Configure(fromNode.transform.position + Vector3.up, fromFacing, connection.Id);
+            fromNode.transform.localRotation = fromFacing;
+            toNode.transform.localRotation = toFacing;
+            fromNode.SetActive(true);
+            toNode.SetActive(true);
+        }
+    }
+
+    private GameObject CreateTraversalNode(GameObject source, string connectionId, string side, DeepFractureInteriorPoint position)
+    {
+        var instance = Instantiate(source, transform, false);
+        instance.name = $"{DeepFractureRoomVisuals.TraversalNodePrefabName}_{connectionId}_{side}";
+        instance.transform.localPosition = ToVector3(position);
+        return instance;
+    }
+
+    private static DeepFractureInteriorPoint PortalPosition(DeepFractureInteriorPoint origin, DeepFractureInteriorPoint target)
+    {
+        var dx = target.X - origin.X;
+        var dz = target.Z - origin.Z;
+        var length = Math.Sqrt(dx * dx + dz * dz);
+        if (length < 0.001d)
+            return new DeepFractureInteriorPoint(origin.X, origin.Y + 1d, origin.Z);
+
+        const double edgeOffset = 38d;
+        return new DeepFractureInteriorPoint(
+            origin.X + dx / length * edgeOffset,
+            origin.Y + 1d,
+            origin.Z + dz / length * edgeOffset);
+    }
+
+    private static Quaternion Facing(DeepFractureInteriorPoint origin, DeepFractureInteriorPoint target)
+    {
+        var direction = new Vector3((float)(target.X - origin.X), 0f, (float)(target.Z - origin.Z));
+        return direction.sqrMagnitude < 0.0001f ? Quaternion.identity : Quaternion.LookRotation(direction.normalized, Vector3.up);
+    }
+
+    private static Vector3 ToVector3(DeepFractureInteriorPoint point)
+        => new((float)point.X, (float)point.Y, (float)point.Z);
+
+    internal static int StableLocationSeed(Vector3 worldPosition)
+    {
+        // Quantize to centimetres so every peer derives the same seed from the persisted location
+        // transform without relying on randomized string hashing or client-local RNG state.
+        var x = (int)Math.Round(worldPosition.x * 100f, MidpointRounding.AwayFromZero);
+        var y = (int)Math.Round(worldPosition.y * 100f, MidpointRounding.AwayFromZero);
+        var z = (int)Math.Round(worldPosition.z * 100f, MidpointRounding.AwayFromZero);
+        unchecked
+        {
+            uint hash = 2166136261u;
+            hash = (hash ^ (uint)x) * 16777619u;
+            hash = (hash ^ (uint)y) * 16777619u;
+            hash = (hash ^ (uint)z) * 16777619u;
+            return (int)hash;
+        }
+    }
+}
