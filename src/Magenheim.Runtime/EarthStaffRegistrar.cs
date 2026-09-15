@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using BepInEx.Logging;
-using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
@@ -11,12 +10,14 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Playable Earth staff family built on Valheim's radial sledge attacks. Earth remains short-ranged
-/// and positional, but the upper tiers now leave real seismic debuffs behind the impact instead of
-/// describing armor breaking and instability only through stagger numbers.
+/// Four-tier Earth staff family. Earth is implemented as a true Magenheim staff line rather than
+/// renamed Stagbreaker, Iron Sledge, or Demolisher items. Each cast launches a short-range seismic
+/// focus that ruptures into blunt force, stagger, armor break, and ground-control effects.
 /// </summary>
 internal sealed class EarthStaffRegistrar : IDisposable
 {
+    private const string BaseStaffPrefab = "StaffIceShards";
+
     private readonly ManualLogSource _log;
     private bool _subscribed;
     private bool _registered;
@@ -37,6 +38,8 @@ internal sealed class EarthStaffRegistrar : IDisposable
 
         try
         {
+            if (PrefabManager.Instance.GetPrefab(BaseStaffPrefab) is null)
+                throw new InvalidOperationException($"Required hidden staff carrier '{BaseStaffPrefab}' is unavailable.");
             if (PrefabManager.Instance.GetPrefab(WorkshopRegistrar.StationPrefab) is null)
                 throw new InvalidOperationException("Geologist's Workstation must exist before Magenheim Earth staff recipes are registered.");
 
@@ -44,39 +47,65 @@ internal sealed class EarthStaffRegistrar : IDisposable
                 "Magenheim_SE_FracturedArmor",
                 "Fractured Armor",
                 "Fault lines have opened through the target's defenses. Blunt, Slash, and Pierce damage now strike as Weak.",
-                ttl: 4f,
-                physicalModifier: HitData.DamageModifier.Weak,
-                speedModifier: 0f,
-                tint: new Color(.72f, .53f, .28f, 1f));
+                4f,
+                HitData.DamageModifier.Weak,
+                0f,
+                new Color(.72f, .53f, .28f, 1f));
             var tremor = RegisterEarthDebuff(
                 "Magenheim_SE_Tremor",
                 "Tremor",
                 "The ground is still moving under the target, reducing movement speed by fifteen percent.",
-                ttl: 2.5f,
-                physicalModifier: HitData.DamageModifier.Normal,
-                speedModifier: -.15f,
-                tint: new Color(.58f, .42f, .24f, 1f));
+                2.5f,
+                HitData.DamageModifier.Normal,
+                -.15f,
+                new Color(.58f, .42f, .24f, 1f));
             var shatteredArmor = RegisterEarthDebuff(
                 "Magenheim_SE_ShatteredArmor",
                 "Shattered Armor",
                 "Worldshaker has broken the target's footing and defenses. Physical damage strikes as VeryWeak while movement is reduced by twenty percent.",
-                ttl: 4.5f,
-                physicalModifier: HitData.DamageModifier.VeryWeak,
-                speedModifier: -.20f,
-                tint: new Color(.92f, .66f, .30f, 1f));
+                4.5f,
+                HitData.DamageModifier.VeryWeak,
+                -.20f,
+                new Color(.92f, .66f, .30f, 1f));
 
-            EarthAbilityEffects.Configure(fracturedArmor, tremor, shatteredArmor);
+            var stonePulse = StaffEffectPayloads.CreateField(
+                "Magenheim_Earth_StonePulse",
+                new HitData.DamageTypes { m_blunt = 12f },
+                2.2f, .16f, .16f, 34f,
+                new Color(.58f,.42f,.24f,1f), .75f);
+            var faultBreaker = StaffEffectPayloads.CreateField(
+                "Magenheim_Earth_FaultBreaker",
+                new HitData.DamageTypes { m_blunt = 18f },
+                2.6f, .18f, .18f, 32f,
+                new Color(.72f,.53f,.28f,1f), .90f,
+                fracturedArmor);
+            var seismicRing = StaffEffectPayloads.CreateField(
+                "Magenheim_Earth_SeismicRing",
+                new HitData.DamageTypes { m_blunt = 10f },
+                3.4f, .28f, .14f, 50f,
+                new Color(.68f,.50f,.27f,1f), 1.0f,
+                tremor);
+            var worldshaker = StaffEffectPayloads.CreateField(
+                "Magenheim_Earth_Worldshaker",
+                new HitData.DamageTypes { m_blunt = 20f },
+                4.1f, .34f, .17f, 60f,
+                new Color(.92f,.66f,.30f,1f), 1.2f,
+                shatteredArmor);
+
+            var payloads = new PayloadSet(
+                StaffEffectPayloads.CreateProjectile("Magenheim_Earth_StonePulseProjectile", new Color(.58f,.42f,.24f,1f), .90f, stonePulse, BaseStaffPrefab),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Earth_FaultBreakerProjectile", new Color(.72f,.53f,.28f,1f), 1.00f, faultBreaker, BaseStaffPrefab),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Earth_SeismicRingProjectile", new Color(.74f,.56f,.30f,1f), 1.10f, seismicRing, BaseStaffPrefab),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Earth_WorldshakerProjectile", new Color(.92f,.66f,.30f,1f), 1.30f, worldshaker, BaseStaffPrefab));
 
             foreach (var definition in Definitions())
             {
-                if (PrefabManager.Instance.GetPrefab(definition.BasePrefab) is null)
-                    throw new InvalidOperationException($"Required seismic carrier prefab '{definition.BasePrefab}' is unavailable.");
-                RegisterStaff(definition);
+                RegisterStaff(definition, payloads);
                 RegisterRecipe(definition);
             }
 
             _registered = true;
-            _log.LogInfo("Registered Earth abilities: Stone Pulse, Fault Breaker with Fractured Armor, Seismic Ring with Tremor, and Worldshaker with Shattered Armor.");
+            _log.LogInfo("Registered Earth staffs as owned Magenheim staff items: Stone Pulse, Fault Breaker, Seismic Ring, and Worldshaker.");
         }
         catch (Exception exception)
         {
@@ -117,9 +146,7 @@ internal sealed class EarthStaffRegistrar : IDisposable
 
         if (speedModifier != 0f)
         {
-            var speedField = typeof(SE_Stats).GetField(
-                "m_speedModifier",
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+            var speedField = typeof(SE_Stats).GetField("m_speedModifier", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 ?? throw new InvalidOperationException("Current Valheim SE_Stats no longer exposes m_speedModifier required by Earth Tremor effects.");
             if (speedField.FieldType != typeof(float))
                 throw new InvalidOperationException($"SE_Stats.m_speedModifier has unexpected type '{speedField.FieldType.FullName}'.");
@@ -132,12 +159,12 @@ internal sealed class EarthStaffRegistrar : IDisposable
         return custom.StatusEffect;
     }
 
-    private static void RegisterStaff(EarthStaffDefinition definition)
+    private static void RegisterStaff(EarthStaffDefinition definition, PayloadSet payloads)
     {
         if (PrefabManager.Instance.GetPrefab(definition.PrefabName) || CustomItem.IsCustomItem(definition.PrefabName))
             throw new InvalidOperationException($"Cannot replace occupied Earth staff identity '{definition.PrefabName}'.");
 
-        var item = new CustomItem(definition.PrefabName, definition.BasePrefab);
+        var item = new CustomItem(definition.PrefabName, BaseStaffPrefab);
         var shared = item.ItemDrop.m_itemData.m_shared;
         shared.m_name = definition.DisplayName;
         shared.m_description = definition.Description;
@@ -145,13 +172,27 @@ internal sealed class EarthStaffRegistrar : IDisposable
         shared.m_maxQuality = 1;
         shared.m_value = 0;
         shared.m_dlc = string.Empty;
+        shared.m_damages = new HitData.DamageTypes { m_blunt = definition.BluntDamage };
+        shared.m_damagesPerLevel = new HitData.DamageTypes();
+        shared.m_icons = new[] { EarthAssets.Icon(definition.AssetName) };
 
         var attack = shared.m_attack;
+        attack.m_attackProjectile = payloads.Resolve(definition.Payload);
         attack.m_attackStamina = definition.StaminaCost;
-        attack.m_attackEitr = definition.EitrCost;
+        attack.m_attackEitr = 0f;
         attack.m_damageMultiplier = definition.DamageMultiplier;
         attack.m_forceMultiplier = definition.ForceMultiplier;
         attack.m_staggerMultiplier = definition.StaggerMultiplier;
+        attack.m_projectileVel = definition.ProjectileVelocity;
+        attack.m_projectileVelMin = definition.ProjectileVelocity;
+        attack.m_projectileAccuracy = definition.ProjectileAccuracy;
+        attack.m_projectileAccuracyMin = definition.ProjectileAccuracy;
+        attack.m_projectiles = 1;
+        attack.m_projectileBursts = 1;
+        attack.m_burstInterval = 0f;
+        attack.m_perBurstResourceUsage = false;
+
+        EarthStaffVisuals.Apply(item.ItemPrefab, definition.PrefabName);
 
         if (!ItemManager.Instance.AddItem(item))
             throw new InvalidOperationException($"Jotunn refused Earth staff item '{definition.PrefabName}'.");
@@ -168,10 +209,8 @@ internal sealed class EarthStaffRegistrar : IDisposable
             MinStationLevel = definition.MinimumStationLevel,
             Enabled = true,
         };
-
         foreach (var requirement in definition.Requirements)
             config.AddRequirement(requirement.PrefabName, requirement.Amount);
-
         if (!ItemManager.Instance.AddRecipe(new CustomRecipe(config)))
             throw new InvalidOperationException($"Jotunn refused Earth staff recipe '{config.Name}'.");
     }
@@ -179,32 +218,25 @@ internal sealed class EarthStaffRegistrar : IDisposable
     private static IReadOnlyList<EarthStaffDefinition> Definitions() => new[]
     {
         new EarthStaffDefinition(
-            "Magenheim_Staff_Earth_Simple",
-            "Simple Staff of Earth",
-            "Stone Pulse: drives a compact impulse into the ground and releases a blunt radial shockwave. Damage is deliberately modest; the spell exists to interrupt and shove nearby enemies without Eitr.",
-            "SledgeStagbreaker", 1, 24f, 0f, .42f, 1.45f, 1.35f,
+            "Magenheim_Staff_Earth_Simple", "staff-earth-simple", "Simple Staff of Earth",
+            "Stone Pulse: casts a compact seismic focus that ruptures into a blunt radial shockwave. It is a close-range interruption and knockback tool, not a disguised hammer.",
+            1, 24f, 12f, .62f, 1.45f, 1.35f, 20f, 2f, PayloadKind.StonePulse,
             new StaffRequirement("CoreWood", 10), new StaffRequirement("Stone", 12), new StaffRequirement("Magenheim_Crystal_Earth_Simple", 1)),
-
         new EarthStaffDefinition(
-            "Magenheim_Staff_Earth_Crystal",
-            "Crystal Staff of Earth",
-            "Fault Breaker: focuses the rupture through the target's defenses. Enemies struck gain Fractured Armor for four seconds, making Blunt, Slash, and Pierce damage strike them as Weak during the follow-up window.",
-            "SledgeIron", 2, 34f, 0f, .72f, 1.35f, 2.35f,
+            "Magenheim_Staff_Earth_Crystal", "staff-earth-crystal", "Crystal Staff of Earth",
+            "Fault Breaker: bursts beneath the target and fractures physical defenses for four seconds while delivering a heavy stagger impulse.",
+            2, 34f, 18f, .76f, 1.35f, 2.35f, 22f, 1.5f, PayloadKind.FaultBreaker,
             new StaffRequirement("ElderBark", 10), new StaffRequirement("Iron", 4), new StaffRequirement("Magenheim_Crystal_Earth_Crystal", 1)),
-
         new EarthStaffDefinition(
-            "Magenheim_Staff_Earth_Advanced",
-            "Advanced Staff of Earth",
-            "Seismic Ring: sacrifices direct damage for violent radial displacement. Survivors remain caught in Tremor for two and a half seconds, losing fifteen percent movement while the ground settles.",
-            "SledgeDemolisher", 3, 14f, 18f, .38f, 2.80f, 2.10f,
+            "Magenheim_Staff_Earth_Advanced", "staff-earth-advanced", "Advanced Staff of Earth",
+            "Seismic Ring: creates a wider rupture with violent radial displacement. Survivors remain slowed by Tremor while the ground settles.",
+            3, 38f, 10f, .58f, 2.80f, 2.10f, 24f, 2.5f, PayloadKind.SeismicRing,
             new StaffRequirement("YggdrasilWood", 10), new StaffRequirement("BlackMarble", 8), new StaffRequirement("Iron", 4), new StaffRequirement("Magenheim_Crystal_Earth_Advanced", 1)),
-
         new EarthStaffDefinition(
-            "Magenheim_Staff_Earth_Master",
-            "Master Staff of Earth",
-            "Worldshaker: turns the caster's immediate ground into a crushing seismic weapon. Enemies struck suffer Shattered Armor for four and a half seconds: physical damage treats them as VeryWeak and their movement is reduced by twenty percent.",
-            "SledgeDemolisher", 4, 0f, 48f, .92f, 3.40f, 2.85f,
-            new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("BlackMarble", 12), new StaffRequirement("BlackMetal", 5), new StaffRequirement("Eitr", 10), new StaffRequirement("Magenheim_Crystal_Earth_Master", 1)),
+            "Magenheim_Staff_Earth_Master", "staff-earth-master", "Master Staff of Earth",
+            "Worldshaker: detonates a broad seismic rupture that crushes footing, hurls enemies outward, and leaves their armor shattered for the follow-up.",
+            4, 52f, 20f, .92f, 3.40f, 2.85f, 26f, 3f, PayloadKind.Worldshaker,
+            new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("BlackMarble", 12), new StaffRequirement("BlackMetal", 5), new StaffRequirement("Magenheim_Crystal_Earth_Master", 1)),
     };
 
     public void Dispose()
@@ -212,6 +244,33 @@ internal sealed class EarthStaffRegistrar : IDisposable
         if (!_subscribed) return;
         PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent;
         _subscribed = false;
+    }
+
+    private enum PayloadKind { StonePulse, FaultBreaker, SeismicRing, Worldshaker }
+
+    private sealed class PayloadSet
+    {
+        private readonly GameObject _stonePulse;
+        private readonly GameObject _faultBreaker;
+        private readonly GameObject _seismicRing;
+        private readonly GameObject _worldshaker;
+
+        internal PayloadSet(GameObject stonePulse, GameObject faultBreaker, GameObject seismicRing, GameObject worldshaker)
+        {
+            _stonePulse = stonePulse;
+            _faultBreaker = faultBreaker;
+            _seismicRing = seismicRing;
+            _worldshaker = worldshaker;
+        }
+
+        internal GameObject Resolve(PayloadKind payload) => payload switch
+        {
+            PayloadKind.StonePulse => _stonePulse,
+            PayloadKind.FaultBreaker => _faultBreaker,
+            PayloadKind.SeismicRing => _seismicRing,
+            PayloadKind.Worldshaker => _worldshaker,
+            _ => throw new ArgumentOutOfRangeException(nameof(payload), payload, null),
+        };
     }
 
     private readonly struct StaffRequirement
@@ -224,69 +283,41 @@ internal sealed class EarthStaffRegistrar : IDisposable
     private sealed class EarthStaffDefinition
     {
         internal EarthStaffDefinition(
-            string prefabName, string displayName, string description, string basePrefab,
-            int minimumStationLevel, float staminaCost, float eitrCost, float damageMultiplier,
-            float forceMultiplier, float staggerMultiplier, params StaffRequirement[] requirements)
+            string prefabName, string assetName, string displayName, string description,
+            int minimumStationLevel, float staminaCost, float bluntDamage,
+            float damageMultiplier, float forceMultiplier, float staggerMultiplier,
+            float projectileVelocity, float projectileAccuracy, PayloadKind payload,
+            params StaffRequirement[] requirements)
         {
-            PrefabName = prefabName; DisplayName = displayName; Description = description; BasePrefab = basePrefab;
-            MinimumStationLevel = minimumStationLevel; StaminaCost = staminaCost; EitrCost = eitrCost;
-            DamageMultiplier = damageMultiplier; ForceMultiplier = forceMultiplier; StaggerMultiplier = staggerMultiplier;
+            PrefabName = prefabName;
+            AssetName = assetName;
+            DisplayName = displayName;
+            Description = description;
+            MinimumStationLevel = minimumStationLevel;
+            StaminaCost = staminaCost;
+            BluntDamage = bluntDamage;
+            DamageMultiplier = damageMultiplier;
+            ForceMultiplier = forceMultiplier;
+            StaggerMultiplier = staggerMultiplier;
+            ProjectileVelocity = projectileVelocity;
+            ProjectileAccuracy = projectileAccuracy;
+            Payload = payload;
             Requirements = requirements;
         }
 
         internal string PrefabName { get; }
+        internal string AssetName { get; }
         internal string DisplayName { get; }
         internal string Description { get; }
-        internal string BasePrefab { get; }
         internal int MinimumStationLevel { get; }
         internal float StaminaCost { get; }
-        internal float EitrCost { get; }
+        internal float BluntDamage { get; }
         internal float DamageMultiplier { get; }
         internal float ForceMultiplier { get; }
         internal float StaggerMultiplier { get; }
+        internal float ProjectileVelocity { get; }
+        internal float ProjectileAccuracy { get; }
+        internal PayloadKind Payload { get; }
         internal IReadOnlyList<StaffRequirement> Requirements { get; }
     }
-}
-
-internal static class EarthAbilityEffects
-{
-    private static StatusEffect? _fracturedArmor;
-    private static StatusEffect? _tremor;
-    private static StatusEffect? _shatteredArmor;
-
-    internal static void Configure(StatusEffect fracturedArmor, StatusEffect tremor, StatusEffect shatteredArmor)
-    {
-        _fracturedArmor = fracturedArmor ?? throw new ArgumentNullException(nameof(fracturedArmor));
-        _tremor = tremor ?? throw new ArgumentNullException(nameof(tremor));
-        _shatteredArmor = shatteredArmor ?? throw new ArgumentNullException(nameof(shatteredArmor));
-    }
-
-    internal static void ApplyOnHit(Character target, HitData hit)
-    {
-        if (target is null || hit is null || target.IsDead() || !hit.HaveAttacker()) return;
-
-        var attacker = hit.GetAttacker() as Humanoid;
-        if (attacker is null || ReferenceEquals(attacker, target)) return;
-
-        var weapon = attacker.GetCurrentWeapon();
-        if (weapon?.m_dropPrefab is null) return;
-
-        var effect = weapon.m_dropPrefab.name switch
-        {
-            "Magenheim_Staff_Earth_Crystal" => _fracturedArmor,
-            "Magenheim_Staff_Earth_Advanced" => _tremor,
-            "Magenheim_Staff_Earth_Master" => _shatteredArmor,
-            _ => null,
-        };
-
-        if (effect is not null)
-            target.GetSEMan().AddStatusEffect(effect, true);
-    }
-}
-
-[HarmonyPatch(typeof(Character), nameof(Character.Damage))]
-internal static class EarthAbilityHitPatch
-{
-    private static void Postfix(Character __instance, HitData hit) =>
-        EarthAbilityEffects.ApplyOnHit(__instance, hit);
 }
