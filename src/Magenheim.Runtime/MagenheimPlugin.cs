@@ -15,7 +15,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.43";
+    internal const string PluginVersion = "0.0.44";
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authoritySynchronizer;
@@ -43,6 +43,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private RadianceStaffRegistrar? _radianceStaffRegistrar;
     private SeidrStaffRegistrar? _seidrStaffRegistrar;
     private SpiritStaffRegistrar? _spiritStaffRegistrar;
+    private DeepFractureRoomRegistrar? _deepFractureRoomRegistrar;
     private SocketWorkstationOverlay? _socketWorkstationOverlay;
     private Harmony? _harmony;
 
@@ -88,6 +89,12 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _harmony.PatchAll(typeof(SocketTooltipPatch));
             _harmony.PatchAll(typeof(EarthAbilityHitPatch));
             _harmony.PatchAll(typeof(CrystalEnchantingDaisSocketPatch));
+
+            // Register the private Deep Fracture room/theme authority at Jotunn's supported
+            // OnVanillaRoomsAvailable boundary. Surface Deep Fracture worldgen remains gated until
+            // collision-safe physical passage routing is authoritative.
+            _deepFractureRoomRegistrar = new DeepFractureRoomRegistrar(Logger);
+            _deepFractureRoomRegistrar.Register();
 
             _earthContentRegistrar = new EarthContentRegistrar(Logger);
             _earthContentRegistrar.Register();
@@ -154,6 +161,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 "a configurable persistent Crystalline Ice Box, a dedicated Crystal Enchanting Dais that gates Crystal Bed and Ice Box construction, " +
                 "a 10-piece high-durability physical crystal weapon set, deliberate Rough-crystal/shard grinding, Crystal Dust, Prismatic Eitrwine fermentation, " +
                 "resolved socket bonuses with server-authoritative remote socket/install/extraction requests, and eight four-tier staff families with distinct runtime effects. " +
+                "Deep Fracture runtime room authority now includes twenty canonical district families plus passage/traversal templates; surface Deep Fracture worldgen remains gated behind collision-safe physical route projection. " +
                 "Fire owns fireburst/scorch/meteor burn terrain; Frost owns Brittle and Rime fields; Storm owns secondary discharges; " +
                 "Earth owns Fractured/Shattered Armor and Tremor; Venom owns corrosion; Radiance owns hard-light/flash/sanctuary payloads; " +
                 "Seidr owns binding hexes; and Spirit owns Haunted, Dissonance, and Soul Suppression attack-damage suppression through spectral echo fields.");
@@ -191,6 +199,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
         _furnitureRegistrar?.Dispose();
         _earthContentRegistrar?.Dispose();
         _workshopRegistrar?.Dispose();
+        _deepFractureRoomRegistrar?.Dispose();
         if (_socketWorkstationOverlay is not null)
             Destroy(_socketWorkstationOverlay);
         _harmony?.UnpatchSelf();
