@@ -34,6 +34,8 @@ internal static class FurnitureVisuals
 
         var root = new GameObject("magenheim." + modelId + ".visual") { layer = prefab.layer };
         root.transform.SetParent(prefab.transform, false);
+        if (modelId == GeodeChair || modelId == CrystalThrone)
+            root.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
 
         var wood = Material(source, modelId + ".wood", new Color(.24f, .15f, .085f, 1f), 0f, .10f);
         var darkWood = Material(source, modelId + ".darkwood", new Color(.13f, .075f, .045f, 1f), 0f, .08f);
@@ -259,6 +261,8 @@ internal static class FurnitureVisuals
     private static Material Material(Material source, string suffix, Color color, float metallic, float glossiness, float emission = 0f)
     {
         var material = new Material(source) { name = "magenheim.furniture." + suffix, mainTexture = Texture2D.whiteTexture };
+        material.mainTextureScale = Vector2.one;
+        material.mainTextureOffset = Vector2.zero;
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", glossiness);
@@ -308,7 +312,13 @@ internal static class FurnitureVisuals
         for (var i = 0; i < sides; i++)
         {
             var next = (i + 1) % sides;
-            triangles.AddRange(new[] { i,next,sides+i, next,sides+next,sides+i, bottom,next,i, top,sides+i,sides+next });
+            triangles.AddRange(new[]
+            {
+                i, sides + i, next,
+                next, sides + i, sides + next,
+                bottom, i, next,
+                top, sides + next, sides + i
+            });
         }
         var mesh = new Mesh { name = "magenheim.furniture.cylinder." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
         mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
@@ -333,7 +343,13 @@ internal static class FurnitureVisuals
         for (var i = 0; i < sides; i++)
         {
             var next = (i + 1) % sides;
-            triangles.AddRange(new[] { bottom,next,i, i,next,sides+i, next,sides+next,sides+i, sides+i,sides+next,top });
+            triangles.AddRange(new[]
+            {
+                bottom, i, next,
+                i, sides + i, next,
+                next, sides + i, sides + next,
+                top, sides + next, sides + i
+            });
         }
         var mesh = new Mesh { name = "magenheim.furniture.prism." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
         mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
