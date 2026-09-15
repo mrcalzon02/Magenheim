@@ -33,6 +33,24 @@ Suggested implementation authorities:
 
 The Dark Throne consumes the reusable `Magenheim_CrystalSpawner_DarkThrone` profile from `MISTLANDS_CRYSTAL_FOES_PLAN.md`. Crystal creatures populate the approaches/perimeter before engagement. Once the King encounter activates, throne-area creature spawners suspend so the boss remains the focus. The King does not continuously summon ordinary crystal adds.
 
+## World safeguards, encounter persistence, and dais leash
+
+The Nowhere King is a unique persistent world encounter and must never depend on ordinary creature despawn rules. Once the Dark Throne location has generated, its durable encounter record becomes the authority for whether the King must exist. The King may be unloaded with the surrounding zone when no players are nearby, but **unloading is not defeat and must never become permanent despawning**. When the Dark Throne zone loads again, the encounter authority reconstructs or resolves the same living King from durable state unless the encounter is explicitly `Defeated`.
+
+The durable Dark Throne record stores at minimum the encounter schema/version, unique encounter/location identity, generated throne anchor, `NeverEncountered`/`Engaged`/`Disengaged`/`Defeated` state, boss health required for the selected reset policy, reward-completion guard, and any other persistent facts required to reconstruct the fight safely. Ordinary AI despawn flags, distance cleanup, day/night cleanup, biome spawn cleanup, or temporary absence of players must never mark the King defeated or permanently remove him.
+
+**Running away counts as disengaging from the encounter, not defeating or deleting it.** When no valid player remains inside the encounter participation boundary for a configurable grace period, the server transitions the encounter to `Disengaged`. The King stops pursuing, cancels transient attacks, clears temporary spatial hazards and target state, and returns to his throne-side home position. The intended default is a full encounter reset after successful disengagement: restore boss health, phase, Null Mantle rolling resistance, Royal Stagger, attack cooldown state, candles, and arena presentation to the pre-engagement baseline. This prevents ranged attrition by repeatedly entering and fleeing. If later design testing prefers health persistence, that becomes an explicit configuration/policy change rather than an accidental consequence of unload behavior.
+
+The King is **hard-leashed to the Dark Throne dais/arena**. `DarkThroneArenaRuntime` owns an authoritative arena boundary derived from the generated location anchor rather than from the current player position. The AI never selects navigation destinations outside that boundary. Royal Advance, Step Between, King's Grasp positioning, lunges, knockback recovery, and every other movement-producing ability must clamp/validate destinations against the same arena authority.
+
+If physics, knockback, navigation failure, ownership transfer, or another mod nevertheless places the King outside the legal dais boundary, the server does not allow him to wander into the Mistlands. It cancels the current attack, clears invalid velocity/path state, and performs a safe authoritative return to the nearest legal recovery point or throne-side home anchor. This correction is an invariant recovery path, not a normal combat teleport and cannot be used by the King to attack players outside the arena.
+
+Players may leave the dais. The King may target players near its edge while they remain valid encounter participants, but he cannot cross the arena boundary to chase them. Once all valid participants have remained outside the disengagement boundary/grace period, the encounter resets as described above. Anti-kiting mechanics therefore operate **inside** the designed arena; they do not justify breaking the leash.
+
+Multiplayer uses the union of valid living encounter participants. One player leaving does not reset the encounter while another valid participant remains inside. Reset/disengagement decisions, boss reconstruction, health restoration, leash corrections, and defeat/reward transitions are server-authoritative. Clients must never independently respawn, reset, or reposition the King.
+
+Suggested condensed authority: `DarkThroneEncounterState.cs` owns durable lifecycle state; `DarkThroneArenaRuntime.cs` owns arena geometry, participant tests, legal-position validation, and recovery anchors; `NowhereKingPersistence.cs` serializes/reconstructs the unique boss. Do not implement separate per-attack leash logic or per-client despawn prevention.
+
 ## Boss implementation architecture
 
 Avoid a monolithic AI switch tree and avoid one Harmony patch per attack. Condense decision-making behind a single attack director and shared spatial/physics authorities.
@@ -58,7 +76,9 @@ The attack director owns phase eligibility, tactical intent, cooldowns, target w
 
 Durable state machine:
 
-`Dormant -> Engaged -> PhaseOne -> TransitionOne -> PhaseTwo -> TransitionTwo -> PhaseThree -> FinalState -> Defeated`
+`Dormant -> Engaged -> PhaseOne -> TransitionOne -> PhaseTwo -> TransitionTwo -> PhaseThree -> FinalState -> Disengaged -> Defeated`
+
+`Disengaged` returns to the pre-engagement baseline and can re-enter `Engaged` when a player validly enters/activates the arena. `Defeated` is terminal for boss reconstruction and enables the unique reward-completion state.
 
 Health boundaries are 70%, 35%, and 10%.
 
@@ -72,7 +92,7 @@ Phase One establishes the melee language.
 
 **King's Reach:** approximately 220-degree enormous horizontal swing after a visible blade drag. Unexpected reach, but a relatively safe rear-quarter repositioning route rewards reading the attack rather than simply retreating.
 
-**Royal Advance:** anti-kiting authority. If the selected player remains beyond melee distance too long, the King walks toward them and gradually accelerates. Continued retreat eventually causes a powerful lunge. Do not replace this with projectile spam or arbitrary teleportation.
+**Royal Advance:** anti-kiting authority. If the selected player remains beyond melee distance too long, the King walks toward them and gradually accelerates. Continued retreat eventually causes a powerful lunge. Do not replace this with projectile spam or arbitrary teleportation. Royal Advance remains clamped to the Dark Throne arena and terminates rather than carrying the King beyond the dais.
 
 At 70%, the King plants The Last Argument, three candles extinguish, lighting dims, a spatial distortion crosses the arena, and he demonstrates displacement for the first time.
 
@@ -80,13 +100,13 @@ At 70%, the King plants The Last Argument, three candles extinguish, lighting di
 
 The melee kit remains intact. Spatial actions are inserted between it.
 
-**Step Between:** 8–12 meter short spatial displacement. A thin destination distortion telegraphs arrival roughly half a second before relocation. Avoid routine untelegraphed behind-player teleports.
+**Step Between:** 8–12 meter short spatial displacement. A thin destination distortion telegraphs arrival roughly half a second before relocation. Avoid routine untelegraphed behind-player teleports. Every destination must validate inside the Dark Throne arena.
 
 **Sever the World:** narrow, extremely dangerous spatial rupture extending across much of the arena. A projected line appears roughly one second before the cut. Correct response is lateral movement.
 
 **Empty Throne:** brief circular spatial collapses around player positions. These disrupt comfortable ground but do not become permanent arena-filling hazards.
 
-**King's Grasp:** telegraphed distant pull that does little direct damage but drags the target toward the King, commonly setting up Crown Breaker or a melee chain. It is the principal response to stationary ranged play.
+**King's Grasp:** telegraphed distant pull that does little direct damage but drags the target toward the King, commonly setting up Crown Breaker or a melee chain. It is the principal response to stationary ranged play. It does not allow the King to leave the dais.
 
 `NowhereKingSpatialRuntime` owns transient spatial markers/tears and their cleanup so individual attacks do not leak independent GameObject trees.
 
@@ -132,17 +152,17 @@ Server owns the stagger meter and resistance window.
 
 Scale primarily through behavior, not absurd health/damage multiplication. With more players the King changes targets more often; Empty Throne may create additional marks; Sever the World may add a delayed secondary rupture; King's Grasp increasingly favors players who remain outside melee range; Gravity Inversion naturally disrupts clustered formations. Damage scaling remains modest and health scaling conservative.
 
-The server/authoritative owner controls boss AI, attack selection, phase transitions, Null Mantle calculations, Royal Stagger, spawner suspension, Gravity Inversion hit determination, persistent encounter state, death, and rewards. Clients own presentation such as particles, audio suppression, distortion, candle visuals, floating debris, and crown presentation.
+The server/authoritative owner controls boss AI, attack selection, phase transitions, Null Mantle calculations, Royal Stagger, spawner suspension, Gravity Inversion hit determination, persistent encounter state, disengagement/reset, dais-leash correction, death, and rewards. Clients own presentation such as particles, audio suppression, distortion, candle visuals, floating debris, and crown presentation.
 
 ## Persistence and serialization
 
 Persistence is part of the initial implementation rather than a late retrofit. Use normal Valheim ZDO/network authority where possible.
 
-Durable encounter data includes a schema/version, location/encounter identity, engaged/defeated state, phase-relevant recovery state where required, candle progression, reward-completion guard, and only those Null Mantle/cooldown facts necessary to prevent save/reload exploits or broken recovery.
+Durable encounter data includes a schema/version, location/encounter identity, generated throne/home anchor, `NeverEncountered`/`Engaged`/`Disengaged`/`Defeated` state, phase-relevant recovery state where required, candle progression, reward-completion guard, and only those Null Mantle/cooldown facts necessary to prevent save/reload exploits or broken recovery.
 
-Do not serialize transient tears, hitboxes, debris objects, individual animation frames, or attack GameObjects. On load, reconstruct presentation and transient state from durable encounter state.
+Do not serialize transient tears, hitboxes, debris objects, individual animation frames, attack GameObjects, current navigation path, or temporary leash correction. On load, reconstruct presentation and transient state from durable encounter state. If the encounter is not `Defeated`, the Dark Throne authority must be capable of reconstructing the King when the location becomes active even if the creature object itself was previously unloaded or lost.
 
-Death/reward state must be transactional enough that server restart, reconnect, ownership transfer, or duplicate death callbacks cannot create repeated unique rewards.
+Death/reward state must be transactional enough that server restart, reconnect, ownership transfer, duplicate death callbacks, or reconstruction cannot create repeated unique rewards.
 
 ## Audio and presentation
 
@@ -209,26 +229,29 @@ Do not copy the boss implementation into a second player implementation. The sha
 
 1. Reconcile current Mistlands location registration, creature registry, combat hooks, elemental authority, ZDO patterns, and existing model/prefab factories.
 2. Implement Dark Throne definition, additive placement, arena prefab, basalt architecture, throne, candles, and consumption of the shared Dark Throne crystal-spawner profile.
-3. Implement Nowhere King model/prefab, Last Argument, networking components, animation controller, and durable encounter identity.
-4. Implement encounter persistence and server-authoritative state machine before complex combat.
-5. Implement Phase One and validate readable melee/anti-kite behavior.
-6. Implement shared spatial runtime and Phase Two.
-7. Implement `AdaptiveResistanceRuntime` and boss Null Mantle behavior using existing Magenheim elemental identities.
-8. Implement Royal Stagger.
-9. Implement Phase Three, shared Gravity Inversion runtime/profiles, and No Kingdom Remains.
-10. Implement final-state behavior and multiplayer behavioral scaling.
-11. Implement death transaction and unique reward guard.
-12. Implement `Magenheim_NullMantle` using the shared adaptive-resistance authority plus reversible `NullMantlePresentationRuntime` for Nowhere black fog, dark player rendering, glowing red eyes, and crown-driven succession appearance.
-13. Implement `Magenheim_TrophyNowhereKing`, trophy knowledge unlock, and cosmetic placed behavior.
-14. Implement `Magenheim_ScepterOfInversion` using the shared Gravity Inversion authority.
-15. Complete audio/VFX/crown/mantle polish only after mechanics are authoritative and multiplayer-safe.
+3. Implement **Dark Throne durable lifecycle authority, non-despawn/reconstruction safeguards, encounter participation/disengagement reset, and the shared dais boundary/leash** before registering the combat-ready King.
+4. Implement Nowhere King model/prefab, Last Argument, networking components, animation controller, and durable encounter identity against that lifecycle authority.
+5. Implement encounter persistence and server-authoritative state machine before complex combat.
+6. Implement Phase One and validate readable melee/anti-kite behavior plus leash compliance for Royal Advance/lunges.
+7. Implement shared spatial runtime and Phase Two, with every displacement destination validated against the arena boundary.
+8. Implement `AdaptiveResistanceRuntime` and boss Null Mantle behavior using existing Magenheim elemental identities.
+9. Implement Royal Stagger.
+10. Implement Phase Three, shared Gravity Inversion runtime/profiles, and No Kingdom Remains.
+11. Implement final-state behavior and multiplayer behavioral scaling.
+12. Implement death transaction and unique reward guard.
+13. Implement `Magenheim_NullMantle` using the shared adaptive-resistance authority plus reversible `NullMantlePresentationRuntime` for Nowhere black fog, dark player rendering, glowing red eyes, and crown-driven succession appearance.
+14. Implement `Magenheim_TrophyNowhereKing`, trophy knowledge unlock, and cosmetic placed behavior.
+15. Implement `Magenheim_ScepterOfInversion` using the shared Gravity Inversion authority.
+16. Complete audio/VFX/crown/mantle polish only after mechanics are authoritative and multiplayer-safe.
 
 ## Acceptance criteria
 
 A fresh eligible world can generate the rare Dark Throne without replacing vanilla Mistlands content. The location persists and does not duplicate on reload. Crystal defenders use the shared Mistlands crystal-spawner authority and suspend during the boss encounter.
 
+The Nowhere King **cannot permanently despawn while undefeated**. Leaving the area, unloading the zone, restarting the server, reconnecting, or ordinary creature cleanup cannot convert an undefeated encounter into an absent boss. Reloading the Dark Throne reconstructs/resolves the unique King from durable encounter state. Running away transitions the encounter to `Disengaged` after the grace period and returns/resets the King rather than killing or despawning him. In multiplayer, the fight remains active while any valid participant remains. The King cannot leave the dais through pathfinding, Royal Advance, Step Between, lunges, knockback, physics, ownership transfer, or foreign-mod interference; invalid positions recover server-authoritatively to a legal arena point without becoming an offensive teleport.
+
 The Nowhere King persists correctly, transitions at the intended health boundaries, retains one authoritative AI/attack director, and cannot duplicate rewards through reconnect/reload/death callback races. All core attacks remain readable and preserve player agency. Null Mantle resistance is adaptive resistance, not immunity. Royal Stagger cannot become a permanent stun-lock. Gravity Inversion uses physical launch behavior where practical and is server-authoritative in multiplayer.
 
 Defeating the King produces the wearable `Magenheim_NullMantle` black crown and `Magenheim_TrophyNowhereKing` blackened head/crown trophy exactly once under the intended reward policy. Trophy acquisition unlocks the Scepter of Inversion recipe. Wearing the Null Mantle grants the player-scale adaptive resistance **and visibly transforms the wearer into the successor Nowhere King through localized black fog, darkened/void-like player materials, glowing red eyes, and the black crown silhouette**. Unequipping it completely and safely restores normal presentation, including after death/respawn and equipment renderer refresh. Other multiplayer clients see the transformation without the wearer suffering an obstructive first-person/local fog treatment. The Scepter produces the player-scale Gravity Inversion behavior through the shared runtime rather than copied boss code.
 
-Final acceptance requires compile/runtime registration verification plus disposable-world generation, boss fight, death/reward, Null Mantle equip/unequip/respawn/multiplayer visual tests, save/reload, reconnect, and dedicated-server multiplayer testing when the environment permits.
+Final acceptance requires compile/runtime registration verification plus disposable-world generation, boss fight, deliberate flee/disengage/reset, zone unload/reload, boss reconstruction, attempted leash escapes, death/reward, Null Mantle equip/unequip/respawn/multiplayer visual tests, save/reload, reconnect, and dedicated-server multiplayer testing when the environment permits.
