@@ -10,6 +10,8 @@ internal sealed class NowhereKingEncounterLink : MonoBehaviour
     private ZNetView _view = null!;
     private bool _reported;
 
+    internal bool IsEncounterEngaged => _encounter != null && _encounter.IsEngaged;
+
     internal void Bind(DarkThroneEncounterRuntime encounter)
     {
         _encounter = encounter;
