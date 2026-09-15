@@ -35,7 +35,11 @@ internal static class GeneratedSurfaceTextures
     private static SurfaceKind Classify(string semantic)
     {
         var key = (semantic ?? string.Empty).ToLowerInvariant();
-        if (ContainsAny(key, "crystal", "frost", "rime", "spirit", "radiance", "venom", "seidr", "fate", "eitr", "gem", "shard", "growth", "focus", "core", "light"))
+        if (ContainsAny(key, "water", "liquid", "solution"))
+            return SurfaceKind.Liquid;
+        if (ContainsAny(key, "hide", "leather", "pelt"))
+            return SurfaceKind.Leather;
+        if (ContainsAny(key, "crystal", "frost", "rime", "ice", "spirit", "radiance", "venom", "seidr", "fate", "eitr", "gem", "shard", "growth", "focus", "core", "light"))
             return SurfaceKind.Crystal;
         if (ContainsAny(key, "stone", "marble", "rock", "earth", "strata", "slate", "basalt"))
             return SurfaceKind.Stone;
@@ -81,6 +85,8 @@ internal static class GeneratedSurfaceTextures
                 SurfaceKind.Metal => Metal(x, y),
                 SurfaceKind.Cloth => Cloth(x, y),
                 SurfaceKind.Bone => Bone(x, y),
+                SurfaceKind.Liquid => Liquid(x, y),
+                SurfaceKind.Leather => Leather(x, y),
                 _ => Generic(x, y),
             };
             pixels[y * TextureSize + x] = new Color(value, value, value, 1f);
@@ -150,6 +156,22 @@ internal static class GeneratedSurfaceTextures
         return Mathf.Clamp01(.76f + striation + pores);
     }
 
+    private static float Liquid(int x, int y)
+    {
+        var waveA = .07f * Mathf.Sin(x * .31f + y * .08f);
+        var waveB = .05f * Mathf.Sin(x * .12f - y * .42f);
+        var ripple = .035f * Mathf.Sin(Mathf.Sqrt((x - 31f) * (x - 31f) + (y - 29f) * (y - 29f)) * .58f);
+        return Mathf.Clamp01(.72f + waveA + waveB + ripple);
+    }
+
+    private static float Leather(int x, int y)
+    {
+        var grain = Hash(x / 2, y / 2, 107) * .13f;
+        var wrinkle = .055f * Mathf.Sin(y * .27f + Mathf.Sin(x * .11f) * 2.4f);
+        var pore = Hash(x, y, 109) > .955f ? -.10f : 0f;
+        return Mathf.Clamp01(.62f + grain + wrinkle + pore);
+    }
+
     private static float Generic(int x, int y) =>
         Mathf.Clamp01(.70f + Hash(x / 2, y / 2, 113) * .18f + .03f * Mathf.Sin((x + y) * .43f));
 
@@ -172,6 +194,8 @@ internal static class GeneratedSurfaceTextures
         Metal,
         Cloth,
         Bone,
+        Liquid,
+        Leather,
         Generic,
     }
 }
