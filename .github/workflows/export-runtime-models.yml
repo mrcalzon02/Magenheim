@@ -42,7 +42,30 @@ jobs:
           set -euo pipefail
           SERVER="$RUNNER_TEMP/valheim-server"
           mkdir -p "$SERVER"
-          /usr/games/steamcmd +force_install_dir "$SERVER" +login anonymous +app_update 896660 validate +quit
+
+          # Steam's anonymous content service intermittently returns "Missing configuration"
+          # for app 896660. Retry with a fresh SteamCMD process before treating provisioning
+          # as a real validation failure; never advance to build with a partial server install.
+          installed=0
+          for attempt in 1 2 3 4; do
+            echo "Valheim dedicated-server install attempt $attempt/4"
+            if /usr/games/steamcmd +@ShutdownOnFailedCommand 1 +@NoPromptForPassword 1 \
+              +force_install_dir "$SERVER" +login anonymous +app_update 896660 validate +quit; then
+              if find "$SERVER" -name assembly_valheim.dll -print -quit | grep -q .; then
+                installed=1
+                break
+              fi
+              echo "SteamCMD exited successfully but assembly_valheim.dll is absent; retrying."
+            else
+              echo "SteamCMD provisioning attempt $attempt failed; retrying after backoff."
+            fi
+            sleep $((attempt * 10))
+          done
+
+          if [[ "$installed" -ne 1 ]]; then
+            echo "Valheim dedicated server could not be provisioned after four attempts." >&2
+            exit 1
+          fi
           echo "VALHEIM_SERVER=$SERVER" >> "$GITHUB_ENV"
 
       - name: Install BepInEx and Jotunn
