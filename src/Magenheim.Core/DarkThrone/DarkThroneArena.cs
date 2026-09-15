@@ -1,5 +1,5 @@
 using System;
-using System.Numerics;
+
 
 namespace Magenheim.Core.DarkThrone;
 
@@ -8,13 +8,13 @@ namespace Magenheim.Core.DarkThrone;
 /// Runtime adapters convert Unity vectors at the boundary instead of duplicating leash math.
 /// </summary>
 public sealed record DarkThroneArena(
-    Vector3 Center,
+    EncounterPosition Center,
     float HalfWidth,
     float HalfDepth,
     float RecoveryInset,
     float ParticipantMargin)
 {
-    public static DarkThroneArena CreateDefault(Vector3 center) =>
+    public static DarkThroneArena CreateDefault(EncounterPosition center) =>
         new(center, HalfWidth: 26f, HalfDepth: 30f, RecoveryInset: 2f, ParticipantMargin: 8f);
 
     public void Validate()
@@ -29,37 +29,37 @@ public sealed record DarkThroneArena(
             throw new InvalidOperationException("Dark Throne participant margin must be finite and non-negative.");
     }
 
-    public bool Contains(Vector3 position)
+    public bool Contains(EncounterPosition position)
     {
         Validate();
         return Math.Abs(position.X - Center.X) <= HalfWidth
             && Math.Abs(position.Z - Center.Z) <= HalfDepth;
     }
 
-    public bool IsEncounterParticipantPosition(Vector3 position)
+    public bool IsEncounterParticipantPosition(EncounterPosition position)
     {
         Validate();
         return Math.Abs(position.X - Center.X) <= HalfWidth + ParticipantMargin
             && Math.Abs(position.Z - Center.Z) <= HalfDepth + ParticipantMargin;
     }
 
-    public Vector3 ClampDestination(Vector3 requested)
+    public EncounterPosition ClampDestination(EncounterPosition requested)
     {
         Validate();
         var minX = Center.X - HalfWidth + RecoveryInset;
         var maxX = Center.X + HalfWidth - RecoveryInset;
         var minZ = Center.Z - HalfDepth + RecoveryInset;
         var maxZ = Center.Z + HalfDepth - RecoveryInset;
-        return new Vector3(
+        return new EncounterPosition(
             Clamp(requested.X, minX, maxX),
             requested.Y,
             Clamp(requested.Z, minZ, maxZ));
     }
 
-    public Vector3 RecoveryPoint(Vector3 invalidPosition)
+    public EncounterPosition RecoveryPoint(EncounterPosition invalidPosition)
     {
         var clamped = ClampDestination(invalidPosition);
-        return new Vector3(clamped.X, Center.Y, clamped.Z);
+        return new EncounterPosition(clamped.X, Center.Y, clamped.Z);
     }
 
     private static bool IsFinite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);

@@ -9,14 +9,14 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal sealed class NowhereKingArenaLeash : MonoBehaviour
 {
-    private ZNetView _view;
-    private Character _character;
-    private DarkThroneArena _arena;
+    private ZNetView _view = null!;
+    private Character _character = null!;
+    private DarkThroneArena _arena = null!;
     private bool _configured;
 
     internal void Configure(Vector3 center)
     {
-        _arena = DarkThroneArena.CreateDefault(new System.Numerics.Vector3(center.x, center.y, center.z));
+        _arena = DarkThroneArena.CreateDefault(new EncounterPosition(center.x, center.y, center.z));
         _arena.Validate();
         _configured = true;
     }
@@ -31,16 +31,16 @@ internal sealed class NowhereKingArenaLeash : MonoBehaviour
     {
         if (!_configured || _view == null || !_view.IsValid() || !_view.IsOwner()) return;
         var p = transform.position;
-        var core = new System.Numerics.Vector3(p.x, p.y, p.z);
+        var core = new EncounterPosition(p.x, p.y, p.z);
         if (_arena.Contains(core)) return;
         var recovery = _arena.RecoveryPoint(core);
         var target = new Vector3(recovery.X, recovery.Y, recovery.Z);
-        if (_character != null) _character.SetPos(target);
+        if (_character != null) _character.transform.position=target;
         else transform.position = target;
         var body = GetComponent<Rigidbody>();
         if (body != null)
         {
-            body.velocity = Vector3.zero;
+            body.linearVelocity = Vector3.zero;
             body.angularVelocity = Vector3.zero;
         }
     }

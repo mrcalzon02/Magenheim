@@ -58,6 +58,8 @@ public static class UnderworldWorldIdentityFactory
         var normalized = value?.Trim() ?? string.Empty;
         if (normalized.Length == 0)
             throw new ArgumentException("A non-empty value is required.", field);
+        if (normalized.Any(char.IsControl))
+            throw new ArgumentException("World identity and seed cannot contain control characters.", field);
         return normalized;
     }
 }

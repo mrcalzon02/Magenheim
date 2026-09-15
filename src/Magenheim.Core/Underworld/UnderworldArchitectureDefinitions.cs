@@ -150,7 +150,7 @@ public static class UnderworldArchitectureValidator
     private static string RequirePrefixed(string value, string prefix, string field)
     {
         var normalized = RequireText(value, field);
-        if (!normalized.StartsWith(prefix, StringComparison.Ordinal))
+        if (!normalized.StartsWith(prefix, StringComparison.Ordinal) || normalized.Length == prefix.Length)
             throw new InvalidOperationException($"{field} '{normalized}' must begin with '{prefix}'.");
         return normalized;
     }
@@ -159,6 +159,8 @@ public static class UnderworldArchitectureValidator
     {
         if (string.IsNullOrWhiteSpace(value))
             throw new InvalidOperationException($"{field} cannot be empty.");
+        if (value.Any(char.IsControl) || value.Contains("|"))
+            throw new InvalidOperationException($"{field} cannot contain fingerprint separators or control characters.");
         return value.Trim();
     }
 

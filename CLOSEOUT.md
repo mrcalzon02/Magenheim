@@ -1,3 +1,9 @@
+# Development closeout — 0.0.48 testing candidate
+
+Underworld U0/U1 authority integration and baseline repairs are detailed in docs/validation/2026-09-15-underworld-authority-integration.md. Schema 5 ships validated catalogs only; no Underworld world transition or runtime construction is enabled. Tests: 36,859 assertions; runtime: zero warnings/errors.
+
+## Historical closeouts
+
 # Development closeout — 0.0.47 testing candidate
 
 Date: 2026-09-14 (local). This is a testing handoff, not full feature completion.

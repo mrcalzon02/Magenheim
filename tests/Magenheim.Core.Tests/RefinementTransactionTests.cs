@@ -50,7 +50,7 @@ internal static class RefinementTransactionTests
             "Destructive failure must consume exactly one source and grant no next-tier crystal.");
         Assert(failure.GrantShardCount == 2 && failure.ShardElement == ElementalAlignment.Fire,
             "Simple Fire failure must return exactly two matching shards.");
-        Assert(failure.AwardExperience, "Valid destructive failure should award experience.");
+        Assert(!failure.AwardExperience, "Failed refinement must not receive the success experience reward (48241a5).");
 
         var denied = planner.Plan(new RefinementTransactionRequest(
             DefinitionAuthorityResult.Pending,

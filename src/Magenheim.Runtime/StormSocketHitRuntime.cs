@@ -1,3 +1,4 @@
+using Magenheim.Core;
 using System;
 using System.Collections.Generic;
 using HarmonyLib;

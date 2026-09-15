@@ -79,6 +79,14 @@ internal static class DeepFractureInteriorBlueprintTests
                     "Authored passage routes must preserve physical connection identity exactly.");
                 foreach (var route in routes)
                 {
+                    var edge = blueprint.Connections.Single(value => value.Id == route.ConnectionId);
+                    Assert(route.Points.First() == blueprint.Modules.Single(value => value.ModuleInstanceId == edge.FromModuleId).Center
+                        && route.Points.Last() == blueprint.Modules.Single(value => value.ModuleInstanceId == edge.ToModuleId).Center,
+                        "Detours preserve both endpoint elevations and identities.");
+                    foreach (var obstacle in blueprint.Modules.Where(value => value.ModuleInstanceId != edge.FromModuleId && value.ModuleInstanceId != edge.ToModuleId))
+                        for (var segment = 1; segment < route.Points.Count; segment++)
+                            Assert(!Intersects(route.Points[segment - 1], route.Points[segment], obstacle.Center, policy.ModuleFootprint / 2d + 4d),
+                                "Every routed segment must clear the expanded unrelated district footprint.");
                     Assert(route.Points.Count >= 2, $"Physical route {route.ConnectionId} must contain at least two points.");
                     Assert(route.Points.All(point => !double.IsNaN(point.X) && !double.IsInfinity(point.X) && !double.IsNaN(point.Z) && !double.IsInfinity(point.Z)),
                         $"Physical route {route.ConnectionId} must contain finite coordinates.");
@@ -113,7 +121,8 @@ internal static class DeepFractureInteriorBlueprintTests
         var deterministicB = DeepFractureInteriorBlueprintCompiler.Build(deterministicDungeon, deterministicEncounters);
         Assert(BlueprintsEquivalent(deterministicA, deterministicB), "Equal dungeon and encounter authority must compile to an identical interior blueprint.");
         Assert(
-            DeepFracturePassageRouter.Build(deterministicA).SequenceEqual(DeepFracturePassageRouter.Build(deterministicB)),
+            DeepFracturePassageRouter.Build(deterministicA).Zip(DeepFracturePassageRouter.Build(deterministicB),
+                (a, b) => a.ConnectionId == b.ConnectionId && a.Points.SequenceEqual(b.Points)).All(equal => equal),
             "Equal interior authority must compile to identical collision-safe physical routes.");
 
         var invalidEncounterPlan = deterministicEncounters with { DungeonSeed = deterministicEncounters.DungeonSeed + 1 };
@@ -158,6 +167,17 @@ internal static class DeepFractureInteriorBlueprintTests
         Assert(!tamperedValidation.IsValid && tamperedValidation.Errors.Any(error => error.Contains("runtime mode", StringComparison.OrdinalIgnoreCase)), "Interior validation must reject connection-mode drift from the authoritative graph role.");
 
         return assertions;
+    }
+
+    // Independent separating-axis check (router uses slab clipping).
+    private static bool Intersects(DeepFractureInteriorPoint a, DeepFractureInteriorPoint b, DeepFractureInteriorPoint center, double extent)
+    {
+        if (Math.Max(a.X, b.X) < center.X - extent || Math.Min(a.X, b.X) > center.X + extent
+            || Math.Max(a.Z, b.Z) < center.Z - extent || Math.Min(a.Z, b.Z) > center.Z + extent) return false;
+        var sides = (from x in new[] { center.X - extent, center.X + extent }
+                     from z in new[] { center.Z - extent, center.Z + extent }
+                     select (b.X - a.X) * (z - a.Z) - (b.Z - a.Z) * (x - a.X)).ToArray();
+        return !(sides.All(value => value > 0d) || sides.All(value => value < 0d));
     }
 
     private static DeepFractureInteriorModulePlacement Placement(string id, DeepFractureInteriorPoint center)

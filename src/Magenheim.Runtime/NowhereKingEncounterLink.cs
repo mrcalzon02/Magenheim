@@ -5,9 +5,9 @@ namespace Magenheim.Runtime;
 /// <summary>Links the reconstructable King instance back to its durable throne authority.</summary>
 internal sealed class NowhereKingEncounterLink : MonoBehaviour
 {
-    private DarkThroneEncounterRuntime _encounter;
-    private Character _character;
-    private ZNetView _view;
+    private DarkThroneEncounterRuntime? _encounter;
+    private Character _character = null!;
+    private ZNetView _view = null!;
     private bool _reported;
 
     internal void Bind(DarkThroneEncounterRuntime encounter)

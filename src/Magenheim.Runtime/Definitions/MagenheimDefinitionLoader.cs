@@ -6,6 +6,7 @@ using Magenheim.Core;
 using Magenheim.Core.Definitions;
 using Magenheim.Core.Socketing;
 using Magenheim.Core.Worldgen;
+using Magenheim.Core.Underworld;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -43,6 +44,7 @@ internal static class MagenheimDefinitionLoader
             {
                 MissingMemberHandling = MissingMemberHandling.Error,
                 NullValueHandling = NullValueHandling.Include,
+                ContractResolver = new UnderworldRequiredFieldsResolver(),
             });
 
             var document = root.ToObject<DefinitionFileDocument>(serializer)
@@ -61,7 +63,12 @@ internal static class MagenheimDefinitionLoader
                 refinementRules,
                 geodes,
                 compatibility,
-                socketEffects);
+                socketEffects,
+                document.Underworld is null ? null : UnderworldDefinitionValidator.ValidateAndFreeze(
+                    document.Underworld.SchemaVersion, document.Underworld.Biomes,
+                    document.Underworld.Bosses, document.Underworld.Deepstones),
+                document.UnderworldArchitecture is null ? null : UnderworldArchitectureValidator.ValidateAndFreeze(
+                    document.UnderworldArchitecture.SchemaVersion, document.UnderworldArchitecture.Pieces));
         }
         catch (JsonException exception)
         {
@@ -193,8 +200,48 @@ internal static class MagenheimDefinitionLoader
         return value.Trim();
     }
 
+    // Core stays JSON-library independent. Require all serialized component fields
+    // here so missing enum/integer fields cannot silently acquire zero defaults.
+    private sealed class UnderworldRequiredFieldsResolver : Newtonsoft.Json.Serialization.DefaultContractResolver
+    {
+        protected override Newtonsoft.Json.Serialization.JsonProperty CreateProperty(
+            System.Reflection.MemberInfo member, MemberSerialization serialization)
+        {
+            var property = base.CreateProperty(member, serialization);
+            if (member.DeclaringType?.Namespace == typeof(UnderworldBiomeDefinition).Namespace)
+                property.Required = Required.Always;
+            return property;
+        }
+    }
+
+    private sealed class UnderworldDocument
+    {
+        [JsonProperty("schemaVersion", Required = Required.Always)]
+        public int SchemaVersion { get; set; }
+        [JsonProperty("biomes", Required = Required.Always)]
+        public List<UnderworldBiomeDefinition> Biomes { get; set; } = null!;
+        [JsonProperty("bosses", Required = Required.Always)]
+        public List<UnderworldBossDefinition> Bosses { get; set; } = null!;
+        [JsonProperty("deepstones", Required = Required.Always)]
+        public List<UnderworldDeepstoneDefinition> Deepstones { get; set; } = null!;
+    }
+
+    private sealed class UnderworldArchitectureDocument
+    {
+        [JsonProperty("schemaVersion", Required = Required.Always)]
+        public int SchemaVersion { get; set; }
+        [JsonProperty("pieces", Required = Required.Always)]
+        public List<UnderworldBuildPieceDefinition> Pieces { get; set; } = null!;
+    }
+
     private sealed class DefinitionFileDocument
     {
+        [JsonProperty("underworld", Required = Required.AllowNull)]
+        public UnderworldDocument? Underworld { get; set; }
+
+        [JsonProperty("underworldArchitecture", Required = Required.AllowNull)]
+        public UnderworldArchitectureDocument? UnderworldArchitecture { get; set; }
+
         [JsonProperty("schemaVersion", Required = Required.Always)]
         public int SchemaVersion { get; set; }
 

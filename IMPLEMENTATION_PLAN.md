@@ -57,3 +57,7 @@ Once the Underworld framework is proven, production proceeds through the complet
 This track may advance through pure definitions, deterministic catalogs, asset prototypes and additive build-piece implementation whenever its dependencies are satisfied, without creating a second Underworld runtime or bypassing higher-priority Magenheim validation gates. It reuses the current architecture registration pattern and eventually contributes gameplay-significant unlock/catalog data to the canonical Magenheim/Underworld fingerprint authority.
 
 The first bounded slice is A0: eleven structural identities comprising an Understone foundation and great plinth, 2/4/8m Worldroot beams, 2/4/8m Worldroot pillars, one iron-banded beam, and 4/8m Rootforged arch ribs. A0 is pure Core catalog/validation/test work only. Runtime registration follows after Core compile/test and resource-authority integration.
+
+## 13. Verified Underworld foundation — 2026-09-15
+
+U0 extension mapping and U1 initial schema/catalog integration now pass compilation and deterministic tests. See docs/validation/2026-09-15-underworld-authority-integration.md. U2 world switching, persistent Nowhere King completion, Underworld resource registration and A1 runtime construction remain gated by the documented runtime acceptance requirements.

@@ -1,4 +1,4 @@
 {
-  "version": "0.0.47",
-  "description": "0.0.47: Fixes startup failure from socket damage/armor patch overloads and an outdated tooltip signature. Includes Crystal Shaping visibility fix. Testing build; multiplayer/persistence validation ongoing."
+  "version": "0.0.48",
+  "description": "0.0.48: Integrates Underworld and Rootforged definition authority; repairs build, Deep Fracture routing and throne offering loss. Testing build; world transitions and multiplayer/persistence acceptance remain pending."
 }

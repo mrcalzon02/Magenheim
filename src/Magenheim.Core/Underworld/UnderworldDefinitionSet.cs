@@ -267,6 +267,8 @@ public static class UnderworldDefinitionValidator
         var normalized = value?.Trim() ?? string.Empty;
         if (normalized.Length == 0)
             throw new InvalidOperationException($"{field} is required.");
+        if (normalized.Any(char.IsControl) || normalized.Contains("|"))
+            throw new InvalidOperationException($"{field} cannot contain fingerprint separators or control characters.");
         return normalized;
     }
 

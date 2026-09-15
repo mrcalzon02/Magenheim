@@ -1,5 +1,5 @@
 using System;
-using System.Numerics;
+
 
 namespace Magenheim.Core.DarkThrone;
 
@@ -19,7 +19,7 @@ public enum DarkThroneEncounterLifecycle
 public sealed record DarkThroneEncounterSnapshot(
     int SchemaVersion,
     string EncounterId,
-    Vector3 ThroneAnchor,
+    EncounterPosition ThroneAnchor,
     DarkThroneEncounterLifecycle Lifecycle,
     double BossHealthFraction,
     bool RewardsCompleted)
@@ -30,6 +30,8 @@ public sealed record DarkThroneEncounterSnapshot(
     {
         if (SchemaVersion != CurrentSchemaVersion)
             throw new InvalidOperationException($"Unsupported Dark Throne encounter schema {SchemaVersion}.");
+        if (!Enum.IsDefined(typeof(DarkThroneEncounterLifecycle), Lifecycle))
+            throw new InvalidOperationException("Unknown Dark Throne encounter lifecycle.");
         if (string.IsNullOrWhiteSpace(EncounterId))
             throw new InvalidOperationException("Dark Throne encounter identity is required.");
         if (!IsFinite(ThroneAnchor.X) || !IsFinite(ThroneAnchor.Y) || !IsFinite(ThroneAnchor.Z))

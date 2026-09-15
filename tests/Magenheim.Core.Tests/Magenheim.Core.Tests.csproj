@@ -8,5 +8,8 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/Magenheim.Core/Magenheim.Core.csproj" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <Compile Include="../../src/Magenheim.Runtime/Definitions/MagenheimDefinitionLoader.cs" Link="Runtime/MagenheimDefinitionLoader.cs" />
+    <None Include="../../default-data/foundation.json" Link="foundation.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

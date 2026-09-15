@@ -35,7 +35,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Rebuild accumulated source as 0.0.45; full core harness passes 13,974 assertions and runtime compiles without warnings/errors. See CLOSEOUT.md.
 - [x] Add strict schema-validated static definition loading with deterministic definition fingerprinting and hard failure on malformed/unknown content.
 - [x] Add controlled balance/compatibility/world-placement overrides on top of the validated static definition snapshot; effective authority is always revalidated and re-fingerprinted.
-- [ ] Add deterministic tests for runtime JSON loader failure cases once a compilable runtime test environment is available.
+- [x] Test actual runtime JSON loader failure cases in the .NET harness, including Underworld required fields, duplicate/unknown properties and invalid references.
 - [x] Add deterministic schema/fingerprint authority comparison with fail-closed mutation admission.
 - [x] Register a two-way Jötunn gameplay-authority handshake and reset cached admission per sync session.
 - [x] Include socket eligibility/configuration policy in the synchronized gameplay fingerprint so peers with different socket rules cannot authorize persistent mutations.
@@ -100,8 +100,8 @@ This is expansion scope and remains subordinate to broken intended behavior and 
 
 - [x] Commit the durable Underworld design and heightfield cavern-illusion architecture.
 - [x] Commit the detailed Underworld implementation program, including biome framework, creature ecology, six-boss progression, Deepstone Conclave and milestone gates.
-- [ ] U0: reconcile live definition, fingerprint, world-state, network and Nowhere King completion authorities and record the exact extension map.
-- [ ] U1: implement Underworld Core definition/schema/fingerprint skeleton with deterministic tests and no false world registration.
+- [x] U0: reconcile live definition, fingerprint, world-state, network and Nowhere King completion authorities; see docs/validation/2026-09-15-underworld-authority-integration.md. Runtime completion adapter remains a prerequisite to U2.
+- [x] U1: compile/test the Core skeleton and embed six-boss progression plus A0 architecture in canonical schema-5 JSON/fingerprint authority; no runtime world registration.
 - [ ] U2: prove the derived-world transition architecture in a disposable environment before biome production.
 - [ ] U3: harden persistent world/map/multiplayer transition state.
 - [ ] U4: prove Macro Basin + Wall Mass + inaccessible Roof Shelf + cavern-sky/fog illusion.

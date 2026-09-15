@@ -1,15 +1,15 @@
-# Magenheim 0.0.47 - test acceptance
+# Magenheim 0.0.48 - test acceptance
 
 ## Required delivery check before launching
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.47 by Local** and start its description with
-**0.0.47: Fixes startup failure from socket damage/armor patch overloads**.
+show **Magenheim v0.0.48 by Local** and start its description with
+**0.0.48: Integrates Underworld and Rootforged definition authority**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.47]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.48]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
@@ -42,7 +42,7 @@ XP should appear. Previously earned Crystal Shaping level/XP must stay unchanged
 
 ## Candidate acceptance matrix
 
-Confirm the startup log reports **0.0.47** and has no Magenheim bootstrap or registration
+Confirm the startup log reports **0.0.48** and has no Magenheim bootstrap or registration
 errors. Keep logs and screenshots with each result. Mark checks PASS / FAIL / NOT RUN;
 record game version, mod list, host/client role, seed, steps, expected/actual result.
 

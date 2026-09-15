@@ -76,6 +76,56 @@ public static class DeepFracturePassageRouter
                 return compact;
         }
 
+        // A packed grid can block every single-bend and perimeter candidate even
+        // though its inter-district aisles remain open. Search visible footprint
+        // corners before declaring the connection impossible.
+        return RouteAroundFootprints(connectionId, from, to, modules, fromId, toId, policy);
+    }
+
+    private static IReadOnlyList<DeepFractureInteriorPoint> RouteAroundFootprints(
+        string connectionId, DeepFractureInteriorPoint from, DeepFractureInteriorPoint to,
+        IReadOnlyList<DeepFractureInteriorModulePlacement> modules, string fromId,
+        string toId, DeepFractureInteriorProjectionPolicy policy)
+    {
+        var nodes = new List<DeepFractureInteriorPoint> { from, to };
+        var extent = policy.ModuleFootprint * .5d + 4.01d;
+        foreach (var module in modules.OrderBy(value => value.ModuleInstanceId, StringComparer.Ordinal))
+        {
+            if (module.ModuleInstanceId == fromId || module.ModuleInstanceId == toId) continue;
+            foreach (var x in new[] { -extent, extent })
+                foreach (var z in new[] { -extent, extent })
+                    nodes.Add(new DeepFractureInteriorPoint(module.Center.X + x, from.Y, module.Center.Z + z));
+        }
+        var distance = Enumerable.Repeat(double.PositiveInfinity, nodes.Count).ToArray();
+        var previous = Enumerable.Repeat(-1, nodes.Count).ToArray();
+        var visited = new bool[nodes.Count];
+        distance[0] = 0d;
+        for (var step = 0; step < nodes.Count; step++)
+        {
+            var current = -1;
+            for (var index = 0; index < nodes.Count; index++)
+                if (!visited[index] && !double.IsPositiveInfinity(distance[index])
+                    && (current < 0 || distance[index] < distance[current])) current = index;
+            if (current < 0) break;
+            if (current == 1)
+            {
+                var path = new List<DeepFractureInteriorPoint>();
+                for (var index = 1; index >= 0; index = previous[index])
+                    path.Add(nodes[index] with { Y = from.Y + (to.Y - from.Y) * distance[index] / distance[1] });
+                path.Reverse();
+                return Compact(path);
+            }
+            visited[current] = true;
+            for (var next = 0; next < nodes.Count; next++)
+            {
+                if (visited[next]) continue;
+                var candidate = distance[current] + nodes[current].HorizontalDistanceTo(nodes[next]);
+                if (candidate >= distance[next]) continue;
+                if (!Clear(new[] { nodes[current], nodes[next] }, modules, fromId, toId, policy)) continue;
+                distance[next] = candidate;
+                previous[next] = current;
+            }
+        }
         throw new InvalidOperationException($"No collision-safe physical route exists for Deep Fracture connection '{connectionId}'.");
     }
 

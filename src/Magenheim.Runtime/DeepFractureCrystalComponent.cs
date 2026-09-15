@@ -19,7 +19,7 @@ namespace Magenheim.Runtime
     {
         private const string HealthKeyPrefix = "magenheim_crystal_health_";
         private const string DestroyedKeyPrefix = "magenheim_crystal_destroyed_";
-        private Character _owner; private ZNetView _view; private string _componentId; private DeepFractureCrystalFunction _function; private float _maximumHealth; private Renderer[] _renderers; private Collider[] _colliders;
+        private Character _owner = null!; private ZNetView _view = null!; private string _componentId = string.Empty; private DeepFractureCrystalFunction _function; private float _maximumHealth; private Renderer[] _renderers = Array.Empty<Renderer>(); private Collider[] _colliders = Array.Empty<Collider>();
         internal DeepFractureCrystalFunction Function { get { return _function; } }
         internal static DeepFractureCrystalComponent Attach(GameObject part,Character owner,ZNetView view,string componentId,DeepFractureCrystalFunction function,float maximumHealth)
         {

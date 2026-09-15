@@ -18,8 +18,8 @@ internal sealed class DarkThroneCrystalSpawner : MonoBehaviour
     private const string NextSpawnTicksKey = "magenheim.darkthrone.spawner.next";
     private const string SuspendedKey = "magenheim.darkthrone.spawner.suspended";
 
-    private ZNetView _view;
-    private CrystalCreatureSpawnProfile _profile;
+    private ZNetView _view = null!;
+    private CrystalCreatureSpawnProfile _profile = null!;
 
     internal void Configure(CrystalCreatureSpawnProfile profile)
     {

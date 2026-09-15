@@ -11,14 +11,14 @@ internal sealed class NullMantleRuntime : MonoBehaviour
     private const float WindowSeconds=10f,DominanceThreshold=.45f,Resistance=.22f,ActiveSeconds=6f;
     private readonly List<Sample> _samples=new();
     private readonly Dictionary<Renderer,Material[]> _originalMaterials=new();
-    private Player _player;
-    private GameObject _presentation;
+    
+    private GameObject? _presentation;
     private DamageType _active=DamageType.None;
     private float _activeUntil;
     private struct Sample{internal float Time;internal DamageType Type;internal float Amount;}
     private enum DamageType{None,Fire,Frost,Lightning,Poison,Spirit}
 
-    private void Awake()=>_player=GetComponent<Player>();
+    
     internal void SetEquipped(bool equipped){if(equipped){if(_presentation==null)ApplyPresentation();}else if(_presentation!=null)RemovePresentation();}
     internal void ObserveAndMitigate(HitData hit)
     {
@@ -56,12 +56,12 @@ internal sealed class NullMantleRuntime : MonoBehaviour
     private void OnDestroy(){if(_presentation!=null)RemovePresentation();}
 }
 
-[HarmonyPatch(typeof(Player),nameof(Player.Update))]
+[HarmonyPatch(typeof(Player), "Update", new System.Type[0])]
 internal static class NullMantleEquipmentPatch
 {
     private static void Postfix(Player __instance)
     {
-        if(__instance==null)return;var helmet=__instance.m_helmetItem;var equipped=helmet!=null&&helmet.m_dropPrefab!=null&&string.Equals(helmet.m_dropPrefab.name,NowhereKingRewardRegistrar.NullMantlePrefabName,StringComparison.Ordinal);
+        if(__instance==null)return;var helmet=__instance.GetInventory().GetAllItems().Find(item=>item.m_equipped && item.m_shared.m_itemType==ItemDrop.ItemData.ItemType.Helmet);var equipped=helmet!=null&&helmet.m_dropPrefab!=null&&string.Equals(helmet.m_dropPrefab.name,NowhereKingRewardRegistrar.NullMantlePrefabName,StringComparison.Ordinal);
         var runtime=__instance.GetComponent<NullMantleRuntime>();if(equipped){runtime??=__instance.gameObject.AddComponent<NullMantleRuntime>();runtime.SetEquipped(true);}else if(runtime!=null)runtime.SetEquipped(false);
     }
 }

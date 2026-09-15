@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Magenheim.Core.Socketing;
 using Magenheim.Core.Worldgen;
+using Magenheim.Core.Underworld;
 
 namespace Magenheim.Core.Definitions;
 
@@ -33,11 +34,13 @@ public sealed record MagenheimDefinitionSet(
 {
     public SocketEffectDefinitionSet SocketEffects { get; init; } =
         new(Array.Empty<SocketEffectRule>());
+    public UnderworldDefinitionSet? Underworld { get; init; }
+    public UnderworldArchitectureDefinitionSet? UnderworldArchitecture { get; init; }
 }
 
 public static class MagenheimDefinitionValidator
 {
-    public const int CurrentSchemaVersion = 4;
+    public const int CurrentSchemaVersion = 5;
 
     private static readonly HashSet<string> SupportedBiomes = new(StringComparer.Ordinal)
     {
@@ -56,7 +59,9 @@ public static class MagenheimDefinitionValidator
         IEnumerable<RefinementRule> refinementRules,
         IEnumerable<GeodeDefinition> geodes,
         WorldgenCompatibilityPolicy worldgenCompatibility,
-        SocketEffectDefinitionSet? socketEffects = null)
+        SocketEffectDefinitionSet? socketEffects = null,
+        UnderworldDefinitionSet? underworld = null,
+        UnderworldArchitectureDefinitionSet? underworldArchitecture = null)
     {
         if (schemaVersion != CurrentSchemaVersion)
             throw new InvalidOperationException($"Unsupported definition schema {schemaVersion}. Expected {CurrentSchemaVersion}.");
@@ -70,6 +75,13 @@ public static class MagenheimDefinitionValidator
         var frozenCompatibility = ValidateAndFreezeWorldgenCompatibility(worldgenCompatibility);
         var frozenSocketEffects = new SocketEffectDefinitionSet(
             socketEffects?.Rules ?? Array.Empty<SocketEffectRule>());
+        // Recompute component fingerprints from data: never trust a caller's hash.
+        var frozenUnderworld = underworld is null ? null : UnderworldDefinitionValidator.ValidateAndFreeze(
+            underworld.SchemaVersion, underworld.Biomes, underworld.Bosses, underworld.Deepstones);
+        var frozenArchitecture = underworldArchitecture is null ? null : UnderworldArchitectureValidator.ValidateAndFreeze(
+            underworldArchitecture.SchemaVersion, underworldArchitecture.Pieces);
+        if (frozenArchitecture is not null && frozenUnderworld is null)
+            throw new InvalidOperationException("Underworld architecture requires Underworld definition authority.");
         var identityComparer = GetIdentityComparer(frozenCompatibility.IdentityComparison);
         var frozenRules = refinementRules.ToArray();
         var frozenGeodes = geodes
@@ -97,7 +109,9 @@ public static class MagenheimDefinitionValidator
             frozenRules,
             frozenGeodes,
             frozenCompatibility,
-            frozenSocketEffects);
+            frozenSocketEffects,
+            frozenUnderworld,
+            frozenArchitecture);
         return new MagenheimDefinitionSet(
             schemaVersion,
             Array.AsReadOnly(frozenRules),
@@ -106,6 +120,8 @@ public static class MagenheimDefinitionValidator
             fingerprint)
         {
             SocketEffects = frozenSocketEffects,
+            Underworld = frozenUnderworld,
+            UnderworldArchitecture = frozenArchitecture,
         };
     }
 
@@ -269,10 +285,14 @@ public static class MagenheimDefinitionValidator
         IEnumerable<RefinementRule> rules,
         IEnumerable<GeodeDefinition> geodes,
         WorldgenCompatibilityPolicy worldgenCompatibility,
-        SocketEffectDefinitionSet socketEffects)
+        SocketEffectDefinitionSet socketEffects,
+        UnderworldDefinitionSet? underworld,
+        UnderworldArchitectureDefinitionSet? underworldArchitecture)
     {
         var builder = new StringBuilder();
         builder.Append("schema=").Append(schemaVersion).Append('\n');
+        builder.Append("underworld=").Append(underworld?.Fingerprint ?? "absent").Append('\n');
+        builder.Append("underworld-architecture=").Append(underworldArchitecture?.Fingerprint ?? "absent").Append('\n');
 
         builder.Append("worldgen|")
             .Append(worldgenCompatibility.InvalidAreaBehavior).Append('|')

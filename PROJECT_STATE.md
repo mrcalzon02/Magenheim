@@ -1,3 +1,9 @@
+# Current source candidate — 0.0.48 / schema 5
+
+Underworld six-boss progression and eleven Rootforged definitions now share canonical Magenheim JSON and gameplay fingerprint authority. Baseline compilation and Deep Fracture route generation repaired. 36,859 deterministic assertions pass; runtime builds without warnings/errors. Installation/startup status is recorded in docs/validation/2026-09-15-underworld-authority-integration.md. Underworld world transitions and live multiplayer/persistence acceptance remain open.
+
+---
+
 # Magenheim Project State
 
 ## Current installed build: 0.0.47 startup repair
