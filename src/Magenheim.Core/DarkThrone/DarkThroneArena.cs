@@ -19,28 +19,28 @@ public sealed record DarkThroneArena(
 
     public void Validate()
     {
-        if (!float.IsFinite(Center.X) || !float.IsFinite(Center.Y) || !float.IsFinite(Center.Z))
+        if (!IsFinite(Center.X) || !IsFinite(Center.Y) || !IsFinite(Center.Z))
             throw new InvalidOperationException("Dark Throne arena center must be finite.");
-        if (!float.IsFinite(HalfWidth) || HalfWidth <= 0f || !float.IsFinite(HalfDepth) || HalfDepth <= 0f)
+        if (!IsFinite(HalfWidth) || HalfWidth <= 0f || !IsFinite(HalfDepth) || HalfDepth <= 0f)
             throw new InvalidOperationException("Dark Throne arena dimensions must be finite and positive.");
-        if (!float.IsFinite(RecoveryInset) || RecoveryInset < 0f || RecoveryInset >= MathF.Min(HalfWidth, HalfDepth))
+        if (!IsFinite(RecoveryInset) || RecoveryInset < 0f || RecoveryInset >= Math.Min(HalfWidth, HalfDepth))
             throw new InvalidOperationException("Dark Throne recovery inset must remain inside the arena.");
-        if (!float.IsFinite(ParticipantMargin) || ParticipantMargin < 0f)
+        if (!IsFinite(ParticipantMargin) || ParticipantMargin < 0f)
             throw new InvalidOperationException("Dark Throne participant margin must be finite and non-negative.");
     }
 
     public bool Contains(Vector3 position)
     {
         Validate();
-        return MathF.Abs(position.X - Center.X) <= HalfWidth
-            && MathF.Abs(position.Z - Center.Z) <= HalfDepth;
+        return Math.Abs(position.X - Center.X) <= HalfWidth
+            && Math.Abs(position.Z - Center.Z) <= HalfDepth;
     }
 
     public bool IsEncounterParticipantPosition(Vector3 position)
     {
         Validate();
-        return MathF.Abs(position.X - Center.X) <= HalfWidth + ParticipantMargin
-            && MathF.Abs(position.Z - Center.Z) <= HalfDepth + ParticipantMargin;
+        return Math.Abs(position.X - Center.X) <= HalfWidth + ParticipantMargin
+            && Math.Abs(position.Z - Center.Z) <= HalfDepth + ParticipantMargin;
     }
 
     public Vector3 ClampDestination(Vector3 requested)
@@ -51,9 +51,9 @@ public sealed record DarkThroneArena(
         var minZ = Center.Z - HalfDepth + RecoveryInset;
         var maxZ = Center.Z + HalfDepth - RecoveryInset;
         return new Vector3(
-            Math.Clamp(requested.X, minX, maxX),
+            Clamp(requested.X, minX, maxX),
             requested.Y,
-            Math.Clamp(requested.Z, minZ, maxZ));
+            Clamp(requested.Z, minZ, maxZ));
     }
 
     public Vector3 RecoveryPoint(Vector3 invalidPosition)
@@ -61,4 +61,9 @@ public sealed record DarkThroneArena(
         var clamped = ClampDestination(invalidPosition);
         return new Vector3(clamped.X, Center.Y, clamped.Z);
     }
+
+    private static bool IsFinite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
+
+    private static float Clamp(float value, float minimum, float maximum) =>
+        value < minimum ? minimum : value > maximum ? maximum : value;
 }
