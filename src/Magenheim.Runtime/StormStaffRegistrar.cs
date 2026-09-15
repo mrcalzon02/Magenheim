@@ -9,13 +9,13 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Four-tier Storm staff family built on Dundr's native electrical projectile. Advanced tiers now
-/// create real secondary discharge areas at impact, so Arc Chain and Thunderhead affect clustered
-/// targets beyond the initially struck projectile path instead of merely approximating chaining by spread.
+/// Four-tier Storm staff family with owned Magenheim staff bodies. Advanced tiers create real
+/// secondary discharge areas at impact so Storm remains about force, chaining, and burst geometry.
 /// </summary>
 internal sealed class StormStaffRegistrar : IDisposable
 {
-    private const string BaseStaffPrefab = "StaffLightning";
+    private const string BaseStaffPrefab = "StaffIceShards";
+    private const string LightningProjectileSource = "StaffLightning";
 
     private readonly ManualLogSource _log;
     private bool _subscribed;
@@ -38,7 +38,9 @@ internal sealed class StormStaffRegistrar : IDisposable
         try
         {
             if (PrefabManager.Instance.GetPrefab(BaseStaffPrefab) is null)
-                throw new InvalidOperationException($"Required vanilla lightning staff prefab '{BaseStaffPrefab}' is unavailable.");
+                throw new InvalidOperationException($"Required hidden staff carrier prefab '{BaseStaffPrefab}' is unavailable.");
+            if (PrefabManager.Instance.GetPrefab(LightningProjectileSource) is null)
+                throw new InvalidOperationException($"Required lightning projectile source '{LightningProjectileSource}' is unavailable.");
             if (PrefabManager.Instance.GetPrefab(WorkshopRegistrar.StationPrefab) is null)
                 throw new InvalidOperationException("Geologist's Workstation must exist before Magenheim Storm staff recipes are registered.");
 
@@ -62,10 +64,10 @@ internal sealed class StormStaffRegistrar : IDisposable
                 emission: 1.95f);
 
             var payloads = new PayloadSet(
-                StaffEffectPayloads.CreateProjectile("Magenheim_Storm_StaticProjectile", new Color(.28f, .62f, 1f, 1f), 1.45f, sourceStaffPrefab: BaseStaffPrefab),
-                StaffEffectPayloads.CreateProjectile("Magenheim_Storm_ThunderboltProjectile", new Color(.50f, .78f, 1f, 1f), 1.65f, sourceStaffPrefab: BaseStaffPrefab),
-                StaffEffectPayloads.CreateProjectile("Magenheim_Storm_ArcProjectile", new Color(.58f, .82f, 1f, 1f), 1.80f, arcDischarge, BaseStaffPrefab),
-                StaffEffectPayloads.CreateProjectile("Magenheim_Storm_ThunderheadProjectile", new Color(.78f, .92f, 1f, 1f), 2.05f, thunderheadPulse, BaseStaffPrefab));
+                StaffEffectPayloads.CreateProjectile("Magenheim_Storm_StaticProjectile", new Color(.28f, .62f, 1f, 1f), 1.45f, sourceStaffPrefab: LightningProjectileSource),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Storm_ThunderboltProjectile", new Color(.50f, .78f, 1f, 1f), 1.65f, sourceStaffPrefab: LightningProjectileSource),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Storm_ArcProjectile", new Color(.58f, .82f, 1f, 1f), 1.80f, arcDischarge, LightningProjectileSource),
+                StaffEffectPayloads.CreateProjectile("Magenheim_Storm_ThunderheadProjectile", new Color(.78f, .92f, 1f, 1f), 2.05f, thunderheadPulse, LightningProjectileSource));
 
             foreach (var definition in Definitions())
             {
@@ -74,7 +76,7 @@ internal sealed class StormStaffRegistrar : IDisposable
             }
 
             _registered = true;
-            _log.LogInfo("Registered Storm abilities: Static Snap, Thunderbolt, Arc Chain with secondary discharge, and Thunderhead pulse fields.");
+            _log.LogInfo("Registered Storm abilities and four owned Magenheim Storm staff bodies.");
         }
         catch (Exception exception)
         {
@@ -106,7 +108,7 @@ internal sealed class StormStaffRegistrar : IDisposable
         var attack = shared.m_attack;
         attack.m_attackProjectile = payloads.Resolve(definition.Payload);
         attack.m_attackStamina = definition.StaminaCost;
-        attack.m_attackEitr = definition.EitrCost;
+        attack.m_attackEitr = 0f;
         attack.m_damageMultiplier = definition.DamageMultiplier;
         attack.m_forceMultiplier = definition.ForceMultiplier;
         attack.m_staggerMultiplier = definition.StaggerMultiplier;
@@ -118,6 +120,8 @@ internal sealed class StormStaffRegistrar : IDisposable
         attack.m_projectileBursts = definition.Bursts;
         attack.m_burstInterval = definition.BurstInterval;
         attack.m_perBurstResourceUsage = false;
+
+        StormStaffVisuals.Apply(item.ItemPrefab, definition.PrefabName);
 
         if (!ItemManager.Instance.AddItem(item))
             throw new InvalidOperationException($"Jotunn refused Storm staff item '{definition.PrefabName}'.");
@@ -148,29 +152,29 @@ internal sealed class StormStaffRegistrar : IDisposable
             "Magenheim_Staff_Storm_Simple",
             "Simple Staff of Storm",
             "Static Snap: discharges one short electrical packet. Its direct lightning damage is modest, but the violent impulse is built to interrupt and knock enemies away without spending Eitr.",
-            1, 20f, 0f, 18f, 1f, 1.55f, 1.20f, 34f, 2f, 1, 1, 0f, PayloadKind.Static,
+            1, 20f, 18f, 1f, 1.55f, 1.20f, 34f, 2f, 1, 1, 0f, PayloadKind.Static,
             new StaffRequirement("FineWood", 8), new StaffRequirement("Bronze", 2), new StaffRequirement("Magenheim_Crystal_Storm_Simple", 1)),
 
         new StormStaffDefinition(
             "Magenheim_Staff_Storm_Crystal",
             "Crystal Staff of Storm",
             "Thunderbolt: compresses the discharge into one nearly straight, high-velocity bolt with heavy force and stagger. It remains a deliberate single-target strike rather than a spread spell.",
-            2, 30f, 0f, 42f, 1f, 2.10f, 1.55f, 58f, .35f, 1, 1, 0f, PayloadKind.Thunderbolt,
+            2, 30f, 42f, 1f, 2.10f, 1.55f, 58f, .35f, 1, 1, 0f, PayloadKind.Thunderbolt,
             new StaffRequirement("ElderBark", 10), new StaffRequirement("Iron", 2), new StaffRequirement("Magenheim_Crystal_Storm_Crystal", 1)),
 
         new StormStaffDefinition(
             "Magenheim_Staff_Storm_Advanced",
             "Advanced Staff of Storm",
             "Arc Chain: fires two successive electrical leaders. Every impact erupts into a 4.5-meter secondary discharge, so the struck target becomes the origin of real lightning pressure against nearby clustered enemies.",
-            3, 12f, 20f, 16f, .85f, 1.05f, 1.00f, 44f, 2.5f, 1, 2, .13f, PayloadKind.Arc,
+            3, 32f, 16f, .85f, 1.05f, 1.00f, 44f, 2.5f, 1, 2, .13f, PayloadKind.Arc,
             new StaffRequirement("YggdrasilWood", 10), new StaffRequirement("Silver", 3), new StaffRequirement("BlackMetal", 2), new StaffRequirement("Magenheim_Crystal_Storm_Advanced", 1)),
 
         new StormStaffDefinition(
             "Magenheim_Staff_Storm_Master",
             "Master Staff of Storm",
             "Thunderhead: throws three branches through three rapid waves. Each impact seeds a short two-pulse lightning burst around itself, creating overlapping electrical pressure and knockback across a broad front.",
-            4, 0f, 50f, 10f, .60f, 1.25f, 1.10f, 40f, 13f, 3, 3, .13f, PayloadKind.Thunderhead,
-            new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("BlackMetal", 5), new StaffRequirement("Eitr", 12), new StaffRequirement("Magenheim_Crystal_Storm_Master", 1)),
+            4, 50f, 10f, .60f, 1.25f, 1.10f, 40f, 13f, 3, 3, .13f, PayloadKind.Thunderhead,
+            new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("BlackMetal", 5), new StaffRequirement("Magenheim_Crystal_Storm_Master", 1)),
     };
 
     public void Dispose()
@@ -227,7 +231,6 @@ internal sealed class StormStaffRegistrar : IDisposable
             string description,
             int minimumStationLevel,
             float staminaCost,
-            float eitrCost,
             float lightningDamage,
             float damageMultiplier,
             float forceMultiplier,
@@ -245,7 +248,6 @@ internal sealed class StormStaffRegistrar : IDisposable
             Description = description;
             MinimumStationLevel = minimumStationLevel;
             StaminaCost = staminaCost;
-            EitrCost = eitrCost;
             LightningDamage = lightningDamage;
             DamageMultiplier = damageMultiplier;
             ForceMultiplier = forceMultiplier;
@@ -264,7 +266,6 @@ internal sealed class StormStaffRegistrar : IDisposable
         internal string Description { get; }
         internal int MinimumStationLevel { get; }
         internal float StaminaCost { get; }
-        internal float EitrCost { get; }
         internal float LightningDamage { get; }
         internal float DamageMultiplier { get; }
         internal float ForceMultiplier { get; }
