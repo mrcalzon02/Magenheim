@@ -72,13 +72,13 @@ internal sealed class DeepFractureRoomRegistrar : IDisposable
         }
     }
 
-    internal static DungeonDB.RoomData ResolveDistrict(string pieceFamilyId)
+    internal static Room ResolveDistrict(string pieceFamilyId)
         => ResolveRoom(DeepFractureRoomVisuals.RoomPrefabName(pieceFamilyId));
 
-    internal static DungeonDB.RoomData ResolvePassage()
+    internal static Room ResolvePassage()
         => ResolveRoom(DeepFractureRoomVisuals.PassagePrefabName);
 
-    internal static DungeonDB.RoomData ResolveTraversalNode()
+    internal static Room ResolveTraversalNode()
         => ResolveRoom(DeepFractureRoomVisuals.TraversalNodePrefabName);
 
     private void AddRoom(GameObject prefab)
@@ -106,12 +106,12 @@ internal sealed class DeepFractureRoomRegistrar : IDisposable
         _registeredRoomNames.Add(prefab.name);
     }
 
-    private static DungeonDB.RoomData ResolveRoom(string prefabName)
+    private static Room ResolveRoom(string prefabName)
     {
         var room = DungeonManager.Instance.GetRoom(prefabName)
             ?? throw new InvalidOperationException($"Deep Fracture room '{prefabName}' is not registered in Jotunn's dungeon manager.");
-        return room.RoomData
-            ?? throw new InvalidOperationException($"Deep Fracture room '{prefabName}' has no RoomData authority.");
+        return room.Room
+            ?? throw new InvalidOperationException($"Deep Fracture room '{prefabName}' has no loaded Room prefab authority.");
     }
 
     private void Unsubscribe()
