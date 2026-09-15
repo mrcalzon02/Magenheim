@@ -232,11 +232,11 @@ internal static class SeidrVisuals
         root.transform.localRotation = Quaternion.identity;
         root.transform.localScale = Vector3.one;
 
-        var blackWood = Material(source, "blackwood", new Color(.10f, .07f, .12f, 1f), 0f, .12f);
-        var iron = Material(source, "blackiron", new Color(.16f, .13f, .20f, 1f), .62f, .30f);
-        var silver = Material(source, "runesilver", new Color(.54f, .48f, .62f, 1f), .55f, .38f);
-        var violet = Material(source, "violet", new Color(.62f, .20f, .95f, 1f), .02f, .74f, .42f);
-        var pale = Material(source, "paleeitr", new Color(.83f, .62f, 1f, 1f), .01f, .86f, .70f);
+        var blackWood = Material(source, "black-wood", new Color(.10f, .07f, .12f, 1f), 0f, .12f);
+        var iron = Material(source, "black-iron", new Color(.16f, .13f, .20f, 1f), .62f, .30f);
+        var silver = Material(source, "rune-silver", new Color(.54f, .48f, .62f, 1f), .55f, .38f);
+        var violet = Material(source, "seidr-violet-crystal", new Color(.62f, .20f, .95f, 1f), .02f, .74f, .42f);
+        var pale = Material(source, "seidr-pale-eitr-crystal", new Color(.83f, .62f, 1f, 1f), .01f, .86f, .70f);
 
         switch (assetName)
         {
@@ -331,9 +331,7 @@ internal static class SeidrVisuals
     private static Material Material(Material source, string name, Color color, float metallic, float gloss, float emission = 0f)
     {
         var material = new Material(source) { name = "magenheim.seidr." + name };
-        material.mainTexture = Texture2D.whiteTexture;
-        material.mainTextureScale = Vector2.one;
-        material.mainTextureOffset = Vector2.zero;
+        GeneratedSurfaceTextures.Apply(material, name);
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", gloss);
