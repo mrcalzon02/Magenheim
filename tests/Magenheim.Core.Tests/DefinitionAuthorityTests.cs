@@ -56,6 +56,7 @@ internal static class DefinitionAuthorityTests
         assertions += DeepFractureCatalogTests.Run();
         assertions += DeepFractureEncounterPlannerTests.Run();
         assertions += DeepFractureInteriorBlueprintTests.Run();
+        assertions += DeepFractureExpeditionPlannerTests.Run();
         assertions += DeepFractureLocationRegistrationTests.Run();
         assertions += GeodeCrackingTests.Run();
         assertions += GeodeOpeningTransactionTests.Run();
