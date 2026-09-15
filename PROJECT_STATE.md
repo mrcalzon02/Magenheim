@@ -22,9 +22,13 @@ were rebased onto it and the combined tree re-verified rather than assumed compa
 
 36,868 deterministic assertions pass; runtime builds with zero warnings/errors; 20 Harmony
 patch targets and 7 literal reflection bindings verify against installed assemblies.
-0.0.49 is packaged but NOT installed: Valheim was running (PID 28028) and project
-instructions forbid terminating the user's game. Underworld world transitions and live
-multiplayer/persistence acceptance remain open.
+0.0.49 is installed and SHA-256 verified in the active Central Fuckery profile, with its
+enabled launcher entry and description confirmed by read-back. Delivery first failed because
+`install-local.ps1` collapsed the JSON checksum manifest into a single entry under Windows
+PowerShell and rejected every package; that verifier was repaired without weakening it.
+Startup, world and gameplay acceptance are NOT claimed, because the game has not been
+launched against this build. Underworld world transitions and live multiplayer/persistence
+acceptance remain open.
 
 ---
 
