@@ -23,8 +23,8 @@ internal static class DeepFracturePassageAssembler
             throw new ArgumentNullException(nameof(blueprint));
 
         var roomData = DeepFractureRoomRegistrar.ResolvePassage();
-        var source = roomData.m_room
-            ?? throw new InvalidOperationException($"Registered Deep Fracture passage '{DeepFractureRoomVisuals.PassagePrefabName}' has no Room prefab.");
+        var source = roomData.m_loadedRoom
+            ?? throw new InvalidOperationException($"Registered Deep Fracture passage '{DeepFractureRoomVisuals.PassagePrefabName}' has no loaded Room prefab.");
         var plan = DeepFracturePassageAssemblyCompiler.Build(blueprint, policyOverride);
         var placed = new List<Room>(plan.Segments.Count);
 
