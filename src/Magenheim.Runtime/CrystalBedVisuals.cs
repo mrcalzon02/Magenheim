@@ -26,7 +26,7 @@ internal static class CrystalBedVisuals
         var tint = ElementVisualPalette.Tint(element);
         var stone = Material(source, "stone", new Color(.10f, .12f, .14f, 1f), .14f, .18f);
         var iron = Material(source, "iron", new Color(.25f, .29f, .32f, 1f), .68f, .32f);
-        var crystal = Material(source, "growth", new Color(Mathf.Min(1f, tint.r + .14f), Mathf.Min(1f, tint.g + .14f), Mathf.Min(1f, tint.b + .14f), 1f), .02f, .90f, .48f);
+        var crystal = Material(source, "crystal-growth", new Color(Mathf.Min(1f, tint.r + .14f), Mathf.Min(1f, tint.g + .14f), Mathf.Min(1f, tint.b + .14f), 1f), .02f, .90f, .48f);
         var water = WaterMaterial(source, tint);
 
         Box(root, "floor", new Vector3(0f, .18f, 0f), new Vector3(3.10f, .36f, 2.20f), stone);
@@ -66,9 +66,12 @@ internal static class CrystalBedVisuals
     private static Material Material(Material source, string suffix, Color color, float metallic, float gloss, float emission = 0f)
     {
         var material = new Material(source) { name = "magenheim.crystal-bed." + suffix };
+        GeneratedSurfaceTextures.Apply(material, suffix);
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", gloss);
+        if (material.HasProperty("_BumpMap")) material.SetTexture("_BumpMap", null);
+        material.DisableKeyword("_NORMALMAP");
         if (material.HasProperty("_EmissionColor") && emission > 0f)
         {
             material.SetColor("_EmissionColor", color * emission);
