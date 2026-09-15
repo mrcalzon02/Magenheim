@@ -10,6 +10,15 @@ namespace Magenheim.Runtime
         private const float RegenerationInterval = 2f;
         private const float RegenerationFraction = 0.0125f;
 
+        internal static void ModifyOutgoingDamage(HitData hit)
+        {
+            if (hit == null) return;
+            var attacker = hit.GetAttacker();
+            if (attacker == null) return;
+            var elemental = attacker.GetComponent<DeepFractureElementalCombat>();
+            if (elemental != null) elemental.ModifyOutgoingHit(hit);
+        }
+
         internal static void ModifyIncomingDamage(Character character, HitData hit)
         {
             if (character == null || hit == null) return;
@@ -28,6 +37,8 @@ namespace Magenheim.Runtime
         internal static void Regenerate(Character character)
         {
             if (character == null || character.IsDead()) return;
+            var view = character.GetComponent<ZNetView>();
+            if (view == null || !view.IsValid() || !view.IsOwner()) return;
             var components = character.GetComponentsInChildren<DeepFractureCrystalComponent>(true);
             for (var i = 0; i < components.Length; i++)
             {
@@ -49,6 +60,7 @@ namespace Magenheim.Runtime
     {
         private static void Prefix(Character __instance, HitData hit)
         {
+            DeepFractureCrystalCombatRuntime.ModifyOutgoingDamage(hit);
             DeepFractureCrystalCombatRuntime.ModifyIncomingDamage(__instance, hit);
         }
     }
@@ -61,6 +73,7 @@ namespace Magenheim.Runtime
         {
             if (__instance == null) return;
             var id = __instance.GetInstanceID();
+            if (__instance.IsDead()) { NextTick.Remove(id); return; }
             float next;
             if (NextTick.TryGetValue(id, out next) && Time.time < next) return;
             NextTick[id] = Time.time + DeepFractureCrystalCombatRuntime.RegenerationPeriod;
