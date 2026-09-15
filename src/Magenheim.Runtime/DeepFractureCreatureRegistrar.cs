@@ -13,6 +13,7 @@ internal sealed class DeepFractureCreatureRegistrar : IDisposable
 {
     internal const string AnnoyanceWispPrefix = "Magenheim_AnnoyanceWisp_";
     internal const string GeodeCrawlerPrefix = "Magenheim_GeodeCrawler_";
+    internal const string ShardlingPrefix = "Magenheim_Shardling_";
 
     private readonly ManualLogSource _log;
     private bool _subscribed;
@@ -34,11 +35,13 @@ internal sealed class DeepFractureCreatureRegistrar : IDisposable
         {
             var wispSource = RequireCreatureSource("Wisp");
             var crawlerSource = RequireCreatureSource("Tick");
+            var shardlingSource = RequireCreatureSource("Greydwarf");
             var registered = new List<string>();
             foreach (ElementalAlignment alignment in Enum.GetValues(typeof(ElementalAlignment)))
             {
                 registered.Add(RegisterAnnoyanceWisp(wispSource, alignment));
                 registered.Add(RegisterGeodeCrawler(crawlerSource, alignment));
+                registered.Add(RegisterShardling(shardlingSource, alignment));
             }
             _registered = true;
             _log.LogInfo($"Registered {registered.Count} additive Deep Fracture creature variants: {string.Join(", ", registered)}.");
@@ -74,36 +77,31 @@ internal sealed class DeepFractureCreatureRegistrar : IDisposable
 
     private static string RegisterAnnoyanceWisp(GameObject source, ElementalAlignment alignment)
     {
-        var prefabName = AnnoyanceWispPrefix + alignment;
-        var prefab = CloneVerified(prefabName, source);
-        var character = prefab.GetComponent<Character>();
-        character.m_name = $"{alignment} Annoyance Wisp";
-        character.m_health = 34f;
-        character.m_runSpeed = Mathf.Max(character.m_runSpeed, 5.5f);
-        character.m_walkSpeed = Mathf.Max(character.m_walkSpeed, 2.5f);
-        DeepFractureCreatureVisuals.ApplyAnnoyanceWisp(prefab, alignment);
-        PrefabManager.Instance.AddPrefab(new CustomPrefab(prefab, true));
-        return prefabName;
+        var prefabName = AnnoyanceWispPrefix + alignment; var prefab = CloneVerified(prefabName, source); var character = prefab.GetComponent<Character>();
+        character.m_name = $"{alignment} Annoyance Wisp"; character.m_health = 34f;
+        character.m_runSpeed = Mathf.Max(character.m_runSpeed, 5.5f); character.m_walkSpeed = Mathf.Max(character.m_walkSpeed, 2.5f);
+        DeepFractureCreatureVisuals.ApplyAnnoyanceWisp(prefab, alignment); PrefabManager.Instance.AddPrefab(new CustomPrefab(prefab, true)); return prefabName;
     }
 
     private static string RegisterGeodeCrawler(GameObject source, ElementalAlignment alignment)
     {
-        var prefabName = GeodeCrawlerPrefix + alignment;
-        var prefab = CloneVerified(prefabName, source);
-        var character = prefab.GetComponent<Character>();
-        character.m_name = $"{alignment} Geode Crawler";
-        character.m_health = 72f;
-        character.m_runSpeed = Mathf.Max(character.m_runSpeed, 4.0f);
-        character.m_walkSpeed = Mathf.Max(character.m_walkSpeed, 1.8f);
-        DeepFractureCreatureVisuals.ApplyGeodeCrawler(prefab, alignment);
-        PrefabManager.Instance.AddPrefab(new CustomPrefab(prefab, true));
-        return prefabName;
+        var prefabName = GeodeCrawlerPrefix + alignment; var prefab = CloneVerified(prefabName, source); var character = prefab.GetComponent<Character>();
+        character.m_name = $"{alignment} Geode Crawler"; character.m_health = 72f;
+        character.m_runSpeed = Mathf.Max(character.m_runSpeed, 4.0f); character.m_walkSpeed = Mathf.Max(character.m_walkSpeed, 1.8f);
+        DeepFractureCreatureVisuals.ApplyGeodeCrawler(prefab, alignment); PrefabManager.Instance.AddPrefab(new CustomPrefab(prefab, true)); return prefabName;
+    }
+
+    private static string RegisterShardling(GameObject source, ElementalAlignment alignment)
+    {
+        var prefabName = ShardlingPrefix + alignment; var prefab = CloneVerified(prefabName, source); var character = prefab.GetComponent<Character>();
+        character.m_name = $"{alignment} Shardling"; character.m_health = 48f;
+        character.m_runSpeed = Mathf.Max(character.m_runSpeed, 6.2f); character.m_walkSpeed = Mathf.Max(character.m_walkSpeed, 2.8f);
+        DeepFractureCreatureVisuals.ApplyShardling(prefab, alignment); PrefabManager.Instance.AddPrefab(new CustomPrefab(prefab, true)); return prefabName;
     }
 
     public void Dispose()
     {
         if (!_subscribed) return;
-        PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent;
-        _subscribed = false;
+        PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent; _subscribed = false;
     }
 }
