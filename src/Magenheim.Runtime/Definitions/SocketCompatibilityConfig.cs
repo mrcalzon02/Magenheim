@@ -6,6 +6,11 @@ using Magenheim.Core.Socketing;
 
 namespace Magenheim.Runtime.Definitions;
 
+internal sealed record EquipmentSocketIntegrationSettings(
+    bool JewelcraftingIntegrationEnabled,
+    bool PreferJewelcrafting,
+    bool FailClosedOnInteropError);
+
 internal static class SocketCompatibilityConfig
 {
     internal static SocketEligibilityPolicy Read(ConfigFile config)
@@ -60,6 +65,21 @@ internal static class SocketCompatibilityConfig
             identityComparison: identity.Value,
             includedItemNames: ParseCsv(includedItems.Value),
             excludedItemNames: ParseCsv(excludedItems.Value));
+    }
+
+    internal static EquipmentSocketIntegrationSettings ReadEquipmentIntegration(ConfigFile config)
+    {
+        if (config is null) throw new ArgumentNullException(nameof(config));
+
+        const string integration = "Socketing.Integration";
+        var enabled = config.Bind(integration, "EnableJewelcraftingIntegration", true,
+            "When Jewelcrafting is installed and its public API is compatible, allow it to own equipment socket storage and UI while Magenheim retains Crystal Shaping, refinement, crystal identity, architecture, furniture and production consumers.");
+        var preferJewelcrafting = config.Bind(integration, "PreferJewelcraftingEquipmentSockets", true,
+            "Prefer Jewelcrafting for equipment socket storage/UI when both mods are available. Disable to keep Magenheim's standalone equipment socket implementation.");
+        var failClosed = config.Bind(integration, "FailClosedOnJewelcraftingInteropError", true,
+            "If Jewelcrafting is detected but its compatibility boundary cannot be verified, block Magenheim equipment socket mutation instead of risking competing socket metadata. Has no effect when Jewelcrafting is absent or integration is disabled.");
+
+        return new EquipmentSocketIntegrationSettings(enabled.Value, preferJewelcrafting.Value, failClosed.Value);
     }
 
     private static string[] ParseCsv(string? value)
