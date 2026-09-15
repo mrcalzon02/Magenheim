@@ -10,7 +10,8 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal sealed class DarkThroneDaisRuntime : MonoBehaviour, Hoverable, Interactable
 {
-    internal const string MaliciousBloodPrefabName = "Magenheim_MaliciousBlood";
+    // Valheim 1.0 vanilla prefab: display name "Malicious Blood".
+    internal const string MaliciousBloodPrefabName = "HatefulBlood";
     private DarkThroneEncounterRuntime _encounter;
 
     internal void Bind(DarkThroneEncounterRuntime encounter)=>_encounter=encounter;
