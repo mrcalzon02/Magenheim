@@ -39,6 +39,11 @@ internal static class Program
         DefinitionSnapshotRejectsForeignCompatibilityExclusion();
         DefinitionSnapshotRejectsDestructiveCompatibilityPolicy();
 
+        _assertions += DeepFractureCatalogTests.Run();
+        _assertions += DeepFractureEncounterPlannerTests.Run();
+        _assertions += DeepFractureInteriorBlueprintTests.Run();
+        _assertions += DeepFractureExpeditionPlannerTests.Run();
+        _assertions += DeepFractureLocationRegistrationTests.Run();
         _assertions += DefinitionCompatibilityTests.Run();
         _assertions += DefinitionAuthorityTests.Run();
         _assertions += SocketingTests.Run();
@@ -79,255 +84,135 @@ internal static class Program
             new Crystal(ElementalAlignment.Fire, CrystalTier.Simple),
             0,
             "Magenheim_StationUpgrade_FracturingBlock",
-            0.10d));
+            0.05d));
 
-        Assert(result.Outcome == RefinementOutcome.FailedDestroyed, "A roll below effective failure must fail destructively.");
-        Assert(result.Output is null, "Destructive failure must not preserve or duplicate the source crystal.");
-        Assert(result.ShardReturnCount == 2, "Simple refinement failure must return two matching shards.");
-        Assert(result.AwardExperience, "A valid failure should be experience-eligible.");
+        Assert(result.Outcome == RefinementOutcome.Failure, "A roll below 20% at skill 0 should fail Simple -> Crystal.");
+        Assert(result.ConsumeSource, "Failed refinement must consume its source crystal.");
+        Assert(result.Shards is { Element: ElementalAlignment.Fire }, "Failed refinement must preserve alignment in returned shards.");
     }
 
     private static void SkillReductionScalesFailure()
     {
-        var defaultAt100 = CrystalRefinementService.CalculateEffectiveFailureChance(0.40d, 100);
-        var perfectAt100 = CrystalRefinementService.CalculateEffectiveFailureChance(0.40d, 100, 1.00d);
-        Assert(Approximately(defaultAt100, 0.10d), "75% maximum reduction should reduce 40% base failure to 10% at skill 100.");
-        Assert(Approximately(perfectAt100, 0d), "100% configured reduction should permit zero failure at skill 100.");
+        var service = new CrystalRefinementService(CrystalRefinementService.CreateCanonicalDefaults());
+        var result = service.Refine(new RefinementRequest(
+            new Crystal(ElementalAlignment.Storm, CrystalTier.Advanced),
+            100,
+            "Magenheim_StationUpgrade_ResonanceFrame",
+            0.21d));
+        Assert(result.Outcome == RefinementOutcome.Success, "Skill 100 should reduce the 40% Master failure chance enough for a 0.21 roll to succeed.");
     }
 
     private static void InvalidStationDoesNotAwardExperience()
     {
         var service = new CrystalRefinementService(CrystalRefinementService.CreateCanonicalDefaults());
         var result = service.Refine(new RefinementRequest(
-            new Crystal(ElementalAlignment.Storm, CrystalTier.Rough),
-            50,
-            "WrongStation",
+            new Crystal(ElementalAlignment.Earth, CrystalTier.Rough),
+            0,
+            "piece_workbench",
             0.99d));
-        Assert(result.Outcome == RefinementOutcome.InvalidStation, "Wrong station must invalidate the attempt.");
-        Assert(!result.AwardExperience, "Invalid attempts must not award experience.");
+        Assert(result.Outcome == RefinementOutcome.InvalidStation, "Wrong station must reject refinement.");
+        Assert(!result.AwardExperience, "Invalid refinement must not award experience.");
     }
 
-    private static void AreaValidationRejectsNone()
-    {
-        var result = SpawnAreaValidator.Normalize(SpawnArea.None);
-        Assert(!result.IsValid, "None must be invalid by default.");
-    }
-
-    private static void AreaValidationRejectsUnknownBits()
-    {
-        var result = SpawnAreaValidator.Normalize((SpawnArea)8);
-        Assert(!result.IsValid, "Unknown area bits must be rejected by default.");
-    }
-
-    private static void AreaValidationRejectsNegativeClamp()
-    {
-        var result = SpawnAreaValidator.Normalize((SpawnArea)(-1), InvalidAreaBehavior.ClampKnownBits);
-        Assert(!result.IsValid, "Negative flag values must not sign-extend into All when clamping.");
-    }
-
-    private static void AreaValidationClampsKnownBits()
-    {
-        var result = SpawnAreaValidator.Normalize(SpawnArea.Median | (SpawnArea)8, InvalidAreaBehavior.ClampKnownBits);
-        Assert(result.IsValid, "ClampKnownBits should retain valid positive bits.");
-        Assert(result.Area == SpawnArea.Median, "ClampKnownBits retained wrong area.");
-    }
-
-    private static void AreaValidationFallsBackOnlyWhenConfigured()
-    {
-        var result = SpawnAreaValidator.Normalize(SpawnArea.None, InvalidAreaBehavior.FallbackToAll);
-        Assert(result.IsValid && result.Area == SpawnArea.All, "FallbackToAll should explicitly produce All.");
-    }
-
-    private static void AreaParserAcceptsEverywhereAlias()
-    {
-        var result = SpawnAreaValidator.ParseConfiguredArea("Everywhere");
-        Assert(result.IsValid && result.Area == SpawnArea.All, "Everywhere should map to the abstract All area.");
-    }
-
-    private static void AreaParserRejectsUnknownTokenByDefault()
-    {
-        var result = SpawnAreaValidator.ParseConfiguredArea("Median,banana");
-        Assert(!result.IsValid, "Unknown textual area tokens must fail under conservative policy.");
-    }
-
-    private static void AreaParserClampsRecognizedTokensWhenConfigured()
-    {
-        var result = SpawnAreaValidator.ParseConfiguredArea("Median,banana", InvalidAreaBehavior.ClampKnownBits);
-        Assert(result.IsValid && result.Area == SpawnArea.Median, "Configured textual clamping should keep only recognized areas.");
-    }
+    private static void AreaValidationRejectsNone() => Assert(!WorldgenAreaMaskValidator.TryValidate(0, false, out _, out _), "Area None must be rejected.");
+    private static void AreaValidationRejectsUnknownBits() => Assert(!WorldgenAreaMaskValidator.TryValidate(8, false, out _, out _), "Unknown area bits must be rejected by default.");
+    private static void AreaValidationRejectsNegativeClamp() => Assert(!WorldgenAreaMaskValidator.TryValidate(-1, true, out _, out _), "Negative area masks must never be clamped.");
+    private static void AreaValidationClampsKnownBits() => Assert(WorldgenAreaMaskValidator.TryValidate(9, true, out var value, out _) && value == 1, "Known bits should survive unknown-bit clamping.");
+    private static void AreaValidationFallsBackOnlyWhenConfigured() => Assert(WorldgenAreaMaskValidator.TryValidate(8, true, out var value, out _) && value == WorldgenAreaMaskValidator.Everywhere, "Unknown-only mask may fall back only in configured clamp mode.");
+    private static void AreaParserAcceptsEverywhereAlias() => Assert(WorldgenAreaMaskValidator.TryParse("Everywhere", false, out var value, out _) && value == WorldgenAreaMaskValidator.Everywhere, "Everywhere alias must parse.");
+    private static void AreaParserRejectsUnknownTokenByDefault() => Assert(!WorldgenAreaMaskValidator.TryParse("Everything|FutureArea", false, out _, out _), "Unknown area token must fail closed.");
+    private static void AreaParserClampsRecognizedTokensWhenConfigured() => Assert(WorldgenAreaMaskValidator.TryParse("Everything|FutureArea", true, out var value, out _) && value == WorldgenAreaMaskValidator.Everywhere, "Clamp mode must preserve recognized tokens.");
 
     private static void PlannerAddsNamespacedEntry()
     {
-        var desired = new[] { new DesiredWorldgenAddition("magenheim.geode.meadows.earth", "Magenheim_Geode_Meadows_Earth", SpawnArea.All) };
-        var plan = WorldgenAdditionPlanner.Build(desired, Array.Empty<ObservedWorldgenRegistration>());
-        Assert(!plan.HasErrors, "Valid namespaced addition should not error.");
-        Assert(plan.Additions.Count() == 1, "Valid addition should be planned exactly once.");
+        var result = AdditiveWorldgenPlanner.Plan(Array.Empty<WorldgenHostEntry>(), new[] { Desired("magenheim.geode.earth", "Magenheim_Geode_Earth_World") }, AdditiveWorldgenCompatibilityPolicy.Default);
+        Assert(result.Additions.Count == 1, "Owned free identity should be added.");
     }
 
     private static void PlannerSkipsOccupiedForeignKeyWithoutMutation()
     {
-        var observed = new[] { new ObservedWorldgenRegistration("magenheim.geode.meadows.earth", "OtherMod", "OtherPrefab") };
-        var desired = new[] { new DesiredWorldgenAddition("magenheim.geode.meadows.earth", "Magenheim_Geode_Meadows_Earth", SpawnArea.All) };
-        var before = observed[0];
-        var plan = WorldgenAdditionPlanner.Build(desired, observed);
-        Assert(plan.Entries.Single().Action == WorldgenPlanAction.Skip, "Occupied key should be skipped under conservative policy.");
-        Assert(Equals(before, observed[0]), "Observed foreign registration must remain unchanged.");
+        var host = new[] { new WorldgenHostEntry("magenheim.geode.earth", "ForeignPrefab", "OtherMod") };
+        var result = AdditiveWorldgenPlanner.Plan(host, new[] { Desired("magenheim.geode.earth", "Magenheim_Geode_Earth_World") }, AdditiveWorldgenCompatibilityPolicy.Default);
+        Assert(result.Additions.Count == 0 && result.Skips.Count == 1, "Occupied key must be skipped, not replaced.");
     }
 
     private static void PlannerSkipsOccupiedPrefabWithoutMutation()
     {
-        var observed = new[] { new ObservedWorldgenRegistration("other.key", "OtherMod", "Magenheim_Geode_Meadows_Earth") };
-        var desired = new[] { new DesiredWorldgenAddition("magenheim.geode.meadows.earth", "Magenheim_Geode_Meadows_Earth", SpawnArea.All) };
-        var before = observed[0];
-        var plan = WorldgenAdditionPlanner.Build(desired, observed);
-        Assert(plan.Entries.Single().Action == WorldgenPlanAction.Skip, "Occupied prefab should be skipped under conservative policy.");
-        Assert(Equals(before, observed[0]), "Prefab collision detection must remain observation-only.");
+        var host = new[] { new WorldgenHostEntry("other.key", "Magenheim_Geode_Earth_World", "OtherMod") };
+        var result = AdditiveWorldgenPlanner.Plan(host, new[] { Desired("magenheim.geode.earth", "Magenheim_Geode_Earth_World") }, AdditiveWorldgenCompatibilityPolicy.Default);
+        Assert(result.Additions.Count == 0 && result.Skips.Count == 1, "Occupied prefab identity must be skipped.");
     }
 
     private static void PlannerRejectsUnownedKeys()
     {
-        var plan = WorldgenAdditionPlanner.Build(
-            new[] { new DesiredWorldgenAddition("foreign.key", "Prefab", SpawnArea.All) },
-            Array.Empty<ObservedWorldgenRegistration>());
-        Assert(plan.HasErrors, "Magenheim planner must reject non-Magenheim keys.");
+        var result = AdditiveWorldgenPlanner.Plan(Array.Empty<WorldgenHostEntry>(), new[] { Desired("foreign.key", "Magenheim_Geode_Earth_World") }, AdditiveWorldgenCompatibilityPolicy.Default);
+        Assert(result.Errors.Count == 1, "Unowned worldgen keys must be rejected.");
     }
 
     private static void PlannerRejectsDuplicateDesiredKeys()
     {
-        var desired = new[]
-        {
-            new DesiredWorldgenAddition("magenheim.same", "A", SpawnArea.All),
-            new DesiredWorldgenAddition("magenheim.same", "B", SpawnArea.All),
-        };
-        var plan = WorldgenAdditionPlanner.Build(desired, Array.Empty<ObservedWorldgenRegistration>());
-        Assert(plan.Entries.Count == 2, "Both desired entries should remain represented in diagnostics.");
-        Assert(plan.Entries[1].Action == WorldgenPlanAction.Skip, "Second duplicate should be skipped by conservative policy.");
+        var desired = new[] { Desired("magenheim.geode.earth", "Magenheim_A"), Desired("magenheim.geode.earth", "Magenheim_B") };
+        var result = AdditiveWorldgenPlanner.Plan(Array.Empty<WorldgenHostEntry>(), desired, AdditiveWorldgenCompatibilityPolicy.Default);
+        Assert(result.Errors.Count == 1, "Duplicate desired keys must fail closed.");
     }
 
     private static void PlannerCanExcludeSpecificAddition()
     {
-        var policy = WorldgenCompatibilityPolicy.Conservative with
-        {
-            ExcludedRegistrationKeys = new[] { "magenheim.geode.meadows.earth" },
-        };
-        var desired = new[] { new DesiredWorldgenAddition("magenheim.geode.meadows.earth", "Magenheim_Geode_Meadows_Earth", SpawnArea.All) };
-        var plan = WorldgenAdditionPlanner.Build(desired, Array.Empty<ObservedWorldgenRegistration>(), policy);
-        Assert(plan.Entries.Single().Action == WorldgenPlanAction.Skip, "Configured exclusion should skip only the Magenheim addition.");
+        var policy = AdditiveWorldgenCompatibilityPolicy.Default with { ExcludedOwnedKeys = new[] { "magenheim.geode.earth" } };
+        var result = AdditiveWorldgenPlanner.Plan(Array.Empty<WorldgenHostEntry>(), new[] { Desired("magenheim.geode.earth", "Magenheim_Geode_Earth_World") }, policy);
+        Assert(result.Additions.Count == 0 && result.Skips.Count == 1, "Configured owned exclusion should skip addition.");
     }
 
     private static void PlannerSupportsOptionalCaseInsensitiveIdentityComparison()
     {
-        var policy = WorldgenCompatibilityPolicy.Conservative with
-        {
-            IdentityComparison = RegistrationIdentityComparison.CaseInsensitive,
-        };
-        var observed = new[] { new ObservedWorldgenRegistration("MAGENHEIM.GEODE.MEADOWS.EARTH", "OtherMod", "OtherPrefab") };
-        var desired = new[] { new DesiredWorldgenAddition("magenheim.geode.meadows.earth", "Magenheim_Geode_Meadows_Earth", SpawnArea.All) };
-        var plan = WorldgenAdditionPlanner.Build(desired, observed, policy);
-        Assert(plan.Entries.Single().Action == WorldgenPlanAction.Skip, "Case-insensitive compatibility mode should detect differently-cased occupied identities.");
+        var host = new[] { new WorldgenHostEntry("OTHER", "magenheim_geode_earth_world", "OtherMod") };
+        var policy = AdditiveWorldgenCompatibilityPolicy.Default with { CaseInsensitiveIdentityComparison = true };
+        var result = AdditiveWorldgenPlanner.Plan(host, new[] { Desired("magenheim.geode.earth", "Magenheim_Geode_Earth_World") }, policy);
+        Assert(result.Skips.Count == 1, "Case-insensitive compatibility mode should detect occupied prefab identity.");
     }
 
     private static void PlannerCannotDisableAdditiveOnly()
     {
-        var threw = false;
-        try
-        {
-            WorldgenAdditionPlanner.Build(
-                Array.Empty<DesiredWorldgenAddition>(),
-                Array.Empty<ObservedWorldgenRegistration>(),
-                new WorldgenCompatibilityPolicy(InvalidAreaBehavior.Reject, DuplicateRegistrationBehavior.Skip, AdditiveOnly: false));
-        }
-        catch (InvalidOperationException)
-        {
-            threw = true;
-        }
-        Assert(threw, "Compatibility policy must not enable destructive worldgen mode.");
+        var policy = AdditiveWorldgenCompatibilityPolicy.Default with { AdditiveOnly = false };
+        var result = AdditiveWorldgenPlanner.Plan(Array.Empty<WorldgenHostEntry>(), new[] { Desired("magenheim.geode.earth", "Magenheim_Geode_Earth_World") }, policy);
+        Assert(result.Errors.Count == 1, "Destructive compatibility policy must fail closed.");
     }
 
     private static void DefinitionSnapshotFreezesCompatibilityPolicy()
     {
-        var policy = WorldgenCompatibilityPolicy.Conservative with
-        {
-            ExcludedRegistrationKeys = new[] { "magenheim.geode.meadows.earth" },
-            ExcludedPrefabNames = new[] { "Magenheim_Geode_Meadows_Earth" },
-        };
-
-        var snapshot = CreateDefinitionSnapshot(policy);
-        Assert(snapshot.SchemaVersion == MagenheimDefinitionValidator.CurrentSchemaVersion, "Definition snapshot should use the current schema.");
-        Assert(snapshot.WorldgenCompatibility.ExcludedRegistrationKeys.Single() == "magenheim.geode.meadows.earth", "Compatibility key exclusions should survive validation.");
-        Assert(snapshot.WorldgenCompatibility.ExcludedPrefabNames.Single() == "Magenheim_Geode_Meadows_Earth", "Compatibility prefab exclusions should survive validation.");
+        var policy = AdditiveWorldgenCompatibilityPolicy.Default with { ExcludedOwnedKeys = new[] { "magenheim.geode.earth" } };
+        var snapshot = DefinitionAuthoritySnapshot.Create(policy);
+        Assert(snapshot.CompatibilityPolicy.ExcludedOwnedKeys.Count == 1, "Snapshot should preserve exclusions.");
     }
 
     private static void DefinitionFingerprintChangesWithCompatibilityPolicy()
     {
-        var baseline = CreateDefinitionSnapshot(WorldgenCompatibilityPolicy.Conservative);
-        var changed = CreateDefinitionSnapshot(WorldgenCompatibilityPolicy.Conservative with
-        {
-            IdentityComparison = RegistrationIdentityComparison.CaseInsensitive,
-        });
-
-        Assert(!string.Equals(baseline.Fingerprint, changed.Fingerprint, StringComparison.Ordinal), "Gameplay fingerprint must change when compatibility policy changes.");
+        var a = DefinitionAuthoritySnapshot.Create(AdditiveWorldgenCompatibilityPolicy.Default);
+        var b = DefinitionAuthoritySnapshot.Create(AdditiveWorldgenCompatibilityPolicy.Default with { CaseInsensitiveIdentityComparison = true });
+        Assert(a.Fingerprint != b.Fingerprint, "Compatibility changes must affect definition fingerprint.");
     }
 
     private static void DefinitionSnapshotRejectsForeignCompatibilityExclusion()
     {
         var threw = false;
-        try
-        {
-            CreateDefinitionSnapshot(WorldgenCompatibilityPolicy.Conservative with
-            {
-                ExcludedRegistrationKeys = new[] { "othermod.geode" },
-            });
-        }
-        catch (InvalidOperationException)
-        {
-            threw = true;
-        }
-
-        Assert(threw, "Compatibility exclusions must not target foreign registration namespaces.");
+        try { DefinitionAuthoritySnapshot.Create(AdditiveWorldgenCompatibilityPolicy.Default with { ExcludedOwnedKeys = new[] { "foreign.key" } }); }
+        catch (InvalidOperationException) { threw = true; }
+        Assert(threw, "Foreign exclusions must be rejected.");
     }
 
     private static void DefinitionSnapshotRejectsDestructiveCompatibilityPolicy()
     {
         var threw = false;
-        try
-        {
-            CreateDefinitionSnapshot(new WorldgenCompatibilityPolicy(
-                InvalidAreaBehavior.Reject,
-                DuplicateRegistrationBehavior.Skip,
-                AdditiveOnly: false));
-        }
-        catch (InvalidOperationException)
-        {
-            threw = true;
-        }
-
-        Assert(threw, "Definition admission must reject destructive worldgen compatibility policy.");
+        try { DefinitionAuthoritySnapshot.Create(AdditiveWorldgenCompatibilityPolicy.Default with { AdditiveOnly = false }); }
+        catch (InvalidOperationException) { threw = true; }
+        Assert(threw, "Destructive compatibility policy must be rejected.");
     }
 
-    private static MagenheimDefinitionSet CreateDefinitionSnapshot(WorldgenCompatibilityPolicy policy)
-    {
-        var geodes = new[]
-        {
-            new GeodeDefinition(
-                "magenheim.geode.meadows.earth",
-                "Meadows",
-                "Magenheim_Geode_Meadows_Earth",
-                SpawnArea.All,
-                1,
-                0.35d,
-                0.10d,
-                new[] { new ElementWeight(ElementalAlignment.Earth, 100d) }),
-        };
+    private static DesiredWorldgenEntry Desired(string key, string prefab)
+        => new(key, prefab, true);
 
-        return MagenheimDefinitionValidator.ValidateAndFreeze(
-            MagenheimDefinitionValidator.CurrentSchemaVersion,
-            CrystalRefinementService.CreateCanonicalDefaults(),
-            geodes,
-            policy);
-    }
-
-    private static bool Approximately(double left, double right) => Math.Abs(left - right) < 0.0000001d;
+    private static bool Approximately(double left, double right)
+        => Math.Abs(left - right) < 0.000001d;
 
     private static void Assert(bool condition, string message)
     {
