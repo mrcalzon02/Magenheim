@@ -60,6 +60,7 @@ internal static class DefinitionAuthorityTests
         assertions += DeepFractureLocationRegistrationTests.Run();
         assertions += GeodeCrackingTests.Run();
         assertions += GeodeOpeningTransactionTests.Run();
+        assertions += UnderworldDefinitionTests.Run();
         return assertions;
     }
 }
