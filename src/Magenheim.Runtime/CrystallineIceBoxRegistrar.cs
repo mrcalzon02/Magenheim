@@ -126,6 +126,7 @@ internal sealed class CrystallineIceBoxRegistrar : IDisposable
             producer.m_coverPoint = harvestPoint.transform;
 
             ConfigureCollider(prefab);
+            PlacementSnapAuthority.FitRectangle(prefab, 2.55f, 1.62f);
             var wear = prefab.GetComponent<WearNTear>();
             if (wear)
             {
