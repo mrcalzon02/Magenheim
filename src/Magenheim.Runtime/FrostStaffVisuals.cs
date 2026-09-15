@@ -37,9 +37,9 @@ internal static class FrostStaffVisuals
         var paleWood = Material(sourceMaterial, "pale-wood", new Color(.46f, .36f, .27f, 1f), 0f, .16f);
         var iron = Material(sourceMaterial, "iron", new Color(.36f, .40f, .43f, 1f), .42f, .22f);
         var silver = Material(sourceMaterial, "silver", new Color(.67f, .75f, .80f, 1f), .62f, .34f);
-        var frost = Material(sourceMaterial, "frost", new Color(.44f, .78f, .92f, 1f), .08f, .58f, .16f);
-        var frostBright = Material(sourceMaterial, "frost-bright", new Color(.73f, .93f, .98f, 1f), .05f, .72f, .28f);
-        var frostDeep = Material(sourceMaterial, "frost-deep", new Color(.22f, .51f, .72f, 1f), .10f, .48f, .12f);
+        var frost = Material(sourceMaterial, "frost-crystal", new Color(.44f, .78f, .92f, 1f), .08f, .58f, .16f);
+        var frostBright = Material(sourceMaterial, "frost-bright-crystal", new Color(.73f, .93f, .98f, 1f), .05f, .72f, .28f);
+        var frostDeep = Material(sourceMaterial, "frost-deep-crystal", new Color(.22f, .51f, .72f, 1f), .10f, .48f, .12f);
 
         switch (assetName)
         {
@@ -145,9 +145,7 @@ internal static class FrostStaffVisuals
     private static Material Material(Material source, string suffix, Color color, float metallic, float glossiness, float emission = 0f)
     {
         var material = new Material(source) { name = "magenheim.frost-staff." + suffix };
-        material.mainTexture = Texture2D.whiteTexture;
-        material.mainTextureScale = Vector2.one;
-        material.mainTextureOffset = Vector2.zero;
+        GeneratedSurfaceTextures.Apply(material, suffix);
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", glossiness);
