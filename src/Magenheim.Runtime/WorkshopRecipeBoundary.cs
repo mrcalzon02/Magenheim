@@ -1,36 +1,54 @@
 using System;
 using System.Collections.Generic;
-using BepInEx.Logging;
-using UnityEngine;
+using HarmonyLib;
 
 namespace Magenheim.Runtime;
 
-/// <summary>Keeps the Geologist's Workstation a specialist Magenheim crafting surface.</summary>
-internal sealed class WorkshopRecipeBoundary : MonoBehaviour
+/// <summary>
+/// Non-destructive recipe visibility boundary for the specialist Geologist's Workstation.
+/// Foreign recipes are suppressed only while InventoryGui rebuilds this station's recipe list;
+/// their ObjectDB records and original enabled state are restored immediately afterwards.
+/// </summary>
+[HarmonyPatch(typeof(InventoryGui), "UpdateRecipeList")]
+internal static class WorkshopRecipeBoundary
 {
-    private ManualLogSource? _log;
-    private float _nextAudit;
-    private readonly HashSet<int> _reported = new HashSet<int>();
+    private static readonly Dictionary<Recipe, bool> SavedEnabledState = new Dictionary<Recipe, bool>();
 
-    internal void Configure(ManualLogSource log) => _log = log ?? throw new ArgumentNullException(nameof(log));
-
-    private void Update()
+    private static void Prefix()
     {
-        if (Time.unscaledTime < _nextAudit) return;
-        _nextAudit = Time.unscaledTime + 2f;
+        Restore();
+        var player = Player.m_localPlayer;
         var database = ObjectDB.instance;
-        if (database == null || database.m_recipes == null) return;
+        if (player == null || database == null || database.m_recipes == null) return;
+        var station = player.GetCurrentCraftingStation();
+        if (!TargetsStation(station)) return;
+
         foreach (var recipe in database.m_recipes)
         {
             if (recipe == null || recipe.m_craftingStation == null || !TargetsStation(recipe.m_craftingStation) || IsMagenheimRecipe(recipe)) continue;
-            var id = recipe.GetInstanceID();
-            recipe.m_craftingStation = null;
-            if (_reported.Add(id)) _log?.LogWarning($"Detached foreign recipe '{recipe.name}' from the Geologist's Workstation specialist recipe boundary.");
+            SavedEnabledState[recipe] = recipe.m_enabled;
+            recipe.m_enabled = false;
         }
     }
 
-    private static bool TargetsStation(CraftingStation station)
+    private static void Postfix() => Restore();
+
+    private static Exception? Finalizer(Exception? __exception)
     {
+        Restore();
+        return __exception;
+    }
+
+    private static void Restore()
+    {
+        foreach (var pair in SavedEnabledState)
+            if (pair.Key != null) pair.Key.m_enabled = pair.Value;
+        SavedEnabledState.Clear();
+    }
+
+    private static bool TargetsStation(CraftingStation? station)
+    {
+        if (station == null) return false;
         var name = station.gameObject != null ? station.gameObject.name : station.name;
         return string.Equals(Normalize(name), WorkshopRegistrar.StationPrefab, StringComparison.Ordinal);
     }
