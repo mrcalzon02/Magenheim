@@ -83,6 +83,7 @@ internal sealed class FurnitureRegistrar : IDisposable
         var visual = FurnitureVisuals.Apply(prefab, definition.ModelId);
         ConfigureWear(prefab, visual);
         ConfigureColliders(prefab, definition.ModelId);
+        PlacementSnapAuthority.AlignToBase(prefab);
 
         if (!PieceManager.Instance.AddPiece(custom))
             throw new InvalidOperationException($"Jotunn refused furniture piece '{definition.PrefabName}'.");
