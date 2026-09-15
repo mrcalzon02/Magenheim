@@ -9,12 +9,7 @@ namespace Magenheim.Runtime;
 /// <summary>Original procedural geometry for Magenheim's elemental banner families.</summary>
 internal static class CrystalBannerVisuals
 {
-    internal enum BannerStyle
-    {
-        Standard,
-        Swallowtail,
-        Pennant
-    }
+    internal enum BannerStyle { Standard, Swallowtail, Pennant }
 
     private static readonly Mesh BoxMesh = CreateBoxMesh();
     private static readonly Dictionary<int, Mesh> CylinderMeshes = new();
@@ -23,15 +18,11 @@ internal static class CrystalBannerVisuals
     internal static GameObject Apply(GameObject prefab, BannerStyle style, ElementalAlignment element)
     {
         if (prefab is null) throw new ArgumentNullException(nameof(prefab));
-
         var original = prefab.GetComponentsInChildren<Renderer>(true);
         var source = original.Select(renderer => renderer.sharedMaterial).FirstOrDefault(material => material)
             ?? throw new InvalidOperationException($"No material source exists on banner host '{prefab.name}'.");
 
-        var root = new GameObject($"magenheim.banner.{style.ToString().ToLowerInvariant()}.{element.ToString().ToLowerInvariant()}.visual")
-        {
-            layer = prefab.layer
-        };
+        var root = new GameObject($"magenheim.banner.{style.ToString().ToLowerInvariant()}.{element.ToString().ToLowerInvariant()}.visual") { layer = prefab.layer };
         root.transform.SetParent(prefab.transform, false);
 
         var tint = ElementVisualPalette.Tint(element);
@@ -39,10 +30,7 @@ internal static class CrystalBannerVisuals
         var clothBright = Material(source, "cloth-bright", tint, 0f, .12f, .06f);
         var wood = Material(source, "wood", new Color(.24f, .15f, .08f, 1f), 0f, .12f);
         var iron = Material(source, "iron", new Color(.28f, .31f, .34f, 1f), .62f, .28f);
-        var crystal = Material(source, "crystal", new Color(
-            Mathf.Min(1f, tint.r * 1.15f + .08f),
-            Mathf.Min(1f, tint.g * 1.15f + .08f),
-            Mathf.Min(1f, tint.b * 1.15f + .08f), 1f), .03f, .78f, .34f);
+        var crystal = Material(source, "crystal", new Color(Mathf.Min(1f, tint.r * 1.15f + .08f), Mathf.Min(1f, tint.g * 1.15f + .08f), Mathf.Min(1f, tint.b * 1.15f + .08f), 1f), .03f, .78f, .34f);
 
         Cylinder(root, "top-rod", new Vector3(0f, .72f, 0f), .035f, 1.12f, 10, wood, new Vector3(0f, 0f, 90f));
         Cylinder(root, "left-cap", new Vector3(-.59f, .72f, 0f), .055f, .10f, 8, iron, new Vector3(0f, 0f, 90f));
@@ -50,24 +38,14 @@ internal static class CrystalBannerVisuals
 
         switch (style)
         {
-            case BannerStyle.Standard:
-                BuildStandard(root, cloth, clothBright, iron, crystal);
-                break;
-            case BannerStyle.Swallowtail:
-                BuildSwallowtail(root, cloth, clothBright, iron, crystal);
-                break;
-            case BannerStyle.Pennant:
-                BuildPennant(root, cloth, clothBright, iron, crystal);
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(style), style, null);
+            case BannerStyle.Standard: BuildStandard(root, cloth, clothBright, iron, crystal); break;
+            case BannerStyle.Swallowtail: BuildSwallowtail(root, cloth, clothBright, iron, crystal); break;
+            case BannerStyle.Pennant: BuildPennant(root, cloth, clothBright, iron, crystal); break;
+            default: throw new ArgumentOutOfRangeException(nameof(style), style, null);
         }
 
-        foreach (var renderer in original)
-            renderer.enabled = false;
-        foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true))
-            lod.enabled = false;
-
+        foreach (var renderer in original) renderer.enabled = false;
+        foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled = false;
         return root;
     }
 
@@ -132,21 +110,13 @@ internal static class CrystalBannerVisuals
 
     private static void Cylinder(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material, Vector3? rotation = null)
     {
-        if (!CylinderMeshes.TryGetValue(sides, out var mesh))
-        {
-            mesh = CreateCylinderMesh(sides);
-            CylinderMeshes.Add(sides, mesh);
-        }
+        if (!CylinderMeshes.TryGetValue(sides, out var mesh)) { mesh = CreateCylinderMesh(sides); CylinderMeshes.Add(sides, mesh); }
         AddPart(root, name, mesh, position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.Euler(rotation ?? Vector3.zero), material);
     }
 
     private static void Prism(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material, Vector3? rotation = null)
     {
-        if (!PrismMeshes.TryGetValue(sides, out var mesh))
-        {
-            mesh = CreatePrismMesh(sides);
-            PrismMeshes.Add(sides, mesh);
-        }
+        if (!PrismMeshes.TryGetValue(sides, out var mesh)) { mesh = CreatePrismMesh(sides); PrismMeshes.Add(sides, mesh); }
         AddPart(root, name, mesh, position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.Euler(rotation ?? Vector3.zero), material);
     }
 
@@ -169,13 +139,8 @@ internal static class CrystalBannerVisuals
             new Vector3(-.5f,-.5f,-.5f), new Vector3(.5f,-.5f,-.5f), new Vector3(.5f,.5f,-.5f), new Vector3(-.5f,.5f,-.5f),
             new Vector3(-.5f,-.5f,.5f), new Vector3(.5f,-.5f,.5f), new Vector3(.5f,.5f,.5f), new Vector3(-.5f,.5f,.5f),
         };
-        mesh.triangles = new[]
-        {
-            0,3,2, 0,2,1, 4,5,6, 4,6,7, 0,4,7, 0,7,3,
-            1,2,6, 1,6,5, 0,1,5, 0,5,4, 3,7,6, 3,6,2,
-        };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        return mesh;
+        mesh.triangles = new[] { 0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2 };
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 
     private static Mesh CreateCylinderMesh(int sides)
@@ -196,11 +161,10 @@ internal static class CrystalBannerVisuals
         for (var i = 0; i < sides; i++)
         {
             var next = (i + 1) % sides;
-            triangles.AddRange(new[] { i, next, sides + i, next, sides + next, sides + i, bottom, next, i, top, sides + i, sides + next });
+            triangles.AddRange(new[] { i, sides + i, next, next, sides + i, sides + next, bottom, i, next, top, sides + next, sides + i });
         }
         var mesh = new Mesh { name = "magenheim.banner.cylinder." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        return mesh;
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 
     private static Mesh CreatePrismMesh(int sides)
@@ -222,10 +186,9 @@ internal static class CrystalBannerVisuals
         for (var i = 0; i < sides; i++)
         {
             var next = (i + 1) % sides;
-            triangles.AddRange(new[] { bottom, next, i, i, next, sides + i, next, sides + next, sides + i, sides + i, sides + next, top });
+            triangles.AddRange(new[] { bottom, i, next, i, sides + i, next, next, sides + i, sides + next, top, sides + next, sides + i });
         }
         var mesh = new Mesh { name = "magenheim.banner.prism." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        return mesh;
+        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 }
