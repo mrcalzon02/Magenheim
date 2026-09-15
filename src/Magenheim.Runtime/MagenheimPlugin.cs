@@ -57,147 +57,36 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
         try
         {
             ModQuery.Enable();
-
-            var assemblyDirectory = Path.GetDirectoryName(typeof(MagenheimPlugin).Assembly.Location)
-                ?? throw new InvalidOperationException("Unable to determine the Magenheim plugin directory.");
+            var assemblyDirectory = Path.GetDirectoryName(typeof(MagenheimPlugin).Assembly.Location) ?? throw new InvalidOperationException("Unable to determine the Magenheim plugin directory.");
             var definitionPath = Path.Combine(assemblyDirectory, "default-data", "foundation.json");
             var baselineDefinitions = MagenheimDefinitionLoader.LoadFromFile(definitionPath);
             var effectiveDefinitions = MagenheimBalanceConfig.Apply(Config, baselineDefinitions);
             var socketPolicy = SocketCompatibilityConfig.Read(Config);
             var socketIntegration = SocketCompatibilityConfig.ReadEquipmentIntegration(Config);
-            var socketProvider = JewelcraftingCompatibility.SelectProvider(
-                socketIntegration.JewelcraftingIntegrationEnabled,
-                socketIntegration.PreferJewelcrafting,
-                socketIntegration.FailClosedOnInteropError);
-            var nativeSocketRuntimeEnabled = socketProvider.Backend == EquipmentSocketBackend.Magenheim
-                && socketProvider.MayMutateEquipmentSockets;
+            var socketProvider = JewelcraftingCompatibility.SelectProvider(socketIntegration.JewelcraftingIntegrationEnabled, socketIntegration.PreferJewelcrafting, socketIntegration.FailClosedOnInteropError);
+            var nativeSocketRuntimeEnabled = socketProvider.Backend == EquipmentSocketBackend.Magenheim && socketProvider.MayMutateEquipmentSockets;
             var socketEffectsEnabled = socketProvider.MayMutateEquipmentSockets;
-
             Logger.LogInfo($"Equipment socket provider: {socketProvider.Backend}. {socketProvider.Diagnostic}");
-
             _services = RuntimeServices.Create(effectiveDefinitions, socketPolicy);
-            _authoritySynchronizer = new DefinitionAuthoritySynchronizer(
-                effectiveDefinitions,
-                socketPolicy,
-                _services.GeodeOpeningOperations,
-                _services.RefinementOperations,
-                _services.SocketOperations,
-                _services.SocketExtractionOperations,
-                Logger);
-
+            _authoritySynchronizer = new DefinitionAuthoritySynchronizer(effectiveDefinitions, socketPolicy, _services.GeodeOpeningOperations, _services.RefinementOperations, _services.SocketOperations, _services.SocketExtractionOperations, Logger);
             WorkshopOperationCatalog.Configure(effectiveDefinitions);
             WorkshopOperationsRuntime.Configure(_services, _authoritySynchronizer, Logger);
             WorkshopOperationRpc.Register(_services, _authoritySynchronizer, Logger);
-
-            if (nativeSocketRuntimeEnabled)
-            {
-                SocketOperationRpc.Register(_services, _authoritySynchronizer, Logger);
-                SocketTooltipRuntime.Configure(effectiveDefinitions);
-                _socketWorkstationOverlay = gameObject.AddComponent<SocketWorkstationOverlay>();
-                _socketWorkstationOverlay.Configure(_services, _authoritySynchronizer, Logger);
-            }
-
-            if (socketEffectsEnabled)
-            {
-                SocketEffectsRuntime.Configure(effectiveDefinitions, Logger, socketProvider.Backend, socketIntegration.MagenheimResonanceMultipliers);
-                SocketBehaviorRuntime.Configure(Logger, socketProvider.Backend, socketIntegration.MagenheimResonanceMultipliers);
-            }
-
-            _harmony = new Harmony(PluginGuid + ".gameplay");
-            _harmony.PatchAll(typeof(WorkshopCraftingPatch));
-            _harmony.PatchAll(typeof(CrystalShapingSkillVisibility));
-            _harmony.PatchAll(typeof(EarthAbilityHitPatch));
-
-            if (socketEffectsEnabled)
-            {
-                _harmony.PatchAll(typeof(SocketDamagePatch));
-                _harmony.PatchAll(typeof(SocketArmorPatch));
-                _harmony.PatchAll(typeof(SocketBlockPowerPatch));
-                _harmony.PatchAll(typeof(SocketCarryWeightPatch));
-                _harmony.PatchAll(typeof(StormSocketHitPatch));
-                _harmony.PatchAll(typeof(EarthSocketHitPatch));
-            }
-
-            if (nativeSocketRuntimeEnabled)
-            {
-                _harmony.PatchAll(typeof(SocketTooltipPatch));
-                _harmony.PatchAll(typeof(CrystalEnchantingDaisSocketPatch));
-            }
-
-            _deepFractureRoomRegistrar = new DeepFractureRoomRegistrar(Logger);
-            _deepFractureRoomRegistrar.Register();
-            _deepFractureLocationRegistrar = new DeepFractureLocationRegistrar(new DeepFractureInteriorBinder(), Logger);
-            _deepFractureLocationRegistrar.Register();
-            _deepFractureCreatureRegistrar = new DeepFractureCreatureRegistrar(Logger);
-            _deepFractureCreatureRegistrar.Register();
-
-            _earthContentRegistrar = new EarthContentRegistrar(Logger);
-            _earthContentRegistrar.Register();
-            if (socketProvider.Backend == EquipmentSocketBackend.Jewelcrafting)
-            {
-                _jewelcraftingCrystalRegistrar = new JewelcraftingCrystalRegistrar(Logger);
-                _jewelcraftingCrystalRegistrar.Register();
-            }
-
-            _workshopRegistrar = new WorkshopRegistrar(Logger); _workshopRegistrar.Register();
-            _furnitureRegistrar = new FurnitureRegistrar(Logger); _furnitureRegistrar.Register();
-            _geologyDecorRegistrar = new GeologyDecorRegistrar(Logger); _geologyDecorRegistrar.Register();
-            _crystalArchitectureRegistrar = new CrystalArchitectureRegistrar(Logger); _crystalArchitectureRegistrar.Register();
-            _crystalBannerRegistrar = new CrystalBannerRegistrar(Logger); _crystalBannerRegistrar.Register();
-            _crystalSentinelRegistrar = new CrystalSentinelRegistrar(Logger, Config); _crystalSentinelRegistrar.Register();
-            _crystalWeaponRegistrar = new CrystalWeaponRegistrar(Logger); _crystalWeaponRegistrar.Register();
-            _geodeItemRegistrar = new GeodeItemRegistrar(effectiveDefinitions, Logger); _geodeItemRegistrar.Register();
-            _geodeWorldgenRegistrar = new GeodeWorldgenRegistrar(effectiveDefinitions, Logger); _geodeWorldgenRegistrar.Register();
-            _workshopOperationRegistrar = new WorkshopOperationRegistrar(Logger); _workshopOperationRegistrar.Register();
-            _shardRecipeRegistrar = new ShardRecipeRegistrar(Logger); _shardRecipeRegistrar.Register();
-            _crystalAlchemyRegistrar = new CrystalAlchemyRegistrar(Logger); _crystalAlchemyRegistrar.Register();
-            _crystalEnchantingDaisRegistrar = new CrystalEnchantingDaisRegistrar(Logger); _crystalEnchantingDaisRegistrar.Register();
-            _crystalBedRegistrar = new CrystalBedRegistrar(Logger, Config); _crystalBedRegistrar.Register();
-            _crystallineIceBoxRegistrar = new CrystallineIceBoxRegistrar(Logger, Config); _crystallineIceBoxRegistrar.Register();
-
-            _fireStaffRegistrar = new FireStaffRegistrar(Logger); _fireStaffRegistrar.Register();
-            _frostStaffRegistrar = new FrostStaffRegistrar(Logger); _frostStaffRegistrar.Register();
-            _stormStaffRegistrar = new StormStaffRegistrar(Logger); _stormStaffRegistrar.Register();
-            _earthStaffRegistrar = new EarthStaffRegistrar(Logger); _earthStaffRegistrar.Register();
-            _venomStaffRegistrar = new VenomStaffRegistrar(Logger); _venomStaffRegistrar.Register();
-            _radianceStaffRegistrar = new RadianceStaffRegistrar(Logger); _radianceStaffRegistrar.Register();
-            _seidrStaffRegistrar = new SeidrStaffRegistrar(Logger); _seidrStaffRegistrar.Register();
-            _spiritStaffRegistrar = new SpiritStaffRegistrar(Logger); _spiritStaffRegistrar.Register();
-
+            if (nativeSocketRuntimeEnabled){SocketOperationRpc.Register(_services, _authoritySynchronizer, Logger);SocketTooltipRuntime.Configure(effectiveDefinitions);_socketWorkstationOverlay=gameObject.AddComponent<SocketWorkstationOverlay>();_socketWorkstationOverlay.Configure(_services,_authoritySynchronizer,Logger);}
+            if(socketEffectsEnabled){SocketEffectsRuntime.Configure(effectiveDefinitions,Logger,socketProvider.Backend,socketIntegration.MagenheimResonanceMultipliers);SocketBehaviorRuntime.Configure(Logger,socketProvider.Backend,socketIntegration.MagenheimResonanceMultipliers);}
+            _harmony=new Harmony(PluginGuid+".gameplay");
+            _harmony.PatchAll(typeof(WorkshopCraftingPatch));_harmony.PatchAll(typeof(CrystalShapingSkillVisibility));_harmony.PatchAll(typeof(EarthAbilityHitPatch));_harmony.PatchAll(typeof(DeepFractureDeathAnchorPatch));
+            if(socketEffectsEnabled){_harmony.PatchAll(typeof(SocketDamagePatch));_harmony.PatchAll(typeof(SocketArmorPatch));_harmony.PatchAll(typeof(SocketBlockPowerPatch));_harmony.PatchAll(typeof(SocketCarryWeightPatch));_harmony.PatchAll(typeof(StormSocketHitPatch));_harmony.PatchAll(typeof(EarthSocketHitPatch));}
+            if(nativeSocketRuntimeEnabled){_harmony.PatchAll(typeof(SocketTooltipPatch));_harmony.PatchAll(typeof(CrystalEnchantingDaisSocketPatch));}
+            _deepFractureRoomRegistrar=new DeepFractureRoomRegistrar(Logger);_deepFractureRoomRegistrar.Register();_deepFractureLocationRegistrar=new DeepFractureLocationRegistrar(new DeepFractureInteriorBinder(),Logger);_deepFractureLocationRegistrar.Register();_deepFractureCreatureRegistrar=new DeepFractureCreatureRegistrar(Logger);_deepFractureCreatureRegistrar.Register();
+            _earthContentRegistrar=new EarthContentRegistrar(Logger);_earthContentRegistrar.Register();if(socketProvider.Backend==EquipmentSocketBackend.Jewelcrafting){_jewelcraftingCrystalRegistrar=new JewelcraftingCrystalRegistrar(Logger);_jewelcraftingCrystalRegistrar.Register();}
+            _workshopRegistrar=new WorkshopRegistrar(Logger);_workshopRegistrar.Register();_furnitureRegistrar=new FurnitureRegistrar(Logger);_furnitureRegistrar.Register();_geologyDecorRegistrar=new GeologyDecorRegistrar(Logger);_geologyDecorRegistrar.Register();_crystalArchitectureRegistrar=new CrystalArchitectureRegistrar(Logger);_crystalArchitectureRegistrar.Register();_crystalBannerRegistrar=new CrystalBannerRegistrar(Logger);_crystalBannerRegistrar.Register();_crystalSentinelRegistrar=new CrystalSentinelRegistrar(Logger,Config);_crystalSentinelRegistrar.Register();_crystalWeaponRegistrar=new CrystalWeaponRegistrar(Logger);_crystalWeaponRegistrar.Register();_geodeItemRegistrar=new GeodeItemRegistrar(effectiveDefinitions,Logger);_geodeItemRegistrar.Register();_geodeWorldgenRegistrar=new GeodeWorldgenRegistrar(effectiveDefinitions,Logger);_geodeWorldgenRegistrar.Register();_workshopOperationRegistrar=new WorkshopOperationRegistrar(Logger);_workshopOperationRegistrar.Register();_shardRecipeRegistrar=new ShardRecipeRegistrar(Logger);_shardRecipeRegistrar.Register();_crystalAlchemyRegistrar=new CrystalAlchemyRegistrar(Logger);_crystalAlchemyRegistrar.Register();_crystalEnchantingDaisRegistrar=new CrystalEnchantingDaisRegistrar(Logger);_crystalEnchantingDaisRegistrar.Register();_crystalBedRegistrar=new CrystalBedRegistrar(Logger,Config);_crystalBedRegistrar.Register();_crystallineIceBoxRegistrar=new CrystallineIceBoxRegistrar(Logger,Config);_crystallineIceBoxRegistrar.Register();
+            _fireStaffRegistrar=new FireStaffRegistrar(Logger);_fireStaffRegistrar.Register();_frostStaffRegistrar=new FrostStaffRegistrar(Logger);_frostStaffRegistrar.Register();_stormStaffRegistrar=new StormStaffRegistrar(Logger);_stormStaffRegistrar.Register();_earthStaffRegistrar=new EarthStaffRegistrar(Logger);_earthStaffRegistrar.Register();_venomStaffRegistrar=new VenomStaffRegistrar(Logger);_venomStaffRegistrar.Register();_radianceStaffRegistrar=new RadianceStaffRegistrar(Logger);_radianceStaffRegistrar.Register();_seidrStaffRegistrar=new SeidrStaffRegistrar(Logger);_seidrStaffRegistrar.Register();_spiritStaffRegistrar=new SpiritStaffRegistrar(Logger);_spiritStaffRegistrar.Register();
             ModelExportRuntime.EnableIfRequested(Logger);
-
-            Logger.LogInfo(
-                $"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. " +
-                $"Baseline definition fingerprint {baselineDefinitions.Fingerprint}; effective definition fingerprint {effectiveDefinitions.Fingerprint}; " +
-                $"effective gameplay authority {_authoritySynchronizer.GameplayFingerprint}; equipment socket backend {socketProvider.Backend}. " +
-                "Player content includes eight biome geodes, eight five-tier elemental crystal families, the full geology workstation refinement ladder, " +
-                "20 geology/crystal furniture and decor pieces, a rainbow Crystal Hearth, three crystal beam sizes, three crystal foundation sizes, " +
-                "24 elemental crystal banners, a floating Crystal Sentinel with eight shard-refined elemental munition types, eight alignment-locked water-filled Crystal Beds, " +
-                "a configurable persistent Crystalline Ice Box, a dedicated Crystal Enchanting Dais that gates Crystal Bed and Ice Box construction, " +
-                "a 10-piece high-durability physical crystal weapon set, deliberate Rough-crystal/shard grinding, Crystal Dust, Prismatic Eitrwine fermentation, " +
-                "provider-routed equipment socketing, and eight four-tier staff families with distinct runtime effects. " +
-                "Deep Fracture runtime authority now registers twenty canonical district families, collision-safe passages, traversal links, additive surface fracture entrances, and the first hostile creature chassis: eight elemental Annoyance Wisp variants backed by original Magenheim procedural crystal geometry. " +
-                "Fire owns fireburst/scorch/meteor burn terrain; Frost owns Brittle and Rime fields; Storm owns secondary discharges; " +
-                "Earth owns Fractured/Shattered Armor and Tremor; Venom owns corrosion; Radiance owns hard-light/flash/sanctuary payloads; " +
-                "Seidr owns binding hexes; and Spirit owns Haunted, Dissonance, and Soul Suppression attack-damage suppression through spectral echo fields.");
+            Logger.LogInfo($"{PluginName} {PluginVersion} loaded definition schema {effectiveDefinitions.SchemaVersion}. Baseline definition fingerprint {baselineDefinitions.Fingerprint}; effective definition fingerprint {effectiveDefinitions.Fingerprint}; effective gameplay authority {_authoritySynchronizer.GameplayFingerprint}; equipment socket backend {socketProvider.Backend}. Deep Fracture creature crystal components and death anchors are runtime-active.");
         }
-        catch (Exception exception)
-        {
-            Logger.LogFatal($"{PluginName} definition bootstrap failed: {exception}");
-            throw;
-        }
+        catch(Exception exception){Logger.LogFatal($"{PluginName} definition bootstrap failed: {exception}");throw;}
     }
 
-    private void OnDestroy()
-    {
-        _spiritStaffRegistrar?.Dispose(); _seidrStaffRegistrar?.Dispose(); _radianceStaffRegistrar?.Dispose(); _venomStaffRegistrar?.Dispose();
-        _earthStaffRegistrar?.Dispose(); _stormStaffRegistrar?.Dispose(); _frostStaffRegistrar?.Dispose(); _fireStaffRegistrar?.Dispose();
-        _crystallineIceBoxRegistrar?.Dispose(); _crystalBedRegistrar?.Dispose(); _crystalEnchantingDaisRegistrar?.Dispose(); _crystalAlchemyRegistrar?.Dispose();
-        _shardRecipeRegistrar?.Dispose(); _workshopOperationRegistrar?.Dispose(); _geodeWorldgenRegistrar?.Dispose(); _geodeItemRegistrar?.Dispose();
-        _crystalWeaponRegistrar?.Dispose(); _crystalSentinelRegistrar?.Dispose(); _crystalBannerRegistrar?.Dispose(); _crystalArchitectureRegistrar?.Dispose();
-        _geologyDecorRegistrar?.Dispose(); _furnitureRegistrar?.Dispose(); _workshopRegistrar?.Dispose(); _jewelcraftingCrystalRegistrar?.Dispose();
-        _earthContentRegistrar?.Dispose(); _deepFractureCreatureRegistrar?.Dispose(); _deepFractureLocationRegistrar?.Dispose(); _deepFractureRoomRegistrar?.Dispose();
-        if (_socketWorkstationOverlay is not null) Destroy(_socketWorkstationOverlay);
-        _harmony?.UnpatchSelf();
-    }
+    private void OnDestroy(){_spiritStaffRegistrar?.Dispose();_seidrStaffRegistrar?.Dispose();_radianceStaffRegistrar?.Dispose();_venomStaffRegistrar?.Dispose();_earthStaffRegistrar?.Dispose();_stormStaffRegistrar?.Dispose();_frostStaffRegistrar?.Dispose();_fireStaffRegistrar?.Dispose();_crystallineIceBoxRegistrar?.Dispose();_crystalBedRegistrar?.Dispose();_crystalEnchantingDaisRegistrar?.Dispose();_crystalAlchemyRegistrar?.Dispose();_shardRecipeRegistrar?.Dispose();_workshopOperationRegistrar?.Dispose();_geodeWorldgenRegistrar?.Dispose();_geodeItemRegistrar?.Dispose();_crystalWeaponRegistrar?.Dispose();_crystalSentinelRegistrar?.Dispose();_crystalBannerRegistrar?.Dispose();_crystalArchitectureRegistrar?.Dispose();_geologyDecorRegistrar?.Dispose();_furnitureRegistrar?.Dispose();_workshopRegistrar?.Dispose();_jewelcraftingCrystalRegistrar?.Dispose();_earthContentRegistrar?.Dispose();_deepFractureCreatureRegistrar?.Dispose();_deepFractureLocationRegistrar?.Dispose();_deepFractureRoomRegistrar?.Dispose();if(_socketWorkstationOverlay is not null)Destroy(_socketWorkstationOverlay);_harmony?.UnpatchSelf();}
 }
