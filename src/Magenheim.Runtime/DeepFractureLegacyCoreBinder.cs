@@ -5,6 +5,9 @@ namespace Magenheim.Runtime
 {
     internal static class DeepFractureLegacyCoreBinder
     {
+        internal static void BindAnnoyanceWisp(GameObject prefab){var c=Context(prefab,"Annoyance Wisp","magenheim.fracture.creature.annoyance-wisp.visual");Attach(c.Root,"motion-core",c.Owner,c.View,"movement",DeepFractureCrystalFunction.Movement,42f);}
+        internal static void BindGeodeCrawler(GameObject prefab){var c=Context(prefab,"Geode Crawler","magenheim.fracture.creature.geode-crawler.visual");Attach(c.Root,"carapace-core",c.Owner,c.View,"armor",DeepFractureCrystalFunction.Armor,68f);}
+        internal static void BindShardling(GameObject prefab){var c=Context(prefab,"Shardling","magenheim.fracture.creature.shardling.visual");Attach(c.Root,"locomotion-core",c.Owner,c.View,"movement",DeepFractureCrystalFunction.Movement,52f);}
         internal static void BindStoneGuardian(GameObject prefab){BindDefensiveTriad(prefab,"Stone Guardian","magenheim.fracture.creature.stone-guardian.visual","resistance-core","armor-core-left","armor-core-right",260f,220f);}
         internal static void BindStoneSentinel(GameObject prefab){BindDefensiveTriad(prefab,"Stone Sentinel","magenheim.fracture.creature.stone-sentinel.visual","resistance-core","armor-core-left","armor-core-right",190f,165f);}
         internal static void BindCrystalRevenant(GameObject prefab){BindDefensiveTriad(prefab,"Crystal Revenant","magenheim.fracture.creature.crystal-revenant.visual","resistance-core","armor-core-l","armor-core-r",115f,90f);}
