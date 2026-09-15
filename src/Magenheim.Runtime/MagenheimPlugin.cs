@@ -121,6 +121,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 _harmony.PatchAll(typeof(SocketBlockPowerPatch));
                 _harmony.PatchAll(typeof(SocketCarryWeightPatch));
                 _harmony.PatchAll(typeof(StormSocketHitPatch));
+                _harmony.PatchAll(typeof(EarthSocketHitPatch));
             }
 
             if (nativeSocketRuntimeEnabled)
