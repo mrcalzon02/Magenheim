@@ -192,9 +192,13 @@ Socket effects are computed from Magenheim-owned per-item metadata and applied t
 
 ## Repository branch reconciliation
 
-`main` remains the sole authoritative development branch by policy. Historical redundant refs `radiance-content`, `tmp-radiance-content`, and `__delete_me__` remain visible.
-
-The historical refs were previously observed at the same SHA `a8b6947c696e4da71e4837ff1b731ac53e98a387`. They are already contained in `main` and contain no unique material work. They are safe to prune when branch-ref deletion capability is available. The current connector does not expose branch deletion, so physical deletion is not claimed.
+`main` is now the sole ref on the remote. On 2026-09-15 the four redundant refs
+`radiance-content`, `tmp-radiance-content`, `__delete_me__` and `tmp-compat-work` were
+deleted with user authorization after re-verifying that each was an ancestor of
+`origin/main`. There were four, not the three recorded earlier, and they pointed to
+`fc84a519` rather than the `a8b6947c` noted during the connector-only cycle; that earlier
+record was stale. Independent readback via `git ls-remote --heads origin` returns
+`refs/heads/main` only.
 
 ## Build and validation boundary
 

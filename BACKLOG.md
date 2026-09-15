@@ -24,7 +24,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Make definition duplicate detection and exclusion normalization obey the configured exact/case-insensitive identity comparer.
 - [x] Canonicalize case-insensitive compatibility exclusions in the definition fingerprint while preserving exact-mode casing authority.
 - [x] Reconcile the former `main`/`master` split and make `main` authoritative.
-- [ ] Delete redundant `radiance-content`, `tmp-radiance-content`, and `__delete_me__` refs. All three point to `a8b6947c696e4da71e4837ff1b731ac53e98a387`, which is already contained in `main`; the current connector cannot delete branch refs.
+- [x] Delete redundant remote refs. Four existed, not three: `radiance-content`, `tmp-radiance-content`, `__delete_me__` and `tmp-compat-work`. All four pointed to `fc84a519`, not the `a8b6947c` recorded by the earlier connector-only cycle. Containment in `origin/main` was re-verified immediately before deletion. `git ls-remote --heads origin` now returns `refs/heads/main` only.
 - [x] Advance definition schema to 3 so geode placement behavior is validated, fingerprinted, and synchronized with the rest of gameplay/worldgen authority.
 - [x] Add server-side BepInEx overrides for fingerprinted geode placement fields and route them through full definition revalidation before use.
 - [x] Harden runtime `All` area mapping so `Everything` / `Everywhere` aliases are admitted only when semantically identical to distinct non-empty `Median | Edge` runtime components.
