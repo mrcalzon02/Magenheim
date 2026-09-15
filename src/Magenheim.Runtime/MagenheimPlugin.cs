@@ -48,6 +48,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
     private SpiritStaffRegistrar? _spiritStaffRegistrar;
     private DeepFractureRoomRegistrar? _deepFractureRoomRegistrar;
     private DeepFractureLocationRegistrar? _deepFractureLocationRegistrar;
+    private DeepFractureCreatureRegistrar? _deepFractureCreatureRegistrar;
     private SocketWorkstationOverlay? _socketWorkstationOverlay;
     private Harmony? _harmony;
 
@@ -98,15 +99,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
             if (socketEffectsEnabled)
             {
-                SocketEffectsRuntime.Configure(
-                    effectiveDefinitions,
-                    Logger,
-                    socketProvider.Backend,
-                    socketIntegration.MagenheimResonanceMultipliers);
-                SocketBehaviorRuntime.Configure(
-                    Logger,
-                    socketProvider.Backend,
-                    socketIntegration.MagenheimResonanceMultipliers);
+                SocketEffectsRuntime.Configure(effectiveDefinitions, Logger, socketProvider.Backend, socketIntegration.MagenheimResonanceMultipliers);
+                SocketBehaviorRuntime.Configure(Logger, socketProvider.Backend, socketIntegration.MagenheimResonanceMultipliers);
             }
 
             _harmony = new Harmony(PluginGuid + ".gameplay");
@@ -134,6 +128,8 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
             _deepFractureRoomRegistrar.Register();
             _deepFractureLocationRegistrar = new DeepFractureLocationRegistrar(new DeepFractureInteriorBinder(), Logger);
             _deepFractureLocationRegistrar.Register();
+            _deepFractureCreatureRegistrar = new DeepFractureCreatureRegistrar(Logger);
+            _deepFractureCreatureRegistrar.Register();
 
             _earthContentRegistrar = new EarthContentRegistrar(Logger);
             _earthContentRegistrar.Register();
@@ -143,54 +139,30 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 _jewelcraftingCrystalRegistrar.Register();
             }
 
-            _workshopRegistrar = new WorkshopRegistrar(Logger);
-            _workshopRegistrar.Register();
-            _furnitureRegistrar = new FurnitureRegistrar(Logger);
-            _furnitureRegistrar.Register();
-            _geologyDecorRegistrar = new GeologyDecorRegistrar(Logger);
-            _geologyDecorRegistrar.Register();
-            _crystalArchitectureRegistrar = new CrystalArchitectureRegistrar(Logger);
-            _crystalArchitectureRegistrar.Register();
-            _crystalBannerRegistrar = new CrystalBannerRegistrar(Logger);
-            _crystalBannerRegistrar.Register();
-            _crystalSentinelRegistrar = new CrystalSentinelRegistrar(Logger, Config);
-            _crystalSentinelRegistrar.Register();
-            _crystalWeaponRegistrar = new CrystalWeaponRegistrar(Logger);
-            _crystalWeaponRegistrar.Register();
-            _geodeItemRegistrar = new GeodeItemRegistrar(effectiveDefinitions, Logger);
-            _geodeItemRegistrar.Register();
-            _geodeWorldgenRegistrar = new GeodeWorldgenRegistrar(effectiveDefinitions, Logger);
-            _geodeWorldgenRegistrar.Register();
-            _workshopOperationRegistrar = new WorkshopOperationRegistrar(Logger);
-            _workshopOperationRegistrar.Register();
-            _shardRecipeRegistrar = new ShardRecipeRegistrar(Logger);
-            _shardRecipeRegistrar.Register();
+            _workshopRegistrar = new WorkshopRegistrar(Logger); _workshopRegistrar.Register();
+            _furnitureRegistrar = new FurnitureRegistrar(Logger); _furnitureRegistrar.Register();
+            _geologyDecorRegistrar = new GeologyDecorRegistrar(Logger); _geologyDecorRegistrar.Register();
+            _crystalArchitectureRegistrar = new CrystalArchitectureRegistrar(Logger); _crystalArchitectureRegistrar.Register();
+            _crystalBannerRegistrar = new CrystalBannerRegistrar(Logger); _crystalBannerRegistrar.Register();
+            _crystalSentinelRegistrar = new CrystalSentinelRegistrar(Logger, Config); _crystalSentinelRegistrar.Register();
+            _crystalWeaponRegistrar = new CrystalWeaponRegistrar(Logger); _crystalWeaponRegistrar.Register();
+            _geodeItemRegistrar = new GeodeItemRegistrar(effectiveDefinitions, Logger); _geodeItemRegistrar.Register();
+            _geodeWorldgenRegistrar = new GeodeWorldgenRegistrar(effectiveDefinitions, Logger); _geodeWorldgenRegistrar.Register();
+            _workshopOperationRegistrar = new WorkshopOperationRegistrar(Logger); _workshopOperationRegistrar.Register();
+            _shardRecipeRegistrar = new ShardRecipeRegistrar(Logger); _shardRecipeRegistrar.Register();
+            _crystalAlchemyRegistrar = new CrystalAlchemyRegistrar(Logger); _crystalAlchemyRegistrar.Register();
+            _crystalEnchantingDaisRegistrar = new CrystalEnchantingDaisRegistrar(Logger); _crystalEnchantingDaisRegistrar.Register();
+            _crystalBedRegistrar = new CrystalBedRegistrar(Logger, Config); _crystalBedRegistrar.Register();
+            _crystallineIceBoxRegistrar = new CrystallineIceBoxRegistrar(Logger, Config); _crystallineIceBoxRegistrar.Register();
 
-            _crystalAlchemyRegistrar = new CrystalAlchemyRegistrar(Logger);
-            _crystalAlchemyRegistrar.Register();
-            _crystalEnchantingDaisRegistrar = new CrystalEnchantingDaisRegistrar(Logger);
-            _crystalEnchantingDaisRegistrar.Register();
-            _crystalBedRegistrar = new CrystalBedRegistrar(Logger, Config);
-            _crystalBedRegistrar.Register();
-            _crystallineIceBoxRegistrar = new CrystallineIceBoxRegistrar(Logger, Config);
-            _crystallineIceBoxRegistrar.Register();
-
-            _fireStaffRegistrar = new FireStaffRegistrar(Logger);
-            _fireStaffRegistrar.Register();
-            _frostStaffRegistrar = new FrostStaffRegistrar(Logger);
-            _frostStaffRegistrar.Register();
-            _stormStaffRegistrar = new StormStaffRegistrar(Logger);
-            _stormStaffRegistrar.Register();
-            _earthStaffRegistrar = new EarthStaffRegistrar(Logger);
-            _earthStaffRegistrar.Register();
-            _venomStaffRegistrar = new VenomStaffRegistrar(Logger);
-            _venomStaffRegistrar.Register();
-            _radianceStaffRegistrar = new RadianceStaffRegistrar(Logger);
-            _radianceStaffRegistrar.Register();
-            _seidrStaffRegistrar = new SeidrStaffRegistrar(Logger);
-            _seidrStaffRegistrar.Register();
-            _spiritStaffRegistrar = new SpiritStaffRegistrar(Logger);
-            _spiritStaffRegistrar.Register();
+            _fireStaffRegistrar = new FireStaffRegistrar(Logger); _fireStaffRegistrar.Register();
+            _frostStaffRegistrar = new FrostStaffRegistrar(Logger); _frostStaffRegistrar.Register();
+            _stormStaffRegistrar = new StormStaffRegistrar(Logger); _stormStaffRegistrar.Register();
+            _earthStaffRegistrar = new EarthStaffRegistrar(Logger); _earthStaffRegistrar.Register();
+            _venomStaffRegistrar = new VenomStaffRegistrar(Logger); _venomStaffRegistrar.Register();
+            _radianceStaffRegistrar = new RadianceStaffRegistrar(Logger); _radianceStaffRegistrar.Register();
+            _seidrStaffRegistrar = new SeidrStaffRegistrar(Logger); _seidrStaffRegistrar.Register();
+            _spiritStaffRegistrar = new SpiritStaffRegistrar(Logger); _spiritStaffRegistrar.Register();
 
             ModelExportRuntime.EnableIfRequested(Logger);
 
@@ -204,7 +176,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                 "a configurable persistent Crystalline Ice Box, a dedicated Crystal Enchanting Dais that gates Crystal Bed and Ice Box construction, " +
                 "a 10-piece high-durability physical crystal weapon set, deliberate Rough-crystal/shard grinding, Crystal Dust, Prismatic Eitrwine fermentation, " +
                 "provider-routed equipment socketing, and eight four-tier staff families with distinct runtime effects. " +
-                "Deep Fracture runtime authority now registers twenty canonical district families, collision-safe passages, traversal links, and additive surface fracture entrances backed by deterministic isolated interiors with paired return travel. " +
+                "Deep Fracture runtime authority now registers twenty canonical district families, collision-safe passages, traversal links, additive surface fracture entrances, and the first hostile creature chassis: eight elemental Annoyance Wisp variants backed by original Magenheim procedural crystal geometry. " +
                 "Fire owns fireburst/scorch/meteor burn terrain; Frost owns Brittle and Rime fields; Storm owns secondary discharges; " +
                 "Earth owns Fractured/Shattered Armor and Tremor; Venom owns corrosion; Radiance owns hard-light/flash/sanctuary payloads; " +
                 "Seidr owns binding hexes; and Spirit owns Haunted, Dissonance, and Soul Suppression attack-damage suppression through spectral echo fields.");
@@ -218,35 +190,14 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 
     private void OnDestroy()
     {
-        _spiritStaffRegistrar?.Dispose();
-        _seidrStaffRegistrar?.Dispose();
-        _radianceStaffRegistrar?.Dispose();
-        _venomStaffRegistrar?.Dispose();
-        _earthStaffRegistrar?.Dispose();
-        _stormStaffRegistrar?.Dispose();
-        _frostStaffRegistrar?.Dispose();
-        _fireStaffRegistrar?.Dispose();
-        _crystallineIceBoxRegistrar?.Dispose();
-        _crystalBedRegistrar?.Dispose();
-        _crystalEnchantingDaisRegistrar?.Dispose();
-        _crystalAlchemyRegistrar?.Dispose();
-        _shardRecipeRegistrar?.Dispose();
-        _workshopOperationRegistrar?.Dispose();
-        _geodeWorldgenRegistrar?.Dispose();
-        _geodeItemRegistrar?.Dispose();
-        _crystalWeaponRegistrar?.Dispose();
-        _crystalSentinelRegistrar?.Dispose();
-        _crystalBannerRegistrar?.Dispose();
-        _crystalArchitectureRegistrar?.Dispose();
-        _geologyDecorRegistrar?.Dispose();
-        _furnitureRegistrar?.Dispose();
-        _workshopRegistrar?.Dispose();
-        _jewelcraftingCrystalRegistrar?.Dispose();
-        _earthContentRegistrar?.Dispose();
-        _deepFractureLocationRegistrar?.Dispose();
-        _deepFractureRoomRegistrar?.Dispose();
-        if (_socketWorkstationOverlay is not null)
-            Destroy(_socketWorkstationOverlay);
+        _spiritStaffRegistrar?.Dispose(); _seidrStaffRegistrar?.Dispose(); _radianceStaffRegistrar?.Dispose(); _venomStaffRegistrar?.Dispose();
+        _earthStaffRegistrar?.Dispose(); _stormStaffRegistrar?.Dispose(); _frostStaffRegistrar?.Dispose(); _fireStaffRegistrar?.Dispose();
+        _crystallineIceBoxRegistrar?.Dispose(); _crystalBedRegistrar?.Dispose(); _crystalEnchantingDaisRegistrar?.Dispose(); _crystalAlchemyRegistrar?.Dispose();
+        _shardRecipeRegistrar?.Dispose(); _workshopOperationRegistrar?.Dispose(); _geodeWorldgenRegistrar?.Dispose(); _geodeItemRegistrar?.Dispose();
+        _crystalWeaponRegistrar?.Dispose(); _crystalSentinelRegistrar?.Dispose(); _crystalBannerRegistrar?.Dispose(); _crystalArchitectureRegistrar?.Dispose();
+        _geologyDecorRegistrar?.Dispose(); _furnitureRegistrar?.Dispose(); _workshopRegistrar?.Dispose(); _jewelcraftingCrystalRegistrar?.Dispose();
+        _earthContentRegistrar?.Dispose(); _deepFractureCreatureRegistrar?.Dispose(); _deepFractureLocationRegistrar?.Dispose(); _deepFractureRoomRegistrar?.Dispose();
+        if (_socketWorkstationOverlay is not null) Destroy(_socketWorkstationOverlay);
         _harmony?.UnpatchSelf();
     }
 }
