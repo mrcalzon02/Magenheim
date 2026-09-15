@@ -26,13 +26,13 @@ internal static class StormStaffVisuals
         root.transform.localRotation = Quaternion.identity;
         root.transform.localScale = Vector3.one;
 
-        var darkWood = Mat(source,"darkwood",new Color(.18f,.14f,.11f,1f),0f,.11f);
-        var ashWood = Mat(source,"ashwood",new Color(.30f,.25f,.20f,1f),0f,.14f);
-        var copper = Mat(source,"copper",new Color(.55f,.31f,.18f,1f),.52f,.31f);
+        var darkWood = Mat(source,"dark-wood",new Color(.18f,.14f,.11f,1f),0f,.11f);
+        var ashWood = Mat(source,"ash-wood",new Color(.30f,.25f,.20f,1f),0f,.14f);
+        var copper = Mat(source,"copper-metal",new Color(.55f,.31f,.18f,1f),.52f,.31f);
         var silver = Mat(source,"silver",new Color(.63f,.70f,.75f,1f),.70f,.38f);
         var blackMetal = Mat(source,"blackmetal",new Color(.12f,.15f,.18f,1f),.78f,.34f);
-        var storm = Mat(source,"storm",new Color(.28f,.62f,1f,1f),.02f,.76f,.50f);
-        var bright = Mat(source,"storm-bright",new Color(.72f,.90f,1f,1f),.01f,.88f,.72f);
+        var storm = Mat(source,"storm-crystal",new Color(.28f,.62f,1f,1f),.02f,.76f,.50f);
+        var bright = Mat(source,"storm-bright-crystal",new Color(.72f,.90f,1f,1f),.01f,.88f,.72f);
 
         switch (prefabName)
         {
@@ -117,7 +117,7 @@ internal static class StormStaffVisuals
     }
     private static Material Mat(Material source,string suffix,Color c,float metallic,float gloss,float emission=0f)
     {
-        var m=new Material(source){name="magenheim.storm-staff."+suffix};m.mainTexture=Texture2D.whiteTexture;m.mainTextureScale=Vector2.one;m.mainTextureOffset=Vector2.zero;if(m.HasProperty("_Color"))m.SetColor("_Color",c);if(m.HasProperty("_Metallic"))m.SetFloat("_Metallic",metallic);if(m.HasProperty("_Glossiness"))m.SetFloat("_Glossiness",gloss);if(m.HasProperty("_BumpMap"))m.SetTexture("_BumpMap",null);m.DisableKeyword("_NORMALMAP");if(m.HasProperty("_EmissionColor")&&emission>0f){m.SetColor("_EmissionColor",c*emission);m.EnableKeyword("_EMISSION");}else m.DisableKeyword("_EMISSION");m.SetOverrideTag("RenderType","Opaque");if(m.HasProperty("_ZWrite"))m.SetFloat("_ZWrite",1f);m.renderQueue=2000;return m;
+        var m=new Material(source){name="magenheim.storm-staff."+suffix};GeneratedSurfaceTextures.Apply(m,suffix);if(m.HasProperty("_Color"))m.SetColor("_Color",c);if(m.HasProperty("_Metallic"))m.SetFloat("_Metallic",metallic);if(m.HasProperty("_Glossiness"))m.SetFloat("_Glossiness",gloss);if(m.HasProperty("_BumpMap"))m.SetTexture("_BumpMap",null);m.DisableKeyword("_NORMALMAP");if(m.HasProperty("_EmissionColor")&&emission>0f){m.SetColor("_EmissionColor",c*emission);m.EnableKeyword("_EMISSION");}else m.DisableKeyword("_EMISSION");m.SetOverrideTag("RenderType","Opaque");if(m.HasProperty("_ZWrite"))m.SetFloat("_ZWrite",1f);m.renderQueue=2000;return m;
     }
     private static Mesh CreateBoxMesh(){var m=new Mesh{name="magenheim.storm-staff.box"};m.vertices=new[]{new Vector3(-.5f,-.5f,-.5f),new Vector3(.5f,-.5f,-.5f),new Vector3(.5f,.5f,-.5f),new Vector3(-.5f,.5f,-.5f),new Vector3(-.5f,-.5f,.5f),new Vector3(.5f,-.5f,.5f),new Vector3(.5f,.5f,.5f),new Vector3(-.5f,.5f,.5f)};m.triangles=new[]{0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2};m.RecalculateNormals();m.RecalculateBounds();return m;}
     private static Mesh MakeCylinder(int sides){var v=new List<Vector3>();var t=new List<int>();for(var r=0;r<2;r++){var y=r==0?-.5f:.5f;for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.5f*Mathf.Cos(a),y,.5f*Mathf.Sin(a)));}}var b=v.Count;v.Add(new Vector3(0,-.5f,0));var top=v.Count;v.Add(new Vector3(0,.5f,0));for(var i=0;i<sides;i++){var n=(i+1)%sides;t.AddRange(new[]{i,sides+i,n,n,sides+i,sides+n,b,i,n,top,sides+n,sides+i});}var m=new Mesh{name="magenheim.storm-staff.cylinder."+sides,vertices=v.ToArray(),triangles=t.ToArray()};m.RecalculateNormals();m.RecalculateBounds();return m;}
