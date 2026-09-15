@@ -1,26 +1,36 @@
 using System;
+using System.Collections.Generic;
 using BepInEx.Logging;
 using HarmonyLib;
 using Magenheim.Core.Definitions;
 using Magenheim.Core.Socketing;
+using Magenheim.Runtime.Compatibility;
 
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Runtime-only application boundary for socket effects. All balance is resolved by the
-/// pure core from per-item Magenheim metadata; these adapters only translate resolved
-/// channels into Valheim return values. Shared ItemDrop/SharedData prefabs are never mutated.
+/// Runtime-only application boundary for socket effects. Balance remains in the pure core.
+/// The selected equipment provider supplies crystal state; these adapters only translate
+/// resolved channels into Valheim return values. Shared ItemDrop/SharedData prefabs are never mutated.
 /// </summary>
 internal static class SocketEffectsRuntime
 {
     private static SocketEffectDefinitionSet? _definitions;
     private static ManualLogSource? _log;
+    private static EquipmentSocketBackend _backend = EquipmentSocketBackend.Magenheim;
+    private static IReadOnlyList<float> _resonanceMultipliers = new[] { 1f };
 
-    internal static void Configure(MagenheimDefinitionSet definitions, ManualLogSource log)
+    internal static void Configure(
+        MagenheimDefinitionSet definitions,
+        ManualLogSource log,
+        EquipmentSocketBackend backend = EquipmentSocketBackend.Magenheim,
+        IReadOnlyList<float>? resonanceMultipliers = null)
     {
         if (definitions is null) throw new ArgumentNullException(nameof(definitions));
         _definitions = definitions.SocketEffects;
         _log = log ?? throw new ArgumentNullException(nameof(log));
+        _backend = backend;
+        _resonanceMultipliers = resonanceMultipliers ?? new[] { 1f };
     }
 
     internal static void ApplyDamage(ItemDrop.ItemData item, ref HitData.DamageTypes damage)
@@ -46,7 +56,6 @@ internal static class SocketEffectsRuntime
     {
         if (!TryResolve(item, out var category, out var effects) || category != EquipmentCategory.Armor)
             return;
-
         armor += ToFloat(effects.Get(SocketEffectKind.Armor));
     }
 
@@ -54,34 +63,26 @@ internal static class SocketEffectsRuntime
     {
         if (!TryResolve(item, out var category, out var effects) || category != EquipmentCategory.Shield)
             return;
-
-        // The Armor channel on shields maps to Valheim's block armor result, keeping the
-        // definition model compact while still remaining category-specific.
         blockPower += ToFloat(effects.Get(SocketEffectKind.Armor));
     }
 
     internal static void ApplyCarryWeight(Player player, ref float maximumCarryWeight)
     {
         if (player is null || _definitions is null) return;
-
         foreach (var item in player.GetInventory().GetEquippedItems())
         {
             if (!TryResolve(item, out var category, out var effects) || category != EquipmentCategory.Utility)
                 continue;
-
             maximumCarryWeight += ToFloat(effects.Get(SocketEffectKind.CarryWeight));
         }
     }
 
-    private static bool TryResolve(
-        ItemDrop.ItemData item,
-        out EquipmentCategory category,
-        out SocketEffectCalculationResult effects)
+    private static bool TryResolve(ItemDrop.ItemData item, out EquipmentCategory category, out SocketEffectCalculationResult effects)
     {
         category = EquipmentCategory.Unknown;
         effects = new SocketEffectCalculationResult(
             SocketEffectCalculationOutcome.UnknownEquipmentCategory,
-            new System.Collections.Generic.Dictionary<SocketEffectKind, double>(),
+            new Dictionary<SocketEffectKind, double>(),
             "Socket effects are not configured.");
 
         if (item is null || _definitions is null)
@@ -91,21 +92,31 @@ internal static class SocketEffectsRuntime
         if (category == EquipmentCategory.Unknown)
             return false;
 
-        if (!ItemSocketAdapter.TryRead(item, out var state, out var metadataDiagnostic))
+        if (_backend == EquipmentSocketBackend.Jewelcrafting)
         {
-            _log?.LogWarning(
-                $"Ignoring malformed Magenheim socket metadata on '{ItemIdentity(item)}': {metadataDiagnostic}");
-            return false;
+            if (_log is null || !JewelcraftingSocketReader.TryReadMagenheimCrystals(item, _log, out var crystals))
+                return false;
+            if (crystals.Count == 0)
+                return false;
+
+            effects = SocketEffectService.CalculateCrystals(crystals, category, _definitions, _resonanceMultipliers);
+        }
+        else
+        {
+            if (!ItemSocketAdapter.TryRead(item, out var state, out var metadataDiagnostic))
+            {
+                _log?.LogWarning($"Ignoring malformed Magenheim socket metadata on '{ItemIdentity(item)}': {metadataDiagnostic}");
+                return false;
+            }
+            if (state.InstalledCrystals.Count == 0)
+                return false;
+
+            effects = SocketEffectService.Calculate(state, category, _definitions);
         }
 
-        if (state.InstalledCrystals.Count == 0)
-            return false;
-
-        effects = SocketEffectService.Calculate(state, category, _definitions);
         if (!effects.IsSuccess)
         {
-            _log?.LogWarning(
-                $"Ignoring unresolved Magenheim socket effects on '{ItemIdentity(item)}': {effects.Diagnostic}");
+            _log?.LogWarning($"Ignoring unresolved Magenheim socket effects on '{ItemIdentity(item)}': {effects.Diagnostic}");
             return false;
         }
 
@@ -123,7 +134,6 @@ internal static class SocketEffectsRuntime
     }
 }
 
-// Patch the shared calculation overload once: the parameterless wrapper calls it.
 [HarmonyPatch(typeof(ItemDrop.ItemData), nameof(ItemDrop.ItemData.GetDamage), typeof(int), typeof(float))]
 internal static class SocketDamagePatch
 {
