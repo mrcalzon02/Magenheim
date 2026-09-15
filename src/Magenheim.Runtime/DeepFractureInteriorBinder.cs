@@ -69,8 +69,8 @@ internal sealed class DeepFractureInteriorRuntime : MonoBehaviour
         foreach (var placement in blueprint.Modules.OrderBy(module => module.SequenceIndex))
         {
             var roomData = DeepFractureRoomRegistrar.ResolveDistrict(placement.PieceFamilyId);
-            var source = roomData.m_room
-                ?? throw new InvalidOperationException($"Registered Deep Fracture district '{placement.PieceFamilyId}' has no Room prefab.");
+            var source = roomData.m_loadedRoom
+                ?? throw new InvalidOperationException($"Registered Deep Fracture district '{placement.PieceFamilyId}' has no loaded Room prefab.");
 
             var instance = Instantiate(source.gameObject, transform, false);
             instance.name = $"{DeepFractureRoomVisuals.RoomPrefabName(placement.PieceFamilyId)}_{placement.ModuleInstanceId}";
@@ -81,8 +81,9 @@ internal sealed class DeepFractureInteriorRuntime : MonoBehaviour
             var room = instance.GetComponent<Room>()
                 ?? throw new InvalidOperationException($"Instantiated Deep Fracture district '{instance.name}' has no Room component.");
             DeepFractureRoomVisuals.ApplyElementalState(room, placement.ElementalStates);
-            if (!instances.TryAdd(placement.PieceFamilyId, instance))
+            if (instances.ContainsKey(placement.PieceFamilyId))
                 throw new InvalidOperationException($"Deep Fracture expedition placed duplicate district family '{placement.PieceFamilyId}', so a unique travel anchor cannot be selected.");
+            instances.Add(placement.PieceFamilyId, instance);
         }
         return instances;
     }
@@ -91,8 +92,8 @@ internal sealed class DeepFractureInteriorRuntime : MonoBehaviour
     {
         var modules = blueprint.Modules.ToDictionary(module => module.ModuleInstanceId, StringComparer.Ordinal);
         var sourceData = DeepFractureRoomRegistrar.ResolveTraversalNode();
-        var source = sourceData.m_room
-            ?? throw new InvalidOperationException($"Registered Deep Fracture traversal node '{DeepFractureRoomVisuals.TraversalNodePrefabName}' has no Room prefab.");
+        var source = sourceData.m_loadedRoom
+            ?? throw new InvalidOperationException($"Registered Deep Fracture traversal node '{DeepFractureRoomVisuals.TraversalNodePrefabName}' has no loaded Room prefab.");
 
         foreach (var connection in blueprint.Connections.Where(connection => connection.RuntimeMode == DeepFractureRuntimeConnectionMode.TraversalLink))
         {
@@ -102,8 +103,8 @@ internal sealed class DeepFractureInteriorRuntime : MonoBehaviour
 
             var fromPosition = PortalPosition(from.Center, to.Center);
             var toPosition = PortalPosition(to.Center, from.Center);
-            var fromNode = CreateTraversalNode(source, connection.Id, "A", fromPosition);
-            var toNode = CreateTraversalNode(source, connection.Id, "B", toPosition);
+            var fromNode = CreateTraversalNode(source.gameObject, connection.Id, "A", fromPosition);
+            var toNode = CreateTraversalNode(source.gameObject, connection.Id, "B", toPosition);
 
             var fromPortal = fromNode.GetComponent<DeepFractureTraversalPortal>()
                 ?? throw new InvalidOperationException($"Traversal node '{fromNode.name}' has no portal component.");
@@ -151,7 +152,7 @@ internal sealed class DeepFractureInteriorRuntime : MonoBehaviour
     }
 
     private static Vector3 ToVector3(DeepFractureInteriorPoint point)
-        => new((float)point.X, (float)point.Y, (float)point.Z);
+        => new Vector3((float)point.X, (float)point.Y, (float)point.Z);
 
     internal static int StableLocationSeed(Vector3 worldPosition)
     {
