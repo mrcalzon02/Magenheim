@@ -81,9 +81,7 @@ internal static class CrystallineIceBoxVisuals
     private static Material Material(Material source, string suffix, Color color, float metallic, float gloss, float emission = 0f)
     {
         var material = new Material(source) { name = "magenheim.crystalline-ice-box." + suffix };
-        material.mainTexture = Texture2D.whiteTexture;
-        material.mainTextureScale = Vector2.one;
-        material.mainTextureOffset = Vector2.zero;
+        GeneratedSurfaceTextures.Apply(material, suffix);
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", gloss);
@@ -104,7 +102,7 @@ internal static class CrystallineIceBoxVisuals
     private static Material IceMaterial(Material source, Color frost)
     {
         var color = new Color(frost.r * .56f + .24f, frost.g * .66f + .24f, Mathf.Min(1f, frost.b * .82f + .22f), .62f);
-        var material = Material(source, "ice", color, .02f, .97f, .22f);
+        var material = Material(source, "ice-crystal", color, .02f, .97f, .22f);
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Mode")) material.SetFloat("_Mode", 3f);
         if (material.HasProperty("_SrcBlend")) material.SetInt("_SrcBlend", (int)BlendMode.SrcAlpha);
