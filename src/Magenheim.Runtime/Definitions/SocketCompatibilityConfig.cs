@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using BepInEx.Configuration;
 using Magenheim.Core.Socketing;
@@ -9,7 +10,8 @@ namespace Magenheim.Runtime.Definitions;
 internal sealed record EquipmentSocketIntegrationSettings(
     bool JewelcraftingIntegrationEnabled,
     bool PreferJewelcrafting,
-    bool FailClosedOnInteropError);
+    bool FailClosedOnInteropError,
+    IReadOnlyList<float> MagenheimResonanceMultipliers);
 
 internal static class SocketCompatibilityConfig
 {
@@ -78,8 +80,38 @@ internal static class SocketCompatibilityConfig
             "Prefer Jewelcrafting for equipment socket storage/UI when both mods are available. Disable to keep Magenheim's standalone equipment socket implementation.");
         var failClosed = config.Bind(integration, "FailClosedOnJewelcraftingInteropError", true,
             "If Jewelcrafting is detected but its compatibility boundary cannot be verified, block Magenheim equipment socket mutation instead of risking competing socket metadata. Has no effect when Jewelcrafting is absent or integration is disabled.");
+        var resonance = config.Bind(integration, "MagenheimResonanceMultipliers", "1,0.5,0.25,0.125",
+            "Comma-separated contribution multipliers for repeated Magenheim crystals of the same element in Jewelcrafting sockets, strongest crystal first. The final value repeats for additional crystals. Default: 100%, 50%, 25%, then 12.5% each.");
 
-        return new EquipmentSocketIntegrationSettings(enabled.Value, preferJewelcrafting.Value, failClosed.Value);
+        return new EquipmentSocketIntegrationSettings(
+            enabled.Value,
+            preferJewelcrafting.Value,
+            failClosed.Value,
+            ParseResonanceMultipliers(resonance.Value));
+    }
+
+    internal static IReadOnlyList<float> ParseResonanceMultipliers(string? value)
+    {
+        var tokens = ParseCsv(value);
+        if (tokens.Length == 0)
+            throw new InvalidOperationException("MagenheimResonanceMultipliers must contain at least one non-negative finite multiplier.");
+
+        var multipliers = new float[tokens.Length];
+        for (var index = 0; index < tokens.Length; index++)
+        {
+            if (!float.TryParse(tokens[index], NumberStyles.Float, CultureInfo.InvariantCulture, out var multiplier)
+                || float.IsNaN(multiplier)
+                || float.IsInfinity(multiplier)
+                || multiplier < 0f)
+            {
+                throw new InvalidOperationException(
+                    $"Invalid Magenheim resonance multiplier '{tokens[index]}'. Values must be non-negative finite numbers using '.' as the decimal separator.");
+            }
+
+            multipliers[index] = multiplier;
+        }
+
+        return Array.AsReadOnly(multipliers);
     }
 
     private static string[] ParseCsv(string? value)
