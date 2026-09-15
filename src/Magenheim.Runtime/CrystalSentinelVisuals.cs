@@ -53,6 +53,14 @@ internal static class CrystalSentinelVisuals
                 new Vector3(0f, -angle * Mathf.Rad2Deg, 0f));
         }
 
+        // The vanilla turret body aims toward local -Z. Give the owned body an unmistakable
+        // forward emitter so placement and tracking direction remain readable at a glance.
+        Box(body, "forward-yoke", new Vector3(0f, .05f, -.38f), new Vector3(.52f, .09f, .09f), iron);
+        Box(body, "forward-rail-left", new Vector3(-.18f, .05f, -.55f), new Vector3(.055f, .055f, .42f), iron);
+        Box(body, "forward-rail-right", new Vector3(.18f, .05f, -.55f), new Vector3(.055f, .055f, .42f), iron);
+        Cylinder(body, "forward-collar", new Vector3(0f, .05f, -.69f), .16f, .09f, 12, iron, new Vector3(90f, 0f, 0f));
+        Prism(body, "forward-emitter", new Vector3(0f, .05f, -.78f), .105f, .42f, 7, crystalCore, new Vector3(-90f, 0f, 0f));
+
         var light = body.AddComponent<Light>();
         light.color = new Color(.55f, .82f, 1f, 1f);
         light.range = 4.5f;
@@ -74,7 +82,7 @@ internal static class CrystalSentinelVisuals
         root.transform.SetParent(turret.m_turretBody ? turret.m_turretBody.transform : turret.transform, false);
         root.transform.localPosition = new Vector3(0f, .90f, -.52f);
         var tint = ElementVisualPalette.Tint(element);
-        var material = Material(source, "ammo-" + element.ToString().ToLowerInvariant(), tint, .02f, .90f, .60f);
+        var material = Material(source, "ammo-crystal-" + element.ToString().ToLowerInvariant(), tint, .02f, .90f, .60f);
         Prism(root, "loaded-rough-crystal", Vector3.zero, .13f, .42f, 7, material, new Vector3(90f, 0f, 0f));
         root.SetActive(false);
         return root;
@@ -92,6 +100,7 @@ internal static class CrystalSentinelVisuals
                 var source = sources[i];
                 if (!source) continue;
                 var material = new Material(source) { name = $"magenheim.sentinel.projectile.{element}.{i}" };
+                GeneratedSurfaceTextures.Apply(material, "crystal-projectile");
                 if (material.HasProperty("_Color")) material.SetColor("_Color", tint);
                 if (material.HasProperty("_EmissionColor"))
                 {
@@ -124,9 +133,7 @@ internal static class CrystalSentinelVisuals
     private static Material Material(Material source, string suffix, Color color, float metallic, float gloss, float emission = 0f)
     {
         var material = new Material(source) { name = "magenheim.sentinel." + suffix };
-        material.mainTexture = Texture2D.whiteTexture;
-        material.mainTextureScale = Vector2.one;
-        material.mainTextureOffset = Vector2.zero;
+        GeneratedSurfaceTextures.Apply(material, suffix);
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", gloss);
