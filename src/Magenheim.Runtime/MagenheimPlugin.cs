@@ -103,6 +103,10 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
                     Logger,
                     socketProvider.Backend,
                     socketIntegration.MagenheimResonanceMultipliers);
+                SocketBehaviorRuntime.Configure(
+                    Logger,
+                    socketProvider.Backend,
+                    socketIntegration.MagenheimResonanceMultipliers);
             }
 
             _harmony = new Harmony(PluginGuid + ".gameplay");
