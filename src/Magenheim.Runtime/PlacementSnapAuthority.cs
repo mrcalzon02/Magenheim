@@ -20,16 +20,25 @@ internal static class PlacementSnapAuthority
         }
     }
 
-    internal static void FitFoundation(GameObject prefab, float size)
+    internal static void FitFoundation(GameObject prefab, float size) =>
+        FitRectangle(prefab, size, size);
+
+    internal static void FitRectangle(GameObject prefab, float width, float depth)
     {
+        if (width <= 0f || float.IsNaN(width) || float.IsInfinity(width))
+            throw new ArgumentOutOfRangeException(nameof(width));
+        if (depth <= 0f || float.IsNaN(depth) || float.IsInfinity(depth))
+            throw new ArgumentOutOfRangeException(nameof(depth));
+
         var snaps = SnapPoints(prefab);
         if (snaps.Length == 0) return;
 
         var maxX = snaps.Max(snap => Mathf.Abs(snap.localPosition.x));
         var maxZ = snaps.Max(snap => Mathf.Abs(snap.localPosition.z));
-        var half = size * .5f;
-        var scaleX = maxX > .01f ? half / maxX : 1f;
-        var scaleZ = maxZ > .01f ? half / maxZ : 1f;
+        var targetHalfX = width * .5f;
+        var targetHalfZ = depth * .5f;
+        var scaleX = maxX > .01f ? targetHalfX / maxX : 1f;
+        var scaleZ = maxZ > .01f ? targetHalfZ / maxZ : 1f;
 
         foreach (var snap in snaps)
         {
