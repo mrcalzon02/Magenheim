@@ -7,7 +7,7 @@ namespace Magenheim.Runtime;
 /// <summary>
 /// Runtime orchestration boundary for an already-authorized Underworld transition.
 /// Core owns transition legality and state mutation. The host adapter owns persistence,
-/// derived-context initialization and observed player placement.
+/// physical-context observation and player placement.
 /// </summary>
 internal sealed class UnderworldWorldTransitionManager
 {
@@ -27,25 +27,21 @@ internal sealed class UnderworldWorldTransitionManager
         UnderworldTransitionRules.ValidatePersistedState(preparedState, identity);
         var active = preparedState.ActiveTransition ?? throw new InvalidOperationException("Underworld runtime transition requires a prepared Core transition.");
         if (active.Phase != UnderworldTransitionPhase.Prepared) throw new InvalidOperationException("Underworld runtime transition may start only from Prepared state.");
-        if (!string.Equals(active.OperationId, operationId, StringComparison.Ordinal)) throw new InvalidOperationException("Underworld runtime operation id does not match the prepared Core transition.");
-        if (!string.Equals(active.AuthorityFingerprint, authorityFingerprint, StringComparison.Ordinal)) throw new InvalidOperationException("Underworld runtime authority fingerprint drifted before execution.");
+        ValidateOperation(active, operationId, authorityFingerprint);
         if (!UnderworldProgressionAuthority.IsUnlocked)
             throw new InvalidOperationException("Deep Gate transition rejected: the Nowhere King has not been defeated in this world.");
 
         _host.Persist(preparedState, identity);
         try
         {
-            _host.EnsureTargetContext(identity, active.TargetLayer, active.TargetAnchor);
-            var targetReady = UnderworldTransitionRules.MarkTargetReady(preparedState, operationId, authorityFingerprint);
-            _host.Persist(targetReady, identity);
-            _host.PlacePlayer(identity, active.TargetLayer, active.TargetAnchor);
-            if (!_host.ObservePlayerPlacement(identity, active.TargetLayer, active.TargetAnchor))
-                throw new InvalidOperationException("Runtime did not observe both the requested world context and player placement at the Underworld transition target.");
-
-            var committed = UnderworldTransitionRules.Commit(targetReady, operationId, authorityFingerprint);
-            _host.Persist(committed, identity);
-            _log.LogInfo($"Underworld transition '{operationId}' committed to {committed.CurrentLayer}.");
-            return committed;
+            return ContinuePrepared(preparedState, identity, operationId, authorityFingerprint);
+        }
+        catch (UnderworldPhysicalWorldSwitchRequiredException)
+        {
+            // This is not transition failure. Prepared state is deliberately left durable so the
+            // physical loader can change worlds and resume the same operation after admission.
+            _log.LogInfo($"Underworld transition '{operationId}' is durably prepared and awaiting its physical target world.");
+            throw;
         }
         catch (Exception transitionFailure)
         {
@@ -63,14 +59,40 @@ internal sealed class UnderworldWorldTransitionManager
             return Recover(persistedState, identity, active.OperationId, active.AuthorityFingerprint, new InvalidOperationException("Gameplay authority changed while an Underworld transition was incomplete."));
         if (active.Phase == UnderworldTransitionPhase.RecoveryRequired)
             return RecoverMarked(persistedState, identity, active.OperationId, active.AuthorityFingerprint);
-        return Recover(persistedState, identity, active.OperationId, active.AuthorityFingerprint, new InvalidOperationException("Recovered an interrupted Underworld transition from persistent state."));
+        if (active.Phase == UnderworldTransitionPhase.Prepared)
+        {
+            try { return ContinuePrepared(persistedState, identity, active.OperationId, active.AuthorityFingerprint); }
+            catch (UnderworldPhysicalWorldSwitchRequiredException) { throw; }
+            catch (Exception failure) { return Recover(persistedState, identity, active.OperationId, active.AuthorityFingerprint, failure); }
+        }
+        return Recover(persistedState, identity, active.OperationId, active.AuthorityFingerprint, new InvalidOperationException("Recovered an interrupted Underworld transition from a non-resumable phase."));
+    }
+
+    private UnderworldPlayerLayerState ContinuePrepared(UnderworldPlayerLayerState preparedState, UnderworldWorldIdentity identity, string operationId, string authorityFingerprint)
+    {
+        var active = preparedState.ActiveTransition ?? throw new InvalidOperationException("Prepared transition disappeared before continuation.");
+        ValidateOperation(active, operationId, authorityFingerprint);
+        _host.EnsureTargetContext(identity, active.TargetLayer, active.TargetAnchor);
+        var targetReady = UnderworldTransitionRules.MarkTargetReady(preparedState, operationId, authorityFingerprint);
+        _host.Persist(targetReady, identity);
+        _host.PlacePlayer(identity, active.TargetLayer, active.TargetAnchor);
+        if (!_host.ObservePlayerPlacement(identity, active.TargetLayer, active.TargetAnchor))
+            throw new InvalidOperationException("Runtime did not observe both the requested world context and player placement at the Underworld transition target.");
+        var committed = UnderworldTransitionRules.Commit(targetReady, operationId, authorityFingerprint);
+        _host.Persist(committed, identity);
+        _log.LogInfo($"Underworld transition '{operationId}' committed to {committed.CurrentLayer}.");
+        return committed;
+    }
+
+    private static void ValidateOperation(UnderworldTransitionRecord active, string operationId, string authorityFingerprint)
+    {
+        if (!string.Equals(active.OperationId, operationId, StringComparison.Ordinal)) throw new InvalidOperationException("Underworld runtime operation id does not match the prepared Core transition.");
+        if (!string.Equals(active.AuthorityFingerprint, authorityFingerprint, StringComparison.Ordinal)) throw new InvalidOperationException("Underworld runtime authority fingerprint drifted before execution.");
     }
 
     private UnderworldPlayerLayerState Recover(UnderworldPlayerLayerState state, UnderworldWorldIdentity identity, string operationId, string authorityFingerprint, Exception failure)
     {
-        var recoveryRequired = state.ActiveTransition?.Phase == UnderworldTransitionPhase.RecoveryRequired
-            ? state
-            : UnderworldTransitionRules.RequireRecovery(state, operationId, authorityFingerprint, failure.Message);
+        var recoveryRequired = state.ActiveTransition?.Phase == UnderworldTransitionPhase.RecoveryRequired ? state : UnderworldTransitionRules.RequireRecovery(state, operationId, authorityFingerprint, failure.Message);
         _host.Persist(recoveryRequired, identity);
         return RecoverMarked(recoveryRequired, identity, operationId, authorityFingerprint);
     }
@@ -80,9 +102,7 @@ internal sealed class UnderworldWorldTransitionManager
         var active = recoveryRequired.ActiveTransition ?? throw new InvalidOperationException("Recovery requires an active Underworld transition.");
         _host.EnsureTargetContext(identity, active.SourceLayer, active.SourceAnchor);
         _host.PlacePlayer(identity, active.SourceLayer, active.SourceAnchor);
-        if (!_host.ObservePlayerPlacement(identity, active.SourceLayer, active.SourceAnchor))
-            throw new InvalidOperationException("Underworld recovery could not verify source world context and placement; recovery state remains persisted.");
-
+        if (!_host.ObservePlayerPlacement(identity, active.SourceLayer, active.SourceAnchor)) throw new InvalidOperationException("Underworld recovery could not verify source world context and placement; recovery state remains persisted.");
         var recovered = UnderworldTransitionRules.RecoverToSource(recoveryRequired, operationId, authorityFingerprint);
         _host.Persist(recovered, identity);
         _log.LogInfo($"Underworld transition '{operationId}' recovered to {recovered.CurrentLayer}.");
