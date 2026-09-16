@@ -7,22 +7,32 @@ using System.Text;
 namespace Magenheim.Core.Socketing;
 
 /// <summary>
-/// Extends the validated definition fingerprint with socket-compatibility policy so
-/// peers cannot admit persistent socket mutations while using different eligibility rules.
+/// Extends the validated definition fingerprint with gameplay-significant policy that lives
+/// outside the static definition document. Socket eligibility and the active Underworld spatial
+/// domain therefore participate in the same peer-admission fingerprint instead of creating
+/// parallel network truth streams.
 /// </summary>
 public static class GameplayAuthorityFingerprint
 {
     public const int Sha256HexLength = 64;
 
-    public static string Compute(string definitionFingerprint, SocketEligibilityPolicy socketPolicy)
+    public static string Compute(
+        string definitionFingerprint,
+        SocketEligibilityPolicy socketPolicy,
+        string? underworldSpatialFingerprint = null)
     {
         if (!IsCanonicalSha256(definitionFingerprint))
             throw new ArgumentException("Definition fingerprint must be canonical lowercase SHA-256 hex.", nameof(definitionFingerprint));
         if (socketPolicy is null)
             throw new ArgumentNullException(nameof(socketPolicy));
+        if (underworldSpatialFingerprint is not null && !IsCanonicalSha256(underworldSpatialFingerprint))
+            throw new ArgumentException("Underworld spatial fingerprint must be canonical lowercase SHA-256 hex.", nameof(underworldSpatialFingerprint));
 
         var builder = new StringBuilder();
         builder.Append("definition|").Append(definitionFingerprint).Append('\n');
+        builder.Append("underworld-spatial|")
+            .Append(underworldSpatialFingerprint ?? "absent")
+            .Append('\n');
         builder.Append("socket-policy-v1|")
             .Append(socketPolicy.WeaponMaxSlots).Append('|')
             .Append(socketPolicy.ArmorMaxSlots).Append('|')

@@ -7,7 +7,7 @@ namespace Magenheim.Runtime;
 internal interface IUnderworldTransitionPlacementHost
 {
     void EnsureTargetContext(UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor);
-    void PlacePlayer(UnderworldLayer layer, UnderworldAnchor anchor);
+    void PlacePlayer(UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor);
     bool ObservePlayerPlacement(UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor);
 }
 
@@ -24,7 +24,7 @@ internal sealed class StoredUnderworldTransitionHost : IUnderworldTransitionHost
 
     public void Persist(UnderworldPlayerLayerState state, UnderworldWorldIdentity identity) => _store.Save(state, identity);
     public void EnsureTargetContext(UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor) => _placement.EnsureTargetContext(identity, layer, anchor);
-    public void PlacePlayer(UnderworldLayer layer, UnderworldAnchor anchor) => _placement.PlacePlayer(layer, anchor);
+    public void PlacePlayer(UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor) => _placement.PlacePlayer(identity, layer, anchor);
     public bool ObservePlayerPlacement(UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor) => _placement.ObservePlayerPlacement(identity, layer, anchor);
 }
 

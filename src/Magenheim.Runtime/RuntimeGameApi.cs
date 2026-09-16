@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 
@@ -15,8 +16,15 @@ internal static class RuntimeGameApi
     private static readonly MethodInfo InventoryChanged = AccessTools.Method(
         typeof(Inventory), "Changed", new[] { typeof(bool), typeof(bool) })
         ?? throw new MissingMethodException(typeof(Inventory).FullName, "Changed(bool, bool)");
+    private static readonly FieldInfo MinimapPins = AccessTools.Field(typeof(Minimap), "m_pins")
+        ?? throw new MissingFieldException(typeof(Minimap).FullName, "m_pins");
 
     internal static Recipe? GetCraftRecipe(InventoryGui gui) => CraftRecipe.GetValue(gui) as Recipe;
+
+    // Minimap.m_pins became private in Valheim 1.0.12. Minimap.PinData and its members are still
+    // public, so only the collection itself needs to cross this boundary.
+    internal static List<Minimap.PinData> GetMapPins(Minimap map) =>
+        MinimapPins.GetValue(map) as List<Minimap.PinData> ?? new List<Minimap.PinData>();
 
     // Inventory.Changed(success, cheatedStateChanged) exists only to drive the cheated-item
     // achievement popup; both stay false because Magenheim mutations are ordinary transactions.

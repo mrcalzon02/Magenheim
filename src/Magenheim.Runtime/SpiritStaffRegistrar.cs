@@ -106,7 +106,7 @@ internal sealed class SpiritStaffRegistrar : IDisposable
             }
 
             _registered = true;
-            _log.LogInfo("Registered Spirit abilities with owned Spirit staff bodies, non-fire projectile carriers, and stamina-only casting.");
+            _log.LogInfo("Registered Spirit abilities with Valheim-scale authored Spirit staff bodies, non-fire projectile carriers, and stamina-only casting.");
         }
         catch (Exception exception)
         {

@@ -76,6 +76,8 @@ internal sealed class FurnitureRegistrar : IDisposable
 
         var custom = new CustomPiece(definition.PrefabName, source, config);
         var prefab = custom.PiecePrefab;
+        custom.Piece.m_name = definition.DisplayName;
+        custom.Piece.m_description = definition.Description;
         custom.Piece.m_dlc = string.Empty;
         custom.Piece.m_comfort = definition.Comfort;
         custom.Piece.m_comfortGroup = ResolveComfortGroup(definition.ComfortGroup);

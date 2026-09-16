@@ -1,20 +1,29 @@
-using System;
-using System.Linq;
-using Magenheim.Core;
 using UnityEngine;
 namespace Magenheim.Runtime;
 /// <summary>Loads editable assets from assets/models/source; geometry is never generated in game.</summary>
 internal static class CrystalSentinelVisuals
 {
+    // The Sentinel now takes a single standardized Magenheim_CrystalMunition rather than one
+    // item per element, so its loaded-ammo visual and projectile are element-agnostic. No
+    // neutral munition model is authored yet, so the standardized visual borrows this body
+    // until one exists; see docs/RENDERING_AND_CONTENT_DEFECTS.md (C5).
+    private const string StandardMunitionModel = "sentinel-ammo-radiance";
 
-    internal static GameObject Apply(GameObject prefab) => ModelAssets.Load(prefab,"crystal-sentinel");
-    internal static GameObject CreateAmmoVisual(Turret turret,ElementalAlignment element,Material source) {
-        var root=ModelAssets.Load(turret.gameObject,"sentinel-ammo-"+element.ToString().ToLowerInvariant(),hideOriginal:false,parent:turret.m_turretBody?turret.m_turretBody.transform:turret.transform);
-        root.SetActive(false);return root;
-    }
-internal static void TintProjectile(GameObject projectile, ElementalAlignment element)
+    internal static GameObject Apply(GameObject prefab) => ModelAssets.Load(prefab, "crystal-sentinel");
+
+    internal static GameObject CreateAmmoVisual(Turret turret, Material source)
     {
-        var tint = ElementVisualPalette.Tint(element);
+        var root = ModelAssets.Load(
+            turret.gameObject,
+            StandardMunitionModel,
+            hideOriginal: false,
+            parent: turret.m_turretBody ? turret.m_turretBody.transform : turret.transform);
+        root.SetActive(false);
+        return root;
+    }
+
+    internal static void TintProjectile(GameObject projectile)
+    {
         foreach (var renderer in projectile.GetComponentsInChildren<Renderer>(true))
         {
             var sources = renderer.sharedMaterials;
@@ -23,22 +32,11 @@ internal static void TintProjectile(GameObject projectile, ElementalAlignment el
             {
                 var source = sources[i];
                 if (!source) continue;
-                var material = new Material(source) { name = $"magenheim.sentinel.projectile.{element}.{i}" };
+                var material = new Material(source) { name = $"magenheim.sentinel.projectile.{i}" };
                 GeneratedSurfaceTextures.Apply(material, "crystal-projectile");
-                if (material.HasProperty("_Color")) material.SetColor("_Color", tint);
-                if (material.HasProperty("_EmissionColor"))
-                {
-                    material.SetColor("_EmissionColor", tint * 1.25f);
-                    material.EnableKeyword("_EMISSION");
-                }
                 materials[i] = material;
             }
             renderer.sharedMaterials = materials;
-        }
-        foreach (var particles in projectile.GetComponentsInChildren<ParticleSystem>(true))
-        {
-            var main = particles.main;
-            main.startColor = new ParticleSystem.MinMaxGradient(tint);
         }
     }
 }

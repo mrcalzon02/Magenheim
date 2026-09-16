@@ -29,6 +29,8 @@ internal sealed class UnderworldWorldTransitionManager
         if (active.Phase != UnderworldTransitionPhase.Prepared) throw new InvalidOperationException("Underworld runtime transition may start only from Prepared state.");
         if (!string.Equals(active.OperationId, operationId, StringComparison.Ordinal)) throw new InvalidOperationException("Underworld runtime operation id does not match the prepared Core transition.");
         if (!string.Equals(active.AuthorityFingerprint, authorityFingerprint, StringComparison.Ordinal)) throw new InvalidOperationException("Underworld runtime authority fingerprint drifted before execution.");
+        if (!UnderworldProgressionAuthority.IsUnlocked)
+            throw new InvalidOperationException("Deep Gate transition rejected: the Nowhere King has not been defeated in this world.");
 
         _host.Persist(preparedState, identity);
         try
@@ -36,7 +38,7 @@ internal sealed class UnderworldWorldTransitionManager
             _host.EnsureTargetContext(identity, active.TargetLayer, active.TargetAnchor);
             var targetReady = UnderworldTransitionRules.MarkTargetReady(preparedState, operationId, authorityFingerprint);
             _host.Persist(targetReady, identity);
-            _host.PlacePlayer(active.TargetLayer, active.TargetAnchor);
+            _host.PlacePlayer(identity, active.TargetLayer, active.TargetAnchor);
             if (!_host.ObservePlayerPlacement(identity, active.TargetLayer, active.TargetAnchor))
                 throw new InvalidOperationException("Runtime did not observe both the requested world context and player placement at the Underworld transition target.");
 
@@ -77,7 +79,7 @@ internal sealed class UnderworldWorldTransitionManager
     {
         var active = recoveryRequired.ActiveTransition ?? throw new InvalidOperationException("Recovery requires an active Underworld transition.");
         _host.EnsureTargetContext(identity, active.SourceLayer, active.SourceAnchor);
-        _host.PlacePlayer(active.SourceLayer, active.SourceAnchor);
+        _host.PlacePlayer(identity, active.SourceLayer, active.SourceAnchor);
         if (!_host.ObservePlayerPlacement(identity, active.SourceLayer, active.SourceAnchor))
             throw new InvalidOperationException("Underworld recovery could not verify source world context and placement; recovery state remains persisted.");
 
@@ -92,6 +94,6 @@ internal interface IUnderworldTransitionHost
 {
     void Persist(UnderworldPlayerLayerState state, UnderworldWorldIdentity identity);
     void EnsureTargetContext(UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor);
-    void PlacePlayer(UnderworldLayer layer, UnderworldAnchor anchor);
+    void PlacePlayer(UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor);
     bool ObservePlayerPlacement(UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor);
 }

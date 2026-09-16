@@ -18,7 +18,8 @@ internal static class UnderworldAuthorityCompositionTests
 
         var content = CreateContent();
         var architecture = UnderworldArchitectureCatalog.CreateInitialStructuralSlice();
-        var authority = UnderworldAuthorityComposer.Compose(content, architecture);
+        var spatial = UnderworldSpatialDomain.CreateDefault();
+        var authority = UnderworldAuthorityComposer.Compose(content, architecture, spatial);
 
         Assert(authority.SchemaVersion == UnderworldAuthorityComposer.CurrentSchemaVersion,
             "Composite authority must expose its schema version.");
@@ -28,8 +29,10 @@ internal static class UnderworldAuthorityCompositionTests
             "Composite authority must retain the validated content snapshot.");
         Assert(ReferenceEquals(authority.Architecture, architecture),
             "Composite authority must retain the validated architecture snapshot.");
+        Assert(ReferenceEquals(authority.SpatialDomain, spatial),
+            "Composite authority must retain the validated spatial-domain snapshot.");
 
-        var repeat = UnderworldAuthorityComposer.Compose(content, architecture);
+        var repeat = UnderworldAuthorityComposer.Compose(content, architecture, spatial);
         Assert(repeat.Fingerprint == authority.Fingerprint,
             "Identical validated component authorities must compose deterministically.");
 
@@ -47,21 +50,41 @@ internal static class UnderworldAuthorityCompositionTests
         var changedArchitecture = UnderworldArchitectureValidator.ValidateAndFreeze(
             UnderworldArchitectureValidator.CurrentSchemaVersion,
             changedPieces);
-        var changedAuthority = UnderworldAuthorityComposer.Compose(content, changedArchitecture);
+        var changedAuthority = UnderworldAuthorityComposer.Compose(content, changedArchitecture, spatial);
         Assert(changedAuthority.Fingerprint != authority.Fingerprint,
             "Gameplay-significant architecture changes must alter canonical Underworld authority.");
 
         var changedContent = CreateContent("magenheim.underworld.boon.spore_communion_variant");
-        var changedContentAuthority = UnderworldAuthorityComposer.Compose(changedContent, architecture);
+        var changedContentAuthority = UnderworldAuthorityComposer.Compose(changedContent, architecture, spatial);
         Assert(changedContentAuthority.Fingerprint != authority.Fingerprint,
             "Gameplay-significant biome/boss/Deepstone changes must alter canonical Underworld authority.");
 
+        var changedSpatial = UnderworldSpatialDomain.ValidateAndFreeze(
+            UnderworldSpatialDomain.CurrentSchemaVersion,
+            spatial.RadiusMeters,
+            spatial.HostBaseY + 128d,
+            spatial.LogicalMinY,
+            spatial.LogicalMaxY,
+            spatial.MappingAlgorithm);
+        var changedSpatialAuthority = UnderworldAuthorityComposer.Compose(content, architecture, changedSpatial);
+        Assert(changedSpatialAuthority.Fingerprint != authority.Fingerprint,
+            "Gameplay-significant host-domain changes must alter canonical Underworld authority.");
+
         AssertThrows(Assert,
-            () => UnderworldAuthorityComposer.Compose(null!, architecture),
+            () => UnderworldAuthorityComposer.Compose(null!, architecture, spatial),
             "Null content authority must fail closed.");
         AssertThrows(Assert,
-            () => UnderworldAuthorityComposer.Compose(content, null!),
+            () => UnderworldAuthorityComposer.Compose(content, null!, spatial),
             "Null architecture authority must fail closed.");
+        AssertThrows(Assert,
+            () => UnderworldAuthorityComposer.Compose(content, architecture, null!),
+            "Null spatial-domain authority must fail closed.");
+        AssertThrows(Assert,
+            () => UnderworldAuthorityComposer.Compose(
+                content,
+                architecture,
+                spatial with { HostBaseY = spatial.HostBaseY + 1d }),
+            "A forged spatial-domain snapshot must fail closed before composition.");
 
         return assertions;
     }
@@ -107,7 +130,6 @@ internal static class UnderworldAuthorityCompositionTests
         {
             threw = true;
         }
-
         assert(threw, message);
     }
 }

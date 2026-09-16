@@ -8,30 +8,35 @@ using Magenheim.Core;
 using Magenheim.Core.Socketing;
 using Magenheim.Runtime.Networking;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Magenheim.Runtime;
 
 /// <summary>
 /// Explicit per-item socket management surface shown only while the local player is using
-/// the Geologist's Workstation. It never edits shared prefabs: all mutation is performed
-/// through Magenheim's namespaced ItemData metadata and pure-core transaction planners.
-/// Remote clients submit immutable socket intent to the server and apply only the approved
-/// plan to the exact selected ItemData after stale-state revalidation.
+/// a Magenheim socket station. The presentation is hosted by Valheim's InventoryGui and copies
+/// the active crafting panel/button/text visuals instead of drawing a separate IMGUI debug window.
+/// It never edits shared prefabs: all mutation is performed through Magenheim's namespaced
+/// ItemData metadata and pure-core transaction planners. Remote clients submit immutable socket
+/// intent to the server and apply only the approved plan after stale-state revalidation.
 /// </summary>
 internal sealed class SocketWorkstationOverlay : MonoBehaviour
 {
     private const long LocalPeerId = 0L;
     private const long LocalSessionGeneration = 1L;
-    private const int WindowId = 0x4D474E48; // MGNH
+    private const float RefreshInterval = .25f;
 
     private RuntimeServices? _services;
     private DefinitionAuthoritySynchronizer? _authority;
     private ManualLogSource? _log;
-    private Rect _window = new Rect(0f, 0f, 470f, 620f);
-    private Vector2 _equipmentScroll;
-    private Vector2 _crystalScroll;
     private ItemDrop.ItemData? _selectedEquipment;
     private string _status = "Select equipment to manage its Magenheim sockets.";
+
+    private GameObject? _nativeRoot;
+    private ScrollRect? _nativeScroll;
+    private RectTransform? _nativeContent;
+    private float _nextRefreshAt;
+    private bool _refreshRequested = true;
 
     internal void Configure(
         RuntimeServices services,
@@ -41,147 +46,464 @@ internal sealed class SocketWorkstationOverlay : MonoBehaviour
         _services = services ?? throw new ArgumentNullException(nameof(services));
         _authority = authority ?? throw new ArgumentNullException(nameof(authority));
         _log = log ?? throw new ArgumentNullException(nameof(log));
-        _window.x = Math.Max(10f, Screen.width - _window.width - 24f);
-        _window.y = Math.Max(10f, (Screen.height - _window.height) * 0.5f);
+        _refreshRequested = true;
     }
 
-    private void OnGUI()
+    private void Update()
     {
         var player = Player.m_localPlayer;
-        if (_services is null || _authority is null || player is null ||
-            !InventoryGui.IsVisible() || !TryGetMagenheimStation(player, out _))
+        var shouldShow = _services is not null &&
+                         _authority is not null &&
+                         player is not null &&
+                         InventoryGui.IsVisible() &&
+                         TryGetMagenheimStation(player, out _);
+
+        if (!shouldShow)
         {
             _selectedEquipment = null;
+            if (_nativeRoot) _nativeRoot.SetActive(false);
+            _refreshRequested = true;
             return;
         }
 
-        _window = GUILayout.Window(WindowId, _window, DrawWindow, "Magenheim Socketing");
-    }
-
-    private void DrawWindow(int id)
-    {
         try
         {
-            var player = Player.m_localPlayer;
-            if (player is null || _services is null || _authority is null)
-                return;
+            EnsureNativeUi();
+            if (!_nativeRoot || !_nativeContent) return;
+            _nativeRoot.SetActive(true);
+            _nativeRoot.transform.SetAsLastSibling();
 
-            var inventory = player.GetInventory();
-            if (_selectedEquipment is not null && !inventory.ContainsItem(_selectedEquipment))
-                _selectedEquipment = null;
-
-            GUILayout.Label("Equipment");
-            GUILayout.Label("Choose an individual weapon, armor piece, shield, tool, or utility item. Foreign prefabs are never rewritten.");
-
-            _equipmentScroll = GUILayout.BeginScrollView(_equipmentScroll, GUILayout.Height(190f));
-            foreach (var candidate in EligibleOrSocketedEquipment(inventory))
+            if (_refreshRequested || Time.unscaledTime >= _nextRefreshAt)
             {
-                var stateText = DescribeSocketState(candidate, out var malformed);
-                var descriptor = ItemSocketAdapter.Describe(candidate);
-                var selected = ReferenceEquals(candidate, _selectedEquipment) ? "> " : string.Empty;
-                var label = $"{selected}{DisplayName(candidate)} [{descriptor.Category}] {stateText}";
-                if (malformed) label += " [metadata error]";
-                if (GUILayout.Button(label))
-                {
-                    _selectedEquipment = candidate;
-                    _status = malformed
-                        ? "Selected item has malformed Magenheim metadata. Mutation is disabled until that metadata is repaired."
-                        : $"Selected {DisplayName(candidate)}.";
-                }
+                RefreshNativeUi(player!);
+                _nextRefreshAt = Time.unscaledTime + RefreshInterval;
+                _refreshRequested = false;
             }
-            GUILayout.EndScrollView();
-
-            if (_selectedEquipment is not null)
-                DrawSelectedEquipment(player, inventory, _selectedEquipment);
-            else
-                GUILayout.Label("No equipment selected.");
-
-            GUILayout.Space(6f);
-            GUILayout.Label("Status");
-            GUILayout.TextArea(_status, GUILayout.Height(58f));
         }
         catch (Exception exception)
         {
-            _log?.LogError($"Magenheim socket workstation UI failed safely: {exception}");
+            _log?.LogError($"Magenheim native socket workstation UI failed safely: {exception}");
             _status = "Socketing UI failed safely; no intentional item mutation was completed.";
+            if (_nativeRoot) _nativeRoot.SetActive(false);
         }
-
-        GUI.DragWindow(new Rect(0f, 0f, 10000f, 24f));
     }
 
-    private void DrawSelectedEquipment(Player player, Inventory inventory, ItemDrop.ItemData equipment)
+    private void OnDestroy()
     {
-        if (_services is null || _authority is null) return;
+        if (_nativeRoot) UnityEngine.Object.Destroy(_nativeRoot);
+        _nativeRoot = null;
+        _nativeContent = null;
+        _nativeScroll = null;
+    }
+
+    private void EnsureNativeUi()
+    {
+        if (_nativeRoot && _nativeContent && _nativeScroll) return;
+        var inventoryGui = InventoryGui.instance;
+        if (!inventoryGui) return;
+
+        var root = new GameObject("Magenheim.Socketing.NativePanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+        root.transform.SetParent(inventoryGui.transform, false);
+        var rootRect = (RectTransform)root.transform;
+        rootRect.anchorMin = new Vector2(1f, .5f);
+        rootRect.anchorMax = new Vector2(1f, .5f);
+        rootRect.pivot = new Vector2(1f, .5f);
+        rootRect.anchoredPosition = new Vector2(-24f, 0f);
+        rootRect.sizeDelta = new Vector2(520f, 720f);
+        CopyNativePanelStyle(root.GetComponent<Image>(), inventoryGui);
+
+        var viewport = new GameObject("Viewport", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Mask));
+        viewport.transform.SetParent(root.transform, false);
+        var viewportRect = (RectTransform)viewport.transform;
+        viewportRect.anchorMin = Vector2.zero;
+        viewportRect.anchorMax = Vector2.one;
+        viewportRect.offsetMin = new Vector2(18f, 18f);
+        viewportRect.offsetMax = new Vector2(-18f, -18f);
+        var viewportImage = viewport.GetComponent<Image>();
+        viewportImage.color = new Color(1f, 1f, 1f, .012f);
+        viewport.GetComponent<Mask>().showMaskGraphic = false;
+
+        var contentObject = new GameObject("Content", typeof(RectTransform), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
+        contentObject.transform.SetParent(viewport.transform, false);
+        var content = (RectTransform)contentObject.transform;
+        content.anchorMin = new Vector2(0f, 1f);
+        content.anchorMax = new Vector2(1f, 1f);
+        content.pivot = new Vector2(.5f, 1f);
+        content.anchoredPosition = Vector2.zero;
+        content.sizeDelta = Vector2.zero;
+        var layout = contentObject.GetComponent<VerticalLayoutGroup>();
+        layout.padding = new RectOffset(8, 8, 8, 8);
+        layout.spacing = 6f;
+        layout.childAlignment = TextAnchor.UpperLeft;
+        layout.childControlWidth = true;
+        layout.childControlHeight = true;
+        layout.childForceExpandWidth = true;
+        layout.childForceExpandHeight = false;
+        var fitter = contentObject.GetComponent<ContentSizeFitter>();
+        fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+        fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        var scroll = root.AddComponent<ScrollRect>();
+        scroll.viewport = viewportRect;
+        scroll.content = content;
+        scroll.horizontal = false;
+        scroll.vertical = true;
+        scroll.movementType = ScrollRect.MovementType.Clamped;
+        scroll.scrollSensitivity = 34f;
+
+        _nativeRoot = root;
+        _nativeContent = content;
+        _nativeScroll = scroll;
+        _refreshRequested = true;
+    }
+
+    private void RefreshNativeUi(Player player)
+    {
+        if (_nativeContent is null || _nativeScroll is null || _services is null || _authority is null) return;
+        var inventory = player.GetInventory();
+        if (_selectedEquipment is not null && !inventory.ContainsItem(_selectedEquipment))
+            _selectedEquipment = null;
+
+        var previousScroll = _nativeScroll.verticalNormalizedPosition;
+        ClearChildren(_nativeContent);
+
+        AddNativeLabel(_nativeContent, "Magenheim Socketing", 34f, true);
+        AddNativeLabel(_nativeContent,
+            "Choose an individual weapon, armor piece, shield, tool, or utility item. Socket data remains attached to that exact item.",
+            54f);
+        AddSectionLabel(_nativeContent, "Equipment");
+
+        var candidates = EligibleOrSocketedEquipment(inventory).ToArray();
+        if (candidates.Length == 0)
+        {
+            AddNativeLabel(_nativeContent, "No socket-eligible equipment is in inventory.", 30f);
+        }
+        else
+        {
+            foreach (var candidate in candidates)
+            {
+                var stateText = DescribeSocketState(candidate, out var malformed);
+                var descriptor = ItemSocketAdapter.Describe(candidate);
+                var selected = ReferenceEquals(candidate, _selectedEquipment) ? "● " : string.Empty;
+                var label = $"{selected}{DisplayName(candidate)}  [{descriptor.Category}]  {stateText}";
+                if (malformed) label += "  [metadata error]";
+                var captured = candidate;
+                AddNativeButton(_nativeContent, label, () =>
+                {
+                    _selectedEquipment = captured;
+                    _status = malformed
+                        ? "Selected item has malformed Magenheim metadata. Mutation is disabled until that metadata is repaired."
+                        : $"Selected {DisplayName(captured)}.";
+                    _refreshRequested = true;
+                });
+            }
+        }
+
+        if (_selectedEquipment is not null)
+            BuildSelectedEquipmentUi(player, inventory, _selectedEquipment);
+        else
+            AddNativeLabel(_nativeContent, "No equipment selected.", 30f);
+
+        AddSectionLabel(_nativeContent, "Status");
+        AddNativeLabel(_nativeContent, _status, 60f);
+
+        Canvas.ForceUpdateCanvases();
+        _nativeScroll.verticalNormalizedPosition = Mathf.Clamp01(previousScroll);
+    }
+
+    private void BuildSelectedEquipmentUi(Player player, Inventory inventory, ItemDrop.ItemData equipment)
+    {
+        if (_nativeContent is null || _services is null || _authority is null) return;
 
         var descriptor = ItemSocketAdapter.Describe(equipment);
         if (!ItemSocketAdapter.TryRead(equipment, out var state, out var metadataError))
         {
-            GUILayout.Label($"Socket metadata error: {metadataError}");
+            AddNativeLabel(_nativeContent, $"Socket metadata error: {metadataError}", 48f);
             return;
         }
 
         var eligibility = SocketEligibilityService.Evaluate(descriptor, _services.SocketPolicy);
-        GUILayout.Label($"Selected: {DisplayName(equipment)}");
-        GUILayout.Label($"Origin: {descriptor.ModOrigin} | Category: {descriptor.Category}");
-        GUILayout.Label($"Sockets: {state.InstalledCrystals.Count}/{state.UnlockedSlots} unlocked, policy maximum {eligibility.MaximumSlots}");
+        AddSectionLabel(_nativeContent, "Selected Equipment");
+        AddNativeLabel(_nativeContent, $"{DisplayName(equipment)}  |  {descriptor.ModOrigin}  |  {descriptor.Category}", 34f, true);
+        AddNativeLabel(_nativeContent,
+            $"Sockets: {state.InstalledCrystals.Count}/{state.UnlockedSlots} unlocked; policy maximum {eligibility.MaximumSlots}.",
+            32f);
 
         if (!eligibility.IsEligible)
-            GUILayout.Label($"New socket/install operations disabled: {eligibility.Reason}");
+            AddNativeLabel(_nativeContent, $"New socket/install operations disabled: {eligibility.Reason}", 44f);
 
         if (state.InstalledCrystals.Count > 0)
         {
-            GUILayout.Label("Installed crystals:");
+            AddSectionLabel(_nativeContent, "Installed Crystals");
             for (var i = 0; i < state.InstalledCrystals.Count; i++)
             {
+                var crystalIndex = i;
                 var crystal = state.InstalledCrystals[i];
-                GUILayout.BeginHorizontal();
-                GUILayout.Label($"{i + 1}. {crystal.Tier} {crystal.Element}");
-                GUI.enabled = CanRequestMutation() && HasFacetingWheel(player);
-                if (GUILayout.Button("Extract", GUILayout.Width(90f)))
-                    TryExtract(player, inventory, equipment, i);
-                GUI.enabled = true;
-                GUILayout.EndHorizontal();
+                AddNativeButton(
+                    _nativeContent,
+                    $"Extract {i + 1}. {crystal.Tier} {crystal.Element}",
+                    () =>
+                    {
+                        TryExtract(player, inventory, equipment, crystalIndex);
+                        _refreshRequested = true;
+                    },
+                    CanRequestMutation() && HasFacetingWheel(player));
             }
 
             if (!HasFacetingWheel(player))
-                GUILayout.Label("Crystal extraction requires the Faceting Wheel upgrade.");
+                AddNativeLabel(_nativeContent, "Crystal extraction requires the Faceting Wheel upgrade.", 34f);
         }
 
-        GUI.enabled = CanRequestMutation() && eligibility.IsEligible;
-        if (GUILayout.Button("Open one socket"))
+        AddNativeButton(_nativeContent, "Open one socket", () =>
+        {
             TryAddSlot(player, inventory, equipment);
-        GUI.enabled = true;
+            _refreshRequested = true;
+        }, CanRequestMutation() && eligibility.IsEligible);
 
-        GUILayout.Label("Install a crystal");
-        _crystalScroll = GUILayout.BeginScrollView(_crystalScroll, GUILayout.Height(120f));
+        AddSectionLabel(_nativeContent, "Install a Crystal");
         var crystals = SocketableCrystals(inventory).ToArray();
         if (crystals.Length == 0)
         {
-            GUILayout.Label("No Simple-or-better Magenheim crystals are in inventory.");
+            AddNativeLabel(_nativeContent, "No Simple-or-better Magenheim crystals are in inventory.", 34f);
         }
         else
         {
             foreach (var crystalItem in crystals)
             {
                 if (!TryParseCrystal(crystalItem, out var crystal)) continue;
-                GUI.enabled = CanRequestMutation() && eligibility.IsEligible && state.FreeSlots > 0;
-                if (GUILayout.Button($"Install {crystal.Tier} {crystal.Element} (x{crystalItem.m_stack})"))
-                    TryInstall(player, inventory, equipment, crystalItem, crystal);
-                GUI.enabled = true;
+                var capturedItem = crystalItem;
+                var capturedCrystal = crystal;
+                AddNativeButton(
+                    _nativeContent,
+                    $"Install {crystal.Tier} {crystal.Element}  (x{crystalItem.m_stack})",
+                    () =>
+                    {
+                        TryInstall(player, inventory, equipment, capturedItem, capturedCrystal);
+                        _refreshRequested = true;
+                    },
+                    CanRequestMutation() && eligibility.IsEligible && state.FreeSlots > 0);
             }
         }
-        GUILayout.EndScrollView();
 
         if (IsRemoteMutationClient())
         {
-            GUILayout.Label(
-                "Remote socket changes are resolved by the server, then applied only if this exact item still matches the approved original state.");
+            AddNativeLabel(_nativeContent,
+                "Remote socket changes are resolved by the server, then applied only if this exact item still matches the approved original state.",
+                54f);
         }
         else if (!IsLocalMutationHost())
         {
-            GUILayout.Label(
-                "Socket mutation is unavailable until the server admits this client's synchronized Magenheim gameplay authority.");
+            AddNativeLabel(_nativeContent,
+                "Socket mutation is unavailable until the server admits this client's synchronized Magenheim gameplay authority.",
+                54f);
         }
+    }
+
+    private static void ClearChildren(Transform parent)
+    {
+        for (var i = parent.childCount - 1; i >= 0; i--)
+        {
+            var child = parent.GetChild(i).gameObject;
+            child.SetActive(false);
+            UnityEngine.Object.Destroy(child);
+        }
+    }
+
+    private static void AddSectionLabel(Transform parent, string text) =>
+        AddNativeLabel(parent, text, 30f, true);
+
+    private static void AddNativeLabel(Transform parent, string text, float preferredHeight, bool emphasize = false)
+    {
+        var inventoryGui = InventoryGui.instance;
+        if (!inventoryGui) return;
+
+        var template = NativeTextTemplate(inventoryGui);
+        GameObject label;
+        if (template)
+        {
+            label = UnityEngine.Object.Instantiate(template, parent, false);
+            label.name = "Magenheim.Socketing.Text";
+            StripInteractiveComponents(label);
+        }
+        else
+        {
+            label = CreateFallbackText(parent);
+        }
+
+        label.SetActive(true);
+        SetText(label, text);
+        var rect = label.GetComponent<RectTransform>() ?? label.AddComponent<RectTransform>();
+        rect.localScale = Vector3.one;
+        var layout = label.GetComponent<LayoutElement>() ?? label.AddComponent<LayoutElement>();
+        layout.minHeight = preferredHeight;
+        layout.preferredHeight = preferredHeight;
+        if (emphasize) TrySetFontStyle(label, FontStyle.Bold);
+    }
+
+    private static void AddNativeButton(Transform parent, string text, Action action, bool interactable = true)
+    {
+        if (action is null) throw new ArgumentNullException(nameof(action));
+        var inventoryGui = InventoryGui.instance;
+        if (!inventoryGui) return;
+
+        var buttonObject = new GameObject("Magenheim.Socketing.Button", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(LayoutElement));
+        buttonObject.transform.SetParent(parent, false);
+        var image = buttonObject.GetComponent<Image>();
+        var button = buttonObject.GetComponent<Button>();
+        CopyNativeButtonStyle(image, button, inventoryGui);
+
+        var nativeButton = NativeCraftButton(inventoryGui);
+        var textTemplate = nativeButton ? FindTextObject(nativeButton.gameObject) : NativeTextTemplate(inventoryGui);
+        GameObject label;
+        if (textTemplate)
+        {
+            label = UnityEngine.Object.Instantiate(textTemplate, buttonObject.transform, false);
+            StripInteractiveComponents(label);
+        }
+        else
+        {
+            label = CreateFallbackText(buttonObject.transform);
+        }
+        label.name = "Label";
+        label.SetActive(true);
+        SetText(label, text);
+        var labelRect = label.GetComponent<RectTransform>() ?? label.AddComponent<RectTransform>();
+        labelRect.anchorMin = Vector2.zero;
+        labelRect.anchorMax = Vector2.one;
+        labelRect.offsetMin = new Vector2(12f, 5f);
+        labelRect.offsetMax = new Vector2(-12f, -5f);
+        labelRect.localScale = Vector3.one;
+
+        var layout = buttonObject.GetComponent<LayoutElement>();
+        layout.minHeight = 40f;
+        layout.preferredHeight = 40f;
+        button.interactable = interactable;
+        button.onClick.AddListener(() => action());
+    }
+
+    private static void CopyNativePanelStyle(Image target, InventoryGui inventoryGui)
+    {
+        var sourceObject = FieldGameObject(inventoryGui, "m_crafting");
+        var source = sourceObject ? sourceObject.GetComponent<Image>() ?? sourceObject.GetComponentInChildren<Image>(true) : null;
+        if (!source)
+        {
+            var button = NativeCraftButton(inventoryGui);
+            source = button ? button.GetComponent<Image>() : null;
+        }
+        if (!source)
+        {
+            target.color = new Color(.08f, .075f, .065f, .98f);
+            return;
+        }
+
+        target.sprite = source.sprite;
+        target.overrideSprite = source.overrideSprite;
+        target.material = source.material;
+        target.type = source.type;
+        target.preserveAspect = source.preserveAspect;
+        target.color = source.color;
+    }
+
+    private static void CopyNativeButtonStyle(Image targetImage, Button targetButton, InventoryGui inventoryGui)
+    {
+        var source = NativeCraftButton(inventoryGui);
+        if (!source)
+        {
+            targetImage.color = new Color(.22f, .18f, .11f, 1f);
+            return;
+        }
+
+        var sourceImage = source.GetComponent<Image>();
+        if (sourceImage)
+        {
+            targetImage.sprite = sourceImage.sprite;
+            targetImage.overrideSprite = sourceImage.overrideSprite;
+            targetImage.material = sourceImage.material;
+            targetImage.type = sourceImage.type;
+            targetImage.preserveAspect = sourceImage.preserveAspect;
+            targetImage.color = sourceImage.color;
+        }
+        targetButton.transition = source.transition;
+        targetButton.colors = source.colors;
+        targetButton.spriteState = source.spriteState;
+        targetButton.navigation = source.navigation;
+        targetButton.targetGraphic = targetImage;
+    }
+
+    private static Button? NativeCraftButton(InventoryGui inventoryGui)
+    {
+        var field = AccessTools.Field(typeof(InventoryGui), "m_craftButton");
+        return field?.GetValue(inventoryGui) as Button;
+    }
+
+    private static GameObject? NativeTextTemplate(InventoryGui inventoryGui) =>
+        FieldGameObject(inventoryGui, "m_recipeName") ??
+        FieldGameObject(inventoryGui, "m_craftingStationName");
+
+    private static GameObject? FieldGameObject(InventoryGui inventoryGui, string fieldName)
+    {
+        var field = AccessTools.Field(typeof(InventoryGui), fieldName);
+        var value = field?.GetValue(inventoryGui);
+        if (value is GameObject gameObject) return gameObject;
+        return value is Component component ? component.gameObject : null;
+    }
+
+    private static GameObject? FindTextObject(GameObject root)
+    {
+        foreach (var component in root.GetComponentsInChildren<Component>(true))
+        {
+            if (!component) continue;
+            var property = component.GetType().GetProperty("text");
+            if (property is not null && property.CanWrite && property.PropertyType == typeof(string))
+                return component.gameObject;
+        }
+        return null;
+    }
+
+    private static void SetText(GameObject root, string text)
+    {
+        foreach (var component in root.GetComponentsInChildren<Component>(true))
+        {
+            if (!component) continue;
+            var property = component.GetType().GetProperty("text");
+            if (property is null || !property.CanWrite || property.PropertyType != typeof(string)) continue;
+            property.SetValue(component, text, null);
+            return;
+        }
+    }
+
+    private static void TrySetFontStyle(GameObject root, FontStyle style)
+    {
+        foreach (var component in root.GetComponentsInChildren<Component>(true))
+        {
+            if (!component) continue;
+            var property = component.GetType().GetProperty("fontStyle");
+            if (property is null || !property.CanWrite || property.PropertyType != typeof(FontStyle)) continue;
+            property.SetValue(component, style, null);
+            return;
+        }
+    }
+
+    private static void StripInteractiveComponents(GameObject root)
+    {
+        foreach (var selectable in root.GetComponentsInChildren<Selectable>(true))
+            UnityEngine.Object.Destroy(selectable);
+        foreach (var layout in root.GetComponents<LayoutElement>())
+            UnityEngine.Object.Destroy(layout);
+    }
+
+    private static GameObject CreateFallbackText(Transform parent)
+    {
+        var gameObject = new GameObject("Magenheim.Socketing.FallbackText", typeof(RectTransform), typeof(CanvasRenderer), typeof(Text));
+        gameObject.transform.SetParent(parent, false);
+        var text = gameObject.GetComponent<Text>();
+        text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        text.fontSize = 14;
+        text.color = new Color(.92f, .86f, .74f, 1f);
+        text.alignment = TextAnchor.MiddleLeft;
+        text.horizontalOverflow = HorizontalWrapMode.Wrap;
+        text.verticalOverflow = VerticalWrapMode.Truncate;
+        return gameObject;
     }
 
     private IEnumerable<ItemDrop.ItemData> EligibleOrSocketedEquipment(Inventory inventory)
@@ -512,10 +834,11 @@ internal sealed class SocketWorkstationOverlay : MonoBehaviour
 
     private static string DisplayName(ItemDrop.ItemData item)
     {
-        var localized = Localization.instance?.Localize(item.m_shared.m_name);
-        if (localized is not null && !string.IsNullOrWhiteSpace(localized) && localized != item.m_shared.m_name)
-            return localized;
-        return item.m_dropPrefab ? item.m_dropPrefab.name : item.m_shared.m_name;
+        var raw = item.m_shared.m_name;
+        var localized = Localization.instance?.Localize(raw);
+        if (!string.IsNullOrWhiteSpace(localized)) return localized!;
+        if (!string.IsNullOrWhiteSpace(raw)) return raw;
+        return item.m_dropPrefab ? item.m_dropPrefab.name : "Unnamed item";
     }
 
     private static bool SocketStatesStillMatch(
