@@ -1,141 +1,134 @@
 # Rendering and content defect register — opened 2026-09-15
 
-Raised from live play against installed 0.0.48/0.0.49 with screenshot evidence. Every entry
-below was confirmed by reading the authoritative source, not inferred from the report alone.
-
-Two root causes explain most of the visual complaints. They are independent and both are real.
-
----
-
-## R1 — Every runtime-generated surface is untextured (root cause, highest impact)
-
-**Status: confirmed, not yet repaired.**
-
-Eighteen visual files assign `mainTexture = Texture2D.whiteTexture`, a 1x1 white pixel:
-
-`CapstoneArtifactVisuals`, `CrystalArchitectureVisuals`, `CrystalBannerVisuals`,
-`CrystalBedVisuals`, `CrystalEnchantingDaisVisuals`, `CrystallineIceBoxVisuals`,
-`CrystalSentinelVisuals`, `CrystalWeaponVisuals`, `DeepFractureObeliskWardenVisual`,
-`FrostStaffVisuals`, `FurnitureVisuals`, `GeodeVisuals`, `GeologyDecorVisuals`,
-`RadianceStaffRegistrar`, `SeidrStaffRegistrar`, `SpiritStaffRegistrar`,
-`VenomStaffVisuals`, `WorldArtifactVisuals`.
-
-Consequence: the mesh is lit and tinted by `_Color` but carries no surface detail whatsoever.
-This is the flat white, pale lavender and flat blue seen across every screenshot, and it is the
-whole of the "crystal items just don't have textures" and "unacceptably flat crystal texture"
-reports. The crystal is not a bad texture; there is no texture.
-
-`EarthAssets.cs` is the sole exception and the working reference: it loads a real PNG atlas per
-asset and supports a tinted variant. The file-backed Earth geode, crystals and workstation
-therefore do have surfaces, which is why they read differently in-world from everything else.
-
-The project already generates textures procedurally in nine icon generators
-(`FurnitureIcons`, `CrystalArchitectureIcons`, `CrystalWeaponIcons`, and others), so the
-capability exists and is simply not applied to world materials.
-
-**Repair direction:** one owned surface-texture authority producing crystal facet, stone,
-timber and iron-banding maps, fed into `mainTexture` for every generated material, replacing
-`Texture2D.whiteTexture` at all eighteen sites. Materials should stop being hand-rolled per
-file.
+Raised from live play against installed 0.0.48/0.0.49 with screenshot evidence. Every original
+entry below was confirmed by reading the authoritative source, not inferred from the report alone.
+The source repairs described here are now committed on `main`; in-game visual acceptance remains
+open until a current build is installed and exercised in Valheim.
 
 ---
 
-## R2 — Generated solids of revolution are wound inside-out (root cause)
+## R1 — Runtime-generated surfaces were untextured
 
-**Status: root cause proven and the correct geometry is now authoritative; call sites not yet migrated.**
+**Status: source repaired; live visual acceptance pending.**
 
-The prism/cylinder builder was copy-pasted into eleven visual files with reversed triangle
-winding:
+The reported build had many runtime visual families assigning `mainTexture =
+Texture2D.whiteTexture`, leaving meshes lit and tinted but without surface detail. This accounted
+for the flat white, pale lavender and flat blue appearance across the screenshots.
 
-```
-bottom,next,i   i,next,sides+i   next,sides+next,sides+i   sides+i,sides+next,top
-```
+`GeneratedSurfaceTextures.cs` now owns repeatable crystal, stone, timber, metal, cloth, bone and
+generic surface maps. Repaired runtime material factories route through that authority instead of
+the one-pixel white texture. Staffs, furniture, Crystal Beds, Ice Box, Dais, Sentinel, banners,
+crystal architecture, physical crystal weapons, geology decor, world artifacts, capstone artifacts
+and the Deep Fracture Obelisk Warden have been migrated. `GeodeVisuals` had already diverged from
+the stale defect snapshot and no longer used the white-pixel assignment when re-read from live
+`main`.
 
-Under Unity's convention the face normal is `cross(v1-v0, v2-v0)`, which `RecalculateNormals`
-reproduces. For this order every normal points into the solid, so a back-face-culled material
-renders the interior: you look through the near face onto the inside of the far one. This is
-the "texture inverted / see through to the other side" report.
+Acceptance still requires a rebuilt installed DLL and live lighting inspection; source repair alone
+is not evidence that every material reads correctly in-game.
 
-The box builder was the only correctly wound primitive, which is why flat slabs look solid
-while columns, crystals and rounded pieces do not.
+---
 
-Affected files: `WorldArtifactVisuals`, `GeologyDecorVisuals`, `FurnitureVisuals`,
+## R2 — Generated solids of revolution were wound inside-out
+
+**Status: source repaired at the root; live visual acceptance pending.**
+
+The reported build contained copied prism/cylinder builders whose triangle winding could point
+surface normals into the solid. With back-face culling this made near faces disappear and exposed
+the inside of far faces, producing the reported see-through/inverted geometry.
+
+`Magenheim.Core/Geometry/MeshPrimitives.cs` owns correctly wound `Box`, `Cylinder` and `Prism`
+solids, while `MeshSurface.cs` and `MeshGeometryTests` provide deterministic closed-surface,
+signed-volume and outward-normal validation. `RuntimeMeshPrimitives.cs` is now the Unity adapter
+for those tested Core solids.
+
+All eleven families from the original defect inventory have been migrated away from their private
+primitive builders: `WorldArtifactVisuals`, `GeologyDecorVisuals`, `FurnitureVisuals`,
 `FrostStaffVisuals`, `CrystallineIceBoxVisuals`, `CrystalSentinelVisuals`,
 `CrystalEnchantingDaisVisuals`, `CrystalBedVisuals`, `CrystalBannerVisuals`,
-`CrystalArchitectureVisuals`, `CapstoneArtifactVisuals`.
+`CrystalArchitectureVisuals` and `CapstoneArtifactVisuals`. The separately discovered
+`CrystalWeaponVisuals` and `DeepFractureObeliskWardenVisual` copies were also migrated so the same
+failure cannot recur there through an independent builder.
 
-**Repaired so far:** `Magenheim.Core/Geometry/MeshPrimitives.cs` now owns correctly wound
-`Box`, `Cylinder` and `Prism` solids, and `MeshSurface.cs` provides deterministic closed-surface,
-signed-volume and outward-normal checks. `MeshGeometryTests` reproduces the exact shipped
-winding and asserts it is rejected, asserts its signed volume is negative, asserts that
-closedness alone cannot detect it, and asserts that reversing it recovers a valid solid.
-
-**Remaining:** migrate the eleven visual files onto the shared primitives and delete the
-duplicated builders.
+Acceptance still requires a rebuilt DLL and live inspection of representative cylinders/prisms.
 
 ---
 
 ## Content and behaviour defects
 
-### C1 — Staff families are rebranded vanilla staffs
+### C1 — Staff families were rebranded vanilla staffs
 
-**Confirmed.** Only Frost and Venom have owned geometry (`FrostStaffVisuals.cs`,
-`VenomStaffVisuals.cs`). Fire, Storm and Earth reference no visuals at all; Radiance, Seidr and
-Spirit only tint. Clone sources are vanilla `StaffFireball` and `StaffIceShards`, and
-`EarthStaffRegistrar` references `SledgeIron` — the giant hammer seen in-world.
+**Status: source repaired; live combat/visual acceptance pending.**
 
-Because they are vanilla staff clones they also inherit the vanilla magic economy: every
-registrar sets `attack.m_attackEitr = definition.EitrCost` and the recipes require `Eitr`.
-Magenheim's progression does not use Eitr, so this is a live design contradiction, not just an
-art problem.
+Fire, Frost, Storm, Earth, Venom, Radiance, Seidr and Spirit now have Magenheim-owned visual
+families and stamina-oriented Magenheim casting behavior rather than depending on the inherited
+vanilla Eitr economy. Spirit's remaining inherited Eitr requirement and fireball carrier were
+removed during this repair pass. The clone prefabs remain implementation carriers where needed,
+but their user-facing geometry/economy is no longer the vanilla identity.
 
-**Blocked on a decision:** what a Magenheim staff should cost instead of Eitr.
+### C2 — Crystal Beds and Ice Box made bee sounds
 
-### C2 — Crystal beds and Ice Box make bee sounds
+**Status: source repaired; live audio acceptance pending.**
 
-**Confirmed.** `CrystalBedRegistrar` and `CrystallineIceBoxRegistrar` both clone
-`piece_beehive` and retain its `Beehive` component, which carries the vanilla hive audio.
+The beehive donor remains useful for persistent production state, but inherited hive audio is now
+removed at the clone boundary for both systems rather than muted piecemeal.
 
-### C3 — Snap points misplaced (floating columns, raised floors, sunken beds)
+### C3 — Snap points misplaced pieces
 
-**Confirmed.** `ConfigureSnapPoints` exists only in `CrystalArchitectureRegistrar` and merely
-rescales snap points inherited from the vanilla clone source. For beams it maps the lowest snap
-to local `y = 0`, which is the centre of a centred mesh rather than its base, so columns sit
-proportionally above the floor. Foundations rescale `x`/`z` only and keep the source's `y`.
-Beds, dais and other pieces configure no snap points at all and inherit the beehive's.
+**Status: source repaired; live placement acceptance pending.**
 
-### C4 — Crystal Sentinel has no icon and no readable facing
+`PlacementSnapAuthority` now owns the relevant placement geometry instead of trusting donor snap
+coordinates. Architecture beams/foundations, furniture, the Dais, Crystal Beds and the Ice Box
+have explicit base/footprint handling. This removes the source path that produced floating columns,
+raised foundations and sunken donor-derived pieces.
 
-**Confirmed.** Clones `piece_turret`; no owned icon generator exists for it, unlike the nine
-other families which have one.
+### C4 — Crystal Sentinel had no icon and no readable facing
+
+**Status: source repaired; live placement/targeting acceptance pending.**
+
+The Sentinel now has an owned hammer-menu icon and an explicit forward emitter/yoke aligned with
+the turret body's local firing direction.
 
 ### C5 — Eight munition variants instead of one
 
-**Confirmed.** `CrystalSentinelRegistrar.RegisterMunition` is called per `ElementalAlignment`,
-producing `Magenheim_CrystalMunition_{element}` plus a projectile and recipe for each. Intended
-design is a single crystal munition refined from any crystal.
+**Status: source repaired; live recipe/turret acceptance pending.**
 
-### C6 — Crystal Dais is not a dais
+The Sentinel now accepts one `Magenheim_CrystalMunition` item with one projectile and one loaded
+ammo visual. Eight elemental-shard recipes are retained only as alternate refinement inputs to that
+single standardized munition identity.
 
-**Confirmed.** `CrystalEnchantingDaisVisuals` builds stacked prisms and cylinders with an apex,
-not a flat raised platform.
+### C6 — Crystal Dais was not a dais
 
-### C7 — Socket interface is a raw Unity debug window
+**Status: source repaired; live station acceptance pending.**
 
-**Confirmed.** `SocketWorkstationOverlay` is the only file in the project using `OnGUI`, drawing
-`GUILayout.Window(WindowId, ...)` with `GUILayout.Button`/`Label`/`TextArea`. It should be built
-from the game's own crafting UI.
+The tall central crystal monument and tall focus collider were removed. The owned visual is now a
+low circular working platform with recessed focus geometry, elemental channels and corrected donor
+snap placement.
 
-### C8 — Vanilla piece name shown on an owned piece
+### C7 — Socket interface was a raw Unity debug window
 
-**Reported from screenshot only, not yet traced.** A white Magenheim platform chair displays the
-vanilla name "Raven Throne". Needs confirmation of whether this is a Magenheim registration
-inheriting the clone's `m_name` or an adjacent vanilla piece.
+**Status: source repaired; compile/live UI acceptance pending.**
+
+`SocketWorkstationOverlay` no longer exposes an `OnGUI`/`GUILayout` presentation path. The socket
+surface is now parented to the active `InventoryGui` and reuses native crafting panel/button/text
+styling while preserving the existing server-authoritative transaction, rollback and stale-state
+logic. The obsolete IMGUI skin patch was removed after the rewrite.
+
+### C8 — Vanilla "Raven Throne" name appeared on an owned piece
+
+**Status: source repaired; live hover acceptance pending.**
+
+The trace reached the furniture clone boundary: configuration supplied the Magenheim display name,
+but the cloned runtime `Piece` component was not explicitly overwritten. Every owned furniture
+clone now writes `Piece.m_name` and `Piece.m_description` from its authoritative definition after
+cloning, including the Crystal Throne.
 
 ---
 
-## Priority
+## Current acceptance boundary
 
-R1 and R2 together account for nearly all of the visual report and should land before any new
-content. C3 is next because misplaced snap points make the build set unusable. C1 carries a
-design decision and is blocked. C2, C4, C5, C6 are bounded. C7 is a self-contained UI rebuild.
+The source defects raised by the screenshot pass are repaired on `main`. The next gate is not more
+model generation: build the current runtime against the active Valheim/Jotunn API and live-test the
+repaired families. Required live checks include representative textured/faceted models, placement
+snaps, bee-audio absence, Sentinel icon/facing/single ammunition, low Dais usability, native socket
+UI behavior and Crystal Throne hover identity. Until that run is observed, these entries are
+**source repaired**, not claimed as runtime-verified.
