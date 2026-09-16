@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -11,13 +10,15 @@ using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>Registers the floating Crystal Sentinel and eight shard-refined crystal munitions.</summary>
+/// <summary>Registers the floating Crystal Sentinel and its single shard-refined Crystal Munition.</summary>
 internal sealed class CrystalSentinelRegistrar : IDisposable
 {
     internal const string SentinelPrefab = "Magenheim_CrystalSentinel";
+    internal const string MunitionPrefab = "Magenheim_CrystalMunition";
     internal const string AmmoType = "magenheim.crystal_sentinel";
     internal const int DefaultMunitionsPerShard = 10;
 
+    private static readonly Color MunitionTint = new(.72f, .91f, 1f, 1f);
     private readonly ManualLogSource _log;
     private readonly int _munitionsPerShard;
     private bool _subscribed;
@@ -33,7 +34,7 @@ internal sealed class CrystalSentinelRegistrar : IDisposable
             "MunitionsPerShard",
             DefaultMunitionsPerShard,
             new ConfigDescription(
-                "Number of matching Crystal Munitions produced from one elemental shard. Requires restart because recipes are registered during bootstrap.",
+                "Number of Crystal Munitions produced from one elemental shard. Requires restart because recipes are registered during bootstrap.",
                 new AcceptableValueRange<int>(1, 100))).Value;
     }
 
@@ -54,14 +55,11 @@ internal sealed class CrystalSentinelRegistrar : IDisposable
             if (PrefabManager.Instance.GetPrefab("TurretBolt") is null)
                 throw new InvalidOperationException("Vanilla ballista munition source 'TurretBolt' is unavailable.");
 
-            var ammo = new List<AmmoDefinition>();
-            foreach (ElementalAlignment element in Enum.GetValues(typeof(ElementalAlignment)))
-                ammo.Add(RegisterMunition(element));
-
+            var ammo = RegisterMunition();
             RegisterSentinel(ammo);
             _registered = true;
             _log.LogInfo(
-                $"Registered Crystal Sentinel plus {ammo.Count} elemental Crystal Munitions; one matching shard refines into {_munitionsPerShard} shots.");
+                $"Registered Crystal Sentinel plus one Crystal Munition item; every elemental shard refines into {_munitionsPerShard} shots.");
         }
         catch (Exception exception)
         {
@@ -74,17 +72,16 @@ internal sealed class CrystalSentinelRegistrar : IDisposable
         }
     }
 
-    private AmmoDefinition RegisterMunition(ElementalAlignment element)
+    private ItemDrop RegisterMunition()
     {
-        var prefabName = $"Magenheim_CrystalMunition_{element}";
-        if (PrefabManager.Instance.GetPrefab(prefabName) || CustomItem.IsCustomItem(prefabName))
-            throw new InvalidOperationException($"Cannot replace occupied Crystal Munition identity '{prefabName}'.");
+        if (PrefabManager.Instance.GetPrefab(MunitionPrefab) || CustomItem.IsCustomItem(MunitionPrefab))
+            throw new InvalidOperationException($"Cannot replace occupied Crystal Munition identity '{MunitionPrefab}'.");
 
-        var item = new CustomItem(prefabName, "TurretBolt");
+        var item = new CustomItem(MunitionPrefab, "TurretBolt");
         var shared = item.ItemDrop.m_itemData.m_shared;
-        shared.m_name = $"{element} Crystal Munition";
+        shared.m_name = "Crystal Munition";
         shared.m_description =
-            $"A dense {element}-aligned crystal shard cut, sleeved, and balanced for use in a Crystal Sentinel.";
+            "A dense shaped crystal dart cut, sleeved, and balanced for use in a Crystal Sentinel. Any elemental shard can be refined into this standardized munition.";
         shared.m_ammoType = AmmoType;
         shared.m_maxStackSize = 100;
         shared.m_weight = .25f;
@@ -93,23 +90,31 @@ internal sealed class CrystalSentinelRegistrar : IDisposable
 
         var sourceProjectile = shared.m_attack.m_attackProjectile
             ?? throw new InvalidOperationException("TurretBolt no longer exposes an attack projectile.");
-        var projectileName = $"Magenheim_CrystalMunitionProjectile_{element}";
+        const string projectileName = "Magenheim_CrystalMunitionProjectile";
         if (PrefabManager.Instance.GetPrefab(projectileName))
             throw new InvalidOperationException($"Cannot replace occupied projectile identity '{projectileName}'.");
         var projectile = PrefabManager.Instance.CreateClonedPrefab(projectileName, sourceProjectile)
-            ?? throw new InvalidOperationException($"Unable to clone Crystal Munition projectile for {element}.");
-        CrystalSentinelVisuals.TintProjectile(projectile, element);
+            ?? throw new InvalidOperationException("Unable to clone Crystal Munition projectile.");
+        CrystalSentinelVisuals.TintProjectile(projectile);
         PrefabManager.Instance.AddPrefab(projectile);
         shared.m_attack.m_attackProjectile = projectile;
 
-        TintItem(item.ItemPrefab, element);
+        TintItem(item.ItemPrefab);
         if (!ItemManager.Instance.AddItem(item))
-            throw new InvalidOperationException($"Jotunn refused Crystal Munition item '{prefabName}'.");
+            throw new InvalidOperationException($"Jotunn refused Crystal Munition item '{MunitionPrefab}'.");
 
+        foreach (ElementalAlignment element in Enum.GetValues(typeof(ElementalAlignment)))
+            RegisterRefiningRecipe(element);
+
+        return item.ItemDrop;
+    }
+
+    private void RegisterRefiningRecipe(ElementalAlignment element)
+    {
         var recipe = new RecipeConfig
         {
-            Name = $"Magenheim_Recipe_CrystalMunition_{element}",
-            Item = prefabName,
+            Name = $"Magenheim_Recipe_CrystalMunition_From_{element}",
+            Item = MunitionPrefab,
             Amount = _munitionsPerShard,
             CraftingStation = WorkshopRegistrar.StationPrefab,
             MinStationLevel = 2,
@@ -118,11 +123,9 @@ internal sealed class CrystalSentinelRegistrar : IDisposable
         recipe.AddRequirement($"Magenheim_Shard_{element}", 1);
         if (!ItemManager.Instance.AddRecipe(new CustomRecipe(recipe)))
             throw new InvalidOperationException($"Jotunn refused Crystal Munition recipe '{recipe.Name}'.");
-
-        return new AmmoDefinition(element, item.ItemDrop);
     }
 
-    private static void RegisterSentinel(IReadOnlyList<AmmoDefinition> ammo)
+    private static void RegisterSentinel(ItemDrop ammo)
     {
         if (PrefabManager.Instance.GetPrefab(SentinelPrefab))
             throw new InvalidOperationException($"Cannot replace occupied Crystal Sentinel identity '{SentinelPrefab}'.");
@@ -130,7 +133,7 @@ internal sealed class CrystalSentinelRegistrar : IDisposable
         var config = new PieceConfig
         {
             Name = "Crystal Sentinel",
-            Description = "A large floating crystal bound in iron rings. It tracks hostile targets like a ballista and fires refined elemental Crystal Munitions.",
+            Description = "A large floating crystal bound in iron rings. It tracks hostile targets like a ballista and fires standardized Crystal Munitions refined from any elemental shard.",
             PieceTable = "Hammer",
             Category = "Defence",
             CraftingStation = "piece_artisanstation",
@@ -162,17 +165,14 @@ internal sealed class CrystalSentinelRegistrar : IDisposable
         var sourceMaterial = prefab.GetComponentsInChildren<Renderer>(true)
             .Select(renderer => renderer.sharedMaterial)
             .FirstOrDefault(material => material)
-            ?? throw new InvalidOperationException("Crystal Sentinel has no material source for loaded-ammo indicators.");
+            ?? throw new InvalidOperationException("Crystal Sentinel has no material source for loaded-ammo indicator.");
 
-        foreach (var entry in ammo)
+        var indicator = CrystalSentinelVisuals.CreateAmmoVisual(turret, sourceMaterial);
+        turret.m_allowedAmmo.Add(new Turret.AmmoType
         {
-            var indicator = CrystalSentinelVisuals.CreateAmmoVisual(turret, entry.Element, sourceMaterial);
-            turret.m_allowedAmmo.Add(new Turret.AmmoType
-            {
-                m_ammo = entry.ItemDrop,
-                m_visual = indicator,
-            });
-        }
+            m_ammo = ammo,
+            m_visual = indicator,
+        });
 
         var wear = prefab.GetComponent<WearNTear>();
         if (wear) wear.m_health = Mathf.Max(wear.m_health, 1800f);
@@ -181,9 +181,8 @@ internal sealed class CrystalSentinelRegistrar : IDisposable
             throw new InvalidOperationException("Jotunn refused Crystal Sentinel piece registration.");
     }
 
-    private static void TintItem(GameObject prefab, ElementalAlignment element)
+    private static void TintItem(GameObject prefab)
     {
-        var tint = ElementVisualPalette.Tint(element);
         foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true))
         {
             var sources = renderer.sharedMaterials;
@@ -192,12 +191,12 @@ internal sealed class CrystalSentinelRegistrar : IDisposable
             {
                 var source = sources[i];
                 if (!source) continue;
-                var material = new Material(source) { name = $"magenheim.munition.{element}.{i}" };
+                var material = new Material(source) { name = $"magenheim.munition.crystal.{i}" };
                 GeneratedSurfaceTextures.Apply(material, "crystal-munition");
-                if (material.HasProperty("_Color")) material.SetColor("_Color", tint);
+                if (material.HasProperty("_Color")) material.SetColor("_Color", MunitionTint);
                 if (material.HasProperty("_EmissionColor"))
                 {
-                    material.SetColor("_EmissionColor", tint * .65f);
+                    material.SetColor("_EmissionColor", MunitionTint * .65f);
                     material.EnableKeyword("_EMISSION");
                 }
                 materials[i] = material;
@@ -214,17 +213,5 @@ internal sealed class CrystalSentinelRegistrar : IDisposable
         if (!_subscribed) return;
         PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent;
         _subscribed = false;
-    }
-
-    private readonly struct AmmoDefinition
-    {
-        internal AmmoDefinition(ElementalAlignment element, ItemDrop itemDrop)
-        {
-            Element = element;
-            ItemDrop = itemDrop;
-        }
-
-        internal ElementalAlignment Element { get; }
-        internal ItemDrop ItemDrop { get; }
     }
 }
