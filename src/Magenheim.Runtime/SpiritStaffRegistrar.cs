@@ -106,7 +106,7 @@ internal sealed class SpiritStaffRegistrar : IDisposable
             }
 
             _registered = true;
-            _log.LogInfo("Registered Spirit abilities with owned Spirit staff bodies, non-fire projectile carriers, and stamina-only casting.");
+            _log.LogInfo("Registered Spirit abilities with Valheim-scale authored Spirit staff bodies, non-fire projectile carriers, and stamina-only casting.");
         }
         catch (Exception exception)
         {
@@ -332,6 +332,10 @@ internal sealed class SpiritStaffRegistrar : IDisposable
 
 internal static class SpiritVisuals
 {
+    private static readonly Mesh BoxMesh = RuntimeMeshPrimitives.Box("magenheim.spirit-staff.box");
+    private static readonly Dictionary<int, Mesh> CylinderMeshes = new();
+    private static readonly Dictionary<int, Mesh> PrismMeshes = new();
+
     internal static void Apply(GameObject prefab, string assetName)
     {
         var original = prefab.GetComponentsInChildren<Renderer>(true);
@@ -341,77 +345,27 @@ internal static class SpiritVisuals
         var root = new GameObject("magenheim." + assetName + ".visual") { layer = prefab.layer };
         root.transform.SetParent(attach, false);
 
-        var bone = MakeMaterial(source, "bone", new Color(.66f, .70f, .65f, 1f), .02f, .18f);
-        var dark = MakeMaterial(source, "dark-wood", new Color(.08f, .12f, .13f, 1f), .18f, .16f);
-        var silver = MakeMaterial(source, "silver", new Color(.42f, .55f, .55f, 1f), .56f, .38f);
-        var spirit = MakeMaterial(source, "spirit-crystal", new Color(.24f, .88f, .76f, 1f), .01f, .74f, .58f);
-        var pale = MakeMaterial(source, "spirit-pale-crystal", new Color(.72f, 1f, .92f, 1f), .01f, .84f, .78f);
+        var bone = MakeMaterial(source, "bone", new Color(.56f, .61f, .57f, 1f), .02f, .16f);
+        var dark = MakeMaterial(source, "dark-wood", new Color(.065f, .09f, .085f, 1f), .08f, .13f);
+        var leather = MakeMaterial(source, "leather", new Color(.13f, .09f, .075f, 1f), .01f, .10f);
+        var silver = MakeMaterial(source, "silver", new Color(.38f, .48f, .47f, 1f), .62f, .34f);
+        var spirit = MakeMaterial(source, "spirit-crystal", new Color(.20f, .80f, .68f, 1f), .01f, .72f, .58f);
+        var pale = MakeMaterial(source, "spirit-pale-crystal", new Color(.64f, .96f, .84f, 1f), .01f, .82f, .82f);
 
         switch (assetName)
         {
             case "staff-spirit-simple":
-                Cylinder(root, "shaft", new Vector3(0f, -.08f, 0f), new Vector3(.065f, 1.48f, .065f), dark);
-                Cylinder(root, "bone-cap", new Vector3(0f, .57f, 0f), new Vector3(.10f, .08f, .10f), bone);
-                Cube(root, "hook", new Vector3(.07f, .73f, 0f), new Vector3(.035f, .34f, .035f), Quaternion.Euler(0f, 0f, 24f), bone);
-                Sphere(root, "whisper", new Vector3(.13f, .90f, 0f), new Vector3(.13f, .18f, .13f), spirit);
+                BuildSimple(root, dark, leather, bone, spirit, pale);
                 break;
-
             case "staff-spirit-crystal":
-                Cylinder(root, "shaft", new Vector3(0f, -.08f, 0f), new Vector3(.072f, 1.48f, .072f), dark);
-                Cylinder(root, "collar", new Vector3(0f, .55f, 0f), new Vector3(.13f, .07f, .13f), silver);
-                for (var i = 0; i < 4; i++)
-                {
-                    var angle = i * Mathf.PI / 2f;
-                    var x = .14f * Mathf.Cos(angle);
-                    var z = .14f * Mathf.Sin(angle);
-                    Cube(root, "cage-" + i, new Vector3(x, .82f, z), new Vector3(.030f, .46f, .030f), Quaternion.Euler(10f * Mathf.Sin(angle), 0f, 16f * Mathf.Cos(angle)), silver);
-                }
-                Sphere(root, "lantern", new Vector3(0f, .90f, 0f), new Vector3(.20f, .28f, .20f), spirit);
-                Sphere(root, "heart", new Vector3(0f, .97f, 0f), new Vector3(.095f, .13f, .095f), pale);
+                BuildCrystal(root, dark, leather, bone, silver, spirit, pale);
                 break;
-
             case "staff-spirit-advanced":
-                Cylinder(root, "shaft", new Vector3(0f, -.08f, 0f), new Vector3(.078f, 1.48f, .078f), dark);
-                Cylinder(root, "collar", new Vector3(0f, .54f, 0f), new Vector3(.15f, .08f, .15f), silver);
-                for (var i = 0; i < 6; i++)
-                {
-                    var angle = i * Mathf.PI / 3f;
-                    var x = .19f * Mathf.Cos(angle);
-                    var z = .19f * Mathf.Sin(angle);
-                    Sphere(root, "voice-" + i, new Vector3(x, .88f, z), new Vector3(.075f, .10f, .075f), i % 2 == 0 ? spirit : pale);
-                    Cube(root, "rib-" + i, new Vector3(x * .70f, .80f, z * .70f), new Vector3(.026f, .42f, .026f), Quaternion.Euler(14f * Mathf.Sin(angle), 0f, 18f * Mathf.Cos(angle)), bone);
-                }
-                Sphere(root, "chorus-core", new Vector3(0f, .91f, 0f), new Vector3(.22f, .30f, .22f), spirit);
+                BuildAdvanced(root, dark, leather, bone, silver, spirit, pale);
                 break;
-
             case "staff-spirit-master":
-                Cylinder(root, "shaft", new Vector3(0f, -.08f, 0f), new Vector3(.084f, 1.48f, .084f), dark);
-                foreach (var y in new[] { -.44f, -.12f, .24f, .51f })
-                    Cylinder(root, "band-" + y, new Vector3(0f, y, 0f), new Vector3(.13f, .045f, .13f), silver);
-                for (var ring = 0; ring < 2; ring++)
-                {
-                    var radius = ring == 0 ? .21f : .29f;
-                    var y = ring == 0 ? .88f : .94f;
-                    var count = ring == 0 ? 6 : 8;
-                    for (var i = 0; i < count; i++)
-                    {
-                        var angle = i * Mathf.PI * 2f / count + (ring == 0 ? 0f : Mathf.PI / 8f);
-                        var x = radius * Mathf.Cos(angle);
-                        var z = radius * Mathf.Sin(angle);
-                        Sphere(root, "echo-" + ring + "-" + i, new Vector3(x, y, z), new Vector3(.065f, .085f, .065f), ring == 0 ? spirit : pale);
-                    }
-                }
-                for (var i = 0; i < 8; i++)
-                {
-                    var angle = i * Mathf.PI / 4f;
-                    var x = .20f * Mathf.Cos(angle);
-                    var z = .20f * Mathf.Sin(angle);
-                    Cube(root, "reliquary-rib-" + i, new Vector3(x * .70f, .83f, z * .70f), new Vector3(.025f, .48f, .025f), Quaternion.Euler(17f * Mathf.Sin(angle), 0f, 20f * Mathf.Cos(angle)), silver);
-                }
-                Sphere(root, "reliquary", new Vector3(0f, .95f, 0f), new Vector3(.25f, .38f, .25f), spirit);
-                Sphere(root, "soul-heart", new Vector3(0f, 1.07f, 0f), new Vector3(.11f, .16f, .11f), pale);
+                BuildMaster(root, dark, leather, bone, silver, spirit, pale);
                 break;
-
             default:
                 throw new InvalidOperationException($"Unknown Spirit geometry '{assetName}'.");
         }
@@ -420,29 +374,186 @@ internal static class SpiritVisuals
         foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled = false;
     }
 
-    private static void Cube(GameObject root, string name, Vector3 position, Vector3 scale, Quaternion rotation, Material material) =>
-        Primitive(root, name, PrimitiveType.Cube, position, scale, rotation, material);
-
-    private static void Cylinder(GameObject root, string name, Vector3 position, Vector3 scale, Material material) =>
-        Primitive(root, name, PrimitiveType.Cylinder, position, scale, Quaternion.identity, material);
-
-    private static void Sphere(GameObject root, string name, Vector3 position, Vector3 scale, Material material) =>
-        Primitive(root, name, PrimitiveType.Sphere, position, scale, Quaternion.identity, material);
-
-    private static void Primitive(GameObject root, string name, PrimitiveType type, Vector3 position, Vector3 scale, Quaternion rotation, Material material)
+    private static void BuildSimple(GameObject root, Material dark, Material leather, Material bone, Material spirit, Material pale)
     {
-        var gameObject = GameObject.CreatePrimitive(type);
-        gameObject.name = name;
-        gameObject.layer = root.layer;
+        BuildOrganicShaft(root, dark, leather, .040f, false);
+        Segment(root, "left-fork", new Vector3(.015f, .48f, .005f), new Vector3(-.13f, .92f, .015f), .029f, bone, 8);
+        Segment(root, "right-fork", new Vector3(.025f, .50f, -.005f), new Vector3(.18f, .82f, -.025f), .025f, bone, 8);
+        Segment(root, "broken-tine", new Vector3(-.13f, .92f, .015f), new Vector3(-.07f, 1.04f, .025f), .020f, bone, 7);
+        Shard(root, "whisper-core", new Vector3(.045f, .87f, .01f), new Vector3(.16f, .30f, .16f), Quaternion.Euler(4f, 0f, -9f), spirit, 6);
+        Shard(root, "whisper-splinter", new Vector3(.17f, .91f, -.025f), new Vector3(.055f, .16f, .055f), Quaternion.Euler(12f, 20f, 19f), pale, 5);
+        AddFocusLight(root, new Vector3(.045f, .89f, .01f), new Color(.22f, .88f, .74f), 1.35f, .34f);
+    }
+
+    private static void BuildCrystal(GameObject root, Material dark, Material leather, Material bone, Material silver, Material spirit, Material pale)
+    {
+        BuildOrganicShaft(root, dark, leather, .043f, true);
+        Band(root, "silver-collar", new Vector3(.018f, .49f, .005f), .068f, .075f, silver, 10);
+        var basePoint = new Vector3(.015f, .53f, .005f);
+        var tips = new[]
+        {
+            new Vector3(-.20f, .96f, .035f),
+            new Vector3(.18f, 1.02f, -.025f),
+            new Vector3(-.035f, .91f, -.20f),
+            new Vector3(.06f, .88f, .18f),
+        };
+        for (var i = 0; i < tips.Length; i++)
+        {
+            var material = i == 1 ? bone : silver;
+            Segment(root, "lantern-rib-" + i, basePoint + new Vector3((i - 1.5f) * .012f, 0f, 0f), tips[i], .021f, material, 8);
+            Segment(root, "lantern-return-" + i, tips[i], new Vector3(.02f, .76f, .005f), .015f, material, 7);
+        }
+        Shard(root, "lantern-core", new Vector3(.015f, .90f, .005f), new Vector3(.20f, .42f, .20f), Quaternion.Euler(-4f, 11f, 3f), spirit, 7);
+        Shard(root, "lantern-heart", new Vector3(.035f, .98f, -.015f), new Vector3(.085f, .20f, .085f), Quaternion.Euler(10f, 24f, -6f), pale, 6);
+        Shard(root, "hanging-splinter", new Vector3(-.17f, .76f, .035f), new Vector3(.045f, .14f, .045f), Quaternion.Euler(18f, 0f, 23f), pale, 5);
+        AddFocusLight(root, new Vector3(.02f, .92f, .005f), new Color(.28f, .96f, .80f), 1.65f, .42f);
+    }
+
+    private static void BuildAdvanced(GameObject root, Material dark, Material leather, Material bone, Material silver, Material spirit, Material pale)
+    {
+        BuildOrganicShaft(root, dark, leather, .046f, true);
+        Band(root, "lower-silver-band", new Vector3(-.008f, .04f, -.002f), .060f, .055f, silver, 10);
+        Band(root, "upper-silver-band", new Vector3(.015f, .45f, .004f), .074f, .070f, silver, 10);
+        var hub = new Vector3(.015f, .57f, .005f);
+        for (var i = 0; i < 6; i++)
+        {
+            var angle = i * Mathf.PI * 2f / 6f + .17f;
+            var radial = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
+            var shoulder = hub + radial * .10f + Vector3.up * .12f;
+            var tip = hub + radial * (i % 2 == 0 ? .27f : .23f) + Vector3.up * (i % 2 == 0 ? .48f : .42f);
+            Segment(root, "chorus-rib-a-" + i, hub, shoulder, .020f, i % 2 == 0 ? bone : silver, 8);
+            Segment(root, "chorus-rib-b-" + i, shoulder, tip, .016f, i % 2 == 0 ? bone : silver, 7);
+            Shard(root, "voice-" + i, tip + Vector3.up * .035f, new Vector3(.060f, .15f, .060f), Quaternion.Euler(10f * Mathf.Sin(angle), angle * Mathf.Rad2Deg, 13f * Mathf.Cos(angle)), i % 2 == 0 ? spirit : pale, 5);
+        }
+        Shard(root, "chorus-core", new Vector3(.015f, .88f, .005f), new Vector3(.23f, .48f, .23f), Quaternion.Euler(0f, 17f, -3f), spirit, 7);
+        Shard(root, "chorus-heart", new Vector3(.025f, .99f, -.015f), new Vector3(.085f, .22f, .085f), Quaternion.Euler(8f, -12f, 4f), pale, 6);
+        Segment(root, "asymmetric-bone-hook", new Vector3(-.15f, .76f, .03f), new Vector3(-.30f, .90f, .06f), .018f, bone, 7);
+        Shard(root, "hook-chime", new Vector3(-.31f, .94f, .06f), new Vector3(.045f, .13f, .045f), Quaternion.Euler(16f, 9f, -17f), pale, 5);
+        AddFocusLight(root, new Vector3(.015f, .91f, .005f), new Color(.42f, 1f, .86f), 1.95f, .50f);
+    }
+
+    private static void BuildMaster(GameObject root, Material dark, Material leather, Material bone, Material silver, Material spirit, Material pale)
+    {
+        BuildOrganicShaft(root, dark, leather, .050f, true);
+        foreach (var band in new[]
+        {
+            new Vector3(-.012f, -.34f, 0f), new Vector3(.004f, -.08f, -.003f),
+            new Vector3(-.006f, .20f, .004f), new Vector3(.018f, .47f, .005f)
+        })
+            Band(root, "reliquary-band-" + band.y.ToString("0.00"), band, .075f, .050f, silver, 10);
+
+        var forkBase = new Vector3(.015f, .51f, .005f);
+        var leftJoint = new Vector3(-.16f, .72f, .025f);
+        var rightJoint = new Vector3(.17f, .70f, -.015f);
+        Segment(root, "left-main-fork", forkBase, leftJoint, .030f, bone, 9);
+        Segment(root, "right-main-fork", forkBase, rightJoint, .029f, bone, 9);
+        Segment(root, "left-spire", leftJoint, new Vector3(-.28f, 1.17f, .055f), .021f, bone, 8);
+        Segment(root, "right-spire", rightJoint, new Vector3(.31f, 1.10f, -.035f), .020f, silver, 8);
+        Segment(root, "rear-spire", new Vector3(.015f, .58f, -.025f), new Vector3(-.03f, 1.20f, -.18f), .018f, silver, 8);
+
+        var centre = new Vector3(.015f, .91f, .005f);
+        for (var i = 0; i < 8; i++)
+        {
+            var angle = i * Mathf.PI * 2f / 8f + .22f;
+            var radial = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
+            var lower = centre + radial * .16f + Vector3.down * .18f;
+            var upper = centre + radial * .26f + Vector3.up * .18f;
+            Segment(root, "reliquary-rib-" + i, lower, upper, .014f, i % 3 == 0 ? bone : silver, 7);
+            if (i % 2 == 0)
+                Segment(root, "reliquary-brace-" + i, upper, centre + radial * .11f + Vector3.up * .29f, .011f, silver, 7);
+        }
+
+        Shard(root, "reliquary-core", centre, new Vector3(.27f, .55f, .27f), Quaternion.Euler(-3f, 21f, 2f), spirit, 8);
+        Shard(root, "soul-heart", centre + new Vector3(.025f, .12f, -.015f), new Vector3(.10f, .25f, .10f), Quaternion.Euler(9f, -17f, -4f), pale, 6);
+        for (var i = 0; i < 6; i++)
+        {
+            var angle = i * Mathf.PI * 2f / 6f + .52f;
+            var radial = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
+            Shard(root, "echo-shard-" + i, centre + radial * .32f + Vector3.up * (.03f + .025f * (i % 2)), new Vector3(.050f, .15f, .050f), Quaternion.Euler(14f * Mathf.Sin(angle), angle * Mathf.Rad2Deg, 18f * Mathf.Cos(angle)), i % 2 == 0 ? pale : spirit, 5);
+        }
+        Segment(root, "left-hanging-chain", new Vector3(-.23f, .91f, .05f), new Vector3(-.31f, .73f, .08f), .010f, silver, 6);
+        Shard(root, "left-chime", new Vector3(-.315f, .69f, .08f), new Vector3(.040f, .13f, .040f), Quaternion.Euler(13f, 0f, -8f), pale, 5);
+        AddFocusLight(root, centre + Vector3.up * .06f, new Color(.58f, 1f, .90f), 2.25f, .58f);
+    }
+
+    private static void BuildOrganicShaft(GameObject root, Material wood, Material leather, float radius, bool reinforced)
+    {
+        var points = new[]
+        {
+            new Vector3(-.015f, -.84f, .010f),
+            new Vector3(-.030f, -.48f, .004f),
+            new Vector3(.010f, -.12f, -.012f),
+            new Vector3(-.012f, .22f, .013f),
+            new Vector3(.018f, .53f, .005f),
+        };
+        for (var i = 0; i < points.Length - 1; i++)
+        {
+            var segmentRadius = radius * (1f - i * .075f);
+            Segment(root, "shaft-" + i, points[i], points[i + 1], segmentRadius, wood, i < 2 ? 9 : 8);
+        }
+
+        Band(root, "grip-lower", new Vector3(-.022f, -.53f, .006f), radius * 1.42f, .055f, leather, 9);
+        Band(root, "grip-middle", new Vector3(-.005f, -.39f, .002f), radius * 1.46f, .060f, leather, 9);
+        Band(root, "grip-upper", new Vector3(.006f, -.25f, -.006f), radius * 1.40f, .050f, leather, 9);
+        if (reinforced)
+        {
+            Segment(root, "shaft-root-spur", new Vector3(-.006f, .23f, .010f), new Vector3(-.105f, .39f, .032f), radius * .52f, wood, 7);
+            Segment(root, "shaft-root-return", new Vector3(-.105f, .39f, .032f), new Vector3(.015f, .50f, .005f), radius * .40f, wood, 7);
+        }
+    }
+
+    private static void Segment(GameObject root, string name, Vector3 from, Vector3 to, float radius, Material material, int sides)
+    {
+        var delta = to - from;
+        var length = delta.magnitude;
+        if (length <= .0001f) throw new InvalidOperationException($"Spirit visual segment '{name}' has zero length.");
+        var rotation = Quaternion.FromToRotation(Vector3.up, delta / length);
+        AddPart(root, name, CylinderMesh(sides), (from + to) * .5f, new Vector3(radius * 2f, length, radius * 2f), rotation, material);
+    }
+
+    private static void Band(GameObject root, string name, Vector3 position, float radius, float height, Material material, int sides) =>
+        AddPart(root, name, CylinderMesh(sides), position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.identity, material);
+
+    private static void Shard(GameObject root, string name, Vector3 position, Vector3 scale, Quaternion rotation, Material material, int sides) =>
+        AddPart(root, name, PrismMesh(sides), position, scale, rotation, material);
+
+    private static GameObject AddPart(GameObject root, string name, Mesh mesh, Vector3 position, Vector3 scale, Quaternion rotation, Material material)
+    {
+        var gameObject = new GameObject(name, typeof(MeshFilter), typeof(MeshRenderer)) { layer = root.layer };
         gameObject.transform.SetParent(root.transform, false);
         gameObject.transform.localPosition = position;
         gameObject.transform.localRotation = rotation;
         gameObject.transform.localScale = scale;
-        var collider = gameObject.GetComponent<Collider>();
-        if (collider) collider.enabled = false;
-        var renderer = gameObject.GetComponent<Renderer>();
-        if (!renderer) throw new InvalidOperationException($"Spirit visual primitive '{name}' has no renderer.");
-        renderer.sharedMaterial = material;
+        gameObject.GetComponent<MeshFilter>().sharedMesh = mesh;
+        gameObject.GetComponent<MeshRenderer>().sharedMaterial = material;
+        return gameObject;
+    }
+
+    private static Mesh CylinderMesh(int sides)
+    {
+        if (CylinderMeshes.TryGetValue(sides, out var mesh)) return mesh;
+        mesh = RuntimeMeshPrimitives.Cylinder(sides, $"magenheim.spirit-staff.cylinder.{sides}");
+        CylinderMeshes.Add(sides, mesh);
+        return mesh;
+    }
+
+    private static Mesh PrismMesh(int sides)
+    {
+        if (PrismMeshes.TryGetValue(sides, out var mesh)) return mesh;
+        mesh = RuntimeMeshPrimitives.Prism(sides, $"magenheim.spirit-staff.prism.{sides}");
+        PrismMeshes.Add(sides, mesh);
+        return mesh;
+    }
+
+    private static void AddFocusLight(GameObject root, Vector3 position, Color color, float range, float intensity)
+    {
+        var lightObject = new GameObject("spirit-focus-light") { layer = root.layer };
+        lightObject.transform.SetParent(root.transform, false);
+        lightObject.transform.localPosition = position;
+        var light = lightObject.AddComponent<Light>();
+        light.color = color;
+        light.range = range;
+        light.intensity = intensity;
     }
 
     private static Material MakeMaterial(Material source, string name, Color color, float metallic, float gloss, float emission = 0f)
