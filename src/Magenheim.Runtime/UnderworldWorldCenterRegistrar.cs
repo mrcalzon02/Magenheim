@@ -18,7 +18,16 @@ internal static class UnderworldWorldCenterRegistrar
     internal const string DescentMonolithName = "Magenheim_DescentMonolith";
     internal static readonly Vector3 ReturnGateOffset = new(18f, 0f, 0f);
     internal static readonly UnderworldAnchor LogicalCenter = new("magenheim.underworld.pending", 0d, 0d, 0d, 0f);
-    private static readonly string[] DeepstoneNames = {"StoneOfBloom","StoneOfDeepTide","StoneOfCinder","StoneOfRime","StoneOfFracture","StoneOfDecay"};
+
+    private static readonly DeepstoneBinding[] Deepstones =
+    {
+        new("StoneOfBloom", "magenheim.underworld.deepstone.bloom"),
+        new("StoneOfDeepTide", "magenheim.underworld.deepstone.tide"),
+        new("StoneOfCinder", "magenheim.underworld.deepstone.cinder"),
+        new("StoneOfRime", "magenheim.underworld.deepstone.rime"),
+        new("StoneOfFracture", "magenheim.underworld.deepstone.fracture"),
+        new("StoneOfDecay", "magenheim.underworld.deepstone.decay"),
+    };
 
     internal static GameObject Create(UnderworldWorldIdentity identity, UnderworldSpatialDomainDefinition spatialDomain, ManualLogSource log)
     {
@@ -49,10 +58,54 @@ internal static class UnderworldWorldCenterRegistrar
 
     private static void BuildStandingStones(Transform parent)
     {
-        var root=new GameObject(StandingStonesName);root.transform.SetParent(parent,false);var material=CreateStoneMaterial();var box=RuntimeMeshPrimitives.Box("magenheim.underworld.standing-stone");var dais=RuntimeMeshPrimitives.Cylinder(32,"magenheim.underworld.center-dais");const float radius=12f;
-        for(var i=0;i<DeepstoneNames.Length;i++){var angle=i*Mathf.PI*2f/DeepstoneNames.Length;AddMesh(root.transform,DeepstoneNames[i],box,new Vector3(Mathf.Cos(angle)*radius,2.8f,Mathf.Sin(angle)*radius),Quaternion.Euler(i%2==0?-3f:4f,-angle*Mathf.Rad2Deg+90f,i%3-1),new Vector3(2.1f,7.4f+(i%3)*0.7f,1.25f),material,parent.gameObject.layer);}
-        AddMesh(root.transform,DescentMonolithName,box,new Vector3(0f,3.9f,0f),Quaternion.identity,new Vector3(2.8f,8.2f,2.8f),material,parent.gameObject.layer);AddMesh(root.transform,"CenterDais",dais,new Vector3(0f,0.45f,0f),Quaternion.identity,new Vector3(17f,0.9f,17f),material,parent.gameObject.layer);
+        var root = new GameObject(StandingStonesName);
+        root.transform.SetParent(parent, false);
+        var material = CreateStoneMaterial();
+        var box = RuntimeMeshPrimitives.Box("magenheim.underworld.standing-stone");
+        var dais = RuntimeMeshPrimitives.Cylinder(32, "magenheim.underworld.center-dais");
+        const float radius = 12f;
+
+        for (var i = 0; i < Deepstones.Length; i++)
+        {
+            var binding = Deepstones[i];
+            var angle = i * Mathf.PI * 2f / Deepstones.Length;
+            var stone = AddMesh(
+                root.transform,
+                binding.ObjectName,
+                box,
+                new Vector3(Mathf.Cos(angle) * radius, 2.8f, Mathf.Sin(angle) * radius),
+                Quaternion.Euler(i % 2 == 0 ? -3f : 4f, -angle * Mathf.Rad2Deg + 90f, i % 3 - 1),
+                new Vector3(2.1f, 7.4f + (i % 3) * 0.7f, 1.25f),
+                material,
+                parent.gameObject.layer);
+            stone.AddComponent<UnderworldDeepstoneRuntime>().Bind(binding.DeepstoneId);
+        }
+
+        AddMesh(root.transform, DescentMonolithName, box, new Vector3(0f, 3.9f, 0f), Quaternion.identity, new Vector3(2.8f, 8.2f, 2.8f), material, parent.gameObject.layer);
+        AddMesh(root.transform, "CenterDais", dais, new Vector3(0f, 0.45f, 0f), Quaternion.identity, new Vector3(17f, 0.9f, 17f), material, parent.gameObject.layer);
     }
-    private static Material CreateStoneMaterial(){var shader=Shader.Find("Standard")??throw new InvalidOperationException("Unity Standard shader unavailable for Underworld standing stones.");var material=new Material(shader){name="Magenheim_UnderworldStandingStone_Material",color=new Color(0.075f,0.082f,0.095f,1f)};material.SetFloat("_Metallic",0.12f);material.SetFloat("_Glossiness",0.24f);return material;}
-    private static void AddMesh(Transform parent,string name,Mesh mesh,Vector3 position,Quaternion rotation,Vector3 scale,Material material,int layer){var node=new GameObject(name){layer=layer};node.transform.SetParent(parent,false);node.transform.localPosition=position;node.transform.localRotation=rotation;node.transform.localScale=scale;node.AddComponent<MeshFilter>().sharedMesh=mesh;node.AddComponent<MeshRenderer>().sharedMaterial=material;node.AddComponent<MeshCollider>().sharedMesh=mesh;}
+
+    private static Material CreateStoneMaterial()
+    {
+        var shader = Shader.Find("Standard") ?? throw new InvalidOperationException("Unity Standard shader unavailable for Underworld standing stones.");
+        var material = new Material(shader) { name = "Magenheim_UnderworldStandingStone_Material", color = new Color(0.075f, 0.082f, 0.095f, 1f) };
+        material.SetFloat("_Metallic", 0.12f);
+        material.SetFloat("_Glossiness", 0.24f);
+        return material;
+    }
+
+    private static GameObject AddMesh(Transform parent, string name, Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale, Material material, int layer)
+    {
+        var node = new GameObject(name) { layer = layer };
+        node.transform.SetParent(parent, false);
+        node.transform.localPosition = position;
+        node.transform.localRotation = rotation;
+        node.transform.localScale = scale;
+        node.AddComponent<MeshFilter>().sharedMesh = mesh;
+        node.AddComponent<MeshRenderer>().sharedMaterial = material;
+        node.AddComponent<MeshCollider>().sharedMesh = mesh;
+        return node;
+    }
+
+    private sealed record DeepstoneBinding(string ObjectName, string DeepstoneId);
 }
