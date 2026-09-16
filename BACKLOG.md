@@ -40,6 +40,7 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Register a two-way Jötunn gameplay-authority handshake and reset cached admission per sync session.
 - [x] Include socket eligibility/configuration policy in the synchronized gameplay fingerprint so peers with different socket rules cannot authorize persistent mutations.
 - [x] Assign a strictly increasing server-local session generation and retire prior operation replay records for reused peers.
+- [x] Bind authority acknowledgement plus workshop/socket request-response-acknowledgement traffic to that server-issued session generation, reject stale-session traffic fail-closed, retire prior-generation client pending records, and preserve unapplied live queue entries. See `docs/validation/2026-09-15-session-generation-handshake-binding.md` and `docs/validation/2026-09-15-session-bound-mutation-rpcs.md`.
 - [ ] Compile and execute the updated gameplay-authority synchronization path in a current Valheim/Jötunn environment and repair any API/serialization defect before runtime admission.
 - [x] Register Crystal Shaping under permanent ID `magenheim.crystal_shaping`.
 - [ ] Confirm the live console diagnostic `raiseskill magenheim.crystal_shaping 1`; the spaced display name is not a valid `raiseskill` argument.
@@ -50,27 +51,26 @@ Priority is dependency order. Broken intended behavior and repository divergence
 - [x] Replace `Character.SetPos` and `Rigidbody.velocity`, both removed or superseded by Valheim 1.0.12, with the installed API.
 - [x] Repair the `Inventory.Changed` binding: 1.0.12 declares `Changed(bool, bool)` and three call sites invoked it with zero arguments, throwing `TargetParameterCountException` in workshop rollback and local/remote socket mutation. Bound at the `RuntimeGameApi` boundary with a pinned signature.
 - [x] Add `tools/verify-reflection-targets.ps1` so literal reflection bindings are resolved against installed assemblies at build time; proven to fail on the pre-repair 0.0.48 DLL.
-- [ ] Extend reflection verification to the helper-wrapper bindings whose member names are passed as arguments (`Aoe`, `Projectile`, `Destructible`, `ZNetView`, `SE_Stats` fields). All resolve correctly at this revision, but they are checked manually rather than by the gate.
+- [x] Extend reflection verification to helper-wrapper bindings for `Aoe`, `Projectile`, `Destructible`, `ZNetView`, and `SE_Stats`, including exact type checks for required fields while preserving optional-field semantics.
 - [x] Install 0.0.49 into the active Central Fuckery profile. Installed and SHA-256 verified after the user closed Valheim; launcher catalog entry and description verified by read-back.
 - [x] Repair `install-local.ps1` checksum verification. Windows PowerShell emits a top-level JSON array as one pipeline item, so `@(... | ConvertFrom-Json)` produced a single nested entry and every package failed integrity. Semantics unchanged; empty manifests now rejected explicitly.
 - [ ] Live-confirm that a failed workshop transaction rolls back without an unhandled exception and that socket install/extract refreshes the inventory.
 
 ## P0.4 — Rendering and content drift (raised from live play 2026-09-15)
 
-Full evidence and root causes: `docs/RENDERING_AND_CONTENT_DEFECTS.md`. This outranks all new
-content. Reported from live play with screenshots; every item confirmed in source.
+Full evidence and root causes: `docs/RENDERING_AND_CONTENT_DEFECTS.md`. Source repair is complete for the screenshot defect set below; live Valheim visual/runtime acceptance remains open where recorded in that register and `TESTING.md`.
 
-- [ ] R1: replace `Texture2D.whiteTexture` in all eighteen visual files with an owned surface-texture authority. Every runtime-generated object is currently untextured; this is the single largest visual defect.
+- [x] R1: replace the one-pixel `Texture2D.whiteTexture` material path with Magenheim-owned generated surface textures across the affected runtime visual families.
 - [x] R2a: give `Magenheim.Core` correctly wound `Box`/`Cylinder`/`Prism` primitives plus deterministic closed-surface, signed-volume and outward-normal checks, with a regression test that rejects the exact winding shipped in eleven visual files.
-- [ ] R2b: migrate the eleven visual files onto the shared primitives and delete the duplicated inside-out builders.
-- [ ] C1: give Fire, Storm, Earth, Radiance, Seidr and Spirit owned staff geometry, and remove the vanilla Eitr cost and Eitr recipe requirement inherited from the `StaffFireball`/`StaffIceShards` clones. `EarthStaffRegistrar` currently references `SledgeIron`. BLOCKED: needs the replacement resource model.
-- [ ] C2: strip vanilla `Beehive` audio from the `piece_beehive` clones used by Crystal Beds and the Ice Box.
-- [ ] C3: own snap points per piece. Columns float, foundations snap above floor level, beds snap ~0.6m below themselves.
-- [ ] C4: generate a Crystal Sentinel icon and give the piece a readable front.
-- [ ] C5: collapse the eight elemental Crystal Munition variants into one crystal munition refined from any crystal.
-- [ ] C6: rebuild the Crystal Dais as a flat raised platform rather than stacked prisms with an apex.
-- [ ] C7: rebuild the socket interface on the game's crafting UI; `SocketWorkstationOverlay` is currently raw `OnGUI`/`GUILayout`.
-- [ ] C8: trace the vanilla "Raven Throne" name appearing on an owned white platform chair.
+- [x] R2b: migrate the original eleven affected visual files onto shared tested primitives and remove their duplicated private builders; additional affected Crystal Weapon and Obelisk Warden geometry was migrated to the same authority.
+- [x] C1: give Fire, Storm, Earth, Radiance, Seidr and Spirit owned staff presentation/geometry and remove the unintended vanilla Eitr gameplay dependency from the elemental staff progression.
+- [x] C2: strip inherited vanilla Beehive behavior/audio from Crystal Bed and Crystalline Ice Box clones.
+- [x] C3: own piece snap points instead of inheriting or merely rescaling incompatible donor snap positions.
+- [x] C4: give the Crystal Sentinel an owned icon/readable front and explicit forward emitter presentation.
+- [x] C5: collapse the eight elemental Crystal Munition item identities into one `Magenheim_CrystalMunition` with multiple shard refining routes.
+- [x] C6: rebuild the Crystal Enchanting Dais as a broad, low raised working platform rather than a stacked apex monument.
+- [x] C7: replace the raw `OnGUI`/`GUILayout` socket window with an `InventoryGui`-hosted native Unity UI surface and remove the obsolete IMGUI skin patch.
+- [x] C8: overwrite cloned furniture `Piece.m_name` and `m_description` with Magenheim-owned identity so donor names such as "Raven Throne" cannot leak into hover text.
 
 ## P1 — Meadows/Earth vertical slice
 
@@ -111,8 +111,8 @@ content. Reported from live play with screenshots; every item confirmed in sourc
 - [x] Add authority/replay-gated socket add/install/extraction planners and local-host transactional rollback paths.
 - [x] Fold gameplay-significant socket limits and compatibility rules into the multiplayer gameplay authority fingerprint.
 - [x] Add deterministic source coverage for item-level compatibility, identity normalization, policy fingerprint drift, replay identity, metadata preservation, socket mutation, extraction, and effect calculation.
-- [x] Bind remote-client socket-management requests to a server-authoritative request/response/ack RPC using existing socket/extraction replay guards; server reconstructs equipment classification from the registered prefab and owns extraction randomness.
-- [ ] Compile and live-validate remote-client socket open/install/extraction, stale-state rejection, replay behavior, policy mismatch rejection, and third-party descriptor spoof rejection in a current Valheim/Jötunn multiplayer environment.
+- [x] Bind remote-client socket-management requests to a server-authoritative, session-generation-bound request/response/ack RPC using existing socket/extraction replay guards; server reconstructs equipment classification from the registered prefab and owns extraction randomness.
+- [ ] Compile and live-validate remote-client socket open/install/extraction, stale-state and stale-session rejection, replay behavior, policy mismatch rejection, and third-party descriptor spoof rejection in a current Valheim/Jötunn multiplayer environment.
 - [ ] Validate persistence and behavior through save/load, drop/pickup, chest storage, repair, upgrade, player transfer, death, dedicated server, and mod removal.
 - [ ] Live-test representative third-party equipment, including explicit item/prefab/mod-origin exclusions and unknown-category opt-in behavior.
 
