@@ -9,9 +9,9 @@ namespace Magenheim.Runtime;
 /// Shared runtime surface authority for Magenheim-owned procedural geometry.
 ///
 /// Generated models receive repeatable 256px material surfaces instead of flat one-pixel color.
-/// The same authority also repairs missing UV0 data on Magenheim-owned procedural meshes after
-/// Jotunn prefab registration so those textures actually resolve across the geometry rather than
-/// sampling one texel for the entire object.
+/// After Jotunn prefab registration, the same authority repairs residual owned placeholder
+/// materials and missing UV0 data so the textures actually resolve across procedural geometry.
+/// Authored/file-backed textures with real dimensions are preserved.
 /// </summary>
 internal static class GeneratedSurfaceTextures
 {
@@ -21,10 +21,10 @@ internal static class GeneratedSurfaceTextures
 
     static GeneratedSurfaceTextures()
     {
-        // Most owned procedural geometry is created while OnVanillaPrefabsAvailable handlers run.
-        // OnPrefabsRegistered is the first common boundary after those registrations are assembled,
-        // so repair missing UV0 data there instead of requiring every visual family to remember it.
-        PrefabManager.OnPrefabsRegistered += RepairOwnedMeshUvs;
+        // Most owned procedural geometry/materials are created while OnVanillaPrefabsAvailable
+        // handlers run. OnPrefabsRegistered is the first common boundary after those registrations
+        // are assembled, so do one owned-only quality reconciliation there.
+        PrefabManager.OnPrefabsRegistered += RepairOwnedVisuals;
     }
 
     internal static void Apply(Material material, string semantic)
@@ -231,11 +231,22 @@ internal static class GeneratedSurfaceTextures
         }
     }
 
-    private static void RepairOwnedMeshUvs()
+    private static void RepairOwnedVisuals()
     {
+        var repairedMaterials = 0;
+        foreach (var material in Resources.FindObjectsOfTypeAll<Material>())
+        {
+            if (!material || !IsOwnedName(material.name) || !NeedsGeneratedSurface(material.mainTexture))
+                continue;
+
+            Apply(material, material.name);
+            repairedMaterials++;
+        }
+
+        var repairedMeshes = 0;
         foreach (var mesh in Resources.FindObjectsOfTypeAll<Mesh>())
         {
-            if (!mesh || !mesh.isReadable || !mesh.name.StartsWith("magenheim.", StringComparison.Ordinal))
+            if (!mesh || !mesh.isReadable || !IsOwnedName(mesh.name))
                 continue;
             if (HasUsableUv(mesh))
                 continue;
@@ -245,6 +256,7 @@ internal static class GeneratedSurfaceTextures
             try
             {
                 ProjectTriangleUvs(mesh);
+                repairedMeshes++;
             }
             catch (Exception exception)
             {
@@ -253,6 +265,24 @@ internal static class GeneratedSurfaceTextures
                 Debug.LogWarning($"Magenheim could not generate UV0 for owned mesh '{mesh.name}': {exception.Message}");
             }
         }
+
+        if (repairedMaterials > 0 || repairedMeshes > 0)
+            Debug.Log($"Magenheim visual-quality reconciliation upgraded {repairedMaterials} placeholder material(s) and {repairedMeshes} UV-less owned mesh(es).");
+    }
+
+    private static bool IsOwnedName(string value) =>
+        !string.IsNullOrEmpty(value) && value.StartsWith("magenheim", StringComparison.OrdinalIgnoreCase);
+
+    private static bool NeedsGeneratedSurface(Texture? texture)
+    {
+        if (!texture || ReferenceEquals(texture, Texture2D.whiteTexture))
+            return true;
+        if (texture.name.StartsWith("magenheim.surface.", StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        // Owned 1-4px textures are placeholders, not authored surface art. Real Earth/file-backed
+        // textures are loaded at their actual image dimensions and therefore remain untouched.
+        return texture.width <= 4 && texture.height <= 4;
     }
 
     private static bool HasUsableUv(Mesh mesh)
