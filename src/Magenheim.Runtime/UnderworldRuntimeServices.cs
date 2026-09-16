@@ -17,11 +17,12 @@ internal sealed class UnderworldRuntimeServices
         var root=Path.Combine(Path.GetFullPath(pluginConfigDirectory),"Magenheim");var spatialDomain=UnderworldSpatialDomain.CreateDefault();var stateStore=new UnderworldTransitionStateStore(Path.Combine(root,"underworld-transitions"),log);var worldPairStore=new UnderworldWorldPairManifestStore(Path.Combine(root,"underworld-world-pairs"),log);var worldContext=new ValheimLogicalUnderworldWorldContextController(log);var placementHost=new ValheimUnderworldTransitionPlacementHost(worldContext,spatialDomain,log);var transitionHost=new StoredUnderworldTransitionHost(stateStore,placementHost);var transitionManager=new UnderworldWorldTransitionManager(transitionHost,log);var recoveryRuntime=new UnderworldTransitionRecoveryRuntime(stateStore,transitionManager,log);
         return new UnderworldRuntimeServices(spatialDomain,stateStore,worldPairStore,worldContext,placementHost,transitionHost,transitionManager,recoveryRuntime);
     }
-    internal bool TryResolveLocalSession(out UnderworldWorldIdentity? identity,out string playerId,out string diagnostic)
+    internal bool TryResolveLocalSession(out UnderworldWorldIdentity? identity,out UnderworldLayer layer,out string playerId,out string diagnostic)
     {
-        if(!UnderworldRuntimeIdentityResolver.TryResolveLocalSession(out identity,out playerId,out diagnostic)||identity is null)return false;
-        WorldPairStore.EnsureManifest(identity);
+        if(!UnderworldRuntimeIdentityResolver.TryResolveLocalSession(WorldPairStore,out identity,out layer,out playerId,out diagnostic)||identity is null)return false;
+        if(layer==UnderworldLayer.Surface)WorldPairStore.EnsureManifest(identity);
         return true;
     }
+    internal bool TryResolveLocalSession(out UnderworldWorldIdentity? identity,out string playerId,out string diagnostic)=>TryResolveLocalSession(out identity,out _,out playerId,out diagnostic);
     internal void ResetForWorldUnload()=>_worldContext.ResetForWorldUnload();
 }
