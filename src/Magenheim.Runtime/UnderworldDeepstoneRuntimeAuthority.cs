@@ -34,6 +34,15 @@ internal static class UnderworldDeepstoneRuntimeAuthority
         return UnderworldDeepstoneProgression.ReconstructPersistentState(definitions, facts);
     }
 
+    internal static UnderworldDeepBoonSelectionState ReconstructDeepBoonSelection(string? persistedDeepBoonId) =>
+        UnderworldDeepBoonSelection.Reconstruct(RequireDefinitions(), ReconstructWorldState(), persistedDeepBoonId);
+
+    internal static UnderworldDeepBoonSelectionResult SelectDeepBoon(UnderworldDeepBoonSelectionState current, string deepBoonId) =>
+        UnderworldDeepBoonSelection.Select(RequireDefinitions(), ReconstructWorldState(), current, deepBoonId);
+
+    internal static UnderworldDeepBoonSelectionResult ClearDeepBoon(UnderworldDeepBoonSelectionState current) =>
+        UnderworldDeepBoonSelection.Clear(current);
+
     internal static UnderworldDeepstoneMountTransactionPlan PlanMount(
         string deepstoneId,
         string trophyPrefabName,
