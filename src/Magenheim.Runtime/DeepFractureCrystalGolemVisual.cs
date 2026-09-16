@@ -11,5 +11,6 @@ internal static class DeepFractureCrystalGolemVisual
         ModelAssets.Load(prefab,"deep-fracture-crystal-golem-visual-"+alignment.ToString().ToLowerInvariant());
         var impact=prefab.GetComponent<DeepFractureHeavyImpactRuntime>()??prefab.AddComponent<DeepFractureHeavyImpactRuntime>();
         impact.ImpactProfile=DeepFractureHeavyImpactRuntime.Profile.CrystalGolem;
+        impact.Alignment=alignment;
     }
 }
