@@ -232,9 +232,7 @@ internal static class CapstoneArtifactVisuals
     private static Material Mat(Material source,string suffix,Color color,float metallic,float gloss,float emission=0f)
     {
         var material=new Material(source){name="magenheim.capstone."+suffix};
-        material.mainTexture=Texture2D.whiteTexture;
-        material.mainTextureScale=Vector2.one;
-        material.mainTextureOffset=Vector2.zero;
+        GeneratedSurfaceTextures.Apply(material, suffix);
         if(material.HasProperty("_Color")) material.SetColor("_Color",color);
         if(material.HasProperty("_Metallic")) material.SetFloat("_Metallic",metallic);
         if(material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness",gloss);
