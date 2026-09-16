@@ -9,6 +9,7 @@ using Magenheim.Core.Definitions;
 using Magenheim.Core.Networking;
 using Magenheim.Core.Socketing;
 using Magenheim.Core.Transactions;
+using Magenheim.Core.Underworld;
 
 namespace Magenheim.Runtime.Networking;
 
@@ -45,7 +46,16 @@ internal sealed class DefinitionAuthoritySynchronizer
         _socketExtractionOperations = socketExtractionOperations ?? throw new ArgumentNullException(nameof(socketExtractionOperations));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-        var gameplayFingerprint = GameplayAuthorityFingerprint.Compute(definitions.Fingerprint, socketPolicy);
+        // The spatial domain is code-authoritative until its policy moves into a later static
+        // definition schema. It is nevertheless gameplay-significant now, so peers must agree on
+        // its fingerprint before any persistent Magenheim mutation is admitted.
+        var underworldSpatialFingerprint = definitions.Underworld is null
+            ? null
+            : UnderworldSpatialDomain.CreateDefault().Fingerprint;
+        var gameplayFingerprint = GameplayAuthorityFingerprint.Compute(
+            definitions.Fingerprint,
+            socketPolicy,
+            underworldSpatialFingerprint);
         _localAuthority = new DefinitionAuthorityDescriptor(definitions.SchemaVersion, gameplayFingerprint);
         if (!DefinitionAuthorityHandshake.IsValid(_localAuthority, out var validationError))
             throw new InvalidOperationException($"Cannot register gameplay synchronization with invalid local authority: {validationError}");

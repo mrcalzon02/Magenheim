@@ -76,6 +76,36 @@ internal static class SocketCompatibilityAuthorityTests
         Assert(!string.Equals(baseline, changedExclusion, StringComparison.Ordinal),
             "Changing item compatibility exclusions must change gameplay authority.");
 
+        var spatialA = new string('b', GameplayAuthorityFingerprint.Sha256HexLength);
+        var spatialB = new string('c', GameplayAuthorityFingerprint.Sha256HexLength);
+        var spatialAuthorityA = GameplayAuthorityFingerprint.Compute(
+            definitionFingerprint,
+            new SocketEligibilityPolicy(),
+            spatialA);
+        var spatialAuthorityB = GameplayAuthorityFingerprint.Compute(
+            definitionFingerprint,
+            new SocketEligibilityPolicy(),
+            spatialB);
+        Assert(!string.Equals(spatialAuthorityA, spatialAuthorityB, StringComparison.Ordinal),
+            "Changing the Underworld spatial-domain fingerprint must change gameplay peer authority.");
+        Assert(!string.Equals(baseline, spatialAuthorityA, StringComparison.Ordinal),
+            "Presence versus absence of Underworld spatial authority must be fingerprint-significant.");
+
+        var invalidSpatialRejected = false;
+        try
+        {
+            _ = GameplayAuthorityFingerprint.Compute(
+                definitionFingerprint,
+                new SocketEligibilityPolicy(),
+                "not-a-sha256");
+        }
+        catch (ArgumentException)
+        {
+            invalidSpatialRejected = true;
+        }
+        Assert(invalidSpatialRejected,
+            "Malformed Underworld spatial authority must fail closed before peer synchronization.");
+
         var caseA = GameplayAuthorityFingerprint.Compute(
             definitionFingerprint,
             new SocketEligibilityPolicy(
