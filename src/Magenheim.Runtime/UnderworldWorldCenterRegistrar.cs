@@ -1,37 +1,52 @@
 using System;
 using BepInEx.Logging;
-using Jotunn.Configs;
-using Jotunn.Entities;
-using Jotunn.Managers;
+using Magenheim.Core.Underworld;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-internal sealed class UnderworldWorldCenterRegistrar : IDisposable
+/// <summary>
+/// Composes the unique Deepstone Conclave presentation for the logical Underworld.
+/// This is deliberately not a ZoneManager location: registering it as ordinary parent-world
+/// worldgen would violate the reserved spatial-domain authority. Admission is owned by the
+/// world-session lifecycle after the derived Underworld identity can be resolved.
+/// </summary>
+internal static class UnderworldWorldCenterRegistrar
 {
     internal const string LocationName = "Magenheim_UnderworldWorldCenter";
     internal const string StandingStonesName = "Magenheim_UnderworldStandingStones";
     internal const string DescentMonolithName = "Magenheim_DescentMonolith";
     internal static readonly Vector3 ReturnGateOffset = new(18f, 0f, 0f);
+    internal static readonly UnderworldAnchor LogicalCenter = new("magenheim.underworld.pending", 0d, 0d, 0d, 0f);
     private static readonly string[] DeepstoneNames = {"StoneOfBloom","StoneOfDeepTide","StoneOfCinder","StoneOfRime","StoneOfFracture","StoneOfDecay"};
-    private readonly ManualLogSource _log; private bool _subscribed; private bool _registered;
-    internal UnderworldWorldCenterRegistrar(ManualLogSource log)=>_log=log??throw new ArgumentNullException(nameof(log));
-    internal void Register(){if(_registered||_subscribed)return;ZoneManager.OnVanillaLocationsAvailable+=OnVanillaLocationsAvailable;_subscribed=true;}
-    public void Dispose(){if(!_subscribed)return;ZoneManager.OnVanillaLocationsAvailable-=OnVanillaLocationsAvailable;_subscribed=false;}
-    private void OnVanillaLocationsAvailable()
+
+    internal static GameObject Create(UnderworldWorldIdentity identity, UnderworldSpatialDomainDefinition spatialDomain, ManualLogSource log)
     {
-        if(_registered)return;try
-        {
-            if(ZoneManager.Instance.GetZoneLocation(LocationName)is not null||CustomLocation.IsCustomLocation(LocationName)){_registered=true;_log.LogWarning($"Underworld world-center identity '{LocationName}' is occupied; existing content was left untouched.");return;}
-            var gatePrefab=PrefabManager.Instance.GetPrefab(UnderworldDeepGateRegistrar.PrefabName)??throw new InvalidOperationException("Deep Gate must be registered before the Underworld world center is composed.");
-            var container=ZoneManager.Instance.CreateLocationContainer(LocationName)??throw new InvalidOperationException($"Jotunn could not create Underworld world-center container '{LocationName}'.");BuildStandingStones(container.transform);
-            var gate=UnityEngine.Object.Instantiate(gatePrefab,container.transform,false);gate.name=UnderworldDeepGateRegistrar.PrefabName;gate.transform.localPosition=ReturnGateOffset;gate.transform.localRotation=Quaternion.Euler(0f,-90f,0f);
-            var endpoint=gate.GetComponent<UnderworldGateEndpoint>()??gate.AddComponent<UnderworldGateEndpoint>();endpoint.Role=UnderworldGateRole.ReturnToSurface;
-            if(gate.GetComponent<UnderworldDeepGateProgressionRuntime>()==null)gate.AddComponent<UnderworldDeepGateProgressionRuntime>();
-            var config=new LocationConfig{Biome=Heightmap.Biome.Meadows,BiomeArea=Heightmap.BiomeArea.Everything,Quantity=1,Priotized=true,ExteriorRadius=72f,MinAltitude=4f,MinTerrainDelta=0f,MaxTerrainDelta=5f,MinDistanceFromSimilar=0f,Group="Magenheim_UnderworldWorldCenter",ClearArea=true,RandomRotation=false,HasInterior=false};
-            var custom=new CustomLocation(container,fixReference:false,config);if(!ZoneManager.Instance.AddCustomLocation(custom))throw new InvalidOperationException($"Jotunn refused Underworld world-center registration for '{LocationName}'.");_registered=true;_log.LogInfo($"Registered Underworld center '{LocationName}' with progression-gated return Deep Gate.");
-        }catch(Exception exception){_log.LogError($"Underworld world-center registration failed: {exception}");throw;}finally{Dispose();}
+        if (identity is null) throw new ArgumentNullException(nameof(identity));
+        if (spatialDomain is null) throw new ArgumentNullException(nameof(spatialDomain));
+        if (log is null) throw new ArgumentNullException(nameof(log));
+
+        var logical = LogicalCenter with { WorldId = identity.DerivedWorldId };
+        var host = UnderworldSpatialDomain.ToHostAnchor(spatialDomain, identity, UnderworldLayer.Underworld, logical);
+        var root = new GameObject(LocationName);
+        root.transform.position = new Vector3((float)host.X, (float)host.Y, (float)host.Z);
+        root.transform.rotation = Quaternion.Euler(0f, host.HeadingDegrees, 0f);
+        BuildStandingStones(root.transform);
+
+        var gatePrefab = Jotunn.Managers.PrefabManager.Instance.GetPrefab(UnderworldDeepGateRegistrar.PrefabName)
+            ?? throw new InvalidOperationException("Deep Gate must be registered before the Underworld world center is composed.");
+        var gate = UnityEngine.Object.Instantiate(gatePrefab, root.transform, false);
+        gate.name = UnderworldDeepGateRegistrar.PrefabName;
+        gate.transform.localPosition = ReturnGateOffset;
+        gate.transform.localRotation = Quaternion.Euler(0f, -90f, 0f);
+        var endpoint = gate.GetComponent<UnderworldGateEndpoint>() ?? gate.AddComponent<UnderworldGateEndpoint>();
+        endpoint.Role = UnderworldGateRole.ReturnToSurface;
+        if (gate.GetComponent<UnderworldDeepGateProgressionRuntime>() == null) gate.AddComponent<UnderworldDeepGateProgressionRuntime>();
+
+        log.LogInfo($"Admitted Underworld center '{LocationName}' at reserved host ({host.X:0.##}, {host.Y:0.##}, {host.Z:0.##}).");
+        return root;
     }
+
     private static void BuildStandingStones(Transform parent)
     {
         var root=new GameObject(StandingStonesName);root.transform.SetParent(parent,false);var material=CreateStoneMaterial();var box=RuntimeMeshPrimitives.Box("magenheim.underworld.standing-stone");var dais=RuntimeMeshPrimitives.Cylinder(32,"magenheim.underworld.center-dais");const float radius=12f;
