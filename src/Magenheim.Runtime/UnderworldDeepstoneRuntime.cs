@@ -47,7 +47,22 @@ internal sealed class UnderworldDeepstoneRuntime : MonoBehaviour, Hoverable, Int
         if (zone == null || znet == null || !znet.IsServer()) return false;
         zone.SetGlobalKey(MountedKeyPrefix + _deepstoneId);
         zone.SetGlobalKey(BoonKeyPrefix + _deepstoneId);
-        return true;
+        var persisted = ReadPersistentState(_deepstoneId!);
+        if (persisted.TrophyMounted && persisted.BoonUnlocked) return true;
+        TryRollbackAuthorizedActivation();
+        return false;
+    }
+
+    internal bool TryRollbackAuthorizedActivation()
+    {
+        if (!IsBound) return false;
+        var zone = ZoneSystem.instance;
+        var znet = ZNet.instance;
+        if (zone == null || znet == null || !znet.IsServer()) return false;
+        zone.RemoveGlobalKey(MountedKeyPrefix + _deepstoneId);
+        zone.RemoveGlobalKey(BoonKeyPrefix + _deepstoneId);
+        var state = ReadPersistentState(_deepstoneId!);
+        return !state.TrophyMounted && !state.BoonUnlocked;
     }
 
     public string GetHoverName() => DisplayName(DeepstoneId);
