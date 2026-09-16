@@ -12,20 +12,33 @@ internal interface IUnderworldWorldContextController
 }
 
 /// <summary>
-/// Valheim binding for player placement. It uses the current Character.TeleportTo API only after
-/// the world-context controller has proved the requested layer active, and commit observation
-/// rechecks both context and player transform so a context drift cannot be mistaken for success.
+/// Valheim binding for player placement. Logical Underworld anchors are deterministically mapped
+/// into the reserved host spatial band immediately before TeleportTo, while surface anchors remain
+/// in ordinary parent-world coordinates. Commit observation repeats the same mapping and verifies
+/// both logical layer context and the physical player transform.
 /// </summary>
 internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTransitionPlacementHost
 {
     private const float PositionTolerance = 1.25f;
     private const float HeadingToleranceDegrees = 8f;
     private readonly IUnderworldWorldContextController _worldContext;
+    private readonly UnderworldSpatialDomainDefinition _spatialDomain;
     private readonly ManualLogSource _log;
 
-    internal ValheimUnderworldTransitionPlacementHost(IUnderworldWorldContextController worldContext, ManualLogSource log)
+    internal ValheimUnderworldTransitionPlacementHost(
+        IUnderworldWorldContextController worldContext,
+        ManualLogSource log)
+        : this(worldContext, UnderworldSpatialDomain.CreateDefault(), log)
+    {
+    }
+
+    internal ValheimUnderworldTransitionPlacementHost(
+        IUnderworldWorldContextController worldContext,
+        UnderworldSpatialDomainDefinition spatialDomain,
+        ManualLogSource log)
     {
         _worldContext = worldContext ?? throw new ArgumentNullException(nameof(worldContext));
+        _spatialDomain = spatialDomain ?? throw new ArgumentNullException(nameof(spatialDomain));
         _log = log ?? throw new ArgumentNullException(nameof(log));
     }
 
@@ -33,23 +46,26 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
     {
         if (identity is null) throw new ArgumentNullException(nameof(identity));
         if (anchor is null) throw new ArgumentNullException(nameof(anchor));
-        var expectedWorldId = layer == UnderworldLayer.Surface ? identity.ParentWorldId : identity.DerivedWorldId;
-        if (!string.Equals(anchor.WorldId, expectedWorldId, StringComparison.Ordinal))
-            throw new InvalidOperationException("Underworld placement anchor does not belong to the requested layer world.");
+
+        // Mapping validates world identity, finite coordinates and reserved Underworld bounds before
+        // context activation, so an invalid target cannot switch logical layers first and fail later.
+        UnderworldSpatialDomain.ToHostAnchor(_spatialDomain, identity, layer, anchor);
         _worldContext.EnsureActive(identity, layer);
         if (!_worldContext.IsActive(identity, layer))
             throw new InvalidOperationException("Valheim did not observe the requested Underworld world context as active.");
     }
 
-    public void PlacePlayer(UnderworldLayer layer, UnderworldAnchor anchor)
+    public void PlacePlayer(UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor)
     {
+        if (identity is null) throw new ArgumentNullException(nameof(identity));
         if (anchor is null) throw new ArgumentNullException(nameof(anchor));
         var player = Player.m_localPlayer ?? throw new InvalidOperationException("The local Valheim player is unavailable for Underworld placement.");
-        var position = new Vector3((float)anchor.X, (float)anchor.Y, (float)anchor.Z);
-        var rotation = Quaternion.Euler(0f, NormalizeHeading(anchor.HeadingDegrees), 0f);
+        var host = UnderworldSpatialDomain.ToHostAnchor(_spatialDomain, identity, layer, anchor);
+        var position = new Vector3((float)host.X, (float)host.Y, (float)host.Z);
+        var rotation = Quaternion.Euler(0f, NormalizeHeading(host.HeadingDegrees), 0f);
         if (!player.TeleportTo(position, rotation, false))
             throw new InvalidOperationException("Valheim rejected the requested Underworld player teleport.");
-        _log.LogDebug($"Underworld placement requested at {position} heading {anchor.HeadingDegrees:0.##} on {layer}.");
+        _log.LogDebug($"Underworld placement requested at host {position} heading {host.HeadingDegrees:0.##} for logical layer {layer}.");
     }
 
     public bool ObservePlayerPlacement(UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor)
@@ -57,9 +73,20 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
         if (identity is null || anchor is null || !_worldContext.IsActive(identity, layer)) return false;
         var player = Player.m_localPlayer;
         if (player is null) return false;
-        var target = new Vector3((float)anchor.X, (float)anchor.Y, (float)anchor.Z);
+
+        UnderworldHostAnchor host;
+        try
+        {
+            host = UnderworldSpatialDomain.ToHostAnchor(_spatialDomain, identity, layer, anchor);
+        }
+        catch
+        {
+            return false;
+        }
+
+        var target = new Vector3((float)host.X, (float)host.Y, (float)host.Z);
         if (Vector3.Distance(player.transform.position, target) > PositionTolerance) return false;
-        var headingDelta = Mathf.Abs(Mathf.DeltaAngle(player.transform.eulerAngles.y, NormalizeHeading(anchor.HeadingDegrees)));
+        var headingDelta = Mathf.Abs(Mathf.DeltaAngle(player.transform.eulerAngles.y, NormalizeHeading(host.HeadingDegrees)));
         return headingDelta <= HeadingToleranceDegrees;
     }
 
