@@ -121,14 +121,16 @@ foreach ($type in $runtime.MainModule.Types) {
 # recover the concrete target type/member pair from each caller. Keep those contracts explicit
 # here so Valheim API drift is still a build-gated event rather than a manual audit.
 #
-# Required fields are used by fail-closed helper calls and must exist. Optional fields are
-# compatibility enhancements whose absence is tolerated by runtime code; the gate reports them
-# without failing so the optional semantics remain truthful.
+# Required fields are used by fail-closed helper calls and must exist with the exact type the
+# runtime assigns. Optional fields are compatibility enhancements whose absence is tolerated by
+# runtime code; the gate reports them without failing so the optional semantics remain truthful.
 $helperFieldContracts = @(
     @{
         Owner = 'StaffEffectPayloads.Projectile'
         Type = 'Projectile'
-        Required = @('m_spawnOnHit')
+        Required = @{
+            m_spawnOnHit = 'UnityEngine.GameObject'
+        }
         Optional = @(
             'm_damage', 'm_aoe', 'm_attackForce', 'm_statusEffect',
             'm_spawnOnHitChance', 'm_spawnCount',
@@ -138,7 +140,14 @@ $helperFieldContracts = @(
     @{
         Owner = 'StaffEffectPayloads.Aoe'
         Type = 'Aoe'
-        Required = @('m_damage', 'm_radius', 'm_ttl', 'm_hitInterval', 'm_hitEnemy', 'm_hitCharacters')
+        Required = @{
+            m_damage = 'HitData/DamageTypes'
+            m_radius = 'System.Single'
+            m_ttl = 'System.Single'
+            m_hitInterval = 'System.Single'
+            m_hitEnemy = 'System.Boolean'
+            m_hitCharacters = 'System.Boolean'
+        }
         Optional = @(
             'm_damagePerLevel', 'm_useAttackSettings', 'm_scaleDamageByDistance', 'm_ttlMax',
             'm_activationDelay', 'm_attackForce', 'm_dodgeable', 'm_blockable', 'm_hitOwner',
@@ -150,19 +159,26 @@ $helperFieldContracts = @(
     @{
         Owner = 'GeodeWorldgenRegistrar.ZNetView'
         Type = 'ZNetView'
-        Required = @('m_persistent')
+        Required = @{
+            m_persistent = 'System.Boolean'
+        }
         Optional = @()
     },
     @{
         Owner = 'GeodeWorldgenRegistrar.Destructible'
         Type = 'Destructible'
-        Required = @('m_health', 'm_minToolTier')
+        Required = @{
+            m_health = 'System.Single'
+            m_minToolTier = 'System.Int32'
+        }
         Optional = @()
     },
     @{
         Owner = 'StatusEffects.SE_Stats'
         Type = 'SE_Stats'
-        Required = @('m_speedModifier')
+        Required = @{
+            m_speedModifier = 'System.Single'
+        }
         Optional = @()
     }
 )
@@ -175,10 +191,16 @@ foreach ($contract in $helperFieldContracts) {
     }
 
     $fields = @(Get-Members $targetType 'field')
-    foreach ($fieldName in $contract.Required) {
+    foreach ($fieldName in $contract.Required.Keys) {
         $matches = @($fields | Where-Object { $_.Name -ceq $fieldName })
         if ($matches.Count -ne 1) {
             $failures += "$($contract.Owner) -> $($contract.Type).$fieldName required helper-wrapped field matched $($matches.Count) installed fields."
+            continue
+        }
+        $expectedType = [string]$contract.Required[$fieldName]
+        $actualType = [string]$matches[0].FieldType.FullName
+        if ($actualType -cne $expectedType) {
+            $failures += "$($contract.Owner) -> $($contract.Type).$fieldName changed type from expected '$expectedType' to '$actualType'."
             continue
         }
         $helperVerified++
