@@ -2,71 +2,74 @@
 
 ## Intent
 
-Double-check that Magenheim socketing has a real user-facing interaction surface and texture treatment, then materially improve the shared texture path used by generated blocks, furniture, staffs, weapons and other procedural equipment instead of accepting low-resolution flat-color stand-ins as finished art.
+Verify that Magenheim socketing has a real player-facing interface and visual treatment, then raise the minimum texture quality for generated blocks, furniture, staffs, weapons, artifacts and other owned procedural equipment so flat one-pixel/low-resolution stand-ins are not accepted as finished presentation.
 
-## Socket interface audit
+## Reconciliation
 
-The native Magenheim socket backend does have an implemented interface. `SocketWorkstationOverlay` opens while `InventoryGui` is visible at an admitted Magenheim socket station and provides:
+This work overlapped another active repair stream. The first texture-fidelity commit (`1b6847d3307d75b509b3b03a463ad908f9ef4160`) upgraded the old socket skin and shared surface authority. Immediately afterward `main` advanced through `543805f60a1baecf742e1642f81f6d06dfd80b61`, which rebuilt socketing directly on Valheim's `InventoryGui`, and `3629c3a68e019481c99b49acff0e92393481ce21`, which removed the now-obsolete IMGUI skin patch. The native UI implementation is newer authority and is preserved here; the removed skin is not reintroduced.
+
+## Socket interface audit result
+
+The socketing system now has a concrete native interface rather than only transaction code or a debug-style window.
+
+`SocketWorkstationOverlay` is hosted under Valheim's active `InventoryGui` and creates a native Unity UI panel using `RectTransform`, `Image`, `Mask`, `ScrollRect`, `VerticalLayoutGroup`, `ContentSizeFitter`, text and button components. It copies active crafting-panel/button/text presentation from the game rather than maintaining a detached IMGUI skin.
+
+The interface provides:
 
 - individual equipment selection;
-- visible socket count / policy maximum;
-- socket opening;
+- category/origin information;
+- installed/unlocked socket counts and policy maximums;
+- opening a socket;
 - crystal installation;
-- crystal extraction when the Faceting Wheel requirement is satisfied;
-- server-authority/revalidation diagnostics and status text.
+- crystal extraction when requirements are met;
+- multiplayer/server-authority and stale-state diagnostics;
+- operation status text.
 
-`MagenheimPlugin` constructs the overlay only when the Magenheim socket backend owns mutation and explicitly Harmony-patches `SocketWorkstationSkinPatch` in the same branch. The skin therefore is not dead code.
-
-The audit also confirms that C7 remains a legitimate presentation debt: the current interface is still `OnGUI` / `GUILayout` rather than a reconstruction inside Valheim's native crafting panel. This pass does not falsely mark that native-UI rebuild complete.
-
-## Socket UI texture repair
-
-The existing skin did have generated textures, but they were only 24-48px for fields/panels and 32px for buttons. That was technically textured but visually too close to an enlarged debug skin.
-
-`SocketWorkstationSkinPatch` now generates materially higher-fidelity UI surfaces:
-
-- 256px mineral-grain panel texture;
-- 128x64 normal/hover/active button textures;
-- 128px field texture;
-- 128x64 section texture;
-- deterministic coarse + fine grain;
-- optional mineral veining;
-- brushed-metal style directional detail for controls;
-- an inner bevel band that remains readable when stretched at common desktop resolutions;
-- larger GUI borders so nine-slice-style stretching does not smear the edge treatment.
-
-The authoritative socket mutation path remains untouched.
+The same existing server-authoritative socket transaction paths remain responsible for mutation. The UI rebuild changes presentation and interaction composition, not socket authority.
 
 ## Shared world/equipment texture repair
 
-The existing `GeneratedSurfaceTextures` authority was a good direction but still generated only 64x64 grayscale maps. More importantly, a source audit of owned procedural meshes found that many mesh builders never authored UV0 coordinates. A material can own a texture and still look flat if the whole mesh samples the same texel.
+The first shared texture authority was directionally correct but generated only 64x64 grayscale maps. A deeper audit also found that many owned procedural mesh builders create vertices and triangles without UV0 coordinates. Giving such a material a texture is insufficient because the geometry can sample effectively one texel across the entire object.
 
-The texture authority is therefore upgraded in two dimensions:
+`GeneratedSurfaceTextures` now raises the shared baseline to 256x256 with mipmaps, trilinear filtering and 4x anisotropy. Crystal, stone, timber, metal, cloth, bone, liquid, leather and generic surfaces use multi-scale deterministic detail instead of flat tint or visibly magnified tiny patterns.
 
-1. Surface maps are now 256x256 with mipmaps, trilinear filtering and 4x anisotropy. Crystal, stone, timber, metal, cloth, bone, liquid, leather and generic materials each receive multi-scale deterministic surface detail instead of magnified 64px patterns.
-2. After Jotunn finishes prefab registration, the same authority scans only readable meshes whose names begin with the owned `magenheim.` namespace. If UV0 is absent or degenerate, it creates triangle-projected UV0 coordinates while preserving geometry, submeshes, existing normals, tangents and vertex colors. Imported/file-backed meshes with valid UVs are left unchanged, as are skinned meshes.
+## Post-registration visual reconciliation
 
-The projection repair duplicates triangle vertices only for an owned mesh that actually lacks usable UVs. This prevents shared-face UV seams from collapsing the texture back into a single sampled region and avoids rewriting foreign meshes.
+After Jotunn finishes prefab registration, the shared authority now performs an owned-only quality pass.
+
+For Magenheim-owned materials, it replaces only obvious placeholder surfaces:
+
+- no texture;
+- Unity's one-pixel `Texture2D.whiteTexture`;
+- an older `magenheim.surface.*` generated surface that should be rebound to the current 256px authority;
+- another 1-4px placeholder texture.
+
+Authored/file-backed textures with real dimensions are preserved, including the Earth asset pipeline. Likewise, an inherited non-placeholder vanilla texture is not silently overwritten; that is model-specific debt and must be repaired deliberately at its authoritative builder.
+
+For readable Magenheim-owned procedural meshes, the pass checks UV0. A mesh with absent or degenerate UV0 receives triangle-projected UV coordinates. The repair preserves geometry, submesh separation, existing normals, tangents and vertex colors, skips skinned meshes, and does not touch foreign meshes. Triangle vertices are split only where necessary so faces can carry stable projection without shared-vertex UV conflicts.
+
+This means residual procedural blocks/equipment no longer remain visually flat merely because a builder forgot UVs or left a one-pixel placeholder behind.
 
 ## Scope boundary
 
-This is a texture/UV framework repair, not a claim that every procedural object is now final-art quality. Low-poly geometry that genuinely looks like a caricature still needs model-specific refinement. Likewise, visual families that have not yet been migrated off direct one-pixel/legacy material construction must still be reconciled with `GeneratedSurfaceTextures`.
+This repair raises the rendering floor; it does not claim that every model is final art. Geometry that genuinely looks like a crude caricature still needs model-specific silhouette, proportion and detail refinement. Inappropriate inherited vanilla textures that are larger than placeholder size also require explicit per-model repair rather than an indiscriminate global override.
 
-The new framework substantially raises the floor: any migrated generated family now has enough texture resolution and usable UV0 data for its material detail to be visible.
+Several model-specific repairs had already landed before this pass, including generated surface migration for elemental staffs, furniture, crystal architecture, banners, beds, Ice Box, world/capstone artifacts, geology decor, Crystal Sentinel and crystal weapons. Crystal weapon geometry also received winding repair. During reconciliation, the Crystal Bed, Ice Box and Crystal Enchanting Dais were additionally migrated toward the new canonical Unity mesh primitives. Those individual repairs remain authoritative and are complemented rather than replaced by the shared fallback.
 
 ## Validation boundary
 
-This connector pass verifies authoritative source composition and Git ancestry. It does not provide the installed Valheim/.NET rendering profile, so compilation and screenshot-level runtime acceptance are not claimed here.
+Repository source and commit ancestry are verified. This connector environment does not run the installed Valheim rendering profile, so compilation and screenshot-level runtime acceptance are not claimed.
 
-Required runtime checks:
+Runtime acceptance still needs to confirm:
 
-- open the Geologist/Enchanting Dais socket surface and verify panel/button/field detail at 1080p and 1440p;
-- verify the interface remains readable under UI scaling;
-- inspect at least one crystal, stone, timber and metal generated object to confirm visible texture variation rather than single-texel tint;
-- inspect curved/prismatic generated equipment for UV seam or orientation defects;
-- confirm imported Earth assets retain their authored UVs/textures;
-- profile generated-mesh vertex growth on a dense build scene.
+- socket panel readability and layout at common resolutions/UI scales;
+- native button/text styling actually resolves from the active InventoryGui;
+- visible texture variation on representative crystal, stone, timber and metal pieces;
+- no severe seams/orientation errors on projected curved/prismatic geometry;
+- imported Earth assets retain authored UVs/textures;
+- residual white/null owned placeholder materials are rebound after prefab registration;
+- generated vertex growth remains acceptable in dense construction scenes.
 
-## Next actionable slice
+## Next visual slice
 
-Finish the residual R1 material migration by locating every remaining generated visual that still installs `Texture2D.whiteTexture` or clears its owned surface after `GeneratedSurfaceTextures.Apply`. Then continue R2 geometry migration and move C7 from the skinned `OnGUI` bridge into Valheim's crafting UI without changing the server-authoritative socket transaction path.
+Continue with model-specific fidelity rather than stacking another generic mutator: identify Magenheim-owned objects still inheriting inappropriate non-placeholder vanilla materials, finish remaining inside-out/winding migrations, and refine the worst low-poly silhouettes/proportions one family at a time. The native socket UI is now an implementation to refine and test, not a missing interface.
