@@ -10,7 +10,7 @@ internal static class DeepFractureEncounterSpawner
 {
     private const string SpawnIdentityKey = "magenheim.fracture.spawn.id";
 
-    internal static void Populate(GameObject district, DeepFractureInteriorModulePlacement placement, DeepFractureEncounterAuthority authority)
+    internal static void Populate(GameObject district, DeepFractureInteriorModulePlacement placement, DeepFractureEncounterAuthority authority, int locationSeed)
     {
         if (district is null) throw new ArgumentNullException(nameof(district));
         if (placement is null) throw new ArgumentNullException(nameof(placement));
@@ -26,8 +26,18 @@ internal static class DeepFractureEncounterSpawner
 
             for (var unitIndex = 0; unitIndex < encounter.SpawnCount; unitIndex++)
             {
-                var identity = $"{placement.ModuleInstanceId}.{encounter.Id}.{unitIndex + 1:00}";
-                if (authority.IsCleared(identity) || FindLivingSpawn(identity) is not null) continue;
+                var legacyIdentity = $"{placement.ModuleInstanceId}.{encounter.Id}.{unitIndex + 1:00}";
+                var identity = $"{unchecked((uint)locationSeed):X8}.{legacyIdentity}";
+
+                // Clear state is already isolated by each fracture authority ZDO, so accept the
+                // pre-namespace key as a migration fallback. Live creature lookup is global,
+                // however, and therefore must use the location-qualified identity exclusively.
+                if (authority.IsCleared(identity) || authority.IsCleared(legacyIdentity))
+                {
+                    if (!authority.IsCleared(identity)) authority.MarkCleared(identity);
+                    continue;
+                }
+                if (FindLivingSpawn(identity) is not null) continue;
 
                 var worldPosition = district.transform.TransformPoint(SpawnOffset(groupIndex, unitIndex));
                 var worldRotation = district.transform.rotation * Quaternion.Euler(0f, FacingYaw(groupIndex, unitIndex), 0f);
