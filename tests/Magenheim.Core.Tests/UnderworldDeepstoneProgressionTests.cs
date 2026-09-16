@@ -25,12 +25,25 @@ internal static class UnderworldDeepstoneProgressionTests
         var wrong = UnderworldDeepstoneProgression.TryMountTrophy(definitions, state, bloom, "Magenheim_Underworld_Trophy_BlackwaterMaw");
         Assert(wrong.Status == UnderworldDeepstoneMountStatus.WrongTrophy && !wrong.Changed, "A Deepstone must reject another boss trophy.");
 
+        var missingInventory = UnderworldDeepstoneProgression.PlanMountTrophy(definitions, state, bloom, "Magenheim_Underworld_Trophy_FirstBloom", 0);
+        Assert(missingInventory.Status == UnderworldDeepstoneTransactionStatus.MissingTrophy && !missingInventory.Ready && missingInventory.TrophyConsumeCount == 0, "A valid trophy identity without authoritative inventory possession must not produce a consumable transaction.");
+        Assert(missingInventory.ResultingState is { TrophyMounted: true, BoonUnlocked: true }, "Rejected inventory execution may describe the prospective canonical state but must not authorize its persistence.");
+
+        var planned = UnderworldDeepstoneProgression.PlanMountTrophy(definitions, state, bloom, "Magenheim_Underworld_Trophy_FirstBloom", 1);
+        Assert(planned.Ready && planned.TrophyConsumeCount == 1, "A valid mount transaction must consume exactly one canonical trophy.");
+        Assert(planned.ResultingState is { TrophyMounted: true, BoonUnlocked: true }, "A ready transaction must atomically couple trophy mount and boon unlock state.");
+
+        var blockedPlan = UnderworldDeepstoneProgression.PlanMountTrophy(definitions, state, tide, "Magenheim_Underworld_Trophy_BlackwaterMaw", 1);
+        Assert(blockedPlan.Status == UnderworldDeepstoneTransactionStatus.PrerequisiteMissing && blockedPlan.TrophyConsumeCount == 0, "Rejected prerequisite transactions must never consume inventory.");
+
         var bloomMounted = UnderworldDeepstoneProgression.TryMountTrophy(definitions, state, bloom, "Magenheim_Underworld_Trophy_FirstBloom");
         Assert(bloomMounted.Changed && bloomMounted.State!.TrophyMounted && bloomMounted.State.BoonUnlocked, "Correct trophy must atomically activate the stone and unlock its boon.");
         state[Array.FindIndex(state, value => value.DeepstoneId == bloom)] = bloomMounted.State!;
 
         var duplicate = UnderworldDeepstoneProgression.TryMountTrophy(definitions, state, bloom, "Magenheim_Underworld_Trophy_FirstBloom");
         Assert(duplicate.Status == UnderworldDeepstoneMountStatus.AlreadyMounted && !duplicate.Changed, "Mounted trophies must be idempotent.");
+        var duplicatePlan = UnderworldDeepstoneProgression.PlanMountTrophy(definitions, state, bloom, "Magenheim_Underworld_Trophy_FirstBloom", 1);
+        Assert(duplicatePlan.Status == UnderworldDeepstoneTransactionStatus.AlreadyMounted && duplicatePlan.TrophyConsumeCount == 0, "Duplicate runtime requests must not consume another trophy.");
 
         var tideMounted = UnderworldDeepstoneProgression.TryMountTrophy(definitions, state, tide, "Magenheim_Underworld_Trophy_BlackwaterMaw");
         Assert(tideMounted.Changed && tideMounted.State!.DeepBoonId == "magenheim.underworld.boon.deep_current", "Completing prerequisites must admit the next canonical trophy and boon.");
