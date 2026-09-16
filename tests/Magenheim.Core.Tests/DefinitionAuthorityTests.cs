@@ -36,15 +36,11 @@ internal static class DefinitionAuthorityTests
         Assert(fingerprintMismatch.Status == DefinitionAuthorityStatus.FingerprintMismatch, "Different fingerprints must report FingerprintMismatch.");
         Assert(!fingerprintMismatch.MutationAuthorized, "Fingerprint mismatch must fail closed.");
 
-        var invalidLocal = DefinitionAuthorityHandshake.Compare(
-            new DefinitionAuthorityDescriptor(0, fingerprintA),
-            new DefinitionAuthorityDescriptor(currentSchema, fingerprintA));
+        var invalidLocal = DefinitionAuthorityHandshake.Compare(new DefinitionAuthorityDescriptor(0, fingerprintA), new DefinitionAuthorityDescriptor(currentSchema, fingerprintA));
         Assert(invalidLocal.Status == DefinitionAuthorityStatus.InvalidDescriptor, "Invalid local authority must be rejected before comparison.");
         Assert(!invalidLocal.MutationAuthorized, "Invalid local authority must never authorize mutation.");
 
-        var invalidRemote = DefinitionAuthorityHandshake.Compare(
-            local,
-            new DefinitionAuthorityDescriptor(currentSchema, fingerprintA.ToUpperInvariant()));
+        var invalidRemote = DefinitionAuthorityHandshake.Compare(local, new DefinitionAuthorityDescriptor(currentSchema, fingerprintA.ToUpperInvariant()));
         Assert(invalidRemote.Status == DefinitionAuthorityStatus.InvalidDescriptor, "Uppercase fingerprints must be rejected as non-canonical descriptors.");
         Assert(!invalidRemote.MutationAuthorized, "Invalid remote authority must never authorize mutation.");
 
@@ -65,6 +61,7 @@ internal static class DefinitionAuthorityTests
         assertions += UnderworldAuthorityCompositionTests.Run();
         assertions += UnderworldDeepstoneProgressionTests.Run();
         assertions += UnderworldDeepBoonSelectionTests.Run();
+        assertions += UnderworldDeepBoonSelectionCodecTests.Run();
         assertions += UnderworldDeepstoneRequestLedgerTests.Run();
         assertions += UnderworldDeepstoneTransactionExecutorTests.Run();
         assertions += UnderworldTransitionTests.Run();
