@@ -7,7 +7,9 @@ namespace Magenheim.Runtime;
 /// <summary>In-memory Hammer icons for the rainbow crystal architecture set.</summary>
 internal static class CrystalArchitectureIcons
 {
-    private const int Size = 128;
+    private const int Size = 256;
+    private const int DesignSize = 128;
+    private const int Scale = Size / DesignSize;
     private static readonly Dictionary<string, Sprite> Cache = new();
 
     internal static Sprite Icon(string modelId)
@@ -83,10 +85,10 @@ internal static class CrystalArchitectureIcons
 
     private static void Rect(Color[] pixels, int x0, int y0, int x1, int y1, Color color)
     {
-        x0 = Mathf.Clamp(x0, 0, Size - 1);
-        x1 = Mathf.Clamp(x1, 0, Size - 1);
-        y0 = Mathf.Clamp(y0, 0, Size - 1);
-        y1 = Mathf.Clamp(y1, 0, Size - 1);
+        x0 = Mathf.Clamp(x0 * Scale, 0, Size - 1);
+        x1 = Mathf.Clamp(((x1 + 1) * Scale) - 1, 0, Size - 1);
+        y0 = Mathf.Clamp(y0 * Scale, 0, Size - 1);
+        y1 = Mathf.Clamp(((y1 + 1) * Scale) - 1, 0, Size - 1);
         for (var y = y0; y <= y1; y++)
             for (var x = x0; x <= x1; x++)
                 Blend(pixels, x, y, color);
@@ -94,11 +96,14 @@ internal static class CrystalArchitectureIcons
 
     private static void Diamond(Color[] pixels, int cx, int cy, int radius, Color color)
     {
-        for (var y = cy - radius; y <= cy + radius; y++)
+        var scaledCx = cx * Scale;
+        var scaledCy = cy * Scale;
+        var scaledRadius = radius * Scale;
+        for (var y = scaledCy - scaledRadius; y <= scaledCy + scaledRadius; y++)
         {
-            var dy = Math.Abs(y - cy);
-            var half = radius - dy;
-            for (var x = cx - half; x <= cx + half; x++)
+            var dy = Math.Abs(y - scaledCy);
+            var half = scaledRadius - dy;
+            for (var x = scaledCx - half; x <= scaledCx + half; x++)
                 if (x >= 0 && x < Size && y >= 0 && y < Size)
                     Blend(pixels, x, y, color);
         }
