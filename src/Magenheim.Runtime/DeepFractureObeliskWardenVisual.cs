@@ -73,8 +73,19 @@ namespace Magenheim.Runtime
 
         private static GameObject Prism(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material, Vector3? rotation = null)
         {
-            Mesh mesh;
-            if (!PrismMeshes.TryGetValue(sides, out mesh)) { mesh = CreatePrism(sides); PrismMeshes.Add(sides, mesh); }
+            if (!PrismMeshes.TryGetValue(sides, out var mesh))
+            {
+                mesh = RuntimeMeshPrimitives.Prism(
+                    sides,
+                    "magenheim.fracture.obelisk-warden.prism." + sides,
+                    lowerRadius: .36f,
+                    lowerY: -.45f,
+                    upperRadius: .50f,
+                    upperY: .20f,
+                    apexY: .68f,
+                    baseY: -.50f);
+                PrismMeshes.Add(sides, mesh);
+            }
             var part = new GameObject(name) { layer = root.layer };
             part.transform.SetParent(root.transform, false);
             part.transform.localPosition = position;
@@ -83,39 +94,6 @@ namespace Magenheim.Runtime
             part.AddComponent<MeshFilter>().sharedMesh = mesh;
             part.AddComponent<MeshRenderer>().sharedMaterial = material;
             return part;
-        }
-
-        private static Mesh CreatePrism(int sides)
-        {
-            var vertices = new List<Vector3>();
-            var triangles = new List<int>();
-            for (var i = 0; i < sides; i++)
-            {
-                var a = 2f * Mathf.PI * i / sides;
-                vertices.Add(new Vector3(.36f * Mathf.Cos(a), -.45f, .36f * Mathf.Sin(a)));
-            }
-            for (var i = 0; i < sides; i++)
-            {
-                var a = 2f * Mathf.PI * i / sides;
-                vertices.Add(new Vector3(.5f * Mathf.Cos(a), .2f, .5f * Mathf.Sin(a)));
-            }
-            var top = vertices.Count; vertices.Add(new Vector3(0f, .68f, 0f));
-            var bottom = vertices.Count; vertices.Add(new Vector3(0f, -.5f, 0f));
-            for (var i = 0; i < sides; i++)
-            {
-                var n = (i + 1) % sides;
-                triangles.AddRange(new[]
-                {
-                    bottom, i, n,
-                    i, sides + i, n,
-                    n, sides + i, sides + n,
-                    top, sides + n, sides + i,
-                });
-            }
-            var mesh = new Mesh { name = "magenheim.fracture.obelisk-warden.prism." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-            mesh.RecalculateNormals();
-            mesh.RecalculateBounds();
-            return mesh;
         }
     }
 }
