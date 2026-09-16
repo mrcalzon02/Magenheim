@@ -6,8 +6,12 @@ using NVec3 = System.Numerics.Vector3;
 
 namespace UnityEngine;
 
+public enum HideFlags { HideAndDontSave }
 public class Object
 {
+    public HideFlags hideFlags;
+    public static void Destroy(Object? o) {}
+    public static void DestroyImmediate(Object? o) { if(o is GameObject g)g.transform.SetParent(null); }
     public string name = string.Empty;
     public static implicit operator bool(Object? value) => value is not null;
     public static bool operator !(Object? value) => value is null;
@@ -17,11 +21,27 @@ public class Component : Object
 {
     public GameObject gameObject = null!;
     public Transform transform => gameObject.transform;
+    public T[] GetComponentsInChildren<T>(bool includeInactive=false) where T:Component => gameObject.GetComponentsInChildren<T>(includeInactive);
 }
 
+public enum PrimitiveType { Cube, Cylinder, Sphere }
+public struct Vector3Int { public int x,y,z; public Vector3Int(int x,int y,int z){this.x=x;this.y=y;this.z=z;} }
+public class Shader:Object { public static Shader Find(string name)=>new(){name=name}; }
 public class GameObject : Object
 {
     private readonly List<Component> _components = new();
+    public static GameObject CreatePrimitive(PrimitiveType type) {
+        var go=new GameObject(type.ToString());
+        var data=type==PrimitiveType.Cube ? Magenheim.Core.Geometry.MeshPrimitives.Box() : Magenheim.Core.Geometry.MeshPrimitives.Cylinder(20);
+        go.AddComponent<MeshFilter>().sharedMesh=new Mesh {vertices=data.Vertices.Select(v=>new Vector3(v.X,v.Y*(type==PrimitiveType.Cylinder?2:1),v.Z)).ToArray(),triangles=data.Triangles.ToArray()};
+        if(type==PrimitiveType.Sphere){
+            var v=new List<Vector3>();var t=new List<int>();const int sides=24,rings=16;
+            for(int r=0;r<=rings;r++)for(int i=0;i<=sides;i++){float a=MathF.PI*r/rings,b=2*MathF.PI*i/sides;v.Add(new Vector3(.5f*MathF.Sin(a)*MathF.Cos(b),.5f*MathF.Cos(a),.5f*MathF.Sin(a)*MathF.Sin(b)));}
+            for(int r=0;r<rings;r++)for(int i=0;i<sides;i++){int a=r*(sides+1)+i,b=a+sides+1;if(r>0)t.AddRange(new[]{a,a+1,b});if(r<rings-1)t.AddRange(new[]{a+1,b+1,b});}
+            go.GetComponent<MeshFilter>()!.sharedMesh=new Mesh{vertices=v.ToArray(),triangles=t.ToArray()};
+        }
+        go.AddComponent<MeshRenderer>().sharedMaterial=new Material();go.AddComponent<BoxCollider>();return go;
+    }
     public int layer;
     public bool activeSelf { get; private set; } = true;
     public Transform transform { get; }
@@ -190,10 +210,14 @@ public static class Mathf
     public static float Lerp(float a,float b,float t)=>a+(b-a)*Clamp01(t);public static int RoundToInt(float v)=>(int)MathF.Round(v);public static int FloorToInt(float v)=>(int)MathF.Floor(v);public static int CeilToInt(float v)=>(int)MathF.Ceiling(v);public static float Pow(float a,float b)=>MathF.Pow(a,b);
 }
 
+public struct Bounds { public Vector3 center,size; }
+public static class ImageConversion { public static bool LoadImage(Texture2D t,byte[] bytes,bool unreadable)=>bytes.Length>8 && bytes[0]==137 && bytes[1]==80; }
 public class Mesh:Object
 {
+    public UnityEngine.Rendering.IndexFormat indexFormat; public Bounds bounds;
     public Vector3[] vertices=Array.Empty<Vector3>();public int[] triangles=Array.Empty<int>();public Vector3[] normals=Array.Empty<Vector3>();public Vector2[] uv=Array.Empty<Vector2>();
-    public void RecalculateNormals(){}public void RecalculateBounds(){}public void RecalculateTangents(){}
+    public void SetVertices(List<Vector3> v){vertices=v.ToArray();}public void SetTriangles(List<int> t,int s){triangles=t.ToArray();}
+    public void RecalculateNormals(){}public void RecalculateBounds(){if(vertices.Length==0)return;var min=new Vector3(vertices.Min(v=>v.x),vertices.Min(v=>v.y),vertices.Min(v=>v.z));var max=new Vector3(vertices.Max(v=>v.x),vertices.Max(v=>v.y),vertices.Max(v=>v.z));bounds=new Bounds{center=(min+max)*.5f,size=max-min};}public void RecalculateTangents(){}
 }
 public class MeshFilter:Component{public Mesh? sharedMesh;public Mesh? mesh{get=>sharedMesh;set=>sharedMesh=value;}}
 public class Renderer:Component
@@ -205,16 +229,17 @@ public class Light:Component{public Color color;public float intensity;public fl
 
 public class Material:Object
 {
-    public Color color=Color.white;public Texture? mainTexture;public Vector2 mainTextureScale=Vector2.one;public Vector2 mainTextureOffset=Vector2.zero;public int renderQueue;
-    public Material(){}public Material(Material source){name=source.name;color=source.color;mainTexture=source.mainTexture;mainTextureScale=source.mainTextureScale;mainTextureOffset=source.mainTextureOffset;renderQueue=source.renderQueue;}
-    public bool HasProperty(string name)=>true;public void SetColor(string name,Color value){if(name=="_Color")color=value;}public void SetFloat(string name,float value){}public void SetInt(string name,int value){}public void SetTexture(string name,Texture? value){}public void EnableKeyword(string keyword){}public void DisableKeyword(string keyword){}public void SetOverrideTag(string tag,string value){}
+    public Color color=Color.white;public Texture? mainTexture;public Vector2 mainTextureScale=Vector2.one;public Vector2 mainTextureOffset=Vector2.zero;public int renderQueue; public Dictionary<string,float> Floats=new(); public Dictionary<string,Color> Colors=new();
+    public Material(){}public Material(Shader shader){}public Material(Material source){name=source.name;color=source.color;mainTexture=source.mainTexture;mainTextureScale=source.mainTextureScale;mainTextureOffset=source.mainTextureOffset;renderQueue=source.renderQueue;}
+    public bool HasProperty(string name)=>true;public void SetColor(string name,Color value){Colors[name]=value;if(name=="_Color")color=value;}public void SetFloat(string name,float value){Floats[name]=value;}public void SetInt(string name,int value){Floats[name]=value;}public void SetTexture(string name,Texture? value){}public void EnableKeyword(string keyword){}public void DisableKeyword(string keyword){}public void SetOverrideTag(string tag,string value){}
 }
 
 public class Texture:Object{} public enum TextureFormat{RGBA32} public enum TextureWrapMode{Clamp,Repeat} public enum FilterMode{Point,Bilinear,Trilinear}
 public class Texture2D:Texture
 {
+    public int width,height,anisoLevel; public Color[] pixels=Array.Empty<Color>();
     public TextureWrapMode wrapMode;public FilterMode filterMode;public static Texture2D whiteTexture{get;}=new(1,1,TextureFormat.RGBA32,false);
-    public Texture2D(int width,int height,TextureFormat format,bool mipChain){}public void SetPixels(Color[] colors){}public void Apply(bool updateMipmaps=true,bool makeNoLongerReadable=false){}
+    public Texture2D(int width,int height,TextureFormat format,bool mipChain){this.width=width;this.height=height;}public void SetPixels(Color[] colors){pixels=colors;}public void Apply(bool updateMipmaps=true,bool makeNoLongerReadable=false){}
 }
 public struct Rect{public float x,y,width,height;public Rect(float x,float y,float width,float height){this.x=x;this.y=y;this.width=width;this.height=height;}}
 public class Sprite:Object{public static Sprite Create(Texture2D texture,Rect rect,Vector2 pivot,float pixelsPerUnit)=>new();}

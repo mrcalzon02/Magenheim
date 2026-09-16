@@ -17,3 +17,5 @@ public enum ShadowCastingMode
     TwoSided = 2,
     ShadowsOnly = 3
 }
+
+public enum IndexFormat { UInt16, UInt32 }

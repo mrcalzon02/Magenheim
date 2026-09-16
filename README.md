@@ -46,3 +46,7 @@ Original editable art and generators are under `assets/earth` and `tools` in the
 source repository. Procedural furniture, weapons and other models are built by
 runtime source. Players require no art tools. Development follows `INSTRUCTIONS.md`
 on `main`.
+
+## Editable 3D models
+
+See [the model library](assets/models/README.md) for 276 Blender sources, GLB exports, review sheets, and the edit/export workflow. Runtime visual builders load those assets instead of constructing shapes.

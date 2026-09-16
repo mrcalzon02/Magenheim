@@ -1,5 +1,4 @@
 using System;
-using System.Numerics;
 using Magenheim.Core.DarkThrone;
 using Magenheim.Core.Underworld;
 
@@ -32,7 +31,7 @@ internal static class UnderworldTransitionTests
         var alive = new DarkThroneEncounterSnapshot(
             DarkThroneEncounterSnapshot.CurrentSchemaVersion,
             "magenheim.dark_throne",
-            Vector3.Zero,
+            EncounterPosition.Zero,
             DarkThroneEncounterLifecycle.Disengaged,
             1d,
             false);

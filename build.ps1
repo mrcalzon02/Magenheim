@@ -36,6 +36,10 @@ if ($Offline) {
 Push-Location $PSScriptRoot
 try {
     & "$PSScriptRoot/tests/LauncherMetadata.Tests.ps1"
+    & python "$PSScriptRoot/tools/verify-model-assets.py"
+    if ($LASTEXITCODE -ne 0) { throw 'Model asset validation failed.' }
+    & $DotNet run --project tools/ModelAssetTests -c Release @restoreOptions
+    if ($LASTEXITCODE -ne 0) { throw 'Model importer tests failed.' }
     & $DotNet run --project tests/Magenheim.Core.Tests -c Release @restoreOptions
     if ($LASTEXITCODE -ne 0) { throw 'Core tests failed.' }
     & $DotNet build src/Magenheim.Runtime -c Release @restoreOptions "-p:BepInExPath=$ProfileRoot/BepInEx" "-p:ValheimManagedPath=$GameRoot/valheim_Data/Managed"

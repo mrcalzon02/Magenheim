@@ -18,14 +18,14 @@ internal static class Program
         var manifest = new List<string>();
         var failures = new List<string>();
         var visualTypes = Assembly.GetExecutingAssembly().GetTypes()
-            .Where(t => t.Namespace == "Magenheim.Runtime" && t.Name.EndsWith("Visuals", StringComparison.Ordinal))
+            .Where(t => t.Namespace == "Magenheim.Runtime" && (t.Name.EndsWith("Visuals", StringComparison.Ordinal) || t.Name.EndsWith("Visual", StringComparison.Ordinal)))
             .OrderBy(t => t.Name)
             .ToArray();
 
         foreach (var type in visualTypes)
         {
             var applies = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
-                .Where(m => m.Name == "Apply")
+                .Where(m => (m.Name.StartsWith("Apply", StringComparison.Ordinal) && m.Name != "ApplyElementalState") || m.Name == "Build")
                 .OrderBy(m => m.GetParameters().Length)
                 .ToArray();
 
@@ -42,6 +42,10 @@ internal static class Program
                         .Where(x => !string.IsNullOrWhiteSpace(x.Id))
                         .DistinctBy(x => x.Id)
                         .ToArray();
+                    if(ids.Length==0) {
+                        var source=File.ReadAllText(Path.Combine(FindRepoRoot(), "tools", "ModelExporter", "LegacySources", type.Name+".cs"));
+                        ids=System.Text.RegularExpressions.Regex.Matches(source,"(?:case |assetName == )\"([^\"]+)\"").Select(m=>(Field:m.Groups[1].Value,Id:(string?)m.Groups[1].Value)).Distinct().ToArray();
+                    }
                     foreach (var model in ids)
                         ExportInvocation(type, apply, model.Id!, model.Field, model.Id!, output, generated, manifest, failures);
                     continue;
@@ -52,8 +56,13 @@ internal static class Program
                     foreach (var value in Enum.GetValues(p[1].ParameterType))
                     {
                         var suffix = value!.ToString()!.ToLowerInvariant();
-                        var id = TypeId(type) + "-" + suffix;
-                        ExportInvocation(type, apply, id, suffix, value, output, generated, manifest, failures);
+                        var id = TypeId(type) + (apply.Name == "Apply" ? "" : "-" + apply.Name.Substring(5)) + "-" + suffix;
+                        if(type.Name=="CrystalBannerVisuals") {
+                            foreach(var element in Enum.GetValues<Magenheim.Core.ElementalAlignment>()) {
+                                var host=CreateHost(id);apply.Invoke(null,new object[]{host,value,element});
+                                ExportObject(host,id+"-"+element.ToString().ToLowerInvariant(),type.Name,output,generated,manifest);
+                            }
+                        } else ExportInvocation(type, apply, id, suffix, value, output, generated, manifest, failures);
                     }
                     continue;
                 }
@@ -73,6 +82,14 @@ internal static class Program
             }
         }
 
+        foreach(var element in Enum.GetValues<Magenheim.Core.ElementalAlignment>()) {
+            var host=CreateHost("ammo");Magenheim.Runtime.CrystalSentinelVisuals.CreateAmmoVisual(host.GetComponent<Turret>()!,element,new Material());
+            ExportObject(host,"sentinel-ammo-"+element.ToString().ToLowerInvariant(),"CrystalSentinelVisuals",output,generated,manifest);
+        }
+        foreach(var family in Magenheim.Core.DeepFractures.DeepFractureCatalog.PieceFamilies)
+            ExportObject(Magenheim.Runtime.DeepFractureRoomVisuals.CreateDistrictPrefab(family),family.Id,"DeepFractureRoomVisuals",output,generated,manifest);
+        ExportObject(Magenheim.Runtime.DeepFractureRoomVisuals.CreatePassagePrefab(),"deep-fracture-passage","DeepFractureRoomVisuals",output,generated,manifest);
+        ExportObject(Magenheim.Runtime.DeepFractureRoomVisuals.CreateTraversalNodePrefab(),"deep-fracture-traversal","DeepFractureRoomVisuals",output,generated,manifest);
         var existingObjs = Directory.EnumerateFiles(existing, "*.obj", SearchOption.AllDirectories).Count();
         File.WriteAllLines(Path.Combine(output, "MODEL_MANIFEST.tsv"),
             new[] { "kind\tmodel_id\tsource\tmesh_parts\tfile" }.Concat(manifest));
@@ -97,9 +114,10 @@ internal static class Program
             var host = CreateHost(type.Name + "." + label);
             var args = BuildArguments(apply, host, second);
             var result = apply.Invoke(null, args);
-            var root = result as GameObject ?? host;
+            var root = host;
             var path = Path.Combine(generated, Safe(id) + ".obj");
             var meshes = ExportObj(root, path);
+            SceneCapture.Write(root,Path.ChangeExtension(path,".scene.json"));
             if (meshes == 0) throw new InvalidOperationException("Apply produced no MeshFilter geometry.");
             manifest.Add($"PROCEDURAL\t{id}\t{type.Name}\t{meshes}\t{Relative(output, path)}");
         }
@@ -109,6 +127,10 @@ internal static class Program
         }
     }
 
+    private static void ExportObject(GameObject root,string id,string source,string output,string generated,List<string> manifest) {
+        var path=Path.Combine(generated,id+".obj");var count=ExportObj(root,path);SceneCapture.Write(root,Path.ChangeExtension(path,".scene.json"));
+        manifest.Add($"BAKED\t{id}\t{source}\t{count}\t{Relative(output,path)}");
+    }
     private static object?[] BuildArguments(MethodInfo method, GameObject host, object? second)
     {
         var p = method.GetParameters();
@@ -129,6 +151,7 @@ internal static class Program
     private static GameObject CreateHost(string name)
     {
         var host = new GameObject(name);
+        host.AddComponent<Character>(); host.AddComponent<ZNetView>();
         host.AddComponent<MeshRenderer>().sharedMaterial = new Material { name = "export-source", color = Color.white };
 
         var attach = new GameObject("attach");
@@ -177,7 +200,7 @@ internal static class Program
     private static void CopyExistingObjAssets(string output)
     {
         var repo = FindRepoRoot();
-        foreach (var source in Directory.EnumerateFiles(Path.Combine(repo, "assets"), "*.*", SearchOption.AllDirectories)
+        foreach (var source in Directory.EnumerateFiles(Path.Combine(repo, "assets", "earth"), "*.*", SearchOption.AllDirectories)
                      .Where(p => p.EndsWith(".obj", StringComparison.OrdinalIgnoreCase) || p.EndsWith(".mtl", StringComparison.OrdinalIgnoreCase)))
         {
             var relative = Path.GetRelativePath(Path.Combine(repo, "assets"), source);
