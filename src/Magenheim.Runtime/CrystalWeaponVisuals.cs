@@ -236,7 +236,8 @@ internal static class CrystalWeaponVisuals
 
     private static Material Material(Material source, string suffix, Color color, float metallic, float glossiness, float emission = 0f)
     {
-        var material = new Material(source) { name = "magenheim.crystal-weapon." + suffix, mainTexture = Texture2D.whiteTexture };
+        var material = new Material(source) { name = "magenheim.crystal-weapon." + suffix };
+        GeneratedSurfaceTextures.Apply(material, suffix);
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", glossiness);
@@ -285,7 +286,7 @@ internal static class CrystalWeaponVisuals
         for (var i = 0; i < sides; i++)
         {
             var n = (i + 1) % sides;
-            triangles.AddRange(new[] { i,n,sides+i, n,sides+n,sides+i, bottom,n,i, top,sides+i,sides+n });
+            triangles.AddRange(new[] { i,sides+i,n, n,sides+i,sides+n, bottom,i,n, top,sides+n,sides+i });
         }
         var mesh = new Mesh { name = "magenheim.crystal-weapon.cylinder." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
         mesh.RecalculateNormals(); mesh.RecalculateBounds();
@@ -311,7 +312,7 @@ internal static class CrystalWeaponVisuals
         for (var i = 0; i < sides; i++)
         {
             var n = (i + 1) % sides;
-            triangles.AddRange(new[] { bottom,n,i, i,n,sides+i, n,sides+n,sides+i, sides+i,sides+n,top });
+            triangles.AddRange(new[] { bottom,i,n, i,sides+i,n, n,sides+i,sides+n, top,sides+n,sides+i });
         }
         var mesh = new Mesh { name = "magenheim.crystal-weapon.prism." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
         mesh.RecalculateNormals(); mesh.RecalculateBounds();
