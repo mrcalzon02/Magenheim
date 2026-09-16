@@ -1000,11 +1000,43 @@ internal static class SocketOperationRpc
 
     private static void TrimClientOperations()
     {
-        while (ClientOperations.Count >= MaximumTrackedClientOperations && ClientOperationOrder.Count > 0)
+        var currentGeneration = _authority?.ClientSessionGeneration ?? 0L;
+        if (currentGeneration > 0L)
+        {
+            var staleKeys = ClientOperations
+                .Where(pair => pair.Value.SessionGeneration != currentGeneration)
+                .Select(pair => pair.Key)
+                .ToArray();
+            foreach (var key in staleKeys)
+                ClientOperations.Remove(key);
+
+            if (staleKeys.Length > 0)
+                _log?.LogDebug($"Retired {staleKeys.Length} stale Magenheim socket client operation record(s) from prior authority sessions.");
+        }
+
+        // Rebuild the queue from records that still exist. Keep unapplied live operations in
+        // rotation instead of dequeuing them permanently while they are still awaiting a reply.
+        var orderedLiveKeys = ClientOperationOrder
+            .Where(ClientOperations.ContainsKey)
+            .ToArray();
+        ClientOperationOrder.Clear();
+        foreach (var key in orderedLiveKeys)
+            ClientOperationOrder.Enqueue(key);
+
+        var scanCount = ClientOperationOrder.Count;
+        while (ClientOperations.Count >= MaximumTrackedClientOperations &&
+               scanCount-- > 0 &&
+               ClientOperationOrder.Count > 0)
         {
             var key = ClientOperationOrder.Dequeue();
             if (ClientOperations.TryGetValue(key, out var record) && record.Applied)
+            {
                 ClientOperations.Remove(key);
+                continue;
+            }
+
+            if (ClientOperations.ContainsKey(key))
+                ClientOperationOrder.Enqueue(key);
         }
     }
 
