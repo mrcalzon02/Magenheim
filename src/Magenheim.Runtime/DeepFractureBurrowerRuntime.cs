@@ -5,7 +5,7 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Turns the Seeker-derived Burrower into an authored ambush chassis. The vanilla host still owns
-/// terrestrial pursuit/combat after emergence; this component owns only the buried staging state.
+/// terrestrial pursuit/combat after emergence; this component owns buried staging and presentation.
 /// </summary>
 internal sealed class DeepFractureBurrowerRuntime : MonoBehaviour
 {
@@ -20,6 +20,7 @@ internal sealed class DeepFractureBurrowerRuntime : MonoBehaviour
     private float _rise;
     private bool _emerging;
     private bool _emerged;
+    private bool _burstPlayed;
 
     private void Awake()
     {
@@ -43,6 +44,7 @@ internal sealed class DeepFractureBurrowerRuntime : MonoBehaviour
                 if (player is null || player.IsDead()) continue;
                 if ((player.transform.position - _surfacePosition).sqrMagnitude > TriggerRadius * TriggerRadius) continue;
                 _emerging = true;
+                PlayEmergenceBurst();
                 SetStaged(false);
                 break;
             }
@@ -54,6 +56,43 @@ internal sealed class DeepFractureBurrowerRuntime : MonoBehaviour
         if (_rise < 1f) return;
         transform.position = _surfacePosition;
         _emerged = true;
+    }
+
+    private void PlayEmergenceBurst()
+    {
+        if (_burstPlayed) return;
+        _burstPlayed = true;
+
+        var root = new GameObject("Magenheim_BurrowerEmergence");
+        root.transform.position = _surfacePosition + Vector3.up * .12f;
+
+        for (var i = 0; i < 9; i++)
+        {
+            var angle = i * (360f / 9f) * Mathf.Deg2Rad;
+            var shard = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            shard.name = "GroundShard";
+            shard.transform.SetParent(root.transform, false);
+            shard.transform.localPosition = new Vector3(Mathf.Cos(angle) * 1.05f, .08f, Mathf.Sin(angle) * 1.05f);
+            shard.transform.localRotation = Quaternion.Euler(UnityEngine.Random.Range(-22f, 22f), -angle * Mathf.Rad2Deg, UnityEngine.Random.Range(-18f, 18f));
+            shard.transform.localScale = new Vector3(.18f, UnityEngine.Random.Range(.35f, .72f), .28f);
+            var collider = shard.GetComponent<Collider>();
+            if (collider is not null) Destroy(collider);
+            var body = shard.AddComponent<Rigidbody>();
+            body.mass = .12f;
+            body.velocity = new Vector3(Mathf.Cos(angle) * 2.8f, UnityEngine.Random.Range(3.2f, 5.1f), Mathf.Sin(angle) * 2.8f);
+            body.angularVelocity = UnityEngine.Random.insideUnitSphere * 7f;
+            Destroy(shard, 1.25f);
+        }
+
+        var disturbance = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        disturbance.name = "GroundDisturbance";
+        disturbance.transform.SetParent(root.transform, false);
+        disturbance.transform.localPosition = new Vector3(0f, .025f, 0f);
+        disturbance.transform.localScale = new Vector3(1.75f, .025f, 1.75f);
+        var disturbanceCollider = disturbance.GetComponent<Collider>();
+        if (disturbanceCollider is not null) Destroy(disturbanceCollider);
+        Destroy(disturbance, .45f);
+        Destroy(root, 1.4f);
     }
 
     private void SetStaged(bool staged)
