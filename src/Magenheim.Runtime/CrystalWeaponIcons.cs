@@ -7,7 +7,9 @@ namespace Magenheim.Runtime;
 /// <summary>In-memory Hammer/inventory icons for the physical crystal weapon family.</summary>
 internal static class CrystalWeaponIcons
 {
-    private const int Size = 128;
+    private const int Size = 256;
+    private const int DesignSize = 128;
+    private const int Scale = Size / DesignSize;
     private static readonly Dictionary<string, Sprite> Cache = new();
 
     internal static Sprite Icon(string modelId)
@@ -114,7 +116,7 @@ internal static class CrystalWeaponIcons
         texture.SetPixels(pixels);
         texture.Apply(false, false);
 
-        var sprite = Sprite.Create(texture, new Rect(0f, 0f, Size, Size), new Vector2(.5f, .5f), 128f);
+        var sprite = Sprite.Create(texture, new Rect(0f, 0f, Size, Size), new Vector2(.5f, .5f), 256f);
         sprite.name = "magenheim." + modelId + ".icon";
         Cache.Add(modelId, sprite);
         return sprite;
@@ -148,8 +150,8 @@ internal static class CrystalWeaponIcons
 
     private static void Rect(Color[] pixels, int x0, int y0, int x1, int y1, Color color)
     {
-        x0 = Mathf.Clamp(x0, 0, Size - 1); x1 = Mathf.Clamp(x1, 0, Size - 1);
-        y0 = Mathf.Clamp(y0, 0, Size - 1); y1 = Mathf.Clamp(y1, 0, Size - 1);
+        x0 = Mathf.Clamp(x0 * Scale, 0, Size - 1); x1 = Mathf.Clamp(x1 * Scale + (Scale - 1), 0, Size - 1);
+        y0 = Mathf.Clamp(y0 * Scale, 0, Size - 1); y1 = Mathf.Clamp(y1 * Scale + (Scale - 1), 0, Size - 1);
         for (var y = y0; y <= y1; y++)
             for (var x = x0; x <= x1; x++)
                 Blend(pixels, x, y, color);
@@ -157,6 +159,9 @@ internal static class CrystalWeaponIcons
 
     private static void DrawDiamond(Color[] pixels, int cx, int cy, int radius, Color color)
     {
+        cx *= Scale;
+        cy *= Scale;
+        radius *= Scale;
         for (var y = cy - radius; y <= cy + radius; y++)
         {
             var dy = Math.Abs(y - cy);
