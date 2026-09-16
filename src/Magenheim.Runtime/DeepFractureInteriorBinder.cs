@@ -30,18 +30,18 @@ internal sealed class DeepFractureInteriorRuntime : MonoBehaviour
     {
         if (_built) return;
         var authority = GetComponent<DeepFractureEncounterAuthority>() ?? throw new InvalidOperationException("Deep Fracture interior has no persistent encounter authority.");
-        var seed = StableLocationSeed(transform.position);var expedition = DeepFractureExpeditionPlanner.Build(seed);var districts = BuildDistricts(expedition.Interior, authority);DeepFracturePassageAssembler.Assemble(transform, expedition.Interior);BuildTraversalLinks(expedition.Interior);
+        var seed = StableLocationSeed(transform.position);var expedition = DeepFractureExpeditionPlanner.Build(seed);var districts = BuildDistricts(expedition.Interior, authority, seed);DeepFracturePassageAssembler.Assemble(transform, expedition.Interior);BuildTraversalLinks(expedition.Interior);
         var descent = districts.TryGetValue("DF-01", out var descentDistrict) ? descentDistrict : throw new InvalidOperationException("Deep Fracture expedition did not place required DF-01 Fracture Descent district.");
         DeepFractureSurfaceTravel.Bind(transform, descent);_built = true;
     }
 
-    private Dictionary<string, GameObject> BuildDistricts(DeepFractureInteriorBlueprint blueprint, DeepFractureEncounterAuthority authority)
+    private Dictionary<string, GameObject> BuildDistricts(DeepFractureInteriorBlueprint blueprint, DeepFractureEncounterAuthority authority, int locationSeed)
     {
         var instances = new Dictionary<string, GameObject>(StringComparer.Ordinal);
         foreach (var placement in blueprint.Modules.OrderBy(module => module.SequenceIndex))
         {
             var source = DeepFractureRoomRegistrar.ResolveDistrict(placement.PieceFamilyId);var instance = Instantiate(source.gameObject, transform, false);instance.name = $"{DeepFractureRoomVisuals.RoomPrefabName(placement.PieceFamilyId)}_{placement.ModuleInstanceId}";instance.transform.localPosition = ToVector3(placement.Center);instance.transform.localRotation = Quaternion.Euler(0f, placement.YawDegrees, 0f);instance.SetActive(true);
-            var room = instance.GetComponent<Room>() ?? throw new InvalidOperationException($"Instantiated Deep Fracture district '{instance.name}' has no Room component.");DeepFractureRoomVisuals.ApplyElementalState(room, placement.ElementalStates);DeepFractureEncounterSpawner.Populate(instance, placement, authority);
+            var room = instance.GetComponent<Room>() ?? throw new InvalidOperationException($"Instantiated Deep Fracture district '{instance.name}' has no Room component.");DeepFractureRoomVisuals.ApplyElementalState(room, placement.ElementalStates);DeepFractureEncounterSpawner.Populate(instance, placement, authority, locationSeed);
             if (instances.ContainsKey(placement.PieceFamilyId)) throw new InvalidOperationException($"Deep Fracture expedition placed duplicate district family '{placement.PieceFamilyId}', so a unique travel anchor cannot be selected.");instances.Add(placement.PieceFamilyId, instance);
         }
         return instances;
