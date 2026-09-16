@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Magenheim.Core;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>Original geometry for the floating iron-banded Crystal Sentinel and its ammo indicators.</summary>
+/// <summary>Original geometry for the floating iron-banded Crystal Sentinel and its unified munition indicator.</summary>
 internal static class CrystalSentinelVisuals
 {
+    private static readonly Color MunitionTint = new(.72f, .91f, 1f, 1f);
     private static readonly Mesh BoxMesh = CreateBoxMesh();
     private static readonly Dictionary<int, Mesh> CylinderMeshes = new();
     private static readonly Dictionary<int, Mesh> PrismMeshes = new();
@@ -75,22 +75,20 @@ internal static class CrystalSentinelVisuals
         return root;
     }
 
-    internal static GameObject CreateAmmoVisual(Turret turret, ElementalAlignment element, Material source)
+    internal static GameObject CreateAmmoVisual(Turret turret, Material source)
     {
         if (turret is null) throw new ArgumentNullException(nameof(turret));
-        var root = new GameObject("magenheim.sentinel.ammo." + element.ToString().ToLowerInvariant()) { layer = turret.gameObject.layer };
+        var root = new GameObject("magenheim.sentinel.ammo.crystal") { layer = turret.gameObject.layer };
         root.transform.SetParent(turret.m_turretBody ? turret.m_turretBody.transform : turret.transform, false);
         root.transform.localPosition = new Vector3(0f, .90f, -.52f);
-        var tint = ElementVisualPalette.Tint(element);
-        var material = Material(source, "ammo-crystal-" + element.ToString().ToLowerInvariant(), tint, .02f, .90f, .60f);
-        Prism(root, "loaded-rough-crystal", Vector3.zero, .13f, .42f, 7, material, new Vector3(90f, 0f, 0f));
+        var material = Material(source, "ammo-crystal", MunitionTint, .02f, .90f, .60f);
+        Prism(root, "loaded-crystal-munition", Vector3.zero, .13f, .42f, 7, material, new Vector3(90f, 0f, 0f));
         root.SetActive(false);
         return root;
     }
 
-    internal static void TintProjectile(GameObject projectile, ElementalAlignment element)
+    internal static void TintProjectile(GameObject projectile)
     {
-        var tint = ElementVisualPalette.Tint(element);
         foreach (var renderer in projectile.GetComponentsInChildren<Renderer>(true))
         {
             var sources = renderer.sharedMaterials;
@@ -99,12 +97,12 @@ internal static class CrystalSentinelVisuals
             {
                 var source = sources[i];
                 if (!source) continue;
-                var material = new Material(source) { name = $"magenheim.sentinel.projectile.{element}.{i}" };
+                var material = new Material(source) { name = $"magenheim.sentinel.projectile.crystal.{i}" };
                 GeneratedSurfaceTextures.Apply(material, "crystal-projectile");
-                if (material.HasProperty("_Color")) material.SetColor("_Color", tint);
+                if (material.HasProperty("_Color")) material.SetColor("_Color", MunitionTint);
                 if (material.HasProperty("_EmissionColor"))
                 {
-                    material.SetColor("_EmissionColor", tint * 1.25f);
+                    material.SetColor("_EmissionColor", MunitionTint * 1.25f);
                     material.EnableKeyword("_EMISSION");
                 }
                 materials[i] = material;
@@ -114,7 +112,7 @@ internal static class CrystalSentinelVisuals
         foreach (var particles in projectile.GetComponentsInChildren<ParticleSystem>(true))
         {
             var main = particles.main;
-            main.startColor = new ParticleSystem.MinMaxGradient(tint);
+            main.startColor = new ParticleSystem.MinMaxGradient(MunitionTint);
         }
     }
 
