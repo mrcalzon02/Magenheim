@@ -75,6 +75,8 @@ internal sealed class DefinitionAuthoritySynchronizer
 
     internal DefinitionAuthorityResult ClientAuthorityResult { get; private set; } = DefinitionAuthorityResult.Pending;
 
+    internal long ClientSessionGeneration { get; private set; }
+
     internal bool IsClientMutationAuthorized => ClientAuthorityResult.MutationAuthorized;
 
     internal bool IsPeerMutationAuthorized(long peerId) =>
@@ -104,6 +106,7 @@ internal sealed class DefinitionAuthoritySynchronizer
 
         var package = new ZPackage();
         package.Write(ServerAuthorityMessage);
+        package.Write(nextGeneration);
         WriteDescriptor(package, _localAuthority);
         return package;
     }
@@ -133,6 +136,7 @@ internal sealed class DefinitionAuthoritySynchronizer
     private IEnumerator ReceiveServerAuthority(long sender, ZPackage package)
     {
         DefinitionAuthorityDescriptor? serverAuthority = null;
+        var serverSessionGeneration = 0L;
 
         try
         {
@@ -140,11 +144,17 @@ internal sealed class DefinitionAuthoritySynchronizer
             if (messageType != ServerAuthorityMessage)
                 throw new InvalidOperationException($"Unexpected gameplay authority message type {messageType} on client.");
 
+            serverSessionGeneration = package.ReadLong();
+            if (serverSessionGeneration <= 0L)
+                throw new InvalidOperationException($"Server supplied invalid gameplay session generation {serverSessionGeneration}.");
+
             serverAuthority = ReadDescriptor(package);
             ClientAuthorityResult = DefinitionAuthorityHandshake.Compare(_localAuthority, serverAuthority);
+            ClientSessionGeneration = ClientAuthorityResult.MutationAuthorized ? serverSessionGeneration : 0L;
         }
         catch (Exception exception)
         {
+            ClientSessionGeneration = 0L;
             ClientAuthorityResult = new DefinitionAuthorityResult(
                 DefinitionAuthorityStatus.InvalidDescriptor,
                 false,
@@ -152,14 +162,15 @@ internal sealed class DefinitionAuthoritySynchronizer
         }
 
         if (ClientAuthorityResult.MutationAuthorized)
-            _logger.LogInfo(ClientAuthorityResult.Diagnostic);
+            _logger.LogInfo($"{ClientAuthorityResult.Diagnostic} Session generation {ClientSessionGeneration}.");
         else
             _logger.LogError($"Magenheim gameplay mutation disabled for this connection. {ClientAuthorityResult.Diagnostic}");
 
-        if (serverAuthority is not null)
+        if (serverAuthority is not null && serverSessionGeneration > 0L)
         {
             var acknowledgement = new ZPackage();
             acknowledgement.Write(ClientAcknowledgementMessage);
+            acknowledgement.Write(serverSessionGeneration);
             WriteDescriptor(acknowledgement, serverAuthority);
             WriteDescriptor(acknowledgement, _localAuthority);
             _rpc.SendPackage(sender, acknowledgement);
@@ -177,20 +188,38 @@ internal sealed class DefinitionAuthoritySynchronizer
             if (messageType != ClientAcknowledgementMessage)
                 throw new InvalidOperationException($"Unexpected gameplay authority message type {messageType} on server.");
 
-            var echoedServerAuthority = ReadDescriptor(package);
-            var clientAuthority = ReadDescriptor(package);
-
-            var echoResult = DefinitionAuthorityHandshake.Compare(_localAuthority, echoedServerAuthority);
-            if (!echoResult.MutationAuthorized)
+            var acknowledgedGeneration = package.ReadLong();
+            if (!_peerSessionGenerations.TryGetValue(sender, out var currentGeneration))
             {
                 result = new DefinitionAuthorityResult(
-                    echoResult.Status,
+                    DefinitionAuthorityStatus.InvalidDescriptor,
                     false,
-                    $"Client did not acknowledge this server's gameplay authority. {echoResult.Diagnostic}");
+                    $"Peer {sender} acknowledged gameplay authority without an active server session generation.");
+            }
+            else if (acknowledgedGeneration != currentGeneration)
+            {
+                result = new DefinitionAuthorityResult(
+                    DefinitionAuthorityStatus.InvalidDescriptor,
+                    false,
+                    $"Peer {sender} acknowledged stale gameplay session {acknowledgedGeneration}; current session is {currentGeneration}.");
             }
             else
             {
-                result = DefinitionAuthorityHandshake.Compare(_localAuthority, clientAuthority);
+                var echoedServerAuthority = ReadDescriptor(package);
+                var clientAuthority = ReadDescriptor(package);
+
+                var echoResult = DefinitionAuthorityHandshake.Compare(_localAuthority, echoedServerAuthority);
+                if (!echoResult.MutationAuthorized)
+                {
+                    result = new DefinitionAuthorityResult(
+                        echoResult.Status,
+                        false,
+                        $"Client did not acknowledge this server's gameplay authority. {echoResult.Diagnostic}");
+                }
+                else
+                {
+                    result = DefinitionAuthorityHandshake.Compare(_localAuthority, clientAuthority);
+                }
             }
         }
         catch (Exception exception)
