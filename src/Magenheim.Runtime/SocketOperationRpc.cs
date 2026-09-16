@@ -103,6 +103,12 @@ internal static class SocketOperationRpc
             diagnostic = $"Server definition authority has not admitted Magenheim mutation. {_authority.ClientAuthorityResult.Diagnostic}";
             return false;
         }
+        var generation = _authority.ClientSessionGeneration;
+        if (generation <= 0L)
+        {
+            diagnostic = "Server gameplay authority has no active session generation.";
+            return false;
+        }
         if (!TryGetCurrentMagenheimStation(player, out _))
         {
             diagnostic = "Use a Geologist's Workstation for socket operations.";
@@ -156,12 +162,13 @@ internal static class SocketOperationRpc
             Mathf.FloorToInt(player.GetSkillLevel(EarthContentRegistrar.CrystalShapingSkill)),
             0,
             100);
-        var record = new ClientOperationRecord(kind, equipment, crystalItem, state, crystal, crystalIndex);
+        var record = new ClientOperationRecord(kind, equipment, crystalItem, state, crystal, crystalIndex, generation);
         ClientOperations.Add(operationId, record);
         ClientOperationOrder.Enqueue(operationId);
 
         var package = new ZPackage();
         package.Write(RequestMessage);
+        package.Write(generation);
         package.Write(operationId);
         package.Write((int)kind);
         WriteDescriptor(package, descriptor);
@@ -209,6 +216,7 @@ internal static class SocketOperationRpc
         if (_rpc is null || _services is null || _authority is null)
             throw new InvalidOperationException("Socket RPC server state is not configured.");
 
+        var suppliedGeneration = package.ReadLong();
         var operationId = package.ReadString();
         var rawKind = package.ReadInt();
         var suppliedDescriptor = ReadDescriptor(package);
@@ -240,6 +248,12 @@ internal static class SocketOperationRpc
         if (generation <= 0)
         {
             SendRejection(sender, operationId, kind, "Peer has no active Magenheim authority session.");
+            return;
+        }
+        if (suppliedGeneration != generation)
+        {
+            SendRejection(sender, operationId, kind,
+                $"Socket request belongs to stale gameplay session {suppliedGeneration}; current session is {generation}.");
             return;
         }
         if (!_authority.IsPeerMutationAuthorized(sender))
@@ -461,6 +475,7 @@ internal static class SocketOperationRpc
             if (messageType != ResponseMessage)
                 throw new InvalidOperationException($"Unexpected socket response message type {messageType}.");
 
+            var responseGeneration = package.ReadLong();
             var operationId = package.ReadString();
             var rawKind = package.ReadInt();
             var authorized = package.ReadBool();
@@ -481,9 +496,22 @@ internal static class SocketOperationRpc
                 _log?.LogWarning($"Ignoring unrecognized Magenheim socket response '{operationId}'.");
                 yield break;
             }
+            if (_authority is null || !_authority.IsClientMutationAuthorized ||
+                responseGeneration <= 0L ||
+                pending.SessionGeneration != responseGeneration ||
+                _authority.ClientSessionGeneration != responseGeneration)
+            {
+                ClientOperations.Remove(operationId);
+                _log?.LogWarning(
+                    $"Ignoring stale Magenheim socket response '{operationId}' for session {responseGeneration}; " +
+                    $"pending session {pending.SessionGeneration}, current session {_authority?.ClientSessionGeneration ?? 0L}.");
+                Player.m_localPlayer?.Message(MessageHud.MessageType.Center,
+                    "Magenheim discarded a socket response from an older network session without mutating inventory.");
+                yield break;
+            }
             if (pending.Kind != kind)
             {
-                SendAcknowledgement(operationId, kind, false);
+                SendAcknowledgement(responseGeneration, operationId, kind, false);
                 ClientOperations.Remove(operationId);
                 Player.m_localPlayer?.Message(MessageHud.MessageType.Center,
                     "Magenheim rejected a mismatched socket response without mutating inventory.");
@@ -497,21 +525,21 @@ internal static class SocketOperationRpc
             }
             if (pending.Applied)
             {
-                SendAcknowledgement(operationId, kind, true);
+                SendAcknowledgement(responseGeneration, operationId, kind, true);
                 yield break;
             }
 
             var player = Player.m_localPlayer;
             if (player is null)
             {
-                SendAcknowledgement(operationId, kind, false);
+                SendAcknowledgement(responseGeneration, operationId, kind, false);
                 ClientOperations.Remove(operationId);
                 yield break;
             }
             var inventory = player.GetInventory();
             if (!inventory.ContainsItem(pending.Equipment))
             {
-                SendAcknowledgement(operationId, kind, false);
+                SendAcknowledgement(responseGeneration, operationId, kind, false);
                 ClientOperations.Remove(operationId);
                 player.Message(MessageHud.MessageType.Center,
                     "Selected equipment changed before the server response; operation was cancelled without mutation.");
@@ -521,7 +549,7 @@ internal static class SocketOperationRpc
             if (!StatesMatch(pending.OriginalState, originalState) ||
                 !SocketStatesStillMatch(pending.Equipment, originalState, out staleReason))
             {
-                SendAcknowledgement(operationId, kind, false);
+                SendAcknowledgement(responseGeneration, operationId, kind, false);
                 ClientOperations.Remove(operationId);
                 player.Message(MessageHud.MessageType.Center,
                     string.IsNullOrWhiteSpace(staleReason)
@@ -536,7 +564,7 @@ internal static class SocketOperationRpc
                 output = PrefabManager.Instance.GetPrefab(outputPrefab);
                 if (!output || outputAmount <= 0 || !inventory.CanAddItem(output, outputAmount))
                 {
-                    SendAcknowledgement(operationId, kind, false);
+                    SendAcknowledgement(responseGeneration, operationId, kind, false);
                     ClientOperations.Remove(operationId);
                     player.Message(MessageHud.MessageType.Center,
                         output ? "Not enough inventory capacity for extraction output; socket state was not changed."
@@ -546,7 +574,7 @@ internal static class SocketOperationRpc
             }
             else if (!string.IsNullOrEmpty(outputPrefab) || outputAmount != 0)
             {
-                SendAcknowledgement(operationId, kind, false);
+                SendAcknowledgement(responseGeneration, operationId, kind, false);
                 ClientOperations.Remove(operationId);
                 yield break;
             }
@@ -560,7 +588,7 @@ internal static class SocketOperationRpc
                     !TryParseCrystal(pending.CrystalItem, out var currentCrystal) ||
                     currentCrystal != pending.Crystal.Value)
                 {
-                    SendAcknowledgement(operationId, kind, false);
+                    SendAcknowledgement(responseGeneration, operationId, kind, false);
                     ClientOperations.Remove(operationId);
                     player.Message(MessageHud.MessageType.Center,
                         "Selected crystal changed before the server response; installation was cancelled without mutation.");
@@ -569,7 +597,7 @@ internal static class SocketOperationRpc
             }
             else if (consumeCrystalCount != 0)
             {
-                SendAcknowledgement(operationId, kind, false);
+                SendAcknowledgement(responseGeneration, operationId, kind, false);
                 ClientOperations.Remove(operationId);
                 yield break;
             }
@@ -592,14 +620,14 @@ internal static class SocketOperationRpc
                 if (experience > 0f)
                     player.RaiseSkill(EarthContentRegistrar.CrystalShapingSkill, experience);
                 player.Message(MessageHud.MessageType.Center, diagnostic);
-                SendAcknowledgement(operationId, kind, true);
+                SendAcknowledgement(responseGeneration, operationId, kind, true);
             }
             catch (Exception exception)
             {
                 snapshot.Restore(inventory);
                 RestoreMagenheimMetadata(pending.Equipment, oldMetadata);
                 NotifyInventoryChanged(inventory);
-                SendAcknowledgement(operationId, kind, false);
+                SendAcknowledgement(responseGeneration, operationId, kind, false);
                 ClientOperations.Remove(operationId);
                 player.Message(MessageHud.MessageType.Center,
                     $"Socket operation rolled back: {exception.Message}");
@@ -619,13 +647,14 @@ internal static class SocketOperationRpc
     {
         if (_services is null || _authority is null) return;
 
+        var acknowledgedGeneration = package.ReadLong();
         var operationId = package.ReadString();
         var rawKind = package.ReadInt();
         var applied = package.ReadBool();
         if (!Enum.IsDefined(typeof(RemoteSocketKind), rawKind)) return;
         var kind = (RemoteSocketKind)rawKind;
         var generation = _authority.GetPeerSessionGeneration(sender);
-        if (generation <= 0) return;
+        if (generation <= 0 || acknowledgedGeneration != generation) return;
 
         var key = new RemoteOperationKey(sender, generation, operationId);
         if (!ServerOperations.TryGetValue(key, out var record) || record.Kind != kind) return;
@@ -657,9 +686,12 @@ internal static class SocketOperationRpc
 
     private static void SendResponse(long peerId, string operationId, ServerOperationRecord record)
     {
-        if (_rpc is null) return;
+        if (_rpc is null || _authority is null) return;
+        var generation = _authority.GetPeerSessionGeneration(peerId);
+        if (generation <= 0L) return;
         var package = new ZPackage();
         package.Write(ResponseMessage);
+        package.Write(generation);
         package.Write(operationId ?? string.Empty);
         package.Write((int)record.Kind);
         package.Write(record.Authorized);
@@ -681,11 +713,12 @@ internal static class SocketOperationRpc
         SendResponse(peerId, operationId,
             ServerOperationRecord.Rejected(kind, diagnostic));
 
-    private static void SendAcknowledgement(string operationId, RemoteSocketKind kind, bool applied)
+    private static void SendAcknowledgement(long generation, string operationId, RemoteSocketKind kind, bool applied)
     {
-        if (_rpc is null || ZRoutedRpc.instance is null) return;
+        if (_rpc is null || ZRoutedRpc.instance is null || generation <= 0L) return;
         var package = new ZPackage();
         package.Write(AcknowledgementMessage);
+        package.Write(generation);
         package.Write(operationId);
         package.Write((int)kind);
         package.Write(applied);
@@ -1020,7 +1053,8 @@ internal static class SocketOperationRpc
             ItemDrop.ItemData? crystalItem,
             SocketState originalState,
             Crystal? crystal,
-            int crystalIndex)
+            int crystalIndex,
+            long sessionGeneration)
         {
             Kind = kind;
             Equipment = equipment;
@@ -1028,6 +1062,7 @@ internal static class SocketOperationRpc
             OriginalState = originalState;
             Crystal = crystal;
             CrystalIndex = crystalIndex;
+            SessionGeneration = sessionGeneration;
         }
 
         internal RemoteSocketKind Kind { get; }
@@ -1036,6 +1071,7 @@ internal static class SocketOperationRpc
         internal SocketState OriginalState { get; }
         internal Crystal? Crystal { get; }
         internal int CrystalIndex { get; }
+        internal long SessionGeneration { get; }
         internal bool Applied { get; set; }
     }
 
