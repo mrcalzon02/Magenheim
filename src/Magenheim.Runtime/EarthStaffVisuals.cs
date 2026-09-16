@@ -1,116 +1,112 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>Owned Magenheim geometry for the four Earth staff tiers.</summary>
+/// <summary>Valheim-style owned silhouettes for the four Earth staff tiers.</summary>
 internal static class EarthStaffVisuals
 {
-    private static readonly Mesh BoxMesh = CreateBoxMesh();
-    private static readonly Dictionary<int, Mesh> Cylinders = new();
-    private static readonly Dictionary<int, Mesh> Prisms = new();
-
     internal static void Apply(GameObject prefab, string prefabName)
     {
-        if (!prefab) throw new ArgumentNullException(nameof(prefab));
-        var original = prefab.GetComponentsInChildren<Renderer>(true);
-        var source = original.Select(r => r.sharedMaterial).FirstOrDefault(m => m)
-            ?? throw new InvalidOperationException($"No material source exists on Earth staff prefab '{prefab.name}'.");
-        var attach = prefab.transform.Find("attach") ?? prefab.transform;
-        var root = new GameObject("magenheim." + prefabName + ".visual") { layer = prefab.layer };
-        root.transform.SetParent(attach, false);
-        root.transform.localPosition = Vector3.zero;
-        root.transform.localRotation = Quaternion.identity;
-        root.transform.localScale = Vector3.one;
-
-        var coreWood = Mat(source,"core-wood",new Color(.26f,.18f,.10f,1f),0f,.10f);
-        var elder = Mat(source,"elder-wood",new Color(.18f,.13f,.10f,1f),0f,.11f);
-        var iron = Mat(source,"iron",new Color(.34f,.35f,.34f,1f),.56f,.23f);
-        var blackMetal = Mat(source,"blackmetal",new Color(.12f,.13f,.12f,1f),.76f,.30f);
-        var stone = Mat(source,"stone",new Color(.39f,.34f,.27f,1f),.02f,.08f);
-        var deepStone = Mat(source,"deep-stone",new Color(.20f,.18f,.16f,1f),.02f,.07f);
-        var earth = Mat(source,"earth-crystal",new Color(.72f,.52f,.25f,1f),.03f,.62f,.22f);
-        var earthBright = Mat(source,"earth-bright-crystal",new Color(.92f,.72f,.34f,1f),.02f,.72f,.34f);
+        var context=ValheimStaffVisualBuilder.Begin(prefab,prefabName);
+        var source=context.SourceMaterial;
+        var coreWood=ValheimStaffVisualBuilder.Surface(source,"earth-staff","core-wood",new Color(.26f,.18f,.10f,1f),0f,.10f);
+        var elder=ValheimStaffVisualBuilder.Surface(source,"earth-staff","elder-wood",new Color(.18f,.13f,.10f,1f),0f,.11f);
+        var leather=ValheimStaffVisualBuilder.Surface(source,"earth-staff","leather-wrap",new Color(.16f,.11f,.08f,1f),.01f,.09f);
+        var iron=ValheimStaffVisualBuilder.Surface(source,"earth-staff","iron",new Color(.34f,.35f,.34f,1f),.56f,.23f);
+        var black=ValheimStaffVisualBuilder.Surface(source,"earth-staff","blackmetal",new Color(.12f,.13f,.12f,1f),.76f,.30f);
+        var stone=ValheimStaffVisualBuilder.Surface(source,"earth-staff","stone",new Color(.39f,.34f,.27f,1f),.02f,.08f);
+        var deep=ValheimStaffVisualBuilder.Surface(source,"earth-staff","deep-stone",new Color(.20f,.18f,.16f,1f),.02f,.07f);
+        var earth=ValheimStaffVisualBuilder.Surface(source,"earth-staff","earth-crystal",new Color(.72f,.52f,.25f,1f),.03f,.62f,.22f);
+        var bright=ValheimStaffVisualBuilder.Surface(source,"earth-staff","earth-bright-crystal",new Color(.92f,.72f,.34f,1f),.02f,.72f,.34f);
 
         switch(prefabName)
         {
-            case "Magenheim_Staff_Earth_Simple": BuildSimple(root,coreWood,iron,stone,earth); break;
-            case "Magenheim_Staff_Earth_Crystal": BuildCrystal(root,elder,iron,stone,earthBright); break;
-            case "Magenheim_Staff_Earth_Advanced": BuildAdvanced(root,elder,blackMetal,stone,deepStone,earth); break;
-            case "Magenheim_Staff_Earth_Master": BuildMaster(root,elder,blackMetal,deepStone,earthBright); break;
+            case "Magenheim_Staff_Earth_Simple": BuildSimple(context.Root,coreWood,leather,iron,stone,earth); break;
+            case "Magenheim_Staff_Earth_Crystal": BuildCrystal(context.Root,elder,leather,iron,stone,bright); break;
+            case "Magenheim_Staff_Earth_Advanced": BuildAdvanced(context.Root,elder,leather,black,stone,deep,earth); break;
+            case "Magenheim_Staff_Earth_Master": BuildMaster(context.Root,elder,leather,black,deep,bright); break;
             default: throw new InvalidOperationException($"Unknown Earth staff model '{prefabName}'.");
         }
-
-        foreach(var renderer in original) renderer.enabled=false;
-        foreach(var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled=false;
+        ValheimStaffVisualBuilder.Finish(context);
     }
 
-    private static void BuildSimple(GameObject root,Material wood,Material metal,Material stone,Material crystal)
+    private static void BuildSimple(GameObject root,Material wood,Material leather,Material iron,Material stone,Material crystal)
     {
-        Shaft(root,wood,metal,.040f);
-        Cylinder(root,"stone-collar",new Vector3(0,.58f,0),.085f,.085f,8,stone);
-        Box(root,"left-brace",new Vector3(-.10f,.75f,0),new Vector3(.050f,.34f,.060f),stone,-12f);
-        Box(root,"right-brace",new Vector3(.10f,.75f,0),new Vector3(.050f,.34f,.060f),stone,12f);
-        Prism(root,"earth-focus",new Vector3(0,.84f,0),.105f,.33f,6,crystal);
+        ValheimStaffVisualBuilder.OrganicShaft(root,"earth",wood,leather,iron,.045f,.75f,false);
+        var hub=new Vector3(.015f,.52f,.005f);
+        var left=new Vector3(-.16f,.79f,.04f);
+        var right=new Vector3(.18f,.75f,-.02f);
+        ValheimStaffVisualBuilder.Segment(root,"stone-yoke-left",hub,left,.038f,stone,7);
+        ValheimStaffVisualBuilder.Segment(root,"stone-yoke-right",hub,right,.036f,stone,7);
+        ValheimStaffVisualBuilder.Segment(root,"stone-left-cap",left,new Vector3(-.13f,.98f,.05f),.028f,stone,6);
+        ValheimStaffVisualBuilder.Segment(root,"stone-right-cap",right,new Vector3(.24f,.93f,-.03f),.026f,stone,6);
+        ValheimStaffVisualBuilder.Shard(root,"earth-focus",new Vector3(.02f,.84f,.005f),new Vector3(.20f,.37f,.20f),Quaternion.Euler(6f,16f,-5f),crystal,6);
+        ValheimStaffVisualBuilder.Plate(root,"fault-plate",new Vector3(-.09f,.68f,.055f),new Vector3(.10f,.05f,.18f),Quaternion.Euler(12f,28f,17f),stone);
     }
 
-    private static void BuildCrystal(GameObject root,Material wood,Material metal,Material stone,Material crystal)
+    private static void BuildCrystal(GameObject root,Material wood,Material leather,Material iron,Material stone,Material crystal)
     {
-        Shaft(root,wood,metal,.043f);
-        Cylinder(root,"lower-stone-band",new Vector3(0,.35f,0),.072f,.060f,8,stone);
-        Cylinder(root,"upper-stone-band",new Vector3(0,.60f,0),.090f,.080f,8,stone);
+        ValheimStaffVisualBuilder.OrganicShaft(root,"earth",wood,leather,iron,.048f,.82f,true);
+        var centre=new Vector3(.018f,.88f,.005f);
         for(var i=0;i<4;i++)
         {
-            var a=Mathf.PI*.5f*i;
-            Box(root,"brace-"+i,new Vector3(.14f*Mathf.Cos(a),.80f,.14f*Mathf.Sin(a)),new Vector3(.055f,.34f,.055f),metal,10f*Mathf.Cos(a));
+            var a=i*Mathf.PI*.5f+.18f;
+            var radial=new Vector3(Mathf.Cos(a),0f,Mathf.Sin(a));
+            var lower=centre+radial*.10f+Vector3.down*.23f;
+            var upper=centre+radial*(i==1?.29f:.25f)+Vector3.up*(i%2==0?.19f:.14f);
+            ValheimStaffVisualBuilder.Segment(root,"fault-brace-"+i,lower,upper,.025f,i%2==0?stone:iron,7);
+            ValheimStaffVisualBuilder.Plate(root,"fault-plate-"+i,upper,new Vector3(.09f,.045f,.16f),Quaternion.Euler(11f*i,35f*i,17f*Mathf.Cos(a)),stone);
         }
-        Prism(root,"fault-focus",new Vector3(0,.89f,0),.125f,.45f,6,crystal);
+        ValheimStaffVisualBuilder.Shard(root,"fault-focus",centre,new Vector3(.24f,.48f,.24f),Quaternion.Euler(-5f,22f,3f),crystal,7);
+        ValheimStaffVisualBuilder.Shard(root,"fault-chip",new Vector3(-.22f,.77f,.06f),new Vector3(.050f,.14f,.050f),Quaternion.Euler(18f,4f,22f),crystal,5);
     }
 
-    private static void BuildAdvanced(GameObject root,Material wood,Material metal,Material stone,Material deepStone,Material crystal)
+    private static void BuildAdvanced(GameObject root,Material wood,Material leather,Material black,Material stone,Material deep,Material crystal)
     {
-        Shaft(root,wood,metal,.046f);
-        foreach(var y in new[]{.22f,.48f,.64f}) Cylinder(root,"reinforcement-"+y,new Vector3(0,y,0),.074f,.050f,10,deepStone);
-        Cylinder(root,"seismic-ring",new Vector3(0,.75f,0),.205f,.060f,10,stone);
+        ValheimStaffVisualBuilder.OrganicShaft(root,"earth",wood,leather,black,.051f,.90f,true);
+        foreach(var y in new[]{.02f,.27f,.48f})
+            ValheimStaffVisualBuilder.Band(root,"deepstone-band-"+y.ToString("0.00"),new Vector3(.008f*y,y,.003f),.080f,.055f,deep,8);
+        var centre=new Vector3(.018f,.92f,.005f);
         for(var i=0;i<6;i++)
         {
-            var a=Mathf.PI*2f*i/6f;
-            var x=.17f*Mathf.Cos(a);var z=.17f*Mathf.Sin(a);
-            Box(root,"stone-rib-"+i,new Vector3(x,.88f,z),new Vector3(.055f,.38f,.055f),i%2==0?stone:deepStone,9f*Mathf.Cos(a));
+            var a=i*Mathf.PI*2f/6f+.21f;
+            var radial=new Vector3(Mathf.Cos(a),0f,Mathf.Sin(a));
+            var lower=centre+radial*.12f+Vector3.down*.25f;
+            var elbow=centre+radial*.22f+Vector3.down*.03f;
+            var upper=centre+radial*(i%3==0?.32f:.27f)+Vector3.up*(i%2==0?.20f:.12f);
+            ValheimStaffVisualBuilder.Segment(root,"seismic-rib-a-"+i,lower,elbow,.025f,i%2==0?stone:deep,7);
+            ValheimStaffVisualBuilder.Segment(root,"seismic-rib-b-"+i,elbow,upper,.019f,deep,6);
+            ValheimStaffVisualBuilder.Plate(root,"seismic-slab-"+i,upper,new Vector3(.10f,.05f,.18f),Quaternion.Euler(10f*i,a*Mathf.Rad2Deg,16f*Mathf.Cos(a)),i%2==0?stone:deep);
         }
-        Prism(root,"seismic-core",new Vector3(0,.93f,0),.135f,.50f,6,crystal);
+        ValheimStaffVisualBuilder.Shard(root,"seismic-core",centre,new Vector3(.28f,.54f,.28f),Quaternion.Euler(-4f,24f,2f),crystal,7);
+        ValheimStaffVisualBuilder.Plate(root,"broken-side-slab",new Vector3(-.30f,.85f,.08f),new Vector3(.12f,.06f,.23f),Quaternion.Euler(18f,20f,31f),stone);
     }
 
-    private static void BuildMaster(GameObject root,Material wood,Material metal,Material stone,Material crystal)
+    private static void BuildMaster(GameObject root,Material wood,Material leather,Material black,Material deep,Material crystal)
     {
-        Shaft(root,wood,metal,.049f);
-        foreach(var y in new[]{-.48f,-.12f,.22f,.51f}) Cylinder(root,"shaft-band-"+y,new Vector3(0,y,0),.072f,.050f,12,metal);
-        Cylinder(root,"world-ring",new Vector3(0,.75f,0),.245f,.070f,12,stone);
+        ValheimStaffVisualBuilder.OrganicShaft(root,"earth",wood,leather,black,.055f,1.0f,true);
+        foreach(var y in new[]{-.34f,-.08f,.20f,.45f})
+            ValheimStaffVisualBuilder.Band(root,"master-band-"+y.ToString("0.00"),new Vector3(.006f*y,y,.004f),.082f,.052f,black,10);
+        var basePoint=new Vector3(.018f,.52f,.005f);
+        var left=new Vector3(-.19f,.72f,.055f);
+        var right=new Vector3(.20f,.69f,-.035f);
+        ValheimStaffVisualBuilder.Segment(root,"world-left-yoke",basePoint,left,.036f,deep,8);
+        ValheimStaffVisualBuilder.Segment(root,"world-right-yoke",basePoint,right,.034f,deep,8);
+        ValheimStaffVisualBuilder.Segment(root,"world-left-spine",left,new Vector3(-.34f,1.14f,.08f),.025f,deep,7);
+        ValheimStaffVisualBuilder.Segment(root,"world-right-spine",right,new Vector3(.31f,1.08f,-.05f),.023f,deep,7);
+        var centre=new Vector3(.018f,.96f,.005f);
         for(var i=0;i<8;i++)
         {
-            var a=Mathf.PI*2f*i/8f;
-            var x=.20f*Mathf.Cos(a);var z=.20f*Mathf.Sin(a);
-            Box(root,"world-rib-"+i,new Vector3(x,.91f,z),new Vector3(.050f,.45f,.050f),metal,12f*Mathf.Cos(a));
-            Prism(root,"world-chip-"+i,new Vector3(x,1.13f,z),.032f,.14f,5,crystal);
+            var a=i*Mathf.PI*2f/8f+.16f;
+            var radial=new Vector3(Mathf.Cos(a),0f,Mathf.Sin(a));
+            var lower=centre+radial*.15f+Vector3.down*.23f;
+            var upper=centre+radial*(i%3==0?.33f:.28f)+Vector3.up*(i%2==0?.19f:.12f);
+            ValheimStaffVisualBuilder.Segment(root,"world-rib-"+i,lower,upper,.018f,deep,6);
+            if(i%2==0) ValheimStaffVisualBuilder.Plate(root,"world-slab-"+i,upper,new Vector3(.11f,.055f,.20f),Quaternion.Euler(13f*Mathf.Sin(a),a*Mathf.Rad2Deg,19f*Mathf.Cos(a)),deep);
         }
-        Prism(root,"world-core",new Vector3(0,.99f,0),.155f,.62f,8,crystal);
+        ValheimStaffVisualBuilder.Shard(root,"world-core",centre,new Vector3(.33f,.66f,.33f),Quaternion.Euler(-3f,26f,3f),crystal,8);
+        ValheimStaffVisualBuilder.Shard(root,"world-heart",centre+new Vector3(.035f,.12f,-.018f),new Vector3(.11f,.27f,.11f),Quaternion.Euler(9f,-15f,-4f),crystal,6);
+        ValheimStaffVisualBuilder.Plate(root,"hanging-fault-stone",new Vector3(-.31f,.74f,.10f),new Vector3(.10f,.16f,.08f),Quaternion.Euler(15f,12f,22f),deep);
     }
-
-    private static void Shaft(GameObject root,Material wood,Material metal,float radius)
-    {
-        Cylinder(root,"shaft",new Vector3(0,-.08f,0),radius,1.48f,10,wood);
-        Cylinder(root,"pommel",new Vector3(0,-.77f,0),radius*1.45f,.11f,10,metal);
-        Cylinder(root,"neck",new Vector3(0,.50f,0),radius*1.38f,.060f,10,metal);
-    }
-
-    private static void Box(GameObject root,string name,Vector3 p,Vector3 s,Material m,float z=0f)=>Add(root,name,BoxMesh,p,s,Quaternion.Euler(0,0,z),m);
-    private static void Cylinder(GameObject root,string name,Vector3 p,float radius,float height,int sides,Material m){if(!Cylinders.TryGetValue(sides,out var mesh)){mesh=MakeCylinder(sides);Cylinders.Add(sides,mesh);}Add(root,name,mesh,p,new Vector3(radius*2f,height,radius*2f),Quaternion.identity,m);}
-    private static void Prism(GameObject root,string name,Vector3 p,float radius,float height,int sides,Material m){if(!Prisms.TryGetValue(sides,out var mesh)){mesh=MakePrism(sides);Prisms.Add(sides,mesh);}Add(root,name,mesh,p,new Vector3(radius*2f,height,radius*2f),Quaternion.identity,m);}
-    private static void Add(GameObject root,string name,Mesh mesh,Vector3 p,Vector3 s,Quaternion r,Material m){var go=new GameObject(name){layer=root.layer};go.transform.SetParent(root.transform,false);go.transform.localPosition=p;go.transform.localScale=s;go.transform.localRotation=r;go.AddComponent<MeshFilter>().sharedMesh=mesh;go.AddComponent<MeshRenderer>().sharedMaterial=m;}
-    private static Material Mat(Material source,string suffix,Color c,float metallic,float gloss,float emission=0f){var m=new Material(source){name="magenheim.earth-staff."+suffix};GeneratedSurfaceTextures.Apply(m,suffix);if(m.HasProperty("_Color"))m.SetColor("_Color",c);if(m.HasProperty("_Metallic"))m.SetFloat("_Metallic",metallic);if(m.HasProperty("_Glossiness"))m.SetFloat("_Glossiness",gloss);if(m.HasProperty("_BumpMap"))m.SetTexture("_BumpMap",null);m.DisableKeyword("_NORMALMAP");if(m.HasProperty("_EmissionColor")&&emission>0f){m.SetColor("_EmissionColor",c*emission);m.EnableKeyword("_EMISSION");}else m.DisableKeyword("_EMISSION");m.SetOverrideTag("RenderType","Opaque");if(m.HasProperty("_ZWrite"))m.SetFloat("_ZWrite",1f);m.renderQueue=2000;return m;}
-    private static Mesh CreateBoxMesh(){var m=new Mesh{name="magenheim.earth-staff.box"};m.vertices=new[]{new Vector3(-.5f,-.5f,-.5f),new Vector3(.5f,-.5f,-.5f),new Vector3(.5f,.5f,-.5f),new Vector3(-.5f,.5f,-.5f),new Vector3(-.5f,-.5f,.5f),new Vector3(.5f,-.5f,.5f),new Vector3(.5f,.5f,.5f),new Vector3(-.5f,.5f,.5f)};m.triangles=new[]{0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2};m.RecalculateNormals();m.RecalculateBounds();return m;}
-    private static Mesh MakeCylinder(int sides){var v=new List<Vector3>();var t=new List<int>();for(var r=0;r<2;r++){var y=r==0?-.5f:.5f;for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.5f*Mathf.Cos(a),y,.5f*Mathf.Sin(a)));}}var b=v.Count;v.Add(new Vector3(0,-.5f,0));var top=v.Count;v.Add(new Vector3(0,.5f,0));for(var i=0;i<sides;i++){var n=(i+1)%sides;t.AddRange(new[]{i,sides+i,n,n,sides+i,sides+n,b,i,n,top,sides+n,sides+i});}var m=new Mesh{name="magenheim.earth-staff.cylinder."+sides,vertices=v.ToArray(),triangles=t.ToArray()};m.RecalculateNormals();m.RecalculateBounds();return m;}
-    private static Mesh MakePrism(int sides){var v=new List<Vector3>();var t=new List<int>();for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.38f*Mathf.Cos(a),-.46f,.38f*Mathf.Sin(a)));}for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.5f*Mathf.Cos(a),.22f,.5f*Mathf.Sin(a)));}var top=v.Count;v.Add(new Vector3(0,.66f,0));var bottom=v.Count;v.Add(new Vector3(0,-.50f,0));for(var i=0;i<sides;i++){var n=(i+1)%sides;t.AddRange(new[]{bottom,i,n,i,sides+i,n,n,sides+i,sides+n,top,sides+n,sides+i});}var m=new Mesh{name="magenheim.earth-staff.prism."+sides,vertices=v.ToArray(),triangles=t.ToArray()};m.RecalculateNormals();m.RecalculateBounds();return m;}
 }
