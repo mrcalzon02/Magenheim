@@ -107,7 +107,7 @@ internal static class UnderworldDeepBoonSelectionRpc
         var playerId = player.GetPlayerID().ToString(CultureInfo.InvariantCulture);
         var persistedId = default(string);
         if (_services.DeepBoonSelectionStore.TryLoad(playerId, identity, out var persisted, out var loadDiagnostic)) persistedId = persisted.SelectedDeepBoonId;
-        else if (!loadDiagnostic.Contains("candidate missing", StringComparison.Ordinal)) _log?.LogWarning($"Deep Boon selection for player {playerId} could not be recovered: {loadDiagnostic}");
+        else if (loadDiagnostic.IndexOf("candidate missing", StringComparison.Ordinal) < 0) _log?.LogWarning($"Deep Boon selection for player {playerId} could not be recovered: {loadDiagnostic}");
 
         UnderworldDeepBoonSelectionState current;
         try { current = UnderworldDeepstoneRuntimeAuthority.ReconstructDeepBoonSelection(persistedId); }
