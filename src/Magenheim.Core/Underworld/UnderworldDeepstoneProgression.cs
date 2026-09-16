@@ -29,6 +29,33 @@ public sealed record UnderworldDeepstoneMountResult(
     public bool Changed => Status == UnderworldDeepstoneMountStatus.Mounted;
 }
 
+public enum UnderworldDeepstoneTransactionStatus
+{
+    Ready,
+    MissingTrophy,
+    AlreadyMounted,
+    WrongTrophy,
+    PrerequisiteMissing,
+    UnknownDeepstone,
+}
+
+/// <summary>
+/// Immutable server transaction plan. Runtime may consume the named trophy only when Ready is
+/// true, then persist ResultingState. Keeping consumption and state mutation in one plan prevents
+/// a client/runtime adapter from granting a boon without paying the trophy or consuming a trophy
+/// after progression was rejected.
+/// </summary>
+public sealed record UnderworldDeepstoneMountTransactionPlan(
+    UnderworldDeepstoneTransactionStatus Status,
+    string DeepstoneId,
+    string TrophyPrefabName,
+    int TrophyConsumeCount,
+    UnderworldDeepstoneState? ResultingState,
+    string Diagnostic)
+{
+    public bool Ready => Status == UnderworldDeepstoneTransactionStatus.Ready;
+}
+
 /// <summary>
 /// Pure progression authority for the Deepstone Conclave. Runtime code supplies durable
 /// mounted-state facts and inventory operations; this authority decides whether a trophy may
@@ -49,6 +76,46 @@ public static class UnderworldDeepstoneProgression
                     stone.Id, boss.Id, boss.TrophyPrefabName, stone.DeepBoonId, false, false);
             })
             .ToArray());
+    }
+
+    public static UnderworldDeepstoneMountTransactionPlan PlanMountTrophy(
+        UnderworldDefinitionSet definitions,
+        IEnumerable<UnderworldDeepstoneState> currentStates,
+        string deepstoneId,
+        string trophyPrefabName,
+        int availableTrophyCount)
+    {
+        if (availableTrophyCount < 0) throw new ArgumentOutOfRangeException(nameof(availableTrophyCount));
+        var result = TryMountTrophy(definitions, currentStates, deepstoneId, trophyPrefabName);
+        if (!result.Changed)
+        {
+            var status = result.Status switch
+            {
+                UnderworldDeepstoneMountStatus.AlreadyMounted => UnderworldDeepstoneTransactionStatus.AlreadyMounted,
+                UnderworldDeepstoneMountStatus.WrongTrophy => UnderworldDeepstoneTransactionStatus.WrongTrophy,
+                UnderworldDeepstoneMountStatus.PrerequisiteMissing => UnderworldDeepstoneTransactionStatus.PrerequisiteMissing,
+                UnderworldDeepstoneMountStatus.UnknownDeepstone => UnderworldDeepstoneTransactionStatus.UnknownDeepstone,
+                _ => throw new InvalidOperationException($"Unhandled Deepstone mount status '{result.Status}'."),
+            };
+            return new UnderworldDeepstoneMountTransactionPlan(status, deepstoneId, trophyPrefabName, 0, result.State, result.Diagnostic);
+        }
+
+        if (availableTrophyCount < 1)
+            return new UnderworldDeepstoneMountTransactionPlan(
+                UnderworldDeepstoneTransactionStatus.MissingTrophy,
+                deepstoneId,
+                trophyPrefabName,
+                0,
+                result.State,
+                $"Deepstone '{deepstoneId}' requires one '{trophyPrefabName}' in the authoritative inventory.");
+
+        return new UnderworldDeepstoneMountTransactionPlan(
+            UnderworldDeepstoneTransactionStatus.Ready,
+            deepstoneId,
+            trophyPrefabName,
+            1,
+            result.State,
+            result.Diagnostic);
     }
 
     public static UnderworldDeepstoneMountResult TryMountTrophy(
