@@ -20,7 +20,7 @@ internal static class CrystalArchitectureVisuals
     internal const string CrystalFoundation4 = "architecture-crystal-foundation-4m";
     internal const string CrystalFoundation8 = "architecture-crystal-foundation-8m";
 
-    private static readonly Mesh BoxMesh = CreateBoxMesh();
+    private static readonly Mesh BoxMesh = RuntimeMeshPrimitives.Box("magenheim.architecture.box");
     private static readonly Dictionary<int, Mesh> PrismMeshes = new();
 
     internal static GameObject Apply(GameObject prefab, string modelId)
@@ -186,7 +186,11 @@ internal static class CrystalArchitectureVisuals
 
     private static void Prism(GameObject root, string name, Vector3 position, Vector3 scale, int sides, Material material, Vector3? euler = null)
     {
-        if (!PrismMeshes.TryGetValue(sides, out var mesh)) { mesh = CreatePrismMesh(sides); PrismMeshes.Add(sides, mesh); }
+        if (!PrismMeshes.TryGetValue(sides, out var mesh))
+        {
+            mesh = RuntimeMeshPrimitives.Prism(sides, "magenheim.architecture.prism." + sides);
+            PrismMeshes.Add(sides, mesh);
+        }
         Add(root, name, mesh, position, scale, Quaternion.Euler(euler ?? Vector3.zero), material);
     }
 
@@ -220,48 +224,5 @@ internal static class CrystalArchitectureVisuals
         if (material.HasProperty("_ZWrite")) material.SetFloat("_ZWrite", 1f);
         material.renderQueue = 2000;
         return material;
-    }
-
-    private static Mesh CreateBoxMesh()
-    {
-        var mesh = new Mesh { name = "magenheim.architecture.box" };
-        mesh.vertices = new[]
-        {
-            new Vector3(-.5f,-.5f,-.5f), new Vector3(.5f,-.5f,-.5f), new Vector3(.5f,.5f,-.5f), new Vector3(-.5f,.5f,-.5f),
-            new Vector3(-.5f,-.5f,.5f), new Vector3(.5f,-.5f,.5f), new Vector3(.5f,.5f,.5f), new Vector3(-.5f,.5f,.5f)
-        };
-        mesh.triangles = new[] { 0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2 };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
-    }
-
-    private static Mesh CreatePrismMesh(int sides)
-    {
-        var vertices = new List<Vector3>();
-        var triangles = new List<int>();
-        for (var i = 0; i < sides; i++)
-        {
-            var angle = Mathf.PI * 2f * i / sides;
-            vertices.Add(new Vector3(.46f * Mathf.Cos(angle), -.50f, .46f * Mathf.Sin(angle)));
-        }
-        for (var i = 0; i < sides; i++)
-        {
-            var angle = Mathf.PI * 2f * i / sides;
-            vertices.Add(new Vector3(.50f * Mathf.Cos(angle), .34f, .50f * Mathf.Sin(angle)));
-        }
-        var top = vertices.Count; vertices.Add(new Vector3(0f, .58f, 0f));
-        var bottom = vertices.Count; vertices.Add(new Vector3(0f, -.52f, 0f));
-        for (var i = 0; i < sides; i++)
-        {
-            var next = (i + 1) % sides;
-            triangles.AddRange(new[]
-            {
-                bottom, i, next,
-                i, sides + i, next,
-                next, sides + i, sides + next,
-                top, sides + next, sides + i
-            });
-        }
-        var mesh = new Mesh { name = "magenheim.architecture.prism." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 }
