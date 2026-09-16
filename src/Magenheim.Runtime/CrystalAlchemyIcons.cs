@@ -11,7 +11,9 @@ internal static class CrystalAlchemyIcons
     internal const string Base = "crystal-alchemy-base";
     internal const string Wine = "crystal-alchemy-wine";
 
-    private const int Size = 128;
+    private const int Size = 256;
+    private const int DesignSize = 128;
+    private const int Scale = Size / DesignSize;
     private static readonly Dictionary<string, Sprite> Cache = new();
 
     internal static Sprite Icon(string id)
@@ -111,10 +113,10 @@ internal static class CrystalAlchemyIcons
 
     private static void Rect(Color[] pixels, int x0, int y0, int x1, int y1, Color color)
     {
-        x0 = Mathf.Clamp(x0, 0, Size - 1);
-        x1 = Mathf.Clamp(x1, 0, Size - 1);
-        y0 = Mathf.Clamp(y0, 0, Size - 1);
-        y1 = Mathf.Clamp(y1, 0, Size - 1);
+        x0 = Mathf.Clamp(x0 * Scale, 0, Size - 1);
+        x1 = Mathf.Clamp(((x1 + 1) * Scale) - 1, 0, Size - 1);
+        y0 = Mathf.Clamp(y0 * Scale, 0, Size - 1);
+        y1 = Mathf.Clamp(((y1 + 1) * Scale) - 1, 0, Size - 1);
         for (var y = y0; y <= y1; y++)
             for (var x = x0; x <= x1; x++)
                 Blend(pixels, x, y, color);
@@ -122,12 +124,16 @@ internal static class CrystalAlchemyIcons
 
     private static void Ellipse(Color[] pixels, int cx, int cy, int rx, int ry, Color color)
     {
-        for (var y = cy - ry; y <= cy + ry; y++)
+        var scaledCx = cx * Scale;
+        var scaledCy = cy * Scale;
+        var scaledRx = rx * Scale;
+        var scaledRy = ry * Scale;
+        for (var y = scaledCy - scaledRy; y <= scaledCy + scaledRy; y++)
         {
-            for (var x = cx - rx; x <= cx + rx; x++)
+            for (var x = scaledCx - scaledRx; x <= scaledCx + scaledRx; x++)
             {
-                var dx = (x - cx) / (float)rx;
-                var dy = (y - cy) / (float)ry;
+                var dx = (x - scaledCx) / (float)scaledRx;
+                var dy = (y - scaledCy) / (float)scaledRy;
                 if (dx * dx + dy * dy <= 1f && x >= 0 && x < Size && y >= 0 && y < Size)
                     Blend(pixels, x, y, color);
             }
@@ -136,10 +142,13 @@ internal static class CrystalAlchemyIcons
 
     private static void DrawDiamond(Color[] pixels, int cx, int cy, int radius, Color color)
     {
-        for (var y = cy - radius; y <= cy + radius; y++)
+        var scaledCx = cx * Scale;
+        var scaledCy = cy * Scale;
+        var scaledRadius = radius * Scale;
+        for (var y = scaledCy - scaledRadius; y <= scaledCy + scaledRadius; y++)
         {
-            var half = radius - Math.Abs(y - cy);
-            for (var x = cx - half; x <= cx + half; x++)
+            var half = scaledRadius - Math.Abs(y - scaledCy);
+            for (var x = scaledCx - half; x <= scaledCx + half; x++)
                 if (x >= 0 && x < Size && y >= 0 && y < Size)
                     Blend(pixels, x, y, color);
         }
