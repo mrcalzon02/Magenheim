@@ -11,5 +11,6 @@ internal static class DeepFractureDeepColossusVisual
         ModelAssets.Load(prefab,"deep-fracture-deep-colossus-visual-"+alignment.ToString().ToLowerInvariant());
         var impact=prefab.GetComponent<DeepFractureHeavyImpactRuntime>()??prefab.AddComponent<DeepFractureHeavyImpactRuntime>();
         impact.ImpactProfile=DeepFractureHeavyImpactRuntime.Profile.DeepColossus;
+        impact.Alignment=alignment;
     }
 }
