@@ -28,10 +28,6 @@ internal static class DeepFractureEncounterSpawner
             {
                 var legacyIdentity = $"{placement.ModuleInstanceId}.{encounter.Id}.{unitIndex + 1:00}";
                 var identity = $"{unchecked((uint)locationSeed):X8}.{legacyIdentity}";
-
-                // Clear state is already isolated by each fracture authority ZDO, so accept the
-                // pre-namespace key as a migration fallback. Live creature lookup is global,
-                // however, and therefore must use the location-qualified identity exclusively.
                 if (authority.IsCleared(identity) || authority.IsCleared(legacyIdentity))
                 {
                     if (!authority.IsCleared(identity)) authority.MarkCleared(identity);
@@ -39,8 +35,9 @@ internal static class DeepFractureEncounterSpawner
                 }
                 if (FindLivingSpawn(identity) is not null) continue;
 
-                var worldPosition = district.transform.TransformPoint(SpawnOffset(groupIndex, unitIndex));
-                var worldRotation = district.transform.rotation * Quaternion.Euler(0f, FacingYaw(groupIndex, unitIndex), 0f);
+                var localPose = TacticalPose(placement.PieceFamilyId, encounter.Definition.Chassis, groupIndex, unitIndex, encounter.SpawnCount);
+                var worldPosition = district.transform.TransformPoint(localPose.Position);
+                var worldRotation = district.transform.rotation * Quaternion.Euler(0f, localPose.YawDegrees, 0f);
                 var instance = UnityEngine.Object.Instantiate(source, worldPosition, worldRotation);
                 instance.name = $"{prefabName}_{encounter.Id}_{unitIndex + 1:00}";
 
@@ -72,6 +69,76 @@ internal static class DeepFractureEncounterSpawner
         return null;
     }
 
+    private static SpawnPose TacticalPose(string pieceFamilyId, CreatureChassis chassis, int groupIndex, int unitIndex, int groupSize)
+    {
+        var profile = DistrictProfile(pieceFamilyId);
+        var lane = unitIndex - (groupSize - 1) * .5f;
+        var flank = lane * profile.Spacing;
+        var depth = ((unitIndex & 1) == 0 ? 1f : -1f) * profile.DepthSpread;
+        var position = profile.Center + new Vector3(flank, .35f, depth);
+        var yaw = Mathf.Atan2(-position.x, -position.z) * Mathf.Rad2Deg;
+
+        switch (chassis)
+        {
+            case CreatureChassis.FacetSentry:
+            case CreatureChassis.ObeliskWarden:
+                position = profile.Center + Radial(groupIndex, unitIndex, profile.EdgeRadius);
+                yaw = Mathf.Atan2(-position.x, -position.z) * Mathf.Rad2Deg;
+                break;
+            case CreatureChassis.StoneSentinel:
+            case CreatureChassis.StoneGuardian:
+            case CreatureChassis.CrystalGolem:
+            case CreatureChassis.DeepColossus:
+                position = profile.Center + new Vector3(flank * .45f, .35f, depth * .25f);
+                break;
+            case CreatureChassis.Burrower:
+            case CreatureChassis.CrystalParasite:
+                position = profile.Center + Radial(groupIndex + 3, unitIndex, profile.EdgeRadius * .82f);
+                yaw = Mathf.Atan2(-position.x, -position.z) * Mathf.Rad2Deg;
+                break;
+            case CreatureChassis.AnnoyanceWisp:
+                position.y = 2.8f + (unitIndex % 3) * .7f;
+                break;
+            case CreatureChassis.CrystalHound:
+            case CreatureChassis.Shardling:
+                position.x += ((unitIndex & 1) == 0 ? -1f : 1f) * 4f;
+                break;
+        }
+
+        return new SpawnPose(position, yaw);
+    }
+
+    private static DistrictSpawnProfile DistrictProfile(string id) => id switch
+    {
+        "DF-01" => new DistrictSpawnProfile(new Vector3(0f,0f,12f), 5.5f, 6f, 24f),
+        "DF-02" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 5f, 10f, 27f),
+        "DF-03" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 6f, 7f, 29f),
+        "DF-04" => new DistrictSpawnProfile(new Vector3(0f,0f,3f), 5f, 14f, 25f),
+        "DF-05" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 6f, 9f, 29f),
+        "DF-06" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 7f, 5f, 25f),
+        "DF-07" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 5f, 13f, 27f),
+        "DF-08" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 7f, 5f, 24f),
+        "DF-09" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 5f, 12f, 31f),
+        "DF-10" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 5f, 11f, 30f),
+        "DF-11" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 6f, 7f, 25f),
+        "DF-12" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 7f, 5f, 25f),
+        "DF-13" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 5f, 10f, 29f),
+        "DF-14" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 5f, 9f, 28f),
+        "DF-15" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 6f, 8f, 27f),
+        "DF-16" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 6f, 7f, 26f),
+        "DF-17" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 5f, 12f, 30f),
+        "DF-18" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 5f, 10f, 29f),
+        "DF-19" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 6f, 8f, 27f),
+        "DF-20" => new DistrictSpawnProfile(new Vector3(0f,0f,0f), 9f, 4f, 30f),
+        _ => throw new InvalidOperationException($"No authored encounter placement profile exists for Deep Fracture district '{id}'.")
+    };
+
+    private static Vector3 Radial(int groupIndex, int unitIndex, float radius)
+    {
+        var angle = ((groupIndex * 137.5f) + (unitIndex * 61f)) * Mathf.Deg2Rad;
+        return new Vector3(Mathf.Cos(angle) * radius, .35f, Mathf.Sin(angle) * radius);
+    }
+
     private static string ResolvePrefabName(CreatureChassis chassis, ElementalAlignment? alignment)
     {
         if (!alignment.HasValue) throw new InvalidOperationException($"Deep Fracture runtime creature '{chassis}' has no elemental alignment, but registered runtime families are alignment-specific.");
@@ -95,12 +162,19 @@ internal static class DeepFractureEncounterSpawner
         return prefix + alignment.Value;
     }
 
-    private static Vector3 SpawnOffset(int groupIndex, int unitIndex)
+    private readonly struct SpawnPose
     {
-        var angle = ((groupIndex * 137.5f) + (unitIndex * 61f)) * Mathf.Deg2Rad;
-        var radius = 4.5f + (groupIndex * 3.25f) + ((unitIndex % 3) * 1.6f);
-        return new Vector3(Mathf.Cos(angle) * radius, 0.35f, Mathf.Sin(angle) * radius);
+        internal SpawnPose(Vector3 position, float yawDegrees) { Position = position; YawDegrees = yawDegrees; }
+        internal Vector3 Position { get; }
+        internal float YawDegrees { get; }
     }
 
-    private static float FacingYaw(int groupIndex, int unitIndex) => (groupIndex * 73f + unitIndex * 47f) % 360f;
+    private readonly struct DistrictSpawnProfile
+    {
+        internal DistrictSpawnProfile(Vector3 center, float spacing, float depthSpread, float edgeRadius) { Center = center; Spacing = spacing; DepthSpread = depthSpread; EdgeRadius = edgeRadius; }
+        internal Vector3 Center { get; }
+        internal float Spacing { get; }
+        internal float DepthSpread { get; }
+        internal float EdgeRadius { get; }
+    }
 }
