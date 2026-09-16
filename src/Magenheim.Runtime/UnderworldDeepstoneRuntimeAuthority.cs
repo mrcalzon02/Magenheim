@@ -7,8 +7,8 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Single runtime bridge between the validated Underworld definition authority and the six
-/// physical Conclave stones. This layer reconstructs durable world state and asks Core to plan
-/// mutations; it does not duplicate trophy, prerequisite, or boon rules.
+/// physical Conclave stones. This layer reads durable world facts and asks Core to reconstruct
+/// and validate progression; it does not duplicate trophy, prerequisite, or boon rules.
 /// </summary>
 internal static class UnderworldDeepstoneRuntimeAuthority
 {
@@ -26,18 +26,12 @@ internal static class UnderworldDeepstoneRuntimeAuthority
     internal static IReadOnlyList<UnderworldDeepstoneState> ReconstructWorldState()
     {
         var definitions = RequireDefinitions();
-        var initial = UnderworldDeepstoneProgression.CreateInitialState(definitions);
-        return Array.AsReadOnly(initial.Select(state =>
+        var facts = definitions.Deepstones.Select(stone =>
         {
-            var runtime = UnderworldDeepstoneRuntime.ReadPersistentState(state.DeepstoneId);
-            if (runtime.BoonUnlocked && !runtime.TrophyMounted)
-                throw new InvalidOperationException($"Deepstone '{state.DeepstoneId}' has an impossible persisted boon-without-trophy state.");
-            return state with
-            {
-                TrophyMounted = runtime.TrophyMounted,
-                BoonUnlocked = runtime.BoonUnlocked,
-            };
-        }).ToArray());
+            var persisted = UnderworldDeepstoneRuntime.ReadPersistentState(stone.Id);
+            return new UnderworldDeepstonePersistenceFact(stone.Id, persisted.TrophyMounted, persisted.BoonUnlocked);
+        });
+        return UnderworldDeepstoneProgression.ReconstructPersistentState(definitions, facts);
     }
 
     internal static UnderworldDeepstoneMountTransactionPlan PlanMount(
