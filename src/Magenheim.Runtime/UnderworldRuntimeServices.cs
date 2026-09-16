@@ -63,5 +63,11 @@ internal sealed class UnderworldRuntimeServices
             recoveryRuntime);
     }
 
+    internal bool TryResolveLocalSession(
+        out UnderworldWorldIdentity? identity,
+        out string playerId,
+        out string diagnostic) =>
+        UnderworldRuntimeIdentityResolver.TryResolveLocalSession(out identity, out playerId, out diagnostic);
+
     internal void ResetForWorldUnload() => _worldContext.ResetForWorldUnload();
 }
