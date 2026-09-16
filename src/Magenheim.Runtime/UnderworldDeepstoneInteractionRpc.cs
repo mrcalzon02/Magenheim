@@ -6,6 +6,7 @@ using System.Threading;
 using BepInEx.Logging;
 using Jotunn.Entities;
 using Jotunn.Managers;
+using Magenheim.Core.Underworld;
 using Magenheim.Runtime.Networking;
 using UnityEngine;
 
@@ -15,16 +16,13 @@ namespace Magenheim.Runtime;
 /// Session-bound transport for Deepstone activation. Clients identify only the stone they touched;
 /// the server resolves the peer character, canonical trophy, inventory count, progression state,
 /// consumption and durable activation. Every remote request also carries a per-client request id;
-/// the server admits each (peer, authority-generation, request-id) tuple at most once.
+/// Core admits each (peer, authority-generation, request-id) tuple at most once.
 /// </summary>
 internal static class UnderworldDeepstoneInteractionRpc
 {
     private const int RequestMessage = 1;
     private const int ResponseMessage = 2;
-    private const int MaxRememberedRequests = 2048;
-    private static readonly object ReplaySync = new();
-    private static readonly HashSet<string> AcceptedRequests = new(StringComparer.Ordinal);
-    private static readonly Queue<string> AcceptedRequestOrder = new();
+    private static readonly UnderworldDeepstoneRequestLedger ReplayLedger = new();
     private static long _nextRequestId;
     private static DefinitionAuthoritySynchronizer? _authority;
     private static ManualLogSource? _log;
@@ -63,7 +61,7 @@ internal static class UnderworldDeepstoneInteractionRpc
             if (_authority is null || _rpc is null) yield break;
             var generation = _authority.GetPeerSessionGeneration(sender);
             if (generation <= 0L || generation != suppliedGeneration || !_authority.IsPeerMutationAuthorized(sender)) { SendResponse(sender, generation, requestId, false, "Deepstone request belongs to an unauthorized or stale Magenheim session."); yield break; }
-            if (requestId <= 0L || !TryAdmitRequest(sender, generation, requestId)) { SendResponse(sender, generation, requestId, false, "Duplicate or invalid Deepstone activation request rejected."); yield break; }
+            if (!ReplayLedger.TryAdmit(sender, generation, requestId)) { SendResponse(sender, generation, requestId, false, "Duplicate or invalid Deepstone activation request rejected."); yield break; }
             if (!TryResolvePeerPlayer(sender, out var player, out var diagnostic) || !TryResolveNearbyStone(player, deepstoneId, out var stone, out diagnostic)) { SendResponse(sender, generation, requestId, false, diagnostic); yield break; }
             var applied = TryActivateServer(stone, player, out diagnostic); SendResponse(sender, generation, requestId, applied, diagnostic);
         }
@@ -83,18 +81,6 @@ internal static class UnderworldDeepstoneInteractionRpc
         }
         catch (Exception exception) { _log?.LogError($"Failed to process Deepstone interaction response: {exception}"); }
         yield break;
-    }
-
-    private static bool TryAdmitRequest(long peerId, long generation, long requestId)
-    {
-        var key = $"{peerId}:{generation}:{requestId}";
-        lock (ReplaySync)
-        {
-            if (!AcceptedRequests.Add(key)) return false;
-            AcceptedRequestOrder.Enqueue(key);
-            while (AcceptedRequestOrder.Count > MaxRememberedRequests) AcceptedRequests.Remove(AcceptedRequestOrder.Dequeue());
-            return true;
-        }
     }
 
     private static bool TryActivateServer(UnderworldDeepstoneRuntime stone, Humanoid user, out string diagnostic)
