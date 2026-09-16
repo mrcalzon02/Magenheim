@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using BepInEx.Logging;
 using Jotunn.Entities;
 using Jotunn.Managers;
@@ -25,6 +26,7 @@ internal sealed class DefinitionAuthoritySynchronizer
     private readonly Dictionary<long, DefinitionAuthorityResult> _peerResults = new();
     private readonly Dictionary<long, long> _peerSessionGenerations = new();
     private readonly CustomRPC _rpc;
+    private long _lastSessionGeneration;
 
     internal DefinitionAuthoritySynchronizer(
         MagenheimDefinitionSet definitions,
@@ -78,12 +80,12 @@ internal sealed class DefinitionAuthoritySynchronizer
     {
         if (peer is null) throw new ArgumentNullException(nameof(peer));
 
-        // Peer ids are transport/session identities, not durable authorization identities.
-        // Every initial synchronization creates a fresh server-local generation so replay
-        // keys from an earlier connection cannot authorize a mutation after reconnect/id reuse.
+        // Keep only live transport identities. Session generations are globally monotonic, so
+        // pruning a disconnected peer cannot recycle a replay identity if that uid later returns.
+        RetireDisconnectedPeerState(peer.m_uid);
         _peerResults.Remove(peer.m_uid);
 
-        var nextGeneration = NextSessionGeneration(peer.m_uid);
+        var nextGeneration = NextSessionGeneration();
         _peerSessionGenerations[peer.m_uid] = nextGeneration;
         _geodeOpeningOperations.RetirePeerSessions(peer.m_uid, nextGeneration);
         _refinementOperations.RetirePeerSessions(peer.m_uid, nextGeneration);
@@ -96,15 +98,26 @@ internal sealed class DefinitionAuthoritySynchronizer
         return package;
     }
 
-    private long NextSessionGeneration(long peerId)
+    private long NextSessionGeneration()
     {
-        if (!_peerSessionGenerations.TryGetValue(peerId, out var current))
-            return 1L;
+        if (_lastSessionGeneration == long.MaxValue)
+            throw new InvalidOperationException("Magenheim exhausted server session generations; refusing to recycle replay identity.");
+        return ++_lastSessionGeneration;
+    }
 
-        if (current == long.MaxValue)
-            throw new InvalidOperationException($"Peer {peerId} exhausted Magenheim session generations; refusing to recycle replay identity.");
-
-        return current + 1L;
+    private void RetireDisconnectedPeerState(long synchronizingPeerId)
+    {
+        if (ZNet.instance is null || _peerSessionGenerations.Count == 0) return;
+        var stale = _peerSessionGenerations.Keys
+            .Where(peerId => peerId != synchronizingPeerId && ZNet.instance.GetPeer(peerId) is null)
+            .ToArray();
+        foreach (var peerId in stale)
+        {
+            _peerResults.Remove(peerId);
+            _peerSessionGenerations.Remove(peerId);
+        }
+        if (stale.Length > 0)
+            _logger.LogDebug($"Retired {stale.Length} disconnected Magenheim authority peer record(s); replay generations remain globally non-recyclable.");
     }
 
     private IEnumerator ReceiveServerAuthority(long sender, ZPackage package)
