@@ -94,41 +94,31 @@ internal static class UnderworldDeepstoneInteractionRpc
         if (!plan.Ready || plan.ResultingState is null) { diagnostic = plan.Diagnostic; return false; }
 
         var removed = new List<ItemDrop.ItemData>();
-        var remaining = plan.TrophyConsumeCount;
-        foreach (var item in trophyItems)
-        {
-            if (remaining <= 0) break;
-            var consume = Math.Min(item.m_stack, remaining);
-            var restore = item.Clone(); restore.m_stack = consume;
-            if (!inventory.RemoveItem(item, consume))
+        var itemIndex = 0;
+        var transaction = UnderworldDeepstoneTransactionExecutor.Execute(
+            plan.TrophyConsumeCount,
+            _ =>
             {
-                if (!RestoreRemovedItems(inventory, removed)) _log?.LogError($"Deepstone '{stone.DeepstoneId}' could not fully compensate a partial trophy-consumption failure.");
-                diagnostic = "The required trophy changed before the server could consume it; the transaction was cancelled.";
-                return false;
-            }
-            removed.Add(restore);
-            remaining -= consume;
-        }
-        if (remaining != 0)
+                while (itemIndex < trophyItems.Length && trophyItems[itemIndex].m_stack <= 0) itemIndex++;
+                if (itemIndex >= trophyItems.Length) return false;
+                var item = trophyItems[itemIndex];
+                var restore = item.Clone(); restore.m_stack = 1;
+                if (!inventory.RemoveItem(item, 1)) return false;
+                removed.Add(restore);
+                return true;
+            },
+            () => stone.PersistAuthorizedActivation(plan.ResultingState.TrophyMounted, plan.ResultingState.BoonUnlocked),
+            stone.TryRollbackAuthorizedActivation,
+            count => RestoreRemovedItems(inventory, removed.Take(count)));
+
+        if (!transaction.Applied)
         {
-            if (!RestoreRemovedItems(inventory, removed)) _log?.LogError($"Deepstone '{stone.DeepstoneId}' could not fully compensate incomplete trophy consumption.");
-            diagnostic = "The server could not complete the authorized trophy consumption; the transaction was cancelled.";
+            if (transaction.Outcome == UnderworldDeepstoneTransactionOutcome.CompensationFailed)
+                _log?.LogError($"Deepstone '{stone.DeepstoneId}' compensation failed. stateRollback={transaction.PersistenceRolledBack}, inventoryRollback={transaction.InventoryRestored}.");
+            diagnostic = transaction.Diagnostic;
             return false;
         }
 
-        if (!stone.PersistAuthorizedActivation(plan.ResultingState.TrophyMounted, plan.ResultingState.BoonUnlocked))
-        {
-            var stateRolledBack = stone.TryRollbackAuthorizedActivation();
-            var inventoryRolledBack = RestoreRemovedItems(inventory, removed);
-            if (!stateRolledBack || !inventoryRolledBack)
-            {
-                _log?.LogError($"Deepstone '{stone.DeepstoneId}' compensation failed after persistence rejection. stateRollback={stateRolledBack}, inventoryRollback={inventoryRolledBack}.");
-                diagnostic = "Deepstone activation failed and server compensation was incomplete; administrator recovery is required.";
-                return false;
-            }
-            diagnostic = "Deepstone activation could not be persisted; the trophy was restored and no boon was granted.";
-            return false;
-        }
         diagnostic = plan.Diagnostic;
         return true;
     }
