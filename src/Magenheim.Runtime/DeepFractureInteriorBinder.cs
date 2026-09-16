@@ -18,7 +18,7 @@ internal sealed class DeepFractureInteriorBinder : IDeepFractureInteriorBinder
         var existing = anchor.Cast<Transform>().SingleOrDefault(transform => string.Equals(transform.name, InteriorRootName, StringComparison.Ordinal));
         if (existing is not null) throw new InvalidOperationException("Deep Fracture interior authority is already attached to this entrance; duplicate binders are refused.");
         DeepFractureSurfaceTravel.AttachSurfacePortal(anchor);
-        var root = new GameObject(InteriorRootName);root.transform.SetParent(anchor, worldPositionStays: false);root.transform.localPosition = Vector3.zero;root.transform.localRotation = Quaternion.identity;root.AddComponent<DeepFractureInteriorRuntime>();
+        var root = new GameObject(InteriorRootName);root.transform.SetParent(anchor, worldPositionStays: false);root.transform.localPosition = Vector3.zero;root.transform.localRotation = Quaternion.identity;root.AddComponent<ZNetView>();root.AddComponent<DeepFractureEncounterAuthority>();root.AddComponent<DeepFractureInteriorRuntime>();
         return new DeepFractureInteriorBinding(true, checked((float)DeepFractureExpeditionPlanner.MaximumSupportedInteriorRadius()), InteriorEnvironment);
     }
 }
@@ -29,18 +29,19 @@ internal sealed class DeepFractureInteriorRuntime : MonoBehaviour
     private void Start()
     {
         if (_built) return;
-        var seed = StableLocationSeed(transform.position);var expedition = DeepFractureExpeditionPlanner.Build(seed);var districts = BuildDistricts(expedition.Interior);DeepFracturePassageAssembler.Assemble(transform, expedition.Interior);BuildTraversalLinks(expedition.Interior);
+        var authority = GetComponent<DeepFractureEncounterAuthority>() ?? throw new InvalidOperationException("Deep Fracture interior has no persistent encounter authority.");
+        var seed = StableLocationSeed(transform.position);var expedition = DeepFractureExpeditionPlanner.Build(seed);var districts = BuildDistricts(expedition.Interior, authority);DeepFracturePassageAssembler.Assemble(transform, expedition.Interior);BuildTraversalLinks(expedition.Interior);
         var descent = districts.TryGetValue("DF-01", out var descentDistrict) ? descentDistrict : throw new InvalidOperationException("Deep Fracture expedition did not place required DF-01 Fracture Descent district.");
         DeepFractureSurfaceTravel.Bind(transform, descent);_built = true;
     }
 
-    private Dictionary<string, GameObject> BuildDistricts(DeepFractureInteriorBlueprint blueprint)
+    private Dictionary<string, GameObject> BuildDistricts(DeepFractureInteriorBlueprint blueprint, DeepFractureEncounterAuthority authority)
     {
         var instances = new Dictionary<string, GameObject>(StringComparer.Ordinal);
         foreach (var placement in blueprint.Modules.OrderBy(module => module.SequenceIndex))
         {
             var source = DeepFractureRoomRegistrar.ResolveDistrict(placement.PieceFamilyId);var instance = Instantiate(source.gameObject, transform, false);instance.name = $"{DeepFractureRoomVisuals.RoomPrefabName(placement.PieceFamilyId)}_{placement.ModuleInstanceId}";instance.transform.localPosition = ToVector3(placement.Center);instance.transform.localRotation = Quaternion.Euler(0f, placement.YawDegrees, 0f);instance.SetActive(true);
-            var room = instance.GetComponent<Room>() ?? throw new InvalidOperationException($"Instantiated Deep Fracture district '{instance.name}' has no Room component.");DeepFractureRoomVisuals.ApplyElementalState(room, placement.ElementalStates);DeepFractureEncounterSpawner.Populate(instance, placement);
+            var room = instance.GetComponent<Room>() ?? throw new InvalidOperationException($"Instantiated Deep Fracture district '{instance.name}' has no Room component.");DeepFractureRoomVisuals.ApplyElementalState(room, placement.ElementalStates);DeepFractureEncounterSpawner.Populate(instance, placement, authority);
             if (instances.ContainsKey(placement.PieceFamilyId)) throw new InvalidOperationException($"Deep Fracture expedition placed duplicate district family '{placement.PieceFamilyId}', so a unique travel anchor cannot be selected.");instances.Add(placement.PieceFamilyId, instance);
         }
         return instances;
