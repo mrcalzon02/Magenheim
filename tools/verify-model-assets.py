@@ -21,7 +21,12 @@ for file in sorted((assets/'runtime').glob('*.model.json')):
    a,b,c=[vertices[indices[i+j]] for j in range(3)];u=[b[j]-a[j] for j in range(3)];v=[c[j]-a[j] for j in range(3)];cross=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]]
    assert sum(x*x for x in cross)>1e-22,('Degenerate face',id,part['name'])
   texture=part['material'].get('texture')
-  if texture:assert (assets/'textures'/texture).read_bytes().startswith(b'\x89PNG\r\n\x1a\n'),('Missing PNG',id,texture)
+  if texture:
+   texture_path=assets/'textures'/texture;png=texture_path.read_bytes()
+   assert png.startswith(b'\x89PNG\r\n\x1a\n'),('Missing PNG',id,texture)
+   assert png[12:16]==b'IHDR' and len(png)>=24,('Invalid PNG header',id,texture)
+   width,height=struct.unpack('>II',png[16:24])
+   assert width>=256 and height>=256,('Texture below 256px fidelity floor',id,texture,width,height)
   triangles+=len(indices)//3;materials.add(part['material']['name'])
  data=glb.read_bytes();magic,version,length=struct.unpack_from('<III',data);assert magic==0x46546c67 and version==2 and length==len(data),id
  size,kind=struct.unpack_from('<II',data,12);assert kind==0x4e4f534a,id
@@ -37,4 +42,4 @@ for file in (root/'src/Magenheim.Runtime').glob('*.cs'):
 (assets/'catalog.json').write_text(json.dumps(rows,indent=2))
 with (assets/'catalog.tsv').open('w',newline='') as f:
  writer=csv.DictWriter(f,fieldnames=rows[0].keys(),delimiter='\t');writer.writeheader();writer.writerows(rows)
-print(f'PASS: {len(rows)} Blender/GLB/runtime sets; {sum(r["triangles"] for r in rows):,} triangles; UVs, normals, PNGs, topology, hashes, and no active shape generators.')
+print(f'PASS: {len(rows)} Blender/GLB/runtime sets; {sum(r["triangles"] for r in rows):,} triangles; UVs, normals, >=256px PNGs, topology, hashes, and no active shape generators.')
