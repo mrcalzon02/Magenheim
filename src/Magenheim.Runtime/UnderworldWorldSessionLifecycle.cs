@@ -7,11 +7,13 @@ namespace Magenheim.Runtime;
 /// <summary>
 /// Tracks the lifetime of the active Valheim world without owning Valheim's world lifecycle.
 /// A disappearance or UID change clears only Magenheim's logical Underworld context so stale
-/// layer state cannot leak into the next loaded world.
+/// layer state cannot leak into the next loaded world. It also owns world-facing Underworld
+/// prefab registrars whose lifetime must follow the plugin/world runtime boundary.
 /// </summary>
 internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
 {
     private UnderworldRuntimeServices? _services;
+    private UnderworldDeepGateRegistrar? _deepGateRegistrar;
     private ManualLogSource? _log;
     private long? _observedWorldUid;
 
@@ -21,6 +23,9 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             throw new InvalidOperationException("Underworld world-session lifecycle is already configured.");
         _services = services ?? throw new ArgumentNullException(nameof(services));
         _log = log ?? throw new ArgumentNullException(nameof(log));
+
+        _deepGateRegistrar = new UnderworldDeepGateRegistrar(log);
+        _deepGateRegistrar.Register();
     }
 
     private void Update()
@@ -56,6 +61,8 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
 
     private void OnDestroy()
     {
+        _deepGateRegistrar?.Dispose();
+        _deepGateRegistrar = null;
         _services?.ResetForWorldUnload();
         _observedWorldUid = null;
     }
