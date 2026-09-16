@@ -46,6 +46,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
             marker.AddComponent<PulseMarker>().Configure(.85f);
         }
         if(Alignment==ElementalAlignment.Storm)EmitStormNetwork(origin);
+        else if(Alignment==ElementalAlignment.Earth)EmitEarthTerritory(origin);
     }
     private void EmitStormNetwork(Vector3 origin)
     {
@@ -61,6 +62,43 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
             if(i%2==0)EmitStormArc(nodes[i],nodes[(i+2)%nodes.Length],.55f+i*.11f);
         }
         for(var i=0;i<4;i++)EmitStormArc(origin+Vector3.up*.3f,nodes[i*2],.9f+i*.19f);
+    }
+    private void EmitEarthTerritory(Vector3 origin)
+    {
+        var color=new Color(.43f,.31f,.16f,.9f);
+        for(var i=0;i<8;i++)
+        {
+            var direction=Quaternion.Euler(0,i*45f,0)*Vector3.forward;
+            var side=Vector3.Cross(Vector3.up,direction);
+            var start=origin+direction*.55f+Vector3.up*.035f;
+            var end=origin+direction*(3.1f+i%2*.45f)+Vector3.up*.035f;
+            var fault=new GameObject("Magenheim_WardenEarthFault");
+            var line=fault.AddComponent<LineRenderer>();
+            line.useWorldSpace=true;line.positionCount=5;line.startWidth=.13f;line.endWidth=.035f;line.startColor=color;line.endColor=new Color(.28f,.19f,.09f,.35f);
+            var material=new Material(Shader.Find("Standard"));material.color=color;material.SetFloat("_Glossiness",.08f);line.material=material;
+            var delta=end-start;
+            line.SetPosition(0,start);
+            line.SetPosition(1,start+delta*.24f+side*((i%2==0)?.16f:-.12f));
+            line.SetPosition(2,start+delta*.48f-side*.19f);
+            line.SetPosition(3,start+delta*.73f+side*((i%3==0)?.22f:-.14f));
+            line.SetPosition(4,end);
+            fault.AddComponent<EarthFaultLifetime>().Configure(.9f);
+            if(i%2==0)EmitEarthUpheaval(origin+direction*(2.05f+i%3*.28f),direction,i);
+        }
+        EmitEarthUpheaval(origin,Vector3.forward,8);
+    }
+    private static void EmitEarthUpheaval(Vector3 position,Vector3 outward,int seed)
+    {
+        var mass=GameObject.CreatePrimitive(PrimitiveType.Cube);
+        mass.name="Magenheim_WardenEarthUpheaval";
+        mass.transform.position=position+Vector3.up*.08f;
+        var scale=.26f+(seed%3)*.06f;
+        mass.transform.localScale=new Vector3(scale,.16f,scale*.82f);
+        mass.transform.rotation=Quaternion.Euler(10f+(seed%2)*9f,seed*37f,12f);
+        var collider=mass.GetComponent<Collider>();if(collider)Destroy(collider);
+        var renderer=mass.GetComponent<Renderer>();
+        if(renderer){var material=new Material(Shader.Find("Standard"));material.color=new Color(.39f,.29f,.17f,1f);material.SetFloat("_Glossiness",.06f);renderer.material=material;}
+        mass.AddComponent<EarthUpheaval>().Configure(outward.normalized,.82f);
     }
     private static void EmitStormArc(Vector3 start,Vector3 end,float bendSeed)
     {
@@ -79,7 +117,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
         line.material=material;
         var delta=end-start;
         var side=Vector3.Cross(Vector3.up,delta.normalized);
-        var bend=.18f+Mathf.Abs(Mathf.Sin(bendSeed))* .22f;
+        var bend=.18f+Mathf.Abs(Mathf.Sin(bendSeed))*.22f;
         line.SetPosition(0,start);
         line.SetPosition(1,start+delta*.33f+side*bend+Vector3.up*.12f);
         line.SetPosition(2,start+delta*.67f-side*bend*.7f+Vector3.up*.05f);
@@ -116,5 +154,19 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
         internal void Configure(float life)=>_life=life;
         private void Update(){_life-=Time.deltaTime;if(_life<=0f)Destroy(gameObject);}
         private void OnDestroy(){var line=GetComponent<LineRenderer>();if(line&&line.material)Destroy(line.material);}
+    }
+    private sealed class EarthFaultLifetime:MonoBehaviour
+    {
+        private float _life;
+        internal void Configure(float life)=>_life=life;
+        private void Update(){_life-=Time.deltaTime;if(_life<=0f)Destroy(gameObject);}
+        private void OnDestroy(){var line=GetComponent<LineRenderer>();if(line&&line.material)Destroy(line.material);}
+    }
+    private sealed class EarthUpheaval:MonoBehaviour
+    {
+        private Vector3 _outward;private float _life,_age;
+        internal void Configure(Vector3 outward,float life){_outward=outward;_life=life;}
+        private void Update(){_age+=Time.deltaTime;var t=Mathf.Clamp01(_age/_life);transform.position+=(_outward*.18f+Vector3.up*(.7f-t*1.15f))*Time.deltaTime;if(_age>=_life)Destroy(gameObject);}
+        private void OnDestroy(){var renderer=GetComponent<Renderer>();if(renderer&&renderer.material)Destroy(renderer.material);}
     }
 }
