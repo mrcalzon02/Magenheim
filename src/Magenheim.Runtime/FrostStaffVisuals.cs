@@ -11,7 +11,7 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal static class FrostStaffVisuals
 {
-    private static readonly Mesh BoxMesh = CreateBoxMesh();
+    private static readonly Mesh BoxMesh = RuntimeMeshPrimitives.Box("magenheim.staff.box");
     private static readonly Dictionary<int, Mesh> CylinderMeshes = new();
     private static readonly Dictionary<int, Mesh> PrismMeshes = new();
 
@@ -121,13 +121,29 @@ internal static class FrostStaffVisuals
 
     private static void Cylinder(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material)
     {
-        if (!CylinderMeshes.TryGetValue(sides, out var mesh)) { mesh = CreateCylinderMesh(sides); CylinderMeshes.Add(sides, mesh); }
+        if (!CylinderMeshes.TryGetValue(sides, out var mesh))
+        {
+            mesh = RuntimeMeshPrimitives.Cylinder(sides, "magenheim.staff.cylinder." + sides);
+            CylinderMeshes.Add(sides, mesh);
+        }
         AddPart(root, name, mesh, position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.identity, material);
     }
 
     private static void Prism(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material)
     {
-        if (!PrismMeshes.TryGetValue(sides, out var mesh)) { mesh = CreatePrismMesh(sides); PrismMeshes.Add(sides, mesh); }
+        if (!PrismMeshes.TryGetValue(sides, out var mesh))
+        {
+            mesh = RuntimeMeshPrimitives.Prism(
+                sides,
+                "magenheim.staff.prism." + sides,
+                lowerRadius: .36f,
+                lowerY: -.45f,
+                upperRadius: .50f,
+                upperY: .20f,
+                apexY: .68f,
+                baseY: -.50f);
+            PrismMeshes.Add(sides, mesh);
+        }
         AddPart(root, name, mesh, position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.identity, material);
     }
 
@@ -161,78 +177,5 @@ internal static class FrostStaffVisuals
         if (material.HasProperty("_ZWrite")) material.SetFloat("_ZWrite", 1f);
         material.renderQueue = 2000;
         return material;
-    }
-
-    private static Mesh CreateBoxMesh()
-    {
-        var mesh = new Mesh { name = "magenheim.staff.box" };
-        mesh.vertices = new[]
-        {
-            new Vector3(-.5f,-.5f,-.5f), new Vector3(.5f,-.5f,-.5f), new Vector3(.5f,.5f,-.5f), new Vector3(-.5f,.5f,-.5f),
-            new Vector3(-.5f,-.5f,.5f), new Vector3(.5f,-.5f,.5f), new Vector3(.5f,.5f,.5f), new Vector3(-.5f,.5f,.5f),
-        };
-        mesh.triangles = new[] { 0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2 };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
-    }
-
-    private static Mesh CreateCylinderMesh(int sides)
-    {
-        var vertices = new List<Vector3>(sides * 2 + 2);
-        var triangles = new List<int>(sides * 12);
-        for (var ring = 0; ring < 2; ring++)
-        {
-            var y = ring == 0 ? -.5f : .5f;
-            for (var index = 0; index < sides; index++)
-            {
-                var angle = 2f * Mathf.PI * index / sides;
-                vertices.Add(new Vector3(.5f * Mathf.Cos(angle), y, .5f * Mathf.Sin(angle)));
-            }
-        }
-        var bottom = vertices.Count; vertices.Add(new Vector3(0, -.5f, 0));
-        var top = vertices.Count; vertices.Add(new Vector3(0, .5f, 0));
-        for (var index = 0; index < sides; index++)
-        {
-            var next = (index + 1) % sides;
-            triangles.AddRange(new[]
-            {
-                index, sides + index, next,
-                next, sides + index, sides + next,
-                bottom, index, next,
-                top, sides + next, sides + index,
-            });
-        }
-        var mesh = new Mesh { name = "magenheim.staff.cylinder." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
-    }
-
-    private static Mesh CreatePrismMesh(int sides)
-    {
-        var vertices = new List<Vector3>(sides * 2 + 2);
-        var triangles = new List<int>(sides * 12);
-        for (var index = 0; index < sides; index++)
-        {
-            var angle = 2f * Mathf.PI * index / sides;
-            vertices.Add(new Vector3(.36f * Mathf.Cos(angle), -.45f, .36f * Mathf.Sin(angle)));
-        }
-        for (var index = 0; index < sides; index++)
-        {
-            var angle = 2f * Mathf.PI * index / sides;
-            vertices.Add(new Vector3(.5f * Mathf.Cos(angle), .20f, .5f * Mathf.Sin(angle)));
-        }
-        var top = vertices.Count; vertices.Add(new Vector3(0, .68f, 0));
-        var bottom = vertices.Count; vertices.Add(new Vector3(0, -.50f, 0));
-        for (var index = 0; index < sides; index++)
-        {
-            var next = (index + 1) % sides;
-            triangles.AddRange(new[]
-            {
-                bottom, index, next,
-                index, sides + index, next,
-                next, sides + index, sides + next,
-                top, sides + next, sides + index,
-            });
-        }
-        var mesh = new Mesh { name = "magenheim.staff.prism." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 }
