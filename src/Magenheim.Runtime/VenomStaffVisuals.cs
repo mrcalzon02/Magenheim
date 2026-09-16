@@ -1,174 +1,114 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>Original Magenheim geometry for the four Venom staff tiers.</summary>
+/// <summary>Valheim-style owned silhouettes for the four Venom staff tiers.</summary>
 internal static class VenomStaffVisuals
 {
-    private static readonly Mesh BoxMesh = CreateBoxMesh();
-    private static readonly Dictionary<int, Mesh> CylinderMeshes = new();
-    private static readonly Dictionary<int, Mesh> PrismMeshes = new();
-
     internal static void Apply(GameObject prefab, string assetName)
     {
-        if (prefab is null) throw new ArgumentNullException(nameof(prefab));
-        var originalRenderers = prefab.GetComponentsInChildren<Renderer>(true);
-        var sourceMaterial = originalRenderers.Select(renderer => renderer.sharedMaterial).FirstOrDefault(material => material)
-            ?? throw new InvalidOperationException($"No material source exists on Venom staff prefab '{prefab.name}'.");
-        var attach = prefab.transform.Find("attach") ?? prefab.transform;
-        var root = new GameObject("magenheim." + assetName + ".visual") { layer = prefab.layer };
-        root.transform.SetParent(attach, false);
-        root.transform.localPosition = Vector3.zero;
-        root.transform.localRotation = Quaternion.identity;
-        root.transform.localScale = Vector3.one;
+        var context=ValheimStaffVisualBuilder.Begin(prefab,assetName);
+        var source=context.SourceMaterial;
+        var wood=ValheimStaffVisualBuilder.Surface(source,"venom-staff","wood",new Color(.25f,.17f,.10f,1f),0f,.10f);
+        var elder=ValheimStaffVisualBuilder.Surface(source,"venom-staff","elder-wood",new Color(.20f,.14f,.11f,1f),0f,.11f);
+        var leather=ValheimStaffVisualBuilder.Surface(source,"venom-staff","leather-wrap",new Color(.13f,.10f,.07f,1f),.01f,.08f);
+        var iron=ValheimStaffVisualBuilder.Surface(source,"venom-staff","iron",new Color(.29f,.34f,.30f,1f),.42f,.20f);
+        var black=ValheimStaffVisualBuilder.Surface(source,"venom-staff","blackmetal",new Color(.12f,.16f,.13f,1f),.72f,.30f);
+        var venom=ValheimStaffVisualBuilder.Surface(source,"venom-staff","venom-crystal",new Color(.37f,.80f,.20f,1f),.04f,.55f,.20f);
+        var bright=ValheimStaffVisualBuilder.Surface(source,"venom-staff","venom-bright-crystal",new Color(.63f,.94f,.35f,1f),.03f,.65f,.32f);
+        var deep=ValheimStaffVisualBuilder.Surface(source,"venom-staff","venom-deep-crystal",new Color(.16f,.43f,.13f,1f),.05f,.35f,.10f);
 
-        var wood = MakeMaterial(sourceMaterial, "wood", new Color(.25f,.17f,.10f,1f), 0f, .10f);
-        var elder = MakeMaterial(sourceMaterial, "elder-wood", new Color(.20f,.14f,.11f,1f), 0f, .11f);
-        var iron = MakeMaterial(sourceMaterial, "iron", new Color(.29f,.34f,.30f,1f), .42f, .20f);
-        var black = MakeMaterial(sourceMaterial, "blackmetal", new Color(.12f,.16f,.13f,1f), .72f, .30f);
-        var venom = MakeMaterial(sourceMaterial, "venom-crystal", new Color(.37f,.80f,.20f,1f), .04f, .55f, .20f);
-        var venomBright = MakeMaterial(sourceMaterial, "venom-bright-crystal", new Color(.63f,.94f,.35f,1f), .03f, .65f, .32f);
-        var venomDeep = MakeMaterial(sourceMaterial, "venom-deep-crystal", new Color(.16f,.43f,.13f,1f), .05f, .35f, .10f);
-
-        switch (assetName)
+        switch(assetName)
         {
-            case "staff-venom-simple": BuildSimple(root, wood, iron, venom); break;
-            case "staff-venom-crystal": BuildCrystal(root, elder, iron, venomBright); break;
-            case "staff-venom-advanced": BuildAdvanced(root, elder, black, venom, venomDeep); break;
-            case "staff-venom-master": BuildMaster(root, elder, black, venomBright, venomDeep); break;
+            case "staff-venom-simple": BuildSimple(context.Root,wood,leather,iron,venom,deep); break;
+            case "staff-venom-crystal": BuildCrystal(context.Root,elder,leather,iron,bright,deep); break;
+            case "staff-venom-advanced": BuildAdvanced(context.Root,elder,leather,black,venom,deep); break;
+            case "staff-venom-master": BuildMaster(context.Root,elder,leather,black,bright,deep); break;
             default: throw new InvalidOperationException($"Unknown Venom staff geometry '{assetName}'.");
         }
-
-        foreach (var renderer in originalRenderers) renderer.enabled = false;
-        foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled = false;
+        ValheimStaffVisualBuilder.Finish(context);
     }
 
-    private static void BuildSimple(GameObject root, Material wood, Material metal, Material venom)
+    private static void BuildSimple(GameObject root,Material wood,Material leather,Material iron,Material venom,Material deep)
     {
-        Shaft(root, wood, metal, .035f);
-        Box(root, "left-hook", new Vector3(-.07f,.70f,0), new Vector3(.052f,.34f,.052f), wood, -18f);
-        Box(root, "right-hook", new Vector3(.07f,.70f,0), new Vector3(.052f,.34f,.052f), wood, 18f);
-        Cylinder(root, "binding", new Vector3(0,.58f,0), .052f,.06f,10,metal);
-        Prism(root, "venom-seed", new Vector3(0,.82f,0), .075f,.28f,6,venom);
+        ValheimStaffVisualBuilder.OrganicShaft(root,"venom",wood,leather,iron,.039f,1.25f,false);
+        var hub=new Vector3(.018f,.52f,.006f);
+        var left=new Vector3(-.18f,.84f,.045f);
+        var right=new Vector3(.15f,.88f,-.025f);
+        ValheimStaffVisualBuilder.Segment(root,"thorn-hook-left",hub,left,.027f,wood,8);
+        ValheimStaffVisualBuilder.Segment(root,"thorn-hook-right",hub,right,.025f,wood,8);
+        ValheimStaffVisualBuilder.Segment(root,"left-fang",left,new Vector3(-.10f,1.03f,.055f),.018f,iron,6);
+        ValheimStaffVisualBuilder.Segment(root,"right-fang",right,new Vector3(.24f,1.00f,-.04f),.016f,iron,6);
+        ValheimStaffVisualBuilder.Shard(root,"venom-seed",new Vector3(.020f,.88f,.005f),new Vector3(.17f,.35f,.17f),Quaternion.Euler(6f,17f,-7f),venom,6);
+        ValheimStaffVisualBuilder.Shard(root,"toxin-barb",new Vector3(-.16f,.72f,.07f),new Vector3(.042f,.14f,.042f),Quaternion.Euler(18f,5f,24f),deep,5);
     }
 
-    private static void BuildCrystal(GameObject root, Material wood, Material metal, Material venom)
+    private static void BuildCrystal(GameObject root,Material wood,Material leather,Material iron,Material bright,Material deep)
     {
-        Shaft(root, wood, metal, .039f);
-        foreach (var y in new[] { .30f,.48f,.64f }) Cylinder(root,"coil-"+y,new Vector3(0,y,0),.070f,.035f,12,metal);
-        Box(root,"left-tine",new Vector3(-.12f,.76f,0),new Vector3(.035f,.29f,.035f),metal,-23f);
-        Box(root,"right-tine",new Vector3(.12f,.76f,0),new Vector3(.035f,.29f,.035f),metal,23f);
-        Prism(root,"venom-heart",new Vector3(0,.84f,0),.10f,.40f,6,venom);
-    }
-
-    private static void BuildAdvanced(GameObject root, Material wood, Material metal, Material venom, Material deep)
-    {
-        Shaft(root, wood, metal, .042f);
-        Cylinder(root,"crown-band",new Vector3(0,.61f,0),.082f,.07f,12,metal);
-        for (var i=0;i<8;i++)
+        ValheimStaffVisualBuilder.OrganicShaft(root,"venom",wood,leather,iron,.043f,1.35f,true);
+        var centre=new Vector3(.018f,.90f,.005f);
+        for(var i=0;i<4;i++)
         {
-            var angle=Mathf.PI*2f*i/8f;
-            var x=.18f*Mathf.Cos(angle); var z=.18f*Mathf.Sin(angle);
-            Box(root,"thorn-"+i,new Vector3(x,.78f,z),new Vector3(.035f,.30f,.035f),metal,8f*Mathf.Cos(angle));
-            Prism(root,"thorn-tip-"+i,new Vector3(x,.96f,z),.025f,.11f,5,deep);
+            var a=i*Mathf.PI*.5f+.20f;
+            var radial=new Vector3(Mathf.Cos(a),0f,Mathf.Sin(a));
+            var lower=centre+radial*.10f+Vector3.down*.27f;
+            var upper=centre+radial*(i==2?.30f:.25f)+Vector3.up*(i%2==0?.19f:.12f);
+            ValheimStaffVisualBuilder.Segment(root,"fang-cage-a-"+i,lower,Vector3.Lerp(lower,upper,.55f),.019f,iron,8);
+            ValheimStaffVisualBuilder.Segment(root,"fang-cage-b-"+i,Vector3.Lerp(lower,upper,.55f),upper,.013f,iron,6);
+            ValheimStaffVisualBuilder.Shard(root,"fang-tip-"+i,upper,new Vector3(.038f,.13f,.038f),Quaternion.Euler(16f*Mathf.Sin(a),a*Mathf.Rad2Deg,18f*Mathf.Cos(a)),deep,5);
         }
-        Prism(root,"advanced-core",new Vector3(0,.87f,0),.11f,.46f,6,venom);
+        ValheimStaffVisualBuilder.Shard(root,"venom-heart",centre,new Vector3(.21f,.47f,.21f),Quaternion.Euler(-4f,21f,3f),bright,7);
+        ValheimStaffVisualBuilder.Shard(root,"drip-crystal",new Vector3(.22f,.77f,-.045f),new Vector3(.040f,.16f,.040f),Quaternion.Euler(170f,4f,-11f),deep,5);
+        ValheimStaffVisualBuilder.FocusLight(root,"venom-light",centre+Vector3.up*.04f,new Color(.53f,.92f,.27f),1.55f,.28f);
     }
 
-    private static void BuildMaster(GameObject root, Material wood, Material metal, Material venom, Material deep)
+    private static void BuildAdvanced(GameObject root,Material wood,Material leather,Material black,Material venom,Material deep)
     {
-        Shaft(root, wood, metal, .045f);
-        foreach (var y in new[] { -.48f,-.10f,.28f,.58f }) Cylinder(root,"shaft-band-"+y,new Vector3(0,y,0),.065f,.045f,12,metal);
-        Cylinder(root,"master-halo",new Vector3(0,.70f,0),.20f,.05f,14,metal);
-        for (var i=0;i<6;i++)
+        ValheimStaffVisualBuilder.OrganicShaft(root,"venom",wood,leather,black,.046f,1.45f,true);
+        var centre=new Vector3(.018f,.91f,.005f);
+        for(var i=0;i<7;i++)
         {
-            var angle=Mathf.PI*2f*i/6f;
-            var x=.17f*Mathf.Cos(angle); var z=.17f*Mathf.Sin(angle);
-            Box(root,"rib-"+i,new Vector3(x,.84f,z),new Vector3(.038f,.42f,.038f),metal,10f*Mathf.Cos(angle));
-            Prism(root,"rib-crystal-"+i,new Vector3(x,1.05f,z),.027f,.13f,5,deep);
+            var a=i*Mathf.PI*2f/7f+.26f;
+            var radial=new Vector3(Mathf.Cos(a),0f,Mathf.Sin(a));
+            var lower=centre+radial*.11f+Vector3.down*.26f;
+            var elbow=centre+radial*.20f+Vector3.down*.02f;
+            var upper=centre+radial*(i==4?.33f:.27f)+Vector3.up*(i%2==0?.22f:.16f);
+            ValheimStaffVisualBuilder.Segment(root,"thorn-rib-a-"+i,lower,elbow,.019f,black,7);
+            ValheimStaffVisualBuilder.Segment(root,"thorn-rib-b-"+i,elbow,upper,.012f,black,6);
+            ValheimStaffVisualBuilder.Shard(root,"thorn-tip-"+i,upper,new Vector3(.038f,.14f,.038f),Quaternion.Euler(14f*Mathf.Sin(a),a*Mathf.Rad2Deg,20f*Mathf.Cos(a)),deep,5);
         }
-        Prism(root,"master-core",new Vector3(0,.91f,0),.13f,.55f,6,venom);
+        ValheimStaffVisualBuilder.Shard(root,"advanced-venom-core",centre,new Vector3(.25f,.52f,.25f),Quaternion.Euler(-3f,24f,2f),venom,7);
+        ValheimStaffVisualBuilder.Segment(root,"crooked-side-thorn",new Vector3(-.15f,.73f,.05f),new Vector3(-.34f,.91f,.09f),.015f,wood,7);
+        ValheimStaffVisualBuilder.Shard(root,"side-toxin",new Vector3(-.35f,.95f,.09f),new Vector3(.040f,.14f,.040f),Quaternion.Euler(14f,0f,-16f),deep,5);
     }
 
-    private static void Shaft(GameObject root, Material wood, Material metal, float radius)
+    private static void BuildMaster(GameObject root,Material wood,Material leather,Material black,Material bright,Material deep)
     {
-        Cylinder(root,"shaft",new Vector3(0,-.08f,0),radius,1.48f,10,wood);
-        Cylinder(root,"pommel",new Vector3(0,-.77f,0),radius*1.35f,.10f,10,metal);
-        Cylinder(root,"neck-band",new Vector3(0,.50f,0),radius*1.30f,.055f,10,metal);
-    }
-
-    private static void Box(GameObject root,string name,Vector3 position,Vector3 size,Material material,float zDegrees=0f) =>
-        AddPart(root,name,BoxMesh,position,size,Quaternion.Euler(0,0,zDegrees),material);
-
-    private static void Cylinder(GameObject root,string name,Vector3 position,float radius,float height,int sides,Material material)
-    {
-        if (!CylinderMeshes.TryGetValue(sides,out var mesh)) { mesh=CreateCylinderMesh(sides); CylinderMeshes.Add(sides,mesh); }
-        AddPart(root,name,mesh,position,new Vector3(radius*2f,height,radius*2f),Quaternion.identity,material);
-    }
-
-    private static void Prism(GameObject root,string name,Vector3 position,float radius,float height,int sides,Material material)
-    {
-        if (!PrismMeshes.TryGetValue(sides,out var mesh)) { mesh=CreatePrismMesh(sides); PrismMeshes.Add(sides,mesh); }
-        AddPart(root,name,mesh,position,new Vector3(radius*2f,height,radius*2f),Quaternion.identity,material);
-    }
-
-    private static void AddPart(GameObject root,string name,Mesh mesh,Vector3 position,Vector3 scale,Quaternion rotation,Material material)
-    {
-        var part=new GameObject(name){layer=root.layer};
-        part.transform.SetParent(root.transform,false); part.transform.localPosition=position; part.transform.localScale=scale; part.transform.localRotation=rotation;
-        part.AddComponent<MeshFilter>().sharedMesh=mesh; part.AddComponent<MeshRenderer>().sharedMaterial=material;
-    }
-
-    private static Material MakeMaterial(Material source,string suffix,Color color,float metallic,float glossiness,float emission=0f)
-    {
-        var material=new Material(source){name="magenheim.venom-staff."+suffix};
-        GeneratedSurfaceTextures.Apply(material,suffix);
-        if(material.HasProperty("_Color")) material.SetColor("_Color",color);
-        if(material.HasProperty("_Metallic")) material.SetFloat("_Metallic",metallic);
-        if(material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness",glossiness);
-        if(material.HasProperty("_BumpMap")) material.SetTexture("_BumpMap",null);
-        material.DisableKeyword("_NORMALMAP");
-        if(material.HasProperty("_EmissionColor") && emission>0f){ material.SetColor("_EmissionColor",color*emission); material.EnableKeyword("_EMISSION"); }
-        else material.DisableKeyword("_EMISSION");
-        material.SetOverrideTag("RenderType","Opaque"); if(material.HasProperty("_ZWrite")) material.SetFloat("_ZWrite",1f); material.renderQueue=2000;
-        return material;
-    }
-
-    private static Mesh CreateBoxMesh()
-    {
-        var mesh=new Mesh{name="magenheim.venom.box"};
-        mesh.vertices=new[]{new Vector3(-.5f,-.5f,-.5f),new Vector3(.5f,-.5f,-.5f),new Vector3(.5f,.5f,-.5f),new Vector3(-.5f,.5f,-.5f),new Vector3(-.5f,-.5f,.5f),new Vector3(.5f,-.5f,.5f),new Vector3(.5f,.5f,.5f),new Vector3(-.5f,.5f,.5f)};
-        mesh.triangles=new[]{0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2};
-        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
-    }
-
-    private static Mesh CreateCylinderMesh(int sides)
-    {
-        var vertices=new List<Vector3>(); var triangles=new List<int>();
-        for(var ring=0;ring<2;ring++){var y=ring==0?-.5f:.5f; for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides; vertices.Add(new Vector3(.5f*Mathf.Cos(a),y,.5f*Mathf.Sin(a)));}}
-        var bottom=vertices.Count; vertices.Add(new Vector3(0,-.5f,0)); var top=vertices.Count; vertices.Add(new Vector3(0,.5f,0));
-        for(var i=0;i<sides;i++)
+        ValheimStaffVisualBuilder.OrganicShaft(root,"venom",wood,leather,black,.050f,1.55f,true);
+        foreach(var y in new[]{-.34f,-.08f,.20f,.45f})
+            ValheimStaffVisualBuilder.Band(root,"master-band-"+y.ToString("0.00"),new Vector3(.007f*y,y,.004f),.076f,.045f,black,10);
+        var basePoint=new Vector3(.018f,.52f,.005f);
+        var left=new Vector3(-.20f,.73f,.05f);
+        var right=new Vector3(.18f,.70f,-.035f);
+        ValheimStaffVisualBuilder.Segment(root,"fang-left",basePoint,left,.029f,black,8);
+        ValheimStaffVisualBuilder.Segment(root,"fang-right",basePoint,right,.028f,black,8);
+        ValheimStaffVisualBuilder.Segment(root,"fang-left-spire",left,new Vector3(-.35f,1.16f,.075f),.017f,black,7);
+        ValheimStaffVisualBuilder.Segment(root,"fang-right-spire",right,new Vector3(.30f,1.10f,-.05f),.016f,black,7);
+        var centre=new Vector3(.018f,.95f,.005f);
+        for(var i=0;i<8;i++)
         {
-            var n=(i+1)%sides;
-            triangles.AddRange(new[]{i,sides+i,n, n,sides+i,sides+n, bottom,i,n, top,sides+n,sides+i});
+            var a=i*Mathf.PI*2f/8f+.29f;
+            var radial=new Vector3(Mathf.Cos(a),0f,Mathf.Sin(a));
+            var lower=centre+radial*.15f+Vector3.down*.22f;
+            var upper=centre+radial*(i%3==0?.32f:.27f)+Vector3.up*(i%2==0?.17f:.22f);
+            ValheimStaffVisualBuilder.Segment(root,"master-thorn-"+i,lower,upper,.012f,black,6);
+            if(i%2==0) ValheimStaffVisualBuilder.Shard(root,"master-toxin-node-"+i,upper,new Vector3(.042f,.14f,.042f),Quaternion.Euler(13f*Mathf.Sin(a),a*Mathf.Rad2Deg,18f*Mathf.Cos(a)),deep,5);
         }
-        var mesh=new Mesh{name="magenheim.venom.cylinder."+sides,vertices=vertices.ToArray(),triangles=triangles.ToArray()}; mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
-    }
-
-    private static Mesh CreatePrismMesh(int sides)
-    {
-        var vertices=new List<Vector3>(); var triangles=new List<int>();
-        for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides; vertices.Add(new Vector3(.36f*Mathf.Cos(a),-.45f,.36f*Mathf.Sin(a)));}
-        for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides; vertices.Add(new Vector3(.5f*Mathf.Cos(a),.20f,.5f*Mathf.Sin(a)));}
-        var top=vertices.Count; vertices.Add(new Vector3(0,.68f,0)); var bottom=vertices.Count; vertices.Add(new Vector3(0,-.50f,0));
-        for(var i=0;i<sides;i++)
-        {
-            var n=(i+1)%sides;
-            triangles.AddRange(new[]{bottom,i,n, i,sides+i,n, n,sides+i,sides+n, top,sides+n,sides+i});
-        }
-        var mesh=new Mesh{name="magenheim.venom.prism."+sides,vertices=vertices.ToArray(),triangles=triangles.ToArray()}; mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
+        ValheimStaffVisualBuilder.Shard(root,"master-venom-core",centre,new Vector3(.29f,.61f,.29f),Quaternion.Euler(-4f,27f,3f),bright,8);
+        ValheimStaffVisualBuilder.Shard(root,"master-dark-heart",centre+new Vector3(.03f,.12f,-.02f),new Vector3(.10f,.25f,.10f),Quaternion.Euler(8f,-14f,-5f),deep,6);
+        ValheimStaffVisualBuilder.Segment(root,"hanging-fang",new Vector3(.24f,.88f,-.07f),new Vector3(.32f,.70f,-.10f),.009f,black,6);
+        ValheimStaffVisualBuilder.Shard(root,"hanging-drop",new Vector3(.325f,.66f,-.10f),new Vector3(.038f,.13f,.038f),Quaternion.Euler(170f,0f,-8f),deep,5);
+        ValheimStaffVisualBuilder.FocusLight(root,"master-venom-light",centre+Vector3.up*.06f,new Color(.65f,.96f,.38f),1.85f,.36f);
     }
 }
