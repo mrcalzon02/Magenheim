@@ -11,6 +11,7 @@ namespace Magenheim.Runtime;
 /// Server-owned durable storage for the canonical Core Underworld transition payload.
 /// Records are isolated by paired-world identity and player identity, written through a
 /// same-directory temporary file, and atomically promoted only after read-back validation.
+/// The previous verified generation is retained as the recovery backup.
 /// </summary>
 internal sealed class UnderworldTransitionStateStore
 {
@@ -81,7 +82,7 @@ internal sealed class UnderworldTransitionStateStore
         var primaryDiagnostic = diagnostic;
         if (TryRead(backup, playerId, identity, out state, out diagnostic))
         {
-            diagnostic = "Recovered Underworld transition state from atomic-write backup after primary read failed: " + primaryDiagnostic;
+            diagnostic = "Recovered Underworld transition state from retained verified backup after primary read failed: " + primaryDiagnostic;
             _log.LogWarning(diagnostic);
             return true;
         }
@@ -150,9 +151,11 @@ internal sealed class UnderworldTransitionStateStore
         var backup = destination + ".bak";
         try
         {
+            // File.Replace atomically installs the verified candidate and moves the previous
+            // committed generation to backup. Do not delete that backup: TryLoad depends on it
+            // when the newest generation is later truncated/corrupted or storage fails mid-write.
             if (File.Exists(backup)) File.Delete(backup);
             File.Replace(temporary, destination, backup);
-            if (File.Exists(backup)) File.Delete(backup);
         }
         catch (PlatformNotSupportedException)
         {
@@ -167,7 +170,7 @@ internal sealed class UnderworldTransitionStateStore
         try
         {
             File.Move(temporary, destination);
-            File.Delete(backup);
+            // Preserve the old committed generation. It is the rollback candidate, not litter.
         }
         catch
         {
