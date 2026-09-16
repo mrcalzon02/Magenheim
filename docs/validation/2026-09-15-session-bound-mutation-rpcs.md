@@ -23,14 +23,20 @@ For both transports:
 
 The server-side operation keys remain `(PeerId, SessionGeneration, OperationId)`, so the transport envelope and the replay guards now use the same session identity instead of two partially independent notions of connection state.
 
+## Pending-operation retirement
+
+Both client transports now retire pending records whose stored session generation differs from the currently authorized generation before enforcing the 256-operation client cap. Their ordering queues are rebuilt from records that still exist, so a reconnect cannot leave dead prior-session operations consuming capacity.
+
+The same pass repaired an older bounded-queue defect: the previous trim loop dequeued unapplied operations but left them in the dictionary, permanently discarding their queue entry. Repeated scans at capacity could therefore empty the ordering queue while the dictionary remained full. The revised loop performs one bounded scan, removes applied records, and re-enqueues unapplied live records so current operations remain tracked until resolved.
+
 ## Commits
 
 - `a443199074a00e944b1be28ae67ec1124e195908` — authority acknowledgement bound to server session generation.
 - `6c8ec3e926a3e5e0b0167ba8baf042b9c98f2619` — workstation request/response/acknowledgement bound to authority session.
 - `2f7065cb7fe3cc404eba8f7871bb17eb92bf1781` — socket request/response/acknowledgement bound to authority session.
+- `23db245ade49aacecd809cd12ed64ea5fdf88bdd` — workstation client pending records retired by generation and queue trimming repaired.
+- `afa0f910bdfe0514bdecd8390e242c8466c0961e` — socket client pending records retired by generation and queue trimming repaired.
 
 ## Acceptance boundary
 
-This is a source-level network safety repair. A current Valheim/Jötunn build and multiplayer reconnect test remain required. Acceptance should prove normal current-generation operations succeed, a stale-generation request is rejected without preparation, a stale response cannot mutate client inventory, and a stale acknowledgement cannot commit a prepared server operation.
-
-A follow-up source cleanup remains: retire old client pending-operation records when a new authority generation becomes active so safely rejected stale records cannot accumulate against the pending-operation cap. That cleanup is separate from mutation safety and should be completed before runtime acceptance is closed.
+This is a source-level network safety repair. A current Valheim/Jötunn build and multiplayer reconnect test remain required. Acceptance should prove normal current-generation operations succeed, a stale-generation request is rejected without preparation, a stale response cannot mutate client inventory, a stale acknowledgement cannot commit a prepared server operation, and reconnecting does not consume the client pending-operation capacity with records from prior sessions.
