@@ -1,181 +1,119 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>
-/// Original runtime geometry for the four Frost staff tiers. The models are assembled from
-/// small authored meshes rather than retaining StaffIceShards' vanilla visual hierarchy.
-/// </summary>
+/// <summary>Valheim-style owned silhouettes for the four Frost staff tiers.</summary>
 internal static class FrostStaffVisuals
 {
-    private static readonly Mesh BoxMesh = RuntimeMeshPrimitives.Box("magenheim.staff.box");
-    private static readonly Dictionary<int, Mesh> CylinderMeshes = new();
-    private static readonly Dictionary<int, Mesh> PrismMeshes = new();
-
     internal static GameObject Apply(GameObject prefab, string assetName)
     {
-        if (prefab is null) throw new ArgumentNullException(nameof(prefab));
-        if (string.IsNullOrWhiteSpace(assetName)) throw new ArgumentException("Asset name is required.", nameof(assetName));
+        var context = ValheimStaffVisualBuilder.Begin(prefab, assetName);
+        var source = context.SourceMaterial;
+        var wood = ValheimStaffVisualBuilder.Surface(source,"frost-staff","wood",new Color(.29f,.21f,.16f,1f),0f,.14f);
+        var paleWood = ValheimStaffVisualBuilder.Surface(source,"frost-staff","pale-wood",new Color(.46f,.36f,.27f,1f),0f,.16f);
+        var leather = ValheimStaffVisualBuilder.Surface(source,"frost-staff","leather-wrap",new Color(.18f,.13f,.11f,1f),.01f,.10f);
+        var iron = ValheimStaffVisualBuilder.Surface(source,"frost-staff","iron",new Color(.36f,.40f,.43f,1f),.42f,.22f);
+        var silver = ValheimStaffVisualBuilder.Surface(source,"frost-staff","silver",new Color(.67f,.75f,.80f,1f),.62f,.34f);
+        var frost = ValheimStaffVisualBuilder.Surface(source,"frost-staff","frost-crystal",new Color(.44f,.78f,.92f,1f),.08f,.58f,.22f);
+        var bright = ValheimStaffVisualBuilder.Surface(source,"frost-staff","frost-bright-crystal",new Color(.73f,.93f,.98f,1f),.05f,.72f,.40f);
+        var deep = ValheimStaffVisualBuilder.Surface(source,"frost-staff","frost-deep-crystal",new Color(.22f,.51f,.72f,1f),.10f,.48f,.14f);
 
-        var originalRenderers = prefab.GetComponentsInChildren<Renderer>(true);
-        var sourceMaterial = originalRenderers
-            .Select(renderer => renderer.sharedMaterial)
-            .FirstOrDefault(material => material)
-            ?? throw new InvalidOperationException($"No material source exists on Frost staff prefab '{prefab.name}'.");
-
-        var attach = prefab.transform.Find("attach") ?? prefab.transform;
-        var root = new GameObject("magenheim." + assetName + ".visual") { layer = prefab.layer };
-        root.transform.SetParent(attach, false);
-        root.transform.localPosition = Vector3.zero;
-        root.transform.localRotation = Quaternion.identity;
-        root.transform.localScale = Vector3.one;
-
-        var wood = Material(sourceMaterial, "wood", new Color(.29f, .21f, .16f, 1f), 0f, .14f);
-        var paleWood = Material(sourceMaterial, "pale-wood", new Color(.46f, .36f, .27f, 1f), 0f, .16f);
-        var iron = Material(sourceMaterial, "iron", new Color(.36f, .40f, .43f, 1f), .42f, .22f);
-        var silver = Material(sourceMaterial, "silver", new Color(.67f, .75f, .80f, 1f), .62f, .34f);
-        var frost = Material(sourceMaterial, "frost-crystal", new Color(.44f, .78f, .92f, 1f), .08f, .58f, .16f);
-        var frostBright = Material(sourceMaterial, "frost-bright-crystal", new Color(.73f, .93f, .98f, 1f), .05f, .72f, .28f);
-        var frostDeep = Material(sourceMaterial, "frost-deep-crystal", new Color(.22f, .51f, .72f, 1f), .10f, .48f, .12f);
-
-        switch (assetName)
+        switch(assetName)
         {
-            case "staff-frost-simple": BuildSimple(root, wood, paleWood, iron, frost); break;
-            case "staff-frost-crystal": BuildCrystal(root, paleWood, silver, frostBright); break;
-            case "staff-frost-advanced": BuildAdvanced(root, wood, silver, frostBright, frostDeep); break;
-            case "staff-frost-master": BuildMaster(root, wood, silver, frost, frostBright, frostDeep); break;
+            case "staff-frost-simple": BuildSimple(context.Root,paleWood,leather,iron,frost,deep); break;
+            case "staff-frost-crystal": BuildCrystal(context.Root,paleWood,leather,silver,bright,deep); break;
+            case "staff-frost-advanced": BuildAdvanced(context.Root,wood,leather,silver,bright,deep); break;
+            case "staff-frost-master": BuildMaster(context.Root,wood,leather,silver,frost,bright,deep); break;
             default: throw new InvalidOperationException($"Unknown Frost staff geometry '{assetName}'.");
         }
 
-        foreach (var renderer in originalRenderers) renderer.enabled = false;
-        foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled = false;
-        return root;
+        ValheimStaffVisualBuilder.Finish(context);
+        return context.Root;
     }
 
-    private static void BuildSimple(GameObject root, Material wood, Material paleWood, Material iron, Material frost)
+    private static void BuildSimple(GameObject root, Material wood, Material leather, Material iron, Material frost, Material deep)
     {
-        Shaft(root, wood, iron, .034f);
-        Box(root, "left-fork", new Vector3(-.065f, .69f, 0), new Vector3(.052f, .38f, .052f), paleWood, -13.75f);
-        Box(root, "right-fork", new Vector3(.065f, .69f, 0), new Vector3(.052f, .38f, .052f), paleWood, 13.75f);
-        Cylinder(root, "fork-band", new Vector3(0, .59f, 0), .052f, .055f, 10, iron);
-        Prism(root, "simple-crystal", new Vector3(0, .80f, 0), .070f, .28f, 6, frost);
+        ValheimStaffVisualBuilder.OrganicShaft(root,"frost",wood,leather,iron,.039f,.95f,false);
+        var basePoint=new Vector3(.016f,.52f,.006f);
+        var left=new Vector3(-.15f,.88f,.035f);
+        var right=new Vector3(.17f,.83f,-.018f);
+        ValheimStaffVisualBuilder.Segment(root,"fork-left",basePoint,left,.029f,wood,8);
+        ValheimStaffVisualBuilder.Segment(root,"fork-right",basePoint,right,.027f,wood,8);
+        ValheimStaffVisualBuilder.Segment(root,"fork-left-tip",left,new Vector3(-.12f,1.07f,.055f),.020f,iron,7);
+        ValheimStaffVisualBuilder.Segment(root,"fork-right-tip",right,new Vector3(.24f,1.00f,-.035f),.018f,iron,7);
+        ValheimStaffVisualBuilder.Shard(root,"ice-focus",new Vector3(.020f,.89f,.005f),new Vector3(.16f,.39f,.16f),Quaternion.Euler(-4f,10f,-6f),frost,6);
+        ValheimStaffVisualBuilder.Shard(root,"ice-chip",new Vector3(-.14f,.77f,.065f),new Vector3(.043f,.15f,.043f),Quaternion.Euler(17f,6f,19f),deep,5);
+        ValheimStaffVisualBuilder.FocusLight(root,"frost-light",new Vector3(.02f,.91f,.005f),new Color(.46f,.80f,1f),1.45f,.30f);
     }
 
-    private static void BuildCrystal(GameObject root, Material wood, Material silver, Material frost)
+    private static void BuildCrystal(GameObject root, Material wood, Material leather, Material silver, Material bright, Material deep)
     {
-        Shaft(root, wood, silver, .038f);
-        Cylinder(root, "crown-band", new Vector3(0, .59f, 0), .066f, .075f, 12, silver);
-        Box(root, "crossbar", new Vector3(0, .69f, 0), new Vector3(.31f, .040f, .045f), silver);
-        Box(root, "left-tine", new Vector3(-.12f, .77f, 0), new Vector3(.040f, .25f, .040f), silver, -20.05f);
-        Box(root, "right-tine", new Vector3(.12f, .77f, 0), new Vector3(.040f, .25f, .040f), silver, 20.05f);
-        Prism(root, "crystal-focus", new Vector3(0, .82f, 0), .090f, .37f, 6, frost);
-    }
-
-    private static void BuildAdvanced(GameObject root, Material wood, Material silver, Material frost, Material frostDeep)
-    {
-        Shaft(root, wood, silver, .041f);
-        Cylinder(root, "lower-band", new Vector3(0, .28f, 0), .058f, .050f, 12, silver);
-        Cylinder(root, "upper-band", new Vector3(0, .58f, 0), .073f, .075f, 12, silver);
-        const float radius = .22f;
-        for (var index = 0; index < 6; index++)
+        ValheimStaffVisualBuilder.OrganicShaft(root,"frost",wood,leather,silver,.042f,1.05f,true);
+        var hub=new Vector3(.018f,.55f,.005f);
+        var tips=new[]
         {
-            var angle = Mathf.PI / 3f * index;
-            Box(root, "crown-" + index,
-                new Vector3(radius * .62f * Mathf.Cos(angle), .81f + radius * .62f * Mathf.Sin(angle), 0),
-                new Vector3(.20f, .034f, .044f), silver, angle * Mathf.Rad2Deg + 90f);
-        }
-        Prism(root, "advanced-focus", new Vector3(0, .84f, 0), .105f, .45f, 6, frost);
-        Prism(root, "left-satellite", new Vector3(-.16f, .72f, .02f), .036f, .17f, 6, frostDeep);
-        Prism(root, "right-satellite", new Vector3(.16f, .72f, -.02f), .036f, .17f, 6, frostDeep);
-    }
-
-    private static void BuildMaster(GameObject root, Material wood, Material silver, Material frost, Material frostBright, Material frostDeep)
-    {
-        Shaft(root, wood, silver, .043f);
-        foreach (var y in new[] { -.48f, -.05f, .37f, .58f })
-            Cylinder(root, "shaft-band-" + y, new Vector3(0, y, 0), .062f, .045f, 12, silver);
-        for (var index = 0; index < 6; index++)
+            new Vector3(-.20f,1.06f,.035f),new Vector3(.21f,1.00f,-.025f),
+            new Vector3(-.04f,.94f,-.19f),new Vector3(.07f,.91f,.18f)
+        };
+        for(var i=0;i<tips.Length;i++)
         {
-            var angle = Mathf.PI / 3f * index;
-            var x = .155f * Mathf.Cos(angle);
-            var z = .155f * Mathf.Sin(angle);
-            Box(root, "master-tine-" + index, new Vector3(x, .83f, z), new Vector3(.035f, .34f, .035f), silver, 10.31f * Mathf.Cos(angle));
-            Prism(root, "master-satellite-" + index, new Vector3(x, .99f, z), .030f, .15f, 6, index % 2 == 0 ? frost : frostDeep);
+            var elbow=Vector3.Lerp(hub,tips[i],.48f)+Vector3.up*.015f;
+            ValheimStaffVisualBuilder.Segment(root,"ice-cage-a-"+i,hub,elbow,.020f,silver,8);
+            ValheimStaffVisualBuilder.Segment(root,"ice-cage-b-"+i,elbow,tips[i],.015f,silver,7);
         }
-        Cylinder(root, "master-halo", new Vector3(0, .70f, 0), .18f, .045f, 14, silver);
-        Prism(root, "master-focus", new Vector3(0, .91f, 0), .125f, .54f, 6, frostBright);
+        ValheimStaffVisualBuilder.Shard(root,"frost-focus",new Vector3(.018f,.92f,.004f),new Vector3(.20f,.49f,.20f),Quaternion.Euler(-5f,16f,3f),bright,7);
+        ValheimStaffVisualBuilder.Shard(root,"frost-side-shard",new Vector3(.20f,.79f,-.045f),new Vector3(.045f,.17f,.045f),Quaternion.Euler(18f,0f,-16f),deep,5);
+        ValheimStaffVisualBuilder.Shard(root,"frost-lower-shard",new Vector3(-.12f,.72f,.055f),new Vector3(.040f,.13f,.040f),Quaternion.Euler(14f,7f,13f),deep,5);
+        ValheimStaffVisualBuilder.FocusLight(root,"frost-crystal-light",new Vector3(.018f,.94f,.004f),new Color(.68f,.91f,1f),1.70f,.38f);
     }
 
-    private static void Shaft(GameObject root, Material wood, Material metal, float radius)
+    private static void BuildAdvanced(GameObject root, Material wood, Material leather, Material silver, Material bright, Material deep)
     {
-        Cylinder(root, "shaft", new Vector3(0, -.08f, 0), radius, 1.48f, 10, wood);
-        Cylinder(root, "pommel", new Vector3(0, -.77f, 0), radius * 1.35f, .10f, 10, metal);
-        Cylinder(root, "neck-band", new Vector3(0, .50f, 0), radius * 1.30f, .055f, 10, metal);
-    }
-
-    private static void Box(GameObject root, string name, Vector3 position, Vector3 size, Material material, float zDegrees = 0f) =>
-        AddPart(root, name, BoxMesh, position, size, Quaternion.Euler(0, 0, zDegrees), material);
-
-    private static void Cylinder(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material)
-    {
-        if (!CylinderMeshes.TryGetValue(sides, out var mesh))
+        ValheimStaffVisualBuilder.OrganicShaft(root,"frost",wood,leather,silver,.045f,1.15f,true);
+        var centre=new Vector3(.015f,.91f,.005f);
+        for(var i=0;i<6;i++)
         {
-            mesh = RuntimeMeshPrimitives.Cylinder(sides, "magenheim.staff.cylinder." + sides);
-            CylinderMeshes.Add(sides, mesh);
+            var a=i*Mathf.PI*2f/6f+.12f;
+            var radial=new Vector3(Mathf.Cos(a),0f,Mathf.Sin(a));
+            var lower=centre+radial*.10f+Vector3.down*.26f;
+            var elbow=centre+radial*.19f+Vector3.down*.01f;
+            var tip=centre+radial*(i==4?.30f:.26f)+Vector3.up*(i%2==0?.26f:.20f);
+            ValheimStaffVisualBuilder.Segment(root,"rime-antler-a-"+i,lower,elbow,.018f,silver,8);
+            ValheimStaffVisualBuilder.Segment(root,"rime-antler-b-"+i,elbow,tip,.014f,silver,7);
+            ValheimStaffVisualBuilder.Shard(root,"rime-icicle-"+i,tip+Vector3.down*.015f,new Vector3(.042f,.17f,.042f),Quaternion.Euler(180f+10f*Mathf.Sin(a),a*Mathf.Rad2Deg,13f*Mathf.Cos(a)),i%2==0?deep:bright,5);
         }
-        AddPart(root, name, mesh, position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.identity, material);
+        ValheimStaffVisualBuilder.Shard(root,"advanced-rime-core",centre,new Vector3(.24f,.54f,.24f),Quaternion.Euler(-3f,20f,2f),bright,7);
+        ValheimStaffVisualBuilder.Segment(root,"long-ice-hook",new Vector3(-.14f,.75f,.05f),new Vector3(-.31f,.96f,.08f),.017f,wood,7);
+        ValheimStaffVisualBuilder.Shard(root,"hook-icicle",new Vector3(-.315f,.91f,.08f),new Vector3(.040f,.16f,.040f),Quaternion.Euler(172f,4f,-8f),deep,5);
+        ValheimStaffVisualBuilder.FocusLight(root,"advanced-frost-light",centre+Vector3.up*.04f,new Color(.67f,.92f,1f),1.95f,.44f);
     }
 
-    private static void Prism(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material)
+    private static void BuildMaster(GameObject root, Material wood, Material leather, Material silver, Material frost, Material bright, Material deep)
     {
-        if (!PrismMeshes.TryGetValue(sides, out var mesh))
+        ValheimStaffVisualBuilder.OrganicShaft(root,"frost",wood,leather,silver,.049f,1.25f,true);
+        foreach(var y in new[]{-.34f,-.08f,.20f,.46f})
+            ValheimStaffVisualBuilder.Band(root,"master-band-"+y.ToString("0.00"),new Vector3(.007f*y,y,.004f),.073f,.045f,silver,10);
+        var basePoint=new Vector3(.017f,.52f,.005f);
+        var left=new Vector3(-.18f,.76f,.035f);
+        var right=new Vector3(.19f,.73f,-.025f);
+        ValheimStaffVisualBuilder.Segment(root,"master-left-fork",basePoint,left,.029f,silver,9);
+        ValheimStaffVisualBuilder.Segment(root,"master-right-fork",basePoint,right,.028f,silver,9);
+        ValheimStaffVisualBuilder.Segment(root,"master-left-spire",left,new Vector3(-.31f,1.18f,.06f),.019f,silver,8);
+        ValheimStaffVisualBuilder.Segment(root,"master-right-spire",right,new Vector3(.30f,1.12f,-.04f),.018f,silver,8);
+        var centre=new Vector3(.017f,.95f,.005f);
+        for(var i=0;i<8;i++)
         {
-            mesh = RuntimeMeshPrimitives.Prism(
-                sides,
-                "magenheim.staff.prism." + sides,
-                lowerRadius: .36f,
-                lowerY: -.45f,
-                upperRadius: .50f,
-                upperY: .20f,
-                apexY: .68f,
-                baseY: -.50f);
-            PrismMeshes.Add(sides, mesh);
+            var a=i*Mathf.PI*2f/8f+.19f;
+            var radial=new Vector3(Mathf.Cos(a),0f,Mathf.Sin(a));
+            var lower=centre+radial*.15f+Vector3.down*.21f;
+            var upper=centre+radial*(i%3==0?.30f:.27f)+Vector3.up*(i%2==0?.18f:.23f);
+            ValheimStaffVisualBuilder.Segment(root,"master-ice-cage-"+i,lower,upper,.013f,silver,7);
+            if(i%2==0) ValheimStaffVisualBuilder.Shard(root,"master-ice-satellite-"+i,upper+Vector3.up*.02f,new Vector3(.045f,.16f,.045f),Quaternion.Euler(11f*Mathf.Sin(a),a*Mathf.Rad2Deg,15f*Mathf.Cos(a)),i%4==0?frost:deep,5);
         }
-        AddPart(root, name, mesh, position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.identity, material);
-    }
-
-    private static void AddPart(GameObject root, string name, Mesh mesh, Vector3 position, Vector3 scale, Quaternion rotation, Material material)
-    {
-        var part = new GameObject(name) { layer = root.layer };
-        part.transform.SetParent(root.transform, false);
-        part.transform.localPosition = position;
-        part.transform.localRotation = rotation;
-        part.transform.localScale = scale;
-        part.AddComponent<MeshFilter>().sharedMesh = mesh;
-        part.AddComponent<MeshRenderer>().sharedMaterial = material;
-    }
-
-    private static Material Material(Material source, string suffix, Color color, float metallic, float glossiness, float emission = 0f)
-    {
-        var material = new Material(source) { name = "magenheim.frost-staff." + suffix };
-        GeneratedSurfaceTextures.Apply(material, suffix);
-        if (material.HasProperty("_Color")) material.SetColor("_Color", color);
-        if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
-        if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", glossiness);
-        if (material.HasProperty("_BumpMap")) material.SetTexture("_BumpMap", null);
-        material.DisableKeyword("_NORMALMAP");
-        if (material.HasProperty("_EmissionColor") && emission > 0f)
-        {
-            material.SetColor("_EmissionColor", color * emission);
-            material.EnableKeyword("_EMISSION");
-        }
-        else material.DisableKeyword("_EMISSION");
-        material.SetOverrideTag("RenderType", "Opaque");
-        if (material.HasProperty("_ZWrite")) material.SetFloat("_ZWrite", 1f);
-        material.renderQueue = 2000;
-        return material;
+        ValheimStaffVisualBuilder.Shard(root,"master-frost-core",centre,new Vector3(.29f,.64f,.29f),Quaternion.Euler(-4f,24f,3f),bright,8);
+        ValheimStaffVisualBuilder.Shard(root,"master-deep-heart",centre+new Vector3(.03f,.12f,-.018f),new Vector3(.095f,.25f,.095f),Quaternion.Euler(7f,-13f,-4f),deep,6);
+        ValheimStaffVisualBuilder.Shard(root,"master-lower-ice",new Vector3(.24f,.76f,-.04f),new Vector3(.045f,.18f,.045f),Quaternion.Euler(170f,0f,-10f),frost,5);
+        ValheimStaffVisualBuilder.FocusLight(root,"master-frost-light",centre+Vector3.up*.07f,new Color(.78f,.96f,1f),2.25f,.52f);
     }
 }
