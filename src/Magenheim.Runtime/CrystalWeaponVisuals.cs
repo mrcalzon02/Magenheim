@@ -19,7 +19,7 @@ internal static class CrystalWeaponVisuals
     internal const string Bow = "crystal-weapon-bow";
     internal const string Crossbow = "crystal-weapon-crossbow";
 
-    private static readonly Mesh BoxMesh = CreateBoxMesh();
+    private static readonly Mesh BoxMesh = RuntimeMeshPrimitives.Box("magenheim.crystal-weapon.box");
     private static readonly Dictionary<int, Mesh> CylinderMeshes = new();
     private static readonly Dictionary<int, Mesh> PrismMeshes = new();
 
@@ -207,7 +207,7 @@ internal static class CrystalWeaponVisuals
     {
         if (!CylinderMeshes.TryGetValue(sides, out var mesh))
         {
-            mesh = CreateCylinderMesh(sides);
+            mesh = RuntimeMeshPrimitives.Cylinder(sides, "magenheim.crystal-weapon.cylinder." + sides);
             CylinderMeshes.Add(sides, mesh);
         }
         Add(root, name, mesh, position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.identity, material);
@@ -217,7 +217,15 @@ internal static class CrystalWeaponVisuals
     {
         if (!PrismMeshes.TryGetValue(sides, out var mesh))
         {
-            mesh = CreatePrismMesh(sides);
+            mesh = RuntimeMeshPrimitives.Prism(
+                sides,
+                "magenheim.crystal-weapon.prism." + sides,
+                lowerRadius: .36f,
+                lowerY: -.45f,
+                upperRadius: .50f,
+                upperY: .20f,
+                apexY: .68f,
+                baseY: -.50f);
             PrismMeshes.Add(sides, mesh);
         }
         Add(root, name, mesh, position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.Euler(euler ?? Vector3.zero), material);
@@ -253,69 +261,5 @@ internal static class CrystalWeaponVisuals
         if (material.HasProperty("_ZWrite")) material.SetFloat("_ZWrite", 1f);
         material.renderQueue = 2000;
         return material;
-    }
-
-    private static Mesh CreateBoxMesh()
-    {
-        var mesh = new Mesh { name = "magenheim.crystal-weapon.box" };
-        mesh.vertices = new[]
-        {
-            new Vector3(-.5f,-.5f,-.5f), new Vector3(.5f,-.5f,-.5f), new Vector3(.5f,.5f,-.5f), new Vector3(-.5f,.5f,-.5f),
-            new Vector3(-.5f,-.5f,.5f), new Vector3(.5f,-.5f,.5f), new Vector3(.5f,.5f,.5f), new Vector3(-.5f,.5f,.5f),
-        };
-        mesh.triangles = new[] { 0,3,2,0,2,1, 4,5,6,4,6,7, 0,4,7,0,7,3, 1,2,6,1,6,5, 0,1,5,0,5,4, 3,7,6,3,6,2 };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        return mesh;
-    }
-
-    private static Mesh CreateCylinderMesh(int sides)
-    {
-        var vertices = new List<Vector3>(sides * 2 + 2);
-        var triangles = new List<int>(sides * 12);
-        for (var ring = 0; ring < 2; ring++)
-        {
-            var y = ring == 0 ? -.5f : .5f;
-            for (var i = 0; i < sides; i++)
-            {
-                var a = 2f * Mathf.PI * i / sides;
-                vertices.Add(new Vector3(.5f * Mathf.Cos(a), y, .5f * Mathf.Sin(a)));
-            }
-        }
-        var bottom = vertices.Count; vertices.Add(new Vector3(0,-.5f,0));
-        var top = vertices.Count; vertices.Add(new Vector3(0,.5f,0));
-        for (var i = 0; i < sides; i++)
-        {
-            var n = (i + 1) % sides;
-            triangles.AddRange(new[] { i,sides+i,n, n,sides+i,sides+n, bottom,i,n, top,sides+n,sides+i });
-        }
-        var mesh = new Mesh { name = "magenheim.crystal-weapon.cylinder." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        return mesh;
-    }
-
-    private static Mesh CreatePrismMesh(int sides)
-    {
-        var vertices = new List<Vector3>(sides * 2 + 2);
-        var triangles = new List<int>(sides * 12);
-        for (var i = 0; i < sides; i++)
-        {
-            var a = 2f * Mathf.PI * i / sides;
-            vertices.Add(new Vector3(.36f * Mathf.Cos(a), -.45f, .36f * Mathf.Sin(a)));
-        }
-        for (var i = 0; i < sides; i++)
-        {
-            var a = 2f * Mathf.PI * i / sides;
-            vertices.Add(new Vector3(.5f * Mathf.Cos(a), .20f, .5f * Mathf.Sin(a)));
-        }
-        var top = vertices.Count; vertices.Add(new Vector3(0,.68f,0));
-        var bottom = vertices.Count; vertices.Add(new Vector3(0,-.50f,0));
-        for (var i = 0; i < sides; i++)
-        {
-            var n = (i + 1) % sides;
-            triangles.AddRange(new[] { bottom,i,n, i,sides+i,n, n,sides+i,sides+n, top,sides+n,sides+i });
-        }
-        var mesh = new Mesh { name = "magenheim.crystal-weapon.prism." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds();
-        return mesh;
     }
 }
