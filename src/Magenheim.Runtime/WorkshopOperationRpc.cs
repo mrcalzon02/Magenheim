@@ -78,6 +78,12 @@ internal static class WorkshopOperationRpc
             diagnostic = $"Server definition authority has not admitted Magenheim mutation. {_authority.ClientAuthorityResult.Diagnostic}";
             return false;
         }
+        var generation = _authority.ClientSessionGeneration;
+        if (generation <= 0L)
+        {
+            diagnostic = "Server gameplay authority has no active session generation.";
+            return false;
+        }
         if (!TryGetCurrentMagenheimStation(player, out _))
         {
             diagnostic = "Use a Geologist's Workstation for this operation.";
@@ -103,11 +109,12 @@ internal static class WorkshopOperationRpc
             Mathf.FloorToInt(player.GetSkillLevel(EarthContentRegistrar.CrystalShapingSkill)),
             0,
             100);
-        ClientOperations.Add(operationId, new ClientOperationRecord(operation.RecipeName));
+        ClientOperations.Add(operationId, new ClientOperationRecord(operation.RecipeName, generation));
         ClientOperationOrder.Enqueue(operationId);
 
         var package = new ZPackage();
         package.Write(RequestMessage);
+        package.Write(generation);
         package.Write(operationId);
         package.Write(operation.RecipeName);
         package.Write(skill);
@@ -148,6 +155,7 @@ internal static class WorkshopOperationRpc
         if (_rpc is null || _services is null || _authority is null)
             throw new InvalidOperationException("Workshop RPC server state is not configured.");
 
+        var suppliedGeneration = package.ReadLong();
         var operationId = package.ReadString();
         var recipeName = package.ReadString();
         var clientSkill = package.ReadInt();
@@ -172,6 +180,12 @@ internal static class WorkshopOperationRpc
         if (generation <= 0)
         {
             SendRejection(sender, operationId, recipeName, "Peer has no active Magenheim authority session.");
+            return;
+        }
+        if (suppliedGeneration != generation)
+        {
+            SendRejection(sender, operationId, recipeName,
+                $"Workstation request belongs to stale gameplay session {suppliedGeneration}; current session is {generation}.");
             return;
         }
         if (!_authority.IsPeerMutationAuthorized(sender))
@@ -363,6 +377,7 @@ internal static class WorkshopOperationRpc
             if (messageType != ResponseMessage)
                 throw new InvalidOperationException($"Unexpected workshop response message type {messageType}.");
 
+            var responseGeneration = package.ReadLong();
             var operationId = package.ReadString();
             var recipeName = package.ReadString();
             var authorized = package.ReadBool();
@@ -388,9 +403,22 @@ internal static class WorkshopOperationRpc
                 _log?.LogWarning($"Ignoring unrecognized Magenheim workshop response '{operationId}'.");
                 yield break;
             }
+            if (_authority is null || !_authority.IsClientMutationAuthorized ||
+                responseGeneration <= 0L ||
+                pending.SessionGeneration != responseGeneration ||
+                _authority.ClientSessionGeneration != responseGeneration)
+            {
+                ClientOperations.Remove(operationId);
+                _log?.LogWarning(
+                    $"Ignoring stale Magenheim workshop response '{operationId}' for session {responseGeneration}; " +
+                    $"pending session {pending.SessionGeneration}, current session {_authority?.ClientSessionGeneration ?? 0L}.");
+                Player.m_localPlayer?.Message(MessageHud.MessageType.Center,
+                    "Magenheim discarded a workstation response from an older network session without mutating inventory.");
+                yield break;
+            }
             if (!string.Equals(pending.RecipeName, recipeName, StringComparison.Ordinal))
             {
-                SendAcknowledgement(operationId, recipeName, false);
+                SendAcknowledgement(responseGeneration, operationId, recipeName, false);
                 ClientOperations.Remove(operationId);
                 Player.m_localPlayer?.Message(MessageHud.MessageType.Center,
                     "Magenheim rejected a mismatched workstation response without mutating inventory.");
@@ -404,12 +432,12 @@ internal static class WorkshopOperationRpc
             }
             if (pending.Applied)
             {
-                SendAcknowledgement(operationId, recipeName, true);
+                SendAcknowledgement(responseGeneration, operationId, recipeName, true);
                 yield break;
             }
             if (!WorkshopOperationCatalog.TryGet(recipeName, out var operation))
             {
-                SendAcknowledgement(operationId, recipeName, false);
+                SendAcknowledgement(responseGeneration, operationId, recipeName, false);
                 ClientOperations.Remove(operationId);
                 yield break;
             }
@@ -417,7 +445,7 @@ internal static class WorkshopOperationRpc
             var player = Player.m_localPlayer;
             if (player is null)
             {
-                SendAcknowledgement(operationId, recipeName, false);
+                SendAcknowledgement(responseGeneration, operationId, recipeName, false);
                 ClientOperations.Remove(operationId);
                 yield break;
             }
@@ -426,7 +454,7 @@ internal static class WorkshopOperationRpc
             var source = FindSource(inventory, operation.SourcePrefab);
             if (source is null)
             {
-                SendAcknowledgement(operationId, recipeName, false);
+                SendAcknowledgement(responseGeneration, operationId, recipeName, false);
                 ClientOperations.Remove(operationId);
                 player.Message(MessageHud.MessageType.Center,
                     "Source item changed before the server response; operation was cancelled without mutation.");
@@ -440,7 +468,7 @@ internal static class WorkshopOperationRpc
                     grants,
                     out var mutationError))
             {
-                SendAcknowledgement(operationId, recipeName, false);
+                SendAcknowledgement(responseGeneration, operationId, recipeName, false);
                 ClientOperations.Remove(operationId);
                 player.Message(MessageHud.MessageType.Center, mutationError);
                 yield break;
@@ -451,7 +479,7 @@ internal static class WorkshopOperationRpc
                 player.RaiseSkill(EarthContentRegistrar.CrystalShapingSkill, experience);
             player.Message(MessageHud.MessageType.Center, diagnostic);
             RuntimeGameApi.RefreshCraftingPanel(InventoryGui.instance);
-            SendAcknowledgement(operationId, recipeName, true);
+            SendAcknowledgement(responseGeneration, operationId, recipeName, true);
         }
         catch (Exception exception)
         {
@@ -467,11 +495,12 @@ internal static class WorkshopOperationRpc
     {
         if (_services is null || _authority is null) return;
 
+        var acknowledgedGeneration = package.ReadLong();
         var operationId = package.ReadString();
         var recipeName = package.ReadString();
         var applied = package.ReadBool();
         var generation = _authority.GetPeerSessionGeneration(sender);
-        if (generation <= 0) return;
+        if (generation <= 0 || acknowledgedGeneration != generation) return;
 
         var key = new RemoteOperationKey(sender, generation, operationId);
         if (!ServerOperations.TryGetValue(key, out var record)) return;
@@ -509,9 +538,12 @@ internal static class WorkshopOperationRpc
 
     private static void SendResponse(long peerId, string operationId, ServerOperationRecord record)
     {
-        if (_rpc is null) return;
+        if (_rpc is null || _authority is null) return;
+        var generation = _authority.GetPeerSessionGeneration(peerId);
+        if (generation <= 0L) return;
         var package = new ZPackage();
         package.Write(ResponseMessage);
+        package.Write(generation);
         package.Write(operationId ?? string.Empty);
         package.Write(record.RecipeName ?? string.Empty);
         package.Write(record.Authorized);
@@ -531,11 +563,12 @@ internal static class WorkshopOperationRpc
         SendResponse(peerId, operationId,
             ServerOperationRecord.Rejected(recipeName ?? string.Empty, diagnostic));
 
-    private static void SendAcknowledgement(string operationId, string recipeName, bool applied)
+    private static void SendAcknowledgement(long generation, string operationId, string recipeName, bool applied)
     {
-        if (_rpc is null || ZRoutedRpc.instance is null) return;
+        if (_rpc is null || ZRoutedRpc.instance is null || generation <= 0L) return;
         var package = new ZPackage();
         package.Write(AcknowledgementMessage);
+        package.Write(generation);
         package.Write(operationId);
         package.Write(recipeName);
         package.Write(applied);
@@ -693,8 +726,13 @@ internal static class WorkshopOperationRpc
 
     private sealed class ClientOperationRecord
     {
-        internal ClientOperationRecord(string recipeName) => RecipeName = recipeName;
+        internal ClientOperationRecord(string recipeName, long sessionGeneration)
+        {
+            RecipeName = recipeName;
+            SessionGeneration = sessionGeneration;
+        }
         internal string RecipeName { get; }
+        internal long SessionGeneration { get; }
         internal bool Applied { get; set; }
     }
 
