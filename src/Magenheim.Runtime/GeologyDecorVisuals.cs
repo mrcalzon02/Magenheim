@@ -273,9 +273,8 @@ internal static class GeologyDecorVisuals
 
     private static Material MakeMaterial(Material source, string suffix, Color color, float metallic, float glossiness, float emission = 0f)
     {
-        var material = new Material(source) { name = "magenheim.geology-decor." + suffix, mainTexture = Texture2D.whiteTexture };
-        material.mainTextureScale = Vector2.one;
-        material.mainTextureOffset = Vector2.zero;
+        var material = new Material(source) { name = "magenheim.geology-decor." + suffix };
+        GeneratedSurfaceTextures.Apply(material, suffix);
         if (material.HasProperty("_Color")) material.SetColor("_Color", color);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", metallic);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", glossiness);
