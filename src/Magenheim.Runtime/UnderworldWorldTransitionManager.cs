@@ -29,6 +29,8 @@ internal sealed class UnderworldWorldTransitionManager
         if (active.Phase != UnderworldTransitionPhase.Prepared) throw new InvalidOperationException("Underworld runtime transition may start only from Prepared state.");
         if (!string.Equals(active.OperationId, operationId, StringComparison.Ordinal)) throw new InvalidOperationException("Underworld runtime operation id does not match the prepared Core transition.");
         if (!string.Equals(active.AuthorityFingerprint, authorityFingerprint, StringComparison.Ordinal)) throw new InvalidOperationException("Underworld runtime authority fingerprint drifted before execution.");
+        if (!UnderworldProgressionAuthority.IsUnlocked)
+            throw new InvalidOperationException("Deep Gate transition rejected: the Nowhere King has not been defeated in this world.");
 
         _host.Persist(preparedState, identity);
         try
