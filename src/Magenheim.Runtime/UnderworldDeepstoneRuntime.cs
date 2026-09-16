@@ -7,10 +7,10 @@ internal readonly record struct UnderworldDeepstonePersistentState(bool TrophyMo
 
 /// <summary>
 /// Runtime identity and synchronized persistence boundary for one physical Deepstone.
-/// Progression decisions remain in Magenheim.Core; this component only binds a Conclave
-/// object to its canonical id and exposes server-owned durable mounted/boon facts.
+/// Progression decisions remain in Magenheim.Core; interaction delegates to the server-authoritative
+/// Deepstone transport rather than accepting a client-selected trophy or progression fact.
 /// </summary>
-internal sealed class UnderworldDeepstoneRuntime : MonoBehaviour, Hoverable
+internal sealed class UnderworldDeepstoneRuntime : MonoBehaviour, Hoverable, Interactable
 {
     private const string MountedKeyPrefix = "magenheim.underworld.deepstone.mounted.";
     private const string BoonKeyPrefix = "magenheim.underworld.deepstone.boon.";
@@ -39,10 +39,6 @@ internal sealed class UnderworldDeepstoneRuntime : MonoBehaviour, Hoverable
             zone.GetGlobalKey(BoonKeyPrefix + deepstoneId));
     }
 
-    /// <summary>
-    /// Persists the atomic state already authorized by UnderworldDeepstoneProgression.
-    /// This method deliberately refuses client mutation and refuses partial mount/boon state.
-    /// </summary>
     internal bool PersistAuthorizedActivation(bool trophyMounted, bool boonUnlocked)
     {
         if (!IsBound || !trophyMounted || !boonUnlocked) return false;
@@ -60,8 +56,18 @@ internal sealed class UnderworldDeepstoneRuntime : MonoBehaviour, Hoverable
     {
         if (!IsBound) return "Deepstone\nUnbound progression identity.";
         if (TrophyMounted && BoonUnlocked) return $"{DisplayName(DeepstoneId)}\nTrophy mounted. Deep Boon awakened.";
-        return $"{DisplayName(DeepstoneId)}\nThe stone awaits its trophy.";
+        return $"{DisplayName(DeepstoneId)}\n[Use] Offer the required trophy";
     }
+
+    public bool Interact(Humanoid user, bool hold, bool alt)
+    {
+        if (hold || user is null || !IsBound || (TrophyMounted && BoonUnlocked)) return false;
+        var accepted = UnderworldDeepstoneInteractionRpc.TryActivate(this, user, out var diagnostic);
+        if (!string.IsNullOrWhiteSpace(diagnostic)) user.Message(MessageHud.MessageType.Center, diagnostic);
+        return accepted;
+    }
+
+    public bool UseItem(Humanoid user, ItemDrop.ItemData item) => Interact(user, false, false);
 
     private static string DisplayName(string id)
     {
