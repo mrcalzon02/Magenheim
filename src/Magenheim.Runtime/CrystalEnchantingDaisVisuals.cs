@@ -12,7 +12,7 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal static class CrystalEnchantingDaisVisuals
 {
-    private static readonly Mesh BoxMesh = CreateBoxMesh();
+    private static readonly Mesh BoxMesh = RuntimeMeshPrimitives.Box("magenheim.crystal-enchanting-dais.box");
     private static readonly Dictionary<int, Mesh> CylinderMeshes = new();
     private static readonly Dictionary<int, Mesh> PrismMeshes = new();
 
@@ -31,8 +31,6 @@ internal static class CrystalEnchantingDaisVisuals
         var iron = Material(source, "iron", new Color(.24f, .27f, .31f, 1f), .76f, .36f);
         var paleCrystal = Material(source, "central-crystal", new Color(.82f, .91f, 1f, 1f), .03f, .95f, .86f);
 
-        // Broad stepped stone courses create a usable raised floor. Nothing at the centre rises
-        // high enough to read as a monument or obstruct the player's view across the platform.
         Cylinder(root, "lower-course", new Vector3(0f, .10f, 0f), 1.82f, .20f, 16, darkStone);
         Cylinder(root, "middle-course", new Vector3(0f, .24f, 0f), 1.58f, .12f, 16, faceStone);
         Cylinder(root, "working-face", new Vector3(0f, .35f, 0f), 1.36f, .10f, 16, darkStone);
@@ -54,14 +52,11 @@ internal static class CrystalEnchantingDaisVisuals
                 new Color(Mathf.Min(1f, tint.r + .10f), Mathf.Min(1f, tint.g + .10f), Mathf.Min(1f, tint.b + .10f), 1f),
                 .02f, .93f, .62f);
 
-            // Low perimeter markers identify each alignment without turning the dais into a forest
-            // of spikes. Their tips sit only slightly above the working surface.
             Prism(root, "node-" + elements[i].ToString().ToLowerInvariant(),
                 direction * 1.13f + Vector3.up * .49f, .095f, .22f, 6, crystalMaterial,
                 new Vector3(i % 2 == 0 ? -4f : 4f, angle, 0f));
         }
 
-        // Recessed central focus: a shallow metal socket and luminous crystal disk, not an apex.
         Cylinder(root, "focus-plinth", new Vector3(0f, .435f, 0f), .47f, .07f, 12, faceStone);
         Cylinder(root, "focus-collar", new Vector3(0f, .475f, 0f), .39f, .045f, 16, iron);
         Cylinder(root, "central-focus", new Vector3(0f, .505f, 0f), .30f, .035f, 16, paleCrystal);
@@ -115,13 +110,29 @@ internal static class CrystalEnchantingDaisVisuals
 
     private static void Cylinder(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material)
     {
-        if (!CylinderMeshes.TryGetValue(sides, out var mesh)) { mesh = CreateCylinderMesh(sides); CylinderMeshes.Add(sides, mesh); }
+        if (!CylinderMeshes.TryGetValue(sides, out var mesh))
+        {
+            mesh = RuntimeMeshPrimitives.Cylinder(sides, "magenheim.crystal-enchanting-dais.cylinder." + sides);
+            CylinderMeshes.Add(sides, mesh);
+        }
         AddPart(root, name, mesh, position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.identity, material);
     }
 
     private static void Prism(GameObject root, string name, Vector3 position, float radius, float height, int sides, Material material, Vector3 rotation)
     {
-        if (!PrismMeshes.TryGetValue(sides, out var mesh)) { mesh = CreatePrismMesh(sides); PrismMeshes.Add(sides, mesh); }
+        if (!PrismMeshes.TryGetValue(sides, out var mesh))
+        {
+            mesh = RuntimeMeshPrimitives.Prism(
+                sides,
+                "magenheim.crystal-enchanting-dais.prism." + sides,
+                lowerRadius: .36f,
+                lowerY: -.45f,
+                upperRadius: .50f,
+                upperY: .20f,
+                apexY: .68f,
+                baseY: -.50f);
+            PrismMeshes.Add(sides, mesh);
+        }
         AddPart(root, name, mesh, position, new Vector3(radius * 2f, height, radius * 2f), Quaternion.Euler(rotation), material);
     }
 
@@ -134,79 +145,5 @@ internal static class CrystalEnchantingDaisVisuals
         part.transform.localScale = scale;
         part.AddComponent<MeshFilter>().sharedMesh = mesh;
         part.AddComponent<MeshRenderer>().sharedMaterial = material;
-    }
-
-    private static Mesh CreateBoxMesh()
-    {
-        var mesh = new Mesh { name = "magenheim.crystal-enchanting-dais.box" };
-        mesh.vertices = new[]
-        {
-            new Vector3(-.5f,-.5f,-.5f), new Vector3(.5f,-.5f,-.5f), new Vector3(.5f,.5f,-.5f), new Vector3(-.5f,.5f,-.5f),
-            new Vector3(-.5f,-.5f,.5f), new Vector3(.5f,-.5f,.5f), new Vector3(.5f,.5f,.5f), new Vector3(-.5f,.5f,.5f),
-        };
-        mesh.triangles = new[] { 0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2 };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
-    }
-
-    private static Mesh CreateCylinderMesh(int sides)
-    {
-        var vertices = new List<Vector3>(sides * 2 + 2);
-        var triangles = new List<int>(sides * 12);
-        for (var i = 0; i < sides; i++)
-        {
-            var angle = 2f * Mathf.PI * i / sides;
-            vertices.Add(new Vector3(.5f * Mathf.Cos(angle), -.5f, .5f * Mathf.Sin(angle)));
-        }
-        for (var i = 0; i < sides; i++)
-        {
-            var angle = 2f * Mathf.PI * i / sides;
-            vertices.Add(new Vector3(.5f * Mathf.Cos(angle), .5f, .5f * Mathf.Sin(angle)));
-        }
-        var bottom = vertices.Count; vertices.Add(new Vector3(0f, -.5f, 0f));
-        var top = vertices.Count; vertices.Add(new Vector3(0f, .5f, 0f));
-        for (var i = 0; i < sides; i++)
-        {
-            var next = (i + 1) % sides;
-            triangles.AddRange(new[]
-            {
-                bottom, i, next,
-                i, sides + i, next,
-                next, sides + i, sides + next,
-                top, sides + next, sides + i,
-            });
-        }
-        var mesh = new Mesh { name = "magenheim.crystal-enchanting-dais.cylinder." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
-    }
-
-    private static Mesh CreatePrismMesh(int sides)
-    {
-        var vertices = new List<Vector3>(sides * 2 + 2);
-        var triangles = new List<int>(sides * 12);
-        for (var i = 0; i < sides; i++)
-        {
-            var angle = 2f * Mathf.PI * i / sides;
-            vertices.Add(new Vector3(.36f * Mathf.Cos(angle), -.45f, .36f * Mathf.Sin(angle)));
-        }
-        for (var i = 0; i < sides; i++)
-        {
-            var angle = 2f * Mathf.PI * i / sides;
-            vertices.Add(new Vector3(.5f * Mathf.Cos(angle), .20f, .5f * Mathf.Sin(angle)));
-        }
-        var top = vertices.Count; vertices.Add(new Vector3(0f, .68f, 0f));
-        var bottom = vertices.Count; vertices.Add(new Vector3(0f, -.50f, 0f));
-        for (var i = 0; i < sides; i++)
-        {
-            var next = (i + 1) % sides;
-            triangles.AddRange(new[]
-            {
-                bottom, i, next,
-                i, sides + i, next,
-                next, sides + i, sides + next,
-                top, sides + next, sides + i,
-            });
-        }
-        var mesh = new Mesh { name = "magenheim.crystal-enchanting-dais.prism." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 }
