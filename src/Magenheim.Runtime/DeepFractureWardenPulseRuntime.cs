@@ -15,12 +15,12 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
         var attacking=_humanoid.InAttack();
         if(attacking&&!_wasAttacking){_armed=true;_pulseAt=Time.time+.54f;}
         if(_armed&&Time.time>=_pulseAt){_armed=false;EmitPulse();}
-        if(!attacking&&_wasAttacking)_armed=false;
         _wasAttacking=attacking;
     }
     private void EmitPulse()
     {
         var origin=transform.position+Vector3.up*.06f;
+        var color=PulseColor();
         for(var i=0;i<3;i++)
         {
             var ring=GameObject.CreatePrimitive(PrimitiveType.Cylinder);
@@ -29,7 +29,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
             ring.transform.localScale=new Vector3(.7f+i*.5f,.014f,.7f+i*.5f);
             var collider=ring.GetComponent<Collider>();if(collider)Destroy(collider);
             var renderer=ring.GetComponent<Renderer>();
-            if(renderer){var material=new Material(Shader.Find("Standard"));material.color=PulseColor();material.SetFloat("_Metallic",.2f);material.SetFloat("_Glossiness",.45f);renderer.material=material;}
+            if(renderer){var material=new Material(Shader.Find("Standard"));material.color=color;material.SetFloat("_Metallic",.2f);material.SetFloat("_Glossiness",.45f);renderer.material=material;}
             ring.AddComponent<TerritoryPulse>().Configure(2.6f+i*.45f,.7f+i*.1f);
         }
         for(var i=0;i<8;i++)
@@ -41,7 +41,9 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
             marker.transform.localScale=new Vector3(.08f,.3f,.08f);
             marker.transform.rotation=Quaternion.Euler(0,i*45f,18f);
             var collider=marker.GetComponent<Collider>();if(collider)Destroy(collider);
-            Destroy(marker,.85f);
+            var renderer=marker.GetComponent<Renderer>();
+            if(renderer){var material=new Material(Shader.Find("Standard"));material.color=color;material.SetFloat("_EmissionColor",color*.65f);renderer.material=material;}
+            marker.AddComponent<PulseMarker>().Configure(.85f);
         }
     }
     private Color PulseColor()=>Alignment switch
@@ -59,5 +61,13 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
         private float _speed,_life,_age;
         internal void Configure(float speed,float life){_speed=speed;_life=life;}
         private void Update(){_age+=Time.deltaTime;var growth=1f+_speed*Time.deltaTime;transform.localScale=new Vector3(transform.localScale.x*growth,transform.localScale.y,transform.localScale.z*growth);if(_age>=_life)Destroy(gameObject);}
+        private void OnDestroy(){var renderer=GetComponent<Renderer>();if(renderer&&renderer.material)Destroy(renderer.material);}
+    }
+    private sealed class PulseMarker:MonoBehaviour
+    {
+        private float _life;
+        internal void Configure(float life)=>_life=life;
+        private void Update(){_life-=Time.deltaTime;if(_life<=0f)Destroy(gameObject);}
+        private void OnDestroy(){var renderer=GetComponent<Renderer>();if(renderer&&renderer.material)Destroy(renderer.material);}
     }
 }
