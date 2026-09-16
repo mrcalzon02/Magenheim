@@ -12,6 +12,11 @@ public sealed record UnderworldDeepstoneState(
     bool TrophyMounted,
     bool BoonUnlocked);
 
+public sealed record UnderworldDeepstonePersistenceFact(
+    string DeepstoneId,
+    bool TrophyMounted,
+    bool BoonUnlocked);
+
 public enum UnderworldDeepstoneMountStatus
 {
     Mounted,
@@ -76,6 +81,52 @@ public static class UnderworldDeepstoneProgression
                     stone.Id, boss.Id, boss.TrophyPrefabName, stone.DeepBoonId, false, false);
             })
             .ToArray());
+    }
+
+    public static IReadOnlyList<UnderworldDeepstoneState> ReconstructPersistentState(
+        UnderworldDefinitionSet definitions,
+        IEnumerable<UnderworldDeepstonePersistenceFact> persistedFacts)
+    {
+        if (definitions is null) throw new ArgumentNullException(nameof(definitions));
+        if (persistedFacts is null) throw new ArgumentNullException(nameof(persistedFacts));
+
+        var facts = persistedFacts.ToArray();
+        if (facts.Any(value => string.IsNullOrWhiteSpace(value.DeepstoneId)))
+            throw new InvalidOperationException("Persisted Deepstone state contains an empty stone identity.");
+        var duplicate = facts.GroupBy(value => value.DeepstoneId, StringComparer.Ordinal).FirstOrDefault(group => group.Count() != 1);
+        if (duplicate is not null)
+            throw new InvalidOperationException($"Persisted Deepstone state contains duplicate stone '{duplicate.Key}'.");
+
+        var initial = CreateInitialState(definitions);
+        var canonicalIds = new HashSet<string>(initial.Select(value => value.DeepstoneId), StringComparer.Ordinal);
+        var unknown = facts.FirstOrDefault(value => !canonicalIds.Contains(value.DeepstoneId));
+        if (unknown is not null)
+            throw new InvalidOperationException($"Persisted Deepstone state contains unknown stone '{unknown.DeepstoneId}'.");
+        if (facts.Length != initial.Count)
+            throw new InvalidOperationException($"Persisted Deepstone state must contain exactly {initial.Count} canonical stones; found {facts.Length}.");
+
+        var factsById = facts.ToDictionary(value => value.DeepstoneId, StringComparer.Ordinal);
+        var reconstructed = initial.Select(state =>
+        {
+            var fact = factsById[state.DeepstoneId];
+            if (fact.TrophyMounted != fact.BoonUnlocked)
+                throw new InvalidOperationException($"Deepstone '{state.DeepstoneId}' has a partial persisted activation; trophy and boon must be atomic.");
+            return state with { TrophyMounted = fact.TrophyMounted, BoonUnlocked = fact.BoonUnlocked };
+        }).ToArray();
+
+        var statesById = reconstructed.ToDictionary(value => value.DeepstoneId, StringComparer.Ordinal);
+        foreach (var state in reconstructed.Where(value => value.TrophyMounted))
+        {
+            var boss = definitions.Bosses.First(value => string.Equals(value.Id, state.BossId, StringComparison.Ordinal));
+            foreach (var prerequisiteBossId in boss.PrerequisiteBossIds)
+            {
+                var prerequisite = definitions.Bosses.First(value => string.Equals(value.Id, prerequisiteBossId, StringComparison.Ordinal));
+                if (!statesById[prerequisite.DeepstoneSlotId].TrophyMounted)
+                    throw new InvalidOperationException($"Persisted Deepstone '{state.DeepstoneId}' is active without prerequisite '{prerequisite.DeepstoneSlotId}'.");
+            }
+        }
+
+        return Array.AsReadOnly(reconstructed);
     }
 
     public static UnderworldDeepstoneMountTransactionPlan PlanMountTrophy(
