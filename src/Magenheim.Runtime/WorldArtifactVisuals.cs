@@ -20,7 +20,7 @@ internal static class WorldArtifactVisuals
     internal const string SpiritFetishRaven = "spirit-fetish-raven";
     internal const string SpiritFetishWarrior = "spirit-fetish-warrior";
 
-    private static readonly Mesh BoxMesh = CreateBoxMesh();
+    private static readonly Mesh BoxMesh = RuntimeMeshPrimitives.Box("magenheim.world-artifact.box");
     private static readonly Dictionary<int, Mesh> CylinderMeshes = new();
     private static readonly Dictionary<int, Mesh> PrismMeshes = new();
 
@@ -221,13 +221,29 @@ internal static class WorldArtifactVisuals
 
     private static void Cylinder(GameObject root, string name, Vector3 position, Vector3 size, int sides, Material material, Vector3? euler = null)
     {
-        if (!CylinderMeshes.TryGetValue(sides, out var mesh)) { mesh = CreateCylinderMesh(sides); CylinderMeshes.Add(sides, mesh); }
+        if (!CylinderMeshes.TryGetValue(sides, out var mesh))
+        {
+            mesh = RuntimeMeshPrimitives.Cylinder(sides, "magenheim.world-artifact.cylinder." + sides);
+            CylinderMeshes.Add(sides, mesh);
+        }
         AddPart(root, name, mesh, position, size, Quaternion.Euler(euler ?? Vector3.zero), material);
     }
 
     private static void Prism(GameObject root, string name, Vector3 position, Vector3 size, int sides, Material material, Vector3? euler = null)
     {
-        if (!PrismMeshes.TryGetValue(sides, out var mesh)) { mesh = CreatePrismMesh(sides); PrismMeshes.Add(sides, mesh); }
+        if (!PrismMeshes.TryGetValue(sides, out var mesh))
+        {
+            mesh = RuntimeMeshPrimitives.Prism(
+                sides,
+                "magenheim.world-artifact.prism." + sides,
+                lowerRadius: .42f,
+                lowerY: -.50f,
+                upperRadius: .50f,
+                upperY: .18f,
+                apexY: .70f,
+                baseY: -.50f);
+            PrismMeshes.Add(sides, mesh);
+        }
         AddPart(root, name, mesh, position, size, Quaternion.Euler(euler ?? Vector3.zero), material);
     }
 
@@ -261,64 +277,5 @@ internal static class WorldArtifactVisuals
         if (material.HasProperty("_ZWrite")) material.SetFloat("_ZWrite", 1f);
         material.renderQueue = 2000;
         return material;
-    }
-
-    private static Mesh CreateBoxMesh()
-    {
-        var mesh = new Mesh { name = "magenheim.world-artifact.box" };
-        mesh.vertices = new[]
-        {
-            new Vector3(-.5f,-.5f,-.5f), new Vector3(.5f,-.5f,-.5f), new Vector3(.5f,.5f,-.5f), new Vector3(-.5f,.5f,-.5f),
-            new Vector3(-.5f,-.5f,.5f), new Vector3(.5f,-.5f,.5f), new Vector3(.5f,.5f,.5f), new Vector3(-.5f,.5f,.5f)
-        };
-        mesh.triangles = new[] { 0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2 };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
-    }
-
-    private static Mesh CreateCylinderMesh(int sides)
-    {
-        var vertices = new List<Vector3>(); var triangles = new List<int>();
-        for (var ring = 0; ring < 2; ring++)
-        {
-            var y = ring == 0 ? -.5f : .5f;
-            for (var i = 0; i < sides; i++)
-            {
-                var a = Mathf.PI * 2f * i / sides;
-                vertices.Add(new Vector3(.5f * Mathf.Cos(a), y, .5f * Mathf.Sin(a)));
-            }
-        }
-        var bottom = vertices.Count; vertices.Add(new Vector3(0f,-.5f,0f));
-        var top = vertices.Count; vertices.Add(new Vector3(0f,.5f,0f));
-        for (var i = 0; i < sides; i++)
-        {
-            var next = (i + 1) % sides;
-            triangles.AddRange(new[] { i,sides+i,next, next,sides+i,sides+next, bottom,i,next, top,sides+next,sides+i });
-        }
-        var mesh = new Mesh { name = "magenheim.world-artifact.cylinder." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
-    }
-
-    private static Mesh CreatePrismMesh(int sides)
-    {
-        var vertices = new List<Vector3>(); var triangles = new List<int>();
-        for (var i = 0; i < sides; i++)
-        {
-            var a = Mathf.PI * 2f * i / sides;
-            vertices.Add(new Vector3(.42f * Mathf.Cos(a), -.5f, .42f * Mathf.Sin(a)));
-        }
-        for (var i = 0; i < sides; i++)
-        {
-            var a = Mathf.PI * 2f * i / sides;
-            vertices.Add(new Vector3(.50f * Mathf.Cos(a), .18f, .50f * Mathf.Sin(a)));
-        }
-        var top = vertices.Count; vertices.Add(new Vector3(0f,.70f,0f));
-        var bottom = vertices.Count; vertices.Add(new Vector3(0f,-.50f,0f));
-        for (var i = 0; i < sides; i++)
-        {
-            var next = (i + 1) % sides;
-            triangles.AddRange(new[] { bottom,i,next, i,sides+i,next, next,sides+i,sides+next, top,sides+next,sides+i });
-        }
-        var mesh = new Mesh { name = "magenheim.world-artifact.prism." + sides, vertices = vertices.ToArray(), triangles = triangles.ToArray() };
-        mesh.RecalculateNormals(); mesh.RecalculateBounds(); return mesh;
     }
 }
