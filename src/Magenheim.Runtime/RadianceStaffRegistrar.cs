@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using BepInEx.Logging;
 using Jotunn.Configs;
 using Jotunn.Entities;
@@ -201,81 +200,108 @@ internal sealed class RadianceStaffRegistrar : IDisposable
 
 internal static class RadianceVisuals
 {
-    private static readonly Mesh Box = MakeBox();
-    private static readonly Dictionary<int, Mesh> Cylinders = new();
-    private static readonly Dictionary<int, Mesh> Prisms = new();
-
-    internal static void Apply(GameObject prefab, string assetName)
+    internal static void Apply(GameObject prefab,string assetName)
     {
-        var original = prefab.GetComponentsInChildren<Renderer>(true);
-        var source = original.Select(x => x.sharedMaterial).FirstOrDefault(x => x)
-            ?? throw new InvalidOperationException($"No material source exists on Radiance staff prefab '{prefab.name}'.");
-        var attach = prefab.transform.Find("attach") ?? prefab.transform;
-        var root = new GameObject("magenheim." + assetName + ".visual") { layer = prefab.layer };
-        root.transform.SetParent(attach, false);
-        root.transform.localPosition = Vector3.zero;
-        root.transform.localRotation = Quaternion.identity;
-        root.transform.localScale = Vector3.one;
+        var context=ValheimStaffVisualBuilder.Begin(prefab,assetName);
+        var source=context.SourceMaterial;
+        var wood=ValheimStaffVisualBuilder.Surface(source,"radiance-staff","wood",new Color(.24f,.17f,.12f,1f),0f,.13f);
+        var ivory=ValheimStaffVisualBuilder.Surface(source,"radiance-staff","ivory",new Color(.78f,.72f,.58f,1f),.03f,.23f);
+        var leather=ValheimStaffVisualBuilder.Surface(source,"radiance-staff","leather-wrap",new Color(.19f,.13f,.08f,1f),.01f,.10f);
+        var bronze=ValheimStaffVisualBuilder.Surface(source,"radiance-staff","bronze",new Color(.62f,.43f,.19f,1f),.46f,.28f);
+        var gold=ValheimStaffVisualBuilder.Surface(source,"radiance-staff","gold",new Color(.90f,.65f,.18f,1f),.68f,.43f);
+        var light=ValheimStaffVisualBuilder.Surface(source,"radiance-staff","radiance-light-crystal",new Color(1f,.91f,.48f,1f),.02f,.78f,.42f);
+        var white=ValheimStaffVisualBuilder.Surface(source,"radiance-staff","radiance-white-crystal",new Color(1f,.99f,.86f,1f),.01f,.88f,.60f);
 
-        var wood = Mat(source,"wood",new Color(.24f,.17f,.12f,1f),0f,.13f);
-        var ivory = Mat(source,"ivory",new Color(.78f,.72f,.58f,1f),.03f,.23f);
-        var bronze = Mat(source,"bronze",new Color(.62f,.43f,.19f,1f),.46f,.28f);
-        var gold = Mat(source,"gold",new Color(.90f,.65f,.18f,1f),.68f,.43f);
-        var light = Mat(source,"radiance-light-crystal",new Color(1f,.91f,.48f,1f),.02f,.78f,.42f);
-        var white = Mat(source,"radiance-white-crystal",new Color(1f,.99f,.86f,1f),.01f,.88f,.60f);
-
-        if (assetName == "staff-radiance-simple")
+        switch(assetName)
         {
-            Shaft(root,wood,bronze,.034f); Part(root,"cross",Box,new Vector3(0,.69f,0),new Vector3(.26f,.036f,.038f),Quaternion.identity,bronze);
-            Prism(root,"spark",new Vector3(0,.88f,0),.075f,.24f,6,light);
+            case "staff-radiance-simple": BuildSimple(context.Root,wood,leather,bronze,light); break;
+            case "staff-radiance-crystal": BuildCrystal(context.Root,ivory,leather,gold,light,white); break;
+            case "staff-radiance-advanced": BuildAdvanced(context.Root,wood,leather,gold,light,white); break;
+            case "staff-radiance-master": BuildMaster(context.Root,ivory,leather,gold,light,white); break;
+            default: throw new InvalidOperationException($"Unknown Radiance geometry '{assetName}'.");
         }
-        else if (assetName == "staff-radiance-crystal")
-        {
-            Shaft(root,ivory,gold,.038f); Cylinder(root,"ring",new Vector3(0,.64f,0),.12f,.04f,16,gold);
-            for (var i=0;i<4;i++){ var a=i*Mathf.PI/2f; Part(root,"ray"+i,Box,new Vector3(.13f*Mathf.Cos(a),.78f,.13f*Mathf.Sin(a)),new Vector3(.03f,.30f,.03f),Quaternion.Euler(0,0,i%2==0?11f:-11f),gold); }
-            Prism(root,"focus",new Vector3(0,.90f,0),.095f,.42f,6,light);
-        }
-        else if (assetName == "staff-radiance-advanced")
-        {
-            Shaft(root,wood,gold,.041f); Cylinder(root,"hub",new Vector3(0,.76f,0),.095f,.065f,14,gold);
-            for (var i=0;i<8;i++){ var a=i*Mathf.PI/4f; var p=new Vector3(.19f*Mathf.Cos(a),.83f,.19f*Mathf.Sin(a)); Part(root,"corona"+i,Box,p,new Vector3(.028f,.34f,.028f),Quaternion.Euler(0,0,14f*Mathf.Cos(a)),gold); Prism(root,"tip"+i,p+Vector3.up*.17f,.025f,.11f,5,i%2==0?light:white); }
-            Prism(root,"core",new Vector3(0,.91f,0),.105f,.36f,6,white);
-        }
-        else if (assetName == "staff-radiance-master")
-        {
-            Shaft(root,ivory,gold,.044f); foreach(var y in new[]{-.46f,-.10f,.26f,.53f}) Cylinder(root,"band"+y,new Vector3(0,y,0),.064f,.042f,14,gold);
-            for (var i=0;i<12;i++){ var a=i*Mathf.PI/6f; Part(root,"daybreak"+i,Box,new Vector3(.23f*Mathf.Cos(a),.82f,.23f*Mathf.Sin(a)),new Vector3(.026f,.38f,.026f),Quaternion.Euler(0,0,18f*Mathf.Cos(a)),gold); }
-            Cylinder(root,"halo",new Vector3(0,.78f,0),.24f,.045f,20,gold); Prism(root,"core",new Vector3(0,.95f,0),.135f,.52f,8,white); Prism(root,"heart",new Vector3(0,1.08f,0),.07f,.22f,6,light);
-        }
-        else throw new InvalidOperationException($"Unknown Radiance geometry '{assetName}'.");
-
-        foreach (var renderer in original) renderer.enabled = false;
-        foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled = false;
+        ValheimStaffVisualBuilder.Finish(context);
     }
 
-    private static void Shaft(GameObject root, Material body, Material metal, float radius)
+    private static void BuildSimple(GameObject root,Material body,Material leather,Material bronze,Material light)
     {
-        Cylinder(root,"shaft",new Vector3(0,-.08f,0),radius,1.48f,10,body);
-        Cylinder(root,"pommel",new Vector3(0,-.77f,0),radius*1.38f,.10f,12,metal);
-        Cylinder(root,"neck",new Vector3(0,.53f,0),radius*1.38f,.06f,12,metal);
+        ValheimStaffVisualBuilder.OrganicShaft(root,"radiance",body,leather,bronze,.039f,.70f,false);
+        var hub=new Vector3(.015f,.53f,.005f);
+        var left=new Vector3(-.16f,.82f,.025f);
+        var right=new Vector3(.17f,.86f,-.02f);
+        ValheimStaffVisualBuilder.Segment(root,"sun-fork-left",hub,left,.025f,bronze,8);
+        ValheimStaffVisualBuilder.Segment(root,"sun-fork-right",hub,right,.024f,bronze,8);
+        ValheimStaffVisualBuilder.Segment(root,"left-ray",left,new Vector3(-.22f,1.00f,.035f),.014f,bronze,6);
+        ValheimStaffVisualBuilder.Segment(root,"right-ray",right,new Vector3(.26f,1.03f,-.03f),.013f,bronze,6);
+        ValheimStaffVisualBuilder.Shard(root,"prism-spark",new Vector3(.020f,.89f,.004f),new Vector3(.16f,.36f,.16f),Quaternion.Euler(-3f,15f,3f),light,6);
+        ValheimStaffVisualBuilder.Segment(root,"side-ray",new Vector3(-.08f,.66f,.04f),new Vector3(-.22f,.73f,.06f),.011f,bronze,6);
+        ValheimStaffVisualBuilder.FocusLight(root,"radiance-light",new Vector3(.02f,.91f,.004f),new Color(1f,.86f,.38f),1.55f,.36f);
     }
-    private static void Cylinder(GameObject root,string name,Vector3 pos,float radius,float height,int sides,Material material)
+
+    private static void BuildCrystal(GameObject root,Material body,Material leather,Material gold,Material light,Material white)
     {
-        if(!Cylinders.TryGetValue(sides,out var mesh)){mesh=MakeCylinder(sides);Cylinders.Add(sides,mesh);} Part(root,name,mesh,pos,new Vector3(radius*2f,height,radius*2f),Quaternion.identity,material);
+        ValheimStaffVisualBuilder.OrganicShaft(root,"radiance",body,leather,gold,.043f,.76f,true);
+        var centre=new Vector3(.018f,.91f,.005f);
+        for(var i=0;i<4;i++)
+        {
+            var a=i*Mathf.PI*.5f+.17f;
+            var radial=new Vector3(Mathf.Cos(a),0f,Mathf.Sin(a));
+            var lower=centre+radial*.09f+Vector3.down*.26f;
+            var upper=centre+radial*(i==1?.29f:.25f)+Vector3.up*(i%2==0?.18f:.12f);
+            ValheimStaffVisualBuilder.Segment(root,"sun-lens-arm-a-"+i,lower,Vector3.Lerp(lower,upper,.56f),.017f,gold,8);
+            ValheimStaffVisualBuilder.Segment(root,"sun-lens-arm-b-"+i,Vector3.Lerp(lower,upper,.56f),upper,.012f,gold,6);
+            ValheimStaffVisualBuilder.Shard(root,"sun-ray-node-"+i,upper,new Vector3(.036f,.12f,.036f),Quaternion.Euler(11f*Mathf.Sin(a),a*Mathf.Rad2Deg,15f*Mathf.Cos(a)),light,5);
+        }
+        ValheimStaffVisualBuilder.Shard(root,"sun-lance-focus",centre,new Vector3(.20f,.48f,.20f),Quaternion.Euler(-4f,20f,2f),white,7);
+        ValheimStaffVisualBuilder.Shard(root,"golden-heart",centre+new Vector3(.03f,.11f,-.015f),new Vector3(.074f,.19f,.074f),Quaternion.Euler(8f,-12f,-4f),light,6);
+        ValheimStaffVisualBuilder.FocusLight(root,"sun-lance-light",centre+Vector3.up*.05f,new Color(1f,.94f,.63f),1.85f,.46f);
     }
-    private static void Prism(GameObject root,string name,Vector3 pos,float radius,float height,int sides,Material material)
+
+    private static void BuildAdvanced(GameObject root,Material body,Material leather,Material gold,Material light,Material white)
     {
-        if(!Prisms.TryGetValue(sides,out var mesh)){mesh=MakePrism(sides);Prisms.Add(sides,mesh);} Part(root,name,mesh,pos,new Vector3(radius*2f,height,radius*2f),Quaternion.identity,material);
+        ValheimStaffVisualBuilder.OrganicShaft(root,"radiance",body,leather,gold,.046f,.84f,true);
+        var centre=new Vector3(.018f,.92f,.005f);
+        for(var i=0;i<7;i++)
+        {
+            var a=i*Mathf.PI*2f/7f+.20f;
+            var radial=new Vector3(Mathf.Cos(a),0f,Mathf.Sin(a));
+            var lower=centre+radial*.11f+Vector3.down*.24f;
+            var upper=centre+radial*(i==5?.34f:.28f)+Vector3.up*(i%2==0?.22f:.14f);
+            ValheimStaffVisualBuilder.Segment(root,"corona-ray-"+i,lower,upper,.013f,gold,6);
+            ValheimStaffVisualBuilder.Shard(root,"corona-tip-"+i,upper,new Vector3(.040f,.13f,.040f),Quaternion.Euler(13f*Mathf.Sin(a),a*Mathf.Rad2Deg,18f*Mathf.Cos(a)),i%2==0?white:light,5);
+        }
+        ValheimStaffVisualBuilder.Shard(root,"corona-core",centre,new Vector3(.24f,.51f,.24f),Quaternion.Euler(-3f,24f,2f),white,7);
+        ValheimStaffVisualBuilder.Segment(root,"long-processional-ray",new Vector3(-.12f,.72f,.05f),new Vector3(-.34f,1.02f,.08f),.012f,gold,6);
+        ValheimStaffVisualBuilder.Shard(root,"processional-tip",new Vector3(-.345f,1.06f,.08f),new Vector3(.038f,.13f,.038f),Quaternion.Euler(9f,0f,-14f),light,5);
+        ValheimStaffVisualBuilder.FocusLight(root,"corona-light",centre+Vector3.up*.06f,new Color(1f,.97f,.74f),2.05f,.56f);
     }
-    private static void Part(GameObject root,string name,Mesh mesh,Vector3 pos,Vector3 scale,Quaternion rot,Material mat)
+
+    private static void BuildMaster(GameObject root,Material body,Material leather,Material gold,Material light,Material white)
     {
-        var go=new GameObject(name){layer=root.layer}; go.transform.SetParent(root.transform,false); go.transform.localPosition=pos; go.transform.localRotation=rot; go.transform.localScale=scale; go.AddComponent<MeshFilter>().sharedMesh=mesh; go.AddComponent<MeshRenderer>().sharedMaterial=mat;
+        ValheimStaffVisualBuilder.OrganicShaft(root,"radiance",body,leather,gold,.050f,.90f,true);
+        foreach(var y in new[]{-.34f,-.08f,.20f,.46f})
+            ValheimStaffVisualBuilder.Band(root,"daybreak-band-"+y.ToString("0.00"),new Vector3(.005f*y,y,.003f),.075f,.045f,gold,10);
+        var basePoint=new Vector3(.018f,.52f,.005f);
+        var left=new Vector3(-.18f,.73f,.04f);
+        var right=new Vector3(.19f,.70f,-.03f);
+        ValheimStaffVisualBuilder.Segment(root,"sanctuary-left",basePoint,left,.027f,gold,8);
+        ValheimStaffVisualBuilder.Segment(root,"sanctuary-right",basePoint,right,.026f,gold,8);
+        ValheimStaffVisualBuilder.Segment(root,"sanctuary-left-spire",left,new Vector3(-.30f,1.15f,.06f),.016f,gold,7);
+        ValheimStaffVisualBuilder.Segment(root,"sanctuary-right-spire",right,new Vector3(.31f,1.11f,-.04f),.015f,gold,7);
+        var centre=new Vector3(.018f,.96f,.005f);
+        for(var i=0;i<9;i++)
+        {
+            var a=i*Mathf.PI*2f/9f+.18f;
+            var radial=new Vector3(Mathf.Cos(a),0f,Mathf.Sin(a));
+            var lower=centre+radial*.14f+Vector3.down*.21f;
+            var upper=centre+radial*(i%4==0?.34f:.28f)+Vector3.up*(i%2==0?.19f:.13f);
+            ValheimStaffVisualBuilder.Segment(root,"daybreak-ray-"+i,lower,upper,.011f,gold,6);
+            if(i%2==0) ValheimStaffVisualBuilder.Shard(root,"daybreak-node-"+i,upper,new Vector3(.040f,.14f,.040f),Quaternion.Euler(12f*Mathf.Sin(a),a*Mathf.Rad2Deg,15f*Mathf.Cos(a)),light,5);
+        }
+        ValheimStaffVisualBuilder.Shard(root,"daybreak-core",centre,new Vector3(.30f,.64f,.30f),Quaternion.Euler(-4f,27f,3f),white,8);
+        ValheimStaffVisualBuilder.Shard(root,"daybreak-heart",centre+new Vector3(.032f,.13f,-.018f),new Vector3(.10f,.26f,.10f),Quaternion.Euler(8f,-14f,-5f),light,6);
+        ValheimStaffVisualBuilder.Segment(root,"hanging-votive",new Vector3(.23f,.89f,-.06f),new Vector3(.31f,.72f,-.09f),.009f,gold,6);
+        ValheimStaffVisualBuilder.Shard(root,"votive-light",new Vector3(.315f,.68f,-.09f),new Vector3(.036f,.12f,.036f),Quaternion.Euler(170f,0f,-8f),white,5);
+        ValheimStaffVisualBuilder.FocusLight(root,"daybreak-light",centre+Vector3.up*.08f,new Color(1f,.99f,.86f),2.50f,.72f);
     }
-    private static Material Mat(Material source,string name,Color color,float metallic,float gloss,float emission=0f)
-    {
-        var m=new Material(source){name="magenheim.radiance."+name}; GeneratedSurfaceTextures.Apply(m,name); if(m.HasProperty("_Color"))m.SetColor("_Color",color); if(m.HasProperty("_Metallic"))m.SetFloat("_Metallic",metallic); if(m.HasProperty("_Glossiness"))m.SetFloat("_Glossiness",gloss); if(m.HasProperty("_BumpMap"))m.SetTexture("_BumpMap",null); m.DisableKeyword("_NORMALMAP"); if(m.HasProperty("_EmissionColor")&&emission>0f){m.SetColor("_EmissionColor",color*emission);m.EnableKeyword("_EMISSION");} else m.DisableKeyword("_EMISSION"); m.SetOverrideTag("RenderType","Opaque"); if(m.HasProperty("_ZWrite"))m.SetFloat("_ZWrite",1f); m.renderQueue=2000; return m;
-    }
-    private static Mesh MakeBox(){var m=new Mesh{name="magenheim.radiance.box"};m.vertices=new[]{new Vector3(-.5f,-.5f,-.5f),new Vector3(.5f,-.5f,-.5f),new Vector3(.5f,.5f,-.5f),new Vector3(-.5f,.5f,-.5f),new Vector3(-.5f,-.5f,.5f),new Vector3(.5f,-.5f,.5f),new Vector3(.5f,.5f,.5f),new Vector3(-.5f,.5f,.5f)};m.triangles=new[]{0,3,2,0,2,1,4,5,6,4,6,7,0,4,7,0,7,3,1,2,6,1,6,5,0,1,5,0,5,4,3,7,6,3,6,2};m.RecalculateNormals();m.RecalculateBounds();return m;}
-    private static Mesh MakeCylinder(int sides){var v=new List<Vector3>();var t=new List<int>();for(var r=0;r<2;r++){var y=r==0?-.5f:.5f;for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.5f*Mathf.Cos(a),y,.5f*Mathf.Sin(a)));}}var b=v.Count;v.Add(new Vector3(0,-.5f,0));var top=v.Count;v.Add(new Vector3(0,.5f,0));for(var i=0;i<sides;i++){var n=(i+1)%sides;t.AddRange(new[]{i,sides+i,n,n,sides+i,sides+n,b,i,n,top,sides+n,sides+i});}var m=new Mesh{name="magenheim.radiance.cylinder."+sides,vertices=v.ToArray(),triangles=t.ToArray()};m.RecalculateNormals();m.RecalculateBounds();return m;}
-    private static Mesh MakePrism(int sides){var v=new List<Vector3>();var t=new List<int>();for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.34f*Mathf.Cos(a),-.45f,.34f*Mathf.Sin(a)));}for(var i=0;i<sides;i++){var a=2f*Mathf.PI*i/sides;v.Add(new Vector3(.5f*Mathf.Cos(a),.18f,.5f*Mathf.Sin(a)));}var top=v.Count;v.Add(new Vector3(0,.68f,0));var bottom=v.Count;v.Add(new Vector3(0,-.5f,0));for(var i=0;i<sides;i++){var n=(i+1)%sides;t.AddRange(new[]{bottom,i,n,i,sides+i,n,n,sides+i,sides+n,top,sides+n,sides+i});}var m=new Mesh{name="magenheim.radiance.prism."+sides,vertices=v.ToArray(),triangles=t.ToArray()};m.RecalculateNormals();m.RecalculateBounds();return m;}
 }
