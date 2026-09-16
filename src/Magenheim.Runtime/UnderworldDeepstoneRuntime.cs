@@ -3,6 +3,8 @@ using UnityEngine;
 
 namespace Magenheim.Runtime;
 
+internal readonly record struct UnderworldDeepstonePersistentState(bool TrophyMounted, bool BoonUnlocked);
+
 /// <summary>
 /// Runtime identity and synchronized persistence boundary for one physical Deepstone.
 /// Progression decisions remain in Magenheim.Core; this component only binds a Conclave
@@ -16,8 +18,8 @@ internal sealed class UnderworldDeepstoneRuntime : MonoBehaviour, Hoverable
 
     internal string DeepstoneId => _deepstoneId ?? string.Empty;
     internal bool IsBound => !string.IsNullOrWhiteSpace(_deepstoneId);
-    internal bool TrophyMounted => IsBound && ZoneSystem.instance != null && ZoneSystem.instance.GetGlobalKey(MountedKeyPrefix + _deepstoneId);
-    internal bool BoonUnlocked => IsBound && ZoneSystem.instance != null && ZoneSystem.instance.GetGlobalKey(BoonKeyPrefix + _deepstoneId);
+    internal bool TrophyMounted => IsBound && ReadPersistentState(_deepstoneId!).TrophyMounted;
+    internal bool BoonUnlocked => IsBound && ReadPersistentState(_deepstoneId!).BoonUnlocked;
 
     internal void Bind(string deepstoneId)
     {
@@ -25,6 +27,16 @@ internal sealed class UnderworldDeepstoneRuntime : MonoBehaviour, Hoverable
         if (_deepstoneId is not null && !string.Equals(_deepstoneId, deepstoneId, StringComparison.Ordinal))
             throw new InvalidOperationException($"Deepstone runtime is already bound to '{_deepstoneId}'.");
         _deepstoneId = deepstoneId;
+    }
+
+    internal static UnderworldDeepstonePersistentState ReadPersistentState(string deepstoneId)
+    {
+        if (string.IsNullOrWhiteSpace(deepstoneId)) throw new ArgumentException("Canonical Deepstone id is required.", nameof(deepstoneId));
+        var zone = ZoneSystem.instance;
+        if (zone == null) return default;
+        return new UnderworldDeepstonePersistentState(
+            zone.GetGlobalKey(MountedKeyPrefix + deepstoneId),
+            zone.GetGlobalKey(BoonKeyPrefix + deepstoneId));
     }
 
     /// <summary>
