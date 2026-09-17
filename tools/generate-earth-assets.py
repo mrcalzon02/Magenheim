@@ -12,11 +12,11 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'assets' / 'earth'
 OUT.mkdir(parents=True, exist_ok=True)
 
-# Keep the shipped Earth icon contract stable until the Stage 2 pipeline migration. The
-# generator can render a larger review target without changing runtime payloads by setting
-# MAGENHEIM_EARTH_PREVIEW_ICON_SIZE. This is deliberately additive: existing checked-in
-# icons and consumers remain untouched.
-PREVIEW_ICON_SIZE = max(128, int(os.environ.get('MAGENHEIM_EARTH_PREVIEW_ICON_SIZE', '256')))
+# Match the modern Magenheim inventory-art target. EarthAssets derives sprite PPU from the
+# actual square texture resolution, so moving 128 -> 256 adds source detail without changing
+# the icon's presentation footprint in Unity.
+ICON_SIZE = max(256, int(os.environ.get('MAGENHEIM_EARTH_ICON_SIZE', '256')))
+PREVIEW_ICON_SIZE = max(ICON_SIZE, int(os.environ.get('MAGENHEIM_EARTH_PREVIEW_ICON_SIZE', str(ICON_SIZE))))
 
 def sub(a, b): return tuple(x-y for x,y in zip(a,b))
 def cross(a,b): return (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0])
@@ -127,7 +127,7 @@ def emit(name, raw, outward=False):
     (OUT/f'{name}.obj').write_text('\n'.join(obj)+'\n')
     (OUT/f'{name}.mtl').write_text(f'newmtl {name}\nKd 1 1 1\nmap_Kd {name}.png\n')
     icon=render(points,faces,colors)
-    icon.resize((128,128),Image.Resampling.LANCZOS).save(OUT/f'{name}.icon.png')
+    icon.resize((ICON_SIZE,ICON_SIZE),Image.Resampling.LANCZOS).save(OUT/f'{name}.icon.png')
     return icon,len(faces)
 
 def render(points,faces,colors):
@@ -154,12 +154,12 @@ def main():
     for i,name in enumerate(names):
         icon,count=emit(name,geode() if i==0 else crystal(i-1))
         icons.append(icon)
-        print(f'{name}: {count} triangles; mesh + OBJ + 512px atlas + icon')
+        print(f'{name}: {count} triangles; mesh + OBJ + 512px atlas + {ICON_SIZE}px icon')
 
     skill=icons[1].copy(); d=ImageDraw.Draw(skill)
     d.polygon([(105,95),(128,76),(365,353),(337,385)],fill=(113,81,47,255))
     d.polygon([(312,321),(343,298),(402,373),(390,412),(354,397)],fill=(199,194,171,255))
-    skill.resize((128,128),Image.Resampling.LANCZOS).save(OUT/'crystal-shaping.icon.png')
+    skill.resize((ICON_SIZE,ICON_SIZE),Image.Resampling.LANCZOS).save(OUT/'crystal-shaping.icon.png')
     skill.resize((256,256),Image.Resampling.LANCZOS).save(ROOT/'icon.png')
 
     sheet=Image.new('RGB',(1600,840),(28,31,30)); d=ImageDraw.Draw(sheet)
