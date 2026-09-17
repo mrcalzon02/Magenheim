@@ -124,6 +124,64 @@ cloning, including the Crystal Throne.
 
 ---
 
+## R3 — Geode geometry is inverted, and the library-wide fidelity measurement
+
+**Status: diagnosed 2026-09-16, not yet repaired. Top priority; see BACKLOG.md P0.1 and
+IMPLEMENTATION_PLAN.md section 14.**
+
+Reported from play: the geode is "a vaguely lumpy D20 with transparency issues across various
+faces and a flat textureless plain upon which a few crystals were sticking straight out of the
+flat textureless side as our exposed interior side".
+
+That is not a transparency defect. `assets/earth/geode.png` is 512x512 RGB with no alpha
+channel, and `EarthAssets.ConfigureOpaqueMaterial` already forces opaque render state. It is
+inverted winding, the same defect class as R2, measured on the exported payload by comparing
+each face normal against the vector from the part centroid:
+
+| Part | Faces pointing inward | Signed volume |
+| --- | --- | --- |
+| `stone-cavity` | 246 / 246 | negative |
+| `interior-crystal-0` | 104 / 142 | negative |
+| `interior-crystal-1` | 104 / 142 | negative |
+| `interior-crystal-2` | 89 / 142 | negative |
+| `interior-crystal-3` | 104 / 142 | negative |
+| `interior-crystal-4` | 104 / 142 | negative |
+
+The "flat textureless plain" is a fully inverted mesh being seen from behind. `stone-shell`
+is correctly wound, which is why only part of the object misbehaves.
+
+Method note: the same pass counted open edges, but the exporter writes unwelded vertices, so
+every directed edge is unique and edge-pairing reports 3x the triangle count on every part
+including correct ones. That metric is uninformative on this payload and was discarded. The
+face-normal test is position-based and does hold.
+
+Scope: `geode-sample` is a single model loaded by `GeodeVisuals.Apply` for both the item and
+the world object, shared by all eight biome geodes, so one rebuild carries the whole set.
+
+The biome-shading mechanism already exists and must be preserved: `GeodeVisuals.Apply` tints
+any material whose name contains `magenheim.geode.interior-` with the biome colour and
+lightens `interior-bright-`. The rebuilt interior must therefore be authored greyscale.
+
+### Library-wide fidelity measurement at `924f5e7`
+
+| Measure | Value |
+| --- | --- |
+| Models with no texture map | 170 of 281 (60%) |
+| Textured parts | 1,320 of 3,688 (36%) |
+| `earth-simple` | 36 triangles |
+| `earth-rough`, `earth-crystal`, `earth-shards` | 108 triangles each |
+| `earth-advanced`, `earth-master` | 180 triangles each |
+| `deep-fracture-passage` | 60 triangles (five boxes) |
+| `deep-fracture-traversal` | 172 triangles |
+| Deep Fracture districts, after the cavern rebuild | ~10,000 triangles each |
+
+Flat Principled base colour with no map is why assets read as clay. The crystal progression
+items, which the player handles throughout the entire refinement loop, are the lowest-poly
+assets in the library. The passage and traversal pieces were not part of the cavern rebuild
+and now connect chambers roughly 150 times their own triangle count.
+
+---
+
 ## Current acceptance boundary
 
 The source defects raised by the screenshot pass are repaired on `main`. The next gate is not more

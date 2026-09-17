@@ -1,3 +1,20 @@
+# Active priority — asset fidelity and live acceptance (from 2026-09-16)
+
+The controlling priority is now `BACKLOG.md` **P0.1** and `IMPLEMENTATION_PLAN.md`
+**section 14**, which outrank every other open track including the Underworld program.
+Evidence is in `docs/RENDERING_AND_CONTENT_DEFECTS.md` R3.
+
+In short: nothing since 0.0.16 has been observed running, a large number of repairs were made
+from inferred rather than observed behaviour, inverted winding has now shipped from three
+independent sources, and 60% of the model library carries no texture map. The next gate is a
+disposable-world acceptance session and the geode rebuild, not additional content.
+
+Deep Fracture districts were rebuilt as enclosed caverns on 2026-09-16
+(docs/validation/2026-09-16-deep-fracture-cavern-terrain.md). Their passage and traversal
+pieces were not, and remain 60 and 172 triangles against districts of roughly 10,000.
+
+---
+
 # Current source candidate — 0.0.49 / schema 5
 
 Repaired the `Inventory.Changed` reflection binding that Valheim 1.0.12 broke: the game

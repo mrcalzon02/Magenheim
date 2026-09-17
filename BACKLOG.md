@@ -2,6 +2,20 @@
 
 Priority is dependency order. Broken intended behavior and repository divergence outrank new scope.
 
+## P0.1 — Asset fidelity, live acceptance and geometry gating (TOP PRIORITY, raised 2026-09-16)
+
+These outrank every item below, including P0.4 and P0.5 remnants and all new content.
+Measurements are from the committed library at `924f5e7`; evidence and method are in
+`docs/RENDERING_AND_CONTENT_DEFECTS.md`.
+
+- [ ] **Run one disposable-world acceptance session.** Everything since 0.0.16 is recorded as "source repaired, live acceptance pending". A large number of defects were repaired from *inferred* behaviour rather than observed behaviour, and nothing currently distinguishes the correct inferences from the wrong ones. This is the cheapest highest-value action available and it gates honest claims on all the rest.
+- [ ] **Rebuild the geode.** `geode-sample` is a single model shared by all eight biome geodes and it is actively broken, not merely dated: `stone-cavity` has 246 of 246 faces pointing inward and all five `interior-crystal-*` parts are 63-73% inverted, every one with negative signed volume. The reported "transparency" is back-face rendering; the atlas carries no alpha and the material is forced opaque. Rebuild the exterior as fractured Voronoi plates with deep crevices over a darker inner mass, and the exposed face as concentric agate banding plus a dense inward-pointing druzy field, authored greyscale. Preserve the existing runtime contract: `GeodeVisuals.Apply` tints any material named `magenheim.geode.interior-*` and lightens `interior-bright-*`, so biome shading needs no runtime change.
+- [ ] **Gate inverted faces across the whole model library.** This defect class has now appeared three separate times: the copied prism/cylinder builders, the geode cavity, and the geode crystals. It produces no compile error, no exception and no log line, and is invisible until a player looks at the wrong side of a surface. Promote the ad-hoc check that found the geode into a permanent gate over all 281 models, in the manner of `tools/verify-deep-fracture-caverns.py`. Note that exported vertices are unwelded, so edge-pairing tests are uninformative; the face-normal-versus-centroid test is the one that holds.
+- [ ] **Close the texture gap.** 170 of 281 models (60%) carry no texture map at all and only 1,320 of 3,688 parts (36%) are textured. Flat Principled base colour is the reason assets read as clay rather than rock or crystal. This is the substantive meaning of "match Valheim standards": vanilla carries albedo and normal maps on essentially everything.
+- [ ] **Develop the crystal progression items.** The items the entire mod is built around are the lowest-poly assets in the library: `earth-simple` is 36 triangles, `earth-rough`/`earth-crystal`/`earth-shards` are 108, and `earth-advanced`/`earth-master` are 180. The player handles these constantly across the whole refinement loop.
+- [ ] **Bring the Deep Fracture passages up to the districts.** `deep-fracture-passage` is 60 triangles (five boxes) and `deep-fracture-traversal` is 172. They now connect districts of roughly 10,000 triangles each. The corridor is the first thing seen after a chamber, so the mismatch is immediately legible.
+- [ ] **Compile before pushing.** Eighteen compile errors arrived on `main` in one batch and two more of the identical class followed hours later, after that class had already been repaired six times on the same branch. Running `build.ps1` before push catches all of it; nothing more elaborate is required.
+
 ## P0 — repository and pure-core foundation
 
 - [x] Reconcile false bootstrap claims against committed repository reality.
