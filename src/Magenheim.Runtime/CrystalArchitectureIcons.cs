@@ -41,7 +41,7 @@ internal static class CrystalArchitectureIcons
                 Rect(pixels, 39, 43, 89, 58, dark);
                 Rect(pixels, 31, 87, 97, 94, iron);
                 for (var i = 0; i < rainbow.Length; i++)
-                    Diamond(pixels, 36 + i * 9, 68 + (i % 2) * 6, 8, rainbow[i]);
+                    CrystalDiamond(pixels, 36 + i * 9, 68 + (i % 2) * 6, 8, rainbow[i]);
                 break;
             case CrystalArchitectureVisuals.CrystalBeam2:
             case CrystalArchitectureVisuals.CrystalBeam4:
@@ -49,7 +49,10 @@ internal static class CrystalArchitectureIcons
                 Rect(pixels, 55, 18, 73, 109, iron);
                 var segment = 84 / rainbow.Length;
                 for (var i = 0; i < rainbow.Length; i++)
-                    Rect(pixels, 59, 23 + i * segment, 69, 23 + (i + 1) * segment - 1, rainbow[i]);
+                {
+                    Rect(pixels, 58, 22 + i * segment, 70, 23 + (i + 1) * segment, dark);
+                    Rect(pixels, 60, 24 + i * segment, 68, 21 + (i + 1) * segment, rainbow[i]);
+                }
                 break;
             case CrystalArchitectureVisuals.CrystalFoundation2:
             case CrystalArchitectureVisuals.CrystalFoundation4:
@@ -61,7 +64,10 @@ internal static class CrystalArchitectureIcons
                 for (var x = 0; x < 4; x++)
                     for (var y = 0; y < 4; y++)
                     {
-                        Rect(pixels, 27 + x * cellW, 34 + y * cellH, 43 + x * cellW, 46 + y * cellH,
+                        var x0 = 27 + x * cellW;
+                        var y0 = 34 + y * cellH;
+                        Rect(pixels, x0, y0, 43 + x * cellW, 46 + y * cellH, dark);
+                        Rect(pixels, x0 + 2, y0 + 2, 41 + x * cellW, 44 + y * cellH,
                             rainbow[index++ % rainbow.Length]);
                     }
                 break;
@@ -81,6 +87,13 @@ internal static class CrystalArchitectureIcons
         sprite.name = "magenheim." + modelId + ".icon";
         Cache.Add(modelId, sprite);
         return sprite;
+    }
+
+    private static void CrystalDiamond(Color[] pixels, int cx, int cy, int radius, Color color)
+    {
+        Diamond(pixels, cx, cy, radius + 2, Color.Lerp(color, Color.black, .72f));
+        Diamond(pixels, cx, cy, radius, color);
+        Diamond(pixels, cx - radius / 4, cy + radius / 4, Math.Max(2, radius / 3), Color.Lerp(color, Color.white, .38f));
     }
 
     private static void Rect(Color[] pixels, int x0, int y0, int x1, int y1, Color color)
