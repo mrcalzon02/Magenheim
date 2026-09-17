@@ -126,8 +126,18 @@ cloning, including the Crystal Throne.
 
 ## R3 — Geode geometry is inverted, and the library-wide fidelity measurement
 
-**Status: diagnosed 2026-09-16, not yet repaired. Top priority; see BACKLOG.md P0.1 and
-IMPLEMENTATION_PLAN.md section 14.**
+**Status: source repaired 2026-09-16; live visual acceptance pending.**
+
+`tools/generate-geode-models.py` rebuilds `geode-sample` as fractured Voronoi plates over a
+cut core, a cavity whose normals face the void, a concentric agate collar and a druzy field
+of 220 inward-pointing crystals. 1,259 triangles across 8 parts became 3,593 across 5, and
+all five parts now carry a generated greyscale albedo where none did before. Material names
+keep the `GeodeVisuals` tint contract, so the eight biome geodes shade with no runtime change.
+
+`tools/verify-model-geometry.py` is the permanent gate for this defect class and passes over
+all 281 models. Two of my own defects were caught during the rebuild and are recorded below.
+
+The original diagnosis follows.
 
 Reported from play: the geode is "a vaguely lumpy D20 with transparency issues across various
 faces and a flat textureless plain upon which a few crystals were sticking straight out of the
@@ -161,6 +171,31 @@ the world object, shared by all eight biome geodes, so one rebuild carries the w
 The biome-shading mechanism already exists and must be preserved: `GeodeVisuals.Apply` tints
 any material whose name contains `magenheim.geode.interior-` with the biome colour and
 lightens `interior-bright-`. The rebuilt interior must therefore be authored greyscale.
+
+### What the new gate caught, including in my own work
+
+Writing the gate was not a formality. Its first useful output was a failure in the cavern
+rebuild I had shipped the previous day: every stalactite and column in all twenty districts
+was wound inside-out. Split into connected components, all 18 cones in DF-01 had negative
+signed volume. The cause was `add_cone` orienting faces against a reference point, which is
+correct for an upright cone and wrong for one that hangs, because a negative span reverses
+the natural ring winding. Formations are now built in isolation, measured, and reversed once
+if the measured volume is negative, rather than reasoned about.
+
+The gate also needed one correction before it was worth anything. Its first version demanded
+a perfectly closed manifold before applying the volume test, which put the geode cavity
+(99% of edges paired) and the interior crystals (96%) into the "cannot judge" bucket and
+passed them silently. A shell with a mouth cut in it is still a shell; the tolerance is now
+10% unpaired edges. A gate that misses its own motivating case is worse than no gate, because
+it manufactures confidence.
+
+Two defects in the geode rebuild were found by rendering rather than by any gate, and both
+were invisible to geometry checks because the meshes were individually valid:
+
+- the darker core sphere was built whole, so it sealed the mouth and no interior was visible
+  at all; it now carries the same opening as the shell and cavity;
+- the druzy placement excluded the wall opposite the mouth as "hidden", which is precisely
+  the surface the player looks at through the opening, leaving crystals only around the rim.
 
 ### Library-wide fidelity measurement at `924f5e7`
 

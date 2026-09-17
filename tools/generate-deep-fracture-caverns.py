@@ -301,6 +301,40 @@ class MeshBuilder:
     def is_empty(self):
         return not self.faces
 
+    def signed_volume(self):
+        """Positive when a closed solid is wound outward."""
+        total = 0.0
+        for face in self.faces:
+            a = self.vertices[face[0]]
+            for k in range(1, len(face) - 1):
+                b = self.vertices[face[k]]
+                c = self.vertices[face[k + 1]]
+                total += (a[0] * (b[1] * c[2] - b[2] * c[1])
+                          - a[1] * (b[0] * c[2] - b[2] * c[0])
+                          + a[2] * (b[0] * c[1] - b[1] * c[0])) / 6.0
+        return total
+
+
+def append_solid(target, solid):
+    """Append a closed solid, reversing every face if it came out inside-out.
+
+    Orienting each face against a reference point is correct for an upright cone and wrong
+    for one that hangs: with a negative span the natural ring winding reverses, and all
+    eighteen stalactites in a district shipped inverted before this was measured rather than
+    reasoned about. Building the solid, measuring its signed volume and correcting once is
+    not subject to that mistake.
+    """
+    reverse = solid.signed_volume() < 0.0
+    for face in solid.faces:
+        points = [solid.vertices[i] for i in face]
+        uvs = [solid.uvs[i] for i in face]
+        if reverse:
+            points, uvs = list(reversed(points)), list(reversed(uvs))
+        base = len(target.vertices)
+        target.vertices.extend(points)
+        target.uvs.extend(uvs)
+        target.faces.append(tuple(range(base, base + len(points))))
+
 
 def _normal_faces_away(points, reference):
     ax, ay, az = points[0]
@@ -432,7 +466,14 @@ def build_walls(field):
     return builder
 
 
-def add_cone(builder, x, y, base_z, tip_z, radius, sides=7, seed_rnd=None, rings=4):
+def add_cone(target, x, y, base_z, tip_z, radius, sides=7, seed_rnd=None, rings=4):
+    """Build one formation in isolation, then append it with its winding corrected."""
+    builder = MeshBuilder()
+    _build_cone(builder, x, y, base_z, tip_z, radius, sides, seed_rnd, rings)
+    append_solid(target, builder)
+
+
+def _build_cone(builder, x, y, base_z, tip_z, radius, sides=7, seed_rnd=None, rings=4):
     """A dripstone formation: a stack of jittered rings that leans and bulges as it tapers.
 
     A single smooth taper reads as a traffic cone rather than rock, so the profile is built
