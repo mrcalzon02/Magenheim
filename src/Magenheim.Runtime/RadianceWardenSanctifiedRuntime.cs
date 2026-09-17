@@ -39,7 +39,7 @@ internal sealed class RadianceWardenSanctifiedRuntime:MonoBehaviour
         zone.transform.localScale=new Vector3(2.75f,.012f,2.75f);
         var collider=zone.GetComponent<Collider>();if(collider)Destroy(collider);
         var renderer=zone.GetComponent<Renderer>();
-        if(renderer){var material=new Material(Shader.Find("Standard"));var color=new Color(.96f,.83f,.39f,.34f);material.color=color;material.SetFloat("_Glossiness",.38f);material.SetFloat("_EmissionColor",color*.72f);renderer.material=material;}
+        if(renderer){var material=new Material(Shader.Find("Standard"));var color=new Color(.96f,.83f,.39f,.34f);material.color=color;material.SetFloat("_Glossiness",.38f);material.SetColor("_EmissionColor",color*.72f);renderer.material=material;}
         zone.AddComponent<SanctifiedLifetime>().Configure(1.85f,1.12f);
     }
     private static void EmitPiercingLine(Vector3 start,Vector3 end,int seed)
@@ -48,7 +48,7 @@ internal sealed class RadianceWardenSanctifiedRuntime:MonoBehaviour
         var line=beam.AddComponent<LineRenderer>();
         line.useWorldSpace=true;line.positionCount=2;line.startWidth=seed%2==0?.085f:.055f;line.endWidth=.012f;
         var color=new Color(1f,.9f,.48f,.94f);line.startColor=color;line.endColor=new Color(1f,.96f,.7f,.18f);
-        var material=new Material(Shader.Find("Standard"));material.color=color;material.SetFloat("_EmissionColor",color*1.45f);line.material=material;
+        var material=new Material(Shader.Find("Standard"));material.color=color;material.SetColor("_EmissionColor",color*1.45f);line.material=material;
         line.SetPosition(0,start);line.SetPosition(1,end);
         beam.AddComponent<BeamLifetime>().Configure(.32f);
     }
@@ -60,7 +60,7 @@ internal sealed class RadianceWardenSanctifiedRuntime:MonoBehaviour
         pillar.transform.localScale=new Vector3(.055f,.55f,.055f);
         var collider=pillar.GetComponent<Collider>();if(collider)Destroy(collider);
         var renderer=pillar.GetComponent<Renderer>();
-        if(renderer){var material=new Material(Shader.Find("Standard"));var color=new Color(1f,.86f,.38f,.82f);material.color=color;material.SetFloat("_EmissionColor",color*(1.05f+seed*.08f));renderer.material=material;}
+        if(renderer){var material=new Material(Shader.Find("Standard"));var color=new Color(1f,.86f,.38f,.82f);material.color=color;material.SetColor("_EmissionColor",color*(1.05f+seed*.08f));renderer.material=material;}
         pillar.AddComponent<PillarLifetime>().Configure(.72f+seed*.06f);
     }
     private sealed class SanctifiedLifetime:MonoBehaviour

@@ -41,7 +41,15 @@ internal static class DeepBoonRuntime
         if (player is null) { diagnostic = "Deep Boon runtime reconciliation requires a player."; return false; }
         if (_services is null || ZNet.instance is null || !ZNet.instance.IsServer()) { diagnostic = "Deep Boon runtime reconciliation requires server authority."; return false; }
         var world = ZNet.World;
-        if (world is null || !UnderworldRuntimeIdentityResolver.TryResolveWorldSession(_services.WorldPairStore, ZNet.instance, world, out var identity, out var layer, out diagnostic) || identity is null)
+        // Split the null check out: short-circuiting past TryResolveWorldSession would leave
+        // its out parameters, including diagnostic, definitely unassigned.
+        if (world is null)
+        {
+            diagnostic = "Deep Boon runtime reconciliation requires a loaded world.";
+            Remove(player);
+            return false;
+        }
+        if (!UnderworldRuntimeIdentityResolver.TryResolveWorldSession(_services.WorldPairStore, ZNet.instance, world, out var identity, out var layer, out diagnostic) || identity is null)
         {
             Remove(player);
             return false;
@@ -74,7 +82,9 @@ internal static class DeepBoonRuntime
             return true;
         }
 
-        ActiveByPlayer[player.GetPlayerID()] = state.SelectedDeepBoonId;
+        // Guarded by the IsNullOrWhiteSpace return above, which does not narrow null-state
+        // against these reference assemblies.
+        ActiveByPlayer[player.GetPlayerID()] = state.SelectedDeepBoonId!;
         diagnostic = $"Deep Boon '{state.SelectedDeepBoonId}' is the player's sole active Magenheim boon.";
         return true;
     }

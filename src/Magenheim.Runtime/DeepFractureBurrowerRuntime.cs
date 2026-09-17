@@ -79,7 +79,7 @@ internal sealed class DeepFractureBurrowerRuntime : MonoBehaviour
             if (collider is not null) Destroy(collider);
             var body = shard.AddComponent<Rigidbody>();
             body.mass = .12f;
-            body.velocity = new Vector3(Mathf.Cos(angle) * 2.8f, UnityEngine.Random.Range(3.2f, 5.1f), Mathf.Sin(angle) * 2.8f);
+            body.linearVelocity = new Vector3(Mathf.Cos(angle) * 2.8f, UnityEngine.Random.Range(3.2f, 5.1f), Mathf.Sin(angle) * 2.8f);
             body.angularVelocity = UnityEngine.Random.insideUnitSphere * 7f;
             Destroy(shard, 1.25f);
         }
@@ -106,7 +106,7 @@ internal sealed class DeepFractureBurrowerRuntime : MonoBehaviour
         var body = GetComponent<Rigidbody>();
         if (body is not null)
         {
-            body.velocity = Vector3.zero;
+            body.linearVelocity = Vector3.zero;
             body.isKinematic = staged;
         }
     }

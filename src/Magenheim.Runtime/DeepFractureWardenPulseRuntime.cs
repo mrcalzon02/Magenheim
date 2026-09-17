@@ -42,7 +42,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
             marker.transform.rotation=Quaternion.Euler(0,i*45f,18f);
             var collider=marker.GetComponent<Collider>();if(collider)Destroy(collider);
             var renderer=marker.GetComponent<Renderer>();
-            if(renderer){var material=new Material(Shader.Find("Standard"));material.color=color;material.SetFloat("_EmissionColor",color*.65f);renderer.material=material;}
+            if(renderer){var material=new Material(Shader.Find("Standard"));material.color=color;material.SetColor("_EmissionColor",color*.65f);renderer.material=material;}
             marker.AddComponent<PulseMarker>().Configure(.85f);
         }
         if(Alignment==ElementalAlignment.Storm)EmitStormNetwork(origin);
@@ -72,7 +72,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
         pool.transform.rotation=Quaternion.Euler(0,yaw,0);
         var collider=pool.GetComponent<Collider>();if(collider)Destroy(collider);
         var renderer=pool.GetComponent<Renderer>();
-        if(renderer){var material=new Material(Shader.Find("Standard"));var color=new Color(.24f,.66f,.13f,.72f);material.color=color;material.SetFloat("_Glossiness",.18f);material.SetFloat("_EmissionColor",color*.28f);renderer.material=material;}
+        if(renderer){var material=new Material(Shader.Find("Standard"));var color=new Color(.24f,.66f,.13f,.72f);material.color=color;material.SetFloat("_Glossiness",.18f);material.SetColor("_EmissionColor",color*.28f);renderer.material=material;}
         pool.AddComponent<VenomPoolLifetime>().Configure(life,1.28f);
     }
     private static void EmitVenomSeep(Vector3 position,Vector3 outward,int seed)
@@ -145,7 +145,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
         var line=arc.AddComponent<LineRenderer>();
         line.useWorldSpace=true;line.positionCount=4;line.startWidth=.075f;line.endWidth=.018f;
         var color=new Color(.58f,.52f,1f,.92f);line.startColor=color;line.endColor=new Color(.72f,.68f,1f,.18f);
-        var material=new Material(Shader.Find("Standard"));material.color=color;material.SetFloat("_EmissionColor",color*1.35f);line.material=material;
+        var material=new Material(Shader.Find("Standard"));material.color=color;material.SetColor("_EmissionColor",color*1.35f);line.material=material;
         var delta=end-start;var side=Vector3.Cross(Vector3.up,delta.normalized);var bend=.18f+Mathf.Abs(Mathf.Sin(bendSeed))*.22f;
         line.SetPosition(0,start);line.SetPosition(1,start+delta*.33f+side*bend+Vector3.up*.12f);line.SetPosition(2,start+delta*.67f-side*bend*.7f+Vector3.up*.05f);line.SetPosition(3,end);
         arc.AddComponent<StormArcLifetime>().Configure(.22f);

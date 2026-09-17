@@ -141,7 +141,7 @@ internal static class UnderworldDeepstoneInteractionRpc
 
     private static bool TryResolveNearbyStone(Player player, string deepstoneId, out UnderworldDeepstoneRuntime stone, out string diagnostic)
     {
-        stone = UnityEngine.Object.FindObjectsOfType<UnderworldDeepstoneRuntime>().FirstOrDefault(value => value.IsBound && string.Equals(value.DeepstoneId, deepstoneId, StringComparison.Ordinal) && Vector3.Distance(player.transform.position, value.transform.position) <= 5f)!;
+        stone = UnityEngine.Object.FindObjectsByType<UnderworldDeepstoneRuntime>(FindObjectsSortMode.None).FirstOrDefault(value => value.IsBound && string.Equals(value.DeepstoneId, deepstoneId, StringComparison.Ordinal) && Vector3.Distance(player.transform.position, value.transform.position) <= 5f)!;
         if (!stone) { diagnostic = "The requested canonical Deepstone is not within interaction range."; return false; }
         diagnostic = string.Empty; return true;
     }

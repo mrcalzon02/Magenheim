@@ -16,7 +16,11 @@ internal static string RoomPrefabName(string pieceFamilyId)
     }
     internal static GameObject CreateDistrictPrefab(DeepFracturePieceFamily family) {
         if(family==null)throw new ArgumentNullException(nameof(family));family.Validate();
-        var root=CreateRoomRoot(RoomPrefabName(family.Id),new Vector3Int(96,32,96));ModelAssets.Load(root,family.Id,hideOriginal:false);return root;
+        // Districts are cavern chambers, not flat courtyards: the floor basin sits below zero
+        // and the vault plus its surface fissure shafts reach well above the old 32 m budget.
+        // Measured extent across all twenty districts is -6.5 to 45.9 m, so the declared room
+        // volume must cover 56 m or the dungeon generator places them against the wrong bounds.
+        var root=CreateRoomRoot(RoomPrefabName(family.Id),new Vector3Int(96,56,96));ModelAssets.Load(root,family.Id,hideOriginal:false);return root;
     }
     internal static GameObject CreatePassagePrefab(){var root=CreateRoomRoot(PassagePrefabName,new Vector3Int(10,10,16));ModelAssets.Load(root,"deep-fracture-passage",hideOriginal:false);return root;}
     internal static GameObject CreateTraversalNodePrefab(){var root=CreateRoomRoot(TraversalNodePrefabName,new Vector3Int(12,10,12));ModelAssets.Load(root,"deep-fracture-traversal",hideOriginal:false);root.AddComponent<DeepFractureTraversalPortal>();return root;}

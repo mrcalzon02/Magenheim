@@ -68,7 +68,7 @@ internal static class SporeCommunionRuntime
     {
         var multiplier = ProvisionEfficiencyMultiplier(player, consumedItem);
         if (multiplier <= 1f || consumedItem is null || PlayerFoodsField is null) return;
-        if (PlayerFoodsField.GetValue(player) is not List<Food> foods) return;
+        if (PlayerFoodsField.GetValue(player) is not List<Player.Food> foods) return;
 
         for (var index = foods.Count - 1; index >= 0; index--)
         {
