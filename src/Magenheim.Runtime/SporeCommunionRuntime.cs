@@ -1,6 +1,7 @@
 using System;
 using BepInEx.Configuration;
 using HarmonyLib;
+using Magenheim.Core.Underworld;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
@@ -13,7 +14,9 @@ internal static class SporeCommunionRuntime
 {
     internal const string DeepBoonId = "spore_communion";
     private const float DefaultPoisonDamageReduction = 0.35f;
+    private const float DefaultFungalProvisionEfficiencyBonus = 0.20f;
     private static ConfigEntry<float>? _poisonDamageReduction;
+    private static ConfigEntry<float>? _fungalProvisionEfficiencyBonus;
 
     internal static void Configure(ConfigFile config)
     {
@@ -23,6 +26,11 @@ internal static class SporeCommunionRuntime
             "PoisonDamageReduction",
             DefaultPoisonDamageReduction,
             "Fraction of incoming poison damage removed while Spore Communion is the player's active Deep Boon. Clamped to 0..0.90; this is resistance, never immunity.");
+        _fungalProvisionEfficiencyBonus = config.Bind(
+            "Balance.Underworld.DeepBoons.SporeCommunion",
+            "FungalProvisionEfficiencyBonus",
+            DefaultFungalProvisionEfficiencyBonus,
+            "Fractional efficiency bonus applied only to canonical Magenheim Underworld fungal provisions while Spore Communion is active. Core clamps this to 0..0.50.");
     }
 
     internal static void MitigatePoison(Player player, HitData hit)
@@ -32,6 +40,21 @@ internal static class SporeCommunionRuntime
         var reduction = Mathf.Clamp(configured, 0f, 0.90f);
         if (reduction <= 0f || hit.m_damage.m_poison <= 0f) return;
         hit.m_damage.m_poison *= 1f - reduction;
+    }
+
+    /// <summary>
+    /// Narrow Runtime adapter for provision consumption. It deliberately resolves only
+    /// the consumed item's prefab identity and delegates eligibility/bounds to Core.
+    /// No ItemDrop.SharedData or prefab state is mutated here, so a future EatFood hook
+    /// can apply the returned multiplier to the player's consumed-food instance only.
+    /// </summary>
+    internal static float ProvisionEfficiencyMultiplier(Player player, ItemDrop.ItemData? item)
+    {
+        if (player is null || item is null || !DeepBoonRuntime.IsActive(player, DeepBoonId)) return 1f;
+
+        var prefabName = item.m_dropPrefab != null ? item.m_dropPrefab.name : null;
+        var configured = _fungalProvisionEfficiencyBonus?.Value ?? DefaultFungalProvisionEfficiencyBonus;
+        return UnderworldFungalProvisionCatalog.EfficiencyMultiplier(prefabName, configured);
     }
 }
 
