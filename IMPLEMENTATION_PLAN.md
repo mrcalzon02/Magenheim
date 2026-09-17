@@ -218,7 +218,15 @@ defect it fixed cannot come back.
 - **Stage 1 — correctness.** Geode holes and the 5 wrong-way-round held models. Touches few
   models. Wire all three failing gates into `build.ps1`.
 - **Stage 2 — `earth-` family.** The crystal progression items and the Workstation set:
-  the worst gap and the highest contact. Single-part meshes become multi-part.
+  the worst gap and the highest contact. **Scope corrected 2026-09-17 after inspection:**
+  these eleven are not simply low-detail Blender assets. They are the surviving output of
+  the older `generate-earth-assets.py` pipeline -- one merged single-material mesh each,
+  with a face-atlas UV -- and they carry a second asset contract that the rest of the
+  library does not: `.mesh.json`, `.obj`, `.mtl`, a 512px atlas and a 128px icon, all
+  enforced by `verify-earth-assets.py`. Raising them is therefore a pipeline migration to
+  the multi-part authored library, honouring or retiring that second contract, not a
+  modifier pass. It is the largest stage, not the quickest, and should start with a clear
+  session rather than the tail of one.
 - **Stage 3 — held equipment.** `crystal-weapon` geometry to the library bar, continuing
   the 0.0.55/0.0.56 weapon work.
 - **Stage 4 — texture resolution.** 256px is the library floor everywhere except the

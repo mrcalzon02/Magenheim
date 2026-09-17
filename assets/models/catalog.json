@@ -2431,9 +2431,9 @@
     "source": "source/earth-advanced.blend",
     "glb": "glb/earth-advanced.glb",
     "runtime": "runtime/earth-advanced.model.json",
-    "source_sha256": "c69422f1ecfc5905be9a65fc17ed53e9edc4b2342a2b93918f18ea8c3a80b389",
-    "runtime_sha256": "1b34270db878bd7893822dc18d3b711401a123b78b57c1ce624306fb0aa66442",
-    "glb_sha256": "b7d59d649a13d5b64b1eac022d741f59ab4f535dd1eb14c9e80eb50cae82aec8"
+    "source_sha256": "d3376ccd194ee7a8e501762e874643a792fd87e50a53956893d037f6b5917b68",
+    "runtime_sha256": "2cda7a3e2d0d4ba483beb4d7ea89acccce54d33bdf6bfd5e7068f4d987a5b471",
+    "glb_sha256": "6c34e07c24038c3a65331fc322524c247c76475a0689a5cd1e3da41983ffdb02"
   },
   {
     "id": "earth-crystal",
@@ -2443,9 +2443,9 @@
     "source": "source/earth-crystal.blend",
     "glb": "glb/earth-crystal.glb",
     "runtime": "runtime/earth-crystal.model.json",
-    "source_sha256": "561cfe53fc24a5b67167b690eff01cc09a7767fc4816f2f7a6f1993e32757aae",
-    "runtime_sha256": "46381789223918547addd3eac0acbd74a5239d39a783cc18231e8a37d79af9eb",
-    "glb_sha256": "14e0885468b12c22cf07e5bc7a4a3fbfdd474aaf6e7fa4226ddb2624508c41c0"
+    "source_sha256": "c1fdf50273b01c286f2457f12be736e504caaa734ae2a3f8ac9cd48e830de14a",
+    "runtime_sha256": "f9f37a409fd6e46d5ba618ab678b7ccc2543ed57ddb4df7beef47f366081ef4b",
+    "glb_sha256": "825e42f2e0c090626da132613803e9037134a9e88fbc9e2dea9c84e2fc405bd2"
   },
   {
     "id": "earth-faceting-wheel",
@@ -2491,9 +2491,9 @@
     "source": "source/earth-master.blend",
     "glb": "glb/earth-master.glb",
     "runtime": "runtime/earth-master.model.json",
-    "source_sha256": "b0e60e20ebfab21ef7ab4296beb6dd0851880ec4c3978fd4bd67fe38aa891761",
-    "runtime_sha256": "fe21dd12d23232d447bf0e461e610ff1871f70c0d8a6a75f10a3b875e1ab87df",
-    "glb_sha256": "be808a95058c44d63fd60dc8e0828d9266a808afb2d7ccc421a1a9d9f35414db"
+    "source_sha256": "995bd778907db8d1197316c104ba0bcbbc23dc5bf2798e356bccf68d64bb6e5c",
+    "runtime_sha256": "2f64933ad3f5b389a2a9f85d6231ccf88dec6955307e262694c6d47757f2a9aa",
+    "glb_sha256": "6560a3099c2460c810c71be350dc397daa4e9d300f3a9ecb1b1a4ce9e5635bdc"
   },
   {
     "id": "earth-resonance-frame",
@@ -2515,9 +2515,9 @@
     "source": "source/earth-rough.blend",
     "glb": "glb/earth-rough.glb",
     "runtime": "runtime/earth-rough.model.json",
-    "source_sha256": "e57c4260b988f9446d297be064e79f02d9e0c5b1200750bf3afd6fd099831d2b",
-    "runtime_sha256": "92a39601a497863347141594fdd457fe9befd6ac1298e4cae28a97d3dd2ca9f0",
-    "glb_sha256": "58b527ba49e966a09243ae4a066dc4c296bbfcfc21ef37c597e66fc5fd746206"
+    "source_sha256": "f44e2556af31cf058c4b70dd2e6afb6cb8813e3df569a7bb132da9ae11da51f6",
+    "runtime_sha256": "d205c7c1bf06f1c5c7cb30e5e4147405bf89d4a4068f3da7a9edb8e95ef4d6af",
+    "glb_sha256": "5df4b061b58edabac37fd0ee7b4c8f0c4c8f524a165b94978e78e623ba2b6d66"
   },
   {
     "id": "earth-shards",
@@ -2539,9 +2539,9 @@
     "source": "source/earth-simple.blend",
     "glb": "glb/earth-simple.glb",
     "runtime": "runtime/earth-simple.model.json",
-    "source_sha256": "c4d8bf6910a60af10d79f63036404c43f54baa7097ce67dc21ff3887461999b7",
-    "runtime_sha256": "bf474e513537c59f2e1a53c990d309015b4398843295a9fa332efb87722abf28",
-    "glb_sha256": "4cd10ef51e1eb81ddf744011a877f253e97576f4abf9550dd8135a29d107cd8b"
+    "source_sha256": "6581385e769eb23ea8a89e9ad7ff5b5e4d972da1538b206985f3abd3094c48bf",
+    "runtime_sha256": "e6382ff73301a9d70c4acf07eb7f2ad62af9449e1b38f20908195a78686c922f",
+    "glb_sha256": "1a880f492a786796c31a82c0affafadaff1838c3bd4bcddeab95f48c1021d4d8"
   },
   {
     "id": "earth-workstation",

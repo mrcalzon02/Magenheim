@@ -1,4 +1,4 @@
 {
-  "version": "0.0.59",
-  "description": "0.0.59: Repairs the geode's reported holes -- they were a gate bug, not an asset defect -- and reverses five held models that pointed the wrong way in the player's hand. Seven model gates that existed but were never run are now wired into the build."
+  "version": "0.0.60",
+  "description": "0.0.60: Closes the five crystal tier meshes. They shipped as triangle soups with over a thousand open edges each, and they are the models the whole refinement loop handles. The last unwired asset gate now runs in the build."
 }

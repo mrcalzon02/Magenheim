@@ -53,7 +53,8 @@ try {
         'verify-held-model-grip-direction',
         'verify-geode-topology',
         'verify-geode-shell-topology',
-        'verify-deep-fracture-caverns')) {
+        'verify-deep-fracture-caverns',
+        'verify-earth-assets')) {
         & python "$PSScriptRoot/tools/$modelGate.py"
         if ($LASTEXITCODE -ne 0) { throw "Model validation failed: $modelGate" }
     }

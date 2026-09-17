@@ -1,5 +1,19 @@
 # Magenheim Changelog
 
+## 0.0.60 - The crystal tier meshes are solid
+
+- Rough, Simple, Crystal, Advanced and Master shipped as triangle soups: 1,146 to 1,590
+  unshared edges each, with no welded topology. These are the models the player handles
+  through the entire refinement loop, and an unclosed solid reads as holes and flickering
+  backfaces. All five are now watertight.
+- `verify-model-geometry.py` missed this because it tests that faces point outward, which
+  they did. `verify-earth-assets.py` catches it, and was the last verifier never wired into
+  the build.
+- That gate also asserted a 512px atlas, which the legacy generator wrote but the modern
+  export path does not; the library standard is square and at least 256px. Aligned to the
+  library contract so it gates the real requirement instead of failing assets that meet it.
+- All twelve asset gates now run in the build.
+
 ## 0.0.59 - Stage 1 of the model quality campaign: correctness
 
 - The geode's "literal missing planes" were never in the asset. Both geode gates compared the
