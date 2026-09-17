@@ -47,6 +47,45 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
         }
         if(Alignment==ElementalAlignment.Storm)EmitStormNetwork(origin);
         else if(Alignment==ElementalAlignment.Earth)EmitEarthTerritory(origin);
+        else if(Alignment==ElementalAlignment.Venom)EmitVenomTerritory(origin);
+    }
+    private void EmitVenomTerritory(Vector3 origin)
+    {
+        EmitVenomPool(origin,new Vector2(2.25f,1.9f),3.6f,0f);
+        for(var i=0;i<10;i++)
+        {
+            var direction=Quaternion.Euler(0,i*36f+(i%2)*11f,0)*Vector3.forward;
+            var radius=2.15f+(i%3)*.62f;
+            var position=origin+direction*radius;
+            var width=1.05f+(i%4)*.18f;
+            var depth=.82f+((i+2)%4)*.16f;
+            EmitVenomPool(position,new Vector2(width,depth),2.7f+(i%3)*.35f,i*31f);
+            if(i%2==0)EmitVenomSeep(origin+direction*(3.35f+(i%3)*.35f),direction,i);
+        }
+    }
+    private static void EmitVenomPool(Vector3 position,Vector2 size,float life,float yaw)
+    {
+        var pool=GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        pool.name="Magenheim_WardenVenomContamination";
+        pool.transform.position=position+Vector3.up*.025f;
+        pool.transform.localScale=new Vector3(size.x,.018f,size.y);
+        pool.transform.rotation=Quaternion.Euler(0,yaw,0);
+        var collider=pool.GetComponent<Collider>();if(collider)Destroy(collider);
+        var renderer=pool.GetComponent<Renderer>();
+        if(renderer){var material=new Material(Shader.Find("Standard"));var color=new Color(.24f,.66f,.13f,.72f);material.color=color;material.SetFloat("_Glossiness",.18f);material.SetFloat("_EmissionColor",color*.28f);renderer.material=material;}
+        pool.AddComponent<VenomPoolLifetime>().Configure(life,1.28f);
+    }
+    private static void EmitVenomSeep(Vector3 position,Vector3 outward,int seed)
+    {
+        var seep=GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        seep.name="Magenheim_WardenVenomPerimeterSeep";
+        seep.transform.position=position+Vector3.up*.09f;
+        seep.transform.localScale=new Vector3(.24f+(seed%3)*.05f,.09f,.55f+(seed%2)*.16f);
+        seep.transform.rotation=Quaternion.LookRotation(outward,Vector3.up);
+        var collider=seep.GetComponent<Collider>();if(collider)Destroy(collider);
+        var renderer=seep.GetComponent<Renderer>();
+        if(renderer){var material=new Material(Shader.Find("Standard"));var color=new Color(.3f,.74f,.12f,.78f);material.color=color;material.SetFloat("_Glossiness",.12f);renderer.material=material;}
+        seep.AddComponent<VenomPoolLifetime>().Configure(3.15f,1.18f);
     }
     private void EmitStormNetwork(Vector3 origin)
     {
@@ -104,24 +143,11 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
     {
         var arc=new GameObject("Magenheim_WardenStormArc");
         var line=arc.AddComponent<LineRenderer>();
-        line.useWorldSpace=true;
-        line.positionCount=4;
-        line.startWidth=.075f;
-        line.endWidth=.018f;
-        var color=new Color(.58f,.52f,1f,.92f);
-        line.startColor=color;
-        line.endColor=new Color(.72f,.68f,1f,.18f);
-        var material=new Material(Shader.Find("Standard"));
-        material.color=color;
-        material.SetFloat("_EmissionColor",color*1.35f);
-        line.material=material;
-        var delta=end-start;
-        var side=Vector3.Cross(Vector3.up,delta.normalized);
-        var bend=.18f+Mathf.Abs(Mathf.Sin(bendSeed))*.22f;
-        line.SetPosition(0,start);
-        line.SetPosition(1,start+delta*.33f+side*bend+Vector3.up*.12f);
-        line.SetPosition(2,start+delta*.67f-side*bend*.7f+Vector3.up*.05f);
-        line.SetPosition(3,end);
+        line.useWorldSpace=true;line.positionCount=4;line.startWidth=.075f;line.endWidth=.018f;
+        var color=new Color(.58f,.52f,1f,.92f);line.startColor=color;line.endColor=new Color(.72f,.68f,1f,.18f);
+        var material=new Material(Shader.Find("Standard"));material.color=color;material.SetFloat("_EmissionColor",color*1.35f);line.material=material;
+        var delta=end-start;var side=Vector3.Cross(Vector3.up,delta.normalized);var bend=.18f+Mathf.Abs(Mathf.Sin(bendSeed))*.22f;
+        line.SetPosition(0,start);line.SetPosition(1,start+delta*.33f+side*bend+Vector3.up*.12f);line.SetPosition(2,start+delta*.67f-side*bend*.7f+Vector3.up*.05f);line.SetPosition(3,end);
         arc.AddComponent<StormArcLifetime>().Configure(.22f);
     }
     private Color PulseColor()=>Alignment switch
@@ -167,6 +193,13 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
         private Vector3 _outward;private float _life,_age;
         internal void Configure(Vector3 outward,float life){_outward=outward;_life=life;}
         private void Update(){_age+=Time.deltaTime;var t=Mathf.Clamp01(_age/_life);transform.position+=(_outward*.18f+Vector3.up*(.7f-t*1.15f))*Time.deltaTime;if(_age>=_life)Destroy(gameObject);}
+        private void OnDestroy(){var renderer=GetComponent<Renderer>();if(renderer&&renderer.material)Destroy(renderer.material);}
+    }
+    private sealed class VenomPoolLifetime:MonoBehaviour
+    {
+        private float _life,_age,_spread;
+        internal void Configure(float life,float spread){_life=life;_spread=spread;}
+        private void Update(){_age+=Time.deltaTime;var growth=1f+((_spread-1f)/Mathf.Max(.01f,_life))*Time.deltaTime;transform.localScale=new Vector3(transform.localScale.x*growth,transform.localScale.y,transform.localScale.z*growth);if(_age>=_life)Destroy(gameObject);}
         private void OnDestroy(){var renderer=GetComponent<Renderer>();if(renderer&&renderer.material)Destroy(renderer.material);}
     }
 }
