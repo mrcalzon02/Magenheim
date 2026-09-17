@@ -48,6 +48,19 @@ internal static class DeepCurrentRuntime
         if (ship is null || controllingPlayer is null || !DeepBoonRuntime.IsActive(controllingPlayer, DeepBoonId)) return 1f;
         return UnderworldVesselCatalog.HandlingMultiplier(Utils.GetPrefabName(ship.gameObject), _vesselHandlingBonus?.Value ?? DefaultVesselHandlingBonus);
     }
+
+    internal static Vector3 AdjustVesselSteeringInput(Ship ship, Vector3 input)
+    {
+        if (ship is null || ship.m_shipControlls is null || Mathf.Approximately(input.x, 0f)) return input;
+        var userId = ship.m_shipControlls.GetUser();
+        if (userId == 0L) return input;
+        var controllingPlayer = Player.GetPlayer(userId);
+        if (controllingPlayer is null) return input;
+        var multiplier = VesselHandlingMultiplier(ship, controllingPlayer);
+        if (multiplier <= 1f) return input;
+        input.x = Mathf.Clamp(input.x * multiplier, -1f, 1f);
+        return input;
+    }
 }
 
 [HarmonyPatch(typeof(Player), nameof(Player.UseStamina))]
@@ -60,4 +73,10 @@ internal static class DeepCurrentSwimmingStaminaPatch
 internal static class DeepCurrentWetRecoveryPatch
 {
     private static void Postfix(SE_Wet __instance, float dt) => DeepCurrentRuntime.AdvanceWetRecovery(__instance, dt);
+}
+
+[HarmonyPatch(typeof(Ship), nameof(Ship.ApplyControlls))]
+internal static class DeepCurrentVesselSteeringPatch
+{
+    private static void Prefix(Ship __instance, ref Vector3 dir) => dir = DeepCurrentRuntime.AdjustVesselSteeringInput(__instance, dir);
 }
