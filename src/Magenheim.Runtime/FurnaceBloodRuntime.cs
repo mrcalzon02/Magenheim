@@ -1,6 +1,5 @@
 using System;
 using BepInEx.Configuration;
-using HarmonyLib;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
@@ -35,15 +34,5 @@ internal static class FurnaceBloodRuntime
         if (reduction <= 0f) return;
 
         hit.m_damage.m_fire *= 1f - reduction;
-    }
-}
-
-[HarmonyPatch(typeof(Character), nameof(Character.Damage))]
-internal static class FurnaceBloodDamagePatch
-{
-    private static void Prefix(Character __instance, HitData hit)
-    {
-        if (__instance is Player player)
-            FurnaceBloodRuntime.MitigateFire(player, hit);
     }
 }
