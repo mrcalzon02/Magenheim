@@ -23,15 +23,12 @@ for name in names:
         edges.update([(a,b),(b,c),(c,a)])
     assert volume>0,(name,'inverted mesh')
     assert all(count==1 and edges[(b,a)]==1 for (a,b),count in edges.items()),(name,'open or inconsistent mesh')
-    # The legacy generator wrote 512px atlases. The library standard is now the one
-    # verify-model-assets.py enforces -- square and at least 256px -- and these atlases are
-    # regenerated at 256 by the modern export path, so pinning 512 here only failed the gate
-    # on assets that meet the current contract. Still rejects a missing or undersized atlas.
     atlas = Image.open(root/f'{name}.png').size
     assert atlas[0] == atlas[1] and atlas[0] >= 256, (name, 'atlas must be square and >=256px', atlas)
     icon=Image.open(root/f'{name}.icon.png')
-    assert icon.size==(128,128) and icon.mode=='RGBA'
+    assert icon.size[0] == icon.size[1] and icon.size[0] >= 256 and icon.mode=='RGBA', (name, 'icon must be square RGBA and >=256px', icon.size, icon.mode)
     assert icon.getchannel('A').getextrema()==(0,255)
     assert (root/f'{name}.obj').is_file() and (root/f'{name}.mtl').is_file()
-    print(f'{name}: closed outward mesh, valid UVs, 512px atlas and transparent icon verified')
-assert Image.open(root/'crystal-shaping.icon.png').size==(128,128)
+    print(f'{name}: closed outward mesh, valid UVs, >=256px atlas and transparent >=256px icon verified')
+skill = Image.open(root/'crystal-shaping.icon.png')
+assert skill.size[0] == skill.size[1] and skill.size[0] >= 256 and skill.mode == 'RGBA', ('crystal-shaping', 'icon must be square RGBA and >=256px', skill.size, skill.mode)
