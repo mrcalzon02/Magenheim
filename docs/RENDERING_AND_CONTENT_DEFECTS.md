@@ -232,6 +232,42 @@ It appeared twice:
 This mattered beyond tidiness: `verify-model-assets.py` runs from `build.ps1`, so the raven
 left the asset gate failing on `main` from the moment the winding check landed.
 
+### R4 — Crystal progression items rebuilt
+
+**Status: source repaired 2026-09-16; live visual acceptance pending.**
+
+Six models carry forty-eight items: `EarthContentRegistrar` registers every tier for all
+eight elements from one shared mesh per tier, tinted per element, plus the shard item. They
+were the lowest-poly assets in the library, for the items the player handles through the
+whole refinement loop.
+
+| Model | Before | After |
+| --- | ---: | ---: |
+| `earth-rough` | 108 | 422 |
+| `earth-simple` | 36 | 382 |
+| `earth-crystal` | 108 | 428 |
+| `earth-advanced` | 180 | 520 |
+| `earth-master` | 180 | 530 |
+| `earth-shards` | 108 | 480 |
+
+`tools/generate-crystal-tier-models.py` builds a readable progression: a matrix chunk with
+stubby points, one terminated point on matrix, a well formed point with a secondary, a main
+point with three secondaries, a radiating seven-point cluster with the matrix nearly gone,
+and six angular fragments. Each carries a generated greyscale albedo split by UV, matrix on
+the left of the map and crystal facets on the right, so `EarthAssets` tinting reads per
+element.
+
+Two constraints from the surrounding code shaped it. `EarthAssets.LoadMesh` calls
+`RecalculateNormals`, so winding alone decides lighting; every solid is built in isolation,
+measured and reversed once if its signed volume came out negative. `ReplaceVisual` builds a
+single `MeshFilter`, so each model is one object with one material.
+
+One defect worth recording because it is invisible to every gate: the forms were authored in
+game space, Y up, while Blender is Z up and the exporter maps `(x, y, z) -> (x, z, -y)`. The
+first export therefore produced crystals lying on their side. Geometry, winding, UVs and
+hashes were all valid; only rendering the result showed it. A conversion at emit now makes
+the exported game coordinates identical to the authored ones.
+
 ### Library-wide fidelity measurement at `924f5e7`
 
 | Measure | Value |
