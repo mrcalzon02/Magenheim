@@ -61,3 +61,21 @@ engine loader API proof
 ```
 
 Content teams may continue terrain, biome, ecology, structure and asset work against the existing derived-world identity contracts, but none of those tracks may redefine transition, world-pair, map-layer or persistence authority.
+
+## Local Claude handoff — 2026-09-17
+
+Repository source now has a unified `UnderworldTravelRuntime` caller boundary. It intentionally implements only the return-side transaction far enough to prove the composition path and **fails closed for entry** rather than fabricating a Dark Throne snapshot. Local repair should collapse the Core `BeginEnter` dependency from a full `DarkThroneEncounterSnapshot` to an already-verified unlock authority/value, or provide the real authoritative Dark Throne snapshot through the runtime service. Do not synthesize a fake defeated encounter.
+
+The engine-facing `IUnderworldPhysicalWorldLoader` is still the primary blocker. Use the installed Valheim 1.0.12 managed assemblies to prove the actual world/save/session loading API and implement the adapter. Preserve server ownership and exact manifest `TargetSaveName`; do not substitute coordinate teleportation.
+
+Before live testing, verify these high-risk boundaries:
+
+- dedicated server has no `Player.m_localPlayer`; travel requests need a server RPC carrying an authenticated peer/player identity and server-observed source anchor;
+- listen-server/local-host may use the local player path, but must exercise the same durable transaction and loader;
+- client lifecycle must not reconstruct or dispatch physical save switches;
+- a successful loader dispatch remains pending until the newly admitted save name and layer match the manifest request;
+- crash/restart in Prepared state reconstructs the request from durable state;
+- map data remains unisolated today: do not accept transit as feature-complete until Overworld/Underworld fog, pins and exploration are separately persisted and the map tabs select those datasets;
+- future cross-world portals must call the same travel service and store pair identity + target layer + portal identity/anchor, never a naked cross-save Vector3.
+
+Local acceptance order: build → fix compiler/API drift → implement proven Valheim loader → bind authenticated multiplayer request → bind dev command/Deep Gate → Surface→Underworld→Surface round trip → host/client reconnect test → dedicated-server test → map-store isolation/tabs → portal-link persistence.
