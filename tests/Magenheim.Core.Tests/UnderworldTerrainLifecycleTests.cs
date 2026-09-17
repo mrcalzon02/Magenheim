@@ -53,6 +53,24 @@ internal static class UnderworldTerrainLifecycleTests
             new UnderworldTerrainSample(0d, 0d, 0d, 0d, 10d, -8d, 0.4d), 1);
         Assert(wet.WaterDepth == 0d, "Negative water depth must normalize to dry terrain.");
 
+        // The protected center should transition into hostile provinces instead of stepping
+        // immediately from safe terrain to the full outer biome displacement/hazard.
+        var transitionRadius = domain.RadiusMeters *
+            ((UnderworldTerrainLifecycle.CentralFungalRadiusFraction + UnderworldTerrainLifecycle.FungalTransitionRadiusFraction) * 0.5d);
+        var transitionSample = new UnderworldTerrainSample(transitionRadius, 0d, 0d, 20d, 18d, 0d, 0.9d);
+        var transition = UnderworldTerrainLifecycle.Evaluate(domain, transitionSample, 777);
+        Assert(transition.Admitted && transition.Biome != UnderworldTerrainBiome.FungalForest,
+            "Transition-band samples must retain their outer province identity.");
+        Assert(transition.Hazard01 >= 0d && transition.Hazard01 < 0.8d,
+            "Transition band must attenuate hostile biome hazard near the protected center.");
+
+        var innerEdge = UnderworldTerrainLifecycle.Evaluate(domain,
+            transitionSample with { X = domain.RadiusMeters * (UnderworldTerrainLifecycle.CentralFungalRadiusFraction + 0.0001d) }, 777);
+        Assert(Math.Abs(innerEdge.Height - transitionSample.BaseHeight) < UnderworldTerrainLifecycle.MaximumTerrainDelta,
+            "Crossing the central biome edge must not create a maximum-delta terrain cliff.");
+        Assert(innerEdge.Hazard01 < transition.Hazard01 + 0.0001d,
+            "Hazard must ramp outward rather than spike at the central biome boundary.");
+
         return assertions;
     }
 }
