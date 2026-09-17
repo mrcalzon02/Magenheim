@@ -38,7 +38,7 @@ internal static class UnderworldWorldCenterRegistrar
         var logical = LogicalCenter with { WorldId = identity.DerivedWorldId };
         var host = UnderworldSpatialDomain.ToHostAnchor(spatialDomain, identity, UnderworldLayer.Underworld, logical);
         var root = new GameObject(LocationName);
-        root.transform.position = new Vector3((float)host.X, (float)host.Y, (float)host.Z);
+        root.transform.position = ResolveGroundedCenterPosition(host);
         root.transform.rotation = Quaternion.Euler(0f, host.HeadingDegrees, 0f);
         BuildStandingStones(root.transform);
 
@@ -56,7 +56,7 @@ internal static class UnderworldWorldCenterRegistrar
         return root;
     }
 
-    private static void BuildStandingStones(Transform parent)
+    private static Vector3 ResolveGroundedCenterPosition(UnderworldHostAnchor host)\n    {\n        // A physical derived world owns its own terrain coordinates. HostBaseY is retained for the\n        // legacy reserved-band mapping contract, but using ~8192m as a Unity position in a separate\n        // world would leave the Conclave and arrival point floating far above generated terrain.\n        var x = (float)host.X;\n        var z = (float)host.Z;\n        var y = ZoneSystem.m_instance is null ? 30f : ZoneSystem.m_instance.m_waterLevel + 2f;\n        var generator = WorldGenerator.instance;\n        if (generator is not null)\n        {\n            try\n            {\n                var biome = generator.GetBiome(x, z);\n                y = generator.GetBiomeHeight(biome, x, z) + 1.25f;\n            }\n            catch\n            {\n                // Admission can race early ZoneSystem/world-generator startup; the waterline fallback\n                // is intentionally playable and the lifecycle will still place the center in-world.\n            }\n        }\n        return new Vector3(x, y, z);\n    }\n\n    private static void BuildStandingStones(Transform parent)
     {
         var root = new GameObject(StandingStonesName);
         root.transform.SetParent(parent, false);
