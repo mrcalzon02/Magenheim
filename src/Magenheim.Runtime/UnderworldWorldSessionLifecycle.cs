@@ -21,9 +21,10 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     }
     private void TryReconcileTransition(long currentWorldUid)
     {
-        if(_services is null||_log is null||_reconciledWorldUid==currentWorldUid||string.IsNullOrWhiteSpace(_gameplayAuthorityFingerprint))return;
+        var fingerprint=_gameplayAuthorityFingerprint;
+        if(_services is null||_log is null||_reconciledWorldUid==currentWorldUid||fingerprint is null||fingerprint.Trim().Length==0)return;
         if(!_services.TryResolveLocalSession(out var identity,out _,out var playerId,out var sessionDiagnostic)||identity is null){_log.LogDebug($"Underworld transition admission deferred: {sessionDiagnostic}");return;}
-        var result=_services.WorldSwitchDriver.ReconcileAdmittedSession(playerId,identity,_gameplayAuthorityFingerprint,out _,out var pending,out var diagnostic);
+        var result=_services.WorldSwitchDriver.ReconcileAdmittedSession(playerId,identity,fingerprint,out _,out var pending,out var diagnostic);
         if(result==UnderworldRecoveryLoadResult.Failed){_log.LogError($"Underworld transition admission failed closed: {diagnostic}");_reconciledWorldUid=currentWorldUid;return;}
         if(result==UnderworldRecoveryLoadResult.PendingWorldSwitch){_log.LogInfo(pending is null?$"Underworld transition remains pending after admission: {diagnostic}":$"Underworld transition awaits physical save '{pending.TargetSaveName}': {diagnostic}");_reconciledWorldUid=currentWorldUid;return;}
         _log.LogDebug($"Underworld transition admission reconciled: {diagnostic}");_reconciledWorldUid=currentWorldUid;

@@ -54,7 +54,7 @@ internal sealed class UnderworldGeothermalHazardVolume : MonoBehaviour
         return ReadHeat(player.GetComponent<ZNetView>());
     }
 
-    private static float ReadHeat(ZNetView view)
+    private static float ReadHeat(ZNetView? view)
     {
         if (view == null || !view.IsValid()) return 0f;
         var zdo = view.GetZDO();

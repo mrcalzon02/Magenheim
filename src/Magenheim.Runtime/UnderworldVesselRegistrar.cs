@@ -40,8 +40,13 @@ internal sealed class UnderworldVesselRegistrar : IDisposable
             if (PrefabManager.Instance.GetPrefab(sourcePrefab) is null)
                 throw new InvalidOperationException($"Required Underworld vessel source prefab '{sourcePrefab}' is unavailable.");
 
-            var vessel = new CustomPrefab(identity, sourcePrefab, fixReference: true);
-            if (!PrefabManager.Instance.AddPrefab(vessel))
+            var vessel = PrefabManager.Instance.CreateClonedPrefab(identity, sourcePrefab)
+                ?? throw new InvalidOperationException($"Unable to clone Underworld vessel source '{sourcePrefab}' as '{identity}'.");
+
+            // Jotunn's AddPrefab(GameObject) overload returns void, so confirm the registration
+            // took by reading the prefab back rather than testing a non-existent result.
+            PrefabManager.Instance.AddPrefab(vessel);
+            if (PrefabManager.Instance.GetPrefab(identity) == null)
                 throw new InvalidOperationException($"Jotunn refused Underworld vessel '{identity}'.");
 
             _registered = true;

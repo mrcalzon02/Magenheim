@@ -43,7 +43,7 @@ public static class UnderworldVesselCatalog
         if (!IsCanonical(prefabName) || float.IsNaN(configuredBonus) || float.IsInfinity(configuredBonus))
             return 1f;
 
-        var boundedBonus = Math.Clamp(configuredBonus, 0f, 0.50f);
+        var boundedBonus = Math.Max(0f, Math.Min(0.50f, configuredBonus));
         return 1f + boundedBonus;
     }
 }

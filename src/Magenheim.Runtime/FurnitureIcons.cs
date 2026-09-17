@@ -112,7 +112,7 @@ internal static class FurnitureIcons
     private static void AddMaterialReadability(Color[] pixels, string modelId)
     {
         var source = (Color[])pixels.Clone();
-        var light = modelId.Contains("crystal", StringComparison.OrdinalIgnoreCase) ? new Color(.72f, .84f, .88f, .18f) : new Color(.78f, .72f, .58f, .15f);
+        var light = modelId.IndexOf("crystal", StringComparison.OrdinalIgnoreCase) >= 0 ? new Color(.72f, .84f, .88f, .18f) : new Color(.78f, .72f, .58f, .15f);
         var shadow = new Color(.015f, .018f, .022f, .32f); var radius = Math.Max(1, Size / DesignSize);
         for (var y = radius; y < Size - radius; y++) for (var x = radius; x < Size - radius; x++)
         {

@@ -81,7 +81,7 @@ internal sealed class UnderworldPhysicalWorldSwitchDriver
     private static bool SameRequest(UnderworldPhysicalWorldSwitchRequest left,UnderworldPhysicalWorldSwitchRequest right)=>
         string.Equals(left.PlayerId,right.PlayerId,StringComparison.Ordinal)&&left.TargetLayer==right.TargetLayer&&
         string.Equals(left.TargetSaveName,right.TargetSaveName,StringComparison.Ordinal)&&
-        string.Equals(left.Identity.Fingerprint,right.Identity.Fingerprint,StringComparison.Ordinal);
+        string.Equals(left.Identity.DerivedSeedFingerprint,right.Identity.DerivedSeedFingerprint,StringComparison.Ordinal);
 }
 
 /// <summary>Engine boundary implemented by the Valheim session hook; policy remains in the driver.</summary>
