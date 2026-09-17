@@ -45,11 +45,15 @@ internal sealed class CrystalDaisSocketOverlay : MonoBehaviour
     private float _nextRefreshAt;
     private bool _refreshRequested = true;
 
+    private SocketEffectDefinitionSet? _socketEffects;
+
     internal void Configure(
         RuntimeServices services,
         DefinitionAuthoritySynchronizer authority,
-        ManualLogSource log)
+        ManualLogSource log,
+        SocketEffectDefinitionSet? socketEffects = null)
     {
+        _socketEffects = socketEffects;
         _services = services ?? throw new ArgumentNullException(nameof(services));
         _authority = authority ?? throw new ArgumentNullException(nameof(authority));
         _log = log ?? throw new ArgumentNullException(nameof(log));
@@ -249,7 +253,7 @@ internal sealed class CrystalDaisSocketOverlay : MonoBehaviour
                 var crystal = state.InstalledCrystals[i];
                 AddNativeButton(
                     _nativeContent,
-                    $"Extract {i + 1}. {crystal.Tier} {crystal.Element}",
+                    $"Remove {i + 1}. {crystal.Tier} {crystal.Element}{DescribeShatterRisk(player, crystal)}",
                     () =>
                     {
                         TryExtract(player, inventory, equipment, crystalIndex);
@@ -280,7 +284,7 @@ internal sealed class CrystalDaisSocketOverlay : MonoBehaviour
                 var capturedCrystal = crystal;
                 AddNativeButton(
                     _nativeContent,
-                    $"Install {crystal.Tier} {crystal.Element}  (x{crystalItem.m_stack})",
+                    $"Install {crystal.Tier} {crystal.Element}  (x{crystalItem.m_stack}){DescribeSlotEffect(crystal, descriptor.Category)}",
                     () =>
                     {
                         TryInstall(player, inventory, equipment, capturedItem, capturedCrystal);
@@ -837,6 +841,37 @@ internal sealed class CrystalDaisSocketOverlay : MonoBehaviour
 
         crystal = new Crystal(element, tier);
         return true;
+    }
+
+    /// <summary>
+    /// What the crystal would do in this item's own slot. Reported from play: the player could
+    /// not tell what a crystal would do before committing the socket, and the answer depends on
+    /// the slot, so it belongs on the button rather than in a general list.
+    /// </summary>
+    private string DescribeSlotEffect(Crystal crystal, EquipmentCategory category)
+    {
+        if (_socketEffects is null) return string.Empty;
+        var effect = Magenheim.Core.Socketing.SocketEffectDescription.ForSlot(
+            crystal.Element, crystal.Tier, category, _socketEffects);
+        return effect is null ? "   (no effect in this slot)" : "   " + effect;
+    }
+
+    /// <summary>
+    /// The chance this removal shatters the crystal, at the player's current Crystal Shaping
+    /// level. Removal is deliberately risky, so the player should see the risk before choosing
+    /// rather than discover it afterwards.
+    /// </summary>
+    private string DescribeShatterRisk(Player player, Crystal crystal)
+    {
+        if (!SocketExtractionService.TryGetExtractionRisk(crystal.Tier, out var baseFailure, out var shards))
+            return string.Empty;
+        // Same skill clamp and reduction ceiling the removal itself uses, so the number the
+        // player reads is the number the planner will apply.
+        var skill = Mathf.Clamp(
+            Mathf.FloorToInt(player.GetSkillLevel(EarthContentRegistrar.CrystalShapingSkill)), 0, 100);
+        var effective = CrystalRefinementService.CalculateEffectiveFailureChance(
+            baseFailure, skill, CrystalRefinementService.DefaultMaximumFailureReduction);
+        return $"   {effective * 100d:0}% shatter risk, {shards} shard(s) if it breaks";
     }
 
     private static string DescribeSocketState(ItemDrop.ItemData item, out bool malformed)

@@ -120,6 +120,36 @@ public static class SocketEffectDescription
         return lines;
     }
 
+    /// <summary>
+    /// What this crystal would do in one specific slot, or null when it does nothing there.
+    /// The socket menu shows this against the item the player has actually selected, so the
+    /// choice is made against the effect that will apply rather than against a list of all
+    /// five slots.
+    /// </summary>
+    public static string? ForSlot(
+        ElementalAlignment element,
+        CrystalTier tier,
+        EquipmentCategory category,
+        SocketEffectDefinitionSet definitions)
+    {
+        if (definitions is null) throw new ArgumentNullException(nameof(definitions));
+        if (tier == CrystalTier.Rough) return null;
+
+        var scalar = SocketEffectDefinitionSet.TierScalar(tier);
+        var effects = definitions.Rules
+            .Where(rule => rule.Element == element && rule.Category == category)
+            .OrderBy(rule => (int)rule.Effect)
+            .Select(rule =>
+            {
+                var wording = Wording.TryGetValue(rule.Effect, out var found)
+                    ? found
+                    : (Label: rule.Effect.ToString(), Unit: string.Empty);
+                return Amount(rule.SimpleMagnitude * scalar, wording.Unit) + " " + wording.Label;
+            })
+            .ToArray();
+        return effects.Length == 0 ? null : string.Join(", ", effects);
+    }
+
     /// <summary>The same content as a single block for an item tooltip.</summary>
     public static string Tooltip(
         ElementalAlignment element,

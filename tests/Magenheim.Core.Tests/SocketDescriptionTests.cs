@@ -62,6 +62,19 @@ internal static class SocketDescriptionTests
         Assert(silent.Count == 2 && silent[0].Contains("No socket effect"),
             "An element with no rules must say so rather than render blank.");
 
+        // The socket menu asks what a crystal does in one specific slot, against the item the
+        // player actually selected, rather than listing all five.
+        Assert(SocketEffectDescription.ForSlot(ElementalAlignment.Fire, CrystalTier.Simple, EquipmentCategory.Weapon, definitions) == "+8 fire damage",
+            "ForSlot returns the effect for the asked-for slot alone.");
+        Assert(SocketEffectDescription.ForSlot(ElementalAlignment.Fire, CrystalTier.Master, EquipmentCategory.Weapon, definitions) == "+28 fire damage",
+            "ForSlot scales to the crystal's own tier.");
+        Assert(SocketEffectDescription.ForSlot(ElementalAlignment.Frost, CrystalTier.Simple, EquipmentCategory.Armor, definitions) is null,
+            "A slot the crystal does nothing for returns null rather than an empty or invented string.");
+        Assert(SocketEffectDescription.ForSlot(ElementalAlignment.Fire, CrystalTier.Rough, EquipmentCategory.Weapon, definitions) is null,
+            "A Rough crystal cannot be socketed, so it has no per-slot effect.");
+        Assert(Throws(() => SocketEffectDescription.ForSlot(ElementalAlignment.Fire, CrystalTier.Simple, EquipmentCategory.Weapon, null!)),
+            "ForSlot must reject a missing definition set rather than invent an effect.");
+
         var tooltip = SocketEffectDescription.Tooltip(ElementalAlignment.Fire, CrystalTier.Simple, definitions);
         Assert(tooltip.Split('\n').Length == 4, "The tooltip joins one line per described slot, plus the station line.");
 

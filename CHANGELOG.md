@@ -1,5 +1,22 @@
 # Magenheim Changelog
 
+## 0.0.58 - Socket menu tells you the outcome, banners get real collision
+
+- Install buttons now say what the crystal will do **in that item's slot**: "Install Crystal
+  Earth (x3)   +4 blunt damage, +0.1 knockback". The effect depends on the slot, so it
+  belongs on the button rather than in a list of all five. A crystal that does nothing in
+  that slot says so instead of looking identical to one that does.
+- Removal buttons now show the risk before you commit: "Remove 1. Crystal Earth   20%
+  shatter risk, 2 shard(s) if it breaks". It uses the same skill clamp and reduction ceiling
+  the planner applies, so the number shown is the number that will be rolled against.
+- "Extract" is now "Remove" on the button. It is the plain word for what it does.
+- Crystal banners now carry collision that matches the banner actually shown. They cloned
+  piece_banner01 and kept the donor's collider while displaying Magenheim geometry, because
+  ModelAssets.Load disables Renderers and LODGroups but never colliders. The box is measured
+  from the loaded meshes rather than hand-written per style, so it cannot go stale the next
+  time the model library is rebuilt, and it is narrowed to the pole so a banner does not
+  block the player standing beside it.
+
 ## 0.0.57 - Descriptions and socket list follow the new station split
 
 - Every crystal now ends its description with "Socket at the Crystal Enchanting Dais." The
