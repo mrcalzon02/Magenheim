@@ -197,6 +197,41 @@ were invisible to geometry checks because the meshes were individually valid:
 - the druzy placement excluded the wall opposite the mouth as "hidden", which is precisely
   the surface the player looks at through the opening, leaving crystals only around the rim.
 
+### Two winding gates, deliberately
+
+`tools/verify-model-assets.py` gained its own winding check in parallel with this work. The
+two are complementary and neither should be removed as redundant:
+
+| Gate | Test | Catches | Blind to |
+| --- | --- | --- | --- |
+| `verify-model-assets.py` | geometric face normal vs authored vertex normals | a face flipped out of step with its neighbours, hand-edited normals; valid on open and concave meshes | a uniformly inside-out solid |
+| `verify-model-geometry.py` | signed volume of a sealed surface | a whole solid wound inside-out | partial flips, and open surfaces, which it reports rather than fails |
+
+The blind spot is not theoretical. The exporter derives authored normals from the winding, so
+in a uniformly inverted solid the geometric and authored normals agree perfectly. Applied to
+the pre-rebuild geode, whose cavity was 246 of 246 faces inverted, the normal-agreement test
+reports **zero** disagreeing faces on every part. That is the exact defect that has now
+shipped three times, and only the signed-volume test sees it.
+
+### Non-planar quads as a third source of the same symptom
+
+Both gates converged on a cause neither was written for. A quad whose corners are not
+coplanar is triangulated at export, and the two halves can end up facing opposite ways. The
+mesh is valid, the winding is "consistent" in the source, and recalculating normals does not
+help, because there is no single correct normal for a bent quad.
+
+It appeared twice:
+
+- the jittered ring bands in the cavern formation builder, found as two disagreeing faces in
+  `DF-01/DistrictSignature`. The builder now emits two planar triangles per band instead of a
+  quad;
+- `spirit-fetish-raven`, whose wings were 13 n-gons each carrying four disagreeing faces per
+  wing. Pre-existing, from `Models updates-1`; `normals_make_consistent` did not clear it, and
+  triangulating each wing to 40 planar faces did.
+
+This mattered beyond tidiness: `verify-model-assets.py` runs from `build.ps1`, so the raven
+left the asset gate failing on `main` from the moment the winding check landed.
+
 ### Library-wide fidelity measurement at `924f5e7`
 
 | Measure | Value |

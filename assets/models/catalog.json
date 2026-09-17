@@ -2191,9 +2191,9 @@
     "source": "source/DF-01.blend",
     "glb": "glb/DF-01.glb",
     "runtime": "runtime/DF-01.model.json",
-    "source_sha256": "722185e3f166b0b6fa3fedde107f385d2fb90a7ee5a37992915f9554e3018d7e",
-    "runtime_sha256": "70bc210dec43858504e8b039f778c92a9aa94c6149885dd5c885938729f7f925",
-    "glb_sha256": "9ce6c57a06b7251af6d126527f6c472ba06e64faa1f0b5ae6f121e4b3d4159e2"
+    "source_sha256": "a6d16df6896dd6d4f34321140a53b241aadb01caf2e907494b867b0127d6a2f4",
+    "runtime_sha256": "59404e776d80a02ddb7d540dd576fa66da136ea5c4c5693da8d4b8d9c7c498de",
+    "glb_sha256": "8324ab06ce60401037957cca4fdcf422d59bc9979b36fe5fcc5698ae12edcece"
   },
   {
     "id": "DF-02",
@@ -2203,9 +2203,9 @@
     "source": "source/DF-02.blend",
     "glb": "glb/DF-02.glb",
     "runtime": "runtime/DF-02.model.json",
-    "source_sha256": "208fb210fdeef980b73f768cdcdceaf5541e468c879f7d020b66df248c55d106",
-    "runtime_sha256": "d1d84f1cc7bc6799164b05067731f0eef5e898f6f74d4b15417ec335857b3071",
-    "glb_sha256": "c2b88747398666fe033217516c28be9f89d655255b3d649bdd30d4cfa3334707"
+    "source_sha256": "93057875eda3fcb66a493ecc9febb3b02f4682353ce7d390869e307bdd35f06c",
+    "runtime_sha256": "608d0cabe44656b66b5eee8f8553befb1550d450f75465e32514caf62565bd88",
+    "glb_sha256": "605eaa5acb891e568ce4a585f02c9454e69386cb7d49bb03af97ebfafedd8340"
   },
   {
     "id": "DF-03",
@@ -2215,9 +2215,9 @@
     "source": "source/DF-03.blend",
     "glb": "glb/DF-03.glb",
     "runtime": "runtime/DF-03.model.json",
-    "source_sha256": "13e3bc1aaae8ca3e97c88d481666c89f2703418e02674caddda81cf196b09860",
-    "runtime_sha256": "4194dcda2b9513bf1f11965ef9ebfe6fbff06711a741f77bfbbe0a5f420a0617",
-    "glb_sha256": "aad578babda0ea6d9124d97c2ee7461fb6525dcf35e92c94fb52a56e42c65240"
+    "source_sha256": "1e854142d8baa6923b791db80f0d9ad5446eed3a3d21f5dad401c13bd4b0f8ec",
+    "runtime_sha256": "feabf6f4026ffb80a18af2e400976891623af29185792f19b4a25687a5985071",
+    "glb_sha256": "f4ca0bfa7afb8b7838b37eaeb45a05a75e280243c191202d120930162e37e594"
   },
   {
     "id": "DF-04",
@@ -2227,9 +2227,9 @@
     "source": "source/DF-04.blend",
     "glb": "glb/DF-04.glb",
     "runtime": "runtime/DF-04.model.json",
-    "source_sha256": "f6e2bbdd1b9c25cd719ee68bffae3b4e506177032bd9fc125ef9bcabc0568243",
-    "runtime_sha256": "62d6533e3aea7bedbd65af4a97e72fe583cd72a4b1d6ec1de29ac5b47bfac35f",
-    "glb_sha256": "a7792181025a8d981b1452ff4fb4ac6b2d85c86b6d102064e3e5bda62e0fde36"
+    "source_sha256": "a0d3c45aa9e7cac3c4b09479d1ac47205ea03a08e6c09745f476c0b8612db2ac",
+    "runtime_sha256": "1a8a9c6d613df729dc2f220c018e6c085a59710ca0289be076b2d47462344f04",
+    "glb_sha256": "3f5e4663c818912be3397b0b4bf78917d067f8e3418f99eb3f059bbd84a2e04e"
   },
   {
     "id": "DF-05",
@@ -2239,9 +2239,9 @@
     "source": "source/DF-05.blend",
     "glb": "glb/DF-05.glb",
     "runtime": "runtime/DF-05.model.json",
-    "source_sha256": "e8a89b89c7efb772e40d99f1da7c2c38ec312b06d76c461095422ce8c7451a8a",
-    "runtime_sha256": "1e176469ea1e343b0fa4d2a3d1ff37b923b613a69a45e5704d01ae4ff9837c3b",
-    "glb_sha256": "1cb65f7aba9a6ec325c7a505601f05e09a55029475e9dd2baacb20138c80c27b"
+    "source_sha256": "2a3417c4f7ecdd4f9a26ec43f6b6d041f88ff86118103ece9aa1382369546db2",
+    "runtime_sha256": "a51b7e21d1018ba08167aed15bef04cc3ca420b67781d7c6e8559f176bb9244e",
+    "glb_sha256": "0c05c43741fee35b323ef3a18c47be0c0e08fba3b9277977f22dec0c4656fdb3"
   },
   {
     "id": "DF-06",
@@ -2251,9 +2251,9 @@
     "source": "source/DF-06.blend",
     "glb": "glb/DF-06.glb",
     "runtime": "runtime/DF-06.model.json",
-    "source_sha256": "77840fdc5ec0b7406ad330c2cf29933c8e0c1d179b4ae2ae5077cb65cfb77c07",
-    "runtime_sha256": "159968702ca7bcdef17da28b15189426c517c0d22e29b44425d78a76866e55f0",
-    "glb_sha256": "8e0eda116a975ca26e99fe0d3d203cfa46e6a680e675268e1b64b32d41b04898"
+    "source_sha256": "abaa6f4ad0a0c4797bed0f901909f1ded44864939c6c67f4584f6f2c99bfa1c4",
+    "runtime_sha256": "a669cdfd109425f76ae88836b28d423ffd056748faee935401562a59574c9776",
+    "glb_sha256": "bd33a7568f6d5d9bd65aadea0c7a6ef673825de62db0224b7ad7b88ce0dd0ca0"
   },
   {
     "id": "DF-07",
@@ -2263,9 +2263,9 @@
     "source": "source/DF-07.blend",
     "glb": "glb/DF-07.glb",
     "runtime": "runtime/DF-07.model.json",
-    "source_sha256": "63b6a5fa1ca8979de7a25270cdec1ff071dedcf7f0e6adac7e6f748df93649d0",
-    "runtime_sha256": "69650d519781c230596d078c40f5331653f5a83b13468c4c8d3041ec642e8874",
-    "glb_sha256": "982d64e3d223ae8f57f4dc936c571dda411db0113aee8330f773ae8c8ad4c871"
+    "source_sha256": "ccaa39d2e30c587b68a7945d3f9b83ea8c71a002b216f896b75626d4475cd63a",
+    "runtime_sha256": "a775990d8f287df192fda7d0970a4bccf9ce4844ccaf8134894eead958f71aaa",
+    "glb_sha256": "2fd502a8b15b677416a9097d0c13200e63ba3971f0df0ce277b8a9bd42154790"
   },
   {
     "id": "DF-08",
@@ -2275,9 +2275,9 @@
     "source": "source/DF-08.blend",
     "glb": "glb/DF-08.glb",
     "runtime": "runtime/DF-08.model.json",
-    "source_sha256": "c409e8e4e6be058d002d245243a5c546250b37391269da2ef6783efc0d7276f3",
-    "runtime_sha256": "967b357e513f237112dc47b3e256797ba92a6abd1a569c19d8ecc515075ee805",
-    "glb_sha256": "1f84c02727823dc1d38edcc8425e0418ee68f68d8b64d47953626d39fb0cb783"
+    "source_sha256": "b93fd8414a84c2c84710dcbfdb51a5bde15306371cca60b987f68a411c78482e",
+    "runtime_sha256": "ff3331731c59bd8f557628b8fd4b615d803b6f97b2f376c591c330ee4d48ee1b",
+    "glb_sha256": "5ce2161f9c8c5d4e20bdfc83b2681b1507cdb692b8684193fceda238d57c648c"
   },
   {
     "id": "DF-09",
@@ -2287,9 +2287,9 @@
     "source": "source/DF-09.blend",
     "glb": "glb/DF-09.glb",
     "runtime": "runtime/DF-09.model.json",
-    "source_sha256": "4a047e0769c1ace67f79dbec9bd42e25146fb1388d5ec849b4ce4207e450829b",
-    "runtime_sha256": "b8cf5b145d43a3d42e457bf35b3d5554edd4df06d238dd9c23263dca862ab6f9",
-    "glb_sha256": "4d7507d013a76057ee2af1f405819913b5e4c221d997b968dba63547335e0a33"
+    "source_sha256": "9b5594b729710090dc562639a02d3a2df754c4517629a2321f2c2351a4a974b5",
+    "runtime_sha256": "4e2632b954cdbbcf122376a02d6046a6b11d7808919fc15ca33cf7b4a5f0db01",
+    "glb_sha256": "26806ada4bc3714d1e60a00490d3a15ff20e29dd32742d0083884b4e47b34664"
   },
   {
     "id": "DF-10",
@@ -2299,9 +2299,9 @@
     "source": "source/DF-10.blend",
     "glb": "glb/DF-10.glb",
     "runtime": "runtime/DF-10.model.json",
-    "source_sha256": "2ac639ffe90ac2be29794989521abf0f4421ddba78b29eac75745091a0ad2349",
-    "runtime_sha256": "2cda53b3bb3789be0547e679ab3382b9d27c1805d26b841c1607af73f3642d20",
-    "glb_sha256": "1628a75bb9146e110b6b446d90826efa85159df7b9e8e1784526a70cb889dfba"
+    "source_sha256": "a2c114616ecb2565407c5ef1808ce28b3988c4be78b142460438d92ed2f05d1d",
+    "runtime_sha256": "56f0cff9fd7fc7f1679e17e26d2abf578ee5b8660098eabb1f6a7f7d8dd2c73e",
+    "glb_sha256": "21ed544ebb283552a5f35f228b717f3a720a91632eaf57a2ca70402c33848b6f"
   },
   {
     "id": "DF-11",
@@ -2311,9 +2311,9 @@
     "source": "source/DF-11.blend",
     "glb": "glb/DF-11.glb",
     "runtime": "runtime/DF-11.model.json",
-    "source_sha256": "0ec7aaa0314f9374a3770405ebdbda14ba6c191930585b3672833b6d73a2423f",
-    "runtime_sha256": "c606dae33e71fc25ec5c3e7e1d303a3cde1b269a5c64532f5e8264a6f474a7f6",
-    "glb_sha256": "416cf1b49b1a63a84ce54bb817b69d16ab2c8d6b5197e6922eb6469945eb5fd3"
+    "source_sha256": "76d3c544437c41ab252d694662123cad0b16de5c61a24f461e0e0d8efc0f72b6",
+    "runtime_sha256": "4d84295957da904b69c2b34c1bf1cfe6e2b63bf5c8b571e8ab5fd346b1cebd21",
+    "glb_sha256": "d23b72ed2340eb93b65dc4ba417e1b732a254ae5b74a7844cb480f08fb916dd0"
   },
   {
     "id": "DF-12",
@@ -2323,9 +2323,9 @@
     "source": "source/DF-12.blend",
     "glb": "glb/DF-12.glb",
     "runtime": "runtime/DF-12.model.json",
-    "source_sha256": "258e88380e14f4d7d9996540334a8da4fa915d8c01c644a7c2a2755320d192b6",
-    "runtime_sha256": "476c27c1bbc06eb4f97b9e8fc90fcac2f858ce11ba2f46d13efd576914c992e7",
-    "glb_sha256": "dccd11659ffca617d4865375c97d23250e9b8a17096d28a75e603405e922199b"
+    "source_sha256": "0fcc33c05e3cc57f3c04a4160254b06bf9dcb0a47b79d7bec25ed9a4603e17eb",
+    "runtime_sha256": "e8ebc6756c6528437352bc63c41bf7c146bc06a70f628767691d60a51d4d4e1b",
+    "glb_sha256": "68e4d788e3db1175152fffcd4ec724f2dac791abcb797e568056b5b440db84af"
   },
   {
     "id": "DF-13",
@@ -2335,9 +2335,9 @@
     "source": "source/DF-13.blend",
     "glb": "glb/DF-13.glb",
     "runtime": "runtime/DF-13.model.json",
-    "source_sha256": "d489b8449bfd5ae0893038066e53f9445c3a85139a181189de9aecd09eb201ee",
-    "runtime_sha256": "d26d62868ff757435219d72546099874d14415523cdc6ee246ad10d4ffbc8058",
-    "glb_sha256": "a8400d103c6083eb908b587e0093b53d9277a8b033303552b5dc8cc870890574"
+    "source_sha256": "61b6f2288c7d381d485fee4e9bc9acaf8c64a7f000025e479595cfe01ceb5a3f",
+    "runtime_sha256": "156a654b77377dcee8d71db4516edcb25775cb88bb267ce2cc94493c8e10f54a",
+    "glb_sha256": "323611b10d9a959f6bef626c41be253e567754f656cb2ebf4f9ae1574ded2349"
   },
   {
     "id": "DF-14",
@@ -2347,9 +2347,9 @@
     "source": "source/DF-14.blend",
     "glb": "glb/DF-14.glb",
     "runtime": "runtime/DF-14.model.json",
-    "source_sha256": "0ef0416d7235c560e4b83004170711bc850ae280a9225e3e85a94e5d4cdaf41e",
-    "runtime_sha256": "2847eb8939c5ec378324e06fc5817d45dc727573958fa58110831568f610a096",
-    "glb_sha256": "3b183b54a74d41f6481bbf1a08ed314cab69b236153be4b394a38324d8765d08"
+    "source_sha256": "8658c7928c1aaa96feb5bbca2ab40aad7040e0bf05efab26434aa0642c82d870",
+    "runtime_sha256": "9e3f9325191983dc9780dc40cf1a2825a7f7e617c3fe8cdc30e185c3d19cb81a",
+    "glb_sha256": "10785513e3501aa4706256f77413aa146298b95b37eab53ae61fb4a281c91cbd"
   },
   {
     "id": "DF-15",
@@ -2359,9 +2359,9 @@
     "source": "source/DF-15.blend",
     "glb": "glb/DF-15.glb",
     "runtime": "runtime/DF-15.model.json",
-    "source_sha256": "1311961eaeffc104ece5df2a58006745c07e12cab0b1d0dfe1f3f86ea1b22eba",
-    "runtime_sha256": "be9304e47f4d2532dedd8c46bac5b672a04ccc2b9df8130b6094d2bc09fdaedb",
-    "glb_sha256": "49dc09039224b0dbec9f8adaa562efd6444c9fd64b7b6027495efd2d535946b8"
+    "source_sha256": "29e530798f9187fcb1edf2ee8fd80d8e0c273f2721bc9f6d940afd58c4dad6d7",
+    "runtime_sha256": "3e05a533ddee57708a6c140293f4741f75e24de164a0ca71269475a3e784a6df",
+    "glb_sha256": "753e47d295dcd04f3d7342e1c7e77aad536f43235b3671f69b33dff2aba39cac"
   },
   {
     "id": "DF-16",
@@ -2371,9 +2371,9 @@
     "source": "source/DF-16.blend",
     "glb": "glb/DF-16.glb",
     "runtime": "runtime/DF-16.model.json",
-    "source_sha256": "0c737e713ad9bfc477e562e8a04c133b4c4ed011a352987335c6144d5d933185",
-    "runtime_sha256": "0184a7a127c9c37d9ad4c020d6e6e5504725492624181e0bcfc5b636db653387",
-    "glb_sha256": "cf4ca73c244f8ac99070711132aad3b010d7fd4246fb43d3f525b47045e525f0"
+    "source_sha256": "ed3f1c61d5edb4989269b253772fa832bee2d71b5908b57eb0c6f88e6abe7251",
+    "runtime_sha256": "345714a07ba326536a3923e8c3853f73255e4bab7d375c81f37c631a50a8d94f",
+    "glb_sha256": "9fba8d84fac9007f8ab83ba1669369b6c04ab82b8df2ae844a77e250046c210f"
   },
   {
     "id": "DF-17",
@@ -2383,9 +2383,9 @@
     "source": "source/DF-17.blend",
     "glb": "glb/DF-17.glb",
     "runtime": "runtime/DF-17.model.json",
-    "source_sha256": "6f859aa999118f5083f490e223b25e8e65abe6cc1c61265020512c7af378047a",
-    "runtime_sha256": "b6f81966fe517f083dbdd704d0b0ade1ad8546c7a19e88603543f03e402d5dee",
-    "glb_sha256": "f243e8bf8946b152a473a67cdf4e77bfdf41483e4e9bbef82e710b5d2c5f6cb5"
+    "source_sha256": "9609de49f72eb41fabf17628271e5b6f525c582e6ae430658e66c1043c718bca",
+    "runtime_sha256": "ba9b0f92aaed889ce5dbbef4312bc7f251feaefaf4862eaa0bb4a3f7b7648f29",
+    "glb_sha256": "850da98ad219602533de97351a944621812923b4fc73a6214955cdd8ad85289a"
   },
   {
     "id": "DF-18",
@@ -2395,9 +2395,9 @@
     "source": "source/DF-18.blend",
     "glb": "glb/DF-18.glb",
     "runtime": "runtime/DF-18.model.json",
-    "source_sha256": "edcd4021fd9f394427db0ded9f9ef6556889376a9f4d4c2ca930096444b15a39",
-    "runtime_sha256": "39b7f943e18ecfd9f964400ce3a570a3fa75696e3468805314637e8e59f7f509",
-    "glb_sha256": "3cff4f91f6b5f98b20753c4939d8f041bf34330a8cc676186121194e04963734"
+    "source_sha256": "18eb26b48e496a11e8bc61f3d91d2ccbb7166065bf1c617975495d8853e4e7e2",
+    "runtime_sha256": "fa19c45c38d4e4395561b46a9d8c3ae82532b1bec39417d3b7effd63c66acd55",
+    "glb_sha256": "56f3b8ef90c69479d4efa5b8ea2ea293df6b002016378942ae58c8888c92dd6e"
   },
   {
     "id": "DF-19",
@@ -2407,9 +2407,9 @@
     "source": "source/DF-19.blend",
     "glb": "glb/DF-19.glb",
     "runtime": "runtime/DF-19.model.json",
-    "source_sha256": "d19ce630e4dfca871375992e4a95c875533491ebbf6a1dd255ef377ea4137d3e",
-    "runtime_sha256": "5dd6c617a93636dc4e72bbcf3402b2646afeecfeac376847fb26fd9788dd1847",
-    "glb_sha256": "2bcfd57e3b78a62542270aa1237ef7b367f10fbf63cb042e0ec13a02bd3fe1ae"
+    "source_sha256": "20e1a834be72b6fb5374cf73b15d5792e7b621d49a97c9bfd4cb3fa54bf6e43c",
+    "runtime_sha256": "2a6b71ea46072ccf28de0c8bf3b77f6cdf3f37067107202a530d2cd4123494f1",
+    "glb_sha256": "da50a8f12357abb34698ea807a3fd86bed25b0998ea922afd76cc6b74dca0ea2"
   },
   {
     "id": "DF-20",
@@ -2419,9 +2419,9 @@
     "source": "source/DF-20.blend",
     "glb": "glb/DF-20.glb",
     "runtime": "runtime/DF-20.model.json",
-    "source_sha256": "f925b04d4c7d8a7f9ca80c6ca195bda17450a8316d347ade080b7cd962c89aab",
-    "runtime_sha256": "aaebce3ff6bb0d3b026d3ae552ef35092b13b148a530d726d7a71914e605bb7a",
-    "glb_sha256": "0fb465cd2e186b0fa9bfbbb0301561b35317d87457b8840db2773d16a56a9b17"
+    "source_sha256": "9f0cb7a487c4de86512d3b5a44a4207f3a31ec0b5f5f1ea1aef9b6ba4e5b67fa",
+    "runtime_sha256": "1fd5232a943897d109bba47fd87a4d45c0cd74ad979f431302dd39677c23c2a7",
+    "glb_sha256": "4ec01c843c431c6bb6e142361b3c85ff50a0639c4d78db41ffa189f8ecbe0d69"
   },
   {
     "id": "earth-advanced",
@@ -3079,9 +3079,9 @@
     "source": "source/spirit-fetish-raven.blend",
     "glb": "glb/spirit-fetish-raven.glb",
     "runtime": "runtime/spirit-fetish-raven.model.json",
-    "source_sha256": "ebcabe2a2344b872c97de7421308aef92883dfea28a665eaf731f3ee0cd6ebf9",
-    "runtime_sha256": "ff965f6aedbef7403ef324eb0f348460fd849334a35a990f6efe8058cdaf12e6",
-    "glb_sha256": "26b48f04311c3ae26cd15b3e5f611fed3a1fa961e964bb0575eba31773b4cd03"
+    "source_sha256": "f3c688eff48560f241a1cddcbe21226064f99f51efec5705f5b4dfab6def485b",
+    "runtime_sha256": "6df99ceb170ad5ac5318ebe71d91063f103aa597b4a6e8a50ac5e6ab6ccb57fd",
+    "glb_sha256": "b4b22d10333dcaeaec45a48b7738c543cc9ce77d1936b21e032d770c66b9dd0c"
   },
   {
     "id": "spirit-fetish-warrior",

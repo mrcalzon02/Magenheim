@@ -23,6 +23,16 @@ its face normals against its own centroid yields noise. So:
 Parts that are genuinely interior surfaces - the inside of a cavity, the underside of a
 vault - are declared in INTERIOR_SURFACES with the reason. That list is intent, which
 geometry cannot supply.
+
+This does NOT duplicate the winding check in verify-model-assets.py, and neither should be
+removed in favour of the other. That one compares each geometric face normal against the
+authored vertex normals, which catches a face flipped out of step with its neighbours or
+normals edited by hand, and stays valid on open and concave meshes. It cannot see a solid
+that is uniformly inside-out, because the exporter derives the authored normals from the
+same winding, so the two agree perfectly. Applied to the pre-rebuild geode - whose cavity
+was 246 of 246 faces inverted - it reports zero disagreeing faces on every part. This gate
+uses signed volume instead, which is exactly the case the other cannot reach, and is the
+defect that has now shipped three times.
 """
 import json
 import sys

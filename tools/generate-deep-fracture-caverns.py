@@ -298,6 +298,14 @@ class MeshBuilder:
         self.uvs.extend(uvs)
         self.faces.append(tuple(range(base, base + len(points))))
 
+    def add_raw(self, points, uvs):
+        """Append without reorienting. Used where the caller guarantees a consistent
+        topological winding and a single volume test settles the orientation afterwards."""
+        base = len(self.vertices)
+        self.vertices.extend(points)
+        self.uvs.extend(uvs)
+        self.faces.append(tuple(range(base, base + len(points))))
+
     def is_empty(self):
         return not self.faces
 
@@ -518,10 +526,14 @@ def _build_cone(builder, x, y, base_z, tip_z, radius, sides=7, seed_rnd=None, ri
             away = (centre[0] + (a[0] - centre[0]) * 8.0,
                     centre[1] + (a[1] - centre[1]) * 8.0,
                     centre[2])
-            builder.add_polygon([a, b, c, d],
-                                [(0.0, r / float(rings)), (1.0, r / float(rings)),
-                                 (1.0, (r + 1) / float(rings)), (0.0, (r + 1) / float(rings))],
-                                reference=away)
+            # Emit two triangles rather than a quad. Ring vertices are jittered in radius
+            # and height, so a band quad is often badly non-planar; the exporter then
+            # triangulates it and one half can face opposite its neighbours. That is what
+            # verify-model-assets found in DF-01/DistrictSignature. Triangles are planar by
+            # construction, so the ambiguity cannot arise.
+            lo, hi = r / float(rings), (r + 1) / float(rings)
+            builder.add_raw([a, b, c], [(0.0, lo), (1.0, lo), (1.0, hi)])
+            builder.add_raw([a, c, d], [(0.0, lo), (1.0, hi), (0.0, hi)])
 
     # Close the tip.
     crown = levels[-1]
@@ -531,13 +543,14 @@ def _build_cone(builder, x, y, base_z, tip_z, radius, sides=7, seed_rnd=None, ri
         away = (centre[0] + (a[0] - centre[0]) * 8.0,
                 centre[1] + (a[1] - centre[1]) * 8.0,
                 centre[2])
-        builder.add_polygon([a, b, tip], [(0.0, 0.8), (1.0, 0.8), (0.5, 1.0)], reference=away)
+        builder.add_raw([a, b, tip], [(0.0, 0.8), (1.0, 0.8), (0.5, 1.0)])
 
     # Cap the base so the formation is a closed solid.
     outside = (x, y, base_z + span * 4.0)
-    builder.add_polygon(list(levels[0]), [(math.cos(math.tau * k / sides) * 0.5 + 0.5,
-                                           math.sin(math.tau * k / sides) * 0.5 + 0.5)
-                                          for k in range(sides)], reference=outside)
+    builder.add_raw(list(reversed(levels[0])),
+                    [(math.cos(math.tau * k / sides) * 0.5 + 0.5,
+                      math.sin(math.tau * k / sides) * 0.5 + 0.5)
+                     for k in range(sides)])
 
 
 def build_formations(field, profile, district_id):
