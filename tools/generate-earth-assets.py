@@ -3,6 +3,7 @@ Requires Python 3 and Pillow. Outputs are checked in; no Python needed by player
 """
 import json
 import math
+import os
 import random
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
@@ -11,12 +12,36 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'assets' / 'earth'
 OUT.mkdir(parents=True, exist_ok=True)
 
+# Keep the shipped Earth icon contract stable until the Stage 2 pipeline migration. The
+# generator can render a larger review target without changing runtime payloads by setting
+# MAGENHEIM_EARTH_PREVIEW_ICON_SIZE. This is deliberately additive: existing checked-in
+# icons and consumers remain untouched.
+PREVIEW_ICON_SIZE = max(128, int(os.environ.get('MAGENHEIM_EARTH_PREVIEW_ICON_SIZE', '256')))
+
 def sub(a, b): return tuple(x-y for x,y in zip(a,b))
 def cross(a,b): return (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0])
 def dot(a,b): return sum(x*y for x,y in zip(a,b))
 def normal(a):
     length = math.sqrt(dot(a,a))
     return tuple(x/length for x in a)
+
+def font(size, bold=False):
+    """Load a readable preview font without assuming a Windows workstation."""
+    candidates = []
+    configured = os.environ.get('MAGENHEIM_PREVIEW_FONT')
+    if configured:
+        candidates.append(configured)
+    candidates.extend([
+        'C:/Windows/Fonts/segoeuib.ttf' if bold else 'C:/Windows/Fonts/segoeui.ttf',
+        '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf' if bold else '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
+        '/System/Library/Fonts/Supplemental/Arial Bold.ttf' if bold else '/System/Library/Fonts/Supplemental/Arial.ttf',
+    ])
+    for candidate in candidates:
+        try:
+            return ImageFont.truetype(candidate, size)
+        except (OSError, IOError):
+            pass
+    return ImageFont.load_default()
 
 def geode():
     points, faces, colors = [], [], []
@@ -41,7 +66,6 @@ def geode():
     rng=random.Random(413)
     for i,f in enumerate(faces):
         center=tuple(sum(points[j][k] for j in f)/3 for k in range(3))
-        # An intact nodule with a shallow, narrow warm mineral seam on one side.
         seam=center[2]>.06 and abs(center[1]-.22*center[0])<.023
         base=(161,112,49) if seam else ((83,86,65) if center[1]>.045 and i%4==0 else (111,101,85))
         shift=rng.randint(-16,16)
@@ -51,7 +75,6 @@ def geode():
 def crystal(tier):
     points,faces,colors=[],[],[]
     rng=random.Random(810+tier)
-    # Rough remains a mineral cluster; later tiers have a taller central prism.
     shards=[(0,0,0,.079,.27)]
     if tier==0: shards=[(-.045,-.04,0,.069,.19),(.065,-.035,.035,.06,.22),(0,-.045,-.065,.05,.15)]
     elif tier>=2: shards += [(-.085,-.055,.025,.042,.17),(.09,-.055,-.015,.034,.13)]
@@ -79,8 +102,6 @@ def crystal(tier):
 
 def emit(name, raw, outward=False):
     points,faces,colors=raw
-    # Orient every face outwards relative to its own connected prism/nodule.
-    # Crystal topology is already outward; geode faces are checked explicitly.
     if name=='geode':
         faces=[(a,c,b) if dot(cross(sub(points[b],points[a]),sub(points[c],points[a])),points[a])<0 else (a,b,c) for a,b,c in faces]
     elif not outward:
@@ -134,25 +155,28 @@ def main():
         icon,count=emit(name,geode() if i==0 else crystal(i-1))
         icons.append(icon)
         print(f'{name}: {count} triangles; mesh + OBJ + 512px atlas + icon')
-    
-    # Distinct skill badge: chisel crossing a mineral cluster.
+
     skill=icons[1].copy(); d=ImageDraw.Draw(skill)
     d.polygon([(105,95),(128,76),(365,353),(337,385)],fill=(113,81,47,255))
     d.polygon([(312,321),(343,298),(402,373),(390,412),(354,397)],fill=(199,194,171,255))
     skill.resize((128,128),Image.Resampling.LANCZOS).save(OUT/'crystal-shaping.icon.png')
     skill.resize((256,256),Image.Resampling.LANCZOS).save(ROOT/'icon.png')
-    
+
     sheet=Image.new('RGB',(1600,840),(28,31,30)); d=ImageDraw.Draw(sheet)
-    font=ImageFont.truetype('C:/Windows/Fonts/segoeui.ttf',26)
-    title=ImageFont.truetype('C:/Windows/Fonts/segoeuib.ttf',44)
-    d.text((46,28),'MAGENHEIM / EARTH MINERALS',font=title,fill=(232,215,174))
-    d.text((48,88),'Original low-poly models, painted atlases, and inventory icons',font=font,fill=(153,162,151))
+    body_font=font(26)
+    title_font=font(44, bold=True)
+    d.text((46,28),'MAGENHEIM / EARTH MINERALS',font=title_font,fill=(232,215,174))
+    d.text((48,88),'Original low-poly models, painted atlases, and inventory icons',font=body_font,fill=(153,162,151))
+    preview_size=PREVIEW_ICON_SIZE
+    display_size=min(270, preview_size)
     for i,(name,icon) in enumerate(zip(names+['Crystal Shaping'],icons+[skill])):
         x=30+(i%4)*395; y=155+(i//4)*330
-        sheet.paste(icon.resize((270,270),Image.Resampling.LANCZOS),(x+48,y),icon.resize((270,270),Image.Resampling.LANCZOS))
-        d.text((x+45,y+274),name.title(),font=font,fill=(228,216,188))
+        preview=icon.resize((preview_size,preview_size),Image.Resampling.LANCZOS)
+        if display_size != preview_size:
+            preview=preview.resize((display_size,display_size),Image.Resampling.LANCZOS)
+        sheet.paste(preview,(x+48,y),preview)
+        d.text((x+45,y+274),name.title(),font=body_font,fill=(228,216,188))
     sheet.save(OUT/'earth-content-preview.png')
-    
 
 if __name__ == '__main__':
     main()
