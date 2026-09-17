@@ -87,22 +87,18 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         };
     }
 
-    private Material MaterialFor(UnderworldTerrainBiome biome)
+    private Material? MaterialFor(UnderworldTerrainBiome biome)
     {
         if(_materials.TryGetValue(biome,out var cached)&&cached)return cached;
-        var shader=Shader.Find("Standard")??throw new InvalidOperationException("Unity Standard shader unavailable.");
-        var material=new Material(shader){name="Magenheim_UnderworldPlaceholder_"+biome};
-        material.color=biome switch
-        {
+        var shader=ResolvePlaceholderShader();if(shader is null)return null;\n        var material=new Material(shader){name="Magenheim_UnderworldPlaceholder_"+biome};\n        var tint=biome switch\n        {
             UnderworldTerrainBiome.FungalForest=>new Color(0.20f,0.48f,0.26f),
             UnderworldTerrainBiome.BlackwaterDeep=>new Color(0.06f,0.12f,0.18f),
             UnderworldTerrainBiome.SulfurousWastes=>new Color(0.55f,0.30f,0.08f),
             UnderworldTerrainBiome.FrozenCaverns=>new Color(0.48f,0.70f,0.82f),
             UnderworldTerrainBiome.FractureZones=>new Color(0.38f,0.16f,0.46f),
-            _=>new Color(0.24f,0.18f,0.20f)
-        };material.SetFloat("_Glossiness",0.18f);_materials[biome]=material;return material;
+            _=>new Color(0.24f,0.18f,0.20f)\n        };\n        if(material.HasProperty("_Color"))material.SetColor("_Color",tint);\n        if(material.HasProperty("_BaseColor"))material.SetColor("_BaseColor",tint);\n        if(material.HasProperty("_Glossiness"))material.SetFloat("_Glossiness",0.18f);\n        _materials[biome]=material;return material;
     }
 
-    private void ClearMarkers(){foreach(var item in _spawned)if(item)Destroy(item);_spawned.Clear();}
+    private static Shader? ResolvePlaceholderShader()\n    {\n        foreach(var name in new[]{"Custom/StaticRock","Custom/Piece","Custom/Vegetation","Standard"})\n        {var shader=Shader.Find(name);if(shader is not null)return shader;}\n        return null;\n    }\n\n    private void ClearMarkers(){foreach(var item in _spawned)if(item)Destroy(item);_spawned.Clear();}
     private void OnDestroy(){ClearMarkers();foreach(var material in _materials.Values)if(material)Destroy(material);_materials.Clear();}
 }
