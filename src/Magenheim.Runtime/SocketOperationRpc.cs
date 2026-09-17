@@ -286,12 +286,6 @@ internal static class SocketOperationRpc
             SendRejection(sender, operationId, kind, stationError);
             return;
         }
-        if (kind == RemoteSocketKind.ExtractCrystal && !HasFacetingWheel(station))
-        {
-            SendRejection(sender, operationId, kind,
-                "Crystal extraction requires the Faceting Wheel at the Geologist's Workstation.");
-            return;
-        }
 
         if (!TryResolveCanonicalDescriptor(suppliedDescriptor, out var descriptor, out var descriptorError))
         {
@@ -798,14 +792,14 @@ internal static class SocketOperationRpc
         out string diagnostic)
     {
         station = CraftingStation.FindClosestStationInRange(
-            "Geologist's Workstation",
+            "Crystal Enchanting Dais",
             player.transform.position,
             4f);
         if (!station ||
-            !string.Equals(NormalizeCloneName(station.gameObject.name), WorkshopRegistrar.StationPrefab, StringComparison.Ordinal) ||
+            !string.Equals(NormalizeCloneName(station.gameObject.name), CrystalEnchantingDaisRegistrar.PrefabName, StringComparison.Ordinal) ||
             !station.InUseDistance(player))
         {
-            diagnostic = "No in-range Geologist's Workstation could be validated for the requesting player.";
+            diagnostic = "No in-range Crystal Enchanting Dais could be validated for the requesting player.";
             return false;
         }
 
@@ -818,18 +812,8 @@ internal static class SocketOperationRpc
         station = player.GetCurrentCraftingStation();
         return station && string.Equals(
             NormalizeCloneName(station.gameObject.name),
-            WorkshopRegistrar.StationPrefab,
+            CrystalEnchantingDaisRegistrar.PrefabName,
             StringComparison.Ordinal);
-    }
-
-    private static bool HasFacetingWheel(CraftingStation station)
-    {
-        var extensions = new List<StationExtension>();
-        StationExtension.FindExtensions(station, station.transform.position, extensions);
-        return extensions.Any(extension => string.Equals(
-            NormalizeCloneName(extension.gameObject.name),
-            WorkshopRegistrar.FacetingPrefab,
-            StringComparison.Ordinal));
     }
 
     private static void WriteDescriptor(ZPackage package, EquipmentDescriptor descriptor)

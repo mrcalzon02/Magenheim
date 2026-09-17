@@ -13,14 +13,21 @@ using UnityEngine.UI;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Explicit per-item socket management surface shown only while the local player is using
-/// a Magenheim socket station. The presentation is hosted by Valheim's InventoryGui and copies
+/// Explicit per-item socket management surface, shown only while the local player is using the
+/// Crystal Enchanting Dais. The Dais is the sole socket station and carries no crafting recipes,
+/// so this surface owns the panel instead of competing with a station's recipe list -- hosting it
+/// on the Geologist's Workstation displaced that station's normal crafting menu.
+///
+/// All three socket operations live here: opening a slot, installing a crystal, and removing one.
+/// None of them belong to the geode/refinement chain.
+///
+/// The presentation is hosted by Valheim's InventoryGui and copies
 /// the active crafting panel/button/text visuals instead of drawing a separate IMGUI debug window.
 /// It never edits shared prefabs: all mutation is performed through Magenheim's namespaced
 /// ItemData metadata and pure-core transaction planners. Remote clients submit immutable socket
 /// intent to the server and apply only the approved plan after stale-state revalidation.
 /// </summary>
-internal sealed class SocketWorkstationOverlay : MonoBehaviour
+internal sealed class CrystalDaisSocketOverlay : MonoBehaviour
 {
     private const long LocalPeerId = 0L;
     private const long LocalSessionGeneration = 1L;
@@ -247,11 +254,8 @@ internal sealed class SocketWorkstationOverlay : MonoBehaviour
                         TryExtract(player, inventory, equipment, crystalIndex);
                         _refreshRequested = true;
                     },
-                    CanRequestMutation() && HasFacetingWheel(player));
+                    CanRequestMutation());
             }
-
-            if (!HasFacetingWheel(player))
-                AddNativeLabel(_nativeContent, "Crystal extraction requires the Faceting Wheel upgrade.", 34f);
         }
 
         AddNativeButton(_nativeContent, "Open one socket", () =>
@@ -687,11 +691,6 @@ internal sealed class SocketWorkstationOverlay : MonoBehaviour
             _status = "Crystal extraction requires admitted server authority.";
             return;
         }
-        if (!HasFacetingWheel(player))
-        {
-            _status = "Crystal extraction requires the Faceting Wheel upgrade.";
-            return;
-        }
         if (!ItemSocketAdapter.TryRead(equipment, out var state, out var metadataError))
         {
             _status = metadataError;
@@ -788,19 +787,8 @@ internal sealed class SocketWorkstationOverlay : MonoBehaviour
         station = player.GetCurrentCraftingStation();
         return station && string.Equals(
             NormalizeCloneName(station.gameObject.name),
-            WorkshopRegistrar.StationPrefab,
+            CrystalEnchantingDaisRegistrar.PrefabName,
             StringComparison.Ordinal);
-    }
-
-    private static bool HasFacetingWheel(Player player)
-    {
-        if (!TryGetMagenheimStation(player, out var station)) return false;
-        var extensions = new List<StationExtension>();
-        StationExtension.FindExtensions(station, station.transform.position, extensions);
-        return extensions.Any(extension => string.Equals(
-            NormalizeCloneName(extension.gameObject.name),
-            WorkshopRegistrar.FacetingPrefab,
-            StringComparison.Ordinal));
     }
 
     private static bool TryParseCrystal(ItemDrop.ItemData item, out Crystal crystal)

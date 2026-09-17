@@ -48,12 +48,21 @@ public sealed record SocketExtractionPlan(
 
 /// <summary>
 /// Pure planner for removing one installed crystal from per-item socket metadata.
-/// Extraction is intentionally risky and is only admitted at the Faceting Wheel.
+///
+/// This is socket removal, the third socket operation alongside opening a slot and
+/// installing a crystal. It is unrelated to the geode/refinement chain, which never
+/// extracts anything. The required station was previously the Faceting Wheel, a
+/// Geologist's Workstation upgrade that also gates Crystal -> Advanced refinement; that
+/// shared constant was the only thing tying socket removal to the refinement chain, and it
+/// made a socket operation look like a refinement step. Socketing is now wholly owned by
+/// the Crystal Enchanting Dais.
+///
+/// Removal remains intentionally risky: the crystal can shatter and return shards instead.
 /// Runtime code must atomically apply ResultState and the returned crystal/shards.
 /// </summary>
 public static class SocketExtractionService
 {
-    public const string RequiredStationId = "Magenheim_StationUpgrade_FacetingWheel";
+    public const string RequiredStationId = "Magenheim_CrystalEnchantingDais";
 
     public static SocketExtractionPlan Plan(SocketExtractionRequest request)
     {
@@ -67,7 +76,7 @@ public static class SocketExtractionService
 
         if (!string.Equals(request.StationId, RequiredStationId, StringComparison.Ordinal))
             return Reject(SocketExtractionOutcome.InvalidStation, request.CurrentState,
-                "Crystal extraction requires the Faceting Wheel at the Geologist's Workstation.");
+                "Removing a socketed crystal requires the Crystal Enchanting Dais.");
 
         if (request.CrystalShapingSkillLevel < 0 || request.CrystalShapingSkillLevel > 100)
             return Reject(SocketExtractionOutcome.InvalidSkill, request.CurrentState,

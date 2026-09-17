@@ -1,11 +1,9 @@
 using System;
 using System.Linq;
 using BepInEx.Logging;
-using HarmonyLib;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
-using Magenheim.Runtime.Networking;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
@@ -173,61 +171,4 @@ internal sealed class CrystalEnchantingDaisRegistrar : IDisposable
         PrefabManager.OnVanillaPrefabsAvailable -= RegisterDais;
         _subscribed = false;
     }
-}
-
-/// <summary>
-/// Admits the dedicated enchanting dais anywhere the socket-management surface or remote socket
-/// authority validates a socket station. Extraction remains restricted by the existing server-side
-/// Faceting Wheel check, which a dais cannot satisfy because that extension belongs to the
-/// Geologist's Workstation.
-/// </summary>
-internal static class CrystalEnchantingDaisSocketPatch
-{
-    [HarmonyPatch(typeof(SocketWorkstationOverlay), "TryGetMagenheimStation")]
-    [HarmonyPostfix]
-    private static void AdmitDaisToLocalSocketUi(ref CraftingStation station, ref bool __result) =>
-        AdmitCurrentDais(ref station, ref __result);
-
-    [HarmonyPatch(typeof(SocketOperationRpc), "TryGetCurrentMagenheimStation")]
-    [HarmonyPostfix]
-    private static void AdmitDaisToRemoteClientGate(ref CraftingStation station, ref bool __result) =>
-        AdmitCurrentDais(ref station, ref __result);
-
-    [HarmonyPatch(typeof(SocketOperationRpc), "TryResolveNearbyMagenheimStation")]
-    [HarmonyPostfix]
-    private static void AdmitDaisToRemoteServerGate(
-        Player player,
-        ref CraftingStation station,
-        ref string diagnostic,
-        ref bool __result)
-    {
-        if (__result || player is null) return;
-
-        var dais = CraftingStation.FindClosestStationInRange(
-            "Crystal Enchanting Dais",
-            player.transform.position,
-            4f);
-        if (!IsDais(dais) || !dais.InUseDistance(player)) return;
-
-        station = dais;
-        diagnostic = string.Empty;
-        __result = true;
-    }
-
-    private static void AdmitCurrentDais(ref CraftingStation station, ref bool result)
-    {
-        if (result || !IsDais(station)) return;
-        result = true;
-    }
-
-    private static bool IsDais(CraftingStation station) =>
-        station && string.Equals(
-            NormalizeCloneName(station.gameObject.name),
-            CrystalEnchantingDaisRegistrar.PrefabName,
-            StringComparison.Ordinal);
-
-    private static string NormalizeCloneName(string name) =>
-        name.EndsWith("(Clone)", StringComparison.Ordinal)
-            ? name.Substring(0, name.Length - "(Clone)".Length)
-            : name;
 }

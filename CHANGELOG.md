@@ -1,5 +1,29 @@
 # Magenheim Changelog
 
+## 0.0.56 - Socketing moves to the Crystal Enchanting Dais
+
+- The socket interface is now hosted only by the Crystal Enchanting Dais. Hosting it on the
+  Geologist's Workstation displaced that station's normal crafting menu, because the
+  Workstation carries the whole crystal/weapon/staff recipe list. The Dais carries no
+  recipes at all, so the socket surface owns the panel instead of competing with one.
+- All three socket operations move together: opening a slot, installing a crystal, and
+  removing one. Removing a crystal is a socket operation, not a refinement step.
+- Removing a crystal no longer requires the Faceting Wheel. That requirement was the only
+  thing coupling socketing to the refinement chain, and it was misleading: the Faceting
+  Wheel is a Geologist's Workstation upgrade that gates Crystal -> Advanced refinement, and
+  the geode/refinement route never removes anything from a socket. The Dais itself is now
+  the gate. The Faceting Wheel keeps its refinement role, unchanged.
+- Deleted the Harmony patch that used to admit the Dais alongside the Workstation. With the
+  Dais primary it was redundant, so the behaviour is in the authority itself rather than in
+  a postfix over it. Harmony patch targets drop from 25 to 22.
+- Renamed `SocketWorkstationOverlay` to `CrystalDaisSocketOverlay`; the old name pointed
+  maintainers at the wrong station.
+- Added deterministic coverage pinning socket removal to the Dais and proving that none of
+  the four refinement stations can remove a socketed crystal.
+
+**Existing worlds:** you must build a Crystal Enchanting Dais to socket. It is built at the
+Geologist's Workstation from Stone, Iron, Crystal and Crystal Dust.
+
 ## 0.0.55 - Weapon world scale
 
 - Rescaled all ten crystal weapons to vanilla proportions. The family shipped oversized:

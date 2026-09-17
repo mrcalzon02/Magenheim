@@ -1,4 +1,4 @@
 {
-  "version": "0.0.55",
-  "description": "0.0.55: Rescales all ten crystal weapons to vanilla proportions against the staff reference, and re-authors weapon surfaces at 512px -- 76 of 79 materials were textured against their own intent. Scale and materials are now gated. Testing build."
+  "version": "0.0.56",
+  "description": "0.0.56: Socketing now lives only on the Crystal Enchanting Dais. Hosting it on the Geologist's Workstation displaced that station's crafting menu. Opening slots, installing and removing crystals all happen at the Dais, which carries no recipes."
 }

@@ -104,8 +104,20 @@ internal static class SocketingTests
         Assert(extractionFailure.MutationAuthorized && extractionFailure.Outcome == SocketExtractionOutcome.FailedShatteredCrystal && extractionFailure.ReturnedCrystal is null && extractionFailure.ShardElement == ElementalAlignment.Earth && extractionFailure.ShardReturnCount == 5 && extractionFailure.ResultState.InstalledCrystals.Count == 0, "A failed Master extraction should clear the socket, destroy the crystal, and return five matching shards.");
         var skilledExtraction = SocketExtractionService.Plan(new SocketExtractionRequest(authority, extractionState, 0, 100, SocketExtractionService.RequiredStationId, 0.11d));
         Assert(skilledExtraction.Outcome == SocketExtractionOutcome.SuccessReturnedCrystal && Math.Abs(skilledExtraction.EffectiveFailureChance - 0.10d) < 0.0000001d, "Skill 100 with the default 75% maximum reduction should lower Master extraction break chance from 40% to 10%.");
-        var wrongStationExtraction = SocketExtractionService.Plan(new SocketExtractionRequest(authority, extractionState, 0, 0, "Magenheim_GeologistWorkstation", 0.90d));
-        Assert(!wrongStationExtraction.MutationAuthorized && wrongStationExtraction.Outcome == SocketExtractionOutcome.InvalidStation && wrongStationExtraction.ResultState.InstalledCrystals.Count == 1, "Extraction without the Faceting Wheel must fail without changing per-item metadata.");
+        // Socket removal is owned by the Crystal Enchanting Dais. It is a socket operation, not a
+        // refinement step, and must not be reachable from the refinement chain's stations.
+        Assert(string.Equals(SocketExtractionService.RequiredStationId, "Magenheim_CrystalEnchantingDais", StringComparison.Ordinal), "Socket removal must be admitted only at the Crystal Enchanting Dais.");
+        foreach (var refinementStation in new[]
+                 {
+                     "Magenheim_GeologistWorkstation",
+                     "Magenheim_StationUpgrade_FracturingBlock",
+                     "Magenheim_StationUpgrade_FacetingWheel",
+                     "Magenheim_StationUpgrade_ResonanceFrame",
+                 })
+        {
+            var refused = SocketExtractionService.Plan(new SocketExtractionRequest(authority, extractionState, 0, 0, refinementStation, 0.90d));
+            Assert(!refused.MutationAuthorized && refused.Outcome == SocketExtractionOutcome.InvalidStation && refused.ResultState.InstalledCrystals.Count == 1, $"Refinement station '{refinementStation}' must not remove a socketed crystal, and must not change per-item metadata.");
+        }
         var extractionAuthorityDenied = SocketExtractionService.Plan(new SocketExtractionRequest(DefinitionAuthorityResult.Pending, extractionState, 0, 0, SocketExtractionService.RequiredStationId, 0.90d));
         Assert(!extractionAuthorityDenied.MutationAuthorized && extractionAuthorityDenied.Outcome == SocketExtractionOutcome.AuthorityDenied, "Unsynchronized definition authority must deny crystal extraction.");
 
