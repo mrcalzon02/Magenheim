@@ -41,7 +41,16 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         try{_worldCenter=UnderworldWorldCenterRegistrar.Create(identity,_services.SpatialDomain,_log);_worldCenterIdentity=identity.DerivedWorldId;_log.LogInfo($"Admitted Underworld world center only for physical derived session '{identity.DerivedWorldId}'.");}
         catch(Exception exception){_worldCenter=null;_worldCenterIdentity=null;_log.LogError($"Underworld reserved-domain center admission failed: {exception}");}
     }
-    private void TryPlaceLocalUnderworldPlayer()\n    {\n        if(_placedLocalUnderworldPlayer||_worldCenter is null||_services is null||_log is null)return;\n        if(!_services.TryResolveLocalSession(out var identity,out var layer,out _,out _)||identity is null||layer!=UnderworldLayer.Underworld)return;\n        var player=Player.m_localPlayer;if(player is null)return;\n        var target=_worldCenter.transform.position+new Vector3(0f,2.5f,-5f);\n        try{player.TeleportTo(target,_worldCenter.transform.rotation,true);_placedLocalUnderworldPlayer=true;_log.LogInfo($"Placed local player at grounded Underworld Conclave test arrival ({target.x:0.0}, {target.y:0.0}, {target.z:0.0}).");}\n        catch(Exception exception){_log.LogWarning($"Underworld test arrival placement deferred: {exception.Message}");}\n    }\n    private void TryReconcileDeepBoons()
+    private void TryPlaceLocalUnderworldPlayer()
+    {
+        if(_placedLocalUnderworldPlayer||_worldCenter is null||_services is null||_log is null)return;
+        if(!_services.TryResolveLocalSession(out var identity,out var layer,out _,out _)||identity is null||layer!=UnderworldLayer.Underworld)return;
+        var player=Player.m_localPlayer;if(player is null)return;
+        var target=_worldCenter.transform.position+new Vector3(0f,2.5f,-5f);
+        try{player.TeleportTo(target,_worldCenter.transform.rotation,true);_placedLocalUnderworldPlayer=true;_log.LogInfo($"Placed local player at grounded Underworld Conclave test arrival ({target.x:0.0}, {target.y:0.0}, {target.z:0.0}).");}
+        catch(Exception exception){_log.LogWarning($"Underworld test arrival placement deferred: {exception.Message}");}
+    }
+    private void TryReconcileDeepBoons()
     {
         if(ZNet.instance is null||!ZNet.instance.IsServer()||Time.unscaledTime<_nextBoonReconcileAt)return;_nextBoonReconcileAt=Time.unscaledTime+2f;
         foreach(var player in Player.GetAllPlayers())if(player)DeepBoonRuntime.Reconcile(player,out _);
