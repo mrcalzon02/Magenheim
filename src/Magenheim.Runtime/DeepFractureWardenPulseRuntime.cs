@@ -23,7 +23,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
         var color=PulseColor();
         for(var i=0;i<3;i++)
         {
-            var ring=GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            var ring=EffectModelAssets.Create("effect-ring");
             ring.name="Magenheim_WardenTerritoryPulse";
             ring.transform.position=origin+Vector3.up*(i*.012f);
             ring.transform.localScale=new Vector3(.7f+i*.5f,.014f,.7f+i*.5f);
@@ -34,7 +34,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
         }
         for(var i=0;i<8;i++)
         {
-            var marker=GameObject.CreatePrimitive(PrimitiveType.Cube);
+            var marker=EffectModelAssets.Create("effect-shard");
             marker.name="Magenheim_WardenPulseMarker";
             var direction=Quaternion.Euler(0,i*45f,0)*Vector3.forward;
             marker.transform.position=origin+direction*(2.4f+i%2*.8f)+Vector3.up*.08f;
@@ -65,7 +65,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
     }
     private static void EmitVenomPool(Vector3 position,Vector2 size,float life,float yaw)
     {
-        var pool=GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        var pool=EffectModelAssets.Create("effect-ring");
         pool.name="Magenheim_WardenVenomContamination";
         pool.transform.position=position+Vector3.up*.025f;
         pool.transform.localScale=new Vector3(size.x,.018f,size.y);
@@ -77,7 +77,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
     }
     private static void EmitVenomSeep(Vector3 position,Vector3 outward,int seed)
     {
-        var seep=GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        var seep=EffectModelAssets.Create("effect-orb");
         seep.name="Magenheim_WardenVenomPerimeterSeep";
         seep.transform.position=position+Vector3.up*.09f;
         seep.transform.localScale=new Vector3(.24f+(seed%3)*.05f,.09f,.55f+(seed%2)*.16f);
@@ -128,7 +128,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
     }
     private static void EmitEarthUpheaval(Vector3 position,Vector3 outward,int seed)
     {
-        var mass=GameObject.CreatePrimitive(PrimitiveType.Cube);
+        var mass=EffectModelAssets.Create("effect-shard");
         mass.name="Magenheim_WardenEarthUpheaval";
         mass.transform.position=position+Vector3.up*.08f;
         var scale=.26f+(seed%3)*.06f;

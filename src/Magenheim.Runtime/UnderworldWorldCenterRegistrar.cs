@@ -61,8 +61,8 @@ internal static class UnderworldWorldCenterRegistrar
         var root = new GameObject(StandingStonesName);
         root.transform.SetParent(parent, false);
         var material = CreateStoneMaterial();
-        var box = RuntimeMeshPrimitives.Box("magenheim.underworld.standing-stone");
-        var dais = RuntimeMeshPrimitives.Cylinder(32, "magenheim.underworld.center-dais");
+        var box = ModelAssets.LoadSingleMesh("underworld-standing-stone");
+        var dais = ModelAssets.LoadSingleMesh("underworld-dais");
         const float radius = 12f;
 
         for (var i = 0; i < Deepstones.Length; i++)

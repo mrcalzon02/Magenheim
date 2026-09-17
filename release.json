@@ -1,4 +1,4 @@
 {
-  "version": "0.0.50",
-  "description": "0.0.50: Loads editable model assets instead of runtime shape generators. Includes 276 Blender/GLB models, UVs, materials and cached meshes. Preserves gameplay bindings. Testing build; live world acceptance pending."
+  "version": "0.0.51",
+  "description": "0.0.51: Revises 281 models with repaired bow/axes, carved effigies, creature contrast, cloth folds and crafted edges. Adds editable effects and Underworld stones. Fixes preview transforms and texture export. Live visual acceptance pending."
 }

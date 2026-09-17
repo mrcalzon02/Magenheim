@@ -1,5 +1,15 @@
 # Magenheim Changelog
 
+## 0.0.51 - Model quality revision
+
+- Revised all 276 existing saved models and added five missing effect/world-center assets.
+- Rebuilt bow/axe and effigy silhouettes; added creature faces, mineral contrast, cloth folds and crafted edges.
+- Preserved all 486 existing collision/crystal bounds and bindings.
+- Fixed preview transform collapse, exported corner normals and packed texture fidelity.
+- Removed remaining active primitive builders; retained historical source in the archive.
+- Repaired pre-existing netstandard2.0 incompatibilities exposed by the build.
+- Live visual and animation acceptance remains pending.
+
 ## 0.0.47 - Startup patch signature repairs
 
 - Fixed fatal ambiguous GetDamage targeting and the same latent GetArmor defect.

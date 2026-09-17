@@ -17,4 +17,12 @@ var untouched=new GameObject("missing");var original=untouched.AddComponent<Mesh
 try{ModelAssets.Load(untouched,"missing-asset-for-test");throw new Exception("Missing asset silently accepted");}catch(FileNotFoundException){}
 if(!original.enabled || untouched.transform.childCount!=0)throw new Exception("Failed load mutated host");
 try{ModelAssets.Load(untouched,"../outside");throw new Exception("Traversal accepted");}catch(ArgumentException){}
+foreach(var id in new[]{"underworld-standing-stone","underworld-dais"})
+{
+ var mesh=ModelAssets.LoadSingleMesh(id);
+ if(!ReferenceEquals(mesh,ModelAssets.LoadSingleMesh(id)))throw new Exception("Standalone mesh cache failed: "+id);
+ if(mesh.vertices.Length==0 || mesh.triangles.Length==0)throw new Exception("Empty standalone mesh: "+id);
+}
+try{ModelAssets.LoadSingleMesh("../outside");throw new Exception("Standalone traversal accepted");}catch(ArgumentException){}
+try{ModelAssets.LoadSingleMesh("crystal-weapon-bow");throw new Exception("Multipart mesh silently truncated");}catch(InvalidDataException){}
 Console.WriteLine($"PASS: {count} model assets imported twice; complete parts/UVs, shared meshes, missing-file and path guards.");

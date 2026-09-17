@@ -1,9 +1,10 @@
-import bpy,json,math
+import bpy,json,math,sys
 from pathlib import Path
 from mathutils import Vector,Matrix
 root=Path(__file__).resolve().parents[1];out=root/'assets/models';preview=out/'previews';preview.mkdir(exist_ok=True)
 models=json.loads((out/'catalog.json').read_text());cols=6;rows=4;per=cols*rows
-for page in range((len(models)+per-1)//per):
+pages=[int(a)-1 for a in sys.argv[sys.argv.index('--')+1:]] if '--' in sys.argv else range((len(models)+per-1)//per)
+for page in pages:
  bpy.ops.wm.read_factory_settings(use_empty=True);scene=bpy.context.scene;scene.render.engine='CYCLES';scene.cycles.samples=12;scene.cycles.use_denoising=True
  scene.render.resolution_x=2400;scene.render.resolution_y=1700;scene.render.resolution_percentage=100
  scene.world=bpy.data.worlds.new('Studio');scene.world.use_nodes=True;scene.world.node_tree.nodes['Background'].inputs[0].default_value=(.15,.18,.22,1);scene.world.node_tree.nodes['Background'].inputs[1].default_value=.65
@@ -12,7 +13,11 @@ for page in range((len(models)+per-1)//per):
   with bpy.data.libraries.load(str(file),link=False) as (src,dst):dst.objects=src.objects
   objects=[o for o in dst.objects if o and o.type=='MESH']
   rot=Matrix.Rotation(math.radians(-25),4,'Z')@Matrix.Rotation(math.radians(-57),4,'X')
-  for obj in objects:scene.collection.objects.link(obj);obj.matrix_world=rot@obj.matrix_world
+  for obj in objects:scene.collection.objects.link(obj)
+  # Library-loaded world matrices are stale until objects enter an evaluated scene.
+  bpy.context.view_layer.update()
+  transforms={obj:obj.matrix_world.copy() for obj in objects}
+  for obj in objects:obj.matrix_world=rot@transforms[obj]
   bpy.context.view_layer.update();points=[o.matrix_world@Vector(c) for o in objects for c in o.bound_box]
   minimum=Vector([min(p[i] for p in points) for i in range(3)]);maximum=Vector([max(p[i] for p in points) for i in range(3)]);center=(minimum+maximum)/2;scale=2.25/max((maximum-minimum).x,(maximum-minimum).y)
   x=(index%cols-(cols-1)/2)*2.9;y=(1.5-index//cols)*3.0+.25

@@ -32,6 +32,7 @@ for file in files:
   for node in material.node_tree.nodes:
    if node.type=='TEX_IMAGE' and node.image:
     image=node.image;texture=hashlib.sha256(image.name.encode()).hexdigest()[:16]+'.png'
+    if min(image.size)<256:raise ValueError(f'{file.name}/{image.name}: packed source texture must be at least 256px')
     image.filepath_raw=str(out/'textures'/texture);image.file_format='PNG';image.save();
     if file.stem.startswith('earth-'):
      image.filepath_raw=str(root/'assets/earth'/(file.stem[6:]+'.png'));image.save()
@@ -40,10 +41,15 @@ for file in files:
           emission=[v*bs.inputs['Emission Strength'].default_value for v in bs.inputs['Emission Color'].default_value[:3]],texture=texture)
   vertices=[];normals=[];uv=[];triangles=[];normal_matrix=obj.matrix_world.to_3x3().inverted().transposed()
   for face in mesh.loop_triangles:
-   for li in face.loops:
-    loop=mesh.loops[li];v=obj.matrix_world@mesh.vertices[loop.vertex_index].co;n=(normal_matrix@face.normal).normalized()
+   # Preserve authored split/smooth normals; mirrored transforms need reversed
+   # winding so exported fronts agree with the inverse-transpose normals.
+   loops=list(face.loops)
+   if obj.matrix_world.to_3x3().determinant()<0:loops.reverse()
+   for li in loops:
+    loop=mesh.loops[li];v=obj.matrix_world@mesh.vertices[loop.vertex_index].co;n=(normal_matrix@mesh.corner_normals[li].vector).normalized()
     vertices.append([v.x,v.z,-v.y]);normals.append([n.x,n.z,-n.y]);uv.append(list(mesh.uv_layers.active.data[li].uv));triangles.append(len(vertices)-1)
   parts.append(dict(name=obj.name,path=path,vertices=vertices,normals=normals,uv=uv,triangles=triangles,material=md,collider=bool(obj['game_collision']),crystal=json.loads(obj['game_crystal'])))
+  evaluated.to_mesh_clear()
  lights=json.loads(scene.get('runtime_lights','[]'))
  for obj in scene.objects:
   if obj.type=='LIGHT' and obj.data.type=='POINT':

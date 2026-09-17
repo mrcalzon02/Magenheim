@@ -26,7 +26,7 @@ public static class UnderworldDeepBoonSelectionCodec
     public static UnderworldDeepBoonSelectionState Decode(string payload)
     {
         if (string.IsNullOrWhiteSpace(payload)) throw new InvalidOperationException("Deep Boon selection payload is empty.");
-        var lines = payload.Replace("\r\n", "\n", StringComparison.Ordinal).Split('\n');
+        var lines = payload.Replace("\r\n", "\n").Split('\n');
         if (lines.Length != 4 || lines[0] != Header || lines[3].Length != 0)
             throw new InvalidOperationException("Deep Boon selection payload shape is invalid.");
         if (lines[1] != "version=" + CurrentFormatVersion)

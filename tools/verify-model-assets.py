@@ -35,10 +35,10 @@ for file in sorted((assets/'runtime').glob('*.model.json')):
   for primitive in m['primitives']:
    for key in ('POSITION','NORMAL','TEXCOORD_0'):assert key in primitive['attributes'],(id,key)
  rows.append(dict(id=id,parts=len(doc['parts']),triangles=triangles,materials=len(materials),source='source/'+source.name,glb='glb/'+glb.name,runtime='runtime/'+file.name,source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),runtime_sha256=hashlib.sha256(file.read_bytes()).hexdigest(),glb_sha256=hashlib.sha256(data).hexdigest()))
-assert len(rows)==276,('Unexpected asset coverage',len(rows))
+assert len(rows)==281,('Unexpected asset coverage',len(rows))
 for file in (root/'src/Magenheim.Runtime').glob('*.cs'):
  if file.name in ('ModelAssets.cs','EarthAssets.cs','ModelExportRuntime.cs'):continue
- text=file.read_text();assert 'CreatePrimitive(' not in text and 'new Mesh' not in text,('Runtime shape builder remains',file.name)
+ text=file.read_text(encoding="utf-8-sig");assert 'CreatePrimitive(' not in text and 'new Mesh' not in text,('Runtime shape builder remains',file.name)
 (assets/'catalog.json').write_text(json.dumps(rows,indent=2))
 with (assets/'catalog.tsv').open('w',newline='') as f:
  writer=csv.DictWriter(f,fieldnames=rows[0].keys(),delimiter='\t');writer.writeheader();writer.writerows(rows)

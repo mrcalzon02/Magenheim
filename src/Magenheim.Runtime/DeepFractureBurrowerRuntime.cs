@@ -69,7 +69,7 @@ internal sealed class DeepFractureBurrowerRuntime : MonoBehaviour
         for (var i = 0; i < 9; i++)
         {
             var angle = i * (360f / 9f) * Mathf.Deg2Rad;
-            var shard = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            var shard = EffectModelAssets.Create("effect-shard");
             shard.name = "GroundShard";
             shard.transform.SetParent(root.transform, false);
             shard.transform.localPosition = new Vector3(Mathf.Cos(angle) * 1.05f, .08f, Mathf.Sin(angle) * 1.05f);
@@ -84,7 +84,7 @@ internal sealed class DeepFractureBurrowerRuntime : MonoBehaviour
             Destroy(shard, 1.25f);
         }
 
-        var disturbance = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        var disturbance = EffectModelAssets.Create("effect-ring");
         disturbance.name = "GroundDisturbance";
         disturbance.transform.SetParent(root.transform, false);
         disturbance.transform.localPosition = new Vector3(0f, .025f, 0f);

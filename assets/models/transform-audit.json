@@ -1,0 +1,1688 @@
+[
+  {
+    "id": "architecture-crystal-beam-2m",
+    "parts": 12,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "architecture-crystal-beam-4m",
+    "parts": 12,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "architecture-crystal-beam-8m",
+    "parts": 12,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "architecture-crystal-foundation-2m",
+    "parts": 6,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "architecture-crystal-foundation-4m",
+    "parts": 9,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "architecture-crystal-foundation-8m",
+    "parts": 21,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "architecture-crystal-hearth",
+    "parts": 21,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "boss-bonemass-rotheart",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "boss-eikthyr-stormheart",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "boss-elder-rootheart",
+    "parts": 14,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "boss-fader-ashheart",
+    "parts": 15,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "boss-kall-winterheart",
+    "parts": 14,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "boss-moder-rimeheart",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "boss-queen-veilheart",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "boss-yagluth-sunheart",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "broken-crown",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-pennant-earth",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-pennant-fire",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-pennant-frost",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-pennant-radiance",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-pennant-seidr",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-pennant-spirit",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-pennant-storm",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-pennant-venom",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-standard-earth",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-standard-fire",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-standard-frost",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-standard-radiance",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-standard-seidr",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-standard-spirit",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-standard-storm",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-standard-venom",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-swallowtail-earth",
+    "parts": 10,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-swallowtail-fire",
+    "parts": 10,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-swallowtail-frost",
+    "parts": 10,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-swallowtail-radiance",
+    "parts": 10,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-swallowtail-seidr",
+    "parts": 10,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-swallowtail-spirit",
+    "parts": 10,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-swallowtail-storm",
+    "parts": 10,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-banner-swallowtail-venom",
+    "parts": 10,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-bed-earth",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-bed-fire",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-bed-frost",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-bed-radiance",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-bed-seidr",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-bed-spirit",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-bed-storm",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-bed-venom",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-brazier",
+    "parts": 20,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-enchanting-dais",
+    "parts": 62,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-lantern",
+    "parts": 20,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-sentinel",
+    "parts": 44,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-wardstone",
+    "parts": 48,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-weapon-atgeir",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-weapon-axe",
+    "parts": 6,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-weapon-battleaxe",
+    "parts": 10,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-weapon-bow",
+    "parts": 12,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-weapon-crossbow",
+    "parts": 9,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-weapon-greatsword",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-weapon-knife",
+    "parts": 5,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-weapon-mace",
+    "parts": 10,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-weapon-spear",
+    "parts": 5,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystal-weapon-sword",
+    "parts": 6,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "crystalline-ice-box",
+    "parts": 27,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "dark-throne",
+    "parts": 28,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "decor-crystal-coat-rack",
+    "parts": 17,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "decor-crystal-end-table",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "decor-crystal-wall-sconce",
+    "parts": 6,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "decor-cut-geode-plaque",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "decor-geode-bowl",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "decor-geode-hearth-mantel",
+    "parts": 32,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "decor-geologist-stool",
+    "parts": 6,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "decor-mineral-display-case",
+    "parts": 22,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "decor-specimen-sideboard",
+    "parts": 22,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "decor-strata-map-table",
+    "parts": 14,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-AnnoyanceWisp-earth",
+    "parts": 7,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-AnnoyanceWisp-fire",
+    "parts": 7,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-AnnoyanceWisp-frost",
+    "parts": 7,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-AnnoyanceWisp-radiance",
+    "parts": 7,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-AnnoyanceWisp-seidr",
+    "parts": 7,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-AnnoyanceWisp-spirit",
+    "parts": 7,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-AnnoyanceWisp-storm",
+    "parts": 7,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-AnnoyanceWisp-venom",
+    "parts": 7,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Burrower-earth",
+    "parts": 22,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Burrower-fire",
+    "parts": 22,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Burrower-frost",
+    "parts": 22,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Burrower-radiance",
+    "parts": 22,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Burrower-seidr",
+    "parts": 22,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Burrower-spirit",
+    "parts": 22,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Burrower-storm",
+    "parts": 22,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Burrower-venom",
+    "parts": 22,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalHound-earth",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalHound-fire",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalHound-frost",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalHound-radiance",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalHound-seidr",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalHound-spirit",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalHound-storm",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalHound-venom",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalParasite-earth",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalParasite-fire",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalParasite-frost",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalParasite-radiance",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalParasite-seidr",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalParasite-spirit",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalParasite-storm",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalParasite-venom",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalRevenant-earth",
+    "parts": 14,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalRevenant-fire",
+    "parts": 14,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalRevenant-frost",
+    "parts": 14,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalRevenant-radiance",
+    "parts": 14,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalRevenant-seidr",
+    "parts": 14,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalRevenant-spirit",
+    "parts": 14,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalRevenant-storm",
+    "parts": 14,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-CrystalRevenant-venom",
+    "parts": 14,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-FacetSentry-earth",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-FacetSentry-fire",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-FacetSentry-frost",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-FacetSentry-radiance",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-FacetSentry-seidr",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-FacetSentry-spirit",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-FacetSentry-storm",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-FacetSentry-venom",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-GeodeCrawler-earth",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-GeodeCrawler-fire",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-GeodeCrawler-frost",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-GeodeCrawler-radiance",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-GeodeCrawler-seidr",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-GeodeCrawler-spirit",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-GeodeCrawler-storm",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-GeodeCrawler-venom",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Shardling-earth",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Shardling-fire",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Shardling-frost",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Shardling-radiance",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Shardling-seidr",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Shardling-spirit",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Shardling-storm",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-Shardling-venom",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneGuardian-earth",
+    "parts": 20,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneGuardian-fire",
+    "parts": 20,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneGuardian-frost",
+    "parts": 20,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneGuardian-radiance",
+    "parts": 20,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneGuardian-seidr",
+    "parts": 20,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneGuardian-spirit",
+    "parts": 20,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneGuardian-storm",
+    "parts": 20,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneGuardian-venom",
+    "parts": 20,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneSentinel-earth",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneSentinel-fire",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneSentinel-frost",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneSentinel-radiance",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneSentinel-seidr",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneSentinel-spirit",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneSentinel-storm",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-creature-StoneSentinel-venom",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-crystal-golem-visual-earth",
+    "parts": 19,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-crystal-golem-visual-fire",
+    "parts": 19,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-crystal-golem-visual-frost",
+    "parts": 19,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-crystal-golem-visual-radiance",
+    "parts": 19,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-crystal-golem-visual-seidr",
+    "parts": 19,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-crystal-golem-visual-spirit",
+    "parts": 19,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-crystal-golem-visual-storm",
+    "parts": 19,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-crystal-golem-visual-venom",
+    "parts": 19,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-deep-colossus-visual-earth",
+    "parts": 30,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-deep-colossus-visual-fire",
+    "parts": 30,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-deep-colossus-visual-frost",
+    "parts": 30,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-deep-colossus-visual-radiance",
+    "parts": 30,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-deep-colossus-visual-seidr",
+    "parts": 30,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-deep-colossus-visual-spirit",
+    "parts": 30,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-deep-colossus-visual-storm",
+    "parts": 30,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-deep-colossus-visual-venom",
+    "parts": 30,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-entrance",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-obelisk-warden-visual-earth",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-obelisk-warden-visual-fire",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-obelisk-warden-visual-frost",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-obelisk-warden-visual-radiance",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-obelisk-warden-visual-seidr",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-obelisk-warden-visual-spirit",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-obelisk-warden-visual-storm",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-obelisk-warden-visual-venom",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-passage",
+    "parts": 5,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "deep-fracture-traversal",
+    "parts": 3,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-01",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-02",
+    "parts": 12,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-03",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-04",
+    "parts": 13,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-05",
+    "parts": 17,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-06",
+    "parts": 17,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-07",
+    "parts": 19,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-08",
+    "parts": 15,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-09",
+    "parts": 17,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-10",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-11",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-12",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-13",
+    "parts": 20,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-14",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-15",
+    "parts": 22,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-16",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-17",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-18",
+    "parts": 22,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-19",
+    "parts": 17,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "DF-20",
+    "parts": 20,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "earth-advanced",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "earth-crystal",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "earth-faceting-wheel",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "earth-fracturing-block",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "earth-geode",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "earth-master",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "earth-resonance-frame",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "earth-rough",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "earth-shards",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "earth-simple",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "earth-workstation",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "effect-orb",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "effect-ring",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "effect-shard",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "elemental-focus",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "fate-crystal",
+    "parts": 26,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "fate-shard",
+    "parts": 3,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "furniture-crystal-bed",
+    "parts": 9,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "furniture-crystal-bench",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "furniture-crystal-divider",
+    "parts": 12,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "furniture-crystal-throne",
+    "parts": 12,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "furniture-geo-desk",
+    "parts": 9,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "furniture-geode-chair",
+    "parts": 11,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "furniture-geode-pedestal",
+    "parts": 9,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "furniture-geode-table",
+    "parts": 15,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "furniture-lapidary-cabinet",
+    "parts": 9,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "furniture-mineral-shelf",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "geode-sample",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "Magenheim_Staff_Earth_Advanced",
+    "parts": 14,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "Magenheim_Staff_Earth_Crystal",
+    "parts": 10,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "Magenheim_Staff_Earth_Master",
+    "parts": 25,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "Magenheim_Staff_Earth_Simple",
+    "parts": 7,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "Magenheim_Staff_Fire_Advanced",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "Magenheim_Staff_Fire_Crystal",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "Magenheim_Staff_Fire_Master",
+    "parts": 21,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "Magenheim_Staff_Fire_Simple",
+    "parts": 7,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "Magenheim_Staff_Storm_Advanced",
+    "parts": 13,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "Magenheim_Staff_Storm_Crystal",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "Magenheim_Staff_Storm_Master",
+    "parts": 21,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "Magenheim_Staff_Storm_Simple",
+    "parts": 7,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "norn-spindle",
+    "parts": 7,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "passage-stone",
+    "parts": 29,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "rune-engraver",
+    "parts": 10,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "runed-totem",
+    "parts": 35,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "runic-keelstone",
+    "parts": 18,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "seidr-ritual-focus",
+    "parts": 21,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "sentinel-ammo-earth",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "sentinel-ammo-fire",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "sentinel-ammo-frost",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "sentinel-ammo-radiance",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "sentinel-ammo-seidr",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "sentinel-ammo-spirit",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "sentinel-ammo-storm",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "sentinel-ammo-venom",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "spirit-fetish-raven",
+    "parts": 15,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "spirit-fetish-warrior",
+    "parts": 9,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "spirit-fetish-wolf",
+    "parts": 16,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-frost-advanced",
+    "parts": 14,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-frost-crystal",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-frost-master",
+    "parts": 21,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-frost-simple",
+    "parts": 7,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-radiance-advanced",
+    "parts": 21,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-radiance-crystal",
+    "parts": 9,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-radiance-master",
+    "parts": 22,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-radiance-simple",
+    "parts": 5,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-seidr-advanced",
+    "parts": 20,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-seidr-crystal",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-seidr-master",
+    "parts": 49,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-seidr-simple",
+    "parts": 6,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-spirit-advanced",
+    "parts": 15,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-spirit-crystal",
+    "parts": 8,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-spirit-master",
+    "parts": 29,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-spirit-simple",
+    "parts": 4,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-venom-advanced",
+    "parts": 21,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-venom-crystal",
+    "parts": 9,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-venom-master",
+    "parts": 21,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "staff-venom-simple",
+    "parts": 7,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "underworld-dais",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  },
+  {
+    "id": "underworld-standing-stone",
+    "parts": 1,
+    "maximum_bound_error_m": 0,
+    "source_runtime_match": true
+  }
+]

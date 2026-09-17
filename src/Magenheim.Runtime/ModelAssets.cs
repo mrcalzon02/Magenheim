@@ -17,6 +17,16 @@ internal static class ModelAssets
     private static readonly Dictionary<string, Texture2D> Textures = new();
     private static string DirectoryPath => Path.Combine(Path.GetDirectoryName(typeof(ModelAssets).Assembly.Location)!, "assets", "models");
 
+    internal static Mesh LoadSingleMesh(string id)
+    {
+        if (string.IsNullOrEmpty(id) || Path.GetFileName(id) != id) throw new ArgumentException("Invalid model identity.", nameof(id));
+        // The underworld registrar retains its own interaction objects and placement.
+        // Only their geometry is supplied by the editable library.
+        var document = JObject.Parse(File.ReadAllText(Path.Combine(DirectoryPath, "runtime", id + ".model.json")));
+        if (!(document["parts"] is JArray parts) || parts.Count != 1) throw new InvalidDataException("Single mesh asset required: " + id);
+        return LoadMesh(id + "/0", parts[0]);
+    }
+
     internal static GameObject Load(GameObject prefab, string id, bool item = false, float scale = 1f, bool hideOriginal = true, bool preserveParticles = false, Transform? parent = null)
     {
         if (!prefab) throw new ArgumentNullException(nameof(prefab));

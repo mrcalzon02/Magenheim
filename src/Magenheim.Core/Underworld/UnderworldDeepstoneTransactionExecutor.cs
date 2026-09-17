@@ -37,10 +37,10 @@ public static class UnderworldDeepstoneTransactionExecutor
         Func<int, bool> restoreConsumed)
     {
         if (authorizedConsumeCount <= 0) throw new ArgumentOutOfRangeException(nameof(authorizedConsumeCount));
-        ArgumentNullException.ThrowIfNull(consumeOne);
-        ArgumentNullException.ThrowIfNull(persistActivation);
-        ArgumentNullException.ThrowIfNull(rollbackPersistence);
-        ArgumentNullException.ThrowIfNull(restoreConsumed);
+        if (consumeOne is null) throw new ArgumentNullException(nameof(consumeOne));
+        if (persistActivation is null) throw new ArgumentNullException(nameof(persistActivation));
+        if (rollbackPersistence is null) throw new ArgumentNullException(nameof(rollbackPersistence));
+        if (restoreConsumed is null) throw new ArgumentNullException(nameof(restoreConsumed));
 
         var consumed = 0;
         for (var index = 0; index < authorizedConsumeCount; index++)

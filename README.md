@@ -2,7 +2,7 @@
 
 **Magic begins as geology.**
 
-## 0.0.47 testing candidate
+## 0.0.51 testing candidate
 
 Eight biome geodes, eight five-tier crystal families and shards, Crystal Shaping,
 workstation opening/refinement, sockets, eight four-tier staff families, crystal
@@ -14,10 +14,10 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.47.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.51.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
-Launch **Modded**. Confirm `Loading [Magenheim 0.0.47]` in the BepInEx log.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.51]` in the BepInEx log.
 Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
 See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.
@@ -43,10 +43,9 @@ With Valheim closed, `./install-local.ps1` builds, backs up and installs into th
 selected profile. To install an already verified package, use `-SkipBuild`.
 
 Original editable art and generators are under `assets/earth` and `tools` in the
-source repository. Procedural furniture, weapons and other models are built by
-runtime source. Players require no art tools. Development follows `INSTRUCTIONS.md`
+source repository. Furniture, weapons and other models load from the exported Blender library. Players require no art tools. Development follows `INSTRUCTIONS.md`
 on `main`.
 
 ## Editable 3D models
 
-See [the model library](assets/models/README.md) for 276 Blender sources, GLB exports, review sheets, and the edit/export workflow. Runtime visual builders load those assets instead of constructing shapes.
+See [the model library](assets/models/README.md) for 281 Blender sources, GLB exports, review sheets, and the edit/export workflow. Runtime visual builders load those assets instead of constructing shapes.

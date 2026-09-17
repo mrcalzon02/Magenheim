@@ -33,7 +33,7 @@ internal sealed class RadianceWardenSanctifiedRuntime:MonoBehaviour
     }
     private static void EmitZone(Vector3 origin)
     {
-        var zone=GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        var zone=EffectModelAssets.Create("effect-ring");
         zone.name="Magenheim_WardenRadianceSanctifiedZone";
         zone.transform.position=origin;
         zone.transform.localScale=new Vector3(2.75f,.012f,2.75f);
@@ -54,7 +54,7 @@ internal sealed class RadianceWardenSanctifiedRuntime:MonoBehaviour
     }
     private static void EmitPillar(Vector3 position,int seed)
     {
-        var pillar=GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        var pillar=EffectModelAssets.Create("effect-ring");
         pillar.name="Magenheim_WardenRadianceBoundaryPillar";
         pillar.transform.position=position+Vector3.up*.55f;
         pillar.transform.localScale=new Vector3(.055f,.55f,.055f);
