@@ -28,7 +28,6 @@ if ([string]::IsNullOrWhiteSpace($release.description) -or $release.description.
 if ([string]$runtimeProject.Project.PropertyGroup.Version -ne $pluginVersion) { throw 'Assembly/plugin version mismatch.' }
 $restoreOptions = @()
 if ($Offline) {
-    # Explicit offline mode uses cached dependencies; it does not claim a vulnerability audit.
     $restoreOptions = @('-p:NuGetAudit=false', '-p:RestoreIgnoreFailedSources=true')
     Write-Warning 'Offline build: online dependency vulnerability audit is unavailable.'
 }
@@ -41,16 +40,15 @@ try {
     & python "$PSScriptRoot/tools/verify-icon-assets.py"
     if ($LASTEXITCODE -ne 0) { throw 'Icon asset validation failed.' }
     # Creature source fidelity gates require Blender rather than Python's standard runtime.
-    # Keep them additive: they validate Magenheim-owned source assets without mutating vanilla
-    # or foreign registrations. The wrapper uses --factory-startup and detects script tracebacks.
-    & "$PSScriptRoot/tools/blender.ps1" verify-stone-guardian
-    if ($LASTEXITCODE -ne 0) { throw 'Stone Guardian source validation failed.' }
+    # They inspect only Magenheim-owned source art and never mutate vanilla/foreign content.
+    foreach ($creatureGate in @('verify-stone-guardian','verify-underworld-sporeling')) {
+        & "$PSScriptRoot/tools/blender.ps1" $creatureGate
+        if ($LASTEXITCODE -ne 0) { throw "Creature source validation failed: $creatureGate" }
+    }
     & python "$PSScriptRoot/tools/verify-model-scale.py"
     if ($LASTEXITCODE -ne 0) { throw 'Model scale validation failed.' }
     & python "$PSScriptRoot/tools/verify-weapon-materials.py"
     if ($LASTEXITCODE -ne 0) { throw 'Weapon material validation failed.' }
-    # These existed but were never wired in, so the defects they detect stayed shipped: the
-    # geode carried literal holes and five held assets pointed the wrong way round.
     foreach ($modelGate in @(
         'verify-model-geometry',
         'verify-model-surface-continuity',
@@ -85,9 +83,6 @@ try {
     $plugin = Join-Path $package 'Magenheim'
     New-Item -ItemType Directory -Force -Path $plugin | Out-Null
     $output = Join-Path $PSScriptRoot 'src/Magenheim.Runtime/bin/Release/net462'
-
-    # Only our assemblies belong in the package. The profile supplies Jotunn,
-    # Newtonsoft.Json, BepInEx and Unity; never copy build-directory dependencies.
     foreach ($assembly in @('Magenheim.dll', 'Magenheim.Core.dll')) {
         Copy-Item -LiteralPath (Join-Path $output $assembly) -Destination $plugin -Force
     }
@@ -102,7 +97,6 @@ try {
     foreach ($record in @('2026-09-14-earth-content-package.md', '2026-09-14-workshop-content.md', '2026-09-15-inventory-changed-reflection-repair.md')) {
         Copy-Item -LiteralPath "$PSScriptRoot/docs/validation/$record" -Destination "$package/docs/validation" -Force
     }
-
     $manifest = @{
         name = 'Magenheim'; version_number = $pluginVersion;
         website_url = 'https://github.com/mrcalzon02/Magenheim';
@@ -115,7 +109,6 @@ try {
     })
     ConvertTo-Json -InputObject $hashes -Depth 3 | Set-Content -LiteralPath (Join-Path $package 'checksums.json')
     Compress-Archive -Path "$package/*" -DestinationPath "$package.zip" -Force
-
     Get-FileHash -LiteralPath (Join-Path $plugin 'Magenheim.dll'),(Join-Path $plugin 'Magenheim.Core.dll')
     Write-Output "Built Magenheim $pluginVersion"
     Write-Output "Test package: $package.zip"
