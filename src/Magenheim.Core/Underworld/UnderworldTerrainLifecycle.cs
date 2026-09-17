@@ -39,6 +39,8 @@ public static class UnderworldTerrainLifecycle
 {
     public const double MaximumTerrainDelta = 48d;
     public const double MaximumSlopeDegrees = 75d;
+    public const double CentralFungalRadiusFraction = 0.16d;
+    public const double FungalTransitionRadiusFraction = 0.22d;
 
     public static UnderworldTerrainResult Evaluate(
         UnderworldSpatialDomainDefinition domain,
@@ -58,11 +60,25 @@ public static class UnderworldTerrainLifecycle
 
         var slope = Clamp(sample.SlopeDegrees, 0d, MaximumSlopeDegrees);
         var noise = Clamp(sample.Noise01, 0d, 1d);
-        var biome = SelectBiome(sample.X, sample.Z, domain.RadiusMeters, derivedSeed32);
+        var distance = Math.Sqrt(sample.X * sample.X + sample.Z * sample.Z);
+        var biome = SelectBiome(sample.X, sample.Z, distance, domain.RadiusMeters, derivedSeed32);
         var delta = TerrainDelta(biome, noise, slope, sample.WaterDepth);
         var water = Math.Max(0d, sample.WaterDepth);
         var cover = Cover(biome, noise, slope, water);
         var hazard = Hazard(biome, noise, water);
+
+        // Blend the terrain shape, cover and hazard around the protected Fungal Forest basin.
+        // This prevents a single sample step across a biome province boundary from producing a
+        // cliff or an immediate lethal hazard while keeping the outer province identity intact.
+        var fungalBlend = FungalTransition(distance, domain.RadiusMeters);
+        if (fungalBlend > 0d && biome != UnderworldTerrainBiome.FungalForest)
+        {
+            var fungalDelta = TerrainDelta(UnderworldTerrainBiome.FungalForest, noise, slope, water);
+            var fungalCover = Cover(UnderworldTerrainBiome.FungalForest, noise, slope, water);
+            delta = Lerp(delta, fungalDelta, fungalBlend);
+            cover = Lerp(cover, fungalCover, fungalBlend);
+            hazard = Lerp(hazard, 0d, fungalBlend);
+        }
 
         return new UnderworldTerrainResult(
             true,
@@ -73,13 +89,12 @@ public static class UnderworldTerrainLifecycle
             Clamp(hazard, 0d, 1d));
     }
 
-    private static UnderworldTerrainBiome SelectBiome(double x, double z, double radius, int seed)
+    private static UnderworldTerrainBiome SelectBiome(double x, double z, double distance, double radius, int seed)
     {
         // Broad angular provinces keep each ecology legible while the seed rotates the map.
         // The center is always Fungal Forest so first admission cannot strand a player in a
         // lethal biome; outer terrain transitions through the remaining five provinces.
-        var distance = Math.Sqrt(x * x + z * z);
-        if (distance <= radius * 0.16d) return UnderworldTerrainBiome.FungalForest;
+        if (distance <= radius * CentralFungalRadiusFraction) return UnderworldTerrainBiome.FungalForest;
 
         var angle = Math.Atan2(z, x) + SeedRotation(seed);
         if (angle < 0d) angle += Math.PI * 2d;
@@ -93,6 +108,18 @@ public static class UnderworldTerrainLifecycle
             3 => UnderworldTerrainBiome.FractureZones,
             _ => UnderworldTerrainBiome.GreatDecay,
         };
+    }
+
+    private static double FungalTransition(double distance, double radius)
+    {
+        var inner = radius * CentralFungalRadiusFraction;
+        var outer = radius * FungalTransitionRadiusFraction;
+        if (distance <= inner) return 1d;
+        if (distance >= outer) return 0d;
+        var t = (distance - inner) / (outer - inner);
+        // Smoothstep keeps both ends derivative-continuous and avoids a visible terrain crease.
+        t = t * t * (3d - 2d * t);
+        return 1d - t;
     }
 
     private static double SeedRotation(int seed) => ((uint)seed / (double)uint.MaxValue) * Math.PI * 2d;
@@ -134,6 +161,7 @@ public static class UnderworldTerrainLifecycle
         _ => 0d,
     };
 
+    private static double Lerp(double from, double to, double amount) => from + (to - from) * Clamp(amount, 0d, 1d);
     private static double Clamp(double value, double min, double max) => Math.Max(min, Math.Min(max, value));
     private static bool Finite(double value) => !double.IsNaN(value) && !double.IsInfinity(value);
 }
