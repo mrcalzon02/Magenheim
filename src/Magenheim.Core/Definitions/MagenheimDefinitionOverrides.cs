@@ -67,7 +67,7 @@ public static class MagenheimDefinitionOverrideApplier
             worldgenCompatibilityOverride ?? baseline.WorldgenCompatibility,
             socketEffectsOverride ?? baseline.SocketEffects,
             baseline.Underworld,
-            baseline.UnderworldArchitecture);
+            baseline.UnderworldArchitecture, baseline.UnderworldFlora);
     }
 
     private static GeodeDefinition ApplyGeodeBalance(

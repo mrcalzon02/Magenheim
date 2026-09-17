@@ -1,3 +1,16 @@
+# Current source candidate — 0.0.62 / schema 5 (2026-09-17)
+
+Begins Underworld flora F1a: validated Glowcap, Spirestalk and Shelfwood data, canonical
+fingerprints and pure terrain eligibility. All biomes share one custom cavern-roof skybox;
+there is no biome-specific physical ceiling. Plans now explicitly enforce that constraint.
+The offline build passed 37,166 core assertions and compiled without warnings/errors.
+0.0.62 is installed and hash-verified in Central Fuckery; enabled launcher metadata was
+verified by read-back, with prior payload and catalog backups.
+Species models, spawning, harvesting and the economy remain pending; no live gameplay
+acceptance is claimed. See `docs/validation/2026-09-17-underworld-flora-foundation.md`.
+
+---
+
 # Current source candidate — 0.0.54 / schema 5 (2026-09-17)
 
 `main` and `origin/main` were both at `5aa8ab0` at session start, with no divergence to

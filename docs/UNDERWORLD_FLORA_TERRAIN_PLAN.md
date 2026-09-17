@@ -8,7 +8,20 @@ This document covers what the Underworld is *made of* and what the player *does*
 the living cover, the ground, the harvestable materials, the stations, the equipment, and
 the landmarks that make one cavern legible as somewhere.
 
-It is a design plan. Nothing here is implemented until it appears in a validation record.
+This is a staged implementation plan. Completed slices are recorded in section 12 and
+in validation records; unlisted content remains planned.
+
+## Shared cavern skybox constraint (authoritative)
+
+The Underworld is a copy of the surface world with altered terrain generation. Its custom
+fantastical underground skybox depicts **one shared cavern roof across every biome**.
+Keep that custom skybox: neither its roof nor its appearance changes by terrain area.
+There is no physical world ceiling to generate, collide with, attach flora to, mine or drop.
+Biome identity comes from heightfield terrain, ground-supported flora and rock formations,
+water, props and local effects. Ignore conflicting roofing/ceiling assumptions in companion
+plans. Plant caps are local vegetation, never a substitute world roof. Player-built
+architecture remains distinct from the shared skybox.
+
 
 ---
 
@@ -105,20 +118,20 @@ earns the player's curiosity or does not. Bioluminescence is the light source: t
 lit by what grows in it.
 
 - **Canopy.** Four fungal tree species, the tallest reaching 12-14m, with caps broad enough
-  to form a ceiling layer the player walks beneath. Light comes from gill undersides, so the
+  to form a local plant canopy the player walks beneath. Light comes from gill undersides, so the
   floor is lit from above by living things.
 - **Ground.** Mycelial mat that takes footprints of light; clustered small caps; a waist-high
   puffshelf the player pushes through; spore drift as ambient particles, not geometry.
 - **Atmosphere.** No damage hazard. Spore density affects visibility; Spore Communion clears it.
-- **Silhouette.** The **Motherbloom**: one colossal fungal trunk per district, 18m, its cap a
-  cavern ceiling in itself, with a hollow base large enough to shelter or build inside.
+- **Silhouette.** The **Motherbloom**: one colossal fungal trunk per district, 18m, its broad cap a
+  distinctive local landmark, with a hollow base large enough to shelter or build inside.
 
 ### 4.2 Blackwater Deep — the drowned dark
 
 *Boss: Blackwater Maw. Boon: Deep Current. The Blackwater Skiff already exists.*
 
-- **Canopy.** None. The ceiling is stone and stalactite. Verticality comes from **column
-  forests**: stalactite-stalagmite pairs fused into pillars, some broken.
+- **Vertical cover.** Ground-supported **column forests**: freestanding mineral spires
+  and broken pillars. Nothing connects to the skybox roof.
 - **Ground.** Mostly water — black, still, opaque. Shorelines of wet flowstone terraces,
   rimstone pools stepping down like paddy fields, pale blind growths at the waterline.
 - **Atmosphere.** Cold, wet, quiet. Wet recovery is already implemented for Deep Current.
@@ -133,19 +146,18 @@ lit by what grows in it.
 - **Ground.** Cracked basalt plate, sulfur crust breaking underfoot, boiling mud pots,
   obsidian glass fields catching the red light.
 - **Atmosphere.** The thermal exposure system is built. Flora is heat-adapted and sparse.
-- **Silhouette.** The **Slagfall**: a frozen cascade of cooled flow down a cavern wall, live
+- **Silhouette.** The **Slagfall**: a frozen cascade of cooled flow down a terrain cliff, live
   glow still visible in its cracks.
 
 ### 4.4 Frozen Caverns — the white silence
 
 *Boss: White Silence. Boon: Rimebound.*
 
-- **Canopy.** Ice. Hanging icicle curtains, frozen waterfalls, a ceiling that refracts the
-  player's own light back at them.
-- **Ground.** Blue ice sheet, rime-crusted stone, snow drifted where the ceiling has opened.
+- **Vertical cover.** Grounded ice spires and frozen cascades on terrain cliffs.
+- **Ground.** Blue ice sheet, rime-crusted stone and snow collected in terrain hollows.
 - **Atmosphere.** Cold, as the mirror of the Sulfurous Wastes. Rimebound is the answer.
-- **Silhouette.** The **Silence**: a cavern so still that a single sound-triggered ice fall is
-  an event. Mechanically a destructible ceiling formation.
+- **Silhouette.** The **Silence**: a still field of freestanding ice fins where a sound-triggered
+  fracture is an event. Mechanically a destructible ground-supported formation.
 
 ### 4.5 Fracture Zones — the broken country
 
@@ -153,7 +165,8 @@ lit by what grows in it.
 
 The districts are already excellent. This biome needs *cover*, not more architecture.
 
-- **Canopy.** Suspended slabs, held mid-fall.
+- **Vertical cover.** Tilted, ground-supported slabs and isolated floating fragments;
+  these are local props with no roof attachment.
 - **Ground.** Scree, tilted plates, crystal seams carrying the mod's core material language
   into the Underworld.
 - **Atmosphere.** Instability; periodic tremor.
@@ -166,7 +179,7 @@ The districts are already excellent. This biome needs *cover*, not more architec
 
 The end of the progression, and it should feel like an ending.
 
-- **Canopy.** Rot-hung roots descending from above, draped in pale sheeting.
+- **Canopy.** Ground-rooted fungal trunks and exposed root arches draped in pale sheeting.
 - **Ground.** Deep soft matter that slows movement, bone gravel, pooled sourness.
 - **Atmosphere.** Contamination over time; Defiant Flesh is the resistance.
 - **Silhouette.** The **Crown**: an immense ring of fused remains, and the arena approach.
@@ -222,7 +235,7 @@ should match it, so a player can live down there.
 
 ### 6.1 The three stones
 
-- **Understone** — the base grey, already defined. Quarried from cavern walls.
+- **Understone** — the base grey, already defined. Quarried from terrain outcrops and ground-supported deposits.
 - **Blackwater Flowstone** — banded and wet-looking, from Blackwater Deep. The decorative stone.
 - **Slagstone** — vesicular and dark, from the Sulfurous Wastes. The heavy stone, and the only
   one that resists the thermal hazard when built with.
@@ -426,3 +439,27 @@ playable on its own rather than a down payment on a later one.
 visual identity, the Deep Fracture districts around it are already finished to a standard the
 flora can be judged against, and it is the smallest complete proof that an Underworld biome
 can carry a full overworld-parity tier.
+
+## 12. F1 implementation slices
+
+1. **F1a — flora authority and terrain eligibility.** Define Glowcap (6–8m), Spirestalk
+   (10–14m) and Shelfwood (4–5m), validate and fingerprint their placement constraints,
+   and gate placement by Underworld layer, Fungal Forest biome, dry ground, slope and
+   local obstruction. Shelfwood requires an exposed rock face. No roof/skybox input.
+2. **F1b — authored assets and runtime harvesting.** Author and verify the species models;
+   register native tree/destructible behaviour and persist harvest state. Consume F1a
+   only after actual Underworld biome/terrain sampling is available. Do not use surface
+   biome names as a substitute or inject plants into surface worlds.
+3. **F1c — first economy.** Register harvest materials, Mycelial Bench, recipes, food,
+   equipment and ground cover through validated definitions; prove the gather/craft loop.
+4. **F1d — playable acceptance.** Verify new-world placement, reload, multiplayer and visual
+   quality under the same custom skybox in every biome. F1 is complete only after this.
+
+F1a begins this implementation; it does not claim spawned flora or a playable tier.
+
+### F1a implementation record — 0.0.62
+
+Definitions, loader/fingerprint integration and terrain eligibility rules are implemented
+and pass the offline build and deterministic tests. See
+[validation record](validation/2026-09-17-underworld-flora-foundation.md).
+Runtime flora registration and authored models are still pending; F1 remains incomplete.

@@ -1,5 +1,12 @@
 # The Underworld — Architecture and Rootforged Construction Implementation Plan
 
+> Authoritative correction (2026-09-17): the Underworld uses altered surface-world
+> terrain beneath one shared custom fantastical cavern-roof skybox for all biomes.
+> The roof cannot vary by biome or terrain area and is not physical geometry.
+> Ignore conflicting roof-shelf, ceiling-generation, roof-attachment and biome-specific
+> ceiling requirements below. Use ground-supported terrain, flora and local props.
+> See `UNDERWORLD_FLORA_TERRAIN_PLAN.md` for the active implementation sequence.
+
 **Project:** Magenheim for Valheim  
 **Track:** parallel Underworld architecture/build-system workstream  
 **Repository:** `mrcalzon02/Magenheim`  

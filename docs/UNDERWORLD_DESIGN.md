@@ -1,5 +1,12 @@
 # The Underworld — Durable Expansion Design
 
+> Authoritative correction (2026-09-17): the Underworld uses altered surface-world
+> terrain beneath one shared custom fantastical cavern-roof skybox for all biomes.
+> The roof cannot vary by biome or terrain area and is not physical geometry.
+> Ignore conflicting roof-shelf, ceiling-generation, roof-attachment and biome-specific
+> ceiling requirements below. Use ground-supported terrain, flora and local props.
+> See `UNDERWORLD_FLORA_TERRAIN_PLAN.md` for the active implementation sequence.
+
 > Ecology, resources, equipment tiers and progression parity with the overworld are
 > planned in [UNDERWORLD_FLORA_TERRAIN_PLAN.md](UNDERWORLD_FLORA_TERRAIN_PLAN.md).
 

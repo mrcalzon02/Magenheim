@@ -68,7 +68,9 @@ internal static class MagenheimDefinitionLoader
                     document.Underworld.SchemaVersion, document.Underworld.Biomes,
                     document.Underworld.Bosses, document.Underworld.Deepstones),
                 document.UnderworldArchitecture is null ? null : UnderworldArchitectureValidator.ValidateAndFreeze(
-                    document.UnderworldArchitecture.SchemaVersion, document.UnderworldArchitecture.Pieces));
+                    document.UnderworldArchitecture.SchemaVersion, document.UnderworldArchitecture.Pieces),
+                document.UnderworldFlora is null ? null : new UnderworldFloraDefinitionSet(
+                    document.UnderworldFlora.SchemaVersion, document.UnderworldFlora.Species));
         }
         catch (JsonException exception)
         {
@@ -234,8 +236,19 @@ internal static class MagenheimDefinitionLoader
         public List<UnderworldBuildPieceDefinition> Pieces { get; set; } = null!;
     }
 
+    private sealed class UnderworldFloraDocument
+    {
+        [JsonProperty("schemaVersion", Required = Required.Always)]
+        public int SchemaVersion { get; set; }
+        [JsonProperty("species", Required = Required.Always)]
+        public List<UnderworldFloraDefinition> Species { get; set; } = null!;
+    }
+
     private sealed class DefinitionFileDocument
     {
+        [JsonProperty("underworldFlora")]
+        public UnderworldFloraDocument? UnderworldFlora { get; set; }
+
         [JsonProperty("underworld", Required = Required.AllowNull)]
         public UnderworldDocument? Underworld { get; set; }
 

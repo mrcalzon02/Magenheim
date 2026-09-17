@@ -1,4 +1,4 @@
 {
-  "version": "0.0.61",
-  "description": "0.0.61: Revises the Underworld's structural landmarks -- standing stone, dais and Deep Fracture entrance gain cut-stone edge definition. The Dark Throne is found shipping a stale export that hides inverted faces, and is recorded rather than patched."
+  "version": "0.0.62",
+  "description": "0.0.62: Begins Fungal Forest flora with validated species definitions and terrain placement rules. Preserves one shared custom cavern skybox across biomes. Flora assets, spawning and harvesting remain pending."
 }

@@ -36,6 +36,7 @@ public sealed record MagenheimDefinitionSet(
         new(Array.Empty<SocketEffectRule>());
     public UnderworldDefinitionSet? Underworld { get; init; }
     public UnderworldArchitectureDefinitionSet? UnderworldArchitecture { get; init; }
+    public UnderworldFloraDefinitionSet? UnderworldFlora { get; init; }
 }
 
 public static class MagenheimDefinitionValidator
@@ -61,7 +62,8 @@ public static class MagenheimDefinitionValidator
         WorldgenCompatibilityPolicy worldgenCompatibility,
         SocketEffectDefinitionSet? socketEffects = null,
         UnderworldDefinitionSet? underworld = null,
-        UnderworldArchitectureDefinitionSet? underworldArchitecture = null)
+        UnderworldArchitectureDefinitionSet? underworldArchitecture = null,
+        UnderworldFloraDefinitionSet? underworldFlora = null)
     {
         if (schemaVersion != CurrentSchemaVersion)
             throw new InvalidOperationException($"Unsupported definition schema {schemaVersion}. Expected {CurrentSchemaVersion}.");
@@ -82,6 +84,11 @@ public static class MagenheimDefinitionValidator
             underworldArchitecture.SchemaVersion, underworldArchitecture.Pieces);
         if (frozenArchitecture is not null && frozenUnderworld is null)
             throw new InvalidOperationException("Underworld architecture requires Underworld definition authority.");
+        var frozenFlora = underworldFlora is null ? null : new UnderworldFloraDefinitionSet(
+            underworldFlora.SchemaVersion, underworldFlora.Species);
+        if (frozenFlora is not null && (frozenUnderworld is null ||
+            frozenFlora.Species.Any(species => !frozenUnderworld.Biomes.Any(biome => biome.Id == species.BiomeId))))
+            throw new InvalidOperationException("Flora requires a known Underworld biome.");
         var identityComparer = GetIdentityComparer(frozenCompatibility.IdentityComparison);
         var frozenRules = refinementRules.ToArray();
         var frozenGeodes = geodes
@@ -111,7 +118,7 @@ public static class MagenheimDefinitionValidator
             frozenCompatibility,
             frozenSocketEffects,
             frozenUnderworld,
-            frozenArchitecture);
+            frozenArchitecture, frozenFlora);
         return new MagenheimDefinitionSet(
             schemaVersion,
             Array.AsReadOnly(frozenRules),
@@ -122,6 +129,7 @@ public static class MagenheimDefinitionValidator
             SocketEffects = frozenSocketEffects,
             Underworld = frozenUnderworld,
             UnderworldArchitecture = frozenArchitecture,
+            UnderworldFlora = frozenFlora,
         };
     }
 
@@ -287,12 +295,16 @@ public static class MagenheimDefinitionValidator
         WorldgenCompatibilityPolicy worldgenCompatibility,
         SocketEffectDefinitionSet socketEffects,
         UnderworldDefinitionSet? underworld,
-        UnderworldArchitectureDefinitionSet? underworldArchitecture)
+        UnderworldArchitectureDefinitionSet? underworldArchitecture,
+        UnderworldFloraDefinitionSet? underworldFlora)
     {
         var builder = new StringBuilder();
         builder.Append("schema=").Append(schemaVersion).Append('\n');
         builder.Append("underworld=").Append(underworld?.Fingerprint ?? "absent").Append('\n');
         builder.Append("underworld-architecture=").Append(underworldArchitecture?.Fingerprint ?? "absent").Append('\n');
+
+        if (underworldFlora is not null)
+            builder.Append("underworld-flora=").Append(underworldFlora.Fingerprint).Append('\n');
 
         builder.Append("worldgen|")
             .Append(worldgenCompatibility.InvalidAreaBehavior).Append('|')

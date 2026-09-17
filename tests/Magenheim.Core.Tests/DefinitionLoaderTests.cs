@@ -27,14 +27,14 @@ internal static class DefinitionLoaderTests
         var changed = MagenheimDefinitionValidator.ValidateAndFreeze(baseline.SchemaVersion, baseline.RefinementRules,
             baseline.Geodes, baseline.WorldgenCompatibility, baseline.SocketEffects, baseline.Underworld,
             architecture with { Pieces = architecture.Pieces.Select((piece, index) => index == 0
-                ? piece with { Costs = piece.Costs.Select(cost => cost with { Amount = cost.Amount + 1 }).ToArray() } : piece).ToArray() });
+                ? piece with { Costs = piece.Costs.Select(cost => cost with { Amount = cost.Amount + 1 }).ToArray() } : piece).ToArray() }, baseline.UnderworldFlora);
         Assert(changed.Fingerprint != baseline.Fingerprint, "Changed build costs invalidate overall authority even with a stale component hash.");
         var forged = MagenheimDefinitionValidator.ValidateAndFreeze(baseline.SchemaVersion, baseline.RefinementRules,
             baseline.Geodes, baseline.WorldgenCompatibility, baseline.SocketEffects,
-            baseline.Underworld! with { Fingerprint = "forged" }, architecture with { Fingerprint = "forged" });
+            baseline.Underworld! with { Fingerprint = "forged" }, architecture with { Fingerprint = "forged" }, baseline.UnderworldFlora);
         Assert(forged.Fingerprint == baseline.Fingerprint, "Supplied fingerprints cannot override actual data.");
         var reordered = JObject.Parse(json);
-        foreach (var path in new[] { "underworld.biomes", "underworld.bosses", "underworld.deepstones", "underworldArchitecture.pieces" })
+        foreach (var path in new[] { "underworld.biomes", "underworld.bosses", "underworld.deepstones", "underworldArchitecture.pieces", "underworldFlora.species" })
         {
             var array = (JArray)reordered.SelectToken(path)!;
             var reverse = array.Reverse().Select(value => value.DeepClone()).ToArray();
@@ -74,7 +74,7 @@ internal static class DefinitionLoaderTests
         changedBoon["underworld"]!["deepstones"]![0]!["deepBoonId"] = "magenheim.underworld.boon.changed";
         Assert(MagenheimDefinitionLoader.LoadFromJson(changedBoon.ToString()).Fingerprint != baseline.Fingerprint, "Deep Boon changes affect canonical peer authority.");
         var absent = JObject.Parse(json);
-        absent["underworld"] = null; absent["underworldArchitecture"] = null;
+        absent["underworld"] = null; absent["underworldArchitecture"] = null; absent["underworldFlora"] = null;
         Assert(MagenheimDefinitionLoader.LoadFromJson(absent.ToString()).Fingerprint != baseline.Fingerprint, "Explicitly absent expansion authority differs from populated catalogs.");
         return assertions;
     }

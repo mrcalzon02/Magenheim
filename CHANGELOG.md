@@ -1,3 +1,10 @@
+## 0.0.62 — Fungal Forest flora foundation
+
+- Correct the Underworld plan to use one shared custom cavern-roof skybox.
+- Add fingerprinted Glowcap, Spirestalk and Shelfwood definitions and pure terrain eligibility rules.
+- Reject surface-world, submerged, unsupported and obstructed placement; require exposed rock for Shelfwood.
+- This is F1a only: models, runtime spawning, harvesting and the crafting economy are pending.
+
 # Magenheim Changelog
 
 ## 0.0.61 - Underworld structural landmarks
