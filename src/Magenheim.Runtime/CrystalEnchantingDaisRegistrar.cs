@@ -50,7 +50,9 @@ internal sealed class CrystalEnchantingDaisRegistrar : IDisposable
                 Name = "Crystal Enchanting Dais",
                 Description =
                     "A low ritual altar patterned after the ancient central standing-stone dais. " +
-                    "Iron channels and elemental crystal nodes focus the recessed central crystal for socketing and crystal enchantment.",
+                    "Iron channels and elemental crystal nodes focus the recessed central crystal. " +
+                    "This is where crystals are set into gear: open a socket, fit a crystal, or draw one back out. " +
+                    "Nothing is crafted or refined here.",
                 PieceTable = "Hammer",
                 Category = "Crafting",
                 CraftingStation = WorkshopRegistrar.StationPrefab,

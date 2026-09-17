@@ -18,6 +18,15 @@ namespace Magenheim.Core.Socketing;
 /// </summary>
 public static class SocketEffectDescription
 {
+    /// <summary>
+    /// Where socketing happens. Socketing is owned solely by the Crystal Enchanting Dais:
+    /// opening a slot, installing a crystal and removing one all happen there, and nowhere
+    /// else. The Geologist's Workstation refines crystals and crafts with them; it does not
+    /// socket. Stated on the crystal itself because the crystal is what the player is holding
+    /// when they wonder where to take it.
+    /// </summary>
+    public const string StationLine = "Socket at the Crystal Enchanting Dais.";
+
     /// <summary>Label and unit for each effect, in the player's language rather than the enum's.</summary>
     private static readonly IReadOnlyDictionary<SocketEffectKind, (string Label, string Unit)> Wording =
         new Dictionary<SocketEffectKind, (string, string)>
@@ -84,7 +93,7 @@ public static class SocketEffectDescription
     {
         if (definitions is null) throw new ArgumentNullException(nameof(definitions));
         if (tier == CrystalTier.Rough)
-            return new[] { "Too rough to socket. Refine it first." };
+            return new[] { "Too rough to socket. Refine it at the Geologist's Workstation first." };
 
         var scalar = SocketEffectDefinitionSet.TierScalar(tier);
         var lines = new List<string>();
@@ -107,6 +116,7 @@ public static class SocketEffectDescription
 
         if (lines.Count == 0)
             lines.Add("No socket effect is defined for this crystal.");
+        lines.Add(StationLine);
         return lines;
     }
 

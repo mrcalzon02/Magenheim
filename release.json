@@ -1,4 +1,4 @@
 {
-  "version": "0.0.56",
-  "description": "0.0.56: Socketing now lives only on the Crystal Enchanting Dais. Hosting it on the Geologist's Workstation displaced that station's crafting menu. Opening slots, installing and removing crystals all happen at the Dais, which carries no recipes."
+  "version": "0.0.57",
+  "description": "0.0.57: Crystal, Dais and Workstation descriptions now state the split -- refine and craft at the Workstation, socket at the Dais. Items the socket policy disallows no longer appear in the list, except while they still hold a crystal to remove."
 }

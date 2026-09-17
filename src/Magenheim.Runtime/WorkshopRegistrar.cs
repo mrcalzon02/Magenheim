@@ -33,7 +33,9 @@ internal sealed class WorkshopRegistrar : IDisposable
         try
         {
             var station = AddPiece(StationPrefab, "piece_workbench", "workstation", "Geologist's Workstation",
-                "A stone-topped bench for studying and arranging elemental minerals.",
+                "A stone-topped bench for studying and arranging elemental minerals. " +
+                "Crack geodes, refine crystals up the tiers, and craft with them here. " +
+                "Setting crystals into gear is done at the Crystal Enchanting Dais.",
                 null, new[] { Cost("Wood", 10), Cost("Stone", 10), Cost("Flint", 2) });
             var craftingStation = station.GetComponent<CraftingStation>()
                 ?? throw new InvalidOperationException("The geologist workstation clone has no CraftingStation.");

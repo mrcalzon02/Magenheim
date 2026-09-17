@@ -183,7 +183,7 @@ internal sealed class CrystalDaisSocketOverlay : MonoBehaviour
         var candidates = EligibleOrSocketedEquipment(inventory).ToArray();
         if (candidates.Length == 0)
         {
-            AddNativeLabel(_nativeContent, "No socket-eligible equipment is in inventory.", 30f);
+            AddNativeLabel(_nativeContent, "No socketable equipment in inventory. Weapons, armor, shields, tools and utility items can take crystals.", 30f);
         }
         else
         {
@@ -193,6 +193,7 @@ internal sealed class CrystalDaisSocketOverlay : MonoBehaviour
                 var descriptor = ItemSocketAdapter.Describe(candidate);
                 var selected = ReferenceEquals(candidate, _selectedEquipment) ? "● " : string.Empty;
                 var label = $"{selected}{DisplayName(candidate)}  [{descriptor.Category}]  {stateText}";
+                if (IsRecoveryOnly(candidate)) label += "  [removal only]";
                 if (malformed) label += "  [metadata error]";
                 var captured = candidate;
                 AddNativeButton(_nativeContent, label, () =>
@@ -510,6 +511,17 @@ internal sealed class CrystalDaisSocketOverlay : MonoBehaviour
         return gameObject;
     }
 
+    /// <summary>
+    /// The equipment the list offers. Items the policy disallows are not shown at all: a list
+    /// entry the player cannot act on is noise, and it reads as a bug rather than a rule.
+    ///
+    /// One narrow exception is deliberate. An item can hold crystals and *then* become
+    /// ineligible, because socket policy is configurable and can change between sessions or
+    /// between a server and a client. Hiding that item would strand the player's crystals
+    /// inside it with no way to reach them, so it is still listed while it has something to
+    /// recover, and only for that. Leftover empty metadata is not something to recover, so it
+    /// is filtered out with the rest.
+    /// </summary>
     private IEnumerable<ItemDrop.ItemData> EligibleOrSocketedEquipment(Inventory inventory)
     {
         if (_services is null) yield break;
@@ -517,12 +529,25 @@ internal sealed class CrystalDaisSocketOverlay : MonoBehaviour
         foreach (var item in inventory.GetAllItems())
         {
             var descriptor = ItemSocketAdapter.Describe(item);
-            var eligibility = SocketEligibilityService.Evaluate(descriptor, _services.SocketPolicy);
-            var hasMetadata = item.m_customData is not null &&
-                              item.m_customData.ContainsKey(SocketMetadataCodec.CustomDataKey);
-            if (eligibility.IsEligible || hasMetadata)
+            if (SocketEligibilityService.Evaluate(descriptor, _services.SocketPolicy).IsEligible)
+            {
+                yield return item;
+                continue;
+            }
+
+            // Disallowed. Offer it only while it still holds a crystal to take back out.
+            if (ItemSocketAdapter.TryRead(item, out var state, out _) &&
+                state.InstalledCrystals.Count > 0)
                 yield return item;
         }
+    }
+
+    /// <summary>True when the item is listed only so its installed crystals can be recovered.</summary>
+    private bool IsRecoveryOnly(ItemDrop.ItemData item)
+    {
+        if (_services is null) return false;
+        return !SocketEligibilityService.Evaluate(
+            ItemSocketAdapter.Describe(item), _services.SocketPolicy).IsEligible;
     }
 
     private static IEnumerable<ItemDrop.ItemData> SocketableCrystals(Inventory inventory)

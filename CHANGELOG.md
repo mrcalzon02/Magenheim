@@ -1,5 +1,24 @@
 # Magenheim Changelog
 
+## 0.0.57 - Descriptions and socket list follow the new station split
+
+- Every crystal now ends its description with "Socket at the Crystal Enchanting Dais." The
+  line is generated in the same Core authority that writes the per-slot effect lines, so it
+  cannot drift out of step with where socketing actually happens.
+- A Rough crystal is sent to refining instead: "Too rough to socket. Refine it at the
+  Geologist's Workstation first." It cannot be socketed at all, so pointing it at the Dais
+  would be actively misleading.
+- The Crystal Enchanting Dais describes what it is for: open a socket, fit a crystal, or
+  draw one back out, and nothing is crafted or refined there.
+- The Geologist's Workstation says what it kept: crack geodes, refine crystals up the tiers
+  and craft with them, and that setting crystals into gear happens at the Dais.
+- Items the socket policy disallows are no longer listed in the socketing surface. A list
+  entry the player cannot act on reads as a bug rather than a rule.
+- One deliberate exception: an item that already holds crystals and has *since* become
+  ineligible is still listed, marked `[removal only]`, so the player can take the crystals
+  back out. Hiding it would strand them with no way to reach them. Leftover empty metadata
+  is not something to recover and is filtered out with the rest.
+
 ## 0.0.56 - Socketing moves to the Crystal Enchanting Dais
 
 - The socket interface is now hosted only by the Crystal Enchanting Dais. Hosting it on the
