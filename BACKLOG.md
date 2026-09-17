@@ -39,6 +39,19 @@ below. Items marked REGRESSION were introduced by the asset work in this session
 - [ ] **Rebuild the socket menu now that it owns the panel.** The whole point of the move. `CrystalDaisSocketOverlay` still lays out a flat vertical button list designed for a cramped shared surface: one button per installed crystal, one per candidate crystal in inventory. With a dedicated station it can show the equipment and its sockets as a real layout — slot states, what each crystal would do in that slot, and the break risk before committing.
 - [ ] **Live-confirm the split.** Unverified: that the Dais opens the socket surface, that the Workstation's crafting menu is now unobstructed, and that removal works without the Faceting Wheel.
 
+### Raised 2026-09-17 — Underworld ecology and progression parity (user directive)
+
+Full plan: `docs/UNDERWORLD_FLORA_TERRAIN_PLAN.md`.
+
+- [ ] **The Underworld has architecture but no economy.** Six biomes, six bosses, six Deep Boons and twenty excellent districts exist, and the entire realm has two raw materials: `understone` and `worldroot_timber`. Nothing grows, nothing is gathered, nothing is crafted. It reads as a place to visit rather than a place to live.
+- [ ] **Each core biome must carry a full overworld-parity tier.** The governing principle: every overworld biome hands the player raw materials, a refining step, a crafting station, a tool that opens a new interaction, an armour set, a weapon line, a food chain and a building material. Six Underworld biomes must each do the same. A biome that gives the player no reason to make camp is scenery.
+- [ ] **Underworld progression is built on different verbs.** The overworld progresses by hitting harder; the Underworld progresses by surviving deeper. Hazard resistance, light, breath, traversal and anchoring are its tiers, which is also what keeps the Deep Boons meaningful: the boon is the innate version, the armour is the craftable version, and they stack.
+- [ ] **Custom fungal trees.** Eight species across the biomes, five models each. Not recoloured vanilla trees: a fungal tree has no branches, no bark grain and no leaf card, and cloning a Beech produces a green Beech.
+- [ ] **Three Underworld stone sets.** Understone, Blackwater Flowstone and Slagstone, roughly 24 pieces each, snapping to each other and to the existing Worldroot timber set. Three genuine sets are a palette; one set with three tints is a swatch.
+- [ ] **Six foundational stations.** Mycelial Bench, Tidal Basin, Furnace Heart Forge, Silence Table, Anchor Forge, Crown Reliquary. Each gates the next biome's crafting, and each is sited by its biome (water, vent, stable ground) so the world dictates where a base can go.
+- [ ] **Decide the portal question before building the economy.** If Underworld portals exist the realm becomes convenient and loses its weight; if they do not, every trip is a committed expedition and the Skiff matters more. This one decision shapes the entire material economy and should be settled first.
+- [ ] **Start at F1, the Fungal Forest.** ~40 models for a complete tier. It is the biome the player meets first, it has the clearest identity, and it is the smallest complete proof that an Underworld biome can carry a full parity tier.
+
 ### Raised 2026-09-17 — Underworld model revision
 
 - [x] **Underworld structural landmarks.** DONE 0.0.61 for three of four. Standing stone 76 -> 332, dais 572 -> 956, Deep Fracture entrance 384 -> 864, chamfered to read as cut stone under low light.

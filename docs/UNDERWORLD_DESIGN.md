@@ -1,5 +1,8 @@
 # The Underworld — Durable Expansion Design
 
+> Ecology, resources, equipment tiers and progression parity with the overworld are
+> planned in [UNDERWORLD_FLORA_TERRAIN_PLAN.md](UNDERWORLD_FLORA_TERRAIN_PLAN.md).
+
 **Project:** Magenheim for Valheim  
 **Logical expansion identity:** The Underworld  
 **Development location:** `mrcalzon02/Magenheim`, authoritative branch `main`  
