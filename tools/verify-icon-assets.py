@@ -14,6 +14,9 @@ registrar subscribed after it -- a missing icon silently removes unrelated conte
 The compatibility floor remains 128px for legacy checked-in assets, but newly authored or
 regenerated icons are expected to meet the 256px readability target. Set
 MAGENHEIM_ICON_TARGET_SIZE to a larger square size for higher-resolution review/export passes.
+Set MAGENHEIM_ENFORCE_ICON_TARGET=1 for asset-release/acceptance passes: every shipped icon
+below the configured target then becomes a hard failure. Normal compatibility builds continue
+to enumerate legacy-resolution debt without destructively blocking unrelated development.
 Exits non-zero on structural failures so build.ps1 fails the build.
 """
 import json
@@ -30,6 +33,9 @@ RUNTIME = ROOT / 'src/Magenheim.Runtime'
 CATALOG = ROOT / 'assets/models/catalog.json'
 LEGACY_ICON_FLOOR = 128
 ICON_TARGET_SIZE = max(256, int(os.environ.get('MAGENHEIM_ICON_TARGET_SIZE', '256')))
+ENFORCE_ICON_TARGET = os.environ.get('MAGENHEIM_ENFORCE_ICON_TARGET', '').strip().lower() in {
+    '1', 'true', 'yes', 'on'
+}
 
 failures: list[str] = []
 legacy_resolution: list[str] = []
@@ -94,7 +100,11 @@ for path in icon_files:
     if width < LEGACY_ICON_FLOOR:
         failures.append(f'{path.name}: {width}px is below the {LEGACY_ICON_FLOOR}px compatibility floor')
     elif width < ICON_TARGET_SIZE:
-        legacy_resolution.append(f'{path.name} ({width}px)')
+        item = f'{path.name} ({width}px < {ICON_TARGET_SIZE}px target)'
+        legacy_resolution.append(item)
+        if ENFORCE_ICON_TARGET:
+            failures.append(f'{item}: asset-release target enforcement is enabled')
+
 
 # 2. Every staff model in the catalog must have an icon named the way the registrars ask.
 def asset_name(model_id: str) -> str:
@@ -127,10 +137,12 @@ if failures:
     sys.exit(1)
 
 if legacy_resolution:
-    print(f'NOTICE: {len(legacy_resolution)} legacy icons remain below the {ICON_TARGET_SIZE}px readability target:')
+    mode = 'enforced' if ENFORCE_ICON_TARGET else 'notice-only'
+    print(f'NOTICE: {len(legacy_resolution)} legacy icons remain below the {ICON_TARGET_SIZE}px readability target ({mode}):')
     for item in legacy_resolution:
         print('  - ' + item)
 
 print(f'PASS: {len(icon_files)} icons decode as square RGBA >={LEGACY_ICON_FLOOR}px; '
       f'{len(staff_models)} staff models carry a matching icon; '
-      f'all literal EarthAssets.Icon references resolve; target={ICON_TARGET_SIZE}px.')
+      f'all literal EarthAssets.Icon references resolve; target={ICON_TARGET_SIZE}px; '
+      f'enforce_target={ENFORCE_ICON_TARGET}.')
