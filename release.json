@@ -1,4 +1,4 @@
 {
-  "version": "0.0.51",
-  "description": "0.0.51: Revises 281 models with repaired bow/axes, carved effigies, creature contrast, cloth folds and crafted edges. Adds editable effects and Underworld stones. Fixes preview transforms and texture export. Live visual acceptance pending."
+  "version": "0.0.52",
+  "description": "0.0.52: Rebuilds the geode, crystal tiers and Deep Fracture passages; textures every model in the library; adds winding and black-texture gates. Repairs inverted geometry and Valheim 1.0.12 API drift. Testing build; in-game acceptance pending."
 }
