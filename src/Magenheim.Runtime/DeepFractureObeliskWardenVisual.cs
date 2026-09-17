@@ -13,5 +13,7 @@ internal static class DeepFractureObeliskWardenVisual
         pulse.Alignment=alignment;
         if(alignment==ElementalAlignment.Radiance && prefab.GetComponent<RadianceWardenSanctifiedRuntime>()==null)
             prefab.AddComponent<RadianceWardenSanctifiedRuntime>();
+        if(alignment==ElementalAlignment.Seidr && prefab.GetComponent<SeidrWardenSpatialLatticeRuntime>()==null)
+            prefab.AddComponent<SeidrWardenSpatialLatticeRuntime>();
     }
 }
