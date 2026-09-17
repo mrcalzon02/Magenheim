@@ -658,7 +658,56 @@ def build_signature(field, district_id):
 
 # ---------------------------------------------------------------- Blender output
 
-def material(name, colour, roughness, metallic=0.0):
+TEXTURE_SIZE = 256
+
+
+def surface_map(name, seed, kind):
+    """Greyscale albedo for a cavern surface.
+
+    The districts shipped with flat Principled base colours and no map at all, which is the
+    same reason the rest of the library reads as clay. These are the largest surfaces the
+    player ever stands on, so a flat colour is most obvious here.
+    """
+    noise = make_noise(seed)
+
+    def sample(u, v):
+        n = noise(u, v, 5.0) * 0.55 + noise(u, v, 13.0) * 0.30 + noise(u, v, 31.0) * 0.15
+        n = n * 0.5 + 0.5
+        if kind == 'rock':
+            return 0.30 + 0.40 * n
+        if kind == 'vault':
+            # Darker overhead, with broader banding so the roof does not read as a dome.
+            band = 0.5 + 0.5 * math.sin(v * math.tau * 2.0 + n * 3.0)
+            return 0.22 + 0.30 * n + 0.08 * band
+        if kind == 'wall':
+            strata = 0.5 + 0.5 * math.sin(v * math.tau * 7.0 + n * 2.0)
+            return 0.26 + 0.30 * n + 0.12 * strata
+        if kind == 'formation':
+            return 0.34 + 0.44 * n
+        if kind == 'daylight':
+            return 0.86 + 0.14 * n
+        facet = 0.5 + 0.5 * math.sin(u * math.tau * 6.0) * math.cos(v * math.tau * 4.0)
+        return 0.46 + 0.34 * facet + 0.12 * n
+
+    image = bpy.data.images.new(name, TEXTURE_SIZE, TEXTURE_SIZE)
+    pixels = [0.0] * (TEXTURE_SIZE * TEXTURE_SIZE * 4)
+    for y in range(TEXTURE_SIZE):
+        vv = (y + 0.5) / TEXTURE_SIZE
+        for x in range(TEXTURE_SIZE):
+            value = min(1.0, max(0.0, sample((x + 0.5) / TEXTURE_SIZE, vv)))
+            i = (y * TEXTURE_SIZE + x) * 4
+            pixels[i] = pixels[i + 1] = pixels[i + 2] = value
+            pixels[i + 3] = 1.0
+    image.pixels = pixels
+    # A generated image stores only its settings in the .blend, not its buffer, so without
+    # packing here the export reopens the file and reads the default generated colour -
+    # black. Every texture produced in this session shipped black before this line existed.
+    image.update()
+    image.pack()
+    return image
+
+
+def material(name, colour, roughness, metallic=0.0, kind='rock', seed=1):
     existing = bpy.data.materials.get(name)
     if existing:
         return existing
@@ -670,6 +719,9 @@ def material(name, colour, roughness, metallic=0.0):
     shader.inputs['Base Color'].default_value = colour
     shader.inputs['Roughness'].default_value = roughness
     shader.inputs['Metallic'].default_value = metallic
+    node = mat.node_tree.nodes.new('ShaderNodeTexImage')
+    node.image = surface_map(name + '.albedo', seed, kind)
+    mat.node_tree.links.new(node.outputs['Color'], shader.inputs['Base Color'])
     return mat
 
 
@@ -697,13 +749,13 @@ def build_district(district_id):
 
     bpy.ops.wm.read_factory_settings(use_empty=True)
 
-    rock = material('df-cavern-rock', (0.113, 0.106, 0.098, 1.0), 0.88)
-    vault_rock = material('df-cavern-vault', (0.082, 0.078, 0.076, 1.0), 0.92)
-    wall_rock = material('df-cavern-wall', (0.098, 0.092, 0.088, 1.0), 0.9)
-    formation = material('df-cavern-formation', (0.148, 0.140, 0.134, 1.0), 0.8)
-    crystal = material('df-cavern-crystal', (0.206, 0.242, 0.286, 1.0), 0.42, 0.18)
+    rock = material('df-cavern-rock', (0.62, 0.58, 0.54, 1.0), 0.88, kind='rock', seed=11)
+    vault_rock = material('df-cavern-vault', (0.52, 0.50, 0.49, 1.0), 0.92, kind='vault', seed=23)
+    wall_rock = material('df-cavern-wall', (0.58, 0.55, 0.52, 1.0), 0.9, kind='wall', seed=37)
+    formation = material('df-cavern-formation', (0.68, 0.65, 0.62, 1.0), 0.8, kind='formation', seed=53)
+    crystal = material('df-cavern-crystal', (0.66, 0.74, 0.86, 1.0), 0.42, 0.18, kind='crystal', seed=71)
     # Stands in for open sky at the top of a fissure; the runtime light does the work.
-    daylight = material('df-cavern-daylight', (0.74, 0.80, 0.92, 1.0), 1.0)
+    daylight = material('df-cavern-daylight', (0.86, 0.90, 0.98, 1.0), 1.0, kind='daylight', seed=89)
 
     fissures = profile['fissures']
     floor_surface, _ = build_surface(field, True)

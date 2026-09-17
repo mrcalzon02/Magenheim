@@ -292,6 +292,36 @@ The sweep checks its own orientation against the tunnel axis instead.
 The preview render was too dark to judge surface quality; it confirms enclosure, floor and
 formations only.
 
+### R6 — Every generated texture shipped black
+
+**Status: repaired 2026-09-16, and gated.**
+
+The geode, crystal tier, passage and district rebuilds each added a generated greyscale
+albedo where none existed. All of them were **pure black**: sampled minimum and maximum of 0.
+Albedo multiplies, so a black map is strictly worse than the flat base colour it replaced.
+
+Cause: `bpy.data.images.new` produces a generated image, and a generated image stores only
+its settings in a `.blend`, not its pixel buffer. The generator wrote pixels and saved the
+file; the exporter reopened it, the image regenerated as its default colour, and that is
+what was packed and hashed. `image.update()` and `image.pack()` in the generator fix it by
+embedding the buffer.
+
+Nothing could see it. The PNG was the right size, correctly formatted, correctly hashed and
+referenced by the right material; geometry, UVs and winding were all valid. Both winding
+gates passed. It was found by decoding a texture and looking at the numbers.
+
+`verify-model-assets.py` now decodes each referenced PNG and requires actual tonal range,
+rejecting both an all-black map and a flat fill. Verified against synthesised cases:
+
+```
+pure black (the shipped defect)    min=0    max=0    -> REJECTED
+flat mid grey (no tonal range)     min=128  max=128  -> REJECTED
+current cavern wall map            min=86   max=154  -> accepted
+```
+
+The districts also gained maps in this pass, having previously carried flat base colours
+only. Library texture coverage is now 134 of 281 models (48%), from 111 at `924f5e7`.
+
 ### Library-wide fidelity measurement at `924f5e7`
 
 | Measure | Value |

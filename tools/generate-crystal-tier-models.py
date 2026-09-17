@@ -312,6 +312,11 @@ def emit(model_id, mesh, sampler):
             pixels[i] = pixels[i + 1] = pixels[i + 2] = value
             pixels[i + 3] = 1.0
     image.pixels = pixels
+    # A generated image stores only its settings in the .blend, not its buffer, so without
+    # packing here the export reopens the file and reads the default generated colour -
+    # black. Every texture produced in this session shipped black before this line existed.
+    image.update()
+    image.pack()
 
     mat = bpy.data.materials.new('magenheim.' + model_id)
     mat.use_nodes = True

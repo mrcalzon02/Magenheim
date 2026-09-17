@@ -337,6 +337,11 @@ def greyscale_image(name, sampler):
             pixels[index] = pixels[index + 1] = pixels[index + 2] = value
             pixels[index + 3] = 1.0
     image.pixels = pixels
+    # A generated image stores only its settings in the .blend, not its buffer, so without
+    # packing here the export reopens the file and reads the default generated colour -
+    # black. Every texture produced in this session shipped black before this line existed.
+    image.update()
+    image.pack()
     return image
 
 

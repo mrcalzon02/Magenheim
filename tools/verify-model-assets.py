@@ -1,6 +1,36 @@
 """Validate committed model assets and write the reviewable catalog."""
 from pathlib import Path
-import csv,json,math,struct,hashlib
+
+import csv,json,math,struct,hashlib,zlib
+
+_texture_range={}
+
+def _png_luminance_range(png):
+ """Smallest and largest sampled channel value in an 8-bit PNG."""
+ pos=8;idat=b'';width=height=colour=0
+ while pos<len(png):
+  length=struct.unpack('>I',png[pos:pos+4])[0];kind=png[pos+4:pos+8];body=png[pos+8:pos+8+length]
+  if kind==b'IHDR':width,height,_depth,colour=struct.unpack('>IIBB',body[:10])
+  elif kind==b'IDAT':idat+=body
+  elif kind==b'IEND':break
+  pos+=12+length
+ channels={0:1,2:3,4:2,6:4}.get(colour)
+ if channels is None or not idat:return (0,255)
+ raw=zlib.decompress(idat);stride=width*channels;values=[];previous=bytearray(stride);offset=0
+ for y in range(height):
+  filter_type=raw[offset];offset+=1;line=bytearray(raw[offset:offset+stride]);offset+=stride
+  for x in range(stride):
+   left=line[x-channels] if x>=channels else 0;up=previous[x];corner=previous[x-channels] if x>=channels else 0
+   if filter_type==1:line[x]=(line[x]+left)&255
+   elif filter_type==2:line[x]=(line[x]+up)&255
+   elif filter_type==3:line[x]=(line[x]+((left+up)>>1))&255
+   elif filter_type==4:
+    predictor=left+up-corner;da,db,dc=abs(predictor-left),abs(predictor-up),abs(predictor-corner)
+    line[x]=(line[x]+(left if (da<=db and da<=dc) else (up if db<=dc else corner)))&255
+  if y%16==0:values.extend(line[0:stride:channels*4])
+  previous=line
+ return (min(values),max(values)) if values else (0,255)
+
 root=Path(__file__).resolve().parents[1];assets=root/'assets/models'
 rows=[]
 for file in sorted((assets/'runtime').glob('*.model.json')):
@@ -39,6 +69,16 @@ for file in sorted((assets/'runtime').glob('*.model.json')):
    assert png[12:16]==b'IHDR' and len(png)>=24,('Invalid PNG header',id,texture)
    width,height=struct.unpack('>II',png[16:24])
    assert width>=256 and height>=256,('Texture below 256px fidelity floor',id,texture,width,height)
+   # A texture can be the right size, valid PNG, correctly hashed and still carry no image.
+   # Generated Blender images store only their settings in a .blend unless packed, so an
+   # unpacked one exports as its default generated colour: every map produced in one
+   # authoring session shipped pure black, multiplying each albedo to nothing. Size and
+   # hash checks cannot see that, so decode and require actual tonal range.
+   if texture not in _texture_range:
+    _texture_range[texture]=_png_luminance_range(png)
+   low,high=_texture_range[texture]
+   assert high>low,('Texture carries no tonal range; it is a flat fill',id,texture,low,high)
+   assert high>=16,('Texture is effectively black',id,texture,low,high)
   triangles+=len(indices)//3;materials.add(part['material']['name'])
  data=glb.read_bytes();magic,version,length=struct.unpack_from('<III',data);assert magic==0x46546c67 and version==2 and length==len(data),id
  size,kind=struct.unpack_from('<II',data,12);assert kind==0x4e4f534a,id
@@ -54,4 +94,4 @@ for file in (root/'src/Magenheim.Runtime').glob('*.cs'):
 (assets/'catalog.json').write_text(json.dumps(rows,indent=2))
 with (assets/'catalog.tsv').open('w',newline='') as f:
  writer=csv.DictWriter(f,fieldnames=rows[0].keys(),delimiter='\t');writer.writeheader();writer.writerows(rows)
-print(f'PASS: {len(rows)} Blender/GLB/runtime sets; {sum(r["triangles"] for r in rows):,} triangles; UVs, normals, >=256px PNGs, topology/winding, hashes, and no active shape generators.')
+print(f'PASS: {len(rows)} Blender/GLB/runtime sets; {sum(r["triangles"] for r in rows):,} triangles; UVs, normals, >=256px PNGs with real tonal range, topology/winding, hashes, and no active shape generators.')
