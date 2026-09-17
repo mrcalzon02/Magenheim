@@ -100,6 +100,9 @@ internal sealed class UnderworldPhysicalWorldSwitchDriver
         return UnderworldRecoveryLoadResult.PendingWorldSwitch;
     }
 
+    internal bool HasPendingPhysicalSwitch=>_inFlight is not null;
+    internal string? PendingTargetSaveName=>_inFlight?.TargetSaveName;
+
     internal void ResetForWorldUnload()
     {
         // Intentionally retain _inFlight and _dispatchIssued across the source-world unload. Reissuing
