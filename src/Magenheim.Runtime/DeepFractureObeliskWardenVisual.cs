@@ -11,5 +11,7 @@ internal static class DeepFractureObeliskWardenVisual
         ModelAssets.Load(prefab,"deep-fracture-obelisk-warden-visual-"+alignment.ToString().ToLowerInvariant());
         var pulse=prefab.GetComponent<DeepFractureWardenPulseRuntime>() ?? prefab.AddComponent<DeepFractureWardenPulseRuntime>();
         pulse.Alignment=alignment;
+        if(alignment==ElementalAlignment.Radiance && prefab.GetComponent<RadianceWardenSanctifiedRuntime>()==null)
+            prefab.AddComponent<RadianceWardenSanctifiedRuntime>();
     }
 }
