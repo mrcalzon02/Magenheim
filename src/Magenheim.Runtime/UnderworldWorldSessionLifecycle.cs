@@ -23,6 +23,8 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     {
         var fingerprint=_gameplayAuthorityFingerprint;
         if(_services is null||_log is null||_reconciledWorldUid==currentWorldUid||fingerprint is null||fingerprint.Trim().Length==0)return;
+        var znet=ZNet.instance;
+        if(znet is null||!znet.IsServer()){_reconciledWorldUid=currentWorldUid;return;}
         if(!_services.TryResolveLocalSession(out var identity,out _,out var playerId,out var sessionDiagnostic)||identity is null){_log.LogDebug($"Underworld transition admission deferred: {sessionDiagnostic}");return;}
         var result=_services.WorldSwitchDriver.ReconcileAdmittedSession(playerId,identity,fingerprint,out _,out var pending,out var diagnostic);
         if(result==UnderworldRecoveryLoadResult.Failed){_log.LogError($"Underworld transition admission failed closed: {diagnostic}");_reconciledWorldUid=currentWorldUid;return;}
