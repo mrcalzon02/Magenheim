@@ -25,8 +25,8 @@ internal static class CrystalArchitectureIcons
         var rainbow = new[]
         {
             new Color(1f,.16f,.12f,1f), new Color(1f,.55f,.10f,1f), new Color(1f,.90f,.16f,1f),
-            new Color(.30f,.95f,.28f,1f), new Color(.14f,.88f,1f,1f), new Color(.28f,.38f,1f,1f),
-            new Color(.78f,.22f,1f,1f)
+            new Color(.30f,.95f,.28f,1f), new Color(.14f,.88f,1f), new Color(.28f,.38f,1f),
+            new Color(.78f,.22f,1f)
         };
 
         Diamond(pixels, 64, 64, 57, new Color(.055f, .06f, .065f, .94f));
@@ -77,7 +77,7 @@ internal static class CrystalArchitectureIcons
         };
         texture.SetPixels(pixels);
         texture.Apply(false, false);
-        var sprite = Sprite.Create(texture, new Rect(0f, 0f, Size, Size), new Vector2(.5f, .5f), 128f);
+        var sprite = Sprite.Create(texture, new Rect(0f, 0f, Size, Size), new Vector2(.5f, .5f), Size);
         sprite.name = "magenheim." + modelId + ".icon";
         Cache.Add(modelId, sprite);
         return sprite;
