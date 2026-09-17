@@ -4,7 +4,9 @@ namespace Magenheim.Runtime;
 
 internal static class CrystallineIceBoxIcons
 {
-    private const int Size = 96;
+    private const int Size = 256;
+    private const int DesignSize = 96;
+    private const float Scale = Size / (float)DesignSize;
     private static Sprite? _cached;
 
     internal static Sprite Icon()
@@ -45,14 +47,17 @@ internal static class CrystallineIceBoxIcons
         texture.filterMode = FilterMode.Bilinear;
         texture.wrapMode = TextureWrapMode.Clamp;
 
-        var sprite = Sprite.Create(texture, new Rect(0, 0, Size, Size), new Vector2(.5f, .5f), 96f);
+        var sprite = Sprite.Create(texture, new Rect(0, 0, Size, Size), new Vector2(.5f, .5f), Size);
         sprite.name = texture.name;
         _cached = sprite;
         return sprite;
     }
 
+    private static int S(int value) => Mathf.RoundToInt(value * Scale);
+
     private static void FillRect(Color[] pixels, int x0, int y0, int x1, int y1, Color color)
     {
+        x0 = S(x0); y0 = S(y0); x1 = S(x1); y1 = S(y1);
         for (var y = Mathf.Max(0, y0); y < Mathf.Min(Size, y1); y++)
         for (var x = Mathf.Max(0, x0); x < Mathf.Min(Size, x1); x++)
             pixels[y * Size + x] = color;
@@ -60,6 +65,7 @@ internal static class CrystallineIceBoxIcons
 
     private static void DrawCrystal(Color[] pixels, int cx, int baseY, int halfWidth, int height, Color color)
     {
+        cx = S(cx); baseY = S(baseY); halfWidth = S(halfWidth); height = S(height);
         for (var y = 0; y < height; y++)
         {
             var t = y / (float)height;
@@ -78,12 +84,13 @@ internal static class CrystallineIceBoxIcons
     {
         var source = (Color[])pixels.Clone();
         var outline = new Color(.025f, .035f, .045f, 1f);
-        for (var y = 1; y < Size - 1; y++)
-        for (var x = 1; x < Size - 1; x++)
+        var radius = Mathf.Max(1, S(1));
+        for (var y = radius; y < Size - radius; y++)
+        for (var x = radius; x < Size - radius; x++)
         {
             if (source[y * Size + x].a > .1f) continue;
-            var adjacent = source[y * Size + x - 1].a > .1f || source[y * Size + x + 1].a > .1f ||
-                           source[(y - 1) * Size + x].a > .1f || source[(y + 1) * Size + x].a > .1f;
+            var adjacent = source[y * Size + x - radius].a > .1f || source[y * Size + x + radius].a > .1f ||
+                           source[(y - radius) * Size + x].a > .1f || source[(y + radius) * Size + x].a > .1f;
             if (adjacent) pixels[y * Size + x] = outline;
         }
     }
