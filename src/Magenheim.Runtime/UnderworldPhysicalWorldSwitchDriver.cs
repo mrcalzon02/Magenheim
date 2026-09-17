@@ -45,6 +45,31 @@ internal sealed class UnderworldPhysicalWorldSwitchDriver
         return result;
     }
 
+    /// <summary>
+    /// Reconstructs volatile handoff ownership from the durable transaction after a process restart.
+    /// The persisted transition remains authoritative; no second request record is serialized.
+    /// </summary>
+    internal UnderworldRecoveryLoadResult ReconcileAdmittedSession(string playerId,UnderworldWorldIdentity identity,string currentAuthorityFingerprint,out UnderworldPlayerLayerState? state,out UnderworldPhysicalWorldSwitchRequest? pendingRequest,out string diagnostic)
+    {
+        pendingRequest=null;
+        if(_inFlight is not null)
+        {
+            var admitted=OnWorldAdmitted(currentAuthorityFingerprint,out state,out diagnostic);
+            if(admitted==UnderworldRecoveryLoadResult.PendingWorldSwitch)pendingRequest=_inFlight;
+            return admitted;
+        }
+
+        var result=_recovery.LoadAndResume(playerId,identity,currentAuthorityFingerprint,out state,out diagnostic);
+        if(result!=UnderworldRecoveryLoadResult.PendingWorldSwitch||state is null)return result;
+        if(!TryPrepare(state,identity,out pendingRequest,out var prepareDiagnostic))
+        {
+            diagnostic=$"{diagnostic} Failed to reconstruct physical handoff: {prepareDiagnostic}";
+            return UnderworldRecoveryLoadResult.Failed;
+        }
+        diagnostic=$"{diagnostic} Reconstructed manifest-backed physical handoff to '{pendingRequest!.TargetSaveName}'.";
+        return UnderworldRecoveryLoadResult.PendingWorldSwitch;
+    }
+
     internal void ResetForWorldUnload()
     {
         // Intentionally retain _inFlight across the source-world unload. The request is cleared only
