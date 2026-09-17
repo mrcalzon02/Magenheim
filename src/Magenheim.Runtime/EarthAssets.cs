@@ -10,6 +10,7 @@ namespace Magenheim.Runtime;
 /// <summary>Loads original checked-in assets and derives elemental color variants at runtime.</summary>
 internal static class EarthAssets
 {
+    private const float IconReferenceSize = 128f;
     private static readonly Dictionary<string, Mesh> Meshes = new();
     private static readonly Dictionary<string, Sprite> Icons = new();
     private static readonly Dictionary<string, Material> Materials = new();
@@ -21,7 +22,7 @@ internal static class EarthAssets
     {
         if (Icons.TryGetValue(name, out var icon)) return icon;
         var texture = Texture(name + ".icon.png");
-        icon = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 128f);
+        icon = CreateIconSprite(texture);
         icon.name = "magenheim." + name + ".icon";
         Icons.Add(name, icon);
         return icon;
@@ -34,10 +35,21 @@ internal static class EarthAssets
         if (Icons.TryGetValue(key, out var icon)) return icon;
 
         var texture = TintedTexture(name + ".icon.png", variant, tint);
-        icon = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), 128f);
+        icon = CreateIconSprite(texture);
         icon.name = "magenheim." + name + "." + variant + ".icon";
         Icons.Add(key, icon);
         return icon;
+    }
+
+    private static Sprite CreateIconSprite(Texture2D texture)
+    {
+        // Keep the historical 128px icon footprint while allowing authored icon files to be
+        // replaced by higher-resolution versions without silently making them larger in Unity.
+        // Using the actual square texture resolution as PPU makes a 256/512px detail upgrade
+        // presentation-neutral. Non-square icons retain the 128px reference density because their
+        // aspect ratio may intentionally encode a different UI footprint.
+        var pixelsPerUnit = texture.width == texture.height ? texture.width : IconReferenceSize;
+        return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f), pixelsPerUnit);
     }
 
     internal static GameObject ReplaceVisual(
