@@ -87,13 +87,13 @@
     "id": "boss-bonemass-rotheart",
     "parts": 16,
     "triangles": 2136,
-    "materials": 3,
+    "materials": 4,
     "source": "source/boss-bonemass-rotheart.blend",
     "glb": "glb/boss-bonemass-rotheart.glb",
     "runtime": "runtime/boss-bonemass-rotheart.model.json",
-    "source_sha256": "05f8646a0f80ff7f8e481fc242960599fde6bd80939808ea18fdae437e8edbe9",
-    "runtime_sha256": "7fecdb66b279358c1dfa695688f8cdace4e0eadb7dce43810bee0933943da7ab",
-    "glb_sha256": "975d9522ced52e589c523592eb1e7660bff40eb6ed7d857604ca5409fcfb6fed"
+    "source_sha256": "2e44c437a9130992358cdcf8ae807fd42153819d4b2f65e8e3163850d7b7c39a",
+    "runtime_sha256": "d715f65d5f07e70b5a7c48d36845689da58b10254b8bff860f1d2f606c8e169a",
+    "glb_sha256": "bc6e93eda3369a221678b32d8a39bf8fddab64b52a8d60f97adce5e8930fd28e"
   },
   {
     "id": "boss-eikthyr-stormheart",
@@ -103,9 +103,9 @@
     "source": "source/boss-eikthyr-stormheart.blend",
     "glb": "glb/boss-eikthyr-stormheart.glb",
     "runtime": "runtime/boss-eikthyr-stormheart.model.json",
-    "source_sha256": "c94f3a7c14e571380351b36644a111d6f69b4f8cd3c5b797ff535d94ed944d49",
-    "runtime_sha256": "196d663d335fd6760c3992b6a109736c52ed7fb2b0ffe4a737bae1d3dba4a8dd",
-    "glb_sha256": "17406a20c94661588cde62066d7cfb1837fd4debd5cbff2c4c222918a05bf022"
+    "source_sha256": "b3a35db46a908cd8ad6abd2f06c8654ae5d813c7695b6a2787a818bb2a6971e3",
+    "runtime_sha256": "4db7bd71ed84cc8760b1d731f0e7f4493506e100360a0ad9e987d197721bc080",
+    "glb_sha256": "0d6f4dfa213b87d46e60a4fc5e83ba4b8ba03e3d73266b81302a5f3b095b589a"
   },
   {
     "id": "boss-elder-rootheart",
@@ -115,21 +115,21 @@
     "source": "source/boss-elder-rootheart.blend",
     "glb": "glb/boss-elder-rootheart.glb",
     "runtime": "runtime/boss-elder-rootheart.model.json",
-    "source_sha256": "6049e44b6fb14a1df9093a3d114eefd1340e3b88766771f4bd6fcf2e122755b3",
-    "runtime_sha256": "5dc977488cbf3f8d02479fbfefdb2c747139f7b4f5fd4f72016cdfbe6aec98d2",
-    "glb_sha256": "95786bca1636f6d9984fffddcb5b4652cbffd1357bb4743b1bcb8ac65f2c71d1"
+    "source_sha256": "80358467ae5cd5d6f727f0843a240a9278fde1b1cca734c99d992ad6195e6d54",
+    "runtime_sha256": "b10e1cdfd0d09aca2874f4c0bb5b63aaeb58c436c0a94ac87bc5ad7c756c87d8",
+    "glb_sha256": "b479d89f7d9156a3bbc7e394b1c054999ce20068d3b1422cce9b6f21c9275d57"
   },
   {
     "id": "boss-fader-ashheart",
     "parts": 15,
     "triangles": 1928,
-    "materials": 3,
+    "materials": 4,
     "source": "source/boss-fader-ashheart.blend",
     "glb": "glb/boss-fader-ashheart.glb",
     "runtime": "runtime/boss-fader-ashheart.model.json",
-    "source_sha256": "fa286e5f7e8984d65a0b1c8587b01db9bbf9932398c081fa1c52723b1d182cd9",
-    "runtime_sha256": "ea1a783bda05bb7f2f410a58f796fd13da96fa7398979fdf17bbeabc45aaf8b8",
-    "glb_sha256": "31ed2b82ffad8ce88d7c9fa4309b0879637c522880537a9923db13875d66b23e"
+    "source_sha256": "be0d690741a65daea0f3a0f9d871f92295e0ea257a413b23aebed8fdef328dfa",
+    "runtime_sha256": "9e480b3d4de3da57424a962a24bef3dd4434addf33a1606fb26ddf5fe1f24e7b",
+    "glb_sha256": "85860cc923d17b95d5de528020f72381e44e562ff548e98a979cdad129836b5b"
   },
   {
     "id": "boss-kall-winterheart",
@@ -139,21 +139,21 @@
     "source": "source/boss-kall-winterheart.blend",
     "glb": "glb/boss-kall-winterheart.glb",
     "runtime": "runtime/boss-kall-winterheart.model.json",
-    "source_sha256": "d6c70b50958421ae6169eba9c4d7ce2dddd8eb44d67430ba4188c8113556115c",
-    "runtime_sha256": "760af02d4a5234bb9a437be58686dab9d57ec41ae1695c5b0caf92cff95a230e",
-    "glb_sha256": "88bc7b3e2de429189f27e85167de83c45ca3c615ed500aa591ddf275a9877e30"
+    "source_sha256": "7193593ad37062855b59c60309f8da4ba6645b4e145406ef56bac79a46844a23",
+    "runtime_sha256": "b1506d61cae2326eb1e5ac4dc229c4df841c51eb44b9e1c54b243e8a87cc1ddd",
+    "glb_sha256": "9d3fae7b8a97e130a7d65714b25fa8ebdca9baa2efbf577ba804b3a9d2157cdd"
   },
   {
     "id": "boss-moder-rimeheart",
     "parts": 8,
     "triangles": 1144,
-    "materials": 2,
+    "materials": 3,
     "source": "source/boss-moder-rimeheart.blend",
     "glb": "glb/boss-moder-rimeheart.glb",
     "runtime": "runtime/boss-moder-rimeheart.model.json",
-    "source_sha256": "60c9d2941881145fec1bfa8a333a5c5a63f2f9ea52daa54ec3dbdb732c324cbc",
-    "runtime_sha256": "1426d79d98e5daac355c90f7c432954b7dd93fc4877ede180738f49ca2fa6e3c",
-    "glb_sha256": "523dd6357e7f12d45ca9df8f5fed4b6e5f8828569c7ceee99fcbd5a7f44917f9"
+    "source_sha256": "19a1e0f7e90bbe210dbf861b4558b9ae9f993afd1b6e9d8c7ddc456a5fccf1eb",
+    "runtime_sha256": "aba775dfba28af6c6017a123e87d20d95f2306629b1eaa868d3353cccffcf7cb",
+    "glb_sha256": "bda454cc2c7dfc8a0ea0d58733894665759927b16ec8cf819ec196e59bc37790"
   },
   {
     "id": "boss-queen-veilheart",
@@ -163,9 +163,9 @@
     "source": "source/boss-queen-veilheart.blend",
     "glb": "glb/boss-queen-veilheart.glb",
     "runtime": "runtime/boss-queen-veilheart.model.json",
-    "source_sha256": "d716e6e898eb0186fa95cfacebf256d351bd70c1788979ec076546ddb7376cc7",
-    "runtime_sha256": "f063b746f220b7b18c81ddd8d2df20c485a70b11a4e8c87303aaa3c4fadd1558",
-    "glb_sha256": "86955fde8b8f272b7186e0fce98f00394632e891b7e2eefce1ce197ee67277a0"
+    "source_sha256": "6a0c62e7ee2dbf8cfd4079e3c151b30682437a92e302f09f8cb290204d5380b6",
+    "runtime_sha256": "0c7d6e8abec6d395bc02c73ff72a178c0de2a433b9a6e72859cc53d0dca09ecd",
+    "glb_sha256": "e9dad94dce16b12deab99b996d937e3c6222f8f73677accae8a66401a79da9b8"
   },
   {
     "id": "boss-yagluth-sunheart",
@@ -175,9 +175,9 @@
     "source": "source/boss-yagluth-sunheart.blend",
     "glb": "glb/boss-yagluth-sunheart.glb",
     "runtime": "runtime/boss-yagluth-sunheart.model.json",
-    "source_sha256": "e209626a7c90bb1e53ceb0bae4fa51f48738f6e76a25414f4f9ea7800c958d43",
-    "runtime_sha256": "1be52e8247743e248a47639e7bcb2686fc7e6372441691c2622a74c546377f4a",
-    "glb_sha256": "ecc061768ffa822980b1adefc1eab79406b6ba11d4bcb70e14ae71d10f11a40c"
+    "source_sha256": "f907fa98e8af287f19e3b5fc6876501fbcd605ceec90334b838d035416b5712f",
+    "runtime_sha256": "b9de870e0a21b7bd502d5f8aa9f7287d7a6b645a39c75296c391076cca8c7c64",
+    "glb_sha256": "b5cdc3027024f029b8b0dae0f9e9d866ad60c6ee0e74209d8fe9c24fcbc8fedd"
   },
   {
     "id": "broken-crown",
@@ -187,9 +187,9 @@
     "source": "source/broken-crown.blend",
     "glb": "glb/broken-crown.glb",
     "runtime": "runtime/broken-crown.model.json",
-    "source_sha256": "8c808d3149ffda203c81083fb2eebcc0ef416456fa1c4b01ce9cbd519cb3ca7a",
-    "runtime_sha256": "1398a9a21110d9564d63e259a73b6a62bc34be0767b2cce0d66b9c54d3a5e3b8",
-    "glb_sha256": "363b774af6ccac2421d43755676915b0bdea1cc728b56b3c43681decd82325cd"
+    "source_sha256": "9a9d0eff765aec0481e06dfcefcc94f1f1884cfa692c2ac26dee28d97f2aac44",
+    "runtime_sha256": "71267e997ef6e7a0a0f91c051989f4c618e014e20560b3095a59886300eac21c",
+    "glb_sha256": "eef3640f25db64f3c5f4b084a80727677db079dccf17dce9bb67b299514d7101"
   },
   {
     "id": "crystal-banner-pennant-earth",
@@ -583,9 +583,9 @@
     "source": "source/crystal-brazier.blend",
     "glb": "glb/crystal-brazier.glb",
     "runtime": "runtime/crystal-brazier.model.json",
-    "source_sha256": "352061c3fb97d2c81fef421130b7e0c712fd9f261af706d4abc0cc64a7ddf2f5",
-    "runtime_sha256": "36f218ee46bd9f7cf6c2f46f999a254c15e9d0a7f6b282b74b5d927e4cdc160b",
-    "glb_sha256": "8ef7ec9b9fb4abd3ed562e61c97bad80358f106f8e291b0a0f7c22111c9a629e"
+    "source_sha256": "736bb3cbd4bf600320371495074d0173be04989fbbaff68f884d6e2b557f3f35",
+    "runtime_sha256": "4adde96f3e9f1a80e4af466d658f150af12de7529d001ba0372451998de614d9",
+    "glb_sha256": "e37ff45244bc01e158285b4b1c51c3d410b8eef1445c34407c9c7e6e247bf0d1"
   },
   {
     "id": "crystal-enchanting-dais",
@@ -607,9 +607,9 @@
     "source": "source/crystal-lantern.blend",
     "glb": "glb/crystal-lantern.glb",
     "runtime": "runtime/crystal-lantern.model.json",
-    "source_sha256": "8a51111c94b38ead979448a64e15b75521c98c1ef24bd57813e022b10c7c3260",
-    "runtime_sha256": "49092ab2ef84686973f567bb7d0b26df6415aa0b6bf5f5ee445227888774745a",
-    "glb_sha256": "f1bba7a80b2131889dfac39e0d5c4ecd787056713ed0d0e30f188fc03031dcb0"
+    "source_sha256": "988a936ed849de3dbe305e03d452424d235cfe2e1f9dae011f0a262226341204",
+    "runtime_sha256": "9cb52335691aeaa5d409dbc78bde44add8146593437962ae8ac5366dc8ada954",
+    "glb_sha256": "69e764f1883a4c0b95dd053c3d17be2eb221816d8cd6ad7c7380ebe02feb6232"
   },
   {
     "id": "crystal-sentinel",
@@ -627,13 +627,13 @@
     "id": "crystal-wardstone",
     "parts": 48,
     "triangles": 5732,
-    "materials": 5,
+    "materials": 6,
     "source": "source/crystal-wardstone.blend",
     "glb": "glb/crystal-wardstone.glb",
     "runtime": "runtime/crystal-wardstone.model.json",
-    "source_sha256": "3479b40e8e4bbe8434600ddbb7c933ceab6cd12577188c4fe3720616d5647fe9",
-    "runtime_sha256": "00c4998d5014497318dbd639ba4e544b10b4515e3b3e606a3c3c226e388fb656",
-    "glb_sha256": "a12d73387f052a2272f54e43e9db302d4999740161dbf8331882803f8b9c589c"
+    "source_sha256": "2e2255df5f413ccb91e29200e62ce57f4b86ccf8964c936eeb9d029416ddef57",
+    "runtime_sha256": "d25f9f74893d064afea49b1ae27a0d4712bf5a9a08e5c3cb9727054009912d32",
+    "glb_sha256": "dd58cdbb1028f0df8283b36a71633195c5c316c9cf49adea95dff68b50b1b1b1"
   },
   {
     "id": "crystal-weapon-atgeir",
@@ -643,9 +643,9 @@
     "source": "source/crystal-weapon-atgeir.blend",
     "glb": "glb/crystal-weapon-atgeir.glb",
     "runtime": "runtime/crystal-weapon-atgeir.model.json",
-    "source_sha256": "7a25d0e0f3fdc63dd7537f0ed34df1e48d8f2c25be66368239e4e33f10f446e3",
-    "runtime_sha256": "20acb74eb5a137e290383599543fd65d5b61e438e36eefe67f252c0804a27720",
-    "glb_sha256": "02d71200d1013cef85fcf71c8b07bd6ac9bce77a5c5176341e8a055579a42bc3"
+    "source_sha256": "d5eecb0a4b45de67d51e0e6e0c6899323a6cd124e8b3bb34233b9660cbecba07",
+    "runtime_sha256": "0f6458ac575afeab93a7aca7aeeb2ec8b415490369361d4e3e8451ae4d317e03",
+    "glb_sha256": "edf69f5fbbed502b9f6ecf8a10c9edd41aff4be71432d41fa5e292aee01b61b4"
   },
   {
     "id": "crystal-weapon-axe",
@@ -655,9 +655,9 @@
     "source": "source/crystal-weapon-axe.blend",
     "glb": "glb/crystal-weapon-axe.glb",
     "runtime": "runtime/crystal-weapon-axe.model.json",
-    "source_sha256": "ddc015925917703f1aa0b98987bbf9052462255dc401fe52ae6ec20442022b72",
-    "runtime_sha256": "ee132557911f3ae755bf77028fc70e666dc7946701f91d1426a48b3445ea1d38",
-    "glb_sha256": "b47eea0d595eab39bd69efa06c09710f5aa67c98691cfd134359141c449c561a"
+    "source_sha256": "a70c45b0f672ff7d194be7d4a23494c937746fb5ac2cac137bffd6ef55e2ff90",
+    "runtime_sha256": "901e25115df1ef0ee4f2381e3340393398bdcecf4f5d93dcab78d143906866e3",
+    "glb_sha256": "5833562ee717dfb43a567c55d6017ac5a519b1cdb1611ebcdf10777769b2b2ec"
   },
   {
     "id": "crystal-weapon-battleaxe",
@@ -667,9 +667,9 @@
     "source": "source/crystal-weapon-battleaxe.blend",
     "glb": "glb/crystal-weapon-battleaxe.glb",
     "runtime": "runtime/crystal-weapon-battleaxe.model.json",
-    "source_sha256": "702878b382740faa49f5bd51ef0445c181ed31c21d36de7fb2862e9dae56188b",
-    "runtime_sha256": "608118f9aa89a313457359084455de5bdd8d3eef427c866170eeb595fa2376e6",
-    "glb_sha256": "d28379ce89d03c10358b56a70821e06fcef610af735f61714aeee8bd4dfbc375"
+    "source_sha256": "ea0f737aaf22450f44af0a01010c7c745b9448e73f6b305e9c54d51ce820b5e7",
+    "runtime_sha256": "057c6f0399003be790220db46e3a3141fc998bc75846173e15aa1b0315133d82",
+    "glb_sha256": "be53f3c40c4a88d1e3d9b1aed16caf19669286847be081d4a8000a51b80033da"
   },
   {
     "id": "crystal-weapon-bow",
@@ -679,33 +679,33 @@
     "source": "source/crystal-weapon-bow.blend",
     "glb": "glb/crystal-weapon-bow.glb",
     "runtime": "runtime/crystal-weapon-bow.model.json",
-    "source_sha256": "b834bd92e3e48b7f4a7b2628baf5ea2aa0474382d9624ee7636eef65cedb13a4",
-    "runtime_sha256": "c0cfa9b98dd971befc3040c2e3d3ad175309d85decfff9a30551fba4faa36da3",
-    "glb_sha256": "31360387dfca68bf1c7fe29db28e46a9da0f110c615764a72be74ea4e4d6d017"
+    "source_sha256": "7883af17800c9bae5d8a8539f65806698b267be5ddad2f340b38259009105876",
+    "runtime_sha256": "f5996909a026370e8e1f4699697f53f872e2e9822797b33b66d85d8a3adb641d",
+    "glb_sha256": "aaf2b116e17adf8b196663c3ba7933284c6b716561b888cf0c35c428eebd27ae"
   },
   {
     "id": "crystal-weapon-crossbow",
     "parts": 9,
     "triangles": 1116,
-    "materials": 6,
+    "materials": 7,
     "source": "source/crystal-weapon-crossbow.blend",
     "glb": "glb/crystal-weapon-crossbow.glb",
     "runtime": "runtime/crystal-weapon-crossbow.model.json",
-    "source_sha256": "4ac2c7a04565a8c5fd9c1f6a354fa6bc5283f675ee3b412bd089d07ef7b99567",
-    "runtime_sha256": "8c05570c2e712d5acae555b48a8ea9b3c65d39cd69bffaf44dbeedbfd3cfa37b",
-    "glb_sha256": "cae9fcc7b3d47201985f67e0cac1dd0b9274d5c61e63441cdee814c18580662c"
+    "source_sha256": "0d294da580cc24355a985214ea86f9da4e3e71cf99475a8dd77a41b472dc64f0",
+    "runtime_sha256": "e97fe2b5c76ec30618f41efee60497b74fb52631681a826171d781f3246f5c23",
+    "glb_sha256": "f091a91f80e665250dc4b4e619b1adbfb596ff4b62d75bfbe0fbc6ee72fff4b0"
   },
   {
     "id": "crystal-weapon-greatsword",
     "parts": 8,
     "triangles": 1228,
-    "materials": 7,
+    "materials": 8,
     "source": "source/crystal-weapon-greatsword.blend",
     "glb": "glb/crystal-weapon-greatsword.glb",
     "runtime": "runtime/crystal-weapon-greatsword.model.json",
-    "source_sha256": "ce0de1fd1d26f4db7f529eeb088c6c192573baffabe3a85b662f18aad6a15df8",
-    "runtime_sha256": "b4cc3c0bf29f873984568ccb1c54a6707d928d44578c9d5568b23a0b2570fffa",
-    "glb_sha256": "d5e93c51d1cca047e4724163de5c50be932c7ba562029ca29d0017968ebf3ca3"
+    "source_sha256": "6bd2f9dfa815419f7517b23d94280ca0b63ef64890d69270fd1ba86668690dca",
+    "runtime_sha256": "e7066538407441f36d3a309c0bd32434a3ab280fe7ed84eb5cca2e792bfa1bb6",
+    "glb_sha256": "c2bfc22f2a3efca17f72767c78a0531e4e64bd55da5acd224c44f75a00db5ab0"
   },
   {
     "id": "crystal-weapon-knife",
@@ -715,9 +715,9 @@
     "source": "source/crystal-weapon-knife.blend",
     "glb": "glb/crystal-weapon-knife.glb",
     "runtime": "runtime/crystal-weapon-knife.model.json",
-    "source_sha256": "9a54deb7d4d0676885494ae0568eb32ab420ad6721e39ecedb2381abb66c00c8",
-    "runtime_sha256": "a21bbcc8e58e2081da1b94cfc4b858e4de69149efcc05d49ff9be0a1832f6413",
-    "glb_sha256": "3da0f949f0b0b6809d6c2cb71759502a7fa16deeb284f0031da892c60e0b4b99"
+    "source_sha256": "d701fef3b0d25b1099cd0bb2600761149620b647d9a8d1f2946da944de09b937",
+    "runtime_sha256": "2e16ce190e78bf9c4703176c9e203ce6e32bf742b49920e12d9e7b5640e1a259",
+    "glb_sha256": "1ee2b20eaeac51717640deef6b8342d1213bc08ac87b75d7a0e0c447611340cf"
   },
   {
     "id": "crystal-weapon-mace",
@@ -727,9 +727,9 @@
     "source": "source/crystal-weapon-mace.blend",
     "glb": "glb/crystal-weapon-mace.glb",
     "runtime": "runtime/crystal-weapon-mace.model.json",
-    "source_sha256": "417038a973748e3b4a269a0115e86a3614b6716b1e3d0ea16dd2d2956020477c",
-    "runtime_sha256": "6303e3ff3460851687b5e86ca30c9ef434da634056c6aacee983875f3c9d2118",
-    "glb_sha256": "700ad6c42bc7e9cdf4b9bba04f31e400604bd192aec3c73947614780e148ae2f"
+    "source_sha256": "66c058ae43bc7a1aeae65abb2759c6507dc1708503834b26f2103c3061acd439",
+    "runtime_sha256": "e3f1418462324218c65479c2a574ff46c3d1b38d2cbfe9cf90c2efab18b4eb19",
+    "glb_sha256": "4ed0d31d37cf40bd3d7f0733571a6b8c7044bf026a2d89ee2b6cd8afc6415bc4"
   },
   {
     "id": "crystal-weapon-spear",
@@ -739,9 +739,9 @@
     "source": "source/crystal-weapon-spear.blend",
     "glb": "glb/crystal-weapon-spear.glb",
     "runtime": "runtime/crystal-weapon-spear.model.json",
-    "source_sha256": "b996a95f903d9f5ba46f47f546075cb16d82fa15157464b80e3786c338a71edd",
-    "runtime_sha256": "51cea031aaa397a34480b7baa537afdc508b01fa4808aedcaf1c3f5d97087cf7",
-    "glb_sha256": "24d74be61fa73165136f37efe2e58e5c99b6c871c4ae2553f40952b2a8dfd53e"
+    "source_sha256": "bd2157375c84cbd2306e8d664f517dc12e753cde430703a8b8acd8846c5347e2",
+    "runtime_sha256": "2974ad76a69dce7ba6bdbf6d79fd6c0febea93b14daf0c3c8d9c90845bf48531",
+    "glb_sha256": "5157253216892dda3e676a6ad600371eeed63b3c0ffbad51ca4cd9a4bffda01b"
   },
   {
     "id": "crystal-weapon-sword",
@@ -751,9 +751,9 @@
     "source": "source/crystal-weapon-sword.blend",
     "glb": "glb/crystal-weapon-sword.glb",
     "runtime": "runtime/crystal-weapon-sword.model.json",
-    "source_sha256": "0e0f03c542f6dbbe9f6ecdc9fc21baa1bb1767e39dad6e240f9028e9587038df",
-    "runtime_sha256": "1834a997091fd9b0f88c3f122c092693d5f9e3178f76fb9de24ae059552fcec1",
-    "glb_sha256": "de5c00336877d6be4145cb3d5ecbcefeda0fd17fb37fcef114bec71e74714022"
+    "source_sha256": "788f3dd2e8a425c84ccf6e2d690b832cee463ad01045f0d37f73a2c7da5eeff1",
+    "runtime_sha256": "d0c4e13388b42511897a52457e7798fc7c90ba0dd14027d4859a37fffa491b9c",
+    "glb_sha256": "62a7d443040b20d8bf2ca26cae50b6380fa0d31eacbe382822a5eba86bcceaf2"
   },
   {
     "id": "crystalline-ice-box",
@@ -771,25 +771,25 @@
     "id": "dark-throne",
     "parts": 28,
     "triangles": 880,
-    "materials": 3,
+    "materials": 4,
     "source": "source/dark-throne.blend",
     "glb": "glb/dark-throne.glb",
     "runtime": "runtime/dark-throne.model.json",
-    "source_sha256": "a4f81670ddce0a12451808e0918f528e9680fb4e5c7a9b0de051fbd1760b9dcb",
-    "runtime_sha256": "e83b11d0098e91236ccebc322d512bf943cc66d7e393d6c76e8be3c996eede0f",
-    "glb_sha256": "c1ba9e3fa4e3f1acb221c5ceb98b1838f73f8f915737d3b15810ab7eabf4398f"
+    "source_sha256": "c91e53ffb590104b6d10ed7e3d0d1c9ab3015d24ae63af413ef61b2fb019c838",
+    "runtime_sha256": "c8f5de01f005296f4b2ec04da3a94c22ed634f70eada6c87c0c6a02fe08eba2b",
+    "glb_sha256": "980b2125ac1457065c1bcb720b0687e8ddb9d79d9ad8a4ca2585a88a921838e8"
   },
   {
     "id": "decor-crystal-coat-rack",
     "parts": 17,
     "triangles": 2576,
-    "materials": 5,
+    "materials": 7,
     "source": "source/decor-crystal-coat-rack.blend",
     "glb": "glb/decor-crystal-coat-rack.glb",
     "runtime": "runtime/decor-crystal-coat-rack.model.json",
-    "source_sha256": "6223d315af241d26e09c2690294f1ba58a538cb49059beeef62593ae9c556db3",
-    "runtime_sha256": "aa9049387385bd0493beec7d4a952c311857edd8ba0417ed997dcbc862b44530",
-    "glb_sha256": "bd9b32de34d6e10c8b277f6454fc8d2c56bd0ffb7cdd29afd36bf330aa82d3ef"
+    "source_sha256": "f4a474672c83ac8eb6433c67e745377e159e584e80b73965b1824334f3d5db5f",
+    "runtime_sha256": "9cdfcce1208a0e813ac46bfae8f8d548ad5c3188eeb596d77f09843c52a2ae78",
+    "glb_sha256": "12dd27ae2c1b10fd77c16827b5844edf55b04ef1519b97134c567012c09262e2"
   },
   {
     "id": "decor-crystal-end-table",
@@ -799,21 +799,21 @@
     "source": "source/decor-crystal-end-table.blend",
     "glb": "glb/decor-crystal-end-table.glb",
     "runtime": "runtime/decor-crystal-end-table.model.json",
-    "source_sha256": "7fbc3a2c85a8cda96a8485a99f119eed9aecc064ec4af7882ceee86e3e966372",
-    "runtime_sha256": "8e148ebe9e570672fe826155dce782c7462708079185c3d1dab10701b03c5149",
-    "glb_sha256": "eb9efac898ed97e239364445174cbb143713f9ddb55947b8639f7190b0a4b1da"
+    "source_sha256": "777e68c6211af7121d6576cbd6ee6a560fb1f9c2c901bd63a406f5590703111d",
+    "runtime_sha256": "cb444443d5805bf558e3904e15cfc4effc6945589dbb0c5fc1164468e10bf961",
+    "glb_sha256": "9a1b8ab4ffda6816eeabe3355431b1d7cac9e1fb344e195d618106c5b5cc9bb8"
   },
   {
     "id": "decor-crystal-wall-sconce",
     "parts": 6,
     "triangles": 868,
-    "materials": 5,
+    "materials": 6,
     "source": "source/decor-crystal-wall-sconce.blend",
     "glb": "glb/decor-crystal-wall-sconce.glb",
     "runtime": "runtime/decor-crystal-wall-sconce.model.json",
-    "source_sha256": "704589c73e2c1dd403b2be65f2b294491829fe3771723d0e50b26f7bf4eaada5",
-    "runtime_sha256": "2c692b7b33c83e63946ff2ba463bf7d30db63081c2ab9804580e2dadce3897af",
-    "glb_sha256": "34eab9aae9ba718bc309949f6c9dc4e60f1025aed7cb2f441488e704dcfb4dd2"
+    "source_sha256": "3bb9d2f82bb4446ac27d1e807cf2f7a26b13c341c675517a36657a70173b2437",
+    "runtime_sha256": "375ce55cb670c11c36ceb5529853000b39244bffd5521c304bfb02365a9b5ccf",
+    "glb_sha256": "7fe04820b80022f94116573b3a214449a18846535af46b003226271a042e1c6d"
   },
   {
     "id": "decor-cut-geode-plaque",
@@ -823,9 +823,9 @@
     "source": "source/decor-cut-geode-plaque.blend",
     "glb": "glb/decor-cut-geode-plaque.glb",
     "runtime": "runtime/decor-cut-geode-plaque.model.json",
-    "source_sha256": "d0edbedecef49c1db8c9b309ef5649175bc993aa0fbd2d7512dffd8d2d0c4217",
-    "runtime_sha256": "af570800585982ca0c0bea4938c165dbe4514cd07ca97fe7926c7c09c6a2411c",
-    "glb_sha256": "610b090054b293dcf540dee4edd50d609c96a682d7145dd6415598da25ad9077"
+    "source_sha256": "3fa6c75e61960e7ecf29bced005a158d33c1d685e4038a625401544eee59f78c",
+    "runtime_sha256": "f19ae6f48358033a71f945ffaea460d9f03f96a9642061b6d049b36dbccf3d72",
+    "glb_sha256": "7c203f31623122ac816f80b21d4afc394aa24b30b583ffcb8a52ec5065265fdd"
   },
   {
     "id": "decor-geode-bowl",
@@ -835,21 +835,21 @@
     "source": "source/decor-geode-bowl.blend",
     "glb": "glb/decor-geode-bowl.glb",
     "runtime": "runtime/decor-geode-bowl.model.json",
-    "source_sha256": "fe13524e80ebec30324a9f353e87b3acb779dd807c23a8be93deff8da30b647d",
-    "runtime_sha256": "b4e967cef4773603a54b99f09e803028ee45028aea59112cf98348ce443ce63e",
-    "glb_sha256": "81832d53e4b9118748e41e8b468832c4033e331bce2f9798bb64ead4ce459002"
+    "source_sha256": "5055a0ac419b352c559c70c40213ef177da5398a43750a2623b582c727e7cf79",
+    "runtime_sha256": "d2c1bebd4f696b56ffa1f61994888be75190cbb1f191963a00b1d7cdfef3dca6",
+    "glb_sha256": "655b8851806e5aad4ca9613534064a8242f1d584cad681157a36c353b1cae1bf"
   },
   {
     "id": "decor-geode-hearth-mantel",
     "parts": 32,
     "triangles": 3876,
-    "materials": 7,
+    "materials": 8,
     "source": "source/decor-geode-hearth-mantel.blend",
     "glb": "glb/decor-geode-hearth-mantel.glb",
     "runtime": "runtime/decor-geode-hearth-mantel.model.json",
-    "source_sha256": "63f03456412ab0776c802b61880c2289b88985ff4ab6dbccdefbb2ce70c50fea",
-    "runtime_sha256": "6a469239903c3c7be108388af797f0066ef5cd939aac4c3a51fb765b9ee8e9fb",
-    "glb_sha256": "ac325fba493b13468930d54d7db51d3221c064fce45d093aa6bba5e7d4c5d321"
+    "source_sha256": "fdf2c5d3d78bf7245400a656696b289c80ca1b0e54bb87f5c6b743793fcef803",
+    "runtime_sha256": "29749412a30f951e3f7d7b42d73720e654ae9dd51df7c325908261f6c1b182c4",
+    "glb_sha256": "0c1aafab75b3da542618d9b21d97ceeffab82478d86562c615161440f6051fe2"
   },
   {
     "id": "decor-geologist-stool",
@@ -859,33 +859,33 @@
     "source": "source/decor-geologist-stool.blend",
     "glb": "glb/decor-geologist-stool.glb",
     "runtime": "runtime/decor-geologist-stool.model.json",
-    "source_sha256": "46181415c99dd96cc562d1801fcf8602a9467ff72c27efa4bd4eccaf0fb0b351",
-    "runtime_sha256": "da2761576ae676ee6953b66a54d7231ec9e0f189262c42aff5c7350898770709",
-    "glb_sha256": "43cf470c0d8f502b7be876ec32085c78209de65ec240d4da66d8803fe4b1549d"
+    "source_sha256": "5e8538407bfd2db0b37bc7a6c2ee7da0f4266526a93fedab1e4bca7e2564d5da",
+    "runtime_sha256": "645c0dacb904462c4146472d157e49813629e8a4b2f8f913e889d3f5e400b7bf",
+    "glb_sha256": "a7c67de78861b2d9ffaa86bdc2bdf41d0b6b851afab4f86ced33633a50e003ae"
   },
   {
     "id": "decor-mineral-display-case",
     "parts": 22,
     "triangles": 2616,
-    "materials": 7,
+    "materials": 10,
     "source": "source/decor-mineral-display-case.blend",
     "glb": "glb/decor-mineral-display-case.glb",
     "runtime": "runtime/decor-mineral-display-case.model.json",
-    "source_sha256": "bdb68f5eeb06ce049f96144bd8d93b0020ab70462f1eef9ae8bf781b64738f94",
-    "runtime_sha256": "3f95d7c94ab0d76ad60fa5abc1f2caf5ee2f61c2201017ba390335388edcf8e6",
-    "glb_sha256": "e681992287b935102f3b1253564fe24ef68318373276ad673e699cce99277318"
+    "source_sha256": "3d5a629d5d48415c6f4dac94d1d8e41bebdd2336983473a18f69d19b34040b0a",
+    "runtime_sha256": "d55854630c7e5fbf905fbff44f143bd78dd1f99ecbd034b8284def18d012e7ee",
+    "glb_sha256": "f6ce69bfa44e06de148143124ecc67db8fa5ce340fe16e115e24d9a537c1adaf"
   },
   {
     "id": "decor-specimen-sideboard",
     "parts": 22,
     "triangles": 2952,
-    "materials": 8,
+    "materials": 10,
     "source": "source/decor-specimen-sideboard.blend",
     "glb": "glb/decor-specimen-sideboard.glb",
     "runtime": "runtime/decor-specimen-sideboard.model.json",
-    "source_sha256": "bc2e0dd788bef6110d46ae68ab6aff532f939c85155a995f8644d861d8e270eb",
-    "runtime_sha256": "827542d7a1e5af24ffad8f4eaeef0afa02d1581eecbd81dbbd9c4763b8d702df",
-    "glb_sha256": "b21261b61391b3dc30af29db36233563efa6b1ae976295f2974e05aa12628371"
+    "source_sha256": "75025c77cee87a2f748a20027d338705771160a166cfb8777cb93f4224437370",
+    "runtime_sha256": "f57bb825c342ee9862f30eff7173cfd01b830620b1fa9d09b0e624bdf41c702b",
+    "glb_sha256": "9e77d1e5cfe79fc0a889b09c86c6ee1ef2e3a438b2be02e9ba31e6deaf20a6c2"
   },
   {
     "id": "decor-strata-map-table",
@@ -895,9 +895,9 @@
     "source": "source/decor-strata-map-table.blend",
     "glb": "glb/decor-strata-map-table.glb",
     "runtime": "runtime/decor-strata-map-table.model.json",
-    "source_sha256": "ef97e06414e2ac679e46b93f44c14250f69050bf09c1f3480358d3e0eb4f5e74",
-    "runtime_sha256": "0cd18a4e3c5ec33840b1b7e55e0f7c5b755975884de7bb7f7a14bc96c60b1e02",
-    "glb_sha256": "12c73787cd97dd9114a64ac3353df9816696ddf75230eab6fbdecaf318977429"
+    "source_sha256": "1e5030fe5f2182b4d14d889e3bc7afe712eee8be962de981c38efa0997869856",
+    "runtime_sha256": "6c63e792c8cd53ce278d86745f01a5187de98df7eb92234cece70de0b85f5c62",
+    "glb_sha256": "537e29838710914ce05e43b21e2de597ce9348acfd06eeade333567b14e2a32c"
   },
   {
     "id": "deep-fracture-creature-AnnoyanceWisp-earth",
@@ -2059,9 +2059,9 @@
     "source": "source/deep-fracture-entrance.blend",
     "glb": "glb/deep-fracture-entrance.glb",
     "runtime": "runtime/deep-fracture-entrance.model.json",
-    "source_sha256": "759a171e7f972df2384770c5ed9b3d26517f7a8d3432a4b886b05b6babe412fc",
-    "runtime_sha256": "0a8fe9696e13e145d5c322fa88f29a9f161f880efac0e2ace4f3803d0dd517b9",
-    "glb_sha256": "c723819b10d57f3ec9f2acb595a6013265d656e7b4a3bbaeac8997b3c9b1b987"
+    "source_sha256": "f32c8f43094b8f26ebe02c9f7103e8c6190efd84f99f7464efe9fe16b856ffbd",
+    "runtime_sha256": "17e7e56c48846ce40ec676ce6ab07f37855d03ed8c900102a16bc14df4878caf",
+    "glb_sha256": "2e567b51032bfac8c99c25bd145cdc95d4ca572a6361487896168547e0b0e0ad"
   },
   {
     "id": "deep-fracture-obelisk-warden-visual-earth",
@@ -2563,9 +2563,9 @@
     "source": "source/effect-orb.blend",
     "glb": "glb/effect-orb.glb",
     "runtime": "runtime/effect-orb.model.json",
-    "source_sha256": "7aadabfb7d76a65dda29156f0c0ba9e8e28fcff5d4cbba41719e7e5e9d2627d0",
-    "runtime_sha256": "9657cb3d13d0280ab774722c57ccddbdd03f41ab8f4295a5a2cd0b3bbfde84ba",
-    "glb_sha256": "27241887bd0153843e37cdb0ac95311cd59a23c13136580597d837f6ad8ff410"
+    "source_sha256": "7d6831aa434191ac78acbdb6eb2af72967ca294612a9703b23a5921df898227f",
+    "runtime_sha256": "df725c83bb3af3736cc59903376681740309ae0019a1773c14630ef6fba368c4",
+    "glb_sha256": "f8400ffd1d729afdf2b9d345a8338ba7231cb0ef1033fcb3ecae783e98b7f6df"
   },
   {
     "id": "effect-ring",
@@ -2575,9 +2575,9 @@
     "source": "source/effect-ring.blend",
     "glb": "glb/effect-ring.glb",
     "runtime": "runtime/effect-ring.model.json",
-    "source_sha256": "73b5d93aa9454d2f1603961dfd3d4ac1b3fec6ff19add10701f5b59ed9fb4e81",
-    "runtime_sha256": "fa0220497bcd2e8b38b45a8b0ac94e45d0d1b2fc6eac0095e2a57d77e783a299",
-    "glb_sha256": "a4907dbb7c3f5b20b1f4460f526afe9dc51dd8647337d7dbe5bf7a56edfc204a"
+    "source_sha256": "ea311748a947db07fe85e75e73d43f73ad9f401d2333a8b4e66e7abaa9288bdb",
+    "runtime_sha256": "e9024af698d5f651571e43398120f6f7c16ace428883c82b174b9a01e4af08cf",
+    "glb_sha256": "69748c960e79b9f3536f02e27d281e7b4185c5314e043ad884c7b0eb27767a2f"
   },
   {
     "id": "effect-shard",
@@ -2587,9 +2587,9 @@
     "source": "source/effect-shard.blend",
     "glb": "glb/effect-shard.glb",
     "runtime": "runtime/effect-shard.model.json",
-    "source_sha256": "9b19c95e518fbb319764d029c9b7ada5b7e2ac9ba71326b8da7939afd264cc0b",
-    "runtime_sha256": "55bcac126fb48c9467ee7f6cfb42e944c78e3a6fc948b1c8c2a5401b15ef24db",
-    "glb_sha256": "55f6f59dad19b20a42c5d210d149700d39bf0638937378c33cae222041890d5a"
+    "source_sha256": "3c7b078bf604d205a15216d671ed96a74606c3f285885b0f93b5f3290d098d43",
+    "runtime_sha256": "c294bca4e7914b4384eef12dfdb351c5b142ef326d37606ac0c0c6b7505a8391",
+    "glb_sha256": "f32fd8351812b2cc9a47ef7548de3d9bcb22bf57afb89a8bfca5a9f93e2c1914"
   },
   {
     "id": "elemental-focus",
@@ -2599,9 +2599,9 @@
     "source": "source/elemental-focus.blend",
     "glb": "glb/elemental-focus.glb",
     "runtime": "runtime/elemental-focus.model.json",
-    "source_sha256": "ea62ce38119b0a466ea8cfe639e121356fe95b9a11fbfe66355608bc5b598ca0",
-    "runtime_sha256": "30167b82b9b60a33261c030c118c7afbc11b7e2d13de87a6d59e005fe51e906c",
-    "glb_sha256": "506e025f032410defba83a6c3b99738fd54928a1e524497e49e4c9645f206441"
+    "source_sha256": "0a1e2e0395a1b69972d0d8e53bdc588aaa5c2313cbe8fd283c9bf5eeaaa7bd1c",
+    "runtime_sha256": "4d5fbe7b687ba09691414d09dfba632827f17ca45436d86d47a8bfc07734ad6e",
+    "glb_sha256": "233f3bac3dd28cdb5961f25455508fd9ec30fc7cbf3a2a64092f4919e4873287"
   },
   {
     "id": "fate-crystal",
@@ -2611,9 +2611,9 @@
     "source": "source/fate-crystal.blend",
     "glb": "glb/fate-crystal.glb",
     "runtime": "runtime/fate-crystal.model.json",
-    "source_sha256": "5111158f2f60231e0c8b1d9c17f9c372ca681753a6af909ebb5121a8f872be56",
-    "runtime_sha256": "c158b9495a70dc50606c7275757bcb4cabd76b9d63d5f18b390736c244020b42",
-    "glb_sha256": "8b2a4c73fcedad43420a1499f5581a6fa830e470e58fe4a5d8d0a236a34a8e91"
+    "source_sha256": "09127a7236ccbfd5ec3e88d15385737f421628ee1f458fca46aabf9953a8d68e",
+    "runtime_sha256": "4f1ac3653eb9447e220bc1258b671bba07238bca59357cb762c5af76fb4b394d",
+    "glb_sha256": "3e34dfe197242f74849ad58f20ba5222a682407b8feab7e69bdedf6d345976c0"
   },
   {
     "id": "fate-shard",
@@ -2623,9 +2623,9 @@
     "source": "source/fate-shard.blend",
     "glb": "glb/fate-shard.glb",
     "runtime": "runtime/fate-shard.model.json",
-    "source_sha256": "4427bacc3a4c65ca022c7a633b7098ed845a8dbeac13b0647e55c21ec563385f",
-    "runtime_sha256": "b8dd3e6c534f3204bfe959742e3b6c820e4f4824ee89b910dc7894abe2152d16",
-    "glb_sha256": "b5d31a456611c9d7cf0efe39345009835c508b65c6656162dabd093778e86ce7"
+    "source_sha256": "6e91a8ab7998ddd6e1656a8ac01782caf92010374cdc1e582ba058800f761344",
+    "runtime_sha256": "d41bc00bfd52cc19ca85d7561bb66c1dcfb43d36b7cca247f350968ed132c678",
+    "glb_sha256": "8f755abacab4df455275acff8c922169e66ebb00b3553c7b29d7235039e3eddb"
   },
   {
     "id": "furniture-crystal-bed",
@@ -2911,57 +2911,57 @@
     "source": "source/norn-spindle.blend",
     "glb": "glb/norn-spindle.glb",
     "runtime": "runtime/norn-spindle.model.json",
-    "source_sha256": "779222e002d429ab4bea796db7089ad61bae37146009190a1178e50577c988dd",
-    "runtime_sha256": "efa842397e7e831011b2e7ab7155ca113c507df8bc58bb0474e722e6282e5e0c",
-    "glb_sha256": "4b4fb325c5cc867ae6afa26fe0e15d312604923b9728849c78eadcf9a9497e78"
+    "source_sha256": "e2c75ee5c018ece9b1eadbd63533bbc97817e663ce3f1b74c4a7ff58f01c6b3c",
+    "runtime_sha256": "bdcc40d0c38cc07ddaa9a99de3616a360f37ff6780ede3f3954a2338a7d851dc",
+    "glb_sha256": "629acd3b614f2e313713aeae96026a1e0aee3d9571b796b6fb67fadce38cfd39"
   },
   {
     "id": "passage-stone",
     "parts": 29,
     "triangles": 3332,
-    "materials": 4,
+    "materials": 5,
     "source": "source/passage-stone.blend",
     "glb": "glb/passage-stone.glb",
     "runtime": "runtime/passage-stone.model.json",
-    "source_sha256": "2db8fd54fb76baff412f4f189bd534c87b6e438ffccddc789b2a6c76d89bd1b5",
-    "runtime_sha256": "f7a3316a5e667e6c048d252654342ad68845c91afc19cb9c34ef5a2ffb47343a",
-    "glb_sha256": "95627a9a038a0a2cd9980fe83a53910d24ffd0b441a7259c3f732e9a3d1dad9d"
+    "source_sha256": "3af734323ed71939e4d8ff253859c29c3ca605be8dfe346019d1959ffdf0824f",
+    "runtime_sha256": "9beca08c8cae34fe7f37716b23783b81f3e49a91ad2f5a9cfee8bb80c20138dc",
+    "glb_sha256": "0c770612e76cdb7e89c71b4a573df3cf757eb83c0bdf5e5252a85d05e6ec1645"
   },
   {
     "id": "rune-engraver",
     "parts": 10,
     "triangles": 1436,
-    "materials": 5,
+    "materials": 7,
     "source": "source/rune-engraver.blend",
     "glb": "glb/rune-engraver.glb",
     "runtime": "runtime/rune-engraver.model.json",
-    "source_sha256": "aaaebfc5bc4bf99f78980d2ba94d0530e8dd6654ea34660fce2bd5747b9cb1c9",
-    "runtime_sha256": "adda47754612c4705a2d65e4fa155780669cf48e5261485edb0fe9506861f8e6",
-    "glb_sha256": "5b81fa4a24fe91a25033793f0c26d286d4bc80d5a26647d1e9b0a949670c810f"
+    "source_sha256": "35c980da756eae19bac685963dee9e7dc6d870338dcc2812fca59b93408d795f",
+    "runtime_sha256": "b7168235f8d584a9d4316eb12fcfb648e80f712eb75c1387ec43498e024bb38f",
+    "glb_sha256": "14d8adc78e31d51a791c1ee1ce79f41f6b7e24f0bfd01ff815604c30844a6ee0"
   },
   {
     "id": "runed-totem",
     "parts": 35,
     "triangles": 4020,
-    "materials": 4,
+    "materials": 5,
     "source": "source/runed-totem.blend",
     "glb": "glb/runed-totem.glb",
     "runtime": "runtime/runed-totem.model.json",
-    "source_sha256": "acd9e40a3dd09f7804f5c61e2211300b4b77a32d1aad07c9bd35b03531caf160",
-    "runtime_sha256": "36103781a7415631ce89b07c087c2a96c615f919f139457e770b2a9b281d4466",
-    "glb_sha256": "30be9a4c7520699f8cd0acdd6916059bd5705b99911138231a8746223034144f"
+    "source_sha256": "069424c3c631fbf8f69b9cff730d66028e611065a4011c63cd4864311c0569cc",
+    "runtime_sha256": "1ddabd5569989e76cdfba7cc03dc2797e319f6c4416aa85a860463f3138dea5a",
+    "glb_sha256": "af9d32f7d932ce473678d3740a59484ac3ab423405c9c8eb92d049c65cc48b17"
   },
   {
     "id": "runic-keelstone",
     "parts": 18,
     "triangles": 1980,
-    "materials": 4,
+    "materials": 6,
     "source": "source/runic-keelstone.blend",
     "glb": "glb/runic-keelstone.glb",
     "runtime": "runtime/runic-keelstone.model.json",
-    "source_sha256": "a447d5e52f5ff3e1b7dce41038417c1736b4f103d6e57016e72465c4c7d90e5b",
-    "runtime_sha256": "c044e8a1c5b54cede045be017e70fd0fc833ea8a977dba3056653c3607417741",
-    "glb_sha256": "904a3cde72f705c8e801135fb61a55b5ac403b35d4328c53939b00587285f04b"
+    "source_sha256": "4f46b2b8c4eb5fc59c91f1cf4c7dd08273ddd9c8bca71302585d0dcb09254845",
+    "runtime_sha256": "97635a0adae54ba03ffba17039bf4b01aaa87154c0ad5045a8dac78a8c0aa465",
+    "glb_sha256": "574c006a70d8133ed70c266d21eeda7d25cd0cd393f09631ae182c1450a82f01"
   },
   {
     "id": "seidr-ritual-focus",
@@ -2971,9 +2971,9 @@
     "source": "source/seidr-ritual-focus.blend",
     "glb": "glb/seidr-ritual-focus.glb",
     "runtime": "runtime/seidr-ritual-focus.model.json",
-    "source_sha256": "380c44abd28f4a62fa3bf02a9b5470f60137f62569c296fa74f333a7b58ead0f",
-    "runtime_sha256": "34c1bf49c8a8b950ddd4bcfb1a4e519d71ab24222e7b00f61c38122aabe87f35",
-    "glb_sha256": "7a40318189b6fd6fbdb438a8d102d4164a67fc98f2a2da0c6ac482f02432c7e6"
+    "source_sha256": "00317199b741753726568b4d65c4fcd57b27edb244fe245bba9422628e072dd0",
+    "runtime_sha256": "6bf89c8b71186a9b2fd2490ddef480217396b65f34516dd39b60ee696c9ad7b4",
+    "glb_sha256": "b95ab4a7c9da91bb83305ff8e636f4cac15cbc8f9d25ae8c5bddbb51de8e5829"
   },
   {
     "id": "sentinel-ammo-earth",
@@ -3075,13 +3075,13 @@
     "id": "spirit-fetish-raven",
     "parts": 15,
     "triangles": 1864,
-    "materials": 4,
+    "materials": 6,
     "source": "source/spirit-fetish-raven.blend",
     "glb": "glb/spirit-fetish-raven.glb",
     "runtime": "runtime/spirit-fetish-raven.model.json",
-    "source_sha256": "f3c688eff48560f241a1cddcbe21226064f99f51efec5705f5b4dfab6def485b",
-    "runtime_sha256": "6df99ceb170ad5ac5318ebe71d91063f103aa597b4a6e8a50ac5e6ab6ccb57fd",
-    "glb_sha256": "b4b22d10333dcaeaec45a48b7738c543cc9ce77d1936b21e032d770c66b9dd0c"
+    "source_sha256": "baa64cc136c048da53952448c7517b1ed615875b57fab35a8051143e9b9da47d",
+    "runtime_sha256": "abfba84f6b504edd1d85c9013521ca62dbd8bf11653d523abb33939381cc2102",
+    "glb_sha256": "a8cd23ef930497b6701abc1bef6579d56c2317fec61196a8c0e8fa1d94b37d05"
   },
   {
     "id": "spirit-fetish-warrior",
@@ -3091,21 +3091,21 @@
     "source": "source/spirit-fetish-warrior.blend",
     "glb": "glb/spirit-fetish-warrior.glb",
     "runtime": "runtime/spirit-fetish-warrior.model.json",
-    "source_sha256": "b247591a30fe9546791193a08e7e70b523dd54d4b25b79c104a41327c928aa14",
-    "runtime_sha256": "3ccab15449c9ed5f4f219e3cd02a1e9e790a8b6e3435291ef2a1519ea9092e1a",
-    "glb_sha256": "c928a50b11798c4f763f996c9c2339309f446e08083c8ba7122d5bc49186daed"
+    "source_sha256": "0bcd048ab360b98f8bc0f4e40de0e450eec5430854601d5a3a9491dfac80ec82",
+    "runtime_sha256": "c49740d5da9399f1df5d5baa7e840dba8877a433f87d9ba0c1fc0a5050fc4e22",
+    "glb_sha256": "17e4b77e9429e4ed508a23c10f2004acbfcd0ebf82670f81fffa7a8fa248f999"
   },
   {
     "id": "spirit-fetish-wolf",
     "parts": 16,
     "triangles": 1468,
-    "materials": 4,
+    "materials": 7,
     "source": "source/spirit-fetish-wolf.blend",
     "glb": "glb/spirit-fetish-wolf.glb",
     "runtime": "runtime/spirit-fetish-wolf.model.json",
-    "source_sha256": "e13c4ef95563257b8938739c1a03fd6e698333aa48ebde7b25106c4d9ac8606f",
-    "runtime_sha256": "d6719aa28b65797efd4a056d8ce1d22a1cd9aef2edeef38b360b74ea1619a1b8",
-    "glb_sha256": "5fe852d3dc774ae24864b929d9e13c5ae083f96742c0c6be1846632d084ed84f"
+    "source_sha256": "ca81610f3254ccb374f2093c821c58c84f31ab4d617b2e4e526429b4158819a3",
+    "runtime_sha256": "a8c97c141392edd1e099b2a9d76f24145fb59e341c0744bffd248bc874a168ce",
+    "glb_sha256": "7ce684df15631e6af42a79499cb3ba430e8fa7fe97b8983188a29ee8e4a69b1f"
   },
   {
     "id": "staff-frost-advanced",
@@ -3355,9 +3355,9 @@
     "source": "source/underworld-dais.blend",
     "glb": "glb/underworld-dais.glb",
     "runtime": "runtime/underworld-dais.model.json",
-    "source_sha256": "f89690ddf637acf30db2496f1a859a26ffef26d440df0506210dc8298aed0316",
-    "runtime_sha256": "8b48a092ef7f12c09cb2aba432221971fcdf2f95ea82c1ae6da758007eff7942",
-    "glb_sha256": "c9f71aa89e29c70d08861d91ccbf227e0cddd17fc119d47a6c677a18f270bb91"
+    "source_sha256": "5b15a58ebeb9801e531c32412c98f5c7ae35733634b476c6f21f6bda5f72086d",
+    "runtime_sha256": "0410ff20b7197c08949acbf9a935cf9e3b079440308b14b5bf5144d0bd3c2f74",
+    "glb_sha256": "1e05baa850763c0d059fe8134869ea26e517f2bf37cd511f91fef8e1062be48b"
   },
   {
     "id": "underworld-standing-stone",
@@ -3367,8 +3367,8 @@
     "source": "source/underworld-standing-stone.blend",
     "glb": "glb/underworld-standing-stone.glb",
     "runtime": "runtime/underworld-standing-stone.model.json",
-    "source_sha256": "122c5f359fc16ca209364ab6b0e5558e0debb949e608ca62db00cd99962daa25",
-    "runtime_sha256": "0d16513215d68acef378bb381d73094a16dc0ffa8e7e5915e9c0e62a71212bd2",
-    "glb_sha256": "d5cef0e9dcb81c30160ff8102855b0682d7d721597ebed37db0ea0b5cac92ed3"
+    "source_sha256": "54c7e91a379e6f24ddbfffc5825dcb9160bfd665ca99b488c087e4b1f2c1efec",
+    "runtime_sha256": "ebaba62941606cb29d25bb55e1a591bb5311528785bfa5ad838437caa345437f",
+    "glb_sha256": "5174c52627bf54fab8af194a47764b97787f35e44096c630f0db36f55fdf9207"
   }
 ]

@@ -1,4 +1,4 @@
-"""Give the Deep Fracture creature models an albedo map without touching their geometry.
+"""Give untextured models an albedo map without touching their geometry.
 
     blender --background --factory-startup --python tools/texture-creature-models.py -- [model-id ...]
 
@@ -24,6 +24,7 @@ settings in a .blend and exports as its default colour, which shipped every text
 authoring session pure black.
 """
 import bpy
+import json
 import math
 import random
 import sys
@@ -33,13 +34,27 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'assets/models/source'
 TEXTURE_SIZE = 256
 
-CRYSTAL_HINTS = ('crystal', 'core', 'shard', 'spire', 'eye', 'orbit', 'prism',
-                 'facet', 'gem', 'glow', 'vein', 'rune')
+# Ordered: the first family whose hint appears in the part name wins, so the more specific
+# materials are tested before the stone fallback.
+ROLE_HINTS = (
+    ('crystal', ('crystal', 'core', 'shard', 'spire', 'orbit', 'prism', 'facet', 'gem',
+                 'glow', 'vein', 'eye', 'heart', 'focus', 'lens', 'geode')),
+    ('metal',   ('iron', 'metal', 'band', 'brace', 'rivet', 'hinge', 'nail', 'blade',
+                 'chain', 'clasp', 'ring', 'fitting', 'bracket')),
+    ('timber',  ('wood', 'timber', 'beam', 'plank', 'post', 'haft', 'shaft', 'pole',
+                 'rafter', 'strut')),
+    ('cloth',   ('cloth', 'banner', 'pennant', 'drape', 'wrap', 'leather', 'hide')),
+    ('carapace', ('body', 'torso', 'limb', 'leg', 'arm', 'claw', 'hook', 'prong', 'plate',
+                  'spine', 'skull', 'jaw', 'shell', 'carapace')),
+)
 
 
 def role_of(name):
     lowered = name.lower()
-    return 'crystal' if any(h in lowered for h in CRYSTAL_HINTS) else 'carapace'
+    for role, hints in ROLE_HINTS:
+        if any(h in lowered for h in hints):
+            return role
+    return 'stone'
 
 
 def noise(seed, lattice=16):
@@ -58,17 +73,32 @@ def noise(seed, lattice=16):
     return sample
 
 
+SEEDS = {'crystal': 6101, 'carapace': 6102, 'metal': 6103, 'timber': 6104,
+         'cloth': 6105, 'stone': 6106}
+
+
 def sampler(role):
-    field = noise(6101 if role == 'crystal' else 6102)
+    field = noise(SEEDS.get(role, 6106))
 
     def sample(u, v):
         n = field(u, v, 7.0) * 0.6 + field(u, v, 19.0) * 0.4
         if role == 'crystal':
             facet = 0.5 + 0.5 * math.sin(u * math.tau * 6.0) * math.cos(v * math.tau * 4.0)
             return 0.55 + 0.32 * facet + 0.13 * n
-        # Pitted, plated carapace: broader mottling with a harder speckle on top.
-        plate = 0.5 + 0.5 * math.sin(u * math.tau * 3.0 + n * 4.0)
-        return 0.42 + 0.30 * n + 0.16 * plate
+        if role == 'metal':
+            brushed = 0.5 + 0.5 * math.sin(v * math.tau * 26.0 + n * 1.6)
+            return 0.44 + 0.22 * brushed + 0.24 * n
+        if role == 'timber':
+            grain = 0.5 + 0.5 * math.sin(v * math.tau * 15.0 + n * 5.0)
+            return 0.34 + 0.26 * grain + 0.26 * n
+        if role == 'cloth':
+            weave = 0.5 + 0.25 * math.sin(u * math.tau * 34.0) + 0.25 * math.sin(v * math.tau * 34.0)
+            return 0.48 + 0.22 * weave + 0.22 * n
+        if role == 'carapace':
+            plate = 0.5 + 0.5 * math.sin(u * math.tau * 3.0 + n * 4.0)
+            return 0.42 + 0.30 * n + 0.16 * plate
+        # Stone fallback: broad mottling, no directional signature.
+        return 0.36 + 0.42 * n
     return sample
 
 
@@ -141,8 +171,16 @@ def main():
     if args:
         targets = args
     else:
-        targets = sorted(p.stem for p in SOURCE.glob('deep-fracture-*.blend')
-                         if 'creature' in p.stem or 'visual' in p.stem)
+        # Every source whose exported payload still has no texture on any part.
+        runtime = ROOT / 'assets/models/runtime'
+        targets = []
+        for source in sorted(SOURCE.glob('*.blend')):
+            payload = runtime / (source.stem + '.model.json')
+            if not payload.exists():
+                continue
+            document = json.loads(payload.read_text(encoding='utf-8'))
+            if not any(part['material'].get('texture') for part in document.get('parts', [])):
+                targets.append(source.stem)
     for model_id in targets:
         process(model_id)
 

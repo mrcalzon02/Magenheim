@@ -349,6 +349,27 @@ construction.
 Library texture coverage: **230 of 281 models (82%)**, from 111 at `924f5e7`. Parts 82%, from
 36%. 51 models remain, led by crystal (13), decor (10) and boss (8) families.
 
+### R8 — Texture gap closed
+
+**Status: source repaired 2026-09-16; live visual acceptance pending.**
+
+Every model in the library now carries an albedo map: **281 of 281 models and 3,681 of 3,681
+parts**, from 111 models and 36% of parts at `924f5e7`.
+
+The pass that textured the creatures was generalised to six surface roles chosen by part
+name - crystal, metal, timber, cloth, carapace, and stone as the fallback - and pointed at
+any model whose exported payload still had no texture. That cleared the last 51: crystal
+architecture, decor, boss hearts, artifacts, effects and assorted singletons.
+
+The same rules apply throughout: each object gets a copy of its own material so a shared
+`export-source` cannot put the wrong map on the wrong surface, and base colour, roughness and
+metallic are preserved so existing tints are undisturbed. Geometry, UVs, custom properties
+and object names are untouched.
+
+What this is and is not: every surface now has tonal variation instead of a flat fill, which
+is what made the library read as clay. It is not hand-authored art, there are no normal maps,
+and no in-game lighting check has been made.
+
 ### Library-wide fidelity measurement at `924f5e7`
 
 | Measure | Value |
