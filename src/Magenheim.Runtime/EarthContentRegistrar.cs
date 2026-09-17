@@ -15,7 +15,12 @@ internal sealed class EarthContentRegistrar : IDisposable
     private bool _subscribed;
     private bool _registered;
 
+    private static Magenheim.Core.Socketing.SocketEffectDefinitionSet? _socketEffects;
+
     internal EarthContentRegistrar(ManualLogSource log) => _log = log;
+
+    internal EarthContentRegistrar(ManualLogSource log, Magenheim.Core.Socketing.SocketEffectDefinitionSet socketEffects)
+        : this(log) => _socketEffects = socketEffects;
 
     internal void Register()
     {
@@ -74,6 +79,12 @@ internal sealed class EarthContentRegistrar : IDisposable
             ? $"{element} Crystal"
             : $"{tier} {element} Crystal";
         var description = $"A {element}-aligned {tier.ToString().ToLowerInvariant()} crystal. {ElementVisualPalette.Essence(element)}";
+        // Reported from play: a crystal did not say what it does in each kind of slot, so the
+        // player could not tell before committing the socket. The lines are generated from the
+        // same validated rules the runtime calculates with, so they cannot drift from balance.
+        if (_socketEffects is not null)
+            description += System.Environment.NewLine + System.Environment.NewLine
+                + Magenheim.Core.Socketing.SocketEffectDescription.Tooltip(element, tier, _socketEffects);
         AddItem(prefab, asset, displayName, description, .3f, element);
     }
 
