@@ -162,6 +162,8 @@ internal static class GeologyDecorIcons
 
     private static void DrawCrystal(Color[] pixels, int cx, int cy, int radius, Color body, Color highlight)
     {
+        var outline = Color.Lerp(body, Color.black, .68f);
+        DrawDiamond(pixels, cx, cy, radius + 2, outline);
         DrawDiamond(pixels, cx, cy, radius, body);
         DrawDiamond(pixels, cx - radius / 4, cy + radius / 4, Math.Max(2, radius / 3), highlight);
     }
