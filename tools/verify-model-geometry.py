@@ -57,6 +57,7 @@ INTERIOR_SURFACES = {
     'CavernWalls': 'perimeter rock seen from inside the chamber',
     'CavernShaft': 'shaft walls seen from inside the shaft',
     'CavernSkyCap': 'cap closing a fissure, seen from below',
+    'PassageShell': 'inside of a passage tunnel, walked through by the player',
 }
 
 

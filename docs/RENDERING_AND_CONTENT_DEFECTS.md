@@ -268,6 +268,30 @@ first export therefore produced crystals lying on their side. Geometry, winding,
 hashes were all valid; only rendering the result showed it. A conversion at emit now makes
 the exported game coordinates identical to the authored ones.
 
+### R5 — Deep Fracture passages brought up to the districts
+
+**Status: source repaired 2026-09-16; live visual acceptance pending.**
+
+The cavern rebuild left the joining pieces behind. `deep-fracture-passage` was five boxes
+totalling 60 triangles and `deep-fracture-traversal` 172, feeding districts of roughly 10,000.
+
+| Model | Before | After | Envelope | Declared Room |
+| --- | ---: | ---: | --- | --- |
+| `deep-fracture-passage` | 60 | 744 | 9.9 x 9.0 x 16.0 | 10 x 10 x 16 |
+| `deep-fracture-traversal` | 172 | 352 | 4.5 x 6.2 x 4.4 | 12 x 10 x 12 |
+
+`tools/generate-deep-fracture-passages.py` sweeps the passage as a rock tunnel with an arched
+roof, a flattened walkable floor and irregular walls, open at both ends so it docks into the
+district mouths, with pendants and floor rubble. The traversal node keeps its plinth, ring
+and core role and envelope but is built as faceted stone and crystal.
+
+`PassageShell` is declared in `verify-model-geometry`'s `INTERIOR_SURFACES`: a swept tube has
+no enclosed volume to test, and the player walks inside it, so its faces point at the axis.
+The sweep checks its own orientation against the tunnel axis instead.
+
+The preview render was too dark to judge surface quality; it confirms enclosure, floor and
+formations only.
+
 ### Library-wide fidelity measurement at `924f5e7`
 
 | Measure | Value |

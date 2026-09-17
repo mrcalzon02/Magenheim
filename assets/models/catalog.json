@@ -2161,27 +2161,27 @@
   },
   {
     "id": "deep-fracture-passage",
-    "parts": 5,
-    "triangles": 60,
-    "materials": 3,
+    "parts": 2,
+    "triangles": 744,
+    "materials": 2,
     "source": "source/deep-fracture-passage.blend",
     "glb": "glb/deep-fracture-passage.glb",
     "runtime": "runtime/deep-fracture-passage.model.json",
-    "source_sha256": "aa609dd4581af282113f3632815bb27b4b7a0cc64ee478b324887ee025645063",
-    "runtime_sha256": "f6308a662cd18ec28eb71cc3847402bb82a0137cf7503d28a389e7e416bd0765",
-    "glb_sha256": "30c32b45ee5b106dae2aefe6f0b2aa8df5b864911a37d894562634b3b04dad5e"
+    "source_sha256": "016c55110afb8c824c2cd70d692b5dc9f90c88c999b09f6f9670b652ac85873e",
+    "runtime_sha256": "6a2ddf7d6ae934474a880d3fcbc7eb75b7c10030f86bd122fa0b7247213b1e76",
+    "glb_sha256": "12a7ab56def54d5cdb35a8f7e32524071c44f0fb1c979a83b6ac25a3d3eacb2d"
   },
   {
     "id": "deep-fracture-traversal",
-    "parts": 3,
-    "triangles": 172,
-    "materials": 3,
+    "parts": 2,
+    "triangles": 352,
+    "materials": 2,
     "source": "source/deep-fracture-traversal.blend",
     "glb": "glb/deep-fracture-traversal.glb",
     "runtime": "runtime/deep-fracture-traversal.model.json",
-    "source_sha256": "0f4c0c32918900783a756d441ad9a6ef1f64262ea9281a5d04e26f2133dc4c65",
-    "runtime_sha256": "bc0ab422b84dee28f10b1970151ee58d193d563cd8652510c5cb0740d89a8022",
-    "glb_sha256": "e6fb474ded5143fbce49b10beee00f2f313f77fef77319e67fd69a2ed91879a2"
+    "source_sha256": "7ba75617658a0de4996bc7e6103b4362a13f5acb78a7556ef3b879f51a65f80c",
+    "runtime_sha256": "dc3a49695d3d7c7df3be1ae8440f2912761f7d631aa466f3a4c375256c82cafc",
+    "glb_sha256": "eda38d3c2a02d6f2ed8808543f57ce85b94e900fea328940d01392ee779f927a"
   },
   {
     "id": "DF-01",
