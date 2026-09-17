@@ -20,7 +20,6 @@ internal sealed class UnderworldTravelRuntime
 
     internal bool TryBegin(
         UnderworldLayer targetLayer,
-        UnderworldAnchor targetAnchor,
         string authorityFingerprint,
         string operationId,
         out UnderworldPhysicalWorldSwitchRequest? request,
