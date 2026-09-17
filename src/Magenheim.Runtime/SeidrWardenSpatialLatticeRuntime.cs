@@ -54,7 +54,7 @@ internal sealed class SeidrWardenSpatialLatticeRuntime:MonoBehaviour
         var line=go.AddComponent<LineRenderer>();
         line.useWorldSpace=true;line.positionCount=3;line.startWidth=.065f;line.endWidth=.018f;
         var color=new Color(.66f,.34f,.9f,.88f);line.startColor=color;line.endColor=new Color(.38f,.18f,.68f,.16f);
-        var material=new Material(Shader.Find("Standard"));material.color=color;material.SetFloat("_EmissionColor",color*1.1f);line.material=material;
+        var material=new Material(Shader.Find("Standard"));material.color=color;material.SetColor("_EmissionColor",color*1.1f);line.material=material;
         var middle=Vector3.Lerp(start,end,.5f)+Vector3.up*(.05f+(seed%3)*.045f);
         line.SetPosition(0,start);line.SetPosition(1,middle);line.SetPosition(2,end);
         go.AddComponent<LatticeLifetime>().Configure(.48f+(seed%2)*.08f);
@@ -68,7 +68,7 @@ internal sealed class SeidrWardenSpatialLatticeRuntime:MonoBehaviour
         rift.transform.rotation=Quaternion.Euler(70f+(seed%2)*12f,seed*47f,seed%3*9f);
         var collider=rift.GetComponent<Collider>();if(collider)Destroy(collider);
         var renderer=rift.GetComponent<Renderer>();
-        if(renderer){var material=new Material(Shader.Find("Standard"));var color=new Color(.58f,.25f,.82f,.76f);material.color=color;material.SetFloat("_EmissionColor",color*.72f);renderer.material=material;}
+        if(renderer){var material=new Material(Shader.Find("Standard"));var color=new Color(.58f,.25f,.82f,.76f);material.color=color;material.SetColor("_EmissionColor",color*.72f);renderer.material=material;}
         rift.AddComponent<RiftLifetime>().Configure(.62f+(seed%3)*.05f,seed%2==0?1f:-1f);
     }
     private static void EmitFalsePosition(Vector3 source,Vector3 origin,int seed)
