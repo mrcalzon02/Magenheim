@@ -322,6 +322,33 @@ current cavern wall map            min=86   max=154  -> accepted
 The districts also gained maps in this pass, having previously carried flat base colours
 only. Library texture coverage is now 134 of 281 models (48%), from 111 at `924f5e7`.
 
+### R7 — Creature models textured
+
+**Status: source repaired 2026-09-16; live visual acceptance pending.**
+
+104 creature and creature-visual models carried 1,520 untextured parts, the largest single
+block of the texture gap.
+
+Their materials could not say what a surface is: the model migration left most of them named
+`export-source`, `export-source.001` or `export-source.002`, shared across hundreds of parts.
+The part names survived and could - `body`, `torso`, `leg-l`, `back-plate`, `hook-r`, `prong`
+against `crystal`, `core`, `shard`, `spire`, `eye` - so `tools/texture-creature-models.py`
+classifies by part name and gives each object a copy of its own material carrying either a
+crystal facet map or a pitted carapace map.
+
+Copying rather than editing the shared material is the point: one `export-source` is used by
+carapace and crystal parts alike, so editing it in place would have put a crystal facet map
+on a leg.
+
+Base colour, roughness and metallic are preserved exactly. Those already encode the elemental
+tint across all eight variants, and Unity multiplies albedo by base colour, so the map adds
+surface without disturbing the tint. Geometry, UVs, custom properties and object names are
+untouched; this is a material pass only, so orientation and collision are unchanged by
+construction.
+
+Library texture coverage: **230 of 281 models (82%)**, from 111 at `924f5e7`. Parts 82%, from
+36%. 51 models remain, led by crystal (13), decor (10) and boss (8) families.
+
 ### Library-wide fidelity measurement at `924f5e7`
 
 | Measure | Value |
