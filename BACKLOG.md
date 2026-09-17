@@ -14,7 +14,7 @@ below. Items marked REGRESSION were introduced by the asset work in this session
 - [ ] **Staves need icons derived from their current models.** Icons predate the staff visual rebuild.
 - [ ] **All item descriptions must be mechanically informative and player-facing.** One clear statement of what the item does, in the player's language, not the implementation's.
 - [ ] **Staves must take damage and degrade like normal weapons and tools.** Check `m_useDurability`, `m_maxDurability` and the durability drain path on the staff clones.
-- [ ] **REGRESSION: crystal buildables are texturally broken.** Introduced by the generic retro-texture pass. Models whose UVs were smart-projected carry packed islands, so a coherent noise map lands as discontinuous patchwork across island boundaries. Models with purpose-authored UVs (geode, crystal tiers, caverns, passages) are unaffected. Either make the retro map fine-grained and low-contrast so island seams cannot read, or revert the pass on the affected families.
+- [x] **REGRESSION: crystal buildables are texturally broken.** FIXED 0.0.53. Introduced by the generic retro-texture pass. Models whose UVs were smart-projected carry packed islands, so a coherent noise map lands as discontinuous patchwork across island boundaries. Models with purpose-authored UVs (geode, crystal tiers, caverns, passages) are unaffected. Either make the retro map fine-grained and low-contrast so island seams cannot read, or revert the pass on the affected families.
 
 ## P0.1 — Asset fidelity, live acceptance and geometry gating (TOP PRIORITY, raised 2026-09-16)
 

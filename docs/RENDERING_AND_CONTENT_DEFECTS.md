@@ -399,13 +399,18 @@ missing behind every "source repaired, live acceptance pending" entry above.
 
 Two findings matter beyond their own fix.
 
-**The retro-texture pass regressed the crystal buildables.** Closing the texture gap to 100%
+**The retro-texture pass regressed the crystal buildables. Fixed in 0.0.53.** Closing the texture gap to 100%
 applied generated maps to models whose UVs were smart-projected into packed islands. A
 coherent noise field sampled across island boundaries reads as discontinuous patchwork, which
 is worse than the flat colour it replaced. Models with purpose-authored UVs - geode, crystal
 tiers, caverns, passages - are unaffected, because their UVs were built for the map. The
 tonal-range gate cannot see this: the map has range, it is simply being sampled across seams.
 Coverage percentage was the wrong measure of success.
+
+The repair replaces every retro-fitted map with fine, low-contrast grain: no feature is larger
+than a few pixels, so no island boundary can expose a discontinuity. 147 sources and 203
+exported models were rewritten. This is a floor, not a finish; a proper fix is a per-family
+unwrap with an authored map, which is a much larger job and remains open.
 
 **Hand orientation is very likely the up-axis defect again.** The crystal tier models were
 authored Y-up against a Z-up Blender and a `(x, y, z) -> (x, z, -y)` exporter, and shipped

@@ -79,8 +79,8 @@
     "source": "source/architecture-crystal-hearth.blend",
     "glb": "glb/architecture-crystal-hearth.glb",
     "runtime": "runtime/architecture-crystal-hearth.model.json",
-    "source_sha256": "714f1f12899de4b22f52328f81ceb59997bf33b6002057978c0905527700cf53",
-    "runtime_sha256": "56c2a6c5e2b004103dfe9893ac3fea50f8eb3a9281e8d7fefe54851827c235dc",
+    "source_sha256": "831e9f300246f6e9f5698e1bc3b3fec1ee8b3b057ad587c1245493210f0194d4",
+    "runtime_sha256": "90d69491256f2445326ed6dad2a24748c4e64c2bcc0f0c531abe2b247526b378",
     "glb_sha256": "3f2c6f68a17c76974972328040e01d68632f6e37ffc76eabeb547d058422c040"
   },
   {
@@ -91,9 +91,9 @@
     "source": "source/boss-bonemass-rotheart.blend",
     "glb": "glb/boss-bonemass-rotheart.glb",
     "runtime": "runtime/boss-bonemass-rotheart.model.json",
-    "source_sha256": "2e44c437a9130992358cdcf8ae807fd42153819d4b2f65e8e3163850d7b7c39a",
-    "runtime_sha256": "d715f65d5f07e70b5a7c48d36845689da58b10254b8bff860f1d2f606c8e169a",
-    "glb_sha256": "bc6e93eda3369a221678b32d8a39bf8fddab64b52a8d60f97adce5e8930fd28e"
+    "source_sha256": "18960f18bb6c53403754fb1c07baae663b34c7bc7f93c38921c035f4866ab6bf",
+    "runtime_sha256": "8f6a7793cfd4a9cc2cd0bb67b19fe8795ded314930cc2d6ff3c40e9e2b113e0e",
+    "glb_sha256": "4f76a3bb547c13f7c788e7b2918abbea63981feb0974230478d483d249af5050"
   },
   {
     "id": "boss-eikthyr-stormheart",
@@ -103,9 +103,9 @@
     "source": "source/boss-eikthyr-stormheart.blend",
     "glb": "glb/boss-eikthyr-stormheart.glb",
     "runtime": "runtime/boss-eikthyr-stormheart.model.json",
-    "source_sha256": "b3a35db46a908cd8ad6abd2f06c8654ae5d813c7695b6a2787a818bb2a6971e3",
-    "runtime_sha256": "4db7bd71ed84cc8760b1d731f0e7f4493506e100360a0ad9e987d197721bc080",
-    "glb_sha256": "0d6f4dfa213b87d46e60a4fc5e83ba4b8ba03e3d73266b81302a5f3b095b589a"
+    "source_sha256": "0375516788bb46f7f020013d10066ce1bb9e9be6edee0c7834aa37d7c05a99b0",
+    "runtime_sha256": "9a7109326327d1c626313ad7499b60237a80a701953d7b2d774d83836fcb50e6",
+    "glb_sha256": "70bb3b00dc33effcf17bd0147023d2e2c000cb91cd624eb5e3ed99cd2e8f7783"
   },
   {
     "id": "boss-elder-rootheart",
@@ -115,9 +115,9 @@
     "source": "source/boss-elder-rootheart.blend",
     "glb": "glb/boss-elder-rootheart.glb",
     "runtime": "runtime/boss-elder-rootheart.model.json",
-    "source_sha256": "80358467ae5cd5d6f727f0843a240a9278fde1b1cca734c99d992ad6195e6d54",
-    "runtime_sha256": "b10e1cdfd0d09aca2874f4c0bb5b63aaeb58c436c0a94ac87bc5ad7c756c87d8",
-    "glb_sha256": "b479d89f7d9156a3bbc7e394b1c054999ce20068d3b1422cce9b6f21c9275d57"
+    "source_sha256": "7235769fe3c9f053a20b05c2dba09070c127e3f223142f18e65a6236decf8441",
+    "runtime_sha256": "00b3cd0357aa52d914e3bece972e0aa9f9c43ed215b78e52c1cfa7ae986eb997",
+    "glb_sha256": "e6759e05623c0a9d0ccc8222186c19dc939e4ac908a5e47f2f21f41a902840f7"
   },
   {
     "id": "boss-fader-ashheart",
@@ -127,9 +127,9 @@
     "source": "source/boss-fader-ashheart.blend",
     "glb": "glb/boss-fader-ashheart.glb",
     "runtime": "runtime/boss-fader-ashheart.model.json",
-    "source_sha256": "be0d690741a65daea0f3a0f9d871f92295e0ea257a413b23aebed8fdef328dfa",
-    "runtime_sha256": "9e480b3d4de3da57424a962a24bef3dd4434addf33a1606fb26ddf5fe1f24e7b",
-    "glb_sha256": "85860cc923d17b95d5de528020f72381e44e562ff548e98a979cdad129836b5b"
+    "source_sha256": "97070c090c75d60bee4d4ede872010dc5c4a628e8549e84c5e92ca153489d265",
+    "runtime_sha256": "4d3b9ca80d4fa331fa7029054c5824999233313d94ffcb2b5867c8ffa4fef7d3",
+    "glb_sha256": "c5fd40b9a3d3f88223e900fff1fc3477cd711c8fccc90cf0d6d0b28c95616adf"
   },
   {
     "id": "boss-kall-winterheart",
@@ -139,9 +139,9 @@
     "source": "source/boss-kall-winterheart.blend",
     "glb": "glb/boss-kall-winterheart.glb",
     "runtime": "runtime/boss-kall-winterheart.model.json",
-    "source_sha256": "7193593ad37062855b59c60309f8da4ba6645b4e145406ef56bac79a46844a23",
-    "runtime_sha256": "b1506d61cae2326eb1e5ac4dc229c4df841c51eb44b9e1c54b243e8a87cc1ddd",
-    "glb_sha256": "9d3fae7b8a97e130a7d65714b25fa8ebdca9baa2efbf577ba804b3a9d2157cdd"
+    "source_sha256": "9a7d6173f89449ff7c19819217d6e876e3bfb0b7c6b5e76a2ddf68bca77875e6",
+    "runtime_sha256": "56baa710971cb6b1c2f71ab869e1a63467780323b42609e6d2fd6d8c7c543a3f",
+    "glb_sha256": "ad6aaf97e5713c3da17e226b97499d606b07e0b0bf8846ee53f3330adca317ef"
   },
   {
     "id": "boss-moder-rimeheart",
@@ -151,9 +151,9 @@
     "source": "source/boss-moder-rimeheart.blend",
     "glb": "glb/boss-moder-rimeheart.glb",
     "runtime": "runtime/boss-moder-rimeheart.model.json",
-    "source_sha256": "19a1e0f7e90bbe210dbf861b4558b9ae9f993afd1b6e9d8c7ddc456a5fccf1eb",
-    "runtime_sha256": "aba775dfba28af6c6017a123e87d20d95f2306629b1eaa868d3353cccffcf7cb",
-    "glb_sha256": "bda454cc2c7dfc8a0ea0d58733894665759927b16ec8cf819ec196e59bc37790"
+    "source_sha256": "ad8b0521750849617f1ac91062fe3d63ed3697749421766f1447fdeab8e2651e",
+    "runtime_sha256": "52ba7bf683a82e0c20f425f977a6941828eebe06c03d253d1462a59697444bf9",
+    "glb_sha256": "51e1a654cb8e3065cd8861c252a338260a06c23f0fd1b1eb04ed16b43dd160ba"
   },
   {
     "id": "boss-queen-veilheart",
@@ -163,9 +163,9 @@
     "source": "source/boss-queen-veilheart.blend",
     "glb": "glb/boss-queen-veilheart.glb",
     "runtime": "runtime/boss-queen-veilheart.model.json",
-    "source_sha256": "6a0c62e7ee2dbf8cfd4079e3c151b30682437a92e302f09f8cb290204d5380b6",
-    "runtime_sha256": "0c7d6e8abec6d395bc02c73ff72a178c0de2a433b9a6e72859cc53d0dca09ecd",
-    "glb_sha256": "e9dad94dce16b12deab99b996d937e3c6222f8f73677accae8a66401a79da9b8"
+    "source_sha256": "db3285075cd91fa8bb807d2815074d5152fe3da503641b8c24df7bd10f99cb1a",
+    "runtime_sha256": "607719acbc3bb9c40d019723c5d6b513a0815c63b3237f2647fb72361ccaf798",
+    "glb_sha256": "1c656748cb0109619aa396924ca2289713ea7e1904c7c10d8866efa99d1d61e5"
   },
   {
     "id": "boss-yagluth-sunheart",
@@ -175,9 +175,9 @@
     "source": "source/boss-yagluth-sunheart.blend",
     "glb": "glb/boss-yagluth-sunheart.glb",
     "runtime": "runtime/boss-yagluth-sunheart.model.json",
-    "source_sha256": "f907fa98e8af287f19e3b5fc6876501fbcd605ceec90334b838d035416b5712f",
-    "runtime_sha256": "b9de870e0a21b7bd502d5f8aa9f7287d7a6b645a39c75296c391076cca8c7c64",
-    "glb_sha256": "b5cdc3027024f029b8b0dae0f9e9d866ad60c6ee0e74209d8fe9c24fcbc8fedd"
+    "source_sha256": "e863a6187c72fdbbbdaeda64484efbb20eb75b7e4fbeaef73a4282d71b851e5a",
+    "runtime_sha256": "7c70b7d3e96de1d865d3b57cb39977267f4c2c28ee3ef5e31ffadeab16d0a494",
+    "glb_sha256": "329183469ed0b91df666e54238918aa1a98c2db232fb3d5ee542fc655cc81ef9"
   },
   {
     "id": "broken-crown",
@@ -187,9 +187,9 @@
     "source": "source/broken-crown.blend",
     "glb": "glb/broken-crown.glb",
     "runtime": "runtime/broken-crown.model.json",
-    "source_sha256": "9a9d0eff765aec0481e06dfcefcc94f1f1884cfa692c2ac26dee28d97f2aac44",
-    "runtime_sha256": "71267e997ef6e7a0a0f91c051989f4c618e014e20560b3095a59886300eac21c",
-    "glb_sha256": "eef3640f25db64f3c5f4b084a80727677db079dccf17dce9bb67b299514d7101"
+    "source_sha256": "a8dc0d097ee793d1049f8c9689d7989c5ff5609b669e28b50f1b3f900ee2f38b",
+    "runtime_sha256": "528ab08ad3c1e3d4df64b1a79c986242e4e6ded6840b42241bd90f8b145aac11",
+    "glb_sha256": "bbef962b625e130a0a70274a015552fd1b06b48eba6a0e8bafbdd9160f8112d5"
   },
   {
     "id": "crystal-banner-pennant-earth",
@@ -199,8 +199,8 @@
     "source": "source/crystal-banner-pennant-earth.blend",
     "glb": "glb/crystal-banner-pennant-earth.glb",
     "runtime": "runtime/crystal-banner-pennant-earth.model.json",
-    "source_sha256": "f14489c68675ced02a2e7a9fa5f340231affa193112c694aea8fc73efddb1d0c",
-    "runtime_sha256": "8079130d81fc659c33e4f94af83804f2f24053509e9c30c8cbb8e19c9cb007a8",
+    "source_sha256": "58eb9a9cf32c9e40d871f8aee0f80f431a414c05256dc06308b43234138af8bc",
+    "runtime_sha256": "cbe302d717eb61b7cda0c4e6a791dbb28433e0a755aab3ccacf73990e4d602a2",
     "glb_sha256": "870b9d9d8b42ef1ec0109d2ed43a2c56eb212d357e9c614234ab5b0ff12ff725"
   },
   {
@@ -211,8 +211,8 @@
     "source": "source/crystal-banner-pennant-fire.blend",
     "glb": "glb/crystal-banner-pennant-fire.glb",
     "runtime": "runtime/crystal-banner-pennant-fire.model.json",
-    "source_sha256": "d6d61332cc4a6f5d00e614eb4e97b216b3d26d45dd642f77b7f2be1ff77fc3b0",
-    "runtime_sha256": "6051a1ad88118c26d8066cf5f8f8fe981562f94053e229aef178fefec326cec6",
+    "source_sha256": "80ee5ec7e5c7ef70e39332f941e19507f19ee1ec8c03496bc915ce13d0a17d76",
+    "runtime_sha256": "c6177023b58223d16e2ae54152217de1b8cba98b697c94cdb139d9feaa4ffcbb",
     "glb_sha256": "770e079632338030d362090cf6eacd52ca5ad1461715add7a953cd06f49ebbb7"
   },
   {
@@ -223,8 +223,8 @@
     "source": "source/crystal-banner-pennant-frost.blend",
     "glb": "glb/crystal-banner-pennant-frost.glb",
     "runtime": "runtime/crystal-banner-pennant-frost.model.json",
-    "source_sha256": "2a69e774e56b10a7d35e55056282ea07117e1a43b205e68dad821427ce7703d4",
-    "runtime_sha256": "e6447e0a1f2b277a9e7cb3dbefb5734163d2bb537fb99ee9a0bf986c9737b5f5",
+    "source_sha256": "7b9b5c16071fe3ee9ebfc573071f2bdd80f52d0f7fc4e9462cf0705d8bf0682e",
+    "runtime_sha256": "b9b468a8cb9d59eb7b3a4bf64e90316866745dcab27311810bd851a86b08a9db",
     "glb_sha256": "e41f099276e0e6e8da9e506386223c82e445d0e82d080f07766a5ff3cf6248da"
   },
   {
@@ -235,8 +235,8 @@
     "source": "source/crystal-banner-pennant-radiance.blend",
     "glb": "glb/crystal-banner-pennant-radiance.glb",
     "runtime": "runtime/crystal-banner-pennant-radiance.model.json",
-    "source_sha256": "02430aacc2567e309eff64701427433f1f757542d81ae1c2f3c3e608fd314968",
-    "runtime_sha256": "cd8c7aa65d31cf37878adfedc52f09dd0d05f73d9dba564ef4ca03bfcedf761f",
+    "source_sha256": "5ee262395066af420512c351f9f517c0fe246313591f6e03652b73d212468790",
+    "runtime_sha256": "0b5e23b61a0442263cea67ed36eeea2848fee4e5411bba1a7dd2e51194bf7956",
     "glb_sha256": "f9e681963591bd289371e460ecebd76cfe6acdb09c532e0743bc0580ed69258e"
   },
   {
@@ -247,8 +247,8 @@
     "source": "source/crystal-banner-pennant-seidr.blend",
     "glb": "glb/crystal-banner-pennant-seidr.glb",
     "runtime": "runtime/crystal-banner-pennant-seidr.model.json",
-    "source_sha256": "3b1fe35ba5c68227e04004dfb54a344421acebbdb5ebe7a7aeaaf11d8c7634b9",
-    "runtime_sha256": "b6a17e7bc470ec3c57eec0563380fc7c2fc8e2f3e9a4b01ba06584f30dc455f1",
+    "source_sha256": "34f95f2f326e1739cf751fc61c22b63af30e467d4b9a56a3286fcdf333956926",
+    "runtime_sha256": "a30631d5513181220677b9a92a284daa078dbf91cef013b491fbc53243407f1a",
     "glb_sha256": "f5454dd196d071e97757743268ecd4230af63c6bdcd82f6917f301811bff0806"
   },
   {
@@ -259,8 +259,8 @@
     "source": "source/crystal-banner-pennant-spirit.blend",
     "glb": "glb/crystal-banner-pennant-spirit.glb",
     "runtime": "runtime/crystal-banner-pennant-spirit.model.json",
-    "source_sha256": "00c8f4a6b19fc5c70fbd4a2625dd9a32fdd468f5d54d29530ce4579fb638cb38",
-    "runtime_sha256": "7e1e7bcf9f9c79287b532c6cf31ba32e3a0a41e583b9e78734fde70217836158",
+    "source_sha256": "e79c203e5aa87c522dd2d31ab6a57d548d0ee6a058cec6b9e4a955dcca447e01",
+    "runtime_sha256": "fd239ffb194665323d31e4d9e70edc56dc2383436d653611b05556da0ce0fa98",
     "glb_sha256": "9f9851331c9896c29251df50c6c7a823b698cfbf5b22b9408e55c5ac8271b221"
   },
   {
@@ -271,8 +271,8 @@
     "source": "source/crystal-banner-pennant-storm.blend",
     "glb": "glb/crystal-banner-pennant-storm.glb",
     "runtime": "runtime/crystal-banner-pennant-storm.model.json",
-    "source_sha256": "1d8fc4ea571222ba220d6737da6375c5fdd086dc3a6fe3c6ff732ba0f5f77c27",
-    "runtime_sha256": "c989cfa74737d3409006108dc70b36c0adb71448a57488fea5d293ee54e314d9",
+    "source_sha256": "57cd589a6597a2d0db7b5a550d70667de6f9eba0e2cb4be5cadb64f4bd0362dc",
+    "runtime_sha256": "8bcc8c6a209e7088df7e63037872aec5f322bc5bb49b2df5ac00e5b26ba6abcd",
     "glb_sha256": "a55199e7d7d230fe6615b8556a16e5ee93429c619dc536c682246e0e6a4f32e9"
   },
   {
@@ -283,8 +283,8 @@
     "source": "source/crystal-banner-pennant-venom.blend",
     "glb": "glb/crystal-banner-pennant-venom.glb",
     "runtime": "runtime/crystal-banner-pennant-venom.model.json",
-    "source_sha256": "bee19d04a21b10a23318aafa6be10e96ceb0e94961741d861a4bd6d02652e667",
-    "runtime_sha256": "3e029938ccaa07ab0a7fbcc647c6123fa93da35801e1b67117ba2d9b62202608",
+    "source_sha256": "1132e92ba7dbd44d039bb9c47f83a8902a28719b05cf752836456109060d8e0e",
+    "runtime_sha256": "93f3884d283487405ee954e53f655345da9950fbb0564e28721897aa56fd9fd4",
     "glb_sha256": "0831de6a8dadf6cf870ca359cb807e2768e9b3d7126dd36367238911cf656d45"
   },
   {
@@ -295,8 +295,8 @@
     "source": "source/crystal-banner-standard-earth.blend",
     "glb": "glb/crystal-banner-standard-earth.glb",
     "runtime": "runtime/crystal-banner-standard-earth.model.json",
-    "source_sha256": "8acd0f87d525aff22f6a8c778eecded6bc59dc0474284cac3d65c3d607ca66bf",
-    "runtime_sha256": "4b3485f0b426bd48fab6292d0ff69776f50a7c2e1262bd709a2d736f97549d9a",
+    "source_sha256": "a8a79237316b89fc566729e73c5d3e3e35d854943b23067c2b3341c8660d9ef1",
+    "runtime_sha256": "592ce9e67b8b8b982fb3dd5bacd9d61dbafbf626248317566a5a496f8218fa7e",
     "glb_sha256": "030a37afd8ae0384afac2b6037d956ab8362901057e9cff6d7f02ce67dae0833"
   },
   {
@@ -307,8 +307,8 @@
     "source": "source/crystal-banner-standard-fire.blend",
     "glb": "glb/crystal-banner-standard-fire.glb",
     "runtime": "runtime/crystal-banner-standard-fire.model.json",
-    "source_sha256": "72d50230125bd49c493ffab75d74d074908a307f49996b58f9290eb7b5f56a84",
-    "runtime_sha256": "6b29e6e2c87a052c423e7899b5ba16d0f1df51b484cf7b0009e2d854911aabcd",
+    "source_sha256": "65b7493b891f2c56f244d1391507e32cdf588069d3bcecdacdae0bd442660e6a",
+    "runtime_sha256": "fe943203adbfa2fe78639c767d85dddcc301edf3c71b4d01492e8aab6af97411",
     "glb_sha256": "ab6cb07f717023551414555b1d682a2c99a17616cfb40539f9afe0f9ba7c616f"
   },
   {
@@ -319,8 +319,8 @@
     "source": "source/crystal-banner-standard-frost.blend",
     "glb": "glb/crystal-banner-standard-frost.glb",
     "runtime": "runtime/crystal-banner-standard-frost.model.json",
-    "source_sha256": "0f92bc3366be11b374b1cc3fcd9fac30c97c8a564bc5487c8a542c07daa7280c",
-    "runtime_sha256": "d679d0ed6613205119038b8cdb9fcd82618ebc53826cfa68e79b2aae21077e59",
+    "source_sha256": "ff7e5d8edc03c9eb412fd3c97a94e3ca564141dc6a299cf38498459b5d214537",
+    "runtime_sha256": "07045d5327765a037dc77dc2eee547713e87eed43f6e6473e3929f6ba8d37e20",
     "glb_sha256": "4732d3d281d35cbf698b2483c45d538ecd440d5d1a0a8dbc5e0491315f817849"
   },
   {
@@ -331,8 +331,8 @@
     "source": "source/crystal-banner-standard-radiance.blend",
     "glb": "glb/crystal-banner-standard-radiance.glb",
     "runtime": "runtime/crystal-banner-standard-radiance.model.json",
-    "source_sha256": "22c292c5d6b0c244c802ff40c39cf8336082867954df626023602ee05f3f8f5a",
-    "runtime_sha256": "4d9fa0cab79eed5a08355523233ec146aee5070b8f56b8f166c631c6e0e2055a",
+    "source_sha256": "2d458475707154f131216506c9c78221038d1f58cc29806c2c7eac6c71c7788d",
+    "runtime_sha256": "8fb0e6ec0d6697a5f9bb71684cf93230d0cf4e4f0d0df946456e76abb61ce16b",
     "glb_sha256": "30292213db6d2050dddb20f0d9149db38d03fd614d7d4aaca2a0f759c6012465"
   },
   {
@@ -343,8 +343,8 @@
     "source": "source/crystal-banner-standard-seidr.blend",
     "glb": "glb/crystal-banner-standard-seidr.glb",
     "runtime": "runtime/crystal-banner-standard-seidr.model.json",
-    "source_sha256": "c3241e5256dc009b0c1ae7bcfaea3efdefff288d7d27ae6d090aed4479b6a95b",
-    "runtime_sha256": "27c49d27891b749ac5b3b02cda2cdd74f07833cdd1dc211fa0a2002abc8d98a2",
+    "source_sha256": "b844105795f662ec19c432a2b4907dc152f00d315643e6d5542da942030f975d",
+    "runtime_sha256": "57cf91bb28f5ef26187fce8dc762afe148e97a885969c4a4166b433bc8b8ba18",
     "glb_sha256": "6924836fc60fd6cd7098a255ba9a82227b8531043d2e14d90ae64b6fba936f77"
   },
   {
@@ -355,8 +355,8 @@
     "source": "source/crystal-banner-standard-spirit.blend",
     "glb": "glb/crystal-banner-standard-spirit.glb",
     "runtime": "runtime/crystal-banner-standard-spirit.model.json",
-    "source_sha256": "5cd60ae2280f4ecc817fdeeb164dc5adf781393f751918d26e69f31cce68ec11",
-    "runtime_sha256": "f648732f90cedcee28220d3ac4d61e08ab5fc215bf61c5f8b7bbfdf40863b438",
+    "source_sha256": "7787bab79690e619e89ecb6195303a8673024282948ffef01651cf89fad61b3a",
+    "runtime_sha256": "fb90ac73bc1e6ba84796d8953d286a668dec032a1998132c598f8a37c18b8e77",
     "glb_sha256": "5f075a757a166a0e4897b4cd00ca7797b143b223a91667fa6b60889858b3a77e"
   },
   {
@@ -367,8 +367,8 @@
     "source": "source/crystal-banner-standard-storm.blend",
     "glb": "glb/crystal-banner-standard-storm.glb",
     "runtime": "runtime/crystal-banner-standard-storm.model.json",
-    "source_sha256": "b37a893f3ef590d4009991987665667c6b49c59d21fca1ac844c03df0636c7b8",
-    "runtime_sha256": "6c28695a322b01523c03ec0f853085aaa380a412fad7834ec91480ad2fc9a78e",
+    "source_sha256": "f86094583bd3bb36342c8a166da53b5757b9ffb787c498ea68492c0f0e153ec5",
+    "runtime_sha256": "0da64c39f485d14c4bc6658d382ed8a0ba594b9b36797aeabf7f96cc39d683a3",
     "glb_sha256": "dd4757b9f0d91707e56a7d55f5e72f5d7872aefa06c9846e5f89ab498e061a4f"
   },
   {
@@ -379,8 +379,8 @@
     "source": "source/crystal-banner-standard-venom.blend",
     "glb": "glb/crystal-banner-standard-venom.glb",
     "runtime": "runtime/crystal-banner-standard-venom.model.json",
-    "source_sha256": "6bf9d57fe67aea09f4eddab2f20b6aa834bf70ee72b10c5038c2c57b388858d1",
-    "runtime_sha256": "345f8afe950e565b824c15e7d974e8f7bbaf5a400fe08a5d5dbb8103c8ef5cdf",
+    "source_sha256": "e5ff1b7295486a3d2cf29515637acc1449bf00642b6ed140d680e12fff58c6b0",
+    "runtime_sha256": "234dbab2634c31d2f584c7183e916c43ab049c6a144062d31b40fee63b6a029d",
     "glb_sha256": "0b31d8568568254c9ed6d22d668c4635e4e71662b85eb98c0ac23189e74e9a8b"
   },
   {
@@ -391,8 +391,8 @@
     "source": "source/crystal-banner-swallowtail-earth.blend",
     "glb": "glb/crystal-banner-swallowtail-earth.glb",
     "runtime": "runtime/crystal-banner-swallowtail-earth.model.json",
-    "source_sha256": "57581c670c0a32b2a7a83ad4cefc01b5499223d5ba4b1142a2befd06795e2f5c",
-    "runtime_sha256": "b3eaa383ce0d2f75307cdb9bacbd40a7cb1694ac3402fe0864ae560ab8e06e5d",
+    "source_sha256": "f675f57ab5188fe1e52c4efee75917b9a18833e901e4616828c26aca9b390e33",
+    "runtime_sha256": "62b5f52b810de0d276db0175ee2343207c12e0a34d354547229fe9c28dd7771b",
     "glb_sha256": "19e82fab0d1b7285b346cffb4ef509c794f52b63770338eb407000e6ec298cc6"
   },
   {
@@ -403,8 +403,8 @@
     "source": "source/crystal-banner-swallowtail-fire.blend",
     "glb": "glb/crystal-banner-swallowtail-fire.glb",
     "runtime": "runtime/crystal-banner-swallowtail-fire.model.json",
-    "source_sha256": "da084deeaca4210cee7af11cbe31e511e97f2114986b892c192194a70acf4374",
-    "runtime_sha256": "95d7d89a6a3a0ddd3cd18aedf23d347c839a96877c74924760fa25e68b849cba",
+    "source_sha256": "92c21ef8dd9d791765aeac1aab1a9fcdf07d0bb54bfd7a5d61842083e30f7136",
+    "runtime_sha256": "318ac79616fefc88642635b01c198646b3ff1d5663ad827e6cd0c630816f9ba8",
     "glb_sha256": "ca7665fe30d76fc72b47cfb75674332477b6c1abd595fab0caa55336ec149136"
   },
   {
@@ -415,8 +415,8 @@
     "source": "source/crystal-banner-swallowtail-frost.blend",
     "glb": "glb/crystal-banner-swallowtail-frost.glb",
     "runtime": "runtime/crystal-banner-swallowtail-frost.model.json",
-    "source_sha256": "423d15e4e5dbf4d3710aa5028617875400cf5487a41bcfc6e00e6a41e62922b5",
-    "runtime_sha256": "efcaa7435b3d7bbf033bac7079e2b06e0738b7045e27cf5977fa3820b1f54952",
+    "source_sha256": "e3ea3a5b4fa8a79bfd4942a9fa9eced96c0ce3b7fafc5fc25e23f2068a66246b",
+    "runtime_sha256": "989a8f06b73c67a8b3a9cbddddf1ad097f85eef13c269687b1adc369757d44e3",
     "glb_sha256": "f06165791c642094d8a62af6908e4402d498d3f1b9b4ba5370553136bf04c638"
   },
   {
@@ -427,8 +427,8 @@
     "source": "source/crystal-banner-swallowtail-radiance.blend",
     "glb": "glb/crystal-banner-swallowtail-radiance.glb",
     "runtime": "runtime/crystal-banner-swallowtail-radiance.model.json",
-    "source_sha256": "c96303de443f837dda634c5204c02e7cca42fdbb3e2dd8a094e2d98d2e1eda0c",
-    "runtime_sha256": "0f59b0d1db9787530597020756a79dffea60fb89b392dde5605299e8e3b71b99",
+    "source_sha256": "f0ccdb6ba7d880fc1ad01d80fd7fcbbcf6f66ccd47794b2a0929bf99149a5544",
+    "runtime_sha256": "2eedc72e353cccfe74274be76ffaf2137d68b4117d17ce239cd10f29869a67b4",
     "glb_sha256": "2056547bd38f71fd8a632510a4d18457214649edf3d2c150177ad0f0b83c2869"
   },
   {
@@ -439,8 +439,8 @@
     "source": "source/crystal-banner-swallowtail-seidr.blend",
     "glb": "glb/crystal-banner-swallowtail-seidr.glb",
     "runtime": "runtime/crystal-banner-swallowtail-seidr.model.json",
-    "source_sha256": "a0fec383ec316177b5cd4ea523f5bff75cbdc65888a9a8e6749b2ba1b4a48a53",
-    "runtime_sha256": "be314687e4a6ad2f70619d02cdd9665d90986f2cf59af6818e06be462f61807b",
+    "source_sha256": "cdfb91504275209c8a32ed948d63287ed595641c41be302e3e6e6d1dfeb2f4ee",
+    "runtime_sha256": "501de6aebc715e6a8121c126fc2476fcebdb0647dd0bb8e4cd57698a25168df0",
     "glb_sha256": "2d5fe41131d789168835a0bede643ac2f28898b14ee9cafde904d554258ad82f"
   },
   {
@@ -451,8 +451,8 @@
     "source": "source/crystal-banner-swallowtail-spirit.blend",
     "glb": "glb/crystal-banner-swallowtail-spirit.glb",
     "runtime": "runtime/crystal-banner-swallowtail-spirit.model.json",
-    "source_sha256": "02260328cfcb422938758917864422e96b05edc7200b2038720e325429184dac",
-    "runtime_sha256": "a6ca4a1800322fbec0f7f3b420d2e61ed09e903e5a8293f4505b97dd12aecb8f",
+    "source_sha256": "a0c68a8eb217b865beafaf7ad009eaad5a83ad9b1e1ed83d0837844572ef6f2d",
+    "runtime_sha256": "71527f065bf330cae7dd9c89996e27d95460831c1599e98337aaef25b4cbd3ed",
     "glb_sha256": "dba7fa1c6af8c6fb816291983826a8c674b545633d9783eb5ca5a524f963ed46"
   },
   {
@@ -463,8 +463,8 @@
     "source": "source/crystal-banner-swallowtail-storm.blend",
     "glb": "glb/crystal-banner-swallowtail-storm.glb",
     "runtime": "runtime/crystal-banner-swallowtail-storm.model.json",
-    "source_sha256": "a6436d49ebe3950616295826df6f3fb5e95aa229f6cbdb70468b9f3b3a507444",
-    "runtime_sha256": "756be86db0aa6931b9c360c165df956c44b934741cca407f09de959077fe4c2c",
+    "source_sha256": "3509a526b8873fa1bf4f551b1c0b2cce858ca9c1a6e5653e04c79f38f8da198c",
+    "runtime_sha256": "3dcde7a938526a5bd133116bb7728600c223fbb474eebf965c1483d7aa63ff68",
     "glb_sha256": "dfae95afaf2466196894e416468ce9926aa765f3f54b2c113ef028fd0e70b176"
   },
   {
@@ -475,8 +475,8 @@
     "source": "source/crystal-banner-swallowtail-venom.blend",
     "glb": "glb/crystal-banner-swallowtail-venom.glb",
     "runtime": "runtime/crystal-banner-swallowtail-venom.model.json",
-    "source_sha256": "1402f69cab559ccf2a2934e10e7ded683e6e4d11659a9f9d1007ba584a87bf32",
-    "runtime_sha256": "a718f372e00caba56e43e3328ab2d8cddb49d8a43dc1f108945c0511dfee77e4",
+    "source_sha256": "075af07b6faadaa6182f01d27a20ad397dcdacb84b228bee31aa1718359b00c8",
+    "runtime_sha256": "16a0fec72a357b2d21429f9033981a364c5a8ad15e76d68d50b5c59ec2b3a033",
     "glb_sha256": "0d5090888cc59d8835285a5290b63b2c1c2735a7bda0cb24d58c1d03ffdc5743"
   },
   {
@@ -487,8 +487,8 @@
     "source": "source/crystal-bed-earth.blend",
     "glb": "glb/crystal-bed-earth.glb",
     "runtime": "runtime/crystal-bed-earth.model.json",
-    "source_sha256": "f3199798e9a2681a14adbf804b779eff470bd03a8f3716a4eac5baca6cb1d27c",
-    "runtime_sha256": "5fa57cac5f65bf448ecfb4fda75bf540e417a7d16e8e7be747375151013c1ae2",
+    "source_sha256": "6b411ef3745883a446ff9b78164b6c7363d4dcafcc1286973aa3651e97ca08cf",
+    "runtime_sha256": "843b614796053f28f83ba6ae965c297b4a1aafeeb1520220a5f8546b1f11ac88",
     "glb_sha256": "e74f38935c5182a7871a483a92b2c97b4a87253e8cc20fbaf367dcdff4628b8f"
   },
   {
@@ -499,8 +499,8 @@
     "source": "source/crystal-bed-fire.blend",
     "glb": "glb/crystal-bed-fire.glb",
     "runtime": "runtime/crystal-bed-fire.model.json",
-    "source_sha256": "a4874de94d8dcdb20d0473a95b0a94ef332d8352d01f9380577b7e59f478586a",
-    "runtime_sha256": "14cfc697cde4f4a5b1daf9608429544c3637953bf3faea55dfb45e8368123200",
+    "source_sha256": "0cccd4e8cb1a0e3e007b4e497ada3d1513da14dbb6407b6d362624e9811b083d",
+    "runtime_sha256": "68ac638ef704e3868f17f504380052ecbbe42998180a60e1d3b7af28e20caf01",
     "glb_sha256": "4dc15bf7076a6afed409a232506c7f641b7eb8eae0df44d711ab5849d11340a9"
   },
   {
@@ -511,8 +511,8 @@
     "source": "source/crystal-bed-frost.blend",
     "glb": "glb/crystal-bed-frost.glb",
     "runtime": "runtime/crystal-bed-frost.model.json",
-    "source_sha256": "82937f91ede54b4175daaf7ead98039b435541a5bdc8f80cec05a0d85b9f164d",
-    "runtime_sha256": "acea3b1cbd817ddf0db51eccbf4f16aa9d3f7a8030534a2585b94a63db7ad69b",
+    "source_sha256": "3625f6bfb9751b547402552706985e366ace0a26ee6f4761e4420fcb371d5028",
+    "runtime_sha256": "ac95abfd85f9267ee8b13b2b491fefee0b8121d2c98ad714dc495bd0558b7ab7",
     "glb_sha256": "38def33e410c727a3b14976d5725dbb944e62db977e64502057a72a2ffd0309b"
   },
   {
@@ -523,8 +523,8 @@
     "source": "source/crystal-bed-radiance.blend",
     "glb": "glb/crystal-bed-radiance.glb",
     "runtime": "runtime/crystal-bed-radiance.model.json",
-    "source_sha256": "63fbee355cf49d834bb6d53765c4c51e1a67b2049df2f3e6e4c0d6706cb28b5e",
-    "runtime_sha256": "eab1a09ac79b4e720a6549d3d64b695033428dea7e8d838fe03e6b70d15e2698",
+    "source_sha256": "5468609edd98d8301196f6485af42aa54a0d8d5844be3e308093eec1039e16dc",
+    "runtime_sha256": "624ae6d5acc9f11de22b14d41ac8ff04b168655f57b80e94f67c4b4a88f9e062",
     "glb_sha256": "3586e9889078887d464781664841957b3231fec1fbe4285a629d890f60d8e908"
   },
   {
@@ -535,8 +535,8 @@
     "source": "source/crystal-bed-seidr.blend",
     "glb": "glb/crystal-bed-seidr.glb",
     "runtime": "runtime/crystal-bed-seidr.model.json",
-    "source_sha256": "8ef770f75a96cc2de35c662dcd69c87dae279d7be6c3bf6693ac83f0e4de199d",
-    "runtime_sha256": "7ba9ec4bf227cc524de3345f9ea6c001aa4177e6889e653a91af0b6263462239",
+    "source_sha256": "34028d8d4f4adcb69131fa435cb096a0bd8b83a22455ed338d60ff73341932ef",
+    "runtime_sha256": "048502b10627581ab99080fc465df3483dedac8f208e71675e4b8222d6b62cb7",
     "glb_sha256": "0d181773bf62516f8124476088a7bfa261da0d9ee7f75e0cc5286b8068a7d89f"
   },
   {
@@ -547,8 +547,8 @@
     "source": "source/crystal-bed-spirit.blend",
     "glb": "glb/crystal-bed-spirit.glb",
     "runtime": "runtime/crystal-bed-spirit.model.json",
-    "source_sha256": "6a3deb47dd115ec4fecb08e5e29de2792ce6994a62897e65b6fefdaa1de09c67",
-    "runtime_sha256": "0b033bfa5cdd7bf0823c02651cb86c8c111c132b0b8367a3cc4511979e5d2ea1",
+    "source_sha256": "de08cce830baeac7fdda427b326362c239b5f055c263dc7f0bcac87e3ee9c5e0",
+    "runtime_sha256": "d1fbd178ebeb8668a1b2f5ae000d13828d4814f2fed573f8e76193a9e759f112",
     "glb_sha256": "c5adcebdce9d1f0245eb5e1ae6abe972827099b9099b8ccfb25212efcd22170a"
   },
   {
@@ -559,8 +559,8 @@
     "source": "source/crystal-bed-storm.blend",
     "glb": "glb/crystal-bed-storm.glb",
     "runtime": "runtime/crystal-bed-storm.model.json",
-    "source_sha256": "770b78b089e88993e391c1fd36eb0ca1370af5f193fd13251824447a575cff30",
-    "runtime_sha256": "f14e8cefc215159cc31a417bd864ec6c62fd8ad120669699ac5a3ed1b5c1bd56",
+    "source_sha256": "7afc8f0a4d7c3d755f04418e4df48c579077b25851448bdf81592dcd4b3dd5ba",
+    "runtime_sha256": "58b1c84e1c9921d158a6f5d024ab3d4deced65508ab2e8e5a3c758a6eb3c1d2e",
     "glb_sha256": "4500c4267dd9f51400892e7ce28d576c2595fa11da7e29f65c3ad3cfa31dca44"
   },
   {
@@ -571,8 +571,8 @@
     "source": "source/crystal-bed-venom.blend",
     "glb": "glb/crystal-bed-venom.glb",
     "runtime": "runtime/crystal-bed-venom.model.json",
-    "source_sha256": "7e31bc0d4dc983cf4e804747ea2cc7607995a4afd64ddcc01121e27ba89a9604",
-    "runtime_sha256": "dfa6e5697e3b4f2a194a27653b04a0ecef46165e58c12b8792d43768af9d5faf",
+    "source_sha256": "9f3be10ebf495f921b2ad7a9a1eda372e0973fd3bdfdfe5cff270e66bc26288c",
+    "runtime_sha256": "ae102c99cd98721b755df71004c682610be810a1597a6860ff7bd69a5a3cc874",
     "glb_sha256": "74b3afef017fe79b7f21f2dd74971d544500a4b0cb2907df34fc8f5fdbf3e73a"
   },
   {
@@ -583,9 +583,9 @@
     "source": "source/crystal-brazier.blend",
     "glb": "glb/crystal-brazier.glb",
     "runtime": "runtime/crystal-brazier.model.json",
-    "source_sha256": "736bb3cbd4bf600320371495074d0173be04989fbbaff68f884d6e2b557f3f35",
-    "runtime_sha256": "4adde96f3e9f1a80e4af466d658f150af12de7529d001ba0372451998de614d9",
-    "glb_sha256": "e37ff45244bc01e158285b4b1c51c3d410b8eef1445c34407c9c7e6e247bf0d1"
+    "source_sha256": "df338737bdebefd01643acb1fb521c6d7e51097feb2d964a8fd9b615b208667e",
+    "runtime_sha256": "bffae9e26463b322ff6252b67986bc7dfa5f729b94600a4315ddc3ad0efdee86",
+    "glb_sha256": "97f910d9b5ddbcdf8cc459a03f03514e1f759148b68070087c641731da470e22"
   },
   {
     "id": "crystal-enchanting-dais",
@@ -607,9 +607,9 @@
     "source": "source/crystal-lantern.blend",
     "glb": "glb/crystal-lantern.glb",
     "runtime": "runtime/crystal-lantern.model.json",
-    "source_sha256": "988a936ed849de3dbe305e03d452424d235cfe2e1f9dae011f0a262226341204",
-    "runtime_sha256": "9cb52335691aeaa5d409dbc78bde44add8146593437962ae8ac5366dc8ada954",
-    "glb_sha256": "69e764f1883a4c0b95dd053c3d17be2eb221816d8cd6ad7c7380ebe02feb6232"
+    "source_sha256": "c9910b2d7ec958ce3cb12e33a2a4382552fe7354119f023688f4ce647dc605c5",
+    "runtime_sha256": "7d4c527d947277a5d5142c392d8bbe3332c406c8046624d0bc37c8c83061dc0f",
+    "glb_sha256": "7e6efef2248476d1d5f555775e22e175d732d8e9b881d02988ac457ddf265df9"
   },
   {
     "id": "crystal-sentinel",
@@ -619,8 +619,8 @@
     "source": "source/crystal-sentinel.blend",
     "glb": "glb/crystal-sentinel.glb",
     "runtime": "runtime/crystal-sentinel.model.json",
-    "source_sha256": "cb6de1dc43c2da0aaf66954b81dc944123a83eacc9b0cd42ecbd27e44373defe",
-    "runtime_sha256": "3f7acc3766850eb5b54a07c08359d846c05db6120f86c4c8418ae5e1e251bb39",
+    "source_sha256": "f75befae8b8bc1eeceee8805c4a02ea7aeb0d9c5ac970078325c0ab6cbbc3942",
+    "runtime_sha256": "b3460e8ae4637a089e8f6de84b595b22c24012cef602e37a7e7b811e7679e331",
     "glb_sha256": "ac04987b508a9e6746ebd6bd89f0b3c9a11d394a294c9f522fbd922f438ec646"
   },
   {
@@ -631,9 +631,9 @@
     "source": "source/crystal-wardstone.blend",
     "glb": "glb/crystal-wardstone.glb",
     "runtime": "runtime/crystal-wardstone.model.json",
-    "source_sha256": "2e2255df5f413ccb91e29200e62ce57f4b86ccf8964c936eeb9d029416ddef57",
-    "runtime_sha256": "d25f9f74893d064afea49b1ae27a0d4712bf5a9a08e5c3cb9727054009912d32",
-    "glb_sha256": "dd58cdbb1028f0df8283b36a71633195c5c316c9cf49adea95dff68b50b1b1b1"
+    "source_sha256": "3078bc01cd6c9f96653ef869507d0bfc3863540156f935d69546e17004d5d529",
+    "runtime_sha256": "f7ad7de4c3d75d9768b994a570bf529757d68ebd7f641a1183b965ab64ef8bda",
+    "glb_sha256": "c10492d2fd54ea8671dd3f6ebbd0551a6a3490f523bb52a3d70e8b5ccbeaf762"
   },
   {
     "id": "crystal-weapon-atgeir",
@@ -643,9 +643,9 @@
     "source": "source/crystal-weapon-atgeir.blend",
     "glb": "glb/crystal-weapon-atgeir.glb",
     "runtime": "runtime/crystal-weapon-atgeir.model.json",
-    "source_sha256": "d5eecb0a4b45de67d51e0e6e0c6899323a6cd124e8b3bb34233b9660cbecba07",
-    "runtime_sha256": "0f6458ac575afeab93a7aca7aeeb2ec8b415490369361d4e3e8451ae4d317e03",
-    "glb_sha256": "edf69f5fbbed502b9f6ecf8a10c9edd41aff4be71432d41fa5e292aee01b61b4"
+    "source_sha256": "4f390f6e6707218d3a1d5bcce976520caac2f27bf8fb9f2a2d802f711be322a0",
+    "runtime_sha256": "7a563ba44c2146d4c87b0efff6e3ad16776c6767613820a777df2f974e28718b",
+    "glb_sha256": "60ff3bbf05428486aadcfce9f9a723290f7e530df56febe3e00163986020cd46"
   },
   {
     "id": "crystal-weapon-axe",
@@ -655,9 +655,9 @@
     "source": "source/crystal-weapon-axe.blend",
     "glb": "glb/crystal-weapon-axe.glb",
     "runtime": "runtime/crystal-weapon-axe.model.json",
-    "source_sha256": "a70c45b0f672ff7d194be7d4a23494c937746fb5ac2cac137bffd6ef55e2ff90",
-    "runtime_sha256": "901e25115df1ef0ee4f2381e3340393398bdcecf4f5d93dcab78d143906866e3",
-    "glb_sha256": "5833562ee717dfb43a567c55d6017ac5a519b1cdb1611ebcdf10777769b2b2ec"
+    "source_sha256": "35f582f31757ebd56cf47f69bf390f4c5373f0d24858f5e008ae478353ee652d",
+    "runtime_sha256": "56e0b1bfaa214a0412f1e6b4378e7f4de36319ebedd05a096d78864b2e99251c",
+    "glb_sha256": "258250bc2158d705ce2a22f927e07b7881e3007c272e04778d34db7ed806ba20"
   },
   {
     "id": "crystal-weapon-battleaxe",
@@ -667,9 +667,9 @@
     "source": "source/crystal-weapon-battleaxe.blend",
     "glb": "glb/crystal-weapon-battleaxe.glb",
     "runtime": "runtime/crystal-weapon-battleaxe.model.json",
-    "source_sha256": "ea0f737aaf22450f44af0a01010c7c745b9448e73f6b305e9c54d51ce820b5e7",
-    "runtime_sha256": "057c6f0399003be790220db46e3a3141fc998bc75846173e15aa1b0315133d82",
-    "glb_sha256": "be53f3c40c4a88d1e3d9b1aed16caf19669286847be081d4a8000a51b80033da"
+    "source_sha256": "c5cb57efb80b2e2992ec9dc20d749b0f8783460a2378e17b0e5b3f504cac8ebe",
+    "runtime_sha256": "5a10897b7175d14f7b62076aa870042a30112acd5e3b5a522feb54d36077ab5f",
+    "glb_sha256": "d16c1e569c0d60ec9e997878b9bd05f66e87e770a9663afa59de9255b5f11134"
   },
   {
     "id": "crystal-weapon-bow",
@@ -679,9 +679,9 @@
     "source": "source/crystal-weapon-bow.blend",
     "glb": "glb/crystal-weapon-bow.glb",
     "runtime": "runtime/crystal-weapon-bow.model.json",
-    "source_sha256": "7883af17800c9bae5d8a8539f65806698b267be5ddad2f340b38259009105876",
-    "runtime_sha256": "f5996909a026370e8e1f4699697f53f872e2e9822797b33b66d85d8a3adb641d",
-    "glb_sha256": "aaf2b116e17adf8b196663c3ba7933284c6b716561b888cf0c35c428eebd27ae"
+    "source_sha256": "fdc561cb35c9b6f0701ae54b80c729cdadd5f16d83de1352a1d384c16d778591",
+    "runtime_sha256": "653beea0f0d580a1f1d1df702c3aeeacdc540209e6077dd184f41eafb6693da2",
+    "glb_sha256": "d2478fccdea756bf3f9386cb15d292fb7a67de2cccab896df80d5b52e9790d99"
   },
   {
     "id": "crystal-weapon-crossbow",
@@ -691,9 +691,9 @@
     "source": "source/crystal-weapon-crossbow.blend",
     "glb": "glb/crystal-weapon-crossbow.glb",
     "runtime": "runtime/crystal-weapon-crossbow.model.json",
-    "source_sha256": "0d294da580cc24355a985214ea86f9da4e3e71cf99475a8dd77a41b472dc64f0",
-    "runtime_sha256": "e97fe2b5c76ec30618f41efee60497b74fb52631681a826171d781f3246f5c23",
-    "glb_sha256": "f091a91f80e665250dc4b4e619b1adbfb596ff4b62d75bfbe0fbc6ee72fff4b0"
+    "source_sha256": "637122188ec71169f14bd7cd20fe27b1dbcca5612b23f1097741a95628becfb6",
+    "runtime_sha256": "983d4c4fcd39f0f7320077509f16b0d9259b34335ca7faa7ace01d914c746d2e",
+    "glb_sha256": "84b008fea5bd8c9b441d70eb597b7e36ceea75fc7ad5de2ab335298e55c708f7"
   },
   {
     "id": "crystal-weapon-greatsword",
@@ -703,9 +703,9 @@
     "source": "source/crystal-weapon-greatsword.blend",
     "glb": "glb/crystal-weapon-greatsword.glb",
     "runtime": "runtime/crystal-weapon-greatsword.model.json",
-    "source_sha256": "6bd2f9dfa815419f7517b23d94280ca0b63ef64890d69270fd1ba86668690dca",
-    "runtime_sha256": "e7066538407441f36d3a309c0bd32434a3ab280fe7ed84eb5cca2e792bfa1bb6",
-    "glb_sha256": "c2bfc22f2a3efca17f72767c78a0531e4e64bd55da5acd224c44f75a00db5ab0"
+    "source_sha256": "be4bc6fb68bf007dc5d6938f585b4c85ce4e81c80d1d40c4ba225849bcd72bb5",
+    "runtime_sha256": "f4478d8697eada2d3e242d3fdffe7a120b93a04ffbcee09cd931b9fa868d4779",
+    "glb_sha256": "c37ca3b46e135833599933101f9ba1efb2354d35cc3a62bd8cc5e60be3d505e6"
   },
   {
     "id": "crystal-weapon-knife",
@@ -715,9 +715,9 @@
     "source": "source/crystal-weapon-knife.blend",
     "glb": "glb/crystal-weapon-knife.glb",
     "runtime": "runtime/crystal-weapon-knife.model.json",
-    "source_sha256": "d701fef3b0d25b1099cd0bb2600761149620b647d9a8d1f2946da944de09b937",
-    "runtime_sha256": "2e16ce190e78bf9c4703176c9e203ce6e32bf742b49920e12d9e7b5640e1a259",
-    "glb_sha256": "1ee2b20eaeac51717640deef6b8342d1213bc08ac87b75d7a0e0c447611340cf"
+    "source_sha256": "86e35a93d8d55dbaa63caa101f682b17ac74b2a23a9a50330169f0b93d052bc5",
+    "runtime_sha256": "efe46e3e9828277c292b31a02a5cb911c2e5307910115d0bba718e58802c6820",
+    "glb_sha256": "f47d7889ce17128eff2851d37e687c2bee4461c733118331bb2b14a6ae81dd8c"
   },
   {
     "id": "crystal-weapon-mace",
@@ -727,9 +727,9 @@
     "source": "source/crystal-weapon-mace.blend",
     "glb": "glb/crystal-weapon-mace.glb",
     "runtime": "runtime/crystal-weapon-mace.model.json",
-    "source_sha256": "66c058ae43bc7a1aeae65abb2759c6507dc1708503834b26f2103c3061acd439",
-    "runtime_sha256": "e3f1418462324218c65479c2a574ff46c3d1b38d2cbfe9cf90c2efab18b4eb19",
-    "glb_sha256": "4ed0d31d37cf40bd3d7f0733571a6b8c7044bf026a2d89ee2b6cd8afc6415bc4"
+    "source_sha256": "e30eee7b7f45e8bcf185e4a0e4abf7e76ea9dfc9bc0ab2d9bff164fd2dc5c913",
+    "runtime_sha256": "3b1ea0f8bb4c481c35b672fb7609c56f03db52c1ae1eec4a066ac98251d2d1c0",
+    "glb_sha256": "c59b17ce2df5b238c66cb2653aa618a071bdbf55b9238afe746b433b4bba4097"
   },
   {
     "id": "crystal-weapon-spear",
@@ -739,9 +739,9 @@
     "source": "source/crystal-weapon-spear.blend",
     "glb": "glb/crystal-weapon-spear.glb",
     "runtime": "runtime/crystal-weapon-spear.model.json",
-    "source_sha256": "bd2157375c84cbd2306e8d664f517dc12e753cde430703a8b8acd8846c5347e2",
-    "runtime_sha256": "2974ad76a69dce7ba6bdbf6d79fd6c0febea93b14daf0c3c8d9c90845bf48531",
-    "glb_sha256": "5157253216892dda3e676a6ad600371eeed63b3c0ffbad51ca4cd9a4bffda01b"
+    "source_sha256": "d251a441925ebfc5e4a9a406aa9d17844cc8de644d296edc62deb3b895224d9f",
+    "runtime_sha256": "5f1f92a8931ac869a5732dd8e93017a46e60729886edaf8e3948dd0238cb4f1f",
+    "glb_sha256": "27ffc93739d3533d7c24c9c16fb09f8bca6898a0e233ff47507bade8f7c57aa8"
   },
   {
     "id": "crystal-weapon-sword",
@@ -751,9 +751,9 @@
     "source": "source/crystal-weapon-sword.blend",
     "glb": "glb/crystal-weapon-sword.glb",
     "runtime": "runtime/crystal-weapon-sword.model.json",
-    "source_sha256": "788f3dd2e8a425c84ccf6e2d690b832cee463ad01045f0d37f73a2c7da5eeff1",
-    "runtime_sha256": "d0c4e13388b42511897a52457e7798fc7c90ba0dd14027d4859a37fffa491b9c",
-    "glb_sha256": "62a7d443040b20d8bf2ca26cae50b6380fa0d31eacbe382822a5eba86bcceaf2"
+    "source_sha256": "8b64f7adc4a38ad6010bec88be1fa83beb2f931004fb7163149ad2d2e6d99575",
+    "runtime_sha256": "8fc1d1714b67b3b24f717f16519b41a3f7adb5925cb0bc3c5c8e29a83a8b5f43",
+    "glb_sha256": "e42c80443632117525faafec1f9248bec627f3a1aca622cb9b5f2c5820f777ea"
   },
   {
     "id": "crystalline-ice-box",
@@ -775,9 +775,9 @@
     "source": "source/dark-throne.blend",
     "glb": "glb/dark-throne.glb",
     "runtime": "runtime/dark-throne.model.json",
-    "source_sha256": "c91e53ffb590104b6d10ed7e3d0d1c9ab3015d24ae63af413ef61b2fb019c838",
+    "source_sha256": "7210e24f54c9e33437fe99a98dd6c42a3c305c6753feecb0b9a35d55af0cc56f",
     "runtime_sha256": "c8f5de01f005296f4b2ec04da3a94c22ed634f70eada6c87c0c6a02fe08eba2b",
-    "glb_sha256": "980b2125ac1457065c1bcb720b0687e8ddb9d79d9ad8a4ca2585a88a921838e8"
+    "glb_sha256": "7831bdc7fdf9e7751f2765c6ed1e0a8a50fb60ca62b620f99b950250868b0aca"
   },
   {
     "id": "decor-crystal-coat-rack",
@@ -787,9 +787,9 @@
     "source": "source/decor-crystal-coat-rack.blend",
     "glb": "glb/decor-crystal-coat-rack.glb",
     "runtime": "runtime/decor-crystal-coat-rack.model.json",
-    "source_sha256": "f4a474672c83ac8eb6433c67e745377e159e584e80b73965b1824334f3d5db5f",
-    "runtime_sha256": "9cdfcce1208a0e813ac46bfae8f8d548ad5c3188eeb596d77f09843c52a2ae78",
-    "glb_sha256": "12dd27ae2c1b10fd77c16827b5844edf55b04ef1519b97134c567012c09262e2"
+    "source_sha256": "cfb1f2e05e8cb7bfe9a0019726831e4f2e6584fd8ffc77b0bd83be7ba7a4a0e2",
+    "runtime_sha256": "ab1933d2173c79d97b34a8cb2ffc094b5f18c30fa4b7342b0656bb3e7655606b",
+    "glb_sha256": "3e3d1f0d0ca33975f150a6abde4f5286aeb0ea624116ac32a294b06a3e32d372"
   },
   {
     "id": "decor-crystal-end-table",
@@ -799,9 +799,9 @@
     "source": "source/decor-crystal-end-table.blend",
     "glb": "glb/decor-crystal-end-table.glb",
     "runtime": "runtime/decor-crystal-end-table.model.json",
-    "source_sha256": "777e68c6211af7121d6576cbd6ee6a560fb1f9c2c901bd63a406f5590703111d",
-    "runtime_sha256": "cb444443d5805bf558e3904e15cfc4effc6945589dbb0c5fc1164468e10bf961",
-    "glb_sha256": "9a1b8ab4ffda6816eeabe3355431b1d7cac9e1fb344e195d618106c5b5cc9bb8"
+    "source_sha256": "9da9c7a1aa20bedb81a919da3fde34ba10db3c218c139ec36f8587deaf3799b2",
+    "runtime_sha256": "3f53c7ccfbd405b8a3f230ae46e4d389e4427193f3787ea65d4fef866a96a289",
+    "glb_sha256": "37e5b765eb84ef7be855a91b6cb49613974f2d5d692151694ecb731c341f6320"
   },
   {
     "id": "decor-crystal-wall-sconce",
@@ -811,9 +811,9 @@
     "source": "source/decor-crystal-wall-sconce.blend",
     "glb": "glb/decor-crystal-wall-sconce.glb",
     "runtime": "runtime/decor-crystal-wall-sconce.model.json",
-    "source_sha256": "3bb9d2f82bb4446ac27d1e807cf2f7a26b13c341c675517a36657a70173b2437",
-    "runtime_sha256": "375ce55cb670c11c36ceb5529853000b39244bffd5521c304bfb02365a9b5ccf",
-    "glb_sha256": "7fe04820b80022f94116573b3a214449a18846535af46b003226271a042e1c6d"
+    "source_sha256": "d7c1db4d73f8a71275a7b54f38da8176abd7bc2af6d66d9e83d73f86424e33e6",
+    "runtime_sha256": "9ce31f73687a03ef43506f17638161e6f86da875c5f7591ce8c8522da43ecaea",
+    "glb_sha256": "162752893b4e0663392edeb559ab55fa7cd91bbb4c626d6a41baedb66ccbbe58"
   },
   {
     "id": "decor-cut-geode-plaque",
@@ -823,9 +823,9 @@
     "source": "source/decor-cut-geode-plaque.blend",
     "glb": "glb/decor-cut-geode-plaque.glb",
     "runtime": "runtime/decor-cut-geode-plaque.model.json",
-    "source_sha256": "3fa6c75e61960e7ecf29bced005a158d33c1d685e4038a625401544eee59f78c",
-    "runtime_sha256": "f19ae6f48358033a71f945ffaea460d9f03f96a9642061b6d049b36dbccf3d72",
-    "glb_sha256": "7c203f31623122ac816f80b21d4afc394aa24b30b583ffcb8a52ec5065265fdd"
+    "source_sha256": "135bce203a705e84d90554f5fa536b808fcd901be22b0459c0abee8f343bb101",
+    "runtime_sha256": "dfeca0dbb4d3bcb94b79e89d009f5b221b670db2ec3292194f48dea12d6b5a32",
+    "glb_sha256": "c48881dec991aea039995bb2a2ecb3b6c015b393f6198a5862ea9c2f5648f579"
   },
   {
     "id": "decor-geode-bowl",
@@ -835,9 +835,9 @@
     "source": "source/decor-geode-bowl.blend",
     "glb": "glb/decor-geode-bowl.glb",
     "runtime": "runtime/decor-geode-bowl.model.json",
-    "source_sha256": "5055a0ac419b352c559c70c40213ef177da5398a43750a2623b582c727e7cf79",
-    "runtime_sha256": "d2c1bebd4f696b56ffa1f61994888be75190cbb1f191963a00b1d7cdfef3dca6",
-    "glb_sha256": "655b8851806e5aad4ca9613534064a8242f1d584cad681157a36c353b1cae1bf"
+    "source_sha256": "17de49f7e753d49ebb191514ce5d77653e69d0b22650d8e6f7b1938c84745233",
+    "runtime_sha256": "11a9d844f2a8289c9f5149a67fd78ed6155ed63b2c34ba4b0c774638ce7f2b44",
+    "glb_sha256": "993d03c66ef2e41089093f90554eeb278dd86d7da4562efc1b74b8ae91c43ff5"
   },
   {
     "id": "decor-geode-hearth-mantel",
@@ -847,9 +847,9 @@
     "source": "source/decor-geode-hearth-mantel.blend",
     "glb": "glb/decor-geode-hearth-mantel.glb",
     "runtime": "runtime/decor-geode-hearth-mantel.model.json",
-    "source_sha256": "fdf2c5d3d78bf7245400a656696b289c80ca1b0e54bb87f5c6b743793fcef803",
-    "runtime_sha256": "29749412a30f951e3f7d7b42d73720e654ae9dd51df7c325908261f6c1b182c4",
-    "glb_sha256": "0c1aafab75b3da542618d9b21d97ceeffab82478d86562c615161440f6051fe2"
+    "source_sha256": "5e1d5156b64e7218b409fbcc868a6b928ee27c50a8ead7c812f3f067f727d3d0",
+    "runtime_sha256": "31e6d565ee3e9d890c2f2b6628e2fd5511b7588647bf38987eb81cdbb4b32589",
+    "glb_sha256": "527a61cf41055b3f4f290db680f5d6f13c5c6172adc6881352b0949a3b3108c7"
   },
   {
     "id": "decor-geologist-stool",
@@ -859,9 +859,9 @@
     "source": "source/decor-geologist-stool.blend",
     "glb": "glb/decor-geologist-stool.glb",
     "runtime": "runtime/decor-geologist-stool.model.json",
-    "source_sha256": "5e8538407bfd2db0b37bc7a6c2ee7da0f4266526a93fedab1e4bca7e2564d5da",
-    "runtime_sha256": "645c0dacb904462c4146472d157e49813629e8a4b2f8f913e889d3f5e400b7bf",
-    "glb_sha256": "a7c67de78861b2d9ffaa86bdc2bdf41d0b6b851afab4f86ced33633a50e003ae"
+    "source_sha256": "0e803f88ee3d9037a6740751047f362fcf40b50ff72660a2675d84f92e4c09a5",
+    "runtime_sha256": "dcce798c0c8716cc36d22be5af1b3c6f0df60c607d3f932bbaac90bf5cfed6e8",
+    "glb_sha256": "a0f2b1f29d7b8400f8375cfdb68daa2793f65a577e272567fba56c13483e8f55"
   },
   {
     "id": "decor-mineral-display-case",
@@ -871,9 +871,9 @@
     "source": "source/decor-mineral-display-case.blend",
     "glb": "glb/decor-mineral-display-case.glb",
     "runtime": "runtime/decor-mineral-display-case.model.json",
-    "source_sha256": "3d5a629d5d48415c6f4dac94d1d8e41bebdd2336983473a18f69d19b34040b0a",
-    "runtime_sha256": "d55854630c7e5fbf905fbff44f143bd78dd1f99ecbd034b8284def18d012e7ee",
-    "glb_sha256": "f6ce69bfa44e06de148143124ecc67db8fa5ce340fe16e115e24d9a537c1adaf"
+    "source_sha256": "6f1b8ac9fc5bc131fcab1e8828a35f8d0b1c6b547daed149efabf8cce447ae56",
+    "runtime_sha256": "e6dd978303c1673b4a2a86122edd2004f100c3d307dfafe81c04968fe819f6e4",
+    "glb_sha256": "3ea536d56ca817c723e26d5acbaa40380f104e2f8d517545fd588052757a5699"
   },
   {
     "id": "decor-specimen-sideboard",
@@ -883,9 +883,9 @@
     "source": "source/decor-specimen-sideboard.blend",
     "glb": "glb/decor-specimen-sideboard.glb",
     "runtime": "runtime/decor-specimen-sideboard.model.json",
-    "source_sha256": "75025c77cee87a2f748a20027d338705771160a166cfb8777cb93f4224437370",
-    "runtime_sha256": "f57bb825c342ee9862f30eff7173cfd01b830620b1fa9d09b0e624bdf41c702b",
-    "glb_sha256": "9e77d1e5cfe79fc0a889b09c86c6ee1ef2e3a438b2be02e9ba31e6deaf20a6c2"
+    "source_sha256": "7b1dcf700f6d4b68770f94c75f96ca2078417c77dcae9dbb103ee4cf71747bcf",
+    "runtime_sha256": "533e4b73011d6376efe20e556c80823a16f5ce3e4a03037c8262ac5f412b3dc0",
+    "glb_sha256": "bcc011a6b649fdbae52adf37ad444296ddb993aac05eb86d947a01898740eb93"
   },
   {
     "id": "decor-strata-map-table",
@@ -895,9 +895,9 @@
     "source": "source/decor-strata-map-table.blend",
     "glb": "glb/decor-strata-map-table.glb",
     "runtime": "runtime/decor-strata-map-table.model.json",
-    "source_sha256": "1e5030fe5f2182b4d14d889e3bc7afe712eee8be962de981c38efa0997869856",
-    "runtime_sha256": "6c63e792c8cd53ce278d86745f01a5187de98df7eb92234cece70de0b85f5c62",
-    "glb_sha256": "537e29838710914ce05e43b21e2de597ce9348acfd06eeade333567b14e2a32c"
+    "source_sha256": "87a3fa291bb4a874e3824cd2132590fec7c06482446c038f807b2fe511975241",
+    "runtime_sha256": "4433edd07e0564e3ead9cad148763ae54723622b21538a13d0a48be2fce551fc",
+    "glb_sha256": "83b728d093a2d67ba39647ac1e5a9b2585d9ab01a6814c5856e9aa8b77a3f2de"
   },
   {
     "id": "deep-fracture-creature-AnnoyanceWisp-earth",
@@ -907,9 +907,9 @@
     "source": "source/deep-fracture-creature-AnnoyanceWisp-earth.blend",
     "glb": "glb/deep-fracture-creature-AnnoyanceWisp-earth.glb",
     "runtime": "runtime/deep-fracture-creature-AnnoyanceWisp-earth.model.json",
-    "source_sha256": "11fbc0429acd4df7afdbd9724d74d0a8a05c8659aa10c87d3d2047cec851a333",
-    "runtime_sha256": "e5143aa31e5831de0a0f236f9c4bc7293c0b3dbc8001b7ec3c9425959cb4e83c",
-    "glb_sha256": "b2fd1a28ac15329334f7e42aeabf98fcb0b0ddb0bbe5e5f32818bb0318788e55"
+    "source_sha256": "c6ae05ae9e6bfa0d0e0bb006c5827dc8379ae5a61626cfa2a1da3c12d50cefe8",
+    "runtime_sha256": "2bd281ba40254bb0e4a229d48aa7f9675721f950956bc63b857e0eb4f84c01c9",
+    "glb_sha256": "1abbae8b227b8a9af7fa42d5d3f2fe5d5b3b63a10c3759a05575fcb19141c765"
   },
   {
     "id": "deep-fracture-creature-AnnoyanceWisp-fire",
@@ -919,9 +919,9 @@
     "source": "source/deep-fracture-creature-AnnoyanceWisp-fire.blend",
     "glb": "glb/deep-fracture-creature-AnnoyanceWisp-fire.glb",
     "runtime": "runtime/deep-fracture-creature-AnnoyanceWisp-fire.model.json",
-    "source_sha256": "ab876d504ee2eb5212a0c02792802418d58924790f83e029b764715802db6781",
-    "runtime_sha256": "c9b7918397be977a72ab787095fafe0c3ccdbfc44dd6c37240cc72d29352adc1",
-    "glb_sha256": "49a9328ed4e55b664740b6afc0e216c4fb13233c7a54a7338b427d81263afd55"
+    "source_sha256": "c0cc16a7bc08946954305d9c0461b5fb9212874a9725923b83512bd659645609",
+    "runtime_sha256": "8a3fd7262dbac205eaa4f3dfb4447fba2c62b13e05b4ddefc81c25aed94b1b91",
+    "glb_sha256": "64ec4743f0e7a4d303af8bb397072c732242f8e15c685af9c9cbc4d09363e79f"
   },
   {
     "id": "deep-fracture-creature-AnnoyanceWisp-frost",
@@ -931,9 +931,9 @@
     "source": "source/deep-fracture-creature-AnnoyanceWisp-frost.blend",
     "glb": "glb/deep-fracture-creature-AnnoyanceWisp-frost.glb",
     "runtime": "runtime/deep-fracture-creature-AnnoyanceWisp-frost.model.json",
-    "source_sha256": "84839bf8ed069f068e31d93186ba0300e2e1c25371161973802bd7d2b88c214f",
-    "runtime_sha256": "bfb927e38cd695ebc5d77eed842aab390b4e60ed9f1030f7ef0eaf34605e588a",
-    "glb_sha256": "face296296faa1bee9050ed8b33f53364b2456100284591f2c47df27fc35a563"
+    "source_sha256": "3022f03b3551ca1a4e48b19afba57e3b671e0d962eb331b2f87691489a8c1d78",
+    "runtime_sha256": "c5869080085ee1bc1d45c5b32ea1cb492d7db2eaead24202213bcbcb04b326a7",
+    "glb_sha256": "3bc3a0892ef09a5589a1a5e4822cbd2687b2081f19812598f4fc6aad6e7a50a8"
   },
   {
     "id": "deep-fracture-creature-AnnoyanceWisp-radiance",
@@ -943,9 +943,9 @@
     "source": "source/deep-fracture-creature-AnnoyanceWisp-radiance.blend",
     "glb": "glb/deep-fracture-creature-AnnoyanceWisp-radiance.glb",
     "runtime": "runtime/deep-fracture-creature-AnnoyanceWisp-radiance.model.json",
-    "source_sha256": "f60136d5b60c425f47f291e093549d8848d408d9a84ad820e6259c49e38a8e9e",
-    "runtime_sha256": "29b9fed1b1d2af6ef090846a0349ee56fa579105639557440fb0473f968a91f4",
-    "glb_sha256": "b3a361f05e97b05417395ec78e3fcf391f200967fe0302dcb21b0c265dec058e"
+    "source_sha256": "93049063ec41511a4fcb8d7ae98a285ecca3eca247e50ec1ebe97cb4d3b3a8fb",
+    "runtime_sha256": "70d09d1c7a7834b5437d0c1b4390a414d71f751554b1fc18ff2da08217d4aed1",
+    "glb_sha256": "5c89ef01d2d8edb445e7a83d6a7d07ab3f9eb578d922b9d8ca2cc3aef44a8011"
   },
   {
     "id": "deep-fracture-creature-AnnoyanceWisp-seidr",
@@ -955,9 +955,9 @@
     "source": "source/deep-fracture-creature-AnnoyanceWisp-seidr.blend",
     "glb": "glb/deep-fracture-creature-AnnoyanceWisp-seidr.glb",
     "runtime": "runtime/deep-fracture-creature-AnnoyanceWisp-seidr.model.json",
-    "source_sha256": "86b792e8ec418cfdd419b0c5660dcfc7377c27f764a859118132ae243e42963d",
-    "runtime_sha256": "66a78327af4dda47b154ff932165dd49125c416ede47f5a3a75427e0feaffbbc",
-    "glb_sha256": "9ff612a2d194f7ec71f9bcb4972d0c074a1f8462d0dd5f6c76e2c42f947f2f4b"
+    "source_sha256": "1c46fb507c1abe0fc378f28baf0c51668d8ce07950f9ec922326bbfc186f7368",
+    "runtime_sha256": "5d4df4c4f8eef54e89f65bbce3a608bde753fed6f674fb4957e6969b1d2b81a7",
+    "glb_sha256": "ea588b7fe5bc8367416481a228b2a2b5bf0bfd3c88fab5bf718bddb8779ffbeb"
   },
   {
     "id": "deep-fracture-creature-AnnoyanceWisp-spirit",
@@ -967,9 +967,9 @@
     "source": "source/deep-fracture-creature-AnnoyanceWisp-spirit.blend",
     "glb": "glb/deep-fracture-creature-AnnoyanceWisp-spirit.glb",
     "runtime": "runtime/deep-fracture-creature-AnnoyanceWisp-spirit.model.json",
-    "source_sha256": "5a72ee1c6b4d06adee4a1407c10caf320a54a783d5f350ae1e899e6c12187a62",
-    "runtime_sha256": "6a8482ad09b40f8af9274f1f28233093e646e613961b9be221ad42340f308645",
-    "glb_sha256": "f4923aa6064cb735d06cbeb994095afac1922fc29341e650b853fbaa01cf8df9"
+    "source_sha256": "097f9caf1f85a331c574aa24d0195384e1180ca7b792ba109e69dcd5ebf7f829",
+    "runtime_sha256": "4eaafbc57a85c64aedc6954c4c2ca950c5cdd5851ce85500b3031bf32e03600a",
+    "glb_sha256": "43b681308d1d5a71e0f5b90a21dea3c5b40983c93582e698b06110722b6ba17d"
   },
   {
     "id": "deep-fracture-creature-AnnoyanceWisp-storm",
@@ -979,9 +979,9 @@
     "source": "source/deep-fracture-creature-AnnoyanceWisp-storm.blend",
     "glb": "glb/deep-fracture-creature-AnnoyanceWisp-storm.glb",
     "runtime": "runtime/deep-fracture-creature-AnnoyanceWisp-storm.model.json",
-    "source_sha256": "5ba958afbc0c6303a9ea97c4a6178c04660661cd32598d028dde707f6254266e",
-    "runtime_sha256": "b89b7da5d2d6897ba377f090550e98fa6e0828e13a1bf9e0c6964a3dca2a5ca5",
-    "glb_sha256": "2c218417266d6c41751f52cbd5c26d4ace1f4639b435c1656fa0514246126f2d"
+    "source_sha256": "890181179f74c73c463c22dc178980cec0641d77aed3ac718a30adeb802426ea",
+    "runtime_sha256": "8b26610c1b3fb0fa66cf1b10d5759b4b044933b52f04a28f0363877b91916218",
+    "glb_sha256": "67e94ff496e376438206cc56c51ab8574db5984a97ba634b627001f8fa69a027"
   },
   {
     "id": "deep-fracture-creature-AnnoyanceWisp-venom",
@@ -991,9 +991,9 @@
     "source": "source/deep-fracture-creature-AnnoyanceWisp-venom.blend",
     "glb": "glb/deep-fracture-creature-AnnoyanceWisp-venom.glb",
     "runtime": "runtime/deep-fracture-creature-AnnoyanceWisp-venom.model.json",
-    "source_sha256": "db3d75bb2272fd22cea8a86d012ffe15c6edfbc5120ceb59a7dfafb6b9987555",
-    "runtime_sha256": "4763e41d44d838a45fe8f0b51ec54d3f7d4483bd4e164724fab1d596ce1b2476",
-    "glb_sha256": "34c5d3b74794ec3a696ae2e7ca8e161d54158e836843ebc659c8ba1f16c03e17"
+    "source_sha256": "f35e375818e45ce8adc8bb7a465201d840f668cefbb48a91b8fdbd9d35a466ea",
+    "runtime_sha256": "0c857d2a99d6f363bde14ab92a70a73400860ac80bdce989398a3ce550f75869",
+    "glb_sha256": "c399a0cbcf5da5be8575d5d8db9f20eb564087fe90d1343e386a6fa53f0c3dc5"
   },
   {
     "id": "deep-fracture-creature-Burrower-earth",
@@ -1003,9 +1003,9 @@
     "source": "source/deep-fracture-creature-Burrower-earth.blend",
     "glb": "glb/deep-fracture-creature-Burrower-earth.glb",
     "runtime": "runtime/deep-fracture-creature-Burrower-earth.model.json",
-    "source_sha256": "f21bd5eaf3171ce08d24a5a8d4901af7467d732b53f948a35a722f51c3b685c1",
-    "runtime_sha256": "0c97c2f0d651994ed30bcb44c08f0910c7c0cee1b2b1e8bf42447425bf0841b9",
-    "glb_sha256": "d35c8f0257b2152b9c3724cd03244bf29c14581492a982c6f2d0ee5cedd3c0ae"
+    "source_sha256": "222ffc1300ced24be0f9fc96b1ca69cb20086645a3fc07aa14346ddcf76e456d",
+    "runtime_sha256": "4ab6b5f6556b9ac6b64e09a9a4e3d397ba4a5b239bc94145c89f045de0e4cad6",
+    "glb_sha256": "ed07e235085fbaee0cd7424ad98596be7fcb3d748f79cca68618430abbae162e"
   },
   {
     "id": "deep-fracture-creature-Burrower-fire",
@@ -1015,9 +1015,9 @@
     "source": "source/deep-fracture-creature-Burrower-fire.blend",
     "glb": "glb/deep-fracture-creature-Burrower-fire.glb",
     "runtime": "runtime/deep-fracture-creature-Burrower-fire.model.json",
-    "source_sha256": "ffa70bfda285b3b94175d65be03d6e7fa45fd6ab360b8dcaf38dedd3934d88d6",
-    "runtime_sha256": "395cd723613d10ee0e59f9093c8e1f1a0870937112cba64422bedd10e85262ae",
-    "glb_sha256": "f4571ea5bf440a48c84ad5654105a89d1e09e7516d32bb315999d82414f620a9"
+    "source_sha256": "42dab60acb9a7a11cbc51082ebfaed68064f44f5e0127f8e6363960f2d3aade2",
+    "runtime_sha256": "13565e8cbdcd5e2648e25e33c9885d6078797b0c03ce17503e36f6a5c39ebcc7",
+    "glb_sha256": "6c55c9a5895ad018436680aabc0b382a55fea5767bbedb3b05ed8c9d01dc8c86"
   },
   {
     "id": "deep-fracture-creature-Burrower-frost",
@@ -1027,9 +1027,9 @@
     "source": "source/deep-fracture-creature-Burrower-frost.blend",
     "glb": "glb/deep-fracture-creature-Burrower-frost.glb",
     "runtime": "runtime/deep-fracture-creature-Burrower-frost.model.json",
-    "source_sha256": "e695bddf2fac013db3749dccfec5d8b4a0522a14e9bb1d2e7bf0c91b105514b0",
-    "runtime_sha256": "b5732d6da37b4d2c7a02683c8e229f809200c4ba285624c87fb935863cab21b9",
-    "glb_sha256": "7537fa9396c71c545765027e867fb039feb37e1d863faff11a53cd2f4c6a89cd"
+    "source_sha256": "809bf20de00f114899fda019257f2430e47458214893fbc689931723cb30e76b",
+    "runtime_sha256": "b2f3b3a957598a5b0e8e295f9a22d7985a6606b6af0b20d607738afca684e822",
+    "glb_sha256": "02479aa8dbe2514710cee389c97edb9354a92c682ab2850ba2d4ec72be3f8d6a"
   },
   {
     "id": "deep-fracture-creature-Burrower-radiance",
@@ -1039,9 +1039,9 @@
     "source": "source/deep-fracture-creature-Burrower-radiance.blend",
     "glb": "glb/deep-fracture-creature-Burrower-radiance.glb",
     "runtime": "runtime/deep-fracture-creature-Burrower-radiance.model.json",
-    "source_sha256": "c1e2d30102ab185e16f934b92be05cb704a86b0f1a045c123667fe4ad02384f7",
-    "runtime_sha256": "aa8c77a4c9a0dd322965debd203e9566fa6cb02e78694dbd1081029ad3ba6e9b",
-    "glb_sha256": "ea73e208f374855c7cc734e35378cf83a741176e4aeb3469a1cd515662199869"
+    "source_sha256": "812ac5c833bf4233ec9c11ab859e6cd5ca3b2ed37ab9c7e5c2f3242b521c4351",
+    "runtime_sha256": "6f243dd22b4e9c0a022388830c23ff433fc5d0a96e8651c68e7acb5bbe254350",
+    "glb_sha256": "e821203653017fc5ceef37b4de5cb76181c5c690cb88dd11e0a34e7cfc6813fd"
   },
   {
     "id": "deep-fracture-creature-Burrower-seidr",
@@ -1051,9 +1051,9 @@
     "source": "source/deep-fracture-creature-Burrower-seidr.blend",
     "glb": "glb/deep-fracture-creature-Burrower-seidr.glb",
     "runtime": "runtime/deep-fracture-creature-Burrower-seidr.model.json",
-    "source_sha256": "15a359b0345cc547cfee8beb6c93d4ea5f40008c1aa53d52d8e8c9c9f40fea8f",
-    "runtime_sha256": "9cafbec90b7ce944166b95633f4facd170c6fe1ebc9e41b8cadfde02588fa5e4",
-    "glb_sha256": "cc11b1819c19eabfc6b2bab42bd31726c484ec2560fe4a3c6c6233d97bb170c1"
+    "source_sha256": "1dde19b8c12b12354775c45626642593e467bd88e5dce25a57cc9b5b1f2103e2",
+    "runtime_sha256": "c184b1ae068ba57612f6cef5df632394a897dc94ad20e747056bb9740fd113e4",
+    "glb_sha256": "5ec934015a2506b83a8f131f7638b336669fb6ec1b2fb5c500c66dbbde5358a4"
   },
   {
     "id": "deep-fracture-creature-Burrower-spirit",
@@ -1063,9 +1063,9 @@
     "source": "source/deep-fracture-creature-Burrower-spirit.blend",
     "glb": "glb/deep-fracture-creature-Burrower-spirit.glb",
     "runtime": "runtime/deep-fracture-creature-Burrower-spirit.model.json",
-    "source_sha256": "58b625576499b184b059ce45b970e203bf99e588866220b3bf864a04cb8f7710",
-    "runtime_sha256": "034bc968734e038e035c0634eeee47b2b4cec83f09b188f7f671245b95ffc06e",
-    "glb_sha256": "3b3fd03a4ba4f10d720b1e5f7630384b06d350cb8519b9af315c4d1e96d7f6a7"
+    "source_sha256": "3c7339b4ab031ddf3465f3f68a6ddaddd3b0c213dbb2f79a782fc81b3770ac5d",
+    "runtime_sha256": "fb555efa64e2020635a0573af511811b244935f78cd51a9d5eb79396f8952211",
+    "glb_sha256": "bdce76593dcb4c2b8daadccf4ac7223a5b8a1c382940b3d0da75adf9425a56bb"
   },
   {
     "id": "deep-fracture-creature-Burrower-storm",
@@ -1075,9 +1075,9 @@
     "source": "source/deep-fracture-creature-Burrower-storm.blend",
     "glb": "glb/deep-fracture-creature-Burrower-storm.glb",
     "runtime": "runtime/deep-fracture-creature-Burrower-storm.model.json",
-    "source_sha256": "d869c14b4284e40d856a0ffb6f0a83a4823659a60ecff789b23340b9bedc3028",
-    "runtime_sha256": "dc2be411a473a061a9beb386103c13a5b7ec17ccede9b841c08fdd8baee7617f",
-    "glb_sha256": "e4568a80ff37a8f3c79d5b883f95e00adb02a7db6bfbbe6bf3e1341da34dee27"
+    "source_sha256": "763ccac0825dcb5665603de36afff8b68241cc0550b802fb263f9ac295015247",
+    "runtime_sha256": "7169fd5242c9593c0b8d98124a5d77422b46e241535037f9ec9f3a31ad542e6f",
+    "glb_sha256": "2ef93aed05a4c457a2179faabb7e3676e87afa7ff0a9efdead82e3f3bcc788ca"
   },
   {
     "id": "deep-fracture-creature-Burrower-venom",
@@ -1087,9 +1087,9 @@
     "source": "source/deep-fracture-creature-Burrower-venom.blend",
     "glb": "glb/deep-fracture-creature-Burrower-venom.glb",
     "runtime": "runtime/deep-fracture-creature-Burrower-venom.model.json",
-    "source_sha256": "f84abf3fc12f14055995cc50ae7c6ac9cf06b1d1151400ef634e0378e0e27c51",
-    "runtime_sha256": "068a489ab93571588074ec97adccaabfecf2784923a74ed9d6807b8326de107a",
-    "glb_sha256": "cd5f8321040a1bbde8c90384c19a107dacdeafcd0e2becbae767da62692941d1"
+    "source_sha256": "74fbc6d124333d93dd22489a980a042f75ca0156605f353a56f3e1c28df77383",
+    "runtime_sha256": "098e10a3846b1e6404991073503d63f1ceea4d001b08757ba38da9c3c813724b",
+    "glb_sha256": "1242963b6031fabbd5335a3ef52c69764dfbc41b343a4ea757e7366be276151e"
   },
   {
     "id": "deep-fracture-creature-CrystalHound-earth",
@@ -1099,9 +1099,9 @@
     "source": "source/deep-fracture-creature-CrystalHound-earth.blend",
     "glb": "glb/deep-fracture-creature-CrystalHound-earth.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalHound-earth.model.json",
-    "source_sha256": "9b37097e87375f27a4035943fdce42d6b4a57ce6f542aaa50f5077787c19314b",
-    "runtime_sha256": "bf3cad068d7ba736786e1a33b04182ccb15b8c73fdca900000e0907db36e8116",
-    "glb_sha256": "75bda1a3a248213024d52f35ee9737b11f5d712c0c360234533bd85154d2d36b"
+    "source_sha256": "df36c2d88730c41a60abab60dc592d5c4a123e4f433af04394228e17d25d04a1",
+    "runtime_sha256": "b28c41e9eccabfbb6fc5cffe9085cb94b69af1307d9f2c09914c04c18292ab86",
+    "glb_sha256": "2755459f7e0faded1b3a7063f580d131066cac7429be57e27046ca29dd0ce7b2"
   },
   {
     "id": "deep-fracture-creature-CrystalHound-fire",
@@ -1111,9 +1111,9 @@
     "source": "source/deep-fracture-creature-CrystalHound-fire.blend",
     "glb": "glb/deep-fracture-creature-CrystalHound-fire.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalHound-fire.model.json",
-    "source_sha256": "660af228a348c75dcbe3c1b0f9b7a16f662c3bbd8b9f3e870499fdbb2e13946e",
-    "runtime_sha256": "46d683f0d4090b0041792cdf55ab8581f5ca617df37750d006b0c4940e69e255",
-    "glb_sha256": "886b85b3041ff2ea722a3b19dad023acece2d2186a370b08f12f25202d94e67e"
+    "source_sha256": "c872304bef017a73e8d59117d6be4a044cc82ada119436dac67bbc8f2d40b98c",
+    "runtime_sha256": "15b24d92a37a317e0dd4e9e598317d3e10600a551bfeba34020f6357904caff1",
+    "glb_sha256": "6b660b6b71575b9ca5187a7bfe61ca2a1bdb0dc0179ea35cbef7e8c49ba03ce1"
   },
   {
     "id": "deep-fracture-creature-CrystalHound-frost",
@@ -1123,9 +1123,9 @@
     "source": "source/deep-fracture-creature-CrystalHound-frost.blend",
     "glb": "glb/deep-fracture-creature-CrystalHound-frost.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalHound-frost.model.json",
-    "source_sha256": "295fa9ddf2b9a59e4966c7b74a4421c1fc5a6dfb62788dc8baf7073efd8a9b7c",
-    "runtime_sha256": "f5890d5cee7e2585d4a159086e85b02db359c28b970bfb1f27c9b5c4a8510e28",
-    "glb_sha256": "2c1816dcd5c38355bf94f43fa3307253c64247be99944df1870bddc18ab1af5a"
+    "source_sha256": "9826c740e585a8da1628848428d60bd1af0202625feb6599fb1a8b63d559e162",
+    "runtime_sha256": "7a11a9c5f20011f556254db533875b22a6e52d1bb3183475f6937b62ad00bd5a",
+    "glb_sha256": "9a293ac244f1675ccd60cc3bc745fd4702c0c1fd344af52caadf4c2492fe7741"
   },
   {
     "id": "deep-fracture-creature-CrystalHound-radiance",
@@ -1135,9 +1135,9 @@
     "source": "source/deep-fracture-creature-CrystalHound-radiance.blend",
     "glb": "glb/deep-fracture-creature-CrystalHound-radiance.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalHound-radiance.model.json",
-    "source_sha256": "81a4dddfbb68e04f33c12f358b325d0bd99963f0ffc2f4ce551616a9d2e9a86e",
-    "runtime_sha256": "31eab7106acb6079b845faf917ec556834cd5f7f29bdc2d21ecc1acba4ee3582",
-    "glb_sha256": "99c46e00123972cf8d6953039d7bd8490adc2b5b8128a5a7250271ff10cfa60e"
+    "source_sha256": "8980d817d5edd5051204761055b4dc368d0ff64757530e4f52abe2de89e26a4b",
+    "runtime_sha256": "e8db5480a071073bffaf8e04094d7290db6e2b85ce1cc5e70fa5c465733ec50a",
+    "glb_sha256": "21ae2d6c1a3d7a4729d1dd060cc8312014abb851dbacb1e9faf5cd47b41e80ba"
   },
   {
     "id": "deep-fracture-creature-CrystalHound-seidr",
@@ -1147,9 +1147,9 @@
     "source": "source/deep-fracture-creature-CrystalHound-seidr.blend",
     "glb": "glb/deep-fracture-creature-CrystalHound-seidr.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalHound-seidr.model.json",
-    "source_sha256": "acc9ed1415336319eb004cf09d7994270b3fa8cb263dc2f43541fffcba4b9db3",
-    "runtime_sha256": "5040672216a774193f8339650d5867d01411e148571e6941f8c05008c7b35e50",
-    "glb_sha256": "d13676ee8cc88aded4af662be1e973d7228dfa37dd3e843ef0c9f9659fc8579a"
+    "source_sha256": "71d6eea97e5fe94f3e0d02cb5500fe681c0f42094704c2a89945ac4e4f36ef0d",
+    "runtime_sha256": "2496750f5cac4dcf03b79da1c16b59d9264956dda0bc423624e81ad7741bc668",
+    "glb_sha256": "21cb93d07c7ac435ceda5cd02cf533687091e7161824f1bfaa167f60a3fd8b85"
   },
   {
     "id": "deep-fracture-creature-CrystalHound-spirit",
@@ -1159,9 +1159,9 @@
     "source": "source/deep-fracture-creature-CrystalHound-spirit.blend",
     "glb": "glb/deep-fracture-creature-CrystalHound-spirit.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalHound-spirit.model.json",
-    "source_sha256": "e5e1d1b05f04e1d509a4cc1cf9fa0237fdfe688c0fdb638e7443ba6ccc5c6536",
-    "runtime_sha256": "a2a90ca8e2a1709e7869b0379448c9950e109684ff3ba00e02296b40341b2957",
-    "glb_sha256": "4873c37ea2380963190c56975b346626178e267e1307663db8168820288ac198"
+    "source_sha256": "67e3cd57f3eb9d547c080a5313af9d49820286019213e9ec986621c8830f43a1",
+    "runtime_sha256": "5d49a49a01c7012e456e59d85df574c7c5a3a5cf0f1044236ff76187d5c167e1",
+    "glb_sha256": "37de2f3f37b3294c7a0a7ac339b3e7141bc7bb99706fab2b747fbd9f206b346b"
   },
   {
     "id": "deep-fracture-creature-CrystalHound-storm",
@@ -1171,9 +1171,9 @@
     "source": "source/deep-fracture-creature-CrystalHound-storm.blend",
     "glb": "glb/deep-fracture-creature-CrystalHound-storm.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalHound-storm.model.json",
-    "source_sha256": "4e23d2e070ca47b8e20213b531a5092fc9844ff71ca7802a1182c0efdf046461",
-    "runtime_sha256": "a240b1c05a6783ede7c9d8155bb2ad0cb6dd37c147f2a177983d835dedfb15a6",
-    "glb_sha256": "863b261a77fcb9443c5eab2dca017f8d0bb8a167f57484a3b98c2c852dc8f145"
+    "source_sha256": "231a5b5a9ebe7171660e217901322389c0916ec9c68f2999ed9855278508af89",
+    "runtime_sha256": "4eba6eedbfd6cb41a07e3e7109d55796abc3097fef795f33d149cadc6411aac7",
+    "glb_sha256": "e3ec2de57dea54ecaff1895b05e713d03b545e30f75ca2de243aa388939f8de4"
   },
   {
     "id": "deep-fracture-creature-CrystalHound-venom",
@@ -1183,9 +1183,9 @@
     "source": "source/deep-fracture-creature-CrystalHound-venom.blend",
     "glb": "glb/deep-fracture-creature-CrystalHound-venom.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalHound-venom.model.json",
-    "source_sha256": "ba2f653950080a22ccc2ab85f9474a8571d70a8a727c09deb5ab2e70a53dac64",
-    "runtime_sha256": "640a811cb2876aa2b9099141a0ebbc528f5758808f0efcb5af4858b73cf3dbb6",
-    "glb_sha256": "02629e240d76b10090d4f413cf082a6d09ffc4998dc95db0fb2c3d6fce760cb8"
+    "source_sha256": "a00988e014d4f2b261507165dc448775b9480368db6ecf9aaf55a225e366bf67",
+    "runtime_sha256": "457510fc75e3fa6999b4cb1718c1fa86e4d9606f2971975deaf45164622b026a",
+    "glb_sha256": "5dcb2e4dae926d4bfee7cb4952078500f2ec5687d3bd9500f71851a238bc76c3"
   },
   {
     "id": "deep-fracture-creature-CrystalParasite-earth",
@@ -1195,9 +1195,9 @@
     "source": "source/deep-fracture-creature-CrystalParasite-earth.blend",
     "glb": "glb/deep-fracture-creature-CrystalParasite-earth.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalParasite-earth.model.json",
-    "source_sha256": "121191ad69fa39dff506a8d228c17e246207b128af4fa44759f43d743517bf5e",
-    "runtime_sha256": "e3e6d9827a705caa58e500628bd02407ec3a388ba4cf940fe18a104e9ce8486c",
-    "glb_sha256": "854480caaf50ede8a8af78d0c8c29498d0e65eb95fa1a4dc90e2486539d97bc4"
+    "source_sha256": "ad53221be18da91e0ec69b0ecfca8cfe965448febff9c4fe855d2520e2a90415",
+    "runtime_sha256": "05b3bb6e3d7182826df6652f40b24416a0994986bb3a1289936ccf2a2c093527",
+    "glb_sha256": "18690042ec6fead9851e822a8db9f1c634a33f89f74d83870d5b0a6f233a7d74"
   },
   {
     "id": "deep-fracture-creature-CrystalParasite-fire",
@@ -1207,9 +1207,9 @@
     "source": "source/deep-fracture-creature-CrystalParasite-fire.blend",
     "glb": "glb/deep-fracture-creature-CrystalParasite-fire.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalParasite-fire.model.json",
-    "source_sha256": "eeaaad7757a9861a0c2a65908b10a0a41ba03a11448cce9fe84f32a6492e1096",
-    "runtime_sha256": "b26382d605db0f37c7191896ce89696cd6e04cc069f1c1b12969924ea6cc3296",
-    "glb_sha256": "40621c34822903e76af69442baa07046763b705f6e2db8c9c7b8e6eb70e0bbf9"
+    "source_sha256": "143dc8c20e69a8f8e77f1b472bdac080025695d35574cf3f7b98d551e7d354f4",
+    "runtime_sha256": "21f36893c92b362f4fea3b61d937c30bfa81f28e3fa342904068adbcb165d62d",
+    "glb_sha256": "7aa94c7760e79b147136a95c26cfd9fb7f8e0b081b898db3e8b36cfde509f6d9"
   },
   {
     "id": "deep-fracture-creature-CrystalParasite-frost",
@@ -1219,9 +1219,9 @@
     "source": "source/deep-fracture-creature-CrystalParasite-frost.blend",
     "glb": "glb/deep-fracture-creature-CrystalParasite-frost.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalParasite-frost.model.json",
-    "source_sha256": "13b7ad884c78f27ee034f62bd3905078ba82cefeab6b39ead0db23549c1cbe1e",
-    "runtime_sha256": "7d66e64fafa7044da0ee9d802142b0838519c8252dbfc15822d5c85d8a4b8bea",
-    "glb_sha256": "3cae8b4c980d766b32fbecb85b95d9e5386493643fcd40a357daaaa25446e0bf"
+    "source_sha256": "71bf626a19d03f38561cb4e70949bab637d2cafac625f5686bc7f02c7e9693bf",
+    "runtime_sha256": "6f75adf89f51e0b1780afe76cce5302d53f8b585480aca336540eaeb89f865ff",
+    "glb_sha256": "740c4e3d2d416287e79a028b9e9085d74c147203cef4deb702b31ff566c52604"
   },
   {
     "id": "deep-fracture-creature-CrystalParasite-radiance",
@@ -1231,9 +1231,9 @@
     "source": "source/deep-fracture-creature-CrystalParasite-radiance.blend",
     "glb": "glb/deep-fracture-creature-CrystalParasite-radiance.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalParasite-radiance.model.json",
-    "source_sha256": "0ad0e570a2935180ee5828788a59716f20d7bc858e54f9ed98795865a9ebd1e2",
-    "runtime_sha256": "897cbfabc2cfacb017b897eef7d527df2a5541832adf32325b0d458e7268619e",
-    "glb_sha256": "01262b59ab6dd5c41ba787da065c118a084dc757348e0ca615882632161eeef8"
+    "source_sha256": "30daa80a8a25c06c8d2708c56d82fc31505a792f2090f3a50fc142e160356f20",
+    "runtime_sha256": "10ddd5d4eb5388d15e8be232142a7ab0225a380982e2390ebae09d19af1b5fed",
+    "glb_sha256": "70802193e5d2b67bcc7eb627b9ed863ca3408164a90215ace6e60b39a070b39b"
   },
   {
     "id": "deep-fracture-creature-CrystalParasite-seidr",
@@ -1243,9 +1243,9 @@
     "source": "source/deep-fracture-creature-CrystalParasite-seidr.blend",
     "glb": "glb/deep-fracture-creature-CrystalParasite-seidr.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalParasite-seidr.model.json",
-    "source_sha256": "a9035be379dab1cb2e62a6508f817825cb386ad52b34ad97f7a78a1a2a75658d",
-    "runtime_sha256": "923a67cbd04233a05e979cb9a5779b296011b8f88c22ea268e6995caa5dd8286",
-    "glb_sha256": "49c3fd393b63f0c5a81abf4378e3e31a6e92022097bcbc99944d6358847fe33b"
+    "source_sha256": "c297e5e8f0c6de8d9f277d3c4cdec021825b72ab02c411cc435e2d32ecb0e9b0",
+    "runtime_sha256": "7660f2b2a116100dd817ff4f49129984c66dac53bc8a24716ca8a4a5b3ada3e3",
+    "glb_sha256": "bf5ae3d11de03c33eb17a5b71aa1fc1ffc0242addafc2a9790a0db71464c40c6"
   },
   {
     "id": "deep-fracture-creature-CrystalParasite-spirit",
@@ -1255,9 +1255,9 @@
     "source": "source/deep-fracture-creature-CrystalParasite-spirit.blend",
     "glb": "glb/deep-fracture-creature-CrystalParasite-spirit.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalParasite-spirit.model.json",
-    "source_sha256": "358c890df6d51c7e0bf47936e0daa41f36c567c501c661d0bf2b215f9166a50e",
-    "runtime_sha256": "51ec960318e5250e726a2b51312909a8004ed13ee89589c07b15f06e126e6acc",
-    "glb_sha256": "4eeab06b2e5a5675ca056c743861893d100676555d09ba67f6b53a40373de45b"
+    "source_sha256": "44b5809c892108b96a328a301dc0a6ef4c2086ba3409819fe33bf6456dc9c0c1",
+    "runtime_sha256": "700a33672de0d8db2b6b36a875a17a99f85c15f9a6ac7137974068dd426779e1",
+    "glb_sha256": "71c04f127161e076d2eba0425a15955c973925af39c7d27c6fc91aee4eba6eaf"
   },
   {
     "id": "deep-fracture-creature-CrystalParasite-storm",
@@ -1267,9 +1267,9 @@
     "source": "source/deep-fracture-creature-CrystalParasite-storm.blend",
     "glb": "glb/deep-fracture-creature-CrystalParasite-storm.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalParasite-storm.model.json",
-    "source_sha256": "ec19615debd399cd6ae8b59aaf536c7296a4c01a3e23f4b876dd7c4b863bf945",
-    "runtime_sha256": "15ca2bfac96df0fcb004f2b6aeb51deb1aabfb635e15e97c6a8c3f89b2b8e726",
-    "glb_sha256": "301cfa8ad9b74e0a25a5a21b37641f0f726b606c77b508b054702c050d1301bf"
+    "source_sha256": "fc55001aaacfa93b61c46c00c9341924fa18a470cc0bfca3352913e1fad27180",
+    "runtime_sha256": "d69e6c2fb13fc3e2ddf30d82f81f3acd29ce147e1b57cc57143e7813c619ced5",
+    "glb_sha256": "29f78127edecd13edeb5cdccc381e64fad4b56caeea126e79e50618f38314d32"
   },
   {
     "id": "deep-fracture-creature-CrystalParasite-venom",
@@ -1279,9 +1279,9 @@
     "source": "source/deep-fracture-creature-CrystalParasite-venom.blend",
     "glb": "glb/deep-fracture-creature-CrystalParasite-venom.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalParasite-venom.model.json",
-    "source_sha256": "86f26cac0d98008f9ed26e6d2ceb86ebe7d716d113a30aa2e2c52cc4c3fb3804",
-    "runtime_sha256": "3055a2621d2b8babec7ac64f4466f73278a6ef32ff7c8b979333945cdef96d6c",
-    "glb_sha256": "f76d87f6886c3861c9ba4da45fe56517b871788cdfc0d21e8404e3e7a22264df"
+    "source_sha256": "e7d0fbf3b3566caad5fdd6361e3fa5a182cb6fd1e7f610a4a5d563b963ce00f3",
+    "runtime_sha256": "6d1c844655d5db2458550e0b81abba2b51d6275577934ef4e802adf77beee4fb",
+    "glb_sha256": "cdd8f8b905305c30f06bf43fb8df342724c7c9b281fd139de81444d499a8f23c"
   },
   {
     "id": "deep-fracture-creature-CrystalRevenant-earth",
@@ -1291,9 +1291,9 @@
     "source": "source/deep-fracture-creature-CrystalRevenant-earth.blend",
     "glb": "glb/deep-fracture-creature-CrystalRevenant-earth.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalRevenant-earth.model.json",
-    "source_sha256": "b951be0b4d9766b3a316f3cafa5789d9b19bd039a94e0190f698ccee5774c703",
-    "runtime_sha256": "c3f064bc2a41160e0899c94ec97a2fc993308f72423f601def4cb071322ca7f6",
-    "glb_sha256": "d427bd50b1f76bb8b68e79b3c832392db8b9bcefb43aed34ce93ce5a2b74179a"
+    "source_sha256": "f03a6bdafede81e895a35142513e422f5a7ede6290deae6fbd471ea38e518cc2",
+    "runtime_sha256": "220dc252d8860be9bd00e32e331a90a8b4f4b0e25dec71a8abb27cfb034622f0",
+    "glb_sha256": "1014e7e8603aff408e7582c33a897da9494cd4ffc193c308d0d5740e991b9249"
   },
   {
     "id": "deep-fracture-creature-CrystalRevenant-fire",
@@ -1303,9 +1303,9 @@
     "source": "source/deep-fracture-creature-CrystalRevenant-fire.blend",
     "glb": "glb/deep-fracture-creature-CrystalRevenant-fire.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalRevenant-fire.model.json",
-    "source_sha256": "ccf520f4f4295305a8f7e1c37618c881deeb3f2eb26e42ad42694b9c1b3f8247",
-    "runtime_sha256": "b1ba08671462a7d3e39811ec0ea5a367c543ff5d9f037859652c48d09d694bad",
-    "glb_sha256": "b05493cf2d28ee67297b83992cf1f3eaa9ea709e4a56db433d5f38ec5fdf08d3"
+    "source_sha256": "bec3596942a40f188f53730588b2ceed54a042d8598b9eefe6d569f5269bbadc",
+    "runtime_sha256": "15356ef3629e0d933091996b4c19c8436adee2936c69cadb14c17bbef2b927c5",
+    "glb_sha256": "c105b57393c9855a32eebb442accbdd507e0c25a601599eb1470319ef767c905"
   },
   {
     "id": "deep-fracture-creature-CrystalRevenant-frost",
@@ -1315,9 +1315,9 @@
     "source": "source/deep-fracture-creature-CrystalRevenant-frost.blend",
     "glb": "glb/deep-fracture-creature-CrystalRevenant-frost.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalRevenant-frost.model.json",
-    "source_sha256": "2eaf50a05cf75eec3eed54c965be7d2f6104b7dff2930149b8894d7c105b4d2e",
-    "runtime_sha256": "841e0425c5c74a41c034b36a082a19d3b0a47bc06730fb240ba8ea4deba75040",
-    "glb_sha256": "a12aedda1b603029ff71220bd52c0ac495d0e2d38ddcd758438e74f415dc75d2"
+    "source_sha256": "6f0bcc8e382672246977773a9435c1614e0e1c14defdb2f376629f37fb8cacae",
+    "runtime_sha256": "e66be31664d36170a36cf50a0f191154ccc985fd22d6f5fadd03745ab1814ccc",
+    "glb_sha256": "02c8f6f0fb97314a299f6ac493faf3dce821fab126a45752b2453642829cf67c"
   },
   {
     "id": "deep-fracture-creature-CrystalRevenant-radiance",
@@ -1327,9 +1327,9 @@
     "source": "source/deep-fracture-creature-CrystalRevenant-radiance.blend",
     "glb": "glb/deep-fracture-creature-CrystalRevenant-radiance.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalRevenant-radiance.model.json",
-    "source_sha256": "33e5dbae8b1644fab664f2c2a0a6c316fe684187dff2a056de63f2640feb33ac",
-    "runtime_sha256": "7c6d1c1bd66efe67a2232dd80e210beb76eff79aac94ff5f4a5101e5ef3c5ba9",
-    "glb_sha256": "0b97ed287150c0d7e8e2dcaff7d0a4e46bdf4fc162ae2e53cd0602f5b5a7751a"
+    "source_sha256": "f2e939522e194e4271b9655c6e6a4e9f39e39b3ce638e70248ec61b4642e674e",
+    "runtime_sha256": "d9f4afab04d2e3926c2b5ee6cbb3678ccd5ea31b42afe5b29a3cd17e2e590da5",
+    "glb_sha256": "a7526c4eca6816c74aa760edbf194081c13e5ac57ffa4f26ffd71b9b862c4988"
   },
   {
     "id": "deep-fracture-creature-CrystalRevenant-seidr",
@@ -1339,9 +1339,9 @@
     "source": "source/deep-fracture-creature-CrystalRevenant-seidr.blend",
     "glb": "glb/deep-fracture-creature-CrystalRevenant-seidr.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalRevenant-seidr.model.json",
-    "source_sha256": "a6c63327fb3773020d864ad688a81c1a11c0df82ca4e892c23f2ff9c9efe0355",
-    "runtime_sha256": "87e410e4a6ac5ab188c858cf410c9789188329f54b3c01968a31d1907212252f",
-    "glb_sha256": "c71f07c4e362bca9565ab84b9c15501507529427df7aacdfb2fc25c1ddf23aed"
+    "source_sha256": "783af9573b04ef492fd5346a04d8d1565f225a1613f96d11ae3fba30e9da2456",
+    "runtime_sha256": "863180824dd19ddfdaa86d053774048a594ddf84d0914259d01a334f05499bbf",
+    "glb_sha256": "f18ebe91856e3c6d692733e23894efad4d290748bbac1803978f8fcd5fdbf59f"
   },
   {
     "id": "deep-fracture-creature-CrystalRevenant-spirit",
@@ -1351,9 +1351,9 @@
     "source": "source/deep-fracture-creature-CrystalRevenant-spirit.blend",
     "glb": "glb/deep-fracture-creature-CrystalRevenant-spirit.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalRevenant-spirit.model.json",
-    "source_sha256": "7ef4cd1a47c4d0df582c2a9951820f71876ab0eca2d51ca7cf25780764c24e6d",
-    "runtime_sha256": "6fa0d7f26c17e694a526962e0805048bd6b2ca72db7ffec6d6d656c071fb384b",
-    "glb_sha256": "4fbb373a8e0a9d3d82ca7989482efd34f4519d16ad74b48782979a8b17cd00e9"
+    "source_sha256": "fa4cafd2c687727ff24b8bc6285765e9ff121a7eac3c261b075b71c0b54fff43",
+    "runtime_sha256": "011e4dbf8540f55b882ac49e6106819ff49303027b1811a48ccddf1420a7df8a",
+    "glb_sha256": "04d5b3bb35857fffd4a65ac0b8115eb66d6e9d0c23a8f4dba59238810dc0f14c"
   },
   {
     "id": "deep-fracture-creature-CrystalRevenant-storm",
@@ -1363,9 +1363,9 @@
     "source": "source/deep-fracture-creature-CrystalRevenant-storm.blend",
     "glb": "glb/deep-fracture-creature-CrystalRevenant-storm.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalRevenant-storm.model.json",
-    "source_sha256": "5fe6930054c281acffb5f9ae463ff2412d82fdb8d825352dbfbab6de3847f8d9",
-    "runtime_sha256": "92a7a82034cbf7669885f5320d1ee54593d94af32d984012f6a847b7e92eca00",
-    "glb_sha256": "502a40d05c540a1da5d6064c3c0f9bbb7f7e15c533bcfeee6deb7d0fbe88a2e5"
+    "source_sha256": "9f12ac340a12ed4d1939ea648161080df54e5d87fefd688f74da37ad0f9af4e4",
+    "runtime_sha256": "2619fee6c336ee09b219fa0130e250b93d0c90e0e7a89a9d89ba740e96efcf6e",
+    "glb_sha256": "590fb37ace7e39d42d78240a89fbf8098cd3b00a7673c7c826da46130713df31"
   },
   {
     "id": "deep-fracture-creature-CrystalRevenant-venom",
@@ -1375,9 +1375,9 @@
     "source": "source/deep-fracture-creature-CrystalRevenant-venom.blend",
     "glb": "glb/deep-fracture-creature-CrystalRevenant-venom.glb",
     "runtime": "runtime/deep-fracture-creature-CrystalRevenant-venom.model.json",
-    "source_sha256": "08d813ff906f72b2c029f7e5635a80374f53fd02cb068dc25cdb9ef1f0b5c1a0",
-    "runtime_sha256": "7779cd8d41b4222a73b3097b6c18b5223db567bb255f5db749d6863373163289",
-    "glb_sha256": "e772949afdd32777c480791dc78f512b5a1d6c15372eb56e87cb1255ffe0d482"
+    "source_sha256": "51f7900d53aea6d3ee7c73a744286805807a50fba778088ffa6767441ee43186",
+    "runtime_sha256": "f11f89dc8963acc5d0228aa02edb244fd45f703505e8f69f194b950af3628320",
+    "glb_sha256": "061bfd6d26b0026590af4a635abdfc7bc029165cccc6b68904bef3515cd17071"
   },
   {
     "id": "deep-fracture-creature-FacetSentry-earth",
@@ -1387,9 +1387,9 @@
     "source": "source/deep-fracture-creature-FacetSentry-earth.blend",
     "glb": "glb/deep-fracture-creature-FacetSentry-earth.glb",
     "runtime": "runtime/deep-fracture-creature-FacetSentry-earth.model.json",
-    "source_sha256": "4f5a54c9ceca4903ec63437eb6ee557bab7f356cb069ba4facf4cc136e751bb8",
-    "runtime_sha256": "dda20d5e5cc18bac33a49f6209d1e64f7c89fc89d5e8c48aae93b7abb38d3102",
-    "glb_sha256": "89a404d0afcead6c59a82a4bd1cb5663a78895ea5a27e60cbf9aff2bea2244bf"
+    "source_sha256": "8e68fb13876c6db51a5df393e439410e843a9996753038916c6e79688df03924",
+    "runtime_sha256": "a0a30380fb8d71b7c5352795186169417f7039e4d5325ee613001e40188f5568",
+    "glb_sha256": "cdc8ffc371a5d13c571dd24bb0ebf129dd73e40367ea4070f4740f458ee1a929"
   },
   {
     "id": "deep-fracture-creature-FacetSentry-fire",
@@ -1399,9 +1399,9 @@
     "source": "source/deep-fracture-creature-FacetSentry-fire.blend",
     "glb": "glb/deep-fracture-creature-FacetSentry-fire.glb",
     "runtime": "runtime/deep-fracture-creature-FacetSentry-fire.model.json",
-    "source_sha256": "3a390b526a106c2aa18a15bce5b079a5c8909d4c0607ca1f180fee30347bdab8",
-    "runtime_sha256": "a40d66e13d14579adaed0a58b33570d230d2b704a30adea23e3853abf507798f",
-    "glb_sha256": "66c747db0cdafd86360d706a8f65d60478d3fcaeb647250713f8206a3c2681da"
+    "source_sha256": "458ade8d7e538fdde03cc74dfadebc415ab9ba22522a672708fb3e6ea5a6bff6",
+    "runtime_sha256": "da7e64f0296fd845e7c7e6312ecdb195abbcc1c5f76251ac5a0b3927f6738d74",
+    "glb_sha256": "3e67dab3f3cc8987c23580abeb1564c10aac43cd28e5aeac850e3c7d145ef622"
   },
   {
     "id": "deep-fracture-creature-FacetSentry-frost",
@@ -1411,9 +1411,9 @@
     "source": "source/deep-fracture-creature-FacetSentry-frost.blend",
     "glb": "glb/deep-fracture-creature-FacetSentry-frost.glb",
     "runtime": "runtime/deep-fracture-creature-FacetSentry-frost.model.json",
-    "source_sha256": "ff9ad085080ab03b2ad3d944386e35804b566b0000bac13f0739172e9ed3b25e",
-    "runtime_sha256": "38d62312a1c43842bebb63b436f1e7bb21a313717ef6e6c000538694abf5fede",
-    "glb_sha256": "3f11b91f1682edc5a318fd41bf76693cf6f16ea3d747045b27af40ed7dcf302f"
+    "source_sha256": "894262ec748e24391b3a3020acac7a344a5e5e502637e11b65428a156cd9729e",
+    "runtime_sha256": "30f17f13ba847534b1a41acd202acc902b764529c402201482b6b435976ee54e",
+    "glb_sha256": "7144bc247a6fa9435c07e1bddc80fbb6e1c0c2b9b8b0223b4a4e245ce6b394a3"
   },
   {
     "id": "deep-fracture-creature-FacetSentry-radiance",
@@ -1423,9 +1423,9 @@
     "source": "source/deep-fracture-creature-FacetSentry-radiance.blend",
     "glb": "glb/deep-fracture-creature-FacetSentry-radiance.glb",
     "runtime": "runtime/deep-fracture-creature-FacetSentry-radiance.model.json",
-    "source_sha256": "c22e7e8af44e51d0ec2a7562a2cb2a86eb39229bb19aa9357d3c9f46bf0da813",
-    "runtime_sha256": "97e132a0714f3bc2c7c77b9859c83a7b5547efcc1619e12a667f778beaee59b2",
-    "glb_sha256": "9c242d46869f3bc37e81d162da708c979087623364d301131c8e04de3dc4f019"
+    "source_sha256": "18991e385ee55b04c10ffe67c72fca500a5603b507fed04ed499ee3f766b746a",
+    "runtime_sha256": "958f617002298067337552fe81e24722028fd23ad4b085a70fecd5eb3131f787",
+    "glb_sha256": "dea839ec210a776bcec6e1e0a5732d8dade7fa837201ee2204c5962913774ea8"
   },
   {
     "id": "deep-fracture-creature-FacetSentry-seidr",
@@ -1435,9 +1435,9 @@
     "source": "source/deep-fracture-creature-FacetSentry-seidr.blend",
     "glb": "glb/deep-fracture-creature-FacetSentry-seidr.glb",
     "runtime": "runtime/deep-fracture-creature-FacetSentry-seidr.model.json",
-    "source_sha256": "c2eb67c0ed4dddcfa901782c818ad203ddfcab64c3a245dcb4c5df6ac87ec003",
-    "runtime_sha256": "baf4e4aea768340288225a281e4a53fe28641ee6f3759502059398100567132a",
-    "glb_sha256": "ba32142945b41edb8c537820b11a2304667c940ee21b5d849d339624d5116f86"
+    "source_sha256": "58285f15e5a621450d408957d7e3d9afb982ed031ec094dc423924fe436cc902",
+    "runtime_sha256": "df3a474fa1cd301cc34b9c6b088f96b887553527e750ab615524f5c53aaa4377",
+    "glb_sha256": "703f46f87efc558a7db802f1eecea8d327e1bbbe286c951527b20d93a0ecc6a7"
   },
   {
     "id": "deep-fracture-creature-FacetSentry-spirit",
@@ -1447,9 +1447,9 @@
     "source": "source/deep-fracture-creature-FacetSentry-spirit.blend",
     "glb": "glb/deep-fracture-creature-FacetSentry-spirit.glb",
     "runtime": "runtime/deep-fracture-creature-FacetSentry-spirit.model.json",
-    "source_sha256": "7d5f894578a39bf17821c35ee28fa36d76fbe64b6fd66599108cdf95993f83f7",
-    "runtime_sha256": "3eaadf1f6655325189756384ea84bcc2a116570e1c6325a2a34b4ae7a26df2ff",
-    "glb_sha256": "399a5aee2864d66e9ada1c68d8cfa2b381cffea88ce22a9125525b59c3cc21e7"
+    "source_sha256": "0e9ecc320f81ce87ecc12e01d27d6190079d0d9ce671300fa81c8e89f29ed263",
+    "runtime_sha256": "b9ffa70071397215bd060eb3801ef15543bb103af6093679aa9c1ff8b25057e4",
+    "glb_sha256": "b5e62f7dddf67796e455d29e9919554f2876604e736c1a94a768bc57630832fa"
   },
   {
     "id": "deep-fracture-creature-FacetSentry-storm",
@@ -1459,9 +1459,9 @@
     "source": "source/deep-fracture-creature-FacetSentry-storm.blend",
     "glb": "glb/deep-fracture-creature-FacetSentry-storm.glb",
     "runtime": "runtime/deep-fracture-creature-FacetSentry-storm.model.json",
-    "source_sha256": "8e1aaeb5170917eaea6b96a95116405de27fcbb2dbf454d16b5aeb7f842c1bb8",
-    "runtime_sha256": "4e126bd88d501f4ea85c971015874019c63cfa993d4dccc5c1b8b6b7af4876d3",
-    "glb_sha256": "9d988c183975e185ef8ea01e637582e58ba542ac94355adabc97e266f3bab484"
+    "source_sha256": "7dad59d175102fc2ca0775522f1d91df3a087fe1bd51dfbc2f623a01e4bc68a4",
+    "runtime_sha256": "bbc47dd5f53f3b6011712200a64ec03b7d833c1f8ef9917ca9c9eebfa128f2a8",
+    "glb_sha256": "17f39cfff55e755a762687b23c304d97b0791c5c67fc99efad00efb9a7760154"
   },
   {
     "id": "deep-fracture-creature-FacetSentry-venom",
@@ -1471,9 +1471,9 @@
     "source": "source/deep-fracture-creature-FacetSentry-venom.blend",
     "glb": "glb/deep-fracture-creature-FacetSentry-venom.glb",
     "runtime": "runtime/deep-fracture-creature-FacetSentry-venom.model.json",
-    "source_sha256": "6a32c1a351cebed1253c54259c9fac8bc524413e338fea5fd7fe9578875a0328",
-    "runtime_sha256": "287b6d12779f4cee2d775a54a3672f32144ad870894dc79cd62085979741996b",
-    "glb_sha256": "c601d39872ad0d95f4c30da50e1216321763c11e0b05e8ccab2d126872f9a164"
+    "source_sha256": "89e7aee8aac14f8fd4bbc143979ba1fe920f3cb7548c28337c3cc3801fdaf000",
+    "runtime_sha256": "a3e2e09cf962addccc376f865f7cffb4f4d5d51ce34acb69a54553f2810a3afc",
+    "glb_sha256": "5411cd54a4125a33c96cd0ab7af55fc1ce0e5b956c72c646b37a10c556394735"
   },
   {
     "id": "deep-fracture-creature-GeodeCrawler-earth",
@@ -1483,9 +1483,9 @@
     "source": "source/deep-fracture-creature-GeodeCrawler-earth.blend",
     "glb": "glb/deep-fracture-creature-GeodeCrawler-earth.glb",
     "runtime": "runtime/deep-fracture-creature-GeodeCrawler-earth.model.json",
-    "source_sha256": "0429edae1d71f8bc51c99e25fe8af4bb1a38509616a29eb96710cb3024028c37",
-    "runtime_sha256": "443aa52ae4c13acc29f81a13a103c1f48ef7dca06dd18b24f360cb05471b8cfa",
-    "glb_sha256": "d6cd50b5e7f90a138ce944e145e71f771773451d1dfff15858187ede63c31e81"
+    "source_sha256": "8fe04ef35ae2efb1828e6a9f97042cff0928710677db64d4e925f4aaf34070ca",
+    "runtime_sha256": "62d7560b8aaaa4b0b52d0808cfb89d024054c78306821a0771ff40bbfe9938e4",
+    "glb_sha256": "cbaba8e2cae3e458cc230c3bb6e5d2b7880f35a45fd96500777f0aaee6a6f3ff"
   },
   {
     "id": "deep-fracture-creature-GeodeCrawler-fire",
@@ -1495,9 +1495,9 @@
     "source": "source/deep-fracture-creature-GeodeCrawler-fire.blend",
     "glb": "glb/deep-fracture-creature-GeodeCrawler-fire.glb",
     "runtime": "runtime/deep-fracture-creature-GeodeCrawler-fire.model.json",
-    "source_sha256": "9841ebf48c8b8c89f86ea2653209b4a1935491d831a2abacd32dc009e171661b",
-    "runtime_sha256": "12483bab5891f1da7e81c9cc6f2483eaf00f68c0f78e85ba81f1b012ed8058ad",
-    "glb_sha256": "d345e33b0f2ce22d24810765139e016b4c09d6bd8de5a9f64297bbe00ca8b95d"
+    "source_sha256": "7738b84f37524397835852e453fd73356271657cc4fe190ac553e0533cb52030",
+    "runtime_sha256": "b0330fc65cb7764301c013cd8b7526a7ee386cefb1459f1eca3ce4df173e775f",
+    "glb_sha256": "1086dc2f10ce185976ae3e242ff77a770796b6b6fbc5fa79f01788a8afe32d4a"
   },
   {
     "id": "deep-fracture-creature-GeodeCrawler-frost",
@@ -1507,9 +1507,9 @@
     "source": "source/deep-fracture-creature-GeodeCrawler-frost.blend",
     "glb": "glb/deep-fracture-creature-GeodeCrawler-frost.glb",
     "runtime": "runtime/deep-fracture-creature-GeodeCrawler-frost.model.json",
-    "source_sha256": "c785ceb2a2593fb2a92861ebe850bbbf962b7d35938734df06772aa2bcb3be29",
-    "runtime_sha256": "9b2bae04db22b6e195fdbd87414cef850d9dced650ce508bee8b993d2c6077ef",
-    "glb_sha256": "d163047eb2e5a113083542fbdf7e010b5e954424f74fe49ab7496a11ca849a19"
+    "source_sha256": "140e025faaf38fb22d5f70e660ee0652838cd13029ff78beecede5b7337868b0",
+    "runtime_sha256": "0d77df27f60f3da350b785f3848820fcfe062aa5b138c32be68f873d9b397a0d",
+    "glb_sha256": "863992f2fd6a37964f186c6447ba76a3ac52278395fb3b1056bc1e12b0cffb53"
   },
   {
     "id": "deep-fracture-creature-GeodeCrawler-radiance",
@@ -1519,9 +1519,9 @@
     "source": "source/deep-fracture-creature-GeodeCrawler-radiance.blend",
     "glb": "glb/deep-fracture-creature-GeodeCrawler-radiance.glb",
     "runtime": "runtime/deep-fracture-creature-GeodeCrawler-radiance.model.json",
-    "source_sha256": "6d0470793db6db29724c5b925d4102e0e79b80db52217a21dc0145148e0d56da",
-    "runtime_sha256": "365810a4da4eab75a2ed10ca9f896d024e932bc9a17bef1b99483d35d8bdaf4c",
-    "glb_sha256": "67a4460b241121afa71bc0e64117dd59e88e034e14403d61cc52001e333a989c"
+    "source_sha256": "aa857cda199a2692d9efc0f87f3d5e84a4c35316ebe19dbfff8536ade3314cba",
+    "runtime_sha256": "b95fa19c1446fe23d07375ff0d80f8984b1eb5ce5e6aacb733e095426a33eb1a",
+    "glb_sha256": "1e780c4ac39c16dbbc43713d6f1bf70178c49c93a48b1b2d3b2215b0fe21330a"
   },
   {
     "id": "deep-fracture-creature-GeodeCrawler-seidr",
@@ -1531,9 +1531,9 @@
     "source": "source/deep-fracture-creature-GeodeCrawler-seidr.blend",
     "glb": "glb/deep-fracture-creature-GeodeCrawler-seidr.glb",
     "runtime": "runtime/deep-fracture-creature-GeodeCrawler-seidr.model.json",
-    "source_sha256": "c5a39522022e1c13712c40bd22c379b58f5f0fa1939f685a7b2ff4bf2f6b2364",
-    "runtime_sha256": "9fee0c0d9779cfd41dfd4bbcffe0e3109a30fbc9f951a318b7654b64d260a3ae",
-    "glb_sha256": "11230cce274c1117b919fca41cf40bed764462f57167e89e215d3e1c2392091f"
+    "source_sha256": "78f5c3b0503ea59995a526361112c01ec6cc1b4dd1490083464b6e2f21766a3c",
+    "runtime_sha256": "423896ff303fb446c377be4a9050d558b4f5672638cd1c5d66d25693c058e323",
+    "glb_sha256": "e16074626f16a9685ef2226b9d90ec6049d939b61e82028cee12558d70955999"
   },
   {
     "id": "deep-fracture-creature-GeodeCrawler-spirit",
@@ -1543,9 +1543,9 @@
     "source": "source/deep-fracture-creature-GeodeCrawler-spirit.blend",
     "glb": "glb/deep-fracture-creature-GeodeCrawler-spirit.glb",
     "runtime": "runtime/deep-fracture-creature-GeodeCrawler-spirit.model.json",
-    "source_sha256": "97db8609a1cd1e6e19cf2ce04ad7a0b60aa60b39644ae0d2f9f10f1bb82fcf61",
-    "runtime_sha256": "21094e09feb2754f9da897d6db66dd8208057a4f815f6fc8a3f1605ce29877e2",
-    "glb_sha256": "7596b3e19e56cb7932964f5b0aca52289436fc2241e28a7b6f3077476cf31dfe"
+    "source_sha256": "bf39e1f529efdd914d1bf12caebcdb9146d41497e509a9c03d1c2d5b4c7b1d07",
+    "runtime_sha256": "aede0bb5d4690fbd9832c43871c7e854a2cd59affed1bf8582364a32b45473e7",
+    "glb_sha256": "531520aadba21edd03a907090f1d9688a36c8476a4812738da57a8f015754cb6"
   },
   {
     "id": "deep-fracture-creature-GeodeCrawler-storm",
@@ -1555,9 +1555,9 @@
     "source": "source/deep-fracture-creature-GeodeCrawler-storm.blend",
     "glb": "glb/deep-fracture-creature-GeodeCrawler-storm.glb",
     "runtime": "runtime/deep-fracture-creature-GeodeCrawler-storm.model.json",
-    "source_sha256": "ab65241e428db52ad5d41e8204458e552c44751b066c93e4e887bdae845fa75b",
-    "runtime_sha256": "fd4c87523d8013a86583d2d64b1ac7e6c088d798b85687c07892c6ad7f0a7aef",
-    "glb_sha256": "eb082cf53183a6a5534af03e2bfb11784902c2ef8f2e53eafe39892e41f16255"
+    "source_sha256": "c8497496d6a37d730e40a9c8de820fd0ac97b5e79a11f00921c3ce9a3c8c0433",
+    "runtime_sha256": "97598ae9c4469c67b1e49382cd346898eb148e48ce879ec73e0c87563fdd0df4",
+    "glb_sha256": "0c4c56614a1add9216963c76a2300892ca76f5c08b0176635d3247ae5997acd9"
   },
   {
     "id": "deep-fracture-creature-GeodeCrawler-venom",
@@ -1567,9 +1567,9 @@
     "source": "source/deep-fracture-creature-GeodeCrawler-venom.blend",
     "glb": "glb/deep-fracture-creature-GeodeCrawler-venom.glb",
     "runtime": "runtime/deep-fracture-creature-GeodeCrawler-venom.model.json",
-    "source_sha256": "07fc1f352c094349345443d488739124114877ff6936e0a0e5a92dde94c38892",
-    "runtime_sha256": "11f2b827ecebc678829300757f4479ddf3d82ac92ddec077a0601fc309a3f527",
-    "glb_sha256": "8c3997e4593b5709072d526c7c56fc2fabbd0c7d74b8682f0de9b70d881860c3"
+    "source_sha256": "7e10ff9da2e097043bb207ef35d41b58c6132a3589000a164f29313a6dbce119",
+    "runtime_sha256": "6f3ad393a1bbc44f8ae6c03cd56be6570b613773a1a11b03d6d9f0277dbff9fe",
+    "glb_sha256": "f00a4689be38147d91698df5077d665b3a1384cb6576d87f163e65e20ab2150a"
   },
   {
     "id": "deep-fracture-creature-Shardling-earth",
@@ -1579,9 +1579,9 @@
     "source": "source/deep-fracture-creature-Shardling-earth.blend",
     "glb": "glb/deep-fracture-creature-Shardling-earth.glb",
     "runtime": "runtime/deep-fracture-creature-Shardling-earth.model.json",
-    "source_sha256": "21bd803c1d9b145f7ef7f5dc428bd32540a1b5e0983d90242c76ef6bbaf8a921",
-    "runtime_sha256": "54f025f20fc7a50cd00c88ccd39db962b5a04bf8a0653a5caf133f846dead007",
-    "glb_sha256": "9e4db4532a90b268010b7133cd3459b5e687e64f03b083d77e203cd9ff1783c6"
+    "source_sha256": "ce1d82194d7118178f4afd495a140ce928b647ab03ec0d992c707c25b38ad448",
+    "runtime_sha256": "1a83ea0a8e223e763c1f222f0d62cf2e132dab44cf90cb2e141b80145d7d1f5b",
+    "glb_sha256": "859b1da324c7ff69549545bb125408ecb2c42fd5f869ffacd21eab30a70dfeb7"
   },
   {
     "id": "deep-fracture-creature-Shardling-fire",
@@ -1591,9 +1591,9 @@
     "source": "source/deep-fracture-creature-Shardling-fire.blend",
     "glb": "glb/deep-fracture-creature-Shardling-fire.glb",
     "runtime": "runtime/deep-fracture-creature-Shardling-fire.model.json",
-    "source_sha256": "f6c521d3def7487ad8e9644c20157624cb44b627d9d68cfa6f684e393fb420c3",
-    "runtime_sha256": "db257c9c962de4aab1e5ff8beae3181bb40c8abeb69777c8ba69841f0306bccf",
-    "glb_sha256": "106dcf39a3e78c3ee411f236d87e6839b3001b83785ae0a36a9fb64d627351dd"
+    "source_sha256": "8955f84a07592cd19bf36fbc85e39a5aabbfadb7856d30e915fcbd87781a3c0d",
+    "runtime_sha256": "71c68b7722257b68f2349a9a4e43a5ec4ff0aac30417ee669e1cab27bd032f82",
+    "glb_sha256": "e0f6282452323331db06de98aea6d6507424b2b93baa5a7ff03d532a5a785024"
   },
   {
     "id": "deep-fracture-creature-Shardling-frost",
@@ -1603,9 +1603,9 @@
     "source": "source/deep-fracture-creature-Shardling-frost.blend",
     "glb": "glb/deep-fracture-creature-Shardling-frost.glb",
     "runtime": "runtime/deep-fracture-creature-Shardling-frost.model.json",
-    "source_sha256": "f2c3a8c1d26665de82d8947b1a985d23c66fb810c9f84f5bf4641cd9ae1ccad8",
-    "runtime_sha256": "421a5572420c09ad41e64b9101a6697a0059193ab30c96642ce141260f5c57f0",
-    "glb_sha256": "307d833ec64e0d0d3bb35fba6bad1d4aa7a48dec21e07d45d660a7ef84b9dc58"
+    "source_sha256": "facb4b7b4eb416db9589c35caddff2124c61442b7a1b32410c8e5ce2b67b5047",
+    "runtime_sha256": "16a0d90372813442c8383d487919fbcef5dc6b660750676e606dd738a9c9f8f2",
+    "glb_sha256": "63fcbef7410ccaeae67634cd64a0609b94fc212cb220e0b9b46dd86bc66197e1"
   },
   {
     "id": "deep-fracture-creature-Shardling-radiance",
@@ -1615,9 +1615,9 @@
     "source": "source/deep-fracture-creature-Shardling-radiance.blend",
     "glb": "glb/deep-fracture-creature-Shardling-radiance.glb",
     "runtime": "runtime/deep-fracture-creature-Shardling-radiance.model.json",
-    "source_sha256": "2493b28176eed6797d58cd541ce6434c746e2187561a12d887aac685c44439fa",
-    "runtime_sha256": "785f95481109633848dc9922a215f9f379ade6708a9a66de23c29171ed2728a1",
-    "glb_sha256": "62a4fe4427ab74eb2314616f16886e9d63cf2998be936204e519a261da0bcb1c"
+    "source_sha256": "8db718a7631254f061450207a8a42a64786d5dd6d48dc10b9a364809b075bee3",
+    "runtime_sha256": "88e3ab8e64be53c09a6a3fc157bcfe0c17e1bca5a0c7858d291f5b6f86ccd772",
+    "glb_sha256": "10a95b46148b833b923dee78644cd6679b8521e5b306f810211f7bc865e5566b"
   },
   {
     "id": "deep-fracture-creature-Shardling-seidr",
@@ -1627,9 +1627,9 @@
     "source": "source/deep-fracture-creature-Shardling-seidr.blend",
     "glb": "glb/deep-fracture-creature-Shardling-seidr.glb",
     "runtime": "runtime/deep-fracture-creature-Shardling-seidr.model.json",
-    "source_sha256": "c88d82ae1be05eb51e14b582ae155690550f82e74fed5dbce09199677bd36a0a",
-    "runtime_sha256": "3bc6bc1e3b2dc292650397b6057f030244194db4c5ce948c468a78d5e811cd6f",
-    "glb_sha256": "37793ea27a0fab486188bfdd42d532c470563eeb3a13917c7bf87aee92255e00"
+    "source_sha256": "557826e624d3d364cce27b3a2f461ff465a1282a78861e6e70baddab9e5e71f9",
+    "runtime_sha256": "a4fe5c1734987743725662bc99184b52b600ceebaec133301408bf6c4178f99f",
+    "glb_sha256": "b0a17f72fa5467a75b3397ef938c3be6d11a7674e996fccf6e429ba8c42645b5"
   },
   {
     "id": "deep-fracture-creature-Shardling-spirit",
@@ -1639,9 +1639,9 @@
     "source": "source/deep-fracture-creature-Shardling-spirit.blend",
     "glb": "glb/deep-fracture-creature-Shardling-spirit.glb",
     "runtime": "runtime/deep-fracture-creature-Shardling-spirit.model.json",
-    "source_sha256": "adf6b5532b8d5e45890ead71b041c703d6252748eff50860201ccd026be74dc1",
-    "runtime_sha256": "ec993bfb978b8af5d65b21ab42ea6917d65bbfc5f738b489ea67a7c936bf42bf",
-    "glb_sha256": "258bcab35bf5399214cd796cc7d811342a107ba831c8235f3a2397617ccf32a9"
+    "source_sha256": "120bc3a3951bcbca409eef5f51cbfb5a4ac2b1f9b51cb072cbcd556218d8db9c",
+    "runtime_sha256": "c565a958ef74c270ce80822e9f10a4874b8a289af75cb49d419516ea4b644a3b",
+    "glb_sha256": "fb58a2d51d07001d9b91ed6304d80d9eda7baef41bd7b02964da3e662404dc24"
   },
   {
     "id": "deep-fracture-creature-Shardling-storm",
@@ -1651,9 +1651,9 @@
     "source": "source/deep-fracture-creature-Shardling-storm.blend",
     "glb": "glb/deep-fracture-creature-Shardling-storm.glb",
     "runtime": "runtime/deep-fracture-creature-Shardling-storm.model.json",
-    "source_sha256": "3eb5a02c48a364e7a2915b0feefe7a14e74dad0940ce70b62e0a5d9ef98053a2",
-    "runtime_sha256": "6c649555351087ae5abb81ed6b1c762396310597b69eb748f58cd7c094b66291",
-    "glb_sha256": "c115100df33c8daa0fdc0e2a0f62af09f0902aa55137eceb61af685a8eba71c4"
+    "source_sha256": "42e0b3881e1076366269409e0f6e71eac29716116a5a98281e329095362772c9",
+    "runtime_sha256": "f86ca49e0eb4941dab0f85b083d280ab36cadbc38c11c17eb15432228ecdbeeb",
+    "glb_sha256": "3e17218c7baf75d68f22105cd9ddd47734dd453e09cf2384cee3fb7a85f9099d"
   },
   {
     "id": "deep-fracture-creature-Shardling-venom",
@@ -1663,9 +1663,9 @@
     "source": "source/deep-fracture-creature-Shardling-venom.blend",
     "glb": "glb/deep-fracture-creature-Shardling-venom.glb",
     "runtime": "runtime/deep-fracture-creature-Shardling-venom.model.json",
-    "source_sha256": "f03165f744d69594d03e4b19b87d7925a8a813b057b9ba3cb0a61669a9024266",
-    "runtime_sha256": "21c4be1793a5f5dd6fc94357032d7e5c3ddd73707421242a304b4906d7e19d5f",
-    "glb_sha256": "e246ddf81f41aeab9f7ddabe7cc19ce76158999546fbf5fd5f07cb5b5ff1d039"
+    "source_sha256": "54b29c383a2fc89cac7e491fd2eb55c625913ea9f2217b96ed95aeb1b6d83c58",
+    "runtime_sha256": "4af8a463721f5ee9686eab72992ec5c989f140d44baa526d7f3e864bd0ca5137",
+    "glb_sha256": "aa977c70d432058192c186eb51d29c6109ced727bfc15a0ddae62970f3b3b4a7"
   },
   {
     "id": "deep-fracture-creature-StoneGuardian-earth",
@@ -1675,9 +1675,9 @@
     "source": "source/deep-fracture-creature-StoneGuardian-earth.blend",
     "glb": "glb/deep-fracture-creature-StoneGuardian-earth.glb",
     "runtime": "runtime/deep-fracture-creature-StoneGuardian-earth.model.json",
-    "source_sha256": "374611d16c9556d24ae863936e4dd8ae2f8fd4b01ad457b7c2677ffdaaaffb47",
-    "runtime_sha256": "5d2305704b5f95285eb3dbe22e8edd387fe8011ff930d63d7c40f3a1eb258685",
-    "glb_sha256": "6d3c101223208c8e544265f176ababb169208a285222bdbf5f7d7a6847cfbbb3"
+    "source_sha256": "a9d20261f6a48a80955e78e338b4935480cc53766011d9dcb68906b56f64ab51",
+    "runtime_sha256": "671ae65aa6f9e07f01292651d7ef901058e56ba2fdf9c3a2f0c1c168f13b3ec7",
+    "glb_sha256": "3e0404cfb30bd65821c411a5943c5ef49ee1347432606c95751227bceb0ef765"
   },
   {
     "id": "deep-fracture-creature-StoneGuardian-fire",
@@ -1687,9 +1687,9 @@
     "source": "source/deep-fracture-creature-StoneGuardian-fire.blend",
     "glb": "glb/deep-fracture-creature-StoneGuardian-fire.glb",
     "runtime": "runtime/deep-fracture-creature-StoneGuardian-fire.model.json",
-    "source_sha256": "6cd168dbffd00c501d52e739c21b490c09e9ffc1c112fa0880efa5bd86a09384",
-    "runtime_sha256": "71af342e71270cc2995d59ef26a6285a77e3834cdfeb27f2d412a0cf695fe21e",
-    "glb_sha256": "b3dae10065f14ed026e54beb0b1ea9977e92cc6245a60eab903cf2cc35f575fe"
+    "source_sha256": "3e4b93eb9f37201c350f100acb9f277c41df137e04cdf679176cf225181b3840",
+    "runtime_sha256": "7f8bc387cd7df0cae0e046939d9f7c82ec577f0f462f1b20ecd518a9bd015d99",
+    "glb_sha256": "f3f932d6f24121de92c48992dd35fe0eba18e78b3902c9d8a9d64cea12e7e907"
   },
   {
     "id": "deep-fracture-creature-StoneGuardian-frost",
@@ -1699,9 +1699,9 @@
     "source": "source/deep-fracture-creature-StoneGuardian-frost.blend",
     "glb": "glb/deep-fracture-creature-StoneGuardian-frost.glb",
     "runtime": "runtime/deep-fracture-creature-StoneGuardian-frost.model.json",
-    "source_sha256": "b85d250070a2cbcb3153c1f595f257df8f700d62fad69ce45c21266b389a08bf",
-    "runtime_sha256": "5a5d73e299ac6453691403adbf26b96f5b096047dd3e057b4e102da29283fa01",
-    "glb_sha256": "7657c0d8771ece92b12e78536ab70c68d4f3735369db5edf52af09590845ed06"
+    "source_sha256": "285dead650f7ac11a8190890a046b5a0dcf25e4e5173ed1c6605bcbef8f7abe7",
+    "runtime_sha256": "77391d8937e69961412d37066580751eb9a0b4ae640d151a4610111eba6e5862",
+    "glb_sha256": "5cdd2ba6607838579d0f68812f8f7080c29c0f888213e1e12aab501e64dd0755"
   },
   {
     "id": "deep-fracture-creature-StoneGuardian-radiance",
@@ -1711,9 +1711,9 @@
     "source": "source/deep-fracture-creature-StoneGuardian-radiance.blend",
     "glb": "glb/deep-fracture-creature-StoneGuardian-radiance.glb",
     "runtime": "runtime/deep-fracture-creature-StoneGuardian-radiance.model.json",
-    "source_sha256": "7f8793f5e449198de871a4a78becc929fb4e94821ddabc667b1c223895ae219e",
-    "runtime_sha256": "79bd18c739acc2f96f92fd04ce560702885c8633bf8033e2ed7663d3bc9732e8",
-    "glb_sha256": "9212f9ab7ee077dd50eb0eac3c4996f81cea09432207c254a907475e3ea0fdae"
+    "source_sha256": "47ed1970af22a6136f5df7d7e3e6ab166f757ae729c9ac50b9faeea19348c481",
+    "runtime_sha256": "5b6b25866585c454c6f8027c4638f65b153282fb4fd6fed3e365300deb30d342",
+    "glb_sha256": "96868cacb2592a25c0bc9d463b5950e292fde44b2ec129bc2e42836c9e8318e5"
   },
   {
     "id": "deep-fracture-creature-StoneGuardian-seidr",
@@ -1723,9 +1723,9 @@
     "source": "source/deep-fracture-creature-StoneGuardian-seidr.blend",
     "glb": "glb/deep-fracture-creature-StoneGuardian-seidr.glb",
     "runtime": "runtime/deep-fracture-creature-StoneGuardian-seidr.model.json",
-    "source_sha256": "2924385636defb12a6cdcd0757fecf5229eeff6053ea6e2524f1bb98b76d61ed",
-    "runtime_sha256": "066f3bc8a5676d31ba9db55a15f631d26ff3a406fdb6637961f16b915a804ca5",
-    "glb_sha256": "da20c89e1feb114a5eca048456897f12be6eea6d6b6a2e9d9e9be9f38c5a6823"
+    "source_sha256": "6bc28449a96de5086df25a2dd3e451de262659eab5b5acecce25799bf6ffe7dd",
+    "runtime_sha256": "b763e6a000510b221b786fb1069b892a494d7cefbe91f57a736a3a9386910761",
+    "glb_sha256": "25733438d43df4fb5205e066cfdd91da0a026c4796dd8f8a6edf6874dd998347"
   },
   {
     "id": "deep-fracture-creature-StoneGuardian-spirit",
@@ -1735,9 +1735,9 @@
     "source": "source/deep-fracture-creature-StoneGuardian-spirit.blend",
     "glb": "glb/deep-fracture-creature-StoneGuardian-spirit.glb",
     "runtime": "runtime/deep-fracture-creature-StoneGuardian-spirit.model.json",
-    "source_sha256": "0787e20424d24641450e453cddba07f9fea5086182417f0fc34f831a68b1047e",
-    "runtime_sha256": "030912081ecb58f659a383df9e70b1cdbb0625a4c2e77d6cbfbfd7ee63672db0",
-    "glb_sha256": "9b1b20b8af61dfcff4eccb7fa1ee094dbff056c148cd4e77ad5fca27517c8d88"
+    "source_sha256": "e822967ac71ea82ba2d28af00cce8957c40255e9918179241b4049e6a28a243a",
+    "runtime_sha256": "86ee8ac7bbb7043518fa38311003e5970143777540b95d2c5f69c4c4adbe3ad5",
+    "glb_sha256": "d0b7012e5bddb63a209f42b8cc2968e3d3400e1c0e31c4843e1e1b3dc34f21b4"
   },
   {
     "id": "deep-fracture-creature-StoneGuardian-storm",
@@ -1747,9 +1747,9 @@
     "source": "source/deep-fracture-creature-StoneGuardian-storm.blend",
     "glb": "glb/deep-fracture-creature-StoneGuardian-storm.glb",
     "runtime": "runtime/deep-fracture-creature-StoneGuardian-storm.model.json",
-    "source_sha256": "005b9cfeb7f13536a662502a7b00e00d0ac0bff99060380f080d110064ca8222",
-    "runtime_sha256": "d26a696ea9f9996c49477defe0a879bef36e6944511275afe240f46a1d9b40f7",
-    "glb_sha256": "07d8a8048a637fb439647c6783cd20ac3081f59739b6a0c81c3056380dbef7a8"
+    "source_sha256": "e9749b74f5dda9f69c9b0442db9d7b6ab494de32a8b6353df8a5e3d2258c0107",
+    "runtime_sha256": "02a24f5c4592bd93c228f0f4db7bd9c514ad9121c09d6baeaff0852d22a7a8f3",
+    "glb_sha256": "3fa3502ba912d2f38da7d5ddc72291c234d1926ad60e59e7e58f68efd7cf3ac3"
   },
   {
     "id": "deep-fracture-creature-StoneGuardian-venom",
@@ -1759,9 +1759,9 @@
     "source": "source/deep-fracture-creature-StoneGuardian-venom.blend",
     "glb": "glb/deep-fracture-creature-StoneGuardian-venom.glb",
     "runtime": "runtime/deep-fracture-creature-StoneGuardian-venom.model.json",
-    "source_sha256": "eafa11fcca987f70e1a92c7da74d7f19aae70d815738a93e8a2b8c6db3446dc9",
-    "runtime_sha256": "c8423384d662ebdc0a2dbcd2d3eba84e934156b97cd01cc616930fe876a9326f",
-    "glb_sha256": "00c1d504832fe95e682ed92f5356af58feb2dc1fa2c1f0f80eec9caa90b94c60"
+    "source_sha256": "d41962f293df715798e8c060357ea08f3f120bce4c4291c28bf56909bc7f46d3",
+    "runtime_sha256": "fa0260dc32aa0758b6da6be8accd0fe7fdf4bb451e518c7a2ff9c04292ed30b7",
+    "glb_sha256": "31188d45bba743efc4f2d2f5ee3867e743c298e25ecc528683b230e6b256d9f5"
   },
   {
     "id": "deep-fracture-creature-StoneSentinel-earth",
@@ -1771,9 +1771,9 @@
     "source": "source/deep-fracture-creature-StoneSentinel-earth.blend",
     "glb": "glb/deep-fracture-creature-StoneSentinel-earth.glb",
     "runtime": "runtime/deep-fracture-creature-StoneSentinel-earth.model.json",
-    "source_sha256": "07cbaa90a22a7ea3655a9207957e79cc0c24e8a533f819025042b9ce4a618a5a",
-    "runtime_sha256": "d9fd90a194ff382d062cd2a597e13486b97b03fe0242fa230d1eaa2f957fe2ec",
-    "glb_sha256": "da6946cee80c7c9163ae52eebfd6ddecf3861afc013cedca0408df91501b54c9"
+    "source_sha256": "23bc9cb40104f8a0304761c3ecb5a8da70ad7bac4418f737b6aac277249afc9c",
+    "runtime_sha256": "a9ed902a77591a561a8d73f085cf80b0bae26c43d782f205511307c19579ddce",
+    "glb_sha256": "395700a00614950d1d113ec0ff0236c465cb5205f4811ef728faa5b26bc48fc5"
   },
   {
     "id": "deep-fracture-creature-StoneSentinel-fire",
@@ -1783,9 +1783,9 @@
     "source": "source/deep-fracture-creature-StoneSentinel-fire.blend",
     "glb": "glb/deep-fracture-creature-StoneSentinel-fire.glb",
     "runtime": "runtime/deep-fracture-creature-StoneSentinel-fire.model.json",
-    "source_sha256": "6b64037b979e3af7ef3e3cdea85c6cd1c8094b349673114a335f7b76ef814140",
-    "runtime_sha256": "0d90ca595b175e0a817b9322eee7b517dc8e63351aef2cc54e1deae37c80ce2c",
-    "glb_sha256": "03ea14fb9d2df81ee2a5224b77be8e4ca9f402daa1450d7a4dcfd47a965c20ec"
+    "source_sha256": "fd496960e3d362ef20656cb476410ae4b7efcba87efaf1316609ab75de53bda5",
+    "runtime_sha256": "3f7fc5e358207a6ff9cee4b329d506bef2667dab57bf239d2f96791e7647017a",
+    "glb_sha256": "fbd6e7f9c52b8c3d6226bd5a956960876df54e61dff4430c042996f519822613"
   },
   {
     "id": "deep-fracture-creature-StoneSentinel-frost",
@@ -1795,9 +1795,9 @@
     "source": "source/deep-fracture-creature-StoneSentinel-frost.blend",
     "glb": "glb/deep-fracture-creature-StoneSentinel-frost.glb",
     "runtime": "runtime/deep-fracture-creature-StoneSentinel-frost.model.json",
-    "source_sha256": "3eb4484ad6cf0ad184ea6eaa5016e3cb2390749147583ec4e9f213aa004ec939",
-    "runtime_sha256": "7231ddb9cb8f3df1b866ac053d19dc01505499523c43bdbe453c11f900aba4fc",
-    "glb_sha256": "1e489b5c386e1c07973d24f614a1ee1fca2fc87741967a0c8b42423fc3e6a0e2"
+    "source_sha256": "083ff987cfcc2e7d5bc6f45ef59b1a559dbd3abff2239fd263e9df16f3225a16",
+    "runtime_sha256": "0afebdb757c3fc286e96978b7cf56afb5b9ccff190010a38d4f99d98ec9357b0",
+    "glb_sha256": "97203c34b6227c7aff1ce4c1a8887ad14522d3d0124bd9b553166cbf4b7679f3"
   },
   {
     "id": "deep-fracture-creature-StoneSentinel-radiance",
@@ -1807,9 +1807,9 @@
     "source": "source/deep-fracture-creature-StoneSentinel-radiance.blend",
     "glb": "glb/deep-fracture-creature-StoneSentinel-radiance.glb",
     "runtime": "runtime/deep-fracture-creature-StoneSentinel-radiance.model.json",
-    "source_sha256": "366c141ea62d1ebd2e3c9133294c2ce28228fe8eed2c50e87080b2ac2c5d88c9",
-    "runtime_sha256": "a70cc9c4004ea45e8dd7f62c78611776aabc6c30dd0bd8f9726a4116925541bc",
-    "glb_sha256": "85c25dddeabf2593610ecf0ddf08c31704aad97f289f5fac0440de5f55affc0f"
+    "source_sha256": "32a6b57bc830532a21ee54bbd8387ee1a6fd93ee062f31ff31aae76ecaa95200",
+    "runtime_sha256": "157f250cf14b5062c1e893972f98df45e8f17178af4c73876382ef67489ea435",
+    "glb_sha256": "1891825f54d0848b8ac52a5853072463158543cd04e347618db9dc027644cbff"
   },
   {
     "id": "deep-fracture-creature-StoneSentinel-seidr",
@@ -1819,9 +1819,9 @@
     "source": "source/deep-fracture-creature-StoneSentinel-seidr.blend",
     "glb": "glb/deep-fracture-creature-StoneSentinel-seidr.glb",
     "runtime": "runtime/deep-fracture-creature-StoneSentinel-seidr.model.json",
-    "source_sha256": "8d979e0dc078ffd3f4c98b8960c6ffc18376897749ec07e1f5a03484e93ca120",
-    "runtime_sha256": "3c9ea2beb476becad93163f09168e2a3f42111241c30aa0cc680aabb03bdee1f",
-    "glb_sha256": "a674cbf3b0255e0bda494094db4d272730f740394b43a2d07b022b0c36e21bb9"
+    "source_sha256": "6da1f48395c11dd180b6fde9346ad1386b4086bdfb720a2ef8a991a3b94fca0b",
+    "runtime_sha256": "5dba1117441904055d1630476bfda3146bfb1ffd8e358110745b7944a4d46f8e",
+    "glb_sha256": "bfcdda73a1a81c6c63afa0438c12c1a0d3653b3c440c5aaea4102fe673d9b3d2"
   },
   {
     "id": "deep-fracture-creature-StoneSentinel-spirit",
@@ -1831,9 +1831,9 @@
     "source": "source/deep-fracture-creature-StoneSentinel-spirit.blend",
     "glb": "glb/deep-fracture-creature-StoneSentinel-spirit.glb",
     "runtime": "runtime/deep-fracture-creature-StoneSentinel-spirit.model.json",
-    "source_sha256": "550d4303551f07272bce4d26bf60bb72734677322e819db8ed64f933e5196586",
-    "runtime_sha256": "1841b50b5e5c0f5b7894739784e5de29778ef2ed6f64056f237b06dc7dd53dca",
-    "glb_sha256": "01644bb526fec60e578ce45bb7763849b0eb9b53dfa731c5919e9ef987174aad"
+    "source_sha256": "fc41ed2f4143ab96b69dde117890727329a2eccde427dd59a0f94a4b03a725c7",
+    "runtime_sha256": "c4103a84b6be3f298f06d084e7730767e141da15c2c4516cfc18a249636981a1",
+    "glb_sha256": "e2267a71b488d4d7f892768a90f1715d265f3e9d43d281049319ed192ff6aab0"
   },
   {
     "id": "deep-fracture-creature-StoneSentinel-storm",
@@ -1843,9 +1843,9 @@
     "source": "source/deep-fracture-creature-StoneSentinel-storm.blend",
     "glb": "glb/deep-fracture-creature-StoneSentinel-storm.glb",
     "runtime": "runtime/deep-fracture-creature-StoneSentinel-storm.model.json",
-    "source_sha256": "aa2e00dbada2f3793169f068a69f4c60a59373ff91496c0f356d63e24a417596",
-    "runtime_sha256": "af3460883a9d259ad8a6331e360db2320d1a7d7e1cff77eaf6612448ddca4a2f",
-    "glb_sha256": "4e84a232c41b81be9a13d923db698442b1fb382e60e793b095795770250ab9d7"
+    "source_sha256": "a9c7fd94633d98185e97e953240b79457df7674ec43e68e7e6ffb827886cb2b5",
+    "runtime_sha256": "18c6d3bb9ecac362a5d5341872de8e095536d8f7d5d2307211639e9d6ba5c5ed",
+    "glb_sha256": "0401324e290768ebfd9f673db08efc6063a4552177e6e2305dbec3f1e0e37f26"
   },
   {
     "id": "deep-fracture-creature-StoneSentinel-venom",
@@ -1855,9 +1855,9 @@
     "source": "source/deep-fracture-creature-StoneSentinel-venom.blend",
     "glb": "glb/deep-fracture-creature-StoneSentinel-venom.glb",
     "runtime": "runtime/deep-fracture-creature-StoneSentinel-venom.model.json",
-    "source_sha256": "4b06747dc22506f59628a8ea5f3ca8f622688be52f8fca6691005e4a3840037f",
-    "runtime_sha256": "da0657f31d62030036c49a357e6c486d6f2c082afeef65a72304b42cd7702b74",
-    "glb_sha256": "79d14f4e33662731f4fd331de12f54bd83c4bfc57493de295ff538eea9a7c012"
+    "source_sha256": "147e90f0b8825645cfcfa31a6e390314258f9d9b2ec95050d922ba4a04f6314e",
+    "runtime_sha256": "3a5688f6e9ab2acd3ebb69cad6bc4b5fdb4173f23f4c7147bee72c2006cfcc10",
+    "glb_sha256": "c715c85fbce91bacc688dbfe67609bfc73b5b89eef4640a7f01f236ac9cea754"
   },
   {
     "id": "deep-fracture-crystal-golem-visual-earth",
@@ -1867,9 +1867,9 @@
     "source": "source/deep-fracture-crystal-golem-visual-earth.blend",
     "glb": "glb/deep-fracture-crystal-golem-visual-earth.glb",
     "runtime": "runtime/deep-fracture-crystal-golem-visual-earth.model.json",
-    "source_sha256": "09a184ab441297350c115add0f951494e450008a5f59897e0748d4ee20c557f1",
-    "runtime_sha256": "417fcb8a8a05ac66b9149f9584c6eefb581d1c0d9caa488ba41d6156a1ae6687",
-    "glb_sha256": "6cf09c6e71045b8fbe897aef1572936a711ec2bbf0d0ba98f5b50dd0f7001f50"
+    "source_sha256": "342d08829b9677c79a8acc11896b5e07217468bc8dd9fa767e79771f5c8441a7",
+    "runtime_sha256": "e65eb77d45a2a6006634086b0aa1d0570ba6f4fbf2e405336061f6ae2bfc1fe8",
+    "glb_sha256": "f2deb3367dff40b6dbb2e5505ff73fc9f3c2a61744050e68cc4da6b7488287fe"
   },
   {
     "id": "deep-fracture-crystal-golem-visual-fire",
@@ -1879,9 +1879,9 @@
     "source": "source/deep-fracture-crystal-golem-visual-fire.blend",
     "glb": "glb/deep-fracture-crystal-golem-visual-fire.glb",
     "runtime": "runtime/deep-fracture-crystal-golem-visual-fire.model.json",
-    "source_sha256": "cd1062d050de591a0cc5d8e0371bd06fc739421a86752bed0b9791dd98bea5c5",
-    "runtime_sha256": "1eff238e9ae68d6a35e9c09ac5bc352e2d3ca78f4627cd86c109805d15d72e7b",
-    "glb_sha256": "d1bafceeb0851f55c08d5fdb95e999e32bdded351dacb90cf8a267a7b39ff71c"
+    "source_sha256": "ad29edc22563e560c8da1baa6759f11b09af0485dd114f45e53de9ec44b0f2fb",
+    "runtime_sha256": "42ab1c4f2d8ada0f6ce673592f49dea3797f9816b0c07ed3850cecf5f4e8a2f3",
+    "glb_sha256": "071a6498c3107da625ab7119a04f5586d2f7fc9472f5e9dd468710df6330a994"
   },
   {
     "id": "deep-fracture-crystal-golem-visual-frost",
@@ -1891,9 +1891,9 @@
     "source": "source/deep-fracture-crystal-golem-visual-frost.blend",
     "glb": "glb/deep-fracture-crystal-golem-visual-frost.glb",
     "runtime": "runtime/deep-fracture-crystal-golem-visual-frost.model.json",
-    "source_sha256": "ad0470b7a8d74dd8ee164c76cdc4849fe17f5afb8d0a91983fe8987df79dce29",
-    "runtime_sha256": "21273b8bbf54521a18bde8f7118186084f8463b7b6d65dbef03a7177be333ff6",
-    "glb_sha256": "a5767330529efccbe9657faeba552c3a28166177978122987b06f29fe9591db2"
+    "source_sha256": "16cb4a52924b89b7d8d3811ceda6411aa4dbc93cb378af153ceb756aef9e8043",
+    "runtime_sha256": "4e4ccf297479ddc77fad82ef7feaefd6a158d5eee0f708514cf19a1a593e61a1",
+    "glb_sha256": "14d55fa6879db6ad1ac6ddd50b76cf1b23ce438d1a4ea47c41c846921683a7c4"
   },
   {
     "id": "deep-fracture-crystal-golem-visual-radiance",
@@ -1903,9 +1903,9 @@
     "source": "source/deep-fracture-crystal-golem-visual-radiance.blend",
     "glb": "glb/deep-fracture-crystal-golem-visual-radiance.glb",
     "runtime": "runtime/deep-fracture-crystal-golem-visual-radiance.model.json",
-    "source_sha256": "15388227522052158959955bb811f23f30068b1875527d147c0f9e4b5340798c",
-    "runtime_sha256": "43d88fdb118292d047d60d752ded929f2e8ef3e31e1e79828abb9f174998f62a",
-    "glb_sha256": "4954ec3e9b8e3aaa9aca26c63d7019808b147789382628162293b35a50f5a833"
+    "source_sha256": "34ef187c5085907310219271e63548455120a86b37714848b83bfc3e3a457a5a",
+    "runtime_sha256": "a8e99dbbeb369b59c057ac0b3cc9ee365f7024e87ac41fe5bf53909792c890f2",
+    "glb_sha256": "6c28b8bcc087061c59cc7bd3b033d7efd50edc73bf35e9a8e3d5c77875cc8c26"
   },
   {
     "id": "deep-fracture-crystal-golem-visual-seidr",
@@ -1915,9 +1915,9 @@
     "source": "source/deep-fracture-crystal-golem-visual-seidr.blend",
     "glb": "glb/deep-fracture-crystal-golem-visual-seidr.glb",
     "runtime": "runtime/deep-fracture-crystal-golem-visual-seidr.model.json",
-    "source_sha256": "7b99c674abd831582c608eeddecbc20d10141e01e435ed5defc12f4fe11c4311",
-    "runtime_sha256": "f07cfd8b00b595be85cca8945976ed45fd7d5d97361be43ee743c7888e280ff9",
-    "glb_sha256": "c49779eb05b0c6d4aa6664ebd4f5d3d34f01d4d6477b286168fc73aad006624f"
+    "source_sha256": "182a6492286bfe6a03a5e9d418ea5b91c67aa255477398ba31a82af5f7078beb",
+    "runtime_sha256": "3fc48d223a78338236ddde2a92db53c645a1ebecbcdfcfc9eb71f9bbe39c6b1d",
+    "glb_sha256": "fd841f3eec46fccb8b0ca25ed16e37b7fde4ee8d65ce9dc6fbde5351311ee0fb"
   },
   {
     "id": "deep-fracture-crystal-golem-visual-spirit",
@@ -1927,9 +1927,9 @@
     "source": "source/deep-fracture-crystal-golem-visual-spirit.blend",
     "glb": "glb/deep-fracture-crystal-golem-visual-spirit.glb",
     "runtime": "runtime/deep-fracture-crystal-golem-visual-spirit.model.json",
-    "source_sha256": "06c44b0b2a0cee3603c020fecbf3070ce14be5d8537a519a666d0b334e15fd6e",
-    "runtime_sha256": "00f5d296b9bcaf96fa208e9b2efce9de86b7a5e3a1ce1b5127517fbe8d5f21c4",
-    "glb_sha256": "825aca3221eff3d9fea0108310752a191b0e6d17a287d7eb017accb23a46599a"
+    "source_sha256": "16ebab08f1f98ddcb9b1aa4a8e91797c4813db986f94bc1eff900ca7b421fc29",
+    "runtime_sha256": "a500afe7f60c3054ad0fb904191d795bce9cd2e982a546fc3d390c17f57d9e51",
+    "glb_sha256": "f5756d28ad841cd7a3454c5f155b8f8755aff5118c86d14bdc41a91613685135"
   },
   {
     "id": "deep-fracture-crystal-golem-visual-storm",
@@ -1939,9 +1939,9 @@
     "source": "source/deep-fracture-crystal-golem-visual-storm.blend",
     "glb": "glb/deep-fracture-crystal-golem-visual-storm.glb",
     "runtime": "runtime/deep-fracture-crystal-golem-visual-storm.model.json",
-    "source_sha256": "c3c0fc67a6610a3443219223b38320a8d93252ab3d8cb99c38922d2e16657f3f",
-    "runtime_sha256": "844d0f04c79bee73d3cc9be5f94848d011da11848eabe8c0f7203dd1b780668b",
-    "glb_sha256": "528636b3cff7a5f681319a7fd955be126b667d1a3ee161622fe43b6bbf425534"
+    "source_sha256": "9a93b1e27c57b69daade4484ad569ea026ea8965efa31f85b27f6198eeb154ae",
+    "runtime_sha256": "825cf89650fab4458f17f9809e354c76bd487099f0fba490d4537b5ae3512d84",
+    "glb_sha256": "056b3ca39e6e1a1949071fb289df52a0805b6fbc9b5104af8bf8530facd89185"
   },
   {
     "id": "deep-fracture-crystal-golem-visual-venom",
@@ -1951,9 +1951,9 @@
     "source": "source/deep-fracture-crystal-golem-visual-venom.blend",
     "glb": "glb/deep-fracture-crystal-golem-visual-venom.glb",
     "runtime": "runtime/deep-fracture-crystal-golem-visual-venom.model.json",
-    "source_sha256": "9055773060cc4633993b0e656d55dc990aed47cff10c5e4be0088b37c035f371",
-    "runtime_sha256": "137349efc1a74fd71306eebc9eb482c8049dceed2cdb1bc28d6431a0b36ff9b2",
-    "glb_sha256": "59c8bc627e0f935b0e8dce7a145fee216b8b4acdd88705acea87d5f3b0a72d18"
+    "source_sha256": "19b2dff587013b4e15986f88a360bd201f84c5a9381cba364c0fe80c2e071d7b",
+    "runtime_sha256": "6f90426aed1d80100caf19a5755b8ab1ed9ae1bef0545dbf1e3547922097ea86",
+    "glb_sha256": "146d940ec0eb6c621617a7f34b95abb4e42ed09f0cedc0b3038cd7c9220a5ca2"
   },
   {
     "id": "deep-fracture-deep-colossus-visual-earth",
@@ -1963,9 +1963,9 @@
     "source": "source/deep-fracture-deep-colossus-visual-earth.blend",
     "glb": "glb/deep-fracture-deep-colossus-visual-earth.glb",
     "runtime": "runtime/deep-fracture-deep-colossus-visual-earth.model.json",
-    "source_sha256": "24fb0cd24d5306740c34720336c101adb7137a909aa953ba78d4ccd119baaa19",
-    "runtime_sha256": "862283890c02f97f388101ee4aa955e390a7b00b9444e3e227511afec0fb7321",
-    "glb_sha256": "bf772868d53a0658932ddced373c7c8731aced67a6f84ede38af5c43a255e009"
+    "source_sha256": "32eea43e59f9ff51061d8d7c83482d43797f09116b3ca728fd83d170d934e0fd",
+    "runtime_sha256": "daaae6fe9c98ae0cdec50a83f7b1015a94bea8c6eb4b463d322e323ee5e4605e",
+    "glb_sha256": "5be97efe479e94fe1397cecf740d3c3752985de144fcfb5e4532feaee6867b1c"
   },
   {
     "id": "deep-fracture-deep-colossus-visual-fire",
@@ -1975,9 +1975,9 @@
     "source": "source/deep-fracture-deep-colossus-visual-fire.blend",
     "glb": "glb/deep-fracture-deep-colossus-visual-fire.glb",
     "runtime": "runtime/deep-fracture-deep-colossus-visual-fire.model.json",
-    "source_sha256": "c0ee46cc1098d764bf21cc6fed708d4f92b327ed1bb693e2cd7f8b61995e39d0",
-    "runtime_sha256": "4e463b2597aef0660b23f33a7f35ebbfe181716a531134f5756e48a61951f7dc",
-    "glb_sha256": "de2ba5910cd02000d7c742c477e4e884e24c1e5793ffd81eb8626b9fa64d76ea"
+    "source_sha256": "c120db73501415bc5b40e5cbfdb4e9e2a0040420fdafcdc76c80e6cc44bfd4b7",
+    "runtime_sha256": "eb59c9214414fefb2a175b1eb283ac2bad78bc763dff30c5035cb457a38b0a72",
+    "glb_sha256": "8909e86313b26048c82efc87c2e12b2b8a70cce7def326a007e0c7cd47381fec"
   },
   {
     "id": "deep-fracture-deep-colossus-visual-frost",
@@ -1987,9 +1987,9 @@
     "source": "source/deep-fracture-deep-colossus-visual-frost.blend",
     "glb": "glb/deep-fracture-deep-colossus-visual-frost.glb",
     "runtime": "runtime/deep-fracture-deep-colossus-visual-frost.model.json",
-    "source_sha256": "ef40e479a738dee790f5dfb7814c4a2f7c69ba9f53c8ee2d6a6b55eaafadf97f",
-    "runtime_sha256": "828bd0a60f16435ef1d91832026f4cc83c119976948c202fac72e3d673722ea6",
-    "glb_sha256": "de9c2f3aeb4462a3d0fb1e1f87af7805e13a9fa0fa17183d949212123c61ebe8"
+    "source_sha256": "b013071ed23867ac55d94c8b97e1493e834ea1ed858f531f8361bf25d0c06ef8",
+    "runtime_sha256": "24db779b7b438122fb4a49ad498909ef83620f240a5d940888c42c37eafbaf63",
+    "glb_sha256": "6c35a6d6d1c4b22f1630b1b6b617b5a0d650eb7ed023a22289b411a42f9d7ac7"
   },
   {
     "id": "deep-fracture-deep-colossus-visual-radiance",
@@ -1999,9 +1999,9 @@
     "source": "source/deep-fracture-deep-colossus-visual-radiance.blend",
     "glb": "glb/deep-fracture-deep-colossus-visual-radiance.glb",
     "runtime": "runtime/deep-fracture-deep-colossus-visual-radiance.model.json",
-    "source_sha256": "2467f3cfcd3c2fd3ceef28a7d3d6adedb9d45180d91315ddbbfc33dea9772d01",
-    "runtime_sha256": "69c7aed9cf4cfc768b1461f3744b5f28a4444274989162e6e49ad2f058987595",
-    "glb_sha256": "fe4821a8fcb24161af1b03b2a15b19accc31441e9135c4024d53b58f2da5a0c4"
+    "source_sha256": "24b97fbb01b4d994658b06fecb5d6a2a3ef4e538e4e96d50ac2f92a15f90fbfd",
+    "runtime_sha256": "20f076a3c391fac3fd2f511e2ce0e3cd2ad9f2a3b9655f57d746876b33e9b320",
+    "glb_sha256": "9b50b4799f036e29b5790b3bf0b8471b0009ce6c7afd19b23ba7ccdc147617cf"
   },
   {
     "id": "deep-fracture-deep-colossus-visual-seidr",
@@ -2011,9 +2011,9 @@
     "source": "source/deep-fracture-deep-colossus-visual-seidr.blend",
     "glb": "glb/deep-fracture-deep-colossus-visual-seidr.glb",
     "runtime": "runtime/deep-fracture-deep-colossus-visual-seidr.model.json",
-    "source_sha256": "4ebbc7b3464f64da73b3fdd086f2517d893edad5a411ffb280b523e20a2a76e0",
-    "runtime_sha256": "993f09dbdd23f06c0f569af87b4de2c8d5ffe62f40da030bdd04f59c8a6d863e",
-    "glb_sha256": "83d8236b35aaebd1418a7d5f8734fad413022036e494109b2859bb74149d7279"
+    "source_sha256": "ffa0682e1c106dbbb702dd981c0cc18a9cf4d25d5facc2cf2b71b9a8a05c2e94",
+    "runtime_sha256": "48c7d82513ff179ec4451b3ba6f1e903b55530dbac39f75fd9d3191b77fc1744",
+    "glb_sha256": "d4941344346d8569c4ec0ef6c7db802d074539ad75fdfbf2a4050fd668c68bcc"
   },
   {
     "id": "deep-fracture-deep-colossus-visual-spirit",
@@ -2023,9 +2023,9 @@
     "source": "source/deep-fracture-deep-colossus-visual-spirit.blend",
     "glb": "glb/deep-fracture-deep-colossus-visual-spirit.glb",
     "runtime": "runtime/deep-fracture-deep-colossus-visual-spirit.model.json",
-    "source_sha256": "f46c3ae41de20d4b10ffd3f8d76fa5c6f1ed0f129690d88b0579b364a747a762",
-    "runtime_sha256": "c4dceba7afeb3463d1e35867d62839a69d701645e9f2694f7ee32a838ca5766f",
-    "glb_sha256": "dc1fae13ef3b58ea58d1a0df46a9d3361aa5328842793382df2d6d10780e0bd2"
+    "source_sha256": "ddf77222cd17dde7b6df6cb65e254415e1e5aae4b7c160b45fca190dc8e31d1a",
+    "runtime_sha256": "908023fd45d0a0a8dfa7756b6316392215e7dd67b364488435dab5d5f90c16a9",
+    "glb_sha256": "cee9d6853a821ab3c3a8988ac56393d494cf0f71d74052b351bc3e965c8c9241"
   },
   {
     "id": "deep-fracture-deep-colossus-visual-storm",
@@ -2035,9 +2035,9 @@
     "source": "source/deep-fracture-deep-colossus-visual-storm.blend",
     "glb": "glb/deep-fracture-deep-colossus-visual-storm.glb",
     "runtime": "runtime/deep-fracture-deep-colossus-visual-storm.model.json",
-    "source_sha256": "95e433639b8d438addfe0d5c2348d605adc507042716e52cceacabd60da8b369",
-    "runtime_sha256": "f7aef2d6452c80f88b84ba7775da4619af69017ab3b0abecd6d3e064fc01a2f0",
-    "glb_sha256": "c875073431508b0e61fd46f608eaa1b14fc7b36d1b04776c533c8372696a95da"
+    "source_sha256": "9e52e77ea5573f209e3f75081f137d65d8b801678d8ca2712376e52f484e0eec",
+    "runtime_sha256": "f8ced44b0cb2777d53ffa226f7e08fc1b9ad24b7fdd6b2346cba8707e0d10579",
+    "glb_sha256": "ea62422aef2f4528775024f8d9a6249b5747c26b9077817ee2139feb47066c47"
   },
   {
     "id": "deep-fracture-deep-colossus-visual-venom",
@@ -2047,9 +2047,9 @@
     "source": "source/deep-fracture-deep-colossus-visual-venom.blend",
     "glb": "glb/deep-fracture-deep-colossus-visual-venom.glb",
     "runtime": "runtime/deep-fracture-deep-colossus-visual-venom.model.json",
-    "source_sha256": "8379d3f07a0d667a53c2afa6fe9524dec7d2c0a9d43d7a691d7b79acd960a51b",
-    "runtime_sha256": "45b39c1355bf7892a84d657aabc19c68a5f7cb36386705fffe476c4d55832303",
-    "glb_sha256": "fa9e556038e0ffc4ac8e66c6f3eb2d032eee713bf11e31e9bc3c446d196b564f"
+    "source_sha256": "135694812a163e868241a10042d73213d4a7ccf16bc869b8496f02fcfc5ca34a",
+    "runtime_sha256": "5f736d677b95a88379342c297612b71f9c58cb9deb8daa799a865207628a194e",
+    "glb_sha256": "9e97a730094be353a9a7f2f0ba5c252209e5216653776765109c2cb0ecd8d663"
   },
   {
     "id": "deep-fracture-entrance",
@@ -2059,9 +2059,9 @@
     "source": "source/deep-fracture-entrance.blend",
     "glb": "glb/deep-fracture-entrance.glb",
     "runtime": "runtime/deep-fracture-entrance.model.json",
-    "source_sha256": "f32c8f43094b8f26ebe02c9f7103e8c6190efd84f99f7464efe9fe16b856ffbd",
-    "runtime_sha256": "17e7e56c48846ce40ec676ce6ab07f37855d03ed8c900102a16bc14df4878caf",
-    "glb_sha256": "2e567b51032bfac8c99c25bd145cdc95d4ca572a6361487896168547e0b0e0ad"
+    "source_sha256": "b96e46415e17f88a02d944d8efa72f46d2e434df67e654a2dcfcf1164feb9e49",
+    "runtime_sha256": "0fa28e81fc5fef502be4187785840bd04bab43efeebfaaf7062260395a90efbe",
+    "glb_sha256": "a6e607ea1a2ccc4961f9e62e8f86be481bcb607ee8ae4e283251f68e0503350e"
   },
   {
     "id": "deep-fracture-obelisk-warden-visual-earth",
@@ -2071,8 +2071,8 @@
     "source": "source/deep-fracture-obelisk-warden-visual-earth.blend",
     "glb": "glb/deep-fracture-obelisk-warden-visual-earth.glb",
     "runtime": "runtime/deep-fracture-obelisk-warden-visual-earth.model.json",
-    "source_sha256": "6c067f891e673553c7e985b4ae917f79e74dd03c71189618918e6e5bbe7974e4",
-    "runtime_sha256": "0ad48b2efd2f745efe14d2e93fe712e983838bbef0641ada03ba1f5ac95d5cdb",
+    "source_sha256": "53efced3365562e6f0b2844e31817d31a7d16fc977bc6af55c316524af599286",
+    "runtime_sha256": "0e80ecb548bcbd7b375f6fb7335684785662d66a8b3247b70d6569931c36a620",
     "glb_sha256": "b2c8ed9bfcad0c2a700818ffc49d7393212766840b7cb010db2c0172a8dc0347"
   },
   {
@@ -2083,8 +2083,8 @@
     "source": "source/deep-fracture-obelisk-warden-visual-fire.blend",
     "glb": "glb/deep-fracture-obelisk-warden-visual-fire.glb",
     "runtime": "runtime/deep-fracture-obelisk-warden-visual-fire.model.json",
-    "source_sha256": "1caedd9d375885fac8826194114a91001881e0d0dbcaad70bb1dbc7fe64221ff",
-    "runtime_sha256": "ce186890453b2afc30d950af64ac1fe393ffe2e3d69476b63f01b3145c134a3d",
+    "source_sha256": "70c124fe6ed3ffca4512f340d5e33180b965959acf47ea50571999eb93725498",
+    "runtime_sha256": "ac8f4b8f1072fa351a724dd2cbddb0612ea11d07505ccfa1543a5b0aaf4cab5e",
     "glb_sha256": "cc276eb80feafb62c1e686f269479c062ca67fd7759e6c8dddb87c9edde9c0e8"
   },
   {
@@ -2095,8 +2095,8 @@
     "source": "source/deep-fracture-obelisk-warden-visual-frost.blend",
     "glb": "glb/deep-fracture-obelisk-warden-visual-frost.glb",
     "runtime": "runtime/deep-fracture-obelisk-warden-visual-frost.model.json",
-    "source_sha256": "e0ecc27ccb2cdbc1339e99f31755bf34c9258f3a94c966fdbb71c65dcf3fcb49",
-    "runtime_sha256": "6cf5706de05a9248248e59b30f06e828de82333a2f2f2964cfe7fa348d6e217c",
+    "source_sha256": "3d2169bad9f3b6f0103998da3013ccb849e251faac0f24cbdc5c053fff6482ad",
+    "runtime_sha256": "1d6e021e88b6645ec0bda3ac3c2fca780fc5c0c034c456c0fecb2bb64a4aa600",
     "glb_sha256": "c79a2fc04a28efcb88a100ab031ddb90f4cb5acff25b8e3cc4696344b1d03a75"
   },
   {
@@ -2107,8 +2107,8 @@
     "source": "source/deep-fracture-obelisk-warden-visual-radiance.blend",
     "glb": "glb/deep-fracture-obelisk-warden-visual-radiance.glb",
     "runtime": "runtime/deep-fracture-obelisk-warden-visual-radiance.model.json",
-    "source_sha256": "2349a4132ccd905b9494c20db292331a38f5a43b82ba547cf3fe9b4df46b690a",
-    "runtime_sha256": "d831d02ad6dca9a5798e534a93dd80e72cf5a87a9b86346ff4351c1c421b491f",
+    "source_sha256": "de1f02f596114a8f6176f6cc66147476dbacf35317a587770e525ff029bfe149",
+    "runtime_sha256": "264f914dff0e5ec31221cac4205e24e171c71a58d0a416e72cca07b28392ba49",
     "glb_sha256": "13b39157719538489930b677ae2f9b9c8f0d62b859e52570700adc3eac9e9a69"
   },
   {
@@ -2119,8 +2119,8 @@
     "source": "source/deep-fracture-obelisk-warden-visual-seidr.blend",
     "glb": "glb/deep-fracture-obelisk-warden-visual-seidr.glb",
     "runtime": "runtime/deep-fracture-obelisk-warden-visual-seidr.model.json",
-    "source_sha256": "d978ffcc2f4625a770da4cc768b26774296435024c163a02d17e0f7d08426763",
-    "runtime_sha256": "17642569c469e725ea6cac5d7afa96eff4e74fa49f6a22f76c323248c9dfc993",
+    "source_sha256": "dafcd72b40438ec903d139715bf5998e536a00300e4b14d4ba1af1ff63305f99",
+    "runtime_sha256": "7070ca44df34ce399e33eaf56fca3c16487d9260bb6d12bbdfb4af947a826e0e",
     "glb_sha256": "723c43b730915869b33794ddd637b52d3070d9684b874c99ba4f683f016b8f0e"
   },
   {
@@ -2131,8 +2131,8 @@
     "source": "source/deep-fracture-obelisk-warden-visual-spirit.blend",
     "glb": "glb/deep-fracture-obelisk-warden-visual-spirit.glb",
     "runtime": "runtime/deep-fracture-obelisk-warden-visual-spirit.model.json",
-    "source_sha256": "0821c1280f9350438a6d58f92be39347cee4f1cdf3a2af631dbb7b0e925483fd",
-    "runtime_sha256": "0fb68d439a680ad2c5a2f6725fdf4335eb3d7535710c43eb754d86e0c9a19d6b",
+    "source_sha256": "c5a372f624f9e08142705fd2fdbddeaf1f3c1b5235598e96947871e121b4f384",
+    "runtime_sha256": "81914b37a6e11d430c67713aec98331ec2fce5474a2e27e82c2a8662ec995f27",
     "glb_sha256": "9e51eef4398836cb43e9bdb6650db7ac4e72ddf97571c919ec21cff7a5aab7e1"
   },
   {
@@ -2143,8 +2143,8 @@
     "source": "source/deep-fracture-obelisk-warden-visual-storm.blend",
     "glb": "glb/deep-fracture-obelisk-warden-visual-storm.glb",
     "runtime": "runtime/deep-fracture-obelisk-warden-visual-storm.model.json",
-    "source_sha256": "a0d4d12aedeb1ec329f9d6cb0c3f28fa2009c79f478923f6983f0f8cb5efdde0",
-    "runtime_sha256": "14642e2264440b690913a45d122a9b95335ef44b89e7fce02307564e2da73757",
+    "source_sha256": "368c39e98311e7842ed0cacdc7485f65f7f6b82995a018bcc8f183491b6f25e1",
+    "runtime_sha256": "12806588ff362c00e31cc0509df803c4e7e4cd94d85f56978c043e1f93971de1",
     "glb_sha256": "614e4d754444a31b1eb48d52443a7198a890ffe3f58e5f12c15dbfcfc743168b"
   },
   {
@@ -2155,8 +2155,8 @@
     "source": "source/deep-fracture-obelisk-warden-visual-venom.blend",
     "glb": "glb/deep-fracture-obelisk-warden-visual-venom.glb",
     "runtime": "runtime/deep-fracture-obelisk-warden-visual-venom.model.json",
-    "source_sha256": "36ee8b10d8c8d360768ffe8a5777ac0b3d99196969e5bcbbf20b9fddc672907c",
-    "runtime_sha256": "d7f3b1f99919abc1ed0bdf950bac8c17562b1d67eb46737f2bd53f66e44fb5a8",
+    "source_sha256": "5bcd1fda4496790b4d634cac14f6d5ebda46c636b7e285f9c595c581d89d545a",
+    "runtime_sha256": "82198551b3d7d4c25a3b29f42f8e2f573ae11be1684f9bc999af20d2a2f734e2",
     "glb_sha256": "e50f621bd9d5f8a9e63e06701435ce2bb85172ab923f15be4a895424e020a050"
   },
   {
@@ -2179,9 +2179,9 @@
     "source": "source/deep-fracture-traversal.blend",
     "glb": "glb/deep-fracture-traversal.glb",
     "runtime": "runtime/deep-fracture-traversal.model.json",
-    "source_sha256": "daf4701f8a96e332f7282aed58a3c68824c11f4cd3a0e7bfe80de657e57d07fb",
-    "runtime_sha256": "dc3a49695d3d7c7df3be1ae8440f2912761f7d631aa466f3a4c375256c82cafc",
-    "glb_sha256": "0c2f02742a495bce834e0450663e0e12ef4a20207a8eba2be773bec3ba0ce544"
+    "source_sha256": "780184219923a2e9ed35506d6c433d7589fcc9b9246621c5f2b1d088ad6b185d",
+    "runtime_sha256": "1d4da6eff5202535aefcfb06ca1424b8b3bf3164cdf351cadef0a0efca7690cb",
+    "glb_sha256": "801c543410ff4ba0c7805e1e27a70dbf982805fa7df0451c95b2c3e5b1234a85"
   },
   {
     "id": "DF-01",
@@ -2563,9 +2563,9 @@
     "source": "source/effect-orb.blend",
     "glb": "glb/effect-orb.glb",
     "runtime": "runtime/effect-orb.model.json",
-    "source_sha256": "7d6831aa434191ac78acbdb6eb2af72967ca294612a9703b23a5921df898227f",
+    "source_sha256": "bdc906314f1f6371fb6070c1d4553232aa042f362db5cdc93205d81f0713a8c1",
     "runtime_sha256": "df725c83bb3af3736cc59903376681740309ae0019a1773c14630ef6fba368c4",
-    "glb_sha256": "f8400ffd1d729afdf2b9d345a8338ba7231cb0ef1033fcb3ecae783e98b7f6df"
+    "glb_sha256": "f249e73ac197ff2db6f1061cbc51493a809af3516b302250333833e1968a37ff"
   },
   {
     "id": "effect-ring",
@@ -2575,9 +2575,9 @@
     "source": "source/effect-ring.blend",
     "glb": "glb/effect-ring.glb",
     "runtime": "runtime/effect-ring.model.json",
-    "source_sha256": "ea311748a947db07fe85e75e73d43f73ad9f401d2333a8b4e66e7abaa9288bdb",
+    "source_sha256": "5f4e015ffa8c34b4562c6ac88c0d758f2c1c6100f231a21ccf8218db29b7383c",
     "runtime_sha256": "e9024af698d5f651571e43398120f6f7c16ace428883c82b174b9a01e4af08cf",
-    "glb_sha256": "69748c960e79b9f3536f02e27d281e7b4185c5314e043ad884c7b0eb27767a2f"
+    "glb_sha256": "25a03460928dbf1c18f572ec877780f64142420d15fd75dee482a05f8da7d507"
   },
   {
     "id": "effect-shard",
@@ -2587,9 +2587,9 @@
     "source": "source/effect-shard.blend",
     "glb": "glb/effect-shard.glb",
     "runtime": "runtime/effect-shard.model.json",
-    "source_sha256": "3c7b078bf604d205a15216d671ed96a74606c3f285885b0f93b5f3290d098d43",
+    "source_sha256": "50cae961cde6ff66414bb672815f2a954e7fed9b7e920dcd572be323f36e7b28",
     "runtime_sha256": "c294bca4e7914b4384eef12dfdb351c5b142ef326d37606ac0c0c6b7505a8391",
-    "glb_sha256": "f32fd8351812b2cc9a47ef7548de3d9bcb22bf57afb89a8bfca5a9f93e2c1914"
+    "glb_sha256": "c0468056f2790151a0a86c61e837e12007a365207d4e68a6ada7b0f450ccb3c6"
   },
   {
     "id": "elemental-focus",
@@ -2599,9 +2599,9 @@
     "source": "source/elemental-focus.blend",
     "glb": "glb/elemental-focus.glb",
     "runtime": "runtime/elemental-focus.model.json",
-    "source_sha256": "0a1e2e0395a1b69972d0d8e53bdc588aaa5c2313cbe8fd283c9bf5eeaaa7bd1c",
+    "source_sha256": "ede0c76a948d729c695120b17f52e314284e9c39d4aaa0304b28c8b1c2406cb0",
     "runtime_sha256": "4d5fbe7b687ba09691414d09dfba632827f17ca45436d86d47a8bfc07734ad6e",
-    "glb_sha256": "233f3bac3dd28cdb5961f25455508fd9ec30fc7cbf3a2a64092f4919e4873287"
+    "glb_sha256": "b4dbc808d3c39798fca3e38bbb6401cab5a75775fef5f7d7b90ab5b0cd5f07a2"
   },
   {
     "id": "fate-crystal",
@@ -2611,9 +2611,9 @@
     "source": "source/fate-crystal.blend",
     "glb": "glb/fate-crystal.glb",
     "runtime": "runtime/fate-crystal.model.json",
-    "source_sha256": "09127a7236ccbfd5ec3e88d15385737f421628ee1f458fca46aabf9953a8d68e",
-    "runtime_sha256": "4f1ac3653eb9447e220bc1258b671bba07238bca59357cb762c5af76fb4b394d",
-    "glb_sha256": "3e34dfe197242f74849ad58f20ba5222a682407b8feab7e69bdedf6d345976c0"
+    "source_sha256": "3310d40ac50f8f052623dbf1603f7ea4780579bf0eb562b174d94969663f0aae",
+    "runtime_sha256": "c5cdd7471e48e94ecd84b20c81d7104198be4d95b934d819decd85c973613ad6",
+    "glb_sha256": "10ca43aefd9ce5367a87c1fa9bc7ebc6087be572659b475b05874dded16157e8"
   },
   {
     "id": "fate-shard",
@@ -2623,9 +2623,9 @@
     "source": "source/fate-shard.blend",
     "glb": "glb/fate-shard.glb",
     "runtime": "runtime/fate-shard.model.json",
-    "source_sha256": "6e91a8ab7998ddd6e1656a8ac01782caf92010374cdc1e582ba058800f761344",
-    "runtime_sha256": "d41bc00bfd52cc19ca85d7561bb66c1dcfb43d36b7cca247f350968ed132c678",
-    "glb_sha256": "8f755abacab4df455275acff8c922169e66ebb00b3553c7b29d7235039e3eddb"
+    "source_sha256": "8847f392c8759f5e0762d7d11fcd8ad6bc3acfbe724afd1d8891ea94618f8b7b",
+    "runtime_sha256": "4c6d075c78a4750043842527ad14db76e189a0b6f019dfbb2a15787efab65d3d",
+    "glb_sha256": "3d77a2e741a3d797cf821ce9359c49e84366f55b012df3f07d3c211c2cb2c6b6"
   },
   {
     "id": "furniture-crystal-bed",
@@ -2635,8 +2635,8 @@
     "source": "source/furniture-crystal-bed.blend",
     "glb": "glb/furniture-crystal-bed.glb",
     "runtime": "runtime/furniture-crystal-bed.model.json",
-    "source_sha256": "59dd5bcf53367c9d2551fdf105dfffeb889c411b71d187685d31a988398d0bf1",
-    "runtime_sha256": "f9b0553282ea673346308da3a0c2c11a27fcb4d33b75c19be13fcfbcdbee005c",
+    "source_sha256": "3e6b4c0dc0d43f72527de5b9d3013b10c0c2ab16501597eb6e242f71b86ee38e",
+    "runtime_sha256": "bae11eaf38b33caca9e39740c1c7ea100880e76dec6fdd596bfa9b55b7ecb2a4",
     "glb_sha256": "9857726f4b31f7a1697ff61f5be2e24dbbc70ba884ac165184e971cb085cdba8"
   },
   {
@@ -2647,8 +2647,8 @@
     "source": "source/furniture-crystal-bench.blend",
     "glb": "glb/furniture-crystal-bench.glb",
     "runtime": "runtime/furniture-crystal-bench.model.json",
-    "source_sha256": "816ad88a5c7724b4385f6a25ec1c1eb1a89b05e5f5b6470132394517a00581df",
-    "runtime_sha256": "935b22325e83ea573d370914166ee5991025c20f01ace2e35b96b6559a9f6765",
+    "source_sha256": "bc9316f9308f712a51f614f9609b0d7181a4266fe92fdc3d603763654215bd68",
+    "runtime_sha256": "997198b92054720a424be7a3e678985289ab462bf54ff13003c08fd07e30ec3c",
     "glb_sha256": "3221a4f2e86be2d156c28bdeca9eb32b93b46a57543ff636f67caead41186373"
   },
   {
@@ -2659,8 +2659,8 @@
     "source": "source/furniture-crystal-divider.blend",
     "glb": "glb/furniture-crystal-divider.glb",
     "runtime": "runtime/furniture-crystal-divider.model.json",
-    "source_sha256": "6f11e1e58bde9f9565c80928510e700a7506a5a1ab45e8ec8ddbd014a1c846ef",
-    "runtime_sha256": "6eca29ce24fd35489def63efa265a7eaa79492abe66b700817bd10dd7279756f",
+    "source_sha256": "812e38a58dde1ee9a898cbd4ae5eb1f813e07f23d9e2ad896bc188aa755d8396",
+    "runtime_sha256": "8169db5482c9ce795d1e94e54c6e08683c3c146191e5b1d20481e9dd4fca8329",
     "glb_sha256": "8e63ba39282141ca1e3d6eba76adda7c511ca1c2a2795f73986572f848cfed12"
   },
   {
@@ -2671,8 +2671,8 @@
     "source": "source/furniture-crystal-throne.blend",
     "glb": "glb/furniture-crystal-throne.glb",
     "runtime": "runtime/furniture-crystal-throne.model.json",
-    "source_sha256": "dbf81559c43fb2b31bb07b0100c31cb23a931c03b203a7a10d83a439602b0d68",
-    "runtime_sha256": "9136e6e1c95661ac85b923124e10f1f70bbf394ed8d7919f661b9881bb5f78d9",
+    "source_sha256": "539398181be72a45aa4ce86c055ef97b75f93b0056663b28c164e4ebbede79ba",
+    "runtime_sha256": "690baae407682fbd9b645777ac389e5ce294f0290a9d1037c3e4385aa464cabb",
     "glb_sha256": "4e8cf1e0607de812dc021ab694309fb66f860cfa62aa85764e3d2ea09f9ef26a"
   },
   {
@@ -2683,8 +2683,8 @@
     "source": "source/furniture-geo-desk.blend",
     "glb": "glb/furniture-geo-desk.glb",
     "runtime": "runtime/furniture-geo-desk.model.json",
-    "source_sha256": "ed35f29964b1d738df4d4e678ceaa66ef975c56cc51da242e31760f05a5c810a",
-    "runtime_sha256": "4588adc37fb0884b1aa810b0dbba59841874a74cb89cf55063b5ae3690c75a03",
+    "source_sha256": "4ba8799be1ba713e0b18fb4b558661cc75d3f820a8042bed5afa773e861aecf6",
+    "runtime_sha256": "08bf0812c61ca32810ea9b48cab060014397e0ca893d55359ecbddef0a4c83bf",
     "glb_sha256": "5dfc0ab38773d272488dde119123e1673f36e1b6cb6292aee74a72b9ab2219d4"
   },
   {
@@ -2695,8 +2695,8 @@
     "source": "source/furniture-geode-chair.blend",
     "glb": "glb/furniture-geode-chair.glb",
     "runtime": "runtime/furniture-geode-chair.model.json",
-    "source_sha256": "c86cccf7140a3be7e18696b5c1db67a07d50b0087cbdb8078535bedfa2a22dbf",
-    "runtime_sha256": "86ede216c62a3de2174c94c2d7f1d49a13cfcf0d7a2ecc256f157fcb80e1f463",
+    "source_sha256": "09484ad1b655637bc3d9d3d1704359e2acc30f2099a209f5103768653faeea37",
+    "runtime_sha256": "9a315eaa73a989d8f3248a6de22170695168cd4d33632e6b2fdbc51d814ab0d8",
     "glb_sha256": "d389e1b97953c472275986f71d31a07f563985ffaadd53c6ab63318fc108ee15"
   },
   {
@@ -2707,8 +2707,8 @@
     "source": "source/furniture-geode-pedestal.blend",
     "glb": "glb/furniture-geode-pedestal.glb",
     "runtime": "runtime/furniture-geode-pedestal.model.json",
-    "source_sha256": "b04ef9780ae2e539f995c781be3399dece2c57570e92a4e3ba1dfbf925520cc4",
-    "runtime_sha256": "172bd7c2b6fbefec21750f4510aae1c48928f32d27f129442111a23d11064899",
+    "source_sha256": "e1010dcbb098f1bdc0193acabd4516f215caad9d0206e2e34614de710b15cf18",
+    "runtime_sha256": "9df3490f54a100901228f7a3ce45e1d14bf3774a9bbd5278244478be3d9673aa",
     "glb_sha256": "9d0d53647b9c07ef2a81f298090c35334f91a518f240c3f26a303f5e3ebd5f12"
   },
   {
@@ -2719,8 +2719,8 @@
     "source": "source/furniture-geode-table.blend",
     "glb": "glb/furniture-geode-table.glb",
     "runtime": "runtime/furniture-geode-table.model.json",
-    "source_sha256": "45a40bb068264259aa8ae276f84dcf8db99c3b9bec74880e7a59b1a716b87989",
-    "runtime_sha256": "f282210d0b10985b874debd8dd75d8a00eec82618c3e5a678ef889b9b5fcc20b",
+    "source_sha256": "03291c9dc4b81bbe48e6525857135af1e7d937c9262dd9bc9f29b43c7f954952",
+    "runtime_sha256": "97a095af1c3d4c9be800875dd7c34403f8c3cc77364b34fca8ec6c83db882003",
     "glb_sha256": "48ef2d63ea3c85468518dcb4c23b4a10ab0e7f0e35b56aae054004b61e5aab93"
   },
   {
@@ -2731,8 +2731,8 @@
     "source": "source/furniture-lapidary-cabinet.blend",
     "glb": "glb/furniture-lapidary-cabinet.glb",
     "runtime": "runtime/furniture-lapidary-cabinet.model.json",
-    "source_sha256": "0e462f45a759bfb459eb99d2afc805512aa32fb511f205a212c869073a90b4d8",
-    "runtime_sha256": "bcd668cf8faa65a4a25c3a4dcd517dc067f9544776a41edd2400a7d771d7e12f",
+    "source_sha256": "6db62c8ac8b8d394250ec0fd0692c4403d79111510e7bd037956e1c266cc43b4",
+    "runtime_sha256": "a39b59a5b37c326b02c87953a60a6fe386f261d286632b092dde2584808060e3",
     "glb_sha256": "eb33931b7f06cd162a443bea28bfe89a44da713fe928b09d51bac818165146ce"
   },
   {
@@ -2743,8 +2743,8 @@
     "source": "source/furniture-mineral-shelf.blend",
     "glb": "glb/furniture-mineral-shelf.glb",
     "runtime": "runtime/furniture-mineral-shelf.model.json",
-    "source_sha256": "f01c4a90f647bea9b249451d59f019440a5f38d767ceb17a5bfc605430746e78",
-    "runtime_sha256": "fb89033c03ede3e77c66d4b602eafe90fb6b5c9a2ce411856297083263b5cbec",
+    "source_sha256": "617c5a617da684b4bd116e05cc2f0aefb556dac8a3f57417c7a7c1d499714a11",
+    "runtime_sha256": "06d71f9e9cb1dcd7eb3d8461c1446357aa54fbb53985b39b3918afb6d3d6bf70",
     "glb_sha256": "e813a7094be5d3fc5111929d77ff429a7a5c688d17b8bd6c6af02b7f7fbe1c6d"
   },
   {
@@ -2767,8 +2767,8 @@
     "source": "source/Magenheim_Staff_Earth_Advanced.blend",
     "glb": "glb/Magenheim_Staff_Earth_Advanced.glb",
     "runtime": "runtime/Magenheim_Staff_Earth_Advanced.model.json",
-    "source_sha256": "2bc5316259f65ac0a4767d0757187e873279b439306aaf7781bd21b473b8029c",
-    "runtime_sha256": "b09abf93bbb4d474804670a107fea6a455bdeedc6b361094e6438421a72ab53b",
+    "source_sha256": "8f2f17be5e8a26b2237ec9fa1ae33b7c8f1ebd6871a4850c98d8211007e1d0ed",
+    "runtime_sha256": "03b2d9ea833cf0fafdde1935e34bcf648b3ad61d52b3b17bb2dcc2e6fc876488",
     "glb_sha256": "790ec564b55fa122a6e4afcf0d3d1db2db3c9d849dacec94ccdefa053dba440d"
   },
   {
@@ -2779,8 +2779,8 @@
     "source": "source/Magenheim_Staff_Earth_Crystal.blend",
     "glb": "glb/Magenheim_Staff_Earth_Crystal.glb",
     "runtime": "runtime/Magenheim_Staff_Earth_Crystal.model.json",
-    "source_sha256": "f9da6ec608b85ad6579ed5cdbda9dc8ea69185d566be4656a26eff54c6abb9f8",
-    "runtime_sha256": "ccf5e3e3f05407e39bcfa93c00b07e09019346a34a1a4a7999ad6d763d10cef7",
+    "source_sha256": "757d67464e700549f3805da9f792ffcdc098b6f143de2e3e59467f732441c262",
+    "runtime_sha256": "cb6a6e4e9743996809ce7a83492445ed5364a892be356f1be6b3cbf65de26485",
     "glb_sha256": "cb2ae54742aad5a7a52a68b0c65b2073486852bc2ebae09538ff8d45a91a7218"
   },
   {
@@ -2803,8 +2803,8 @@
     "source": "source/Magenheim_Staff_Earth_Simple.blend",
     "glb": "glb/Magenheim_Staff_Earth_Simple.glb",
     "runtime": "runtime/Magenheim_Staff_Earth_Simple.model.json",
-    "source_sha256": "210735226a56d7274bdb5834b91bbbe673d5f2bc9dc4894f899e149aa3b42dbf",
-    "runtime_sha256": "85a0ad63437a730b95caff9d187d701fcd7a7f3c9774b11a076d5cef7939c570",
+    "source_sha256": "f751c09f2aeebe867ccd8333bbced0adb0fe444ff1af5becb7069517ab967682",
+    "runtime_sha256": "f9bc0e42869264e2e437bdd75f30bc738c4366fe1d4bf955200bb6294a1a600f",
     "glb_sha256": "d9db5938b5a5b3680fdf1f263b41e13e082c5bd0272cba3acc373669e5937eb4"
   },
   {
@@ -2911,9 +2911,9 @@
     "source": "source/norn-spindle.blend",
     "glb": "glb/norn-spindle.glb",
     "runtime": "runtime/norn-spindle.model.json",
-    "source_sha256": "e2c75ee5c018ece9b1eadbd63533bbc97817e663ce3f1b74c4a7ff58f01c6b3c",
-    "runtime_sha256": "bdcc40d0c38cc07ddaa9a99de3616a360f37ff6780ede3f3954a2338a7d851dc",
-    "glb_sha256": "629acd3b614f2e313713aeae96026a1e0aee3d9571b796b6fb67fadce38cfd39"
+    "source_sha256": "1bd52f7bce3094092f36fc7ce528db3d68f0cfc92896209c7bb8c43b25786e28",
+    "runtime_sha256": "a0e3705baaa94b33e0d5ba9e91d3f31e266da88bc105442d18d8ae5ed7695d36",
+    "glb_sha256": "7dda3eb4e19d5fe7716969d331205b5f1d440d71fb37d4a34940d122725a1210"
   },
   {
     "id": "passage-stone",
@@ -2923,9 +2923,9 @@
     "source": "source/passage-stone.blend",
     "glb": "glb/passage-stone.glb",
     "runtime": "runtime/passage-stone.model.json",
-    "source_sha256": "3af734323ed71939e4d8ff253859c29c3ca605be8dfe346019d1959ffdf0824f",
-    "runtime_sha256": "9beca08c8cae34fe7f37716b23783b81f3e49a91ad2f5a9cfee8bb80c20138dc",
-    "glb_sha256": "0c770612e76cdb7e89c71b4a573df3cf757eb83c0bdf5e5252a85d05e6ec1645"
+    "source_sha256": "b1559fd340ed600731e1a4797bec1b996ffd64065c32cad57545e316e52bdc63",
+    "runtime_sha256": "e3eaf27526b89431c2afa49d7199ac1bdfe06f190bfb3095bfce7fbd342eb138",
+    "glb_sha256": "d7622b7fd807ec5983b7e7eec2942c3f2fa9ab0130225208eefb088c525a01f9"
   },
   {
     "id": "rune-engraver",
@@ -2935,9 +2935,9 @@
     "source": "source/rune-engraver.blend",
     "glb": "glb/rune-engraver.glb",
     "runtime": "runtime/rune-engraver.model.json",
-    "source_sha256": "35c980da756eae19bac685963dee9e7dc6d870338dcc2812fca59b93408d795f",
-    "runtime_sha256": "b7168235f8d584a9d4316eb12fcfb648e80f712eb75c1387ec43498e024bb38f",
-    "glb_sha256": "14d8adc78e31d51a791c1ee1ce79f41f6b7e24f0bfd01ff815604c30844a6ee0"
+    "source_sha256": "2b28766a14ec42eb572195454da4182f6028072d57b036983b2ade9a85337561",
+    "runtime_sha256": "98b1ea719d25d6400b3b55c3e1d251d842af3188eb0b982991b54ff52a73e84a",
+    "glb_sha256": "77fedd3071a2293a6d4fc4ddb996da1b486a550ee9afce54d83115d5a7d2092b"
   },
   {
     "id": "runed-totem",
@@ -2947,9 +2947,9 @@
     "source": "source/runed-totem.blend",
     "glb": "glb/runed-totem.glb",
     "runtime": "runtime/runed-totem.model.json",
-    "source_sha256": "069424c3c631fbf8f69b9cff730d66028e611065a4011c63cd4864311c0569cc",
-    "runtime_sha256": "1ddabd5569989e76cdfba7cc03dc2797e319f6c4416aa85a860463f3138dea5a",
-    "glb_sha256": "af9d32f7d932ce473678d3740a59484ac3ab423405c9c8eb92d049c65cc48b17"
+    "source_sha256": "d9048d4fc95760e9482b631c60d654f8a7cfb9c32c4124725cdde827cb0b3e09",
+    "runtime_sha256": "b80733307207e08e7429bcbb279f6406da3dde4ea2ee14c598ad82f7e49d6d49",
+    "glb_sha256": "1b1115399ad7aeccef06360bd098022b8aecdf7b18bc33c247aff57af2be8ed1"
   },
   {
     "id": "runic-keelstone",
@@ -2959,9 +2959,9 @@
     "source": "source/runic-keelstone.blend",
     "glb": "glb/runic-keelstone.glb",
     "runtime": "runtime/runic-keelstone.model.json",
-    "source_sha256": "4f46b2b8c4eb5fc59c91f1cf4c7dd08273ddd9c8bca71302585d0dcb09254845",
-    "runtime_sha256": "97635a0adae54ba03ffba17039bf4b01aaa87154c0ad5045a8dac78a8c0aa465",
-    "glb_sha256": "574c006a70d8133ed70c266d21eeda7d25cd0cd393f09631ae182c1450a82f01"
+    "source_sha256": "29d28f98b1787e64467cbe8130dd6d1e3952c5d165d39597599a32057ce49c65",
+    "runtime_sha256": "08c91161cf967350ce5254f5e1e6c72f188d9619b98596e0518ae39306fe7661",
+    "glb_sha256": "fdef5642ece4abf27da94534ba3abfa304285dd066f20c5695d50ceac4dd8d90"
   },
   {
     "id": "seidr-ritual-focus",
@@ -2971,9 +2971,9 @@
     "source": "source/seidr-ritual-focus.blend",
     "glb": "glb/seidr-ritual-focus.glb",
     "runtime": "runtime/seidr-ritual-focus.model.json",
-    "source_sha256": "00317199b741753726568b4d65c4fcd57b27edb244fe245bba9422628e072dd0",
-    "runtime_sha256": "6bf89c8b71186a9b2fd2490ddef480217396b65f34516dd39b60ee696c9ad7b4",
-    "glb_sha256": "b95ab4a7c9da91bb83305ff8e636f4cac15cbc8f9d25ae8c5bddbb51de8e5829"
+    "source_sha256": "c9d72619c4a16097960c9064ce3d50e614ccd832ba6fd847810738f5f0d1a411",
+    "runtime_sha256": "84b9adc1f0d59ccf4dda9e43c7c860dd1f2947a146a97ac4b4288e45af00334f",
+    "glb_sha256": "a7478cb74ec0111a21a0fdf98e53f4b855ccbca4b11841749e985144777fd1d1"
   },
   {
     "id": "sentinel-ammo-earth",
@@ -3079,9 +3079,9 @@
     "source": "source/spirit-fetish-raven.blend",
     "glb": "glb/spirit-fetish-raven.glb",
     "runtime": "runtime/spirit-fetish-raven.model.json",
-    "source_sha256": "baa64cc136c048da53952448c7517b1ed615875b57fab35a8051143e9b9da47d",
-    "runtime_sha256": "abfba84f6b504edd1d85c9013521ca62dbd8bf11653d523abb33939381cc2102",
-    "glb_sha256": "a8cd23ef930497b6701abc1bef6579d56c2317fec61196a8c0e8fa1d94b37d05"
+    "source_sha256": "72488fecbdad899fdaecb3e7c38401a1eebdeb59b8cd1aaa3ff8fd7687738d70",
+    "runtime_sha256": "9e25d88c1124373a49cc73c90da9b86f05d2502cae5ca0c4cb3b625074efc676",
+    "glb_sha256": "7dd0d126197fa72aa5393f017c1fceeb074fd177013fb9d7179364988d91c756"
   },
   {
     "id": "spirit-fetish-warrior",
@@ -3091,9 +3091,9 @@
     "source": "source/spirit-fetish-warrior.blend",
     "glb": "glb/spirit-fetish-warrior.glb",
     "runtime": "runtime/spirit-fetish-warrior.model.json",
-    "source_sha256": "0bcd048ab360b98f8bc0f4e40de0e450eec5430854601d5a3a9491dfac80ec82",
-    "runtime_sha256": "c49740d5da9399f1df5d5baa7e840dba8877a433f87d9ba0c1fc0a5050fc4e22",
-    "glb_sha256": "17e4b77e9429e4ed508a23c10f2004acbfcd0ebf82670f81fffa7a8fa248f999"
+    "source_sha256": "f24e0a5b9afcb4dbe0b26ab9cca109bf98cde2212794477f0044658fcb6ce1d9",
+    "runtime_sha256": "fb6a941b04ee887cb3b55646a62aeceba7bc8aa010c67fa88b1f5995096bf97c",
+    "glb_sha256": "8544b3bfcfc041e66e1682f3b14a1ade6c4f877aae470105e01fd62aaa5d6c51"
   },
   {
     "id": "spirit-fetish-wolf",
@@ -3103,9 +3103,9 @@
     "source": "source/spirit-fetish-wolf.blend",
     "glb": "glb/spirit-fetish-wolf.glb",
     "runtime": "runtime/spirit-fetish-wolf.model.json",
-    "source_sha256": "ca81610f3254ccb374f2093c821c58c84f31ab4d617b2e4e526429b4158819a3",
-    "runtime_sha256": "a8c97c141392edd1e099b2a9d76f24145fb59e341c0744bffd248bc874a168ce",
-    "glb_sha256": "7ce684df15631e6af42a79499cb3ba430e8fa7fe97b8983188a29ee8e4a69b1f"
+    "source_sha256": "69e2d78267f1493b0730b96ccb5f09972cae2d1a3c3d6415aa14b6f1357bce10",
+    "runtime_sha256": "050779aa90a7926d45ebc5d2766e2a2223d2ac74bf8414a28063a5a3cd8fc268",
+    "glb_sha256": "009bc23c8fa159379cf8f7f130c13f55d04ab6382a1facc112403aa0337ea4c7"
   },
   {
     "id": "staff-frost-advanced",
@@ -3355,9 +3355,9 @@
     "source": "source/underworld-dais.blend",
     "glb": "glb/underworld-dais.glb",
     "runtime": "runtime/underworld-dais.model.json",
-    "source_sha256": "5b15a58ebeb9801e531c32412c98f5c7ae35733634b476c6f21f6bda5f72086d",
+    "source_sha256": "5f0b40dffb268e2bd838409b7ca078fd356c3d845e8de3b2261fa307d7049b63",
     "runtime_sha256": "0410ff20b7197c08949acbf9a935cf9e3b079440308b14b5bf5144d0bd3c2f74",
-    "glb_sha256": "1e05baa850763c0d059fe8134869ea26e517f2bf37cd511f91fef8e1062be48b"
+    "glb_sha256": "ca202002eb4312c933b0daad23aa3ba5c087e9c5e60f0a1d8ce5b21837c5ddb2"
   },
   {
     "id": "underworld-standing-stone",
@@ -3367,8 +3367,8 @@
     "source": "source/underworld-standing-stone.blend",
     "glb": "glb/underworld-standing-stone.glb",
     "runtime": "runtime/underworld-standing-stone.model.json",
-    "source_sha256": "54c7e91a379e6f24ddbfffc5825dcb9160bfd665ca99b488c087e4b1f2c1efec",
+    "source_sha256": "cc21bdce9b5690139f3162eedd2640393de76f82cf82d7bf76868bed7271ba00",
     "runtime_sha256": "ebaba62941606cb29d25bb55e1a591bb5311528785bfa5ad838437caa345437f",
-    "glb_sha256": "5174c52627bf54fab8af194a47764b97787f35e44096c630f0db36f55fdf9207"
+    "glb_sha256": "987f7bcd5ea5cc00d271ffc138c15f350f3072ce599d118011245278ecc2a2a6"
   }
 ]

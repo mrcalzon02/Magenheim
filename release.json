@@ -1,4 +1,4 @@
 {
-  "version": "0.0.52",
-  "description": "0.0.52: Rebuilds the geode, crystal tiers and Deep Fracture passages; textures every model in the library; adds winding and black-texture gates. Repairs inverted geometry and Valheim 1.0.12 API drift. Testing build; in-game acceptance pending."
+  "version": "0.0.53",
+  "description": "0.0.53: Repairs the crystal buildable textures broken in 0.0.52; retro-fitted maps are now fine grain that island UVs cannot break into patchwork. Seven further live-play defects are recorded as backlog P0.0. Testing build."
 }
