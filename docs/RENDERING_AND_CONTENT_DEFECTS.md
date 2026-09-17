@@ -390,6 +390,34 @@ and now connect chambers roughly 150 times their own triangle count.
 
 ---
 
+## R9 — First live acceptance pass, 0.0.52
+
+**Status: eight defects reported from play 2026-09-16; see BACKLOG.md P0.0.**
+
+This is the first report from an installed build since 0.0.16, and it is the evidence that was
+missing behind every "source repaired, live acceptance pending" entry above.
+
+Two findings matter beyond their own fix.
+
+**The retro-texture pass regressed the crystal buildables.** Closing the texture gap to 100%
+applied generated maps to models whose UVs were smart-projected into packed islands. A
+coherent noise field sampled across island boundaries reads as discontinuous patchwork, which
+is worse than the flat colour it replaced. Models with purpose-authored UVs - geode, crystal
+tiers, caverns, passages - are unaffected, because their UVs were built for the map. The
+tonal-range gate cannot see this: the map has range, it is simply being sampled across seams.
+Coverage percentage was the wrong measure of success.
+
+**Hand orientation is very likely the up-axis defect again.** The crystal tier models were
+authored Y-up against a Z-up Blender and a `(x, y, z) -> (x, z, -y)` exporter, and shipped
+lying on their side with entirely valid geometry, winding, UVs and hashes. If weapons and
+staves are wrong in hand, that is the same class, and no gate in the project can see it.
+
+Counted with the earlier four, this session has now produced six defects invisible to every
+automated check and found only by looking: sealed geode core, sideways crystals, under-lit
+passage, black textures, island-seam patchwork, and hand orientation.
+
+---
+
 ## Current acceptance boundary
 
 The source defects raised by the screenshot pass are repaired on `main`. The next gate is not more

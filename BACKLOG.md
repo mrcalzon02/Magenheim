@@ -2,6 +2,20 @@
 
 Priority is dependency order. Broken intended behavior and repository divergence outrank new scope.
 
+## P0.0 — Live play defects from the 0.0.52 session (TOP PRIORITY, raised 2026-09-16)
+
+The first live acceptance pass against an installed build. These outrank P0.1 and everything
+below. Items marked REGRESSION were introduced by the asset work in this session.
+
+- [ ] **Geode still shows textureless, unsurfaced parts.** `geode-sample` reports five parts all carrying maps, so this is not a missing texture at the payload level. Needs a screenshot to identify which surface: candidates are `GeodeCore` seen through the crevices, the shaft interior, or a surface reading flat because its map has range but no legible structure under game lighting.
+- [ ] **Crystal Staff of Venom does not attack.** Venom is one of the two staff families that had owned visuals before the C1 rebuild. Check the attack binding, projectile spawn and any cost gate left behind when the inherited Eitr economy was removed.
+- [ ] **Socket crystal descriptions must state per-slot effect.** A crystal's description needs to say what it does in a weapon, in armour and in a utility slot. Today the player cannot tell before committing the socket.
+- [ ] **Crystal weapons and staves orient wrongly in the player's hand.** Almost certainly the authored up-axis: these are Y-up game-space sources, Blender is Z-up, and the exporter maps `(x, y, z)` to `(x, z, -y)`. The crystal tier models had exactly this defect and it was invisible to every gate. Check the attach transform against a vanilla weapon.
+- [ ] **Staves need icons derived from their current models.** Icons predate the staff visual rebuild.
+- [ ] **All item descriptions must be mechanically informative and player-facing.** One clear statement of what the item does, in the player's language, not the implementation's.
+- [ ] **Staves must take damage and degrade like normal weapons and tools.** Check `m_useDurability`, `m_maxDurability` and the durability drain path on the staff clones.
+- [ ] **REGRESSION: crystal buildables are texturally broken.** Introduced by the generic retro-texture pass. Models whose UVs were smart-projected carry packed islands, so a coherent noise map lands as discontinuous patchwork across island boundaries. Models with purpose-authored UVs (geode, crystal tiers, caverns, passages) are unaffected. Either make the retro map fine-grained and low-contrast so island seams cannot read, or revert the pass on the affected families.
+
 ## P0.1 — Asset fidelity, live acceptance and geometry gating (TOP PRIORITY, raised 2026-09-16)
 
 These outrank every item below, including P0.4 and P0.5 remnants and all new content.
