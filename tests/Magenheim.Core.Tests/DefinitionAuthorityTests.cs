@@ -30,11 +30,11 @@ internal static class DefinitionAuthorityTests
 
         var schemaMismatch = DefinitionAuthorityHandshake.Compare(local, new DefinitionAuthorityDescriptor(currentSchema + 1, fingerprintA));
         Assert(schemaMismatch.Status == DefinitionAuthorityStatus.SchemaMismatch, "Different schema versions must report SchemaMismatch.");
-        Assert(!schemaMismatch.MutationAuthorized, "Schema mismatch must fail closed.");
+        Assert(!schemaMismatch.MutationAuthorized, "Schema mismatch must fail closed for mutation.");
 
         var fingerprintMismatch = DefinitionAuthorityHandshake.Compare(local, new DefinitionAuthorityDescriptor(currentSchema, fingerprintB));
         Assert(fingerprintMismatch.Status == DefinitionAuthorityStatus.FingerprintMismatch, "Different fingerprints must report FingerprintMismatch.");
-        Assert(!fingerprintMismatch.MutationAuthorized, "Fingerprint mismatch must fail closed.");
+        Assert(!fingerprintMismatch.MutationAuthorized, "Fingerprint mismatch must fail closed for mutation.");
 
         var invalidLocal = DefinitionAuthorityHandshake.Compare(new DefinitionAuthorityDescriptor(0, fingerprintA), new DefinitionAuthorityDescriptor(currentSchema, fingerprintA));
         Assert(invalidLocal.Status == DefinitionAuthorityStatus.InvalidDescriptor, "Invalid local authority must be rejected before comparison.");
@@ -67,6 +67,7 @@ internal static class DefinitionAuthorityTests
         assertions += UnderworldFungalProvisionCatalogTests.Run();
         assertions += UnderworldVesselCatalogTests.Run();
         assertions += UnderworldThermalExposureTests.Run();
+        assertions += UnderworldThermalStateTests.Run();
         assertions += UnderworldGeothermalHazardTests.Run();
         assertions += UnderworldTransitionTests.Run();
         assertions += UnderworldTransitionStateCodecTests.Run();
