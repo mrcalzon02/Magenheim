@@ -20,23 +20,39 @@ internal sealed class UnderworldPhysicalWorldSwitchCoordinator
     internal UnderworldPhysicalWorldSwitchRequest ResolvePending(UnderworldPlayerLayerState state,UnderworldWorldIdentity identity)
     {
         if(state is null)throw new ArgumentNullException(nameof(state));if(identity is null)throw new ArgumentNullException(nameof(identity));
+        RequireServerAuthority("resolve");
         var active=state.ActiveTransition??throw new InvalidOperationException("Cannot resolve a physical world switch without an active persisted transition.");
         if(active.TargetLayer==state.CurrentLayer)throw new InvalidOperationException("Persisted transition target is already the player's committed layer; physical switch request is inconsistent.");
         var targetSave=_pairStore.GetTargetSaveName(identity,active.TargetLayer);
         if(string.IsNullOrWhiteSpace(targetSave))throw new InvalidOperationException("World-pair manifest resolved an empty physical target save name.");
         var request=new UnderworldPhysicalWorldSwitchRequest(identity,state.PlayerId,state.CurrentLayer,active.TargetLayer,targetSave);
-        _log.LogInfo($"Resolved persisted Underworld physical switch {request.CurrentLayer} -> {request.TargetLayer} using save '{request.TargetSaveName}'.");
+        _log.LogInfo($"Resolved server-authoritative persisted Underworld physical switch {request.CurrentLayer} -> {request.TargetLayer} using save '{request.TargetSaveName}'.");
         return request;
     }
 
     internal bool IsTargetAdmitted(UnderworldPhysicalWorldSwitchRequest request,out string diagnostic)
     {
         if(request is null)throw new ArgumentNullException(nameof(request));
+        if(!HasServerAuthority(out diagnostic))return false;
         if(!_worldContext.IsActive(request.Identity,request.TargetLayer)){diagnostic=$"Loaded Valheim session has not admitted requested {request.TargetLayer} world '{request.TargetSaveName}'.";return false;}
         var world=ZNet.World;if(world is null){diagnostic="Valheim world metadata disappeared after target-layer admission.";return false;}
         var liveSave=UnderworldRuntimeIdentityResolver.ResolveWorldSaveName(world);
         if(!string.Equals(liveSave,request.TargetSaveName,StringComparison.Ordinal)){diagnostic=$"Loaded save '{liveSave}' does not match requested physical target '{request.TargetSaveName}'.";return false;}
-        diagnostic=$"Verified physical target '{request.TargetSaveName}' as {request.TargetLayer} for the persisted world pair.";return true;
+        diagnostic=$"Verified server-authoritative physical target '{request.TargetSaveName}' as {request.TargetLayer} for the persisted world pair.";return true;
+    }
+
+    private static void RequireServerAuthority(string operation)
+    {
+        if(HasServerAuthority(out var diagnostic))return;
+        throw new InvalidOperationException($"Cannot {operation} an Underworld physical world switch without Valheim server/host authority. {diagnostic}");
+    }
+
+    private static bool HasServerAuthority(out string diagnostic)
+    {
+        var znet=ZNet.instance;
+        if(znet is null){diagnostic="ZNet is not active.";return false;}
+        if(!znet.IsServer()){diagnostic="The local peer is a client; physical world selection is owned by the server/host.";return false;}
+        diagnostic="Valheim server/host authority is active.";return true;
     }
 }
 
