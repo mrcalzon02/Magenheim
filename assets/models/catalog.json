@@ -643,9 +643,9 @@
     "source": "source/crystal-weapon-atgeir.blend",
     "glb": "glb/crystal-weapon-atgeir.glb",
     "runtime": "runtime/crystal-weapon-atgeir.model.json",
-    "source_sha256": "31c3b068ad88d3a622d282cf43302cccb4846da4a3098263f6dd80c67999eb6a",
-    "runtime_sha256": "284d3dc09a1618a873ae95327953ac575b368a6d4a4913054d86482688db534d",
-    "glb_sha256": "c91d5d5c1e7762e259ee9460ec73f4b27f74a01fc7bdefb5cebf859389d5c9ab"
+    "source_sha256": "c6b80c3894adb736262ab6507bd61863cfe6b8f10c2a870f3ae37a5f789cee3c",
+    "runtime_sha256": "7e3a2bc1fca6d7f68d10b4cf8178b580f84724c6062cf1d897a61f51d360bc96",
+    "glb_sha256": "a72154aeab84299383d62d9cab2585a6a4007ac71091fa68931f131ecf6e545a"
   },
   {
     "id": "crystal-weapon-axe",
@@ -655,9 +655,9 @@
     "source": "source/crystal-weapon-axe.blend",
     "glb": "glb/crystal-weapon-axe.glb",
     "runtime": "runtime/crystal-weapon-axe.model.json",
-    "source_sha256": "b69d226a270f92fbcfb5dc51b9908d73a6e2a42a11f0b10ffb06060c9d4202a9",
-    "runtime_sha256": "dc44a3fb5ee4cbdcb1791ba8be7e23a46e005fb2bc617540d484851158e11dd6",
-    "glb_sha256": "7e0a20d00265e1ab1c79cd7b02e44546e699b57da636a1a9b17cac7eea0844ce"
+    "source_sha256": "1e7e6aebc246aaaa1198a9dfbb77df18c67b872dd33c391891801e26308a4d1d",
+    "runtime_sha256": "1d737f9c11f66ef86a5f5c5ef60dd0b81aa35bdc8a7267de96edc3fe645fadf9",
+    "glb_sha256": "be2933ecd1f216710c337e5b75e0d00cd306f6678e2504be94618df162ff4fd7"
   },
   {
     "id": "crystal-weapon-battleaxe",
@@ -667,9 +667,9 @@
     "source": "source/crystal-weapon-battleaxe.blend",
     "glb": "glb/crystal-weapon-battleaxe.glb",
     "runtime": "runtime/crystal-weapon-battleaxe.model.json",
-    "source_sha256": "6f02074a70112e146475a3130e96ce07b11c8ced5e7243c2620806c8c8c3d19e",
-    "runtime_sha256": "cfaae82f9f68a9f4cb52a95aa5c4b4821faa42351a64c8e185c39e8c47933d6b",
-    "glb_sha256": "1f986b35beb01db4b010e1cc77473a21a8d4e33627b8a78850160c50c3761550"
+    "source_sha256": "02be38e2e08fc9b1cd16258d737187475eb878ebc1be367a35b9421e0d3208f6",
+    "runtime_sha256": "a50a5575460a66c5062bec03d5fd52c0e9ad55ae4779f8d1ba2efd1d7812bbf2",
+    "glb_sha256": "5de69ecc97becc96ec8a9df40dd7bbf118e13539ee3c0171c5d1fae34ba21ddc"
   },
   {
     "id": "crystal-weapon-bow",
@@ -679,9 +679,9 @@
     "source": "source/crystal-weapon-bow.blend",
     "glb": "glb/crystal-weapon-bow.glb",
     "runtime": "runtime/crystal-weapon-bow.model.json",
-    "source_sha256": "037b7b823ea9f39f6dc3a5d703258e9ec8e640af14de1ec0a4d619090c00ad3b",
-    "runtime_sha256": "542e9e150fbde5130158be4d65c049106a66ac1429b316e936affd8af9c7b6c3",
-    "glb_sha256": "5646e8ec41d03352ffd83342c68732e766bad4858e5ff935222881537da5fc2f"
+    "source_sha256": "f4cd37ca71dae14aa5e5f20e31596c256ac84f9d34dde4e16abd25adbf25fd71",
+    "runtime_sha256": "4ce89312e3316b1b8877fe0b9f528c46d6837ebcd57be027d49f5db82ce604a4",
+    "glb_sha256": "bda7ea376ef23e5710e9007914c65bf1d78f636e63c2a8d018024918b659a19d"
   },
   {
     "id": "crystal-weapon-crossbow",
@@ -691,9 +691,9 @@
     "source": "source/crystal-weapon-crossbow.blend",
     "glb": "glb/crystal-weapon-crossbow.glb",
     "runtime": "runtime/crystal-weapon-crossbow.model.json",
-    "source_sha256": "18f06c81aae53994bb1c80b084680abb350eb0191cccea23fe327c32ee463754",
-    "runtime_sha256": "6ebbc802424a6ed1fe922ce644d04cf2276e21996950c305d2e83f7577b04641",
-    "glb_sha256": "1c1cb0b2dd4748280003443f0f60c5391302cb713229b6cbd6a151464471e59d"
+    "source_sha256": "a806d9a073c4300b60f4970b768419fe58a7c1091080aaf00c3d4d6012a84bd7",
+    "runtime_sha256": "6b88062b25046b5f57e9dacfec722a088068b6974a37d9cca9150197a5e73e34",
+    "glb_sha256": "107dfb7f0bfab98e0a52fdb40de28f769de4cc15eadd958f5e285c291b948877"
   },
   {
     "id": "crystal-weapon-greatsword",
@@ -703,9 +703,9 @@
     "source": "source/crystal-weapon-greatsword.blend",
     "glb": "glb/crystal-weapon-greatsword.glb",
     "runtime": "runtime/crystal-weapon-greatsword.model.json",
-    "source_sha256": "d7c3c2b1fb011f3fa7f7f063cd6691682ac26d5704954db30cf3ff6dac75e61b",
-    "runtime_sha256": "a305ae2bb65cac0d84d31ce53606e52c7fb5c2c223190035d6a39c1f097d8c37",
-    "glb_sha256": "9a0f771cc8c3f0b5ae5b799b544f5d5d802e885966008aa43a8eabea9329dbaf"
+    "source_sha256": "14ff598bb9328a5ac2e74524f73fa8d09b53b114353392cc518ae5d45427aec0",
+    "runtime_sha256": "958ce0bbf7bb1d5ceb99db4b19555071ba54759c0a87b3905c4698fa6c88b553",
+    "glb_sha256": "ca573fadd5a1c30e20a876a47c497b9d8a77064dd4f2ec0c7005f38cdfbb0911"
   },
   {
     "id": "crystal-weapon-knife",
@@ -715,9 +715,9 @@
     "source": "source/crystal-weapon-knife.blend",
     "glb": "glb/crystal-weapon-knife.glb",
     "runtime": "runtime/crystal-weapon-knife.model.json",
-    "source_sha256": "372223bea8bf1746d155cf22260c414f2d324009af50c5ecdc102fbc35ebb012",
-    "runtime_sha256": "c6f2fedabd5e661489aec404692e1bfdc449ad3743619aebcadff03e63adc18a",
-    "glb_sha256": "32382a045a43a454e9fae7773bb0f5de3133fb3b2e7abfa6baaae8931c28b5e3"
+    "source_sha256": "7e96e9dff0bde30c70f76db4d5ff608eca34784a66c12c61fda454b63305843d",
+    "runtime_sha256": "8fdd73c919c8203ba599c9bdbe88e9e66f3433b195010ced082a3ce68cf4e9f6",
+    "glb_sha256": "57de22362a84efc9f3da1b1ab5bbd64b4af9829f6522774f182ac1dfdfa762f4"
   },
   {
     "id": "crystal-weapon-mace",
@@ -727,9 +727,9 @@
     "source": "source/crystal-weapon-mace.blend",
     "glb": "glb/crystal-weapon-mace.glb",
     "runtime": "runtime/crystal-weapon-mace.model.json",
-    "source_sha256": "5f1a10a983670ba07bbc0a6f11c8f1a039f2fa8875ef3dd8669dd1876390d061",
-    "runtime_sha256": "80fa5231d0f6ccd5298e2ded7a697ad86f339e05b7a77388cabade793cc2443d",
-    "glb_sha256": "81579bbd98570c5c79045c3ea373360e28cb5e5f684f7823f558d9a1fb49dc54"
+    "source_sha256": "29d59d2b79b78b3335246afa52765a80c5783acbcc06774a903448d47e407604",
+    "runtime_sha256": "854f696d51907681e6b44519379f78c20626faef12669c6737b24598b2cf27dc",
+    "glb_sha256": "e055c82b38993ec4b14ff8f21e1fcab3593dbf6ae51fbbec8415fb87d8032f99"
   },
   {
     "id": "crystal-weapon-spear",
@@ -739,9 +739,9 @@
     "source": "source/crystal-weapon-spear.blend",
     "glb": "glb/crystal-weapon-spear.glb",
     "runtime": "runtime/crystal-weapon-spear.model.json",
-    "source_sha256": "a5043b31c032c9c81134a7e3766d915972504507e4e4651d106e4ebaab159766",
-    "runtime_sha256": "4cbb53d99a3a7ff7828e1ed01f83e31b2cc2de2c29e682be6a733cbfd4921673",
-    "glb_sha256": "41d33b9e45a8165e17eca5677e88572efdffb22e100b4c43c9f74519a0c2a56c"
+    "source_sha256": "03b469ecc14c8232b9b47e91cb895e213ea5ec42334b225371d8467c661a7a9a",
+    "runtime_sha256": "62edb8fd77e5dd026dde31119b063abac08fd73c8657ca0de3befbd91ab26bcf",
+    "glb_sha256": "17ab0af2b3ba52190117e6924b51f9cafef549d4451ed078543bf1eba5f86061"
   },
   {
     "id": "crystal-weapon-sword",
@@ -751,9 +751,9 @@
     "source": "source/crystal-weapon-sword.blend",
     "glb": "glb/crystal-weapon-sword.glb",
     "runtime": "runtime/crystal-weapon-sword.model.json",
-    "source_sha256": "bd322d871f4d8c38725a4f9284ff11cec7a85e9258bab8209f1edb6b5f7f04b8",
-    "runtime_sha256": "b9809666673364eb9600839ae39e35ca1f9f828a9c2e92c253edde145a28b58c",
-    "glb_sha256": "a5507c8157910012ea1b3e43517d599afe95ef19f764d94f49aa237e59dd102b"
+    "source_sha256": "c60e2b079e59fb8135572cb92920a19e9712b348598c3ba2491b706bf47872b2",
+    "runtime_sha256": "7e5f8ebd6dc0011bf167c5f0fdd686400128157d463e71b53fb5f2579a43d311",
+    "glb_sha256": "aeba050e49de198db5ec829d4f6a2dbc96ae6b7510b0190f723832d63739e623"
   },
   {
     "id": "crystalline-ice-box",

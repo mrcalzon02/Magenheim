@@ -42,6 +42,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Icon asset validation failed.' }
     & python "$PSScriptRoot/tools/verify-model-scale.py"
     if ($LASTEXITCODE -ne 0) { throw 'Model scale validation failed.' }
+    & python "$PSScriptRoot/tools/verify-weapon-materials.py"
+    if ($LASTEXITCODE -ne 0) { throw 'Weapon material validation failed.' }
     & $DotNet run --project tools/ModelAssetTests -c Release @restoreOptions
     if ($LASTEXITCODE -ne 0) { throw 'Model importer tests failed.' }
     & $DotNet run --project tests/Magenheim.Core.Tests -c Release @restoreOptions

@@ -1,4 +1,4 @@
 {
   "version": "0.0.55",
-  "description": "0.0.55: Rescales all ten crystal weapons to match vanilla proportions, using the staff family as the in-play reference. The sword drops from 2.09m to 1.56m and the knife from 1.25m to 0.93m. Model world scale is now gated. Testing build."
+  "description": "0.0.55: Rescales all ten crystal weapons to vanilla proportions against the staff reference, and re-authors weapon surfaces at 512px -- 76 of 79 materials were textured against their own intent. Scale and materials are now gated. Testing build."
 }

@@ -13,7 +13,20 @@
   than applying a runtime scale, so the models themselves are correct.
 - Added `tools/verify-model-scale.py`, wired into the build. Nothing had ever checked model
   scale; it produces no compile error and is only visible in a player's hand.
-- Weapon geometry detail and texture resolution are not addressed here and remain open.
+- Re-authored the weapon surfaces. The retro-texture pass had assigned surface families
+  essentially at random: 76 of 79 weapon materials contradicted their own declared intent.
+  A sword grip was textured as stone, its crystal as metal, and a greatsword's blackmetal
+  as carapace, all on five shared 256px maps.
+- The family token is load-bearing twice over: it selects the packed albedo, and
+  `GeneratedSurfaceTextures.Classify` reads it to choose the runtime fallback surface, so a
+  grip named `.stone` was classified Stone at runtime too. Both now follow the intent.
+- Seven authored 512px families: leather, timber, blackmetal, silver, crystal,
+  crystal-bright and prismatic. Grain stays fine and low-contrast because these UVs are
+  smart-projected into small islands and any larger feature reads as patchwork.
+- Added `tools/verify-weapon-materials.py`, wired into the build.
+- Weapon geometry detail is NOT addressed. The weapons remain box primitives inflated by
+  bevel modifiers, at a median 1,262 triangles against a library median of 2,348. That
+  re-authoring is still open.
 
 ## 0.0.54 - Staff registration, icons and durability
 
