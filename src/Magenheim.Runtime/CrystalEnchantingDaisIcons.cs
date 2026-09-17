@@ -20,13 +20,15 @@ internal static class CrystalEnchantingDaisIcons
             name = "magenheim.crystal-enchanting-dais.icon"
         };
         var pixels = new Color[Size * Size];
-        for (var i = 0; i < pixels.Length; i++) pixels[i] = new Color(0f, 0f, 0f, 0f);
+        for (var i = 0; i < pixels.Length; i++) pixels[i] = Color.clear;
 
         var darkStone = new Color(.12f, .13f, .15f, 1f);
         var faceStone = new Color(.28f, .30f, .32f, 1f);
         var iron = new Color(.27f, .31f, .35f, 1f);
-        var bright = new Color(.82f, .92f, 1f, 1f);
+        var focus = new Color(.62f, .78f, .88f, 1f);
+        var focusBright = new Color(.84f, .94f, 1f, 1f);
 
+        // Keep the silhouette low and broad: this is a working dais, not a crystal monument.
         FillEllipse(pixels, 48, 38, 36, 18, darkStone);
         FillEllipse(pixels, 48, 42, 31, 15, faceStone);
         FillEllipse(pixels, 48, 46, 25, 12, darkStone);
@@ -46,9 +48,12 @@ internal static class CrystalEnchantingDaisIcons
                 1f));
         }
 
-        DrawCrystal(pixels, 48, 48, 8, 31, bright);
-        FillRect(pixels, 36, 45, 60, 49, iron);
-        FillRect(pixels, 39, 57, 57, 60, iron);
+        // Recessed focus: readable at Hammer-menu scale without contradicting the low station geometry.
+        FillEllipse(pixels, 48, 45, 12, 6, iron);
+        FillEllipse(pixels, 48, 46, 9, 4, focus);
+        FillEllipse(pixels, 46, 47, 4, 2, focusBright);
+        FillRect(pixels, 34, 37, 38, 48, iron);
+        FillRect(pixels, 58, 37, 62, 48, iron);
         Outline(pixels);
 
         texture.SetPixels(pixels);
@@ -72,8 +77,7 @@ internal static class CrystalEnchantingDaisIcons
             if (x < 0 || x >= Size || y < 0 || y >= Size) continue;
             var dx = (x - cx) / (float)rx;
             var dy = (y - cy) / (float)ry;
-            if (dx * dx + dy * dy <= 1f)
-                pixels[y * Size + x] = color;
+            if (dx * dx + dy * dy <= 1f) pixels[y * Size + x] = color;
         }
     }
 
@@ -97,25 +101,7 @@ internal static class CrystalEnchantingDaisIcons
     {
         x0 = S(x0); y0 = S(y0); x1 = S(x1); y1 = S(y1);
         for (var y = Mathf.Max(0, y0); y < Mathf.Min(Size, y1); y++)
-        for (var x = Mathf.Max(0, x0); x < Mathf.Min(Size, x1); x++)
-            pixels[y * Size + x] = color;
-    }
-
-    private static void DrawCrystal(Color[] pixels, int cx, int baseY, int halfWidth, int height, Color color)
-    {
-        cx = S(cx); baseY = S(baseY); halfWidth = S(halfWidth); height = S(height);
-        for (var y = 0; y < height; y++)
-        {
-            var t = y / (float)height;
-            var width = Mathf.Max(1, Mathf.RoundToInt(halfWidth * (1f - t)));
-            for (var x = -width; x <= width; x++)
-            {
-                var px = cx + x;
-                var py = baseY + y;
-                if (px >= 0 && px < Size && py >= 0 && py < Size)
-                    pixels[py * Size + px] = color;
-            }
-        }
+        for (var x = Mathf.Max(0, x0); x < Mathf.Min(Size, x1); x++) pixels[y * Size + x] = color;
     }
 
     private static void Outline(Color[] pixels)
