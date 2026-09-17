@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using BepInEx.Configuration;
 using HarmonyLib;
 using Magenheim.Core.Underworld;
@@ -15,6 +17,7 @@ internal static class SporeCommunionRuntime
     internal const string DeepBoonId = "spore_communion";
     private const float DefaultPoisonDamageReduction = 0.35f;
     private const float DefaultFungalProvisionEfficiencyBonus = 0.20f;
+    private static readonly FieldInfo? PlayerFoodsField = AccessTools.Field(typeof(Player), "m_foods");
     private static ConfigEntry<float>? _poisonDamageReduction;
     private static ConfigEntry<float>? _fungalProvisionEfficiencyBonus;
 
@@ -45,8 +48,7 @@ internal static class SporeCommunionRuntime
     /// <summary>
     /// Narrow Runtime adapter for provision consumption. It deliberately resolves only
     /// the consumed item's prefab identity and delegates eligibility/bounds to Core.
-    /// No ItemDrop.SharedData or prefab state is mutated here, so a future EatFood hook
-    /// can apply the returned multiplier to the player's consumed-food instance only.
+    /// No ItemDrop.SharedData or prefab state is mutated here.
     /// </summary>
     internal static float ProvisionEfficiencyMultiplier(Player player, ItemDrop.ItemData? item)
     {
@@ -55,6 +57,29 @@ internal static class SporeCommunionRuntime
         var prefabName = item.m_dropPrefab != null ? item.m_dropPrefab.name : null;
         var configured = _fungalProvisionEfficiencyBonus?.Value ?? DefaultFungalProvisionEfficiencyBonus;
         return UnderworldFungalProvisionCatalog.EfficiencyMultiplier(prefabName, configured);
+    }
+
+    /// <summary>
+    /// Applies Spore Communion only after Valheim has successfully created/replaced the
+    /// consuming player's Food entry. The entry is player-owned state; shared item data
+    /// and prefabs remain untouched, preventing cross-player amplification.
+    /// </summary>
+    internal static void ApplyConsumedProvision(Player player, ItemDrop.ItemData? consumedItem)
+    {
+        var multiplier = ProvisionEfficiencyMultiplier(player, consumedItem);
+        if (multiplier <= 1f || consumedItem is null || PlayerFoodsField is null) return;
+        if (PlayerFoodsField.GetValue(player) is not List<Food> foods) return;
+
+        for (var index = foods.Count - 1; index >= 0; index--)
+        {
+            var food = foods[index];
+            if (food is null || !ReferenceEquals(food.m_item, consumedItem)) continue;
+
+            food.m_health *= multiplier;
+            food.m_stamina *= multiplier;
+            food.m_eitr *= multiplier;
+            return;
+        }
     }
 }
 
@@ -65,5 +90,15 @@ internal static class SporeCommunionDamagePatch
     {
         if (__instance is Player player)
             SporeCommunionRuntime.MitigatePoison(player, hit);
+    }
+}
+
+[HarmonyPatch(typeof(Player), "EatFood", new Type[] { typeof(ItemDrop.ItemData) })]
+internal static class SporeCommunionFoodPatch
+{
+    private static void Postfix(Player __instance, ItemDrop.ItemData item, bool __result)
+    {
+        if (__result)
+            SporeCommunionRuntime.ApplyConsumedProvision(__instance, item);
     }
 }
