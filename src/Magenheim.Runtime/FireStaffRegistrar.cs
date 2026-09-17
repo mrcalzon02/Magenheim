@@ -4,6 +4,7 @@ using BepInEx.Logging;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
+using Magenheim.Core;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
@@ -110,6 +111,18 @@ internal sealed class FireStaffRegistrar : IDisposable
         shared.m_dlc = string.Empty;
         shared.m_damages = new HitData.DamageTypes { m_fire = definition.FireDamage };
         shared.m_damagesPerLevel = new HitData.DamageTypes();
+        shared.m_icons = new[] { EarthAssets.Icon(definition.AssetName) };
+
+        // StaffIceShards spends Eitr rather than durability, so a clone inherits none and
+        // never degrades. The Eitr economy was removed from Magenheim staves, so durability
+        // is what keeps them in the ordinary wear-and-repair loop with every other weapon.
+        if (!CrystalStaffDurability.TryResolveTier(definition.PrefabName, out var staffTier))
+            throw new InvalidOperationException($"Staff identity '{definition.PrefabName}' does not resolve a canonical crystal tier.");
+        shared.m_useDurability = true;
+        shared.m_maxDurability = CrystalStaffDurability.ForTier(staffTier);
+        shared.m_durabilityPerLevel = 0f;
+        shared.m_durabilityDrain = 0f;
+        shared.m_useDurabilityDrain = 0f;
 
         var attack = shared.m_attack;
         attack.m_attackProjectile = payloads.Resolve(definition.Payload);
@@ -151,22 +164,22 @@ internal sealed class FireStaffRegistrar : IDisposable
     private static IReadOnlyList<FireStaffDefinition> Definitions() => new[]
     {
         new FireStaffDefinition(
-            "Magenheim_Staff_Fire_Simple", "Simple Staff of Fire",
+            "Magenheim_Staff_Fire_Simple", "staff-fire-simple", "Simple Staff of Fire",
             "Ember Dart: fires one compact Magenheim ember with no secondary blast. It is the clean stamina-only introduction to direct Fire crystal damage.",
             1, 24f, 20f, 1f, 28f, 1.5f, 1, 1, 0f, PayloadKind.Ember,
             new StaffRequirement("FineWood", 10), new StaffRequirement("Bronze", 2), new StaffRequirement("Magenheim_Crystal_Fire_Simple", 1)),
         new FireStaffDefinition(
-            "Magenheim_Staff_Fire_Crystal", "Crystal Staff of Fire",
+            "Magenheim_Staff_Fire_Crystal", "staff-fire-crystal", "Crystal Staff of Fire",
             "Firebolt: drives a dense bolt into one target and blooms into a compact 1.8-meter fireburst on impact, rewarding accurate shots against clustered enemies.",
             2, 34f, 36f, 1f, 38f, .8f, 1, 1, 0f, PayloadKind.Firebolt,
             new StaffRequirement("ElderBark", 10), new StaffRequirement("Iron", 2), new StaffRequirement("Magenheim_Crystal_Fire_Crystal", 1)),
         new FireStaffDefinition(
-            "Magenheim_Staff_Fire_Advanced", "Advanced Staff of Fire",
+            "Magenheim_Staff_Fire_Advanced", "staff-fire-advanced", "Advanced Staff of Fire",
             "Flameburst: throws three unstable bolts across a fan. Every impact leaves three seconds of burning ground, so the spell pressures movement rather than ending at the initial hit.",
             3, 32f, 14f, .78f, 31f, 7f, 3, 1, 0f, PayloadKind.Flameburst,
             new StaffRequirement("FineWood", 12), new StaffRequirement("Silver", 3), new StaffRequirement("BlackMetal", 2), new StaffRequirement("Magenheim_Crystal_Fire_Advanced", 1)),
         new FireStaffDefinition(
-            "Magenheim_Staff_Fire_Master", "Master Staff of Fire",
+            "Magenheim_Staff_Fire_Master", "staff-fire-master", "Master Staff of Fire",
             "Meteorfall: releases three waves of three meteoric bolts. Every impact leaves a wide four-and-a-half-second burn zone, turning the barrage into persistent incendiary terrain instead of nine disconnected fireballs.",
             4, 48f, 9f, .70f, 34f, 9f, 3, 3, .18f, PayloadKind.Meteor,
             new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("BlackMetal", 4), new StaffRequirement("Magenheim_Crystal_Fire_Master", 1)),
@@ -213,18 +226,19 @@ internal sealed class FireStaffRegistrar : IDisposable
     private sealed class FireStaffDefinition
     {
         internal FireStaffDefinition(
-            string prefabName, string displayName, string description, int minimumStationLevel,
+            string prefabName, string assetName, string displayName, string description, int minimumStationLevel,
             float staminaCost, float fireDamage, float damageMultiplier,
             float projectileVelocity, float projectileAccuracy, int projectiles, int bursts,
             float burstInterval, PayloadKind payload, params StaffRequirement[] requirements)
         {
-            PrefabName = prefabName; DisplayName = displayName; Description = description; MinimumStationLevel = minimumStationLevel;
+            PrefabName = prefabName; AssetName = assetName; DisplayName = displayName; Description = description; MinimumStationLevel = minimumStationLevel;
             StaminaCost = staminaCost; FireDamage = fireDamage; DamageMultiplier = damageMultiplier;
             ProjectileVelocity = projectileVelocity; ProjectileAccuracy = projectileAccuracy; Projectiles = projectiles;
             Bursts = bursts; BurstInterval = burstInterval; Payload = payload; Requirements = requirements;
         }
 
         internal string PrefabName { get; }
+        internal string AssetName { get; }
         internal string DisplayName { get; }
         internal string Description { get; }
         internal int MinimumStationLevel { get; }

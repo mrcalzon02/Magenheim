@@ -1,5 +1,25 @@
 # Magenheim Changelog
 
+## 0.0.54 - Staff registration, icons and durability
+
+- Repaired eight compile errors that were sitting unbuilt on `main`, including a seventh
+  netstandard2.0/net462 BCL-availability defect of the already-recurring class.
+- Fixed the missing Earth staff icon. `EarthStaffRegistrar` requested an icon that has
+  never existed in repository history; because all eight staff registrars share one
+  multicast registration event, that exception also stopped the Venom, Radiance, Seidr and
+  Spirit families from registering at all. This is the cause of the reported
+  "Crystal Staff of Venom does not attack" — the registrar that builds its projectile
+  payloads never ran.
+- Replaced three committed staff icons that carried corrupt PNG chunk data.
+- Re-rendered all 32 staff icons from the same Blender sources the runtime meshes are
+  exported from, so an icon can no longer drift from its model. Fire and Storm previously
+  showed the vanilla donor icon; Radiance, Seidr and Spirit showed a tinted generic crystal.
+- Staves now use durability and degrade with use. They clone a vanilla magic staff that
+  spends Eitr instead, so they previously never wore out. Simple 150, +75 per tier.
+- Added `tools/verify-icon-assets.py` as a build gate over icon integrity, staff icon
+  coverage and literal icon references; added `.gitattributes` declaring binary assets.
+- Live acceptance remains pending: the game has not been launched against this build.
+
 ## 0.0.51 - Model quality revision
 
 - Revised all 276 existing saved models and added five missing effect/world-center assets.

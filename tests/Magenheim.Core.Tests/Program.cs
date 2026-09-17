@@ -21,6 +21,7 @@ internal static class Program
         _assertions += RefinementTransactionTests.Run();
         _assertions += MeshGeometryTests.Run();
         _assertions += SocketDescriptionTests.Run();
+        _assertions += CrystalStaffDurabilityTests.Run();
         Console.WriteLine($"Magenheim.Core.Tests: {_assertions} assertions passed (plus separately reported module suites).");
     }
     private static void RefinementAndAreaBoundaries()

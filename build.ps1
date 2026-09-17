@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [string]$ProfileRoot = (Join-Path $env:APPDATA 'r2modmanPlus-local/Valheim/profiles/Central Fuckery'),
     [string]$GameRoot = (Split-Path $PSScriptRoot -Parent),
@@ -38,6 +38,8 @@ try {
     & "$PSScriptRoot/tests/LauncherMetadata.Tests.ps1"
     & python "$PSScriptRoot/tools/verify-model-assets.py"
     if ($LASTEXITCODE -ne 0) { throw 'Model asset validation failed.' }
+    & python "$PSScriptRoot/tools/verify-icon-assets.py"
+    if ($LASTEXITCODE -ne 0) { throw 'Icon asset validation failed.' }
     & $DotNet run --project tools/ModelAssetTests -c Release @restoreOptions
     if ($LASTEXITCODE -ne 0) { throw 'Model importer tests failed.' }
     & $DotNet run --project tests/Magenheim.Core.Tests -c Release @restoreOptions

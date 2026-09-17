@@ -1,0 +1,8 @@
+# Three committed staff icons shipped with corrupt IDAT chunks. Declaring the binary
+# asset types keeps Git from ever applying text or EOL conversion to them, and keeps
+# diffs of these files readable as "binary" instead of mangled text.
+*.png   binary
+*.blend binary
+*.glb   binary
+*.zip   binary
+*.dll   binary

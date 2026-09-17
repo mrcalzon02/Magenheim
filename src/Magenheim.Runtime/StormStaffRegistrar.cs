@@ -4,6 +4,7 @@ using BepInEx.Logging;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
+using Magenheim.Core;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
@@ -104,6 +105,18 @@ internal sealed class StormStaffRegistrar : IDisposable
         shared.m_dlc = string.Empty;
         shared.m_damages = new HitData.DamageTypes { m_lightning = definition.LightningDamage };
         shared.m_damagesPerLevel = new HitData.DamageTypes();
+        shared.m_icons = new[] { EarthAssets.Icon(definition.AssetName) };
+
+        // StaffIceShards spends Eitr rather than durability, so a clone inherits none and
+        // never degrades. The Eitr economy was removed from Magenheim staves, so durability
+        // is what keeps them in the ordinary wear-and-repair loop with every other weapon.
+        if (!CrystalStaffDurability.TryResolveTier(definition.PrefabName, out var staffTier))
+            throw new InvalidOperationException($"Staff identity '{definition.PrefabName}' does not resolve a canonical crystal tier.");
+        shared.m_useDurability = true;
+        shared.m_maxDurability = CrystalStaffDurability.ForTier(staffTier);
+        shared.m_durabilityPerLevel = 0f;
+        shared.m_durabilityDrain = 0f;
+        shared.m_useDurabilityDrain = 0f;
 
         var attack = shared.m_attack;
         attack.m_attackProjectile = payloads.Resolve(definition.Payload);
@@ -150,6 +163,7 @@ internal sealed class StormStaffRegistrar : IDisposable
     {
         new StormStaffDefinition(
             "Magenheim_Staff_Storm_Simple",
+            "staff-storm-simple",
             "Simple Staff of Storm",
             "Static Snap: discharges one short electrical packet. Its direct lightning damage is modest, but the violent impulse is built to interrupt and knock enemies away without spending Eitr.",
             1, 20f, 18f, 1f, 1.55f, 1.20f, 34f, 2f, 1, 1, 0f, PayloadKind.Static,
@@ -157,6 +171,7 @@ internal sealed class StormStaffRegistrar : IDisposable
 
         new StormStaffDefinition(
             "Magenheim_Staff_Storm_Crystal",
+            "staff-storm-crystal",
             "Crystal Staff of Storm",
             "Thunderbolt: compresses the discharge into one nearly straight, high-velocity bolt with heavy force and stagger. It remains a deliberate single-target strike rather than a spread spell.",
             2, 30f, 42f, 1f, 2.10f, 1.55f, 58f, .35f, 1, 1, 0f, PayloadKind.Thunderbolt,
@@ -164,6 +179,7 @@ internal sealed class StormStaffRegistrar : IDisposable
 
         new StormStaffDefinition(
             "Magenheim_Staff_Storm_Advanced",
+            "staff-storm-advanced",
             "Advanced Staff of Storm",
             "Arc Chain: fires two successive electrical leaders. Every impact erupts into a 4.5-meter secondary discharge, so the struck target becomes the origin of real lightning pressure against nearby clustered enemies.",
             3, 32f, 16f, .85f, 1.05f, 1.00f, 44f, 2.5f, 1, 2, .13f, PayloadKind.Arc,
@@ -171,6 +187,7 @@ internal sealed class StormStaffRegistrar : IDisposable
 
         new StormStaffDefinition(
             "Magenheim_Staff_Storm_Master",
+            "staff-storm-master",
             "Master Staff of Storm",
             "Thunderhead: throws three branches through three rapid waves. Each impact seeds a short two-pulse lightning burst around itself, creating overlapping electrical pressure and knockback across a broad front.",
             4, 50f, 10f, .60f, 1.25f, 1.10f, 40f, 13f, 3, 3, .13f, PayloadKind.Thunderhead,
@@ -227,6 +244,7 @@ internal sealed class StormStaffRegistrar : IDisposable
     {
         internal StormStaffDefinition(
             string prefabName,
+            string assetName,
             string displayName,
             string description,
             int minimumStationLevel,
@@ -244,6 +262,7 @@ internal sealed class StormStaffRegistrar : IDisposable
             params StaffRequirement[] requirements)
         {
             PrefabName = prefabName;
+            AssetName = assetName;
             DisplayName = displayName;
             Description = description;
             MinimumStationLevel = minimumStationLevel;
@@ -262,6 +281,7 @@ internal sealed class StormStaffRegistrar : IDisposable
         }
 
         internal string PrefabName { get; }
+        internal string AssetName { get; }
         internal string DisplayName { get; }
         internal string Description { get; }
         internal int MinimumStationLevel { get; }

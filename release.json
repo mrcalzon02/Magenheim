@@ -1,4 +1,4 @@
 {
-  "version": "0.0.53",
-  "description": "0.0.53: Repairs the crystal buildable textures broken in 0.0.52; retro-fitted maps are now fine grain that island UVs cannot break into patchwork. Seven further live-play defects are recorded as backlog P0.0. Testing build."
+  "version": "0.0.54",
+  "description": "0.0.54: Fixes eight compile errors on main, and a missing Earth staff icon whose exception also stopped the Venom, Radiance, Seidr and Spirit staves registering. All 32 staff icons re-rendered from their models; staves now wear. Testing build."
 }

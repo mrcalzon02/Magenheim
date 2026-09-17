@@ -1,4 +1,55 @@
-# Active priority — asset fidelity and live acceptance (from 2026-09-16)
+# Current source candidate — 0.0.54 / schema 5 (2026-09-17)
+
+`main` and `origin/main` were both at `5aa8ab0` at session start, with no divergence to
+reconcile: the remote work was already present locally. 67 commits had landed since this
+document was last written and the source version had moved 0.0.49 -> 0.0.53, so the
+sections below this one describe a superseded state and are retained as history.
+
+**`main` did not compile.** The first action of the session was `build.ps1 -Offline`,
+which P0.1 requires before push. Eight compile errors were on `main`, none ever built:
+`Math.Clamp` in a netstandard2.0 project, `string.Contains(string, StringComparison)` on
+net462, two CS8604 nullable-flow errors, a member that does not exist on
+`UnderworldWorldIdentity`, and a wrong Jotunn `CustomPrefab`/`AddPrefab` usage. Each was
+repaired against the idiom already established elsewhere in the codebase. Committed as
+`72b0652`.
+
+**A missing icon was silently deleting four staff families.** `EarthStaffRegistrar`
+requested `staff-earth-*.icon.png`, which has never existed in repository history, and
+`EarthAssets.Texture` resolves icons through `File.ReadAllBytes`. All eight staff
+registrars subscribe to `PrefabManager.OnVanillaPrefabsAvailable`, a multicast delegate
+whose invocation stops at the first handler to throw. Bootstrap order is Fire, Frost,
+Storm, **Earth**, Venom, Radiance, Seidr, Spirit, so the missing Earth icon also prevented
+Venom, Radiance, Seidr and Spirit from registering — 20 items, no log line naming them.
+That is the cause of the P0.0 live report "Crystal Staff of Venom does not attack": the
+registrar that builds its projectile payloads never ran. Three further committed staff
+icons (`staff-frost-simple`, `staff-venom-advanced`, `staff-venom-master`) carry bad IDAT
+CRCs or truncated chunks in the committed blobs; Frost is second in bootstrap order, so it
+would have thrown before Earth was even reached.
+
+0.0.54 re-renders all 32 staff icons from the same Blender sources the runtime meshes are
+exported from, wires all eight families to their own icons, adds staff durability as a
+pure Core rule with fail-closed tier resolution, adds `tools/verify-icon-assets.py` as a
+permanent build gate over icon integrity and coverage, and adds the `.gitattributes` the
+repository never had. The gate is proven to fail on the pre-repair tree with exactly the
+three real defects and nothing else.
+
+37,120 deterministic assertions pass; runtime builds with zero warnings/errors; 281 model
+asset sets, 25 Harmony patch targets and 13 literal plus 42 helper-wrapped reflection
+bindings verify against installed assemblies.
+
+**Nothing here is runtime-accepted.** The game has not been launched against this build.
+In particular it is not established that the five previously-dead staff families now
+register, that the Venom staff attacks, that the new icons read at inventory scale, or
+that staves lose durability per swing. Evidence:
+`docs/validation/2026-09-17-staff-icon-registration-chain-repair.md`.
+
+The controlling priority remains `BACKLOG.md` **P0.0/P0.1** and `IMPLEMENTATION_PLAN.md`
+**section 14**: one disposable-world acceptance session, which should now specifically
+confirm the five staff families that could not previously register.
+
+---
+
+# Historical — asset fidelity and live acceptance (from 2026-09-16)
 
 The controlling priority is now `BACKLOG.md` **P0.1** and `IMPLEMENTATION_PLAN.md`
 **section 14**, which outrank every other open track including the Underworld program.

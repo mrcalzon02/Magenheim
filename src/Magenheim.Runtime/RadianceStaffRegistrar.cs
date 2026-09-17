@@ -4,6 +4,7 @@ using BepInEx.Logging;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
+using Magenheim.Core;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
@@ -78,7 +79,18 @@ internal sealed class RadianceStaffRegistrar : IDisposable
         shared.m_dlc = string.Empty;
         shared.m_damages = new HitData.DamageTypes { m_pierce = definition.PierceDamage, m_spirit = definition.SpiritDamage };
         shared.m_damagesPerLevel = new HitData.DamageTypes();
-        shared.m_icons = new[] { EarthAssets.Icon("crystal", definition.AssetName, definition.Tint) };
+        shared.m_icons = new[] { EarthAssets.Icon(definition.AssetName) };
+
+        // StaffIceShards spends Eitr rather than durability, so a clone inherits none and
+        // never degrades. The Eitr economy was removed from Magenheim staves, so durability
+        // is what keeps them in the ordinary wear-and-repair loop with every other weapon.
+        if (!CrystalStaffDurability.TryResolveTier(definition.PrefabName, out var staffTier))
+            throw new InvalidOperationException($"Staff identity '{definition.PrefabName}' does not resolve a canonical crystal tier.");
+        shared.m_useDurability = true;
+        shared.m_maxDurability = CrystalStaffDurability.ForTier(staffTier);
+        shared.m_durabilityPerLevel = 0f;
+        shared.m_durabilityDrain = 0f;
+        shared.m_useDurabilityDrain = 0f;
 
         var attack = shared.m_attack;
         attack.m_attackProjectile = payloads.Resolve(definition.Payload);
