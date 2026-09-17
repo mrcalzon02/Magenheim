@@ -27,9 +27,10 @@ internal sealed class UnderworldWorldSwitchDispatchRuntime : MonoBehaviour
     {
         if(Time.unscaledTime<_nextAt)return;_nextAt=Time.unscaledTime+0.5f;
         if(_services is null||ZNet.instance is null||!ZNet.instance.IsServer())return;
+        if(!_services.WorldSwitchDriver.HasPendingPhysicalSwitch)return;
         if(_loader is null)
         {
-            ReportOnce("Underworld physical handoff is prepared-capable but no Valheim save loader is installed; live test must enter the manifest-backed derived save directly.");
+            ReportOnce($"Underworld physical handoff to '{_services.WorldSwitchDriver.PendingTargetSaveName}' is durably pending but no Valheim save loader is installed.");
             return;
         }
         if(_services.WorldSwitchDriver.TryDispatchPending(_loader,out var diagnostic))ReportOnce(diagnostic);
