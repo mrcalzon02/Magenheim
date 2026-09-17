@@ -88,8 +88,9 @@ internal static class SporeCommunionDamagePatch
 {
     private static void Prefix(Character __instance, HitData hit)
     {
-        if (__instance is Player player)
-            SporeCommunionRuntime.MitigatePoison(player, hit);
+        if (__instance is not Player player) return;
+        SporeCommunionRuntime.MitigatePoison(player, hit);
+        FurnaceBloodRuntime.MitigateFire(player, hit);
     }
 }
 
