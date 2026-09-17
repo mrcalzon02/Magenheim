@@ -130,6 +130,8 @@ internal static class FurnitureIcons
                 throw new InvalidOperationException($"Unknown Magenheim furniture icon '{modelId}'.");
         }
 
+        AddMaterialReadability(pixels, modelId);
+
         var texture = new Texture2D(Size, Size, TextureFormat.RGBA32, false)
         {
             name = "magenheim." + modelId + ".icon.texture",
@@ -139,7 +141,7 @@ internal static class FurnitureIcons
         texture.SetPixels(pixels);
         texture.Apply(false, false);
 
-        var sprite = Sprite.Create(texture, new Rect(0f, 0f, Size, Size), new Vector2(.5f, .5f), 256f);
+        var sprite = Sprite.Create(texture, new Rect(0f, 0f, Size, Size), new Vector2(.5f, .5f), Size);
         sprite.name = "magenheim." + modelId + ".icon";
         Cache.Add(modelId, sprite);
         return sprite;
@@ -159,6 +161,35 @@ internal static class FurnitureIcons
         FurnitureVisuals.CrystalThrone => new Color(.82f, .68f, .31f, 1f),
         _ => new Color(.50f, .82f, .92f, 1f),
     };
+
+    // Vanilla Valheim icons stay readable by separating material masses with broad value changes,
+    // not by relying on tiny decorative noise. Add restrained edge lighting/shadow to our opaque
+    // geometry after composition so wood, stone and metal forms survive Hammer-menu downsampling.
+    private static void AddMaterialReadability(Color[] pixels, string modelId)
+    {
+        var source = (Color[])pixels.Clone();
+        var light = modelId.Contains("crystal", StringComparison.OrdinalIgnoreCase)
+            ? new Color(.72f, .84f, .88f, .18f)
+            : new Color(.78f, .72f, .58f, .15f);
+        var shadow = new Color(.015f, .018f, .022f, .32f);
+        var radius = Math.Max(1, Size / DesignSize);
+
+        for (var y = radius; y < Size - radius; y++)
+        for (var x = radius; x < Size - radius; x++)
+        {
+            var index = y * Size + x;
+            if (source[index].a < .35f) continue;
+
+            // Upper/left exposed edges catch light; lower/right edges receive a dark contact rim.
+            // This is deliberately broad enough to survive bilinear reduction to vanilla UI scale.
+            var upperOpen = source[(y + radius) * Size + x].a < .20f;
+            var leftOpen = source[y * Size + x - radius].a < .20f;
+            var lowerOpen = source[(y - radius) * Size + x].a < .20f;
+            var rightOpen = source[y * Size + x + radius].a < .20f;
+            if (upperOpen || leftOpen) Blend(pixels, x, y, light);
+            if (lowerOpen || rightOpen) Blend(pixels, x, y, shadow);
+        }
+    }
 
     private static void DrawCrystal(Color[] pixels, int cx, int cy, int radius, Color body, Color highlight)
     {
