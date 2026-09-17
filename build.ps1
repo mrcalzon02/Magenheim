@@ -40,6 +40,11 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Model asset validation failed.' }
     & python "$PSScriptRoot/tools/verify-icon-assets.py"
     if ($LASTEXITCODE -ne 0) { throw 'Icon asset validation failed.' }
+    # Creature source fidelity gates require Blender rather than Python's standard runtime.
+    # Keep them additive: they validate Magenheim-owned source assets without mutating vanilla
+    # or foreign registrations. The wrapper uses --factory-startup and detects script tracebacks.
+    & "$PSScriptRoot/tools/blender.ps1" verify-stone-guardian
+    if ($LASTEXITCODE -ne 0) { throw 'Stone Guardian source validation failed.' }
     & python "$PSScriptRoot/tools/verify-model-scale.py"
     if ($LASTEXITCODE -ne 0) { throw 'Model scale validation failed.' }
     & python "$PSScriptRoot/tools/verify-weapon-materials.py"
