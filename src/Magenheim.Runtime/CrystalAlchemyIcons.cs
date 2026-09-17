@@ -48,7 +48,7 @@ internal static class CrystalAlchemyIcons
         texture.SetPixels(pixels);
         texture.Apply(false, false);
 
-        var sprite = Sprite.Create(texture, new Rect(0f, 0f, Size, Size), new Vector2(.5f, .5f), 128f);
+        var sprite = Sprite.Create(texture, new Rect(0f, 0f, Size, Size), new Vector2(.5f, .5f), Size);
         sprite.name = "magenheim." + id + ".icon";
         Cache.Add(id, sprite);
         return sprite;
