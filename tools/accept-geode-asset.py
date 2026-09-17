@@ -15,11 +15,37 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
-BLENDER = shutil.which("blender")
+def _resolve_blender():
+    """Blender is rarely on PATH on a Windows workstation, and requiring it there meant this
+    acceptance pass could never run: the Blender source repair existed while the checked-in
+    runtime payload stayed broken, which is exactly the gap this command is supposed to close.
+    Honour MAGENHEIM_BLENDER first, then PATH, then the standard install locations."""
+    import os
+
+    override = os.environ.get("MAGENHEIM_BLENDER")
+    if override and Path(override).is_file():
+        return override
+
+    found = shutil.which("blender")
+    if found:
+        return found
+
+    for root in (Path(r"C:/Program Files/Blender Foundation"),
+                 Path(r"C:/Program Files (x86)/Blender Foundation")):
+        if not root.is_dir():
+            continue
+        # Newest install wins, so a machine with several versions uses the current one.
+        for candidate in sorted(root.glob("Blender */blender.exe"), reverse=True):
+            return str(candidate)
+    return None
+
+
+BLENDER = _resolve_blender()
 
 if BLENDER is None:
     raise SystemExit(
-        "GEODE ACCEPTANCE BLOCKED: Blender is not on PATH. Install/configure Blender, then rerun "
+        "GEODE ACCEPTANCE BLOCKED: Blender was not found on PATH, in MAGENHEIM_BLENDER, or in a "
+        "standard install location. Set MAGENHEIM_BLENDER to blender.exe and rerun "
         "`python tools/accept-geode-asset.py`; no source or runtime asset was changed."
     )
 
@@ -37,7 +63,7 @@ run(
 )
 run(
     "exporting geode-sample runtime payload",
-    [BLENDER, "--background", "--python", str(TOOLS / "export-model-assets.py"), "--", "geode-sample"],
+    [BLENDER, "--background", "--factory-startup", "--python", str(TOOLS / "export-model-assets.py"), "--", "geode-sample"],
 )
 run("verifying backing/core topology", [sys.executable, str(TOOLS / "verify-geode-topology.py")])
 run("verifying visible shell topology", [sys.executable, str(TOOLS / "verify-geode-shell-topology.py")])

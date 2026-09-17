@@ -52,6 +52,10 @@ def noise(d):
 
 
 cut = normalise(CUT_DIRECTION)
+# Width of the triplanar projection in radii. Slightly over 2 keeps the whole shell inside
+# the 0..1 UV square with a margin, so no face samples outside the authored map.
+UV_PROJECTION_SPAN = 2.2
+
 old = bpy.data.objects.get("GeodeShell")
 if old is None or old.type != "MESH":
     raise RuntimeError("Missing GeodeShell; regenerate geode source first")
@@ -84,6 +88,30 @@ bmesh.ops.delete(bm, geom=remove, context="FACES")
 
 # Recalculate normals from the now-final topology.
 bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+
+# The shell needs a UV map or export refuses it, and without an export the repaired source
+# never reaches the runtime payload -- which is why the checked-in geode kept failing its
+# topology gates while this rebuild existed.
+#
+# The unwrap is a deliberate triplanar box projection rather than smart_project. A smart
+# projection packs many small islands, and a map sampled across island boundaries reads as
+# patchwork; that is the defect reported from play at 0.0.52. Projecting each face along the
+# dominant axis of its own normal keeps texel density even and keeps neighbouring faces
+# continuous wherever they share a dominant axis, which over a near-spherical rock skin is
+# almost everywhere.
+uv_layer = bm.loops.layers.uv.new("UVMap")
+for face in bm.faces:
+    normal = face.normal
+    axis = max(range(3), key=lambda i: abs(normal[i]))
+    # Pick the two axes that are not the projection axis, keeping a right-handed pairing.
+    u_axis, v_axis = (1, 2) if axis == 0 else (0, 2) if axis == 1 else (0, 1)
+    for loop in face.loops:
+        position = loop.vert.co
+        loop[uv_layer].uv = (
+            0.5 + position[u_axis] / (UV_PROJECTION_SPAN * RADIUS),
+            0.5 + position[v_axis] / (UV_PROJECTION_SPAN * RADIUS),
+        )
+
 bm.to_mesh(mesh)
 bm.free()
 mesh.update()

@@ -44,6 +44,19 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Model scale validation failed.' }
     & python "$PSScriptRoot/tools/verify-weapon-materials.py"
     if ($LASTEXITCODE -ne 0) { throw 'Weapon material validation failed.' }
+    # These existed but were never wired in, so the defects they detect stayed shipped: the
+    # geode carried literal holes and five held assets pointed the wrong way round.
+    foreach ($modelGate in @(
+        'verify-model-geometry',
+        'verify-model-surface-continuity',
+        'verify-held-model-orientation',
+        'verify-held-model-grip-direction',
+        'verify-geode-topology',
+        'verify-geode-shell-topology',
+        'verify-deep-fracture-caverns')) {
+        & python "$PSScriptRoot/tools/$modelGate.py"
+        if ($LASTEXITCODE -ne 0) { throw "Model validation failed: $modelGate" }
+    }
     & $DotNet run --project tools/ModelAssetTests -c Release @restoreOptions
     if ($LASTEXITCODE -ne 0) { throw 'Model importer tests failed.' }
     & $DotNet run --project tests/Magenheim.Core.Tests -c Release @restoreOptions

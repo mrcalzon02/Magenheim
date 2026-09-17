@@ -751,9 +751,9 @@
     "source": "source/crystal-weapon-sword.blend",
     "glb": "glb/crystal-weapon-sword.glb",
     "runtime": "runtime/crystal-weapon-sword.model.json",
-    "source_sha256": "c60e2b079e59fb8135572cb92920a19e9712b348598c3ba2491b706bf47872b2",
-    "runtime_sha256": "7e5f8ebd6dc0011bf167c5f0fdd686400128157d463e71b53fb5f2579a43d311",
-    "glb_sha256": "aeba050e49de198db5ec829d4f6a2dbc96ae6b7510b0190f723832d63739e623"
+    "source_sha256": "b11b970aea2c5c2e9f53348793d91ab9786c99abdc303404bbf948926649dba1",
+    "runtime_sha256": "948da91840697557775787817aa0cf11f97b27aaabef596b6e2b1ea84e7d2cdd",
+    "glb_sha256": "4ecb04fbd67d13f1048e82307f40c519261dbf894da20d786fc28ac0082d4141"
   },
   {
     "id": "crystalline-ice-box",
@@ -2750,14 +2750,14 @@
   {
     "id": "geode-sample",
     "parts": 5,
-    "triangles": 3593,
+    "triangles": 3892,
     "materials": 5,
     "source": "source/geode-sample.blend",
     "glb": "glb/geode-sample.glb",
     "runtime": "runtime/geode-sample.model.json",
-    "source_sha256": "ac7a7544656c387d8526e336ba5e56d29811fe4e01e65566d0ede863ead5e8f1",
-    "runtime_sha256": "b4713d5b206b727c88491659fafbbafac592b2680cb10e376d19659319df5445",
-    "glb_sha256": "582c0875b1df921159453cc86e9589a9af77f9e17d9507bb43fe01c493b6c1c8"
+    "source_sha256": "e07717c7e9e3b9b5ae4a6fc19531928a6b56819d01544dc6b227481b5d851014",
+    "runtime_sha256": "8d1108a00bf46b78dfdb3b089c6e374a18581f2b7d2f5dbe26a371f5d641b399",
+    "glb_sha256": "ce7543d805462cb92c3eb969c96e2accafa3e1c63daba25ccbca38d43183cee5"
   },
   {
     "id": "Magenheim_Staff_Earth_Advanced",
@@ -2827,9 +2827,9 @@
     "source": "source/Magenheim_Staff_Fire_Crystal.blend",
     "glb": "glb/Magenheim_Staff_Fire_Crystal.glb",
     "runtime": "runtime/Magenheim_Staff_Fire_Crystal.model.json",
-    "source_sha256": "2965272cc1d6d6605b70ad9fb4d8bc8aec3a36bdebb4ed6d4d371c07b9136280",
-    "runtime_sha256": "019ff4b9f917f20275d4861a3fea312fd35c0e36d27f964d86977b62d9451da1",
-    "glb_sha256": "0817d66f0c537441b0e5afaeb95bffd1d5d0f15df823df36b8fdd47e42803eb1"
+    "source_sha256": "88946641970eca0c0e8ea22f62adb71fc5a62aa2c6e23d4d30db0ee4930c143b",
+    "runtime_sha256": "554481028d83a72d4921a34bb54e0314c7f0d58f2745d1743062bcb0a04d2d58",
+    "glb_sha256": "3f568047af60915a4436a7063e589b32456307d046a75e9527ba62c471ab2bb4"
   },
   {
     "id": "Magenheim_Staff_Fire_Master",
@@ -2875,9 +2875,9 @@
     "source": "source/Magenheim_Staff_Storm_Crystal.blend",
     "glb": "glb/Magenheim_Staff_Storm_Crystal.glb",
     "runtime": "runtime/Magenheim_Staff_Storm_Crystal.model.json",
-    "source_sha256": "8b18415e0ae70b0d07154e7400736c82e14a23919366f8198aca3be7d2fd171e",
-    "runtime_sha256": "e3949a5f61026e7f69fe4d42cec6d03a2514a0bd4213cbacc509c548ca2d1fa2",
-    "glb_sha256": "b970b3f8783b6962240e1008464e5ae4ed11240266bccdd263a7b8a4efde03d2"
+    "source_sha256": "b62df0d589918238f472548cd6dba9c187c81299475af3e3fc44158d6fcca662",
+    "runtime_sha256": "7f22e08cfaacdc19f8198f81a4ca157bf49f0809a795a2b0ea0016e3613e7d42",
+    "glb_sha256": "5bac6042ade9b41193add6b0dfbc9ae989ed3dd41c2ddbfa329fcf1bb118b48c"
   },
   {
     "id": "Magenheim_Staff_Storm_Master",
@@ -3175,9 +3175,9 @@
     "source": "source/staff-radiance-crystal.blend",
     "glb": "glb/staff-radiance-crystal.glb",
     "runtime": "runtime/staff-radiance-crystal.model.json",
-    "source_sha256": "df8ea17f3904e1cc43b8dc2cb8068761420c468d2fb527902889619ac92217c2",
-    "runtime_sha256": "960130e34550b064d7f491f0d1e58b6b34785f6765fe54357ec1960b313bc120",
-    "glb_sha256": "37133459d3473bc56cc1e4f4a1d15ea839bcea17d26f53cc0e9f7f68785372a9"
+    "source_sha256": "e38df1026b4e4e1b292ab48ec51d6e1662eb4ecd6186911620b478cec85b7726",
+    "runtime_sha256": "761ae040e1f3feca306dcf942d3eb0e3c8d57f5a8856acfe64070e93e5ae485b",
+    "glb_sha256": "15031a734d9ec21c45e9339f44cc0f9857a03db287b9398f0502c2b6805030cc"
   },
   {
     "id": "staff-radiance-master",
@@ -3319,9 +3319,9 @@
     "source": "source/staff-venom-crystal.blend",
     "glb": "glb/staff-venom-crystal.glb",
     "runtime": "runtime/staff-venom-crystal.model.json",
-    "source_sha256": "ae14f92adf74c92ee406fa83fbf2a15fa2013c5426991e197f31bfe024aa40f6",
-    "runtime_sha256": "88a34029540ccb862fe9b58653dc5331f2475088dc774c816aad52dab055ca99",
-    "glb_sha256": "d79e170cb3b9fafaa6a0a4304806981bd00436353cfa63f486331a29b6bbe20e"
+    "source_sha256": "f41d04c14e3bd2bca0c0d88c4eff8d28ab2d6061926ba1e375072eb88ac2a865",
+    "runtime_sha256": "d9bb83a3253f83a5a552540fc5720414d29421e11d71b23eb180ef6b47dd523c",
+    "glb_sha256": "6841896c063c38bd319b66a20cc8c101723903cf2803ce78a85470ca34b4c27f"
   },
   {
     "id": "staff-venom-master",

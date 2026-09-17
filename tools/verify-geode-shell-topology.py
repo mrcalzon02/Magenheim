@@ -27,6 +27,16 @@ def normalise(v):
 
 def dot(a, b):
     return sum(a[i] * b[i] for i in range(3))
+# export-model-assets.py writes Blender coordinates as (x, z, -y). CUT_DIRECTION is authored
+# in Blender space, the same literal the repair tools carve with, so it must be mapped the
+# same way before it can be compared against exported vertices.
+#
+# Testing the unmapped direction compared the mouth against the wrong axis: it reported the
+# geode as carrying 14 core and 198 shell boundary edges of "literal missing planes" while
+# the mouth was in fact one clean loop. Mapped, every boundary vertex sits in a tight band
+# (core 0.39-0.66, shell 0.45-0.58) around the cut, which is what a rim looks like.
+def to_export_space(vector):
+    return (vector[0], vector[2], -vector[1])
 
 
 def weld(vertices):
@@ -68,7 +78,7 @@ def main():
     if not boundaries:
         raise SystemExit("Geode shell topology FAILED: deliberate crystal mouth is sealed")
 
-    cut = normalise(CUT_DIRECTION)
+    cut = normalise(to_export_space(CUT_DIRECTION))
     illegal = [edge for edge in boundaries if any(
         dot(normalise(vertices[index]), cut) < OPENING_COS - MOUTH_MARGIN for index in edge)]
     if illegal:

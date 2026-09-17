@@ -1,4 +1,4 @@
 {
-  "version": "0.0.58",
-  "description": "0.0.58: The socket menu now says what a crystal will do in that item's slot before you install it, and what the shatter risk is before you remove one. Crystal banners get collision matching the banner shown instead of the donor's."
+  "version": "0.0.59",
+  "description": "0.0.59: Repairs the geode's reported holes -- they were a gate bug, not an asset defect -- and reverses five held models that pointed the wrong way in the player's hand. Seven model gates that existed but were never run are now wired into the build."
 }

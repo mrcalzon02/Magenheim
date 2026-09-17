@@ -46,6 +46,8 @@ def boundary_edges(mesh):
 
 
 cut = normalise(CUT_DIRECTION)
+UV_PROJECTION_SPAN = 2.2
+
 old = bpy.data.objects.get("GeodeCore")
 if old is None or old.type != "MESH":
     raise RuntimeError("Missing GeodeCore; regenerate geode source first")
@@ -64,6 +66,23 @@ bm = bmesh.new()
 bmesh.ops.create_icosphere(bm, subdivisions=SUBDIVISIONS, radius=CORE_RADIUS)
 remove = [face for face in bm.faces if dot(face_direction(face), cut) > OPENING_COS]
 bmesh.ops.delete(bm, geom=remove, context="FACES")
+
+# A replaced mesh carries no UV layer, and export refuses a mesh without one, so the repaired
+# source never reached the runtime payload and the topology gate kept failing against the old
+# broken export. Triplanar box projection for the same reason as the shell: a smart projection
+# packs small islands and a map sampled across their boundaries reads as patchwork.
+uv_layer = bm.loops.layers.uv.new("UVMap")
+for face in bm.faces:
+    normal = face.normal
+    axis = max(range(3), key=lambda i: abs(normal[i]))
+    u_axis, v_axis = (1, 2) if axis == 0 else (0, 2) if axis == 1 else (0, 1)
+    for loop in face.loops:
+        position = loop.vert.co
+        loop[uv_layer].uv = (
+            0.5 + position[u_axis] / (UV_PROJECTION_SPAN * CORE_RADIUS),
+            0.5 + position[v_axis] / (UV_PROJECTION_SPAN * CORE_RADIUS),
+        )
+
 bm.to_mesh(mesh)
 bm.free()
 mesh.update()

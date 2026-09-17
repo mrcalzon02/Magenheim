@@ -1,5 +1,23 @@
 # Magenheim Changelog
 
+## 0.0.59 - Stage 1 of the model quality campaign: correctness
+
+- The geode's "literal missing planes" were never in the asset. Both geode gates compared the
+  mouth's cut direction against exported vertices without mapping it into export space, and
+  the exporter writes Blender coordinates as (x, z, -y). They were testing the wrong axis.
+  Mapped correctly, every boundary vertex sits in a tight band around the cut (core
+  0.39-0.66, shell 0.45-0.58) and the mouth is one clean loop. The corrected gates were
+  re-proven to still fail when a hole is punched away from the mouth.
+- The acceptance pass that rebuilds the geode could never run here: it required Blender on
+  PATH. It now honours MAGENHEIM_BLENDER and the standard install locations.
+- Two geode meshes were rebuilt without a UV map, and export refuses a mesh without one, so
+  the repaired source never reached the runtime payload. Both now carry a triplanar box
+  unwrap, deliberately not a smart projection, which is what caused the 0.0.52 patchwork.
+- Five held assets pointed the wrong way round in the hand: the Crystal-tier Fire, Storm,
+  Radiance and Venom staves, and the crystal sword. They are reversed to match the other 35.
+- Seven model gates existed but were never wired into the build, which is why all of the
+  above stayed shipped. All are wired now, and all 11 verifiers pass.
+
 ## 0.0.58 - Socket menu tells you the outcome, banners get real collision
 
 - Install buttons now say what the crystal will do **in that item's slot**: "Install Crystal
