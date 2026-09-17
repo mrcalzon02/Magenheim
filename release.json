@@ -1,4 +1,4 @@
 {
-  "version": "0.0.60",
-  "description": "0.0.60: Closes the five crystal tier meshes. They shipped as triangle soups with over a thousand open edges each, and they are the models the whole refinement loop handles. The last unwired asset gate now runs in the build."
+  "version": "0.0.61",
+  "description": "0.0.61: Revises the Underworld's structural landmarks -- standing stone, dais and Deep Fracture entrance gain cut-stone edge definition. The Dark Throne is found shipping a stale export that hides inverted faces, and is recorded rather than patched."
 }

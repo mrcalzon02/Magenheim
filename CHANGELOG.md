@@ -1,5 +1,26 @@
 # Magenheim Changelog
 
+## 0.0.61 - Underworld structural landmarks
+
+The Underworld is 130 of the 281 models. Its districts are the best assets in the library at
+10,012-11,070 triangles and its creatures are healthy, but a handful of structural landmarks
+had been left far behind -- and they are exactly what a player walks up to and stands in.
+
+- Underworld Standing Stone 76 -> 332, Underworld Dais 572 -> 956, Deep Fracture entrance
+  384 -> 864. Edge definition rather than re-authored form: a chamfer so stone reads as cut
+  stone under the Underworld's low light instead of as flat facets. Subdivision is
+  deliberately not used, because it would round corners meant to be sharp.
+- Dark Throne is **not** revised here, and the attempt found something worse. Its source
+  evaluates to 4,080 triangles while the shipped payload is 880, so the arena centrepiece has
+  been shipping at a fifth of its authored fidelity. Re-exporting it is blocked: the fresh
+  export immediately fails asset verification with four inverted faces on `Dais_Step_1` that
+  the stale payload was hiding, and recalculating normals does not fix them. It is left on
+  the stale export rather than trading a hidden defect for extra triangles, and recorded.
+- The Deep Fracture passage and traversal are unchanged and reported as such. A chamfer
+  produces no geometry on them, which means they have no hard edges to cut and need real
+  re-authoring rather than a refinement pass. They remain the weakest Underworld assets, and
+  they connect districts of roughly 10,000 triangles.
+
 ## 0.0.60 - The crystal tier meshes are solid
 
 - Rough, Simple, Crystal, Advanced and Master shipped as triangle soups: 1,146 to 1,590

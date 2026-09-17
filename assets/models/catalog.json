@@ -2054,13 +2054,13 @@
   {
     "id": "deep-fracture-entrance",
     "parts": 8,
-    "triangles": 384,
+    "triangles": 864,
     "materials": 3,
     "source": "source/deep-fracture-entrance.blend",
     "glb": "glb/deep-fracture-entrance.glb",
     "runtime": "runtime/deep-fracture-entrance.model.json",
-    "source_sha256": "b96e46415e17f88a02d944d8efa72f46d2e434df67e654a2dcfcf1164feb9e49",
-    "runtime_sha256": "0fa28e81fc5fef502be4187785840bd04bab43efeebfaaf7062260395a90efbe",
+    "source_sha256": "f6604a56a9a7798477049c7d5fa8d7080e99d3ffa3e01929c68a2d1112ed8334",
+    "runtime_sha256": "966ca721c26b89e493505bf6622dda42e527a552bac5571b92899da9a3199b1b",
     "glb_sha256": "a6e607ea1a2ccc4961f9e62e8f86be481bcb607ee8ae4e283251f68e0503350e"
   },
   {
@@ -2179,7 +2179,7 @@
     "source": "source/deep-fracture-traversal.blend",
     "glb": "glb/deep-fracture-traversal.glb",
     "runtime": "runtime/deep-fracture-traversal.model.json",
-    "source_sha256": "780184219923a2e9ed35506d6c433d7589fcc9b9246621c5f2b1d088ad6b185d",
+    "source_sha256": "12b3b3c636c9f4a5730a39bc6ea4367b1271b1d311fb6b0f57ec156c6c49a9e6",
     "runtime_sha256": "1d4da6eff5202535aefcfb06ca1424b8b3bf3164cdf351cadef0a0efca7690cb",
     "glb_sha256": "801c543410ff4ba0c7805e1e27a70dbf982805fa7df0451c95b2c3e5b1234a85"
   },
@@ -3350,25 +3350,25 @@
   {
     "id": "underworld-dais",
     "parts": 1,
-    "triangles": 572,
+    "triangles": 956,
     "materials": 1,
     "source": "source/underworld-dais.blend",
     "glb": "glb/underworld-dais.glb",
     "runtime": "runtime/underworld-dais.model.json",
-    "source_sha256": "5f0b40dffb268e2bd838409b7ca078fd356c3d845e8de3b2261fa307d7049b63",
-    "runtime_sha256": "0410ff20b7197c08949acbf9a935cf9e3b079440308b14b5bf5144d0bd3c2f74",
+    "source_sha256": "f39ed33a93caec57f79cd9ab5df7087830aa258a0ba7c4b07feba0e3cc34f07a",
+    "runtime_sha256": "69dd0a5e1c07796b9dff941251e80a9971f046b8045debe866cc7b7df813e408",
     "glb_sha256": "ca202002eb4312c933b0daad23aa3ba5c087e9c5e60f0a1d8ce5b21837c5ddb2"
   },
   {
     "id": "underworld-standing-stone",
     "parts": 1,
-    "triangles": 76,
+    "triangles": 332,
     "materials": 1,
     "source": "source/underworld-standing-stone.blend",
     "glb": "glb/underworld-standing-stone.glb",
     "runtime": "runtime/underworld-standing-stone.model.json",
-    "source_sha256": "cc21bdce9b5690139f3162eedd2640393de76f82cf82d7bf76868bed7271ba00",
-    "runtime_sha256": "ebaba62941606cb29d25bb55e1a591bb5311528785bfa5ad838437caa345437f",
+    "source_sha256": "b23b0db5a63af656eaefe614d29ea5e029817c0146eab829c2eed7d84333ca62",
+    "runtime_sha256": "5757735530eb9fe3b205090d80aa28a27e943c376256f12ca1be1785629d5e20",
     "glb_sha256": "987f7bcd5ea5cc00d271ffc138c15f350f3072ce599d118011245278ecc2a2a6"
   }
 ]
