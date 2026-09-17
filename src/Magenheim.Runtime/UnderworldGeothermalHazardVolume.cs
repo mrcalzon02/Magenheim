@@ -21,7 +21,19 @@ internal sealed class UnderworldGeothermalHazardVolume : MonoBehaviour
     {
         var player = other.GetComponentInParent<Player>();
         if (player == null) return;
+        EnsureThermalLifecycle(player);
         ApplySample(player, _hazardId, _intensity, Time.fixedDeltaTime);
+    }
+
+    /// <summary>
+    /// Thermal state only exists after a player has actually contacted a canonical geothermal
+    /// gameplay surface. This avoids attaching an idle component to every Player in every world.
+    /// The component is owner-aware and will not mutate remote peers.
+    /// </summary>
+    private static void EnsureThermalLifecycle(Player player)
+    {
+        if (player.GetComponent<UnderworldThermalLifecycleRuntime>() == null)
+            player.gameObject.AddComponent<UnderworldThermalLifecycleRuntime>();
     }
 
     /// <summary>
