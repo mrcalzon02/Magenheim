@@ -17,9 +17,21 @@ for file in sorted((assets/'runtime').glob('*.model.json')):
   assert all(0<=i<len(vertices) for i in indices),id
   assert all(math.isfinite(x) for table in (vertices,uv,normals) for v in table for x in v),id
   assert all(abs(sum(x*x for x in n)-1)<.01 for n in normals),('Bad normal',id)
+  # Winding gate: exported vertices are intentionally unwelded, so edge-pairing cannot
+  # establish a reliable inside/outside. Instead require each geometric face normal to
+  # agree with its authored vertex normals. This catches the silent back-face defect that
+  # previously shipped in prisms, cylinders and the geode while remaining valid for
+  # concave/open meshes where a model-centroid heuristic can misclassify legitimate faces.
+  inverted=[]
   for i in range(0,len(indices),3):
-   a,b,c=[vertices[indices[i+j]] for j in range(3)];u=[b[j]-a[j] for j in range(3)];v=[c[j]-a[j] for j in range(3)];cross=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]]
-   assert sum(x*x for x in cross)>1e-22,('Degenerate face',id,part['name'])
+   face=[indices[i+j] for j in range(3)];a,b,c=[vertices[n] for n in face];u=[b[j]-a[j] for j in range(3)];v=[c[j]-a[j] for j in range(3)];cross=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]]
+   magnitude=math.sqrt(sum(x*x for x in cross));assert magnitude>1e-11,('Degenerate face',id,part['name'])
+   geometric=[x/magnitude for x in cross];authored=[sum(normals[n][axis] for n in face) for axis in range(3)]
+   authored_magnitude=math.sqrt(sum(x*x for x in authored))
+   if authored_magnitude>1e-8:
+    authored=[x/authored_magnitude for x in authored]
+    if sum(geometric[j]*authored[j] for j in range(3)) < -0.05: inverted.append(i//3)
+  assert not inverted,('Inverted face winding',id,part['name'],len(inverted),len(indices)//3,'first faces',inverted[:12])
   texture=part['material'].get('texture')
   if texture:
    texture_path=assets/'textures'/texture;png=texture_path.read_bytes()
@@ -42,4 +54,4 @@ for file in (root/'src/Magenheim.Runtime').glob('*.cs'):
 (assets/'catalog.json').write_text(json.dumps(rows,indent=2))
 with (assets/'catalog.tsv').open('w',newline='') as f:
  writer=csv.DictWriter(f,fieldnames=rows[0].keys(),delimiter='\t');writer.writeheader();writer.writerows(rows)
-print(f'PASS: {len(rows)} Blender/GLB/runtime sets; {sum(r["triangles"] for r in rows):,} triangles; UVs, normals, >=256px PNGs, topology, hashes, and no active shape generators.')
+print(f'PASS: {len(rows)} Blender/GLB/runtime sets; {sum(r["triangles"] for r in rows):,} triangles; UVs, normals, >=256px PNGs, topology/winding, hashes, and no active shape generators.')
