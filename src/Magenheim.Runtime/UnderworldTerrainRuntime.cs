@@ -60,6 +60,20 @@ internal static class UnderworldTerrainRuntime
         return (float)result.Height;
     }
 
+    internal static UnderworldTerrainResult SampleTerrain(float wx, float wy, float vanillaHeight)
+    {
+        var services = _services;
+        if (services is null || ZNet.instance is null || ZNet.World is null) return default;
+        if (!UnderworldRuntimeIdentityResolver.TryResolveWorldSession(services.WorldPairStore, ZNet.instance, ZNet.World,
+                out var identity, out var layer, out _) || identity is null || layer != UnderworldLayer.Underworld) return default;
+        var noise = Mathf.PerlinNoise((wx + identity.DerivedSeed32 * 0.0137f) * 0.00115f,
+            (wy - identity.DerivedSeed32 * 0.0091f) * 0.00115f);
+        var waterLevel = ZoneSystem.m_instance is null ? 30f : ZoneSystem.m_instance.m_waterLevel;
+        return UnderworldTerrainLifecycle.Evaluate(services.SpatialDomain,
+            new UnderworldTerrainSample(wx, 0d, wy, vanillaHeight, 0d, Math.Max(0d, waterLevel - vanillaHeight), noise),
+            identity.DerivedSeed32);
+    }
+
     internal static Heightmap.Biome SelectVanillaBiome(float wx, float wy, Heightmap.Biome vanillaBiome)
     {
         var services = _services;
