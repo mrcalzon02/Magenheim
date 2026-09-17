@@ -68,7 +68,7 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         node.transform.position=position+Vector3.up*(1.5f+Math.Abs(variant%4));
         node.transform.rotation=Quaternion.Euler(Math.Abs(variant%17),Math.Abs(variant*37%360),Math.Abs(variant%11));
         node.transform.localScale=Scale(biome,variant);
-        var renderer=node.GetComponent<Renderer>();if(renderer)renderer.sharedMaterial=MaterialFor(biome);
+        var renderer=node.GetComponent<Renderer>();var material=MaterialFor(biome);if(renderer&&material is not null)renderer.sharedMaterial=material;
         var collider=node.GetComponent<Collider>();if(collider&&biome==UnderworldTerrainBiome.FungalForest)collider.enabled=false;
         _spawned.Add(node);
     }
