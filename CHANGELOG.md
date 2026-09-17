@@ -1,5 +1,20 @@
 # Magenheim Changelog
 
+## 0.0.55 - Weapon world scale
+
+- Rescaled all ten crystal weapons to vanilla proportions. The family shipped oversized:
+  the knife measured 1.25m on its longest axis, longer than a vanilla sword, and the
+  sword measured 2.09m, longer than a vanilla greatsword.
+- The correction factor is observed, not inferred. The staff family reads correctly in
+  play at 1.80-2.96m, and the sword was about a third longer than it needed to be, so
+  every weapon was scaled by 0.75 about the world origin, which keeps the grip at the hand.
+- Sword 2.09 -> 1.56m, knife 1.25 -> 0.93m, greatsword 2.78 -> 2.08m, atgeir 3.02 -> 2.26m.
+- Rescaled the authored Blender sources and re-exported through the normal pipeline rather
+  than applying a runtime scale, so the models themselves are correct.
+- Added `tools/verify-model-scale.py`, wired into the build. Nothing had ever checked model
+  scale; it produces no compile error and is only visible in a player's hand.
+- Weapon geometry detail and texture resolution are not addressed here and remain open.
+
 ## 0.0.54 - Staff registration, icons and durability
 
 - Repaired eight compile errors that were sitting unbuilt on `main`, including a seventh

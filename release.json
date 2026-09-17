@@ -1,4 +1,4 @@
 {
-  "version": "0.0.54",
-  "description": "0.0.54: Fixes eight compile errors on main, and a missing Earth staff icon whose exception also stopped the Venom, Radiance, Seidr and Spirit staves registering. All 32 staff icons re-rendered from their models; staves now wear. Testing build."
+  "version": "0.0.55",
+  "description": "0.0.55: Rescales all ten crystal weapons to match vanilla proportions, using the staff family as the in-play reference. The sword drops from 2.09m to 1.56m and the knife from 1.25m to 0.93m. Model world scale is now gated. Testing build."
 }
