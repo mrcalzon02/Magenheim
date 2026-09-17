@@ -142,3 +142,107 @@ Fix the winding as part of the rebuild rather than patching the existing meshes.
 Eighteen compile errors reached `main` in one batch and two more of an identical, already
 repaired class followed hours later. `build.ps1` before push catches all of them. No new
 tooling is required; the gate exists and is not being run.
+
+## 15. Model quality program — staged Blender campaign, from 2026-09-17
+
+This section plans one campaign to bring the whole 281-model library to a single quality
+bar, and to do it in stages that each end at a green build and a commit, so nothing is lost
+if a stage has to stop.
+
+### 15.1 Measured starting state
+
+Median triangles by family, against a library median of 2,348:
+
+| family | n | median | note |
+|---|---|---|---|
+| df- (districts) | 20 | 10,448 | the bar the rest should approach |
+| crystal-banner | 24 | 3,384 | |
+| deep-fracture | 27 | 3,188 | |
+| staff | 32 | 2,316 | at the median |
+| deep-fracture-creature | 80 | 2,266 | |
+| architecture | 7 | 2,108 | |
+| furniture | 10 | 1,366 | |
+| **crystal-weapon** | 10 | **1,262** | half the median, held closest to camera |
+| **earth-** | 11 | **454** | worst gap; all single-part |
+| sentinel ammo | 8 | 252 | small projectiles, may be intentional |
+| effect- | 3 | 80 | small effects, may be intentional |
+
+`earth-` is the largest gap and the highest player contact in the mod: it is the crystal
+progression items the whole refinement loop handles, plus the Geologist's Workstation and
+its three upgrades. Every one is a **single-part** mesh, which is why they are low; the rest
+of the library is multi-part. They were raised from 36-180 triangles on 2026-09-16, so this
+is a second pass on known-weak assets rather than a regression.
+
+### 15.2 Open correctness defects
+
+Three verifiers fail today, and none of them are wired into `build.ps1`:
+
+- `verify-geode-topology` — 14 boundary edges outside the intentional mouth: literal holes
+  in the geode, the asset shared by all eight biome geodes.
+- `verify-geode-shell-topology` — 198 visible boundary edges outside the crystal mouth.
+- `verify-held-model-grip-direction` — 5 models hold the wrong way round: the four
+  Crystal-tier staves for Fire, Storm, Radiance and Venom, plus `crystal-weapon-sword`.
+
+Correctness is repaired before quality. A hole is a defect; a low triangle count is a
+shortfall.
+
+### 15.3 Token and time strategy
+
+The campaign is dominated by Blender invocations, and their cost is mostly avoidable noise.
+
+1. **`--factory-startup` on every Blender call.** Two user-installed addons fail on import
+   in background mode and print about 45 lines of traceback per invocation, on every run,
+   for the whole campaign. The flag skips addon loading and removes all of it.
+2. **One Blender process per stage, not per model.** Process startup is small, but each
+   invocation costs a tool round trip. A stage authors every model it owns in one process.
+3. **Redirect Blender output to a file and read only a summary.** The glTF exporter prints
+   roughly six lines per mesh part; a 280-model export is thousands of lines that say
+   nothing a count does not.
+4. **Idempotent revision markers**, following the existing `art_revision` scene property in
+   `revise-model-library.py`. A stage that stops halfway can resume instead of restarting,
+   and a re-run is safe.
+5. **Author and export stay separate processes**, as they already are. Authoring is the
+   risky step; export is mechanical and re-runnable.
+6. **Contact sheets, not individual renders.** Judging a family needs one grid image, not
+   thirty. Render only where human judgement is actually required.
+7. **One `model-quality-report.py`** so progress is measured by a single cheap call rather
+   than ad-hoc scripting each time.
+
+### 15.4 Stages
+
+Each stage ends at a green `build.ps1`, a commit, and its gate wired into the build so the
+defect it fixed cannot come back.
+
+- **Stage 0 — harness.** `--factory-startup` everywhere, the quality report tool. No model
+  changes. Cheap, and it pays for itself across every later stage.
+- **Stage 1 — correctness.** Geode holes and the 5 wrong-way-round held models. Touches few
+  models. Wire all three failing gates into `build.ps1`.
+- **Stage 2 — `earth-` family.** The crystal progression items and the Workstation set:
+  the worst gap and the highest contact. Single-part meshes become multi-part.
+- **Stage 3 — held equipment.** `crystal-weapon` geometry to the library bar, continuing
+  the 0.0.55/0.0.56 weapon work.
+- **Stage 4 — texture resolution.** 256px is the library floor everywhere except the
+  weapons. Raising it is the largest single job and changes package size materially; it
+  deserves its own decision and probably its own session.
+- **Stage 5 — placement and spacing.** Snap points, base alignment and collider fit across
+  the buildable families. This is largely C# (`PlacementSnapAuthority`, the per-registrar
+  collider passes) rather than Blender, so it does not need to share a stage with the
+  authoring work.
+
+### 15.5 Export is content-stable but not byte-stable
+
+Re-exporting an untouched model rewrites its UVs by about 1.2e-07, one float32 ULP, on
+roughly 4% of values. The geometry, materials and part structure are identical; it is
+round-trip precision, not a change. But it is enough to dirty the file and change its
+catalog hash.
+
+So a stage re-exports **only the models it actually authored**, by explicit id. Never
+re-export the whole library "to be safe": it produces 281 meaningless diffs, obscures the
+real change in review, and burns the token budget on noise.
+
+### 15.6 Standing rule
+
+Do not re-unwrap with `smart_project` during uplift. That is what produced the island
+patchwork reported from play at 0.0.52 and repaired in 0.0.53; `refine-retro-textures.py`
+records the mechanism. Added geometry must carry the existing UV layout, or the family
+needs a purpose-authored unwrap as deliberate work rather than a side effect.
