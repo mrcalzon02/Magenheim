@@ -39,26 +39,28 @@ def organic(name,loc,scale,mat,sub=2,seed=0):
     o.data.materials.append(mat); bevel(o); return o
 
 def segment(name,a,b,r,mat):
-    mid=tuple((a[i]+b[i])/2 for i in range(3)); d=Vector(tuple(b[i]-a[i] for i in range(3))); bpy.ops.mesh.primitive_cylinder_add(vertices=10,radius=r,depth=d.length,location=mid)
+    mid=tuple((a[i]+b[i])/2 for i in range(3)); d=Vector(tuple(b[i]-a[i] for i in range(3))); bpy.ops.mesh.primitive_cylinder_add(vertices=16,radius=r,depth=d.length,location=mid)
     o=bpy.context.object; o.name=name; o.data.materials.append(mat); o.rotation_mode='QUATERNION'; o.rotation_quaternion=Vector((0,0,1)).rotation_difference(d.normalized()); o.rotation_mode='XYZ'; bevel(o,r*.18); return o
 
-def cone(name,loc,r,depth,mat,rot=(0,0,0),verts=12):
+def cone(name,loc,r,depth,mat,rot=(0,0,0),verts=16):
     bpy.ops.mesh.primitive_cone_add(vertices=verts,radius1=r,radius2=r*.18,depth=depth,location=loc,rotation=rot); o=bpy.context.object; o.name=name; o.data.materials.append(mat); bevel(o,r*.12); return o
 
 bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
 flesh=material('SporelingFlesh','flesh',.72); chitin=material('SporelingCapChitin','cap-chitin',.64); gill=material('SporelingGill','gill',.52,True); sac=material('SporelingSporeSac','spore-sac',.58,True); dark=material('SporelingJoint','joint',.90)
 parts={}
 def keep(o,bone): parts[o.name]=bone; return o
-keep(organic('Sporeling_Thorax',(0,0,.245),(.115,.145,.105),flesh,2,1),'Thorax'); keep(organic('Sporeling_Abdomen',(0,-.145,.255),(.135,.165,.125),sac,2,2),'Abdomen'); keep(organic('Sporeling_Head',(0,.145,.245),(.105,.095,.085),flesh,2,3),'Head')
-bpy.ops.mesh.primitive_uv_sphere_add(segments=28,ring_count=10,radius=1,location=(0,-.045,.345)); cap=bpy.context.object; cap.name='Sporeling_CapArmor'; cap.scale=(.185,.205,.045); bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); cap.data.materials.append(chitin); keep(cap,'Thorax')
+# The three read-at-distance body masses carry the runtime-detail budget; the small joint
+# blobs stay at their low subdivision so the extra density lands where silhouette is read.
+keep(organic('Sporeling_Thorax',(0,0,.245),(.115,.145,.105),flesh,3,1),'Thorax'); keep(organic('Sporeling_Abdomen',(0,-.145,.255),(.135,.165,.125),sac,3,2),'Abdomen'); keep(organic('Sporeling_Head',(0,.145,.245),(.105,.095,.085),flesh,3,3),'Head')
+bpy.ops.mesh.primitive_uv_sphere_add(segments=28,ring_count=16,radius=1,location=(0,-.045,.345)); cap=bpy.context.object; cap.name='Sporeling_CapArmor'; cap.scale=(.185,.205,.045); bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); cap.data.materials.append(chitin); keep(cap,'Thorax')
 for v in cap.data.vertices:
     a=__import__('math').atan2(v.co.y,v.co.x); k=1+.055*sin(a*7)+.022*sin(a*13); v.co.x*=k; v.co.y*=k
-bpy.ops.mesh.primitive_torus_add(major_radius=.142,minor_radius=.012,major_segments=28,minor_segments=6,location=(0,-.04,.314)); lip=bpy.context.object; lip.name='Sporeling_GillRim'; lip.scale.y=1.12; bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); lip.data.materials.append(gill); keep(lip,'Thorax')
+bpy.ops.mesh.primitive_torus_add(major_radius=.142,minor_radius=.012,major_segments=28,minor_segments=8,location=(0,-.04,.314)); lip=bpy.context.object; lip.name='Sporeling_GillRim'; lip.scale.y=1.12; bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); lip.data.materials.append(gill); keep(lip,'Thorax')
 leg_points={}
 for pair,y in enumerate((.105,0,-.105),1):
     for side in (-1,1):
         s='L' if side<0 else 'R'; hip=(side*.082,y,.245); knee=(side*(.155+.012*pair),y+(.025 if pair==1 else -.012*pair),.145); ankle=(side*(.205+.008*pair),y-.018,.045); toe=(side*(.225+.006*pair),y+.035,.012); leg_points[(s,pair)]=(hip,knee,ankle,toe)
-        keep(organic(f'Sporeling_{s}_Coxa{pair}',hip,(.031,.032,.030),dark,1,10+pair),f'{s}_Coxa{pair}'); keep(segment(f'Sporeling_{s}_Femur{pair}',hip,knee,.022,flesh),f'{s}_Coxa{pair}'); keep(segment(f'Sporeling_{s}_Tibia{pair}',knee,ankle,.017,dark),f'{s}_Femur{pair}'); keep(segment(f'Sporeling_{s}_Tarsus{pair}',ankle,toe,.010,chitin),f'{s}_Tarsus{pair}')
+        keep(organic(f'Sporeling_{s}_Coxa{pair}',hip,(.031,.032,.030),dark,2,10+pair),f'{s}_Coxa{pair}'); keep(segment(f'Sporeling_{s}_Femur{pair}',hip,knee,.022,flesh),f'{s}_Coxa{pair}'); keep(segment(f'Sporeling_{s}_Tibia{pair}',knee,ankle,.017,dark),f'{s}_Femur{pair}'); keep(segment(f'Sporeling_{s}_Tarsus{pair}',ankle,toe,.010,chitin),f'{s}_Tarsus{pair}')
 for side in (-1,1):
     s='L' if side<0 else 'R'; keep(segment(f'Sporeling_Mandible_{s}',(side*.045,.205,.238),(side*.075,.265,.205),.018,chitin),'Jaw'); keep(segment(f'Sporeling_Frond_{s}',(side*.035,.185,.295),(side*.075,.265,.350),.009,gill),f'Frond_{s}'); keep(cone(f'Sporeling_FrondTip_{s}',(side*.082,.278,.36),.013,.045,gill,(pi/2,0,0),10),f'Frond_{s}')
 for i in range(6):
