@@ -17,6 +17,12 @@
 **Unlock position:** post-Nowhere King  
 **Primary dependency:** Magenheim systems, progression, persistence, compatibility rules, and release pipeline
 
+## Binding player-facing objective
+
+**The Underworld is not another continent next door, and it is definitely not a second save that requires quitting Valheim and loading another world. It is a second logical world layer inside the same persistent Valheim game world.**
+
+Its distant reserved coordinates exist only so Valheim can simulate and persist a second heightfield region in the same session. They are not the geography shown to players. The Underworld has its own logical coordinate projection, biome map, exploration/cloud state and Surface | Underworld map tab. Surface and Underworld therefore share simulation and persistence while remaining distinct maps and world layers to the player. This objective outranks attempts to force the reserved region to behave like an ordinary adjacent vanilla continent.
+
 ## 1. Executive concept
 
 The Underworld is a full expansion-scale world beneath Valheim. The surface world is treated as the prelude: after the Nowhere King is defeated, players gain access to a second persistent world-space representing the deep underside of Valheim itself.
