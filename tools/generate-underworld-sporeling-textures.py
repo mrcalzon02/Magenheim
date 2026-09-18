@@ -8,6 +8,7 @@ import random
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'assets/textures/underworld/creatures/sporeling'; OUT.mkdir(parents=True,exist_ok=True)
 SIZE=1024
+READABILITY_SIZE=64
 
 def clamp(v): return max(0,min(255,int(v)))
 def field(seed, base, amp, grain=18):
@@ -60,6 +61,17 @@ if len(files)!=expected: raise RuntimeError(f'Expected {expected} Sporeling text
 for p in files:
     with Image.open(p) as im:
         if im.size!=(SIZE,SIZE): raise RuntimeError(f'{p.name}: wrong dimensions {im.size}')
-        extrema=im.convert('L').getextrema()
+        luma=im.convert('L'); extrema=luma.getextrema()
         if extrema[1]-extrema[0]<16: raise RuntimeError(f'{p.name}: insufficient tonal range {extrema}')
-print(f'AUTHORED Sporeling texture set: {len(files)} maps at {SIZE}x{SIZE} -> {OUT}',flush=True)
+        # Source resolution alone is not useful if all readable structure disappears after
+        # Valheim mipmapping/UI distance. Preserve medium-frequency contrast at a 64px proxy.
+        proxy=luma.resize((READABILITY_SIZE,READABILITY_SIZE),Image.Resampling.LANCZOS)
+        proxy_extrema=proxy.getextrema()
+        if proxy_extrema[1]-proxy_extrema[0]<8:
+            raise RuntimeError(f'{p.name}: detail collapses at gameplay scale {proxy_extrema}')
+        if p.name.endswith('-emission.png'):
+            lit=sum(1 for v in proxy.getdata() if v>=8)
+            coverage=lit/(READABILITY_SIZE*READABILITY_SIZE)
+            if coverage<.01 or coverage>.70:
+                raise RuntimeError(f'{p.name}: emission coverage {coverage:.1%} is not localized/readable')
+print(f'AUTHORED Sporeling texture set: {len(files)} maps at {SIZE}x{SIZE}; {READABILITY_SIZE}px readability proxy passed -> {OUT}',flush=True)
