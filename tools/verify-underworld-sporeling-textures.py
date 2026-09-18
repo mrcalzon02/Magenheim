@@ -29,11 +29,17 @@ def percentile(values,q):
     data=sorted(values); return data[min(len(data)-1,max(0,int((len(data)-1)*q)))]
 def sampled(im,step=8):
     p=im.load(); return [p[x,y] for y in range(0,im.height,step) for x in range(0,im.width,step)]
-def proxy_values(im):
-    return list(luminance(im).resize(COMBAT_PROXY,Image.Resampling.LANCZOS).getdata())
-def normal_proxy_values(im):
-    p=im.resize(COMBAT_PROXY,Image.Resampling.LANCZOS)
-    return list(p.getdata())
+def proxy(im): return im.resize(COMBAT_PROXY,Image.Resampling.LANCZOS)
+def proxy_values(im): return list(luminance(proxy(im)).getdata())
+def normal_proxy_values(im): return list(proxy(im).getdata())
+def channel_means(im):
+    vals=list(proxy(im.convert('RGB')).getdata()); n=len(vals)
+    return tuple(sum(v[i] for v in vals)/n for i in range(3))
+
+def chroma_signature(im):
+    """Mean RGB ratios at combat scale; luminance alone cannot prove tissue color identity."""
+    r,g,b=channel_means(im); total=max(1.0,r+g+b)
+    return (r/total,g/total,b/total)
 
 for stem in STEMS:
     alb=load(f'{stem}-albedo.png','RGB'); vals=sampled(luminance(alb))
@@ -70,10 +76,22 @@ for stem in ('gill','spore-sac'):
     if proxy_hot<.002: raise RuntimeError(f'{stem}: emission disappears at 64px combat scale')
     if proxy_hot>.30: raise RuntimeError(f'{stem}: emission blooms across too much of the 64px combat proxy ({proxy_hot:.1%})')
 
-signatures={stem:proxy_values(load(f'{stem}-albedo.png','RGB')) for stem in STEMS}
+albedos={stem:load(f'{stem}-albedo.png','RGB') for stem in STEMS}
+signatures={stem:proxy_values(albedos[stem]) for stem in STEMS}
+chromas={stem:chroma_signature(albedos[stem]) for stem in STEMS}
 for i,a in enumerate(STEMS):
     for b in STEMS[i+1:]:
         delta=mean(abs(x-y) for x,y in zip(signatures[a],signatures[b]))
         if delta<3.0: raise RuntimeError(f'{a}/{b}: albedo families are visually redundant at combat scale (mean delta={delta:.2f})')
+        cd=sum(abs(x-y) for x,y in zip(chromas[a],chromas[b]))
+        if cd<.025: raise RuntimeError(f'{a}/{b}: combat-scale color identity is redundant (normalized RGB delta={cd:.3f})')
 
-print('VERIFIED Sporeling texture fidelity: 17 maps, 1024px source, 64px combat albedo/roughness/normal/emission readability, localized emission, distinct material families',flush=True)
+# Gameplay hierarchy: luminous anatomy must remain more green-forward than flesh/joints,
+# while the spore sac remains visibly magenta-forward. These are identity cues, not decoration.
+for stem in ('gill','cap-chitin'):
+    r,g,b=channel_means(albedos[stem])
+    if g<=r*1.18: raise RuntimeError(f'{stem}: loses green/cyan identity at combat scale (RGB={r:.1f},{g:.1f},{b:.1f})')
+r,g,b=channel_means(albedos['spore-sac'])
+if r<=g*1.12 or b<=g*1.15: raise RuntimeError(f'spore-sac: loses magenta identity at combat scale (RGB={r:.1f},{g:.1f},{b:.1f})')
+
+print('VERIFIED Sporeling texture fidelity: 17 maps, 1024px source, 64px combat albedo/chroma/roughness/normal/emission readability, localized emission, distinct material families',flush=True)
