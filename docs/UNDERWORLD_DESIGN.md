@@ -144,8 +144,14 @@ The Underworld applies the same instancing, with two differences: the reserved v
 world-sized rather than room-sized, and its contents come from Valheim's own terrain generator
 rather than from a room list.
 
-- The playable layer uses logical Underworld coordinates. Runtime adapters map those into a reserved
-  host band immediately before placement or generation. This is `UnderworldSpatialDomain` in
+- The reserved region is offset **horizontally**, not vertically. Valheim terrain is a 2D
+  heightfield — `Heightmap.m_heights` is a flat list and `WorldGenerator.GetBiomeHeight` returns one
+  height per column — so surface ground and Underworld ground can never share an (x, z). Valheim
+  solves this the same way for its own far landmasses: `worldSize = 10000`, `waterEdge = 10500`,
+  `deepNorthMinDistance = 12000` with `deepNorthYOffset = 4000`. The Underworld is another such
+  region, streamed by the same ZoneSystem into the same save.
+- The playable layer uses logical Underworld coordinates. Runtime adapters map those into the
+  reserved region immediately before placement or generation. This is `UnderworldSpatialDomain` in
   `Magenheim.Core`, which is the authority for that mapping.
 - Terrain inside the band is produced by Valheim's own world generator, reshaped through Harmony
   postfixes on `WorldGenerator.GetBiomeHeight` and `WorldGenerator.GetBiome`, so the Underworld is a
@@ -161,9 +167,12 @@ rather than from a room list.
   Underworld are in the same running world at the same time.
 - Travel between layers is a **teleport within the world**. It is never a save load, never a
   reconnect, and never a return to the main menu.
-- The Underworld seed is deterministically derived from the surface world's seed, so the same
-  surface world always produces the same Underworld. It is deliberately not the surface seed used
-  verbatim, because §10 requires that the player cannot navigate below by copying their surface map.
+- **The Underworld uses the surface world's seed verbatim.** It is the *generation algorithm* that
+  differs, not the seed: the same seed run through the Underworld's biome fields, terrain rules and
+  vertical bands produces an entirely different map. This satisfies §10 — the player cannot navigate
+  below by copying their surface map — without introducing a second seed to keep in sync, and it
+  guarantees that one surface world always yields exactly one Underworld. Do not hash, salt or
+  derive a separate terrain seed.
 - Underworld placed state, construction, resource depletion and progression persist as ordinary ZDOs
   in the shared save, distinguished by their location in the reserved band.
 - Multiplayer needs no second server and no special session handling. Normal ZDO and `ZNetView`

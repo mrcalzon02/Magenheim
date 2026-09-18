@@ -20,8 +20,15 @@ internal static class UnderworldSpatialDomainTests
             "Default spatial domain must expose the current schema.");
         Assert(domain.Fingerprint.Length == 64,
             "Spatial-domain fingerprint must be SHA-256 hex.");
-        Assert(domain.HostBaseY + domain.LogicalMinY > 7000d,
-            "Default Underworld host band must remain far above ordinary surface terrain.");
+        // The reserved region is offset horizontally, not vertically: Valheim terrain is a 2D
+        // heightfield, so surface ground and Underworld ground cannot share an (x, z) column. The
+        // region must therefore sit clear of ordinary play and of Ashlands/Deep North, the way
+        // Valheim's own far landmasses do.
+        var centreDistance = Math.Sqrt(domain.HostCenterX * domain.HostCenterX + domain.HostCenterZ * domain.HostCenterZ);
+        Assert(centreDistance - domain.RadiusMeters >= UnderworldSpatialDomain.MinimumHostClearanceMeters,
+            "Default Underworld region must clear ordinary surface play and Valheim's far landmasses.");
+        Assert(!UnderworldSpatialDomain.ContainsHostPoint(domain, 0d, domain.HostBaseY, 0d),
+            "The surface world origin must never fall inside the reserved Underworld region.");
 
         var identity = UnderworldWorldIdentityFactory.Derive("world-spatial", "seed-spatial");
         var logical = new UnderworldAnchor(identity.DerivedWorldId, 120d, 64d, -340d, 35f);
@@ -77,6 +84,8 @@ internal static class UnderworldSpatialDomainTests
         var changedDomain = UnderworldSpatialDomain.ValidateAndFreeze(
             UnderworldSpatialDomain.CurrentSchemaVersion,
             domain.RadiusMeters - 1d,
+            domain.HostCenterX,
+            domain.HostCenterZ,
             domain.HostBaseY,
             domain.LogicalMinY,
             domain.LogicalMaxY,

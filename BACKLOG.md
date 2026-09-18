@@ -25,7 +25,11 @@ flora and progression work. None of that is wasted.
   `ValheimPhysicalUnderworldWorldContextController`, `UnderworldWorldPairManifestStore` and the
   `IUnderworldPhysicalWorldLoader` boundary — roughly 360 lines across five files, plus the
   `.worldpair` manifests written into the plugin config directory.
-- [ ] **Re-ground the Conclave on the reserved host band.** The center was moved off `HostBaseY` to
+- [x] **Reserved region converted from a vertical band to a horizontal region.** DONE: schema 2,
+  `seed32-quarter-turn-offset-v2`, centre (40000, 0), radius 8000m, `HostBaseY` 0 so Underworld
+  terrain generates at ordinary altitudes. A vertical band at the same (x, z) could host objects but
+  never terrain, which is the dead end that produced the separate save.
+- [ ] **Re-ground the Conclave on the reserved host region.** The center was moved off `HostBaseY` to
   sit on derived-world terrain; that specific change is what turned a region of the live world into
   a second save. Restore band-hosted placement.
 - [ ] **Make layer travel a teleport within the world.** Entry and return resolve through
@@ -34,10 +38,12 @@ flora and progression work. None of that is wasted.
 - [ ] **Confirm the terrain-shaping band bounds against the reserved host band.** The
   `GetBiomeHeight`/`GetBiome` postfixes currently key off an admitted session; they must instead key
   off the host band so surface coordinates are untouched in the same session.
-- [ ] **Decide the seed question explicitly.** §6 derives the Underworld seed from the surface seed
-  so the same world always yields the same Underworld, while §10 forbids the Underworld being
-  navigable by copying the surface map. Confirm derived-not-identical is what is wanted, and record
-  it.
+- [x] **Seed question decided 2026-09-17 (user).** The Underworld uses the surface seed **verbatim**;
+  the map differs because the generation algorithm differs. Recorded in `INSTRUCTIONS.md` and §6.
+- [ ] **Make terrain generation use the surface seed verbatim.** `UnderworldTerrainRuntime` and
+  `UnderworldTerrainLifecycle` currently shape from `identity.DerivedSeed32`, a hash of the surface
+  seed. Feed them the surface seed instead. Decide separately whether the quarter-turn rotation in
+  `UnderworldSpatialDomain` should still key off a derived value or be dropped.
 - [ ] **Purge the separate-save language from the remaining docs and validation records** so no
   future session reads it as authority.
 

@@ -32,7 +32,7 @@ Live verified repository state outranks stale conversation, scheduled prompts, o
 ## The Underworld is one world, one save — non-negotiable
 
 The Underworld is a **region of the same Valheim world and the same save file** as the surface,
-hosted in a reserved coordinate band exactly the way Valheim's own instanced dungeon interiors are.
+hosted in a reserved coordinate region exactly the way Valheim's own instanced dungeon interiors are.
 Both layers are resident in the same running session at the same time. Travel between them is a
 teleport within the world.
 
@@ -42,10 +42,13 @@ teleport within the world.
 - Never produce a design in which the player must leave the session to reach the Underworld.
 - Valheim's `ZNet`, `ZoneSystem`, `WorldGenerator` and `ZDOMan` are per-world singletons. Two
   simultaneously loaded worlds are impossible in one process; do not attempt or plan around it.
+- The reserved region is offset **horizontally**, not vertically, because Valheim terrain is a 2D
+  heightfield with one height per (x, z) column. Valheim does the same for Ashlands and Deep North.
 - `UnderworldSpatialDomain` in `Magenheim.Core` is the authority for the logical-to-host coordinate
-  mapping. Terrain inside the band comes from Valheim's own generator via the
-  `WorldGenerator.GetBiomeHeight`/`GetBiome` postfixes, reshaped to Underworld biomes from a seed
-  deterministically derived from the surface seed.
+  mapping. Terrain inside the region comes from Valheim's own generator via the
+  `WorldGenerator.GetBiomeHeight`/`GetBiome` postfixes, reshaped to Underworld biomes.
+- **The Underworld uses the surface world's seed verbatim.** The map differs because the generation
+  algorithm differs, not because the seed differs. Do not hash, salt or derive a separate seed.
 
 This was got wrong once: `docs/UNDERWORLD_DESIGN.md` §6 previously specified a separate persistent
 world instance, an implementation was built against it, and the result could only be entered by

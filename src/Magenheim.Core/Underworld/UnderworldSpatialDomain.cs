@@ -8,6 +8,8 @@ namespace Magenheim.Core.Underworld;
 public sealed record UnderworldSpatialDomainDefinition(
     int SchemaVersion,
     double RadiusMeters,
+    double HostCenterX,
+    double HostCenterZ,
     double HostBaseY,
     double LogicalMinY,
     double LogicalMaxY,
@@ -23,17 +25,37 @@ public sealed record UnderworldHostAnchor(
 
 /// <summary>
 /// Deterministic spatial authority for hosting the logical Underworld inside the active parent
-/// Valheim world without colliding vertically with ordinary surface terrain. The playable layer
-/// uses logical Underworld coordinates; runtime adapters map those coordinates into this reserved
-/// host band immediately before placement or generation.
+/// Valheim world, in the same save, as a reserved region far outside ordinary surface play. The
+/// playable layer uses logical Underworld coordinates; runtime adapters map those coordinates into
+/// the reserved host region immediately before placement or generation.
 /// </summary>
+/// <remarks>
+/// The region is offset horizontally, not vertically. Valheim terrain is a 2D heightfield --
+/// Heightmap.m_heights is a flat list and WorldGenerator.GetBiomeHeight returns one height per
+/// column -- so surface ground and Underworld ground can never occupy the same (x, z). An earlier
+/// schema offset only Y, which could host objects but could never host generated terrain, and that
+/// dead end is what pushed the implementation into a separate save file.
+///
+/// Valheim solves this exact problem the same way: Ashlands and Deep North are landmasses placed
+/// beyond the ordinary world (worldSize = 10000, waterEdge = 10500, deepNorthMinDistance = 12000
+/// with deepNorthYOffset = 4000), streamed by the same ZoneSystem into the same save. The
+/// Underworld is another such region.
+/// </remarks>
 public static class UnderworldSpatialDomain
 {
-    public const int CurrentSchemaVersion = 1;
-    public const string CurrentMappingAlgorithm = "seed32-quarter-turn-v1";
+    public const int CurrentSchemaVersion = 2;
+    public const string CurrentMappingAlgorithm = "seed32-quarter-turn-offset-v2";
+
+    /// <summary>The reserved region's nearest edge must clear the vanilla world and its far landmasses.</summary>
+    public const double MinimumHostClearanceMeters = 20000d;
 
     private const double DefaultRadiusMeters = 8000d;
-    private const double DefaultHostBaseY = 8192d;
+    // Offset along +X so the region cannot collide with Deep North (+Z) or Ashlands (-Z).
+    private const double DefaultHostCenterX = 40000d;
+    private const double DefaultHostCenterZ = 0d;
+    // Now that the region owns its own heightfield columns, Underworld terrain generates at ordinary
+    // Valheim altitudes, so water level, swimming and every height-driven system behave normally.
+    private const double DefaultHostBaseY = 0d;
     private const double DefaultLogicalMinY = -256d;
     private const double DefaultLogicalMaxY = 1792d;
 
@@ -41,6 +63,8 @@ public static class UnderworldSpatialDomain
         ValidateAndFreeze(
             CurrentSchemaVersion,
             DefaultRadiusMeters,
+            DefaultHostCenterX,
+            DefaultHostCenterZ,
             DefaultHostBaseY,
             DefaultLogicalMinY,
             DefaultLogicalMaxY,
@@ -49,16 +73,20 @@ public static class UnderworldSpatialDomain
     public static UnderworldSpatialDomainDefinition ValidateAndFreeze(
         int schemaVersion,
         double radiusMeters,
+        double hostCenterX,
+        double hostCenterZ,
         double hostBaseY,
         double logicalMinY,
         double logicalMaxY,
         string mappingAlgorithm)
     {
-        ValidateFields(schemaVersion, radiusMeters, hostBaseY, logicalMinY, logicalMaxY, mappingAlgorithm);
+        ValidateFields(schemaVersion, radiusMeters, hostCenterX, hostCenterZ, hostBaseY, logicalMinY, logicalMaxY, mappingAlgorithm);
         var algorithm = mappingAlgorithm.Trim();
         return new UnderworldSpatialDomainDefinition(
             schemaVersion,
             radiusMeters,
+            hostCenterX,
+            hostCenterZ,
             hostBaseY,
             logicalMinY,
             logicalMaxY,
@@ -66,6 +94,8 @@ public static class UnderworldSpatialDomain
             ComputeFingerprint(
                 schemaVersion,
                 radiusMeters,
+                hostCenterX,
+                hostCenterZ,
                 hostBaseY,
                 logicalMinY,
                 logicalMaxY,
@@ -78,6 +108,8 @@ public static class UnderworldSpatialDomain
         ValidateFields(
             domain.SchemaVersion,
             domain.RadiusMeters,
+            domain.HostCenterX,
+            domain.HostCenterZ,
             domain.HostBaseY,
             domain.LogicalMinY,
             domain.LogicalMaxY,
@@ -85,6 +117,8 @@ public static class UnderworldSpatialDomain
         var expected = ComputeFingerprint(
             domain.SchemaVersion,
             domain.RadiusMeters,
+            domain.HostCenterX,
+            domain.HostCenterZ,
             domain.HostBaseY,
             domain.LogicalMinY,
             domain.LogicalMaxY,
@@ -124,9 +158,9 @@ public static class UnderworldSpatialDomain
         var rotated = Rotate(anchor.X, anchor.Z, quarterTurns);
         return new UnderworldHostAnchor(
             identity.ParentWorldId,
-            rotated.X,
+            domain.HostCenterX + rotated.X,
             domain.HostBaseY + anchor.Y,
-            rotated.Z,
+            domain.HostCenterZ + rotated.Z,
             NormalizeHeading(anchor.HeadingDegrees + quarterTurns * 90f));
     }
 
@@ -144,7 +178,10 @@ public static class UnderworldSpatialDomain
 
         var localY = hostAnchor.Y - domain.HostBaseY;
         var quarterTurns = QuarterTurns(identity.DerivedSeed32);
-        var local = Rotate(hostAnchor.X, hostAnchor.Z, (4 - quarterTurns) & 3);
+        var local = Rotate(
+            hostAnchor.X - domain.HostCenterX,
+            hostAnchor.Z - domain.HostCenterZ,
+            (4 - quarterTurns) & 3);
         ValidateLogicalUnderworldBounds(domain, local.X, localY, local.Z);
 
         return new UnderworldAnchor(
@@ -164,7 +201,9 @@ public static class UnderworldSpatialDomain
         ValidateDefinition(domain);
         if (!IsFinite(x) || !IsFinite(y) || !IsFinite(z)) return false;
         var radiusSquared = domain.RadiusMeters * domain.RadiusMeters;
-        var horizontalSquared = x * x + z * z;
+        var dx = x - domain.HostCenterX;
+        var dz = z - domain.HostCenterZ;
+        var horizontalSquared = dx * dx + dz * dz;
         return horizontalSquared <= radiusSquared &&
                y >= domain.HostBaseY + domain.LogicalMinY &&
                y <= domain.HostBaseY + domain.LogicalMaxY;
@@ -173,6 +212,8 @@ public static class UnderworldSpatialDomain
     private static void ValidateFields(
         int schemaVersion,
         double radiusMeters,
+        double hostCenterX,
+        double hostCenterZ,
         double hostBaseY,
         double logicalMinY,
         double logicalMaxY,
@@ -183,8 +224,14 @@ public static class UnderworldSpatialDomain
                 $"Unsupported Underworld spatial-domain schema {schemaVersion}. Expected {CurrentSchemaVersion}.");
         if (!IsFinite(radiusMeters) || radiusMeters <= 0d)
             throw new InvalidOperationException("Underworld spatial radius must be a positive finite value.");
-        if (!IsFinite(hostBaseY) || !IsFinite(logicalMinY) || !IsFinite(logicalMaxY))
+        if (!IsFinite(hostCenterX) || !IsFinite(hostCenterZ) ||
+            !IsFinite(hostBaseY) || !IsFinite(logicalMinY) || !IsFinite(logicalMaxY))
             throw new InvalidOperationException("Underworld spatial-domain coordinates must be finite.");
+        var centreDistance = Math.Sqrt(hostCenterX * hostCenterX + hostCenterZ * hostCenterZ);
+        if (centreDistance - radiusMeters < MinimumHostClearanceMeters)
+            throw new InvalidOperationException(
+                "The reserved Underworld region must clear ordinary surface play and Valheim's own far landmasses by at least " +
+                MinimumHostClearanceMeters.ToString(CultureInfo.InvariantCulture) + "m.");
         if (logicalMaxY <= logicalMinY)
             throw new InvalidOperationException("Underworld logical vertical maximum must exceed the minimum.");
 
@@ -257,6 +304,8 @@ public static class UnderworldSpatialDomain
     private static string ComputeFingerprint(
         int schemaVersion,
         double radiusMeters,
+        double hostCenterX,
+        double hostCenterZ,
         double hostBaseY,
         double logicalMinY,
         double logicalMaxY,
@@ -266,6 +315,8 @@ public static class UnderworldSpatialDomain
             .Append("underworld-spatial-schema=").Append(schemaVersion).Append('\n')
             .Append("mapping=").Append(mappingAlgorithm).Append('\n')
             .Append("radius=").Append(radiusMeters.ToString("R", CultureInfo.InvariantCulture)).Append('\n')
+            .Append("host-center-x=").Append(hostCenterX.ToString("R", CultureInfo.InvariantCulture)).Append('\n')
+            .Append("host-center-z=").Append(hostCenterZ.ToString("R", CultureInfo.InvariantCulture)).Append('\n')
             .Append("host-base-y=").Append(hostBaseY.ToString("R", CultureInfo.InvariantCulture)).Append('\n')
             .Append("logical-min-y=").Append(logicalMinY.ToString("R", CultureInfo.InvariantCulture)).Append('\n')
             .Append("logical-max-y=").Append(logicalMaxY.ToString("R", CultureInfo.InvariantCulture)).Append('\n')

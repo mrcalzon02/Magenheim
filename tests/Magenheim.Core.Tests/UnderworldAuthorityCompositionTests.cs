@@ -62,6 +62,8 @@ internal static class UnderworldAuthorityCompositionTests
         var changedSpatial = UnderworldSpatialDomain.ValidateAndFreeze(
             UnderworldSpatialDomain.CurrentSchemaVersion,
             spatial.RadiusMeters,
+            spatial.HostCenterX,
+            spatial.HostCenterZ,
             spatial.HostBaseY + 128d,
             spatial.LogicalMinY,
             spatial.LogicalMaxY,
