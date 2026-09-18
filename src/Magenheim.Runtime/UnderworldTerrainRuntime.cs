@@ -142,15 +142,34 @@ internal static class UnderworldTerrainRuntime
     /// This runs on HeightmapBuilder's worker thread as well as the main thread, so it stays on
     /// static maths and a static field read.
     /// </remarks>
+    private static float _nextSectorDiagnosticAt;
+
     internal static BiomeSector SelectBiomeSector(int gridX, int gridY, BiomeSector vanillaSector)
     {
         var services = _services;
         if (services is null || _world is null) return vanillaSector;
         var wx = AltBiomeWorldData.MapSpaceToWorldSpace((float)gridX);
         var wz = AltBiomeWorldData.MapSpaceToWorldSpace((float)gridY);
-        return UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, wx, wz)
-            ? BiomeSector.EmptyMeadows
-            : vanillaSector;
+        var inside = UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, wx, wz);
+
+        // Temporary instrumentation. The sector override was reasoned about twice and wrong twice;
+        // this records what the postfix actually sees so the next change is evidence-led. Throttled
+        // hard because this is called per heightmap column.
+        if (inside && Time.unscaledTime >= _nextSectorDiagnosticAt)
+        {
+            _nextSectorDiagnosticAt = Time.unscaledTime + 5f;
+            _log?.LogWarning(
+                $"[sector probe] grid=({gridX},{gridY}) world=({wx:0.0},{wz:0.0}) inside={inside} " +
+                $"vanilla={(vanillaSector is null ? "<null>" : vanillaSector.Biome.ToString())} " +
+                $"vanillaType={(vanillaSector?.BiomeType is null ? "<null>" : vanillaSector.BiomeType.Biome.ToString())} " +
+                $"meadows={(BiomeSector.EmptyMeadows is null ? "<null>" : BiomeSector.EmptyMeadows.Biome.ToString())} " +
+                $"meadowsType={(BiomeSector.EmptyMeadows?.BiomeType is null ? "<null>" : BiomeSector.EmptyMeadows.BiomeType.Biome.ToString())}");
+        }
+
+        // Fall back to vanilla rather than ever handing a consumer a null sector. The
+        // null-forgiveness is honest: outside the region this hands back exactly what vanilla
+        // returned, whatever that was.
+        return (inside ? BiomeSector.EmptyMeadows ?? vanillaSector : vanillaSector)!;
     }
 }
 
