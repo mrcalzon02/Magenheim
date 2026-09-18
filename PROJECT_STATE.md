@@ -1,3 +1,24 @@
+# Current source candidate — 0.0.69 / schema 5 (2026-09-18)
+
+Underworld environment production now starts from Valheim-owned runtime donors instead of authored
+placeholder geometry. The disposable local ecology preview has biome-specific donor palettes for all
+six Underworld terrain ecologies and reconstructs only the render/material/light/LOD surface of each
+source prefab. Vanilla gameplay and network components are deliberately not carried into the local
+preview objects, and no base-game mesh or texture is packaged by Magenheim.
+
+The controlling flora/terrain plan now fixes the art order as: vanilla donor composition, donor
+kitbash/material variation, Magenheim-authored gap fills, then external permissive assets only when a
+remaining requirement justifies them. This lets terrain density, scale, silhouette and biome identity
+be judged in Valheim before the custom asset backlog expands.
+
+**Acceptance remains open.** The connected environment cannot launch Valheim, so 0.0.69 has not
+been observed in the live game. The next runtime gate is a walk through all six Underworld terrain
+ecologies checking missing donor warnings, donor grounding, collision obstruction, LOD transitions,
+light range, placement density and frame cost before any donor palette is promoted from preview to
+persistent/networked world content.
+
+---
+
 # Current source candidate — 0.0.64 / schema 5 (2026-09-18)
 
 Closes the defect class 0.0.63 spent the session repairing: a generator or its gate moving on while
