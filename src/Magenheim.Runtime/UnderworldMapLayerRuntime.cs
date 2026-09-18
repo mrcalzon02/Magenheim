@@ -50,15 +50,11 @@ internal static class UnderworldMapLayerRuntime
     internal static void Select(MagenheimMapLayer layer)
     {
         if (_selectedLayer == layer) return;
-
-        // A layer transition is a persistence boundary. Save before Surface becomes authoritative so
-        // portal travel, logout transitions and world changes cannot strand the latest fog mutations.
         if (_selectedLayer == MagenheimMapLayer.Underworld && _underworldExploration is not null)
         {
             try { SaveUnderworldExploration(); }
-            catch (Exception exception) { _log?.LogWarning("Failed to persist Underworld exploration while leaving layer: " + exception.Message); }
+            catch (Exception exception) { Warn("Failed to persist Underworld exploration while leaving layer: " + exception.Message); }
         }
-
         _selectedLayer = layer;
         _log?.LogDebug("Magenheim map layer selected: " + layer + ".");
     }
@@ -67,8 +63,7 @@ internal static class UnderworldMapLayerRuntime
     {
         state = null!;
         var services = _services;
-        if (services is null || !services.TryResolveLocalSession(out var identity, out _, out var playerId, out _))
-            return false;
+        if (services is null || !services.TryResolveLocalSession(out var identity, out _, out var playerId, out _)) return false;
 
         var key = identity.ParentWorldId + "\n" + identity.DerivedSeedFingerprint + "\n" + playerId;
         if (_underworldExploration is not null && string.Equals(_explorationIdentityKey, key, StringComparison.Ordinal))
@@ -77,11 +72,10 @@ internal static class UnderworldMapLayerRuntime
             return true;
         }
 
-        // Do not silently discard dirty fog if the active player/world identity changes in-process.
         if (_underworldExploration is not null)
         {
             try { SaveUnderworldExploration(); }
-            catch (Exception exception) { _log?.LogWarning("Failed to persist outgoing Underworld exploration: " + exception.Message); }
+            catch (Exception exception) { Warn("Failed to persist outgoing Underworld exploration: " + exception.Message); }
         }
 
         var fresh = new UnderworldExplorationState(MagenheimMapLayer.Underworld,
@@ -97,11 +91,6 @@ internal static class UnderworldMapLayerRuntime
         return true;
     }
 
-    /// <summary>
-    /// Reveals logical Underworld fog around a physical world position. The host displacement is
-    /// removed before cell selection; surface positions never mutate Underworld discovery state.
-    /// Returns the number of newly revealed cells.
-    /// </summary>
     internal static int RevealUnderworldAtWorldPosition(double worldX, double worldZ,
         double radiusMeters = DefaultRevealRadiusMeters)
     {
@@ -114,12 +103,10 @@ internal static class UnderworldMapLayerRuntime
         var logical = UnderworldSpatialDomain.ToLogicalColumn(services.SpatialDomain, worldX, worldZ);
         var viewport = UnderworldMapPresentation.CreateUnderworldViewport(services.SpatialDomain,
             exploration.Width, exploration.Height);
-        if (!UnderworldMapPresentation.TryLogicalToCell(viewport, logical.X, logical.Z, out var cellX, out var cellY))
-            return 0;
+        if (!UnderworldMapPresentation.TryLogicalToCell(viewport, logical.X, logical.Z, out var cellX, out var cellY)) return 0;
 
         var metresPerCell = services.SpatialDomain.RadiusMeters * 2d / Math.Min(exploration.Width, exploration.Height);
-        var radiusCells = (int)Math.Ceiling(radiusMeters / metresPerCell);
-        return exploration.RevealCircle(cellX, cellY, radiusCells);
+        return exploration.RevealCircle(cellX, cellY, (int)Math.Ceiling(radiusMeters / metresPerCell));
     }
 
     internal static bool SaveUnderworldExploration()
@@ -155,10 +142,12 @@ internal static class UnderworldMapLayerRuntime
         catch (InvalidOperationException) { point = default; return false; }
     }
 
+    internal static void Warn(string message) => _log?.LogWarning(message);
+
     internal static void Reset()
     {
         try { SaveUnderworldExploration(); }
-        catch (Exception exception) { _log?.LogWarning("Failed to persist Underworld exploration during shutdown: " + exception.Message); }
+        catch (Exception exception) { Warn("Failed to persist Underworld exploration during shutdown: " + exception.Message); }
         _selectedLayer = MagenheimMapLayer.Surface;
         _underworldExploration = null;
         _explorationIdentityKey = null;
@@ -168,11 +157,6 @@ internal static class UnderworldMapLayerRuntime
     }
 }
 
-/// <summary>
-/// Thin local-player lifecycle hook for logical Underworld discovery. Remote Player instances are
-/// intentionally ignored: exploration is per local profile/world and must not be mutated by another
-/// peer's replicated movement. Work is throttled independently of Player.Update's frame cadence.
-/// </summary>
 [HarmonyPatch(typeof(Player), "Update", new Type[0])]
 internal static class UnderworldExplorationPlayerPatch
 {
@@ -185,7 +169,6 @@ internal static class UnderworldExplorationPlayerPatch
     private static void Postfix(Player __instance)
     {
         if (!ReferenceEquals(__instance, Player.m_localPlayer)) return;
-
         var now = Time.unscaledTime;
         if (now < _nextRevealAt) return;
         _nextRevealAt = now + RevealIntervalSeconds;
@@ -194,11 +177,8 @@ internal static class UnderworldExplorationPlayerPatch
         {
             UnderworldMapLayerRuntime.FollowPlayerLayer();
             if (UnderworldMapLayerRuntime.SelectedLayer != MagenheimMapLayer.Underworld) return;
-
             var position = __instance.transform.position;
-            if (UnderworldMapLayerRuntime.RevealUnderworldAtWorldPosition(position.x, position.z) > 0)
-                _dirty = true;
-
+            if (UnderworldMapLayerRuntime.RevealUnderworldAtWorldPosition(position.x, position.z) > 0) _dirty = true;
             if (_dirty && now >= _nextPersistenceAt)
             {
                 if (UnderworldMapLayerRuntime.SaveUnderworldExploration()) _dirty = false;
@@ -207,8 +187,7 @@ internal static class UnderworldExplorationPlayerPatch
         }
         catch (Exception exception)
         {
-            // Never let optional map bookkeeping break Valheim's Player.Update lifecycle.
-            MagenheimPlugin.Log?.LogWarning("Underworld exploration lifecycle update failed: " + exception.Message);
+            UnderworldMapLayerRuntime.Warn("Underworld exploration lifecycle update failed: " + exception.Message);
         }
     }
 
