@@ -11,6 +11,15 @@ namespace Magenheim.Runtime;
 /// <summary>Imports the checked-in Blender model payloads. No shape generators or fallback geometry.</summary>
 internal static class ModelAssets
 {
+    /// <summary>Set by the plugin so held-model alignment can report the correction it measured.
+    /// A plain delegate rather than a ManualLogSource: ModelAssetTests compiles this file without
+    /// a BepInEx reference.</summary>
+    internal static Action<string>? Log { get; set; }
+
+    /// <summary>Installed by the plugin. Kept as a delegate so this file still compiles against
+    /// the ModelAssetTests Unity shim, which has no Matrix4x4 and a minimal Bounds.</summary>
+    internal static Action<Transform, Renderer[], GameObject, string>? HeldModelAligner { get; set; }
+
     private static readonly Dictionary<string, JObject> Documents = new();
     private static readonly Dictionary<string, Mesh> Meshes = new();
     private static readonly Dictionary<string, Material> Materials = new();
@@ -113,6 +122,12 @@ internal static class ModelAssets
                 go.transform.localPosition = Vector(data["position"]!); var light = go.AddComponent<Light>();
                 light.color = Colour(data["color"]!); light.range = (float)data["range"]!; light.intensity = (float)data["intensity"]!;
             }
+            // A held item's donor authors its mesh in its own local frame under `attach`, and each
+            // crystal weapon clones a different donor, so dropping the replacement in at identity
+            // presents correctly only where the two frames happen to agree. Measure the donor and
+            // match it. This runs before the originals are hidden, because it needs their bounds.
+            if (item && hideOriginal && HeldModelAligner is not null && root.transform.parent is not null)
+                HeldModelAligner(root.transform.parent, original, root, id);
             if (hideOriginal)
             {
                 foreach (var renderer in original) if (!preserveParticles || !(renderer is ParticleSystemRenderer)) renderer.enabled = false;

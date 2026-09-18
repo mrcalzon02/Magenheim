@@ -189,6 +189,7 @@ internal sealed class SpiritStaffRegistrar : IDisposable
         attack.m_projectileBursts = definition.Bursts;
         attack.m_burstInterval = definition.BurstInterval;
         attack.m_perBurstResourceUsage = false;
+        StaffBurstContract.Apply(attack, definition.PrefabName);
 
         SpiritVisuals.Apply(item.ItemPrefab, definition.AssetName);
         if (!ItemManager.Instance.AddItem(item))

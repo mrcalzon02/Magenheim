@@ -2551,7 +2551,7 @@
     "source": "source/earth-workstation.blend",
     "glb": "glb/earth-workstation.glb",
     "runtime": "runtime/earth-workstation.model.json",
-    "source_sha256": "519e625b1a44706358ba4ce8202b2d630ac3223ceec330fa8cf3e49812205842",
+    "source_sha256": "b2bb7cee1f827cd2565e1052def18bcd1d7337ea8a2c17b714d473ab0b6e3a41",
     "runtime_sha256": "34e713eadc7c79be47ba11a0b161e13acc841dda0fffc9645248828cef86f8b5",
     "glb_sha256": "95d048cdff291ed940ef0d4a89289485cc810a6e712243a6484fe2a7b6d076e9"
   },
@@ -2719,7 +2719,7 @@
     "source": "source/furniture-geode-table.blend",
     "glb": "glb/furniture-geode-table.glb",
     "runtime": "runtime/furniture-geode-table.model.json",
-    "source_sha256": "03291c9dc4b81bbe48e6525857135af1e7d937c9262dd9bc9f29b43c7f954952",
+    "source_sha256": "0e9ca81220b9be2e9a7323519d0b19f26d02ab2283f16e5530ef2303e5a238c6",
     "runtime_sha256": "97a095af1c3d4c9be800875dd7c34403f8c3cc77364b34fca8ec6c83db882003",
     "glb_sha256": "48ef2d63ea3c85468518dcb4c23b4a10ab0e7f0e35b56aae054004b61e5aab93"
   },
@@ -2743,7 +2743,7 @@
     "source": "source/furniture-mineral-shelf.blend",
     "glb": "glb/furniture-mineral-shelf.glb",
     "runtime": "runtime/furniture-mineral-shelf.model.json",
-    "source_sha256": "617c5a617da684b4bd116e05cc2f0aefb556dac8a3f57417c7a7c1d499714a11",
+    "source_sha256": "11c7e28d53314806e60cb590e43da8b597915653b13c326d13ef470acb6a7cfa",
     "runtime_sha256": "06d71f9e9cb1dcd7eb3d8461c1446357aa54fbb53985b39b3918afb6d3d6bf70",
     "glb_sha256": "e813a7094be5d3fc5111929d77ff429a7a5c688d17b8bd6c6af02b7f7fbe1c6d"
   },
@@ -2755,7 +2755,7 @@
     "source": "source/geode-sample.blend",
     "glb": "glb/geode-sample.glb",
     "runtime": "runtime/geode-sample.model.json",
-    "source_sha256": "e07717c7e9e3b9b5ae4a6fc19531928a6b56819d01544dc6b227481b5d851014",
+    "source_sha256": "09e1e4dcede152ad31bcf2b98c653cd2447058fbc7fd694789054481760695ab",
     "runtime_sha256": "8d1108a00bf46b78dfdb3b089c6e374a18581f2b7d2f5dbe26a371f5d641b399",
     "glb_sha256": "ce7543d805462cb92c3eb969c96e2accafa3e1c63daba25ccbca38d43183cee5"
   },
@@ -2935,7 +2935,7 @@
     "source": "source/rune-engraver.blend",
     "glb": "glb/rune-engraver.glb",
     "runtime": "runtime/rune-engraver.model.json",
-    "source_sha256": "2b28766a14ec42eb572195454da4182f6028072d57b036983b2ade9a85337561",
+    "source_sha256": "1db1fb674340483cd2ff9bfc8758e9cd312c329e725d2aab08744856eb97fa4c",
     "runtime_sha256": "98b1ea719d25d6400b3b55c3e1d251d842af3188eb0b982991b54ff52a73e84a",
     "glb_sha256": "77fedd3071a2293a6d4fc4ddb996da1b486a550ee9afce54d83115d5a7d2092b"
   },

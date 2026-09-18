@@ -229,7 +229,24 @@ play. Surface play only — Meadows and Black Forest, Day 1 — so **nothing abo
 region, the biome sector, the map or travel was exercised**, and 0.0.63's sector repair remains
 entirely unverified.
 
-- [ ] **Six of eight Master staves do nothing; Radiance works.** User: Storm, Venom, Spirit, Fire
+- [x] **Six of eight Master staves do nothing; Radiance works. ROOT CAUSE FOUND, FIXED 0.0.68.**
+  `Attack.ProjectileAttackTriggered` fires a single-burst projectile attack synchronously inside the
+  animation trigger and defers anything with more than one burst to `Attack.UpdateProjectile`, which
+  only runs while the attack is live; `Attack.Update` calls `Stop()` the moment `InAttack()` goes
+  false, setting `m_attackDone`. Every staff clones `StaffIceShards`, a single-shot staff whose
+  animation ends right after its trigger, and no registrar set `m_loopingAttack`, so a staff authored
+  for 3-6 deferred bursts had no window to fire them. The split is exact: bursts==1 fires
+  (Radiance, Earth), bursts>1 does not (Fire/Storm/Venom 3, Seidr 4, Frost 6). Stamina drained
+  regardless because `Attack.Update` charges it up front when `m_perBurstResourceUsage` is false,
+  which every staff sets -- which is why it read as "costs stamina, does nothing". `StaffBurstContract`
+  folds the burst count into the projectile count so each family's authored bolt count, damage,
+  damage type, spread, velocity and payload are untouched and the volley reaches the code path that
+  works. A damage rebalance attempted earlier in the session was wrong and was reverted in full.
+- [ ] **Restore the staggered burst cadence.** 0.0.68 releases each staff's volley in one shot. The
+  authored stagger needs `m_loopingAttack` plus an attack animation that holds open while the
+  sequence plays. A looping attack that never self-terminates leaves the player stuck mid-swing, so
+  this needs its own design pass rather than a flag flip.
+- [ ] ~~Six of eight Master staves do nothing~~ original note: User: Storm, Venom, Spirit, Fire
   and Frost deplete stamina with no visible effect; Earth fires visible projectiles that do nothing;
   Radiance "works quite well against the undead". Established from the installed assemblies and the
   log, so these are *not* the cause: the weapon's damage does reach the projectile

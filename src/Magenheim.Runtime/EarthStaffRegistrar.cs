@@ -203,6 +203,7 @@ internal sealed class EarthStaffRegistrar : IDisposable
         attack.m_projectileBursts = 1;
         attack.m_burstInterval = 0f;
         attack.m_perBurstResourceUsage = false;
+        StaffBurstContract.Apply(attack, definition.PrefabName);
 
         EarthStaffVisuals.Apply(item.ItemPrefab, definition.PrefabName);
 

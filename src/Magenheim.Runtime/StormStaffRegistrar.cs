@@ -133,6 +133,7 @@ internal sealed class StormStaffRegistrar : IDisposable
         attack.m_projectileBursts = definition.Bursts;
         attack.m_burstInterval = definition.BurstInterval;
         attack.m_perBurstResourceUsage = false;
+        StaffBurstContract.Apply(attack, definition.PrefabName);
 
         StormStaffVisuals.Apply(item.ItemPrefab, definition.PrefabName);
 

@@ -1,3 +1,49 @@
+## 0.0.68 — Staves that fire
+
+Six of the eight Master staves depleted stamina and produced nothing; Radiance and Earth worked. The
+split is exact, and it is not damage, damage type, projectile source or payload — every staff that
+fires has one burst and every staff that does nothing has more than one. Valheim's own
+`Attack.ProjectileAttackTriggered` ends with:
+
+```
+if (m_projectileBursts == 1) FireProjectileBurst();
+else m_projectileAttackStarted = true;
+```
+
+A single burst fires synchronously, inside the animation trigger. More than one defers to
+`Attack.UpdateProjectile`, which only runs while the attack is live — and `Attack.Update` calls
+`Stop()` the moment `InAttack()` goes false, setting `m_attackDone` so no later burst can fire.
+Every Magenheim staff clones `StaffIceShards`, a single-shot staff whose animation ends right after
+its trigger, and no registrar set `m_loopingAttack`. A staff authored for three or six deferred
+bursts therefore had no window to fire them. Stamina still drained because `Attack.Update` charges it
+up front whenever `m_perBurstResourceUsage` is false, which every staff sets — which is exactly why
+the symptom read as "costs stamina, does nothing" rather than as a refused attack.
+
+Each family keeps its authored identity: bolt count, damage, damage type, spread, velocity and
+payload are untouched. Only the release changes — a staff authored as three bolts across three waves
+now sends its nine bolts in one volley, on the code path that works. The stagger is **not** restored;
+that needs `m_loopingAttack` plus an animation that holds open, and a looping attack that never
+self-terminates would leave the player stuck mid-swing. That is recorded as its own item rather than
+ridden along with a repair.
+
+An earlier attempt in this session rebalanced the six families' damage upward against Radiance. That
+was wrong — the numbers were never the defect — and it has been reverted in full.
+
+## 0.0.67 — Held weapons meet their donors
+
+Each crystal weapon clones a different vanilla donor, and Valheim authors every donor mesh in its own
+local frame under `attach`. `ModelAssets.Load` parented the replacement there at identity, so a
+weapon presented correctly only where the donor's frame happened to match Magenheim's authoring
+convention — axe, battleaxe and bow right; crossbow reversed, greatsword rolled, knife, mace and
+spear wrong. The replacement is now rotated into the donor's measured frame, and the correction is
+logged per model so the three already-correct weapons act as the check: for those it must come out
+at identity.
+
+Also: the Crystal Sentinel never set a single targeting field, so it inherited whatever `piece_turret`
+shipped with rather than what its own description promises. Enemies are now explicitly targeted;
+players and tamed creatures explicitly are not. Geode placement scale widened from 0.85–1.15 to
+0.70–1.45, since plus or minus fifteen percent reads as one uniform size in a field.
+
 ## 0.0.66 — Materials stop being named by their model
 
 Crystal placeables looked correct in the authored preview and arrived in game as a patchwork of

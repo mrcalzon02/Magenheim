@@ -6,3 +6,4 @@ backups/
 *.local.props
 __pycache__/
 artifacts/
+*.blend1

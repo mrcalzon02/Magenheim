@@ -107,6 +107,7 @@ internal sealed class RadianceStaffRegistrar : IDisposable
         attack.m_projectileBursts = definition.Bursts;
         attack.m_burstInterval = definition.BurstInterval;
         attack.m_perBurstResourceUsage = false;
+        StaffBurstContract.Apply(attack, definition.PrefabName);
 
         RadianceVisuals.Apply(item.ItemPrefab, definition.AssetName);
         if (!ItemManager.Instance.AddItem(item))

@@ -162,6 +162,18 @@ internal sealed class CrystalSentinelRegistrar : IDisposable
         turret.m_maxAmmo = 20;
         turret.m_returnAmmoOnDestroy = true;
 
+        // Targeting was never set here at all, so the Sentinel inherited whatever the piece_turret
+        // prefab happened to ship with rather than what it advertises. Its description promises it
+        // "tracks hostile targets", and in play it would not engage skeletons. Turret.UpdateTarget
+        // passes these straight into BaseAI.FindClosestCreature as includePlayers/includeTamed/
+        // includeEnemies, so stating them is the difference between a documented default and an
+        // inherited one. Players and tamed creatures stay excluded: a defensive emplacement that
+        // shoots its owner or their boar is worse than one that misses a skeleton.
+        turret.m_targetEnemies = true;
+        turret.m_targetPlayers = false;
+        turret.m_targetTamed = false;
+        turret.m_targetTamedConfig = false;
+
         var sourceMaterial = prefab.GetComponentsInChildren<Renderer>(true)
             .Select(renderer => renderer.sharedMaterial)
             .FirstOrDefault(material => material)

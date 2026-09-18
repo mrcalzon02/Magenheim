@@ -205,6 +205,7 @@ internal sealed class VenomStaffRegistrar : IDisposable
         attack.m_projectileBursts = definition.Bursts;
         attack.m_burstInterval = definition.BurstInterval;
         attack.m_perBurstResourceUsage = false;
+        StaffBurstContract.Apply(attack, definition.PrefabName);
 
         VenomStaffVisuals.Apply(item.ItemPrefab, definition.AssetName);
 

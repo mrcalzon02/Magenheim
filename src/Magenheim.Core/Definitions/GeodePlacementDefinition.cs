@@ -47,8 +47,12 @@ public sealed record GeodePlacementDefinition(
         InForest: false,
         ForestThresholdMin: 0d,
         ForestThresholdMax: 1d,
-        ScaleMin: 0.85d,
-        ScaleMax: 1.15d,
+        // 0.85-1.15 is plus or minus fifteen percent, which reads as one uniform size in play: the
+        // largest geode in a field is only 1.35x the smallest, and that difference disappears under
+        // ground clutter at the distance a player first sees them. 0.70-1.45 doubles the smallest to
+        // the largest, which is a silhouette difference rather than a measurement one.
+        ScaleMin: 0.70d,
+        ScaleMax: 1.45d,
         GroupSizeMin: 1,
         GroupSizeMax: 1,
         GroupRadius: 0d,

@@ -126,6 +126,7 @@ internal sealed class SeidrStaffRegistrar : IDisposable
         attack.m_projectileBursts = definition.Bursts;
         attack.m_burstInterval = definition.BurstInterval;
         attack.m_perBurstResourceUsage = false;
+        StaffBurstContract.Apply(attack, definition.PrefabName);
 
         SeidrVisuals.Apply(item.ItemPrefab, definition.AssetName);
         if (!ItemManager.Instance.AddItem(item)) throw new InvalidOperationException($"Jotunn refused Seidr staff item '{definition.PrefabName}'.");

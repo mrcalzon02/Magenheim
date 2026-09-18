@@ -1,4 +1,4 @@
 {
-  "version": "0.0.66",
-  "description": "0.0.66: Fixes 326 of 1979 model materials being classified by their model id instead of their own surface, which is why crystal placeables read as a patchwork. A hearth iron band and its crystals were all textured as stone."
+  "version": "0.0.68",
+  "description": "0.0.68: Six Master staves fired nothing because Valheim only fires a multi-burst projectile attack while the attack is still live, and the donor single-shot animation ends first. Their authored volleys now release intact."
 }
