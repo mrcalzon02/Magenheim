@@ -24,7 +24,7 @@ public static class UnderworldMapRaster
         for (var y = 0; y < height; y++)
         for (var x = 0; x < width; x++)
         {
-            var logical = UnderworldMapPresentation.CellToLogical(viewport, x, y);
+            var logical = UnderworldMapPresentation.CellCenterToLogical(viewport, x, y);
             var index = UnderworldMapProjection.CellIndex(width, height, x, y);
             if (logical.X * logical.X + logical.Z * logical.Z > domain.RadiusMeters * domain.RadiusMeters)
             {

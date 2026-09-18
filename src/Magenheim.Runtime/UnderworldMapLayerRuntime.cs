@@ -58,7 +58,7 @@ internal static class UnderworldMapLayerRuntime
     {
         state = null!;
         var services = _services;
-        if (services is null || !services.TryResolveLocalSession(out var identity, out _, out var playerId, out _)) return false;
+        if (services is null || !services.TryResolveLocalSession(out var identity, out _, out var playerId, out _) || identity is null) return false;
         var key = identity.ParentWorldId + "\n" + identity.DerivedSeedFingerprint + "\n" + playerId;
         if (_underworldExploration is not null && string.Equals(_explorationIdentityKey, key, StringComparison.Ordinal))
         {
@@ -100,7 +100,7 @@ internal static class UnderworldMapLayerRuntime
     internal static bool SaveUnderworldExploration()
     {
         var services = _services;
-        if (services is null || _underworldExploration is null || !services.TryResolveLocalSession(out var identity, out _, out var playerId, out _)) return false;
+        if (services is null || _underworldExploration is null || !services.TryResolveLocalSession(out var identity, out _, out var playerId, out _) || identity is null) return false;
         services.ExplorationStateStore.Save(playerId, identity, _underworldExploration);
         return true;
     }

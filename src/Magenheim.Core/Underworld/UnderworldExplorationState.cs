@@ -24,6 +24,12 @@ public sealed class UnderworldExplorationState
     public int Width { get; }
     public int Height { get; }
 
+    /// <summary>
+    /// Revealed cells. Maintained incrementally so a presentation layer can decide whether its fog
+    /// texture is stale without rescanning every cell each frame.
+    /// </summary>
+    public int ExploredCount { get; private set; }
+
     public bool IsExplored(int x, int y) => _cells[UnderworldMapProjection.CellIndex(Width, Height, x, y)];
 
     public bool Reveal(int x, int y)
@@ -31,6 +37,7 @@ public sealed class UnderworldExplorationState
         var index = UnderworldMapProjection.CellIndex(Width, Height, x, y);
         if (_cells[index]) return false;
         _cells[index] = true;
+        ExploredCount++;
         return true;
     }
 
@@ -66,8 +73,13 @@ public sealed class UnderworldExplorationState
         if (packed is null) throw new ArgumentNullException(nameof(packed));
         if (packed.Length != (_cells.Length + 7) / 8)
             throw new InvalidOperationException("Exploration payload size does not match this logical map layer.");
+        var explored = 0;
         for (var i = 0; i < _cells.Length; i++)
+        {
             _cells[i] = (packed[i >> 3] & (1 << (i & 7))) != 0;
+            if (_cells[i]) explored++;
+        }
+        ExploredCount = explored;
     }
 }
 
