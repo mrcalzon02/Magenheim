@@ -1,4 +1,4 @@
 {
-  "version": "0.0.72",
-  "description": "0.0.72: Crystal weapon icons rendered from their Blender sources, the hand-authored geode shipped, and an exporter that no longer dies on a source saved in Edit Mode. Combined with the 0.0.69 donor ecology pass."
+  "version": "0.0.73",
+  "description": "0.0.73: The six crystal tier icons, rough through master plus shards, are rendered from the rebuilt 3D tier models instead of the hand-authored 128px art that predated them."
 }

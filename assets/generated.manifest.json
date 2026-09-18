@@ -126,6 +126,34 @@
         "assets/earth/crystal-weapon-sword.icon.png": null
       },
       "hash": "generator-only"
+    },
+    {
+      "id": "crystal-tier-icons",
+      "generator": "tools/render-crystal-tier-icons.py",
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-Command",
+        "& './tools/blender.ps1' render-crystal-tier-icons"
+      ],
+      "outputs": [
+        "assets/earth/rough.icon.png",
+        "assets/earth/simple.icon.png",
+        "assets/earth/crystal.icon.png",
+        "assets/earth/advanced.icon.png",
+        "assets/earth/master.icon.png",
+        "assets/earth/shards.icon.png"
+      ],
+      "generator_sha256": "634f0d22d5de2e7ab8834ae70b07cedb1cf01ef8508cb17baa72581fc42199a2",
+      "output_sha256": {
+        "assets/earth/advanced.icon.png": null,
+        "assets/earth/crystal.icon.png": null,
+        "assets/earth/master.icon.png": null,
+        "assets/earth/rough.icon.png": null,
+        "assets/earth/shards.icon.png": null,
+        "assets/earth/simple.icon.png": null
+      },
+      "hash": "generator-only"
     }
   ]
 }
