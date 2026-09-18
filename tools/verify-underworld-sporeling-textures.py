@@ -2,8 +2,8 @@
 """Quantitative fidelity gate for the Fungal Forest Sporeling texture set.
 
 Runs without Blender so local handoff can reject flat, clipped, noisy or over-emissive
-maps before creature authoring. Source resolution is not enough: albedo, normal and emission
-must retain useful structure after mip-like downsampling to combat-distance display scale.
+maps before creature authoring. Source resolution is not enough: albedo, roughness, normal
+and emission must retain useful structure after mip-like downsampling to combat distance.
 """
 from pathlib import Path
 from statistics import mean, pstdev
@@ -32,8 +32,6 @@ def sampled(im,step=8):
 def proxy_values(im):
     return list(luminance(im).resize(COMBAT_PROXY,Image.Resampling.LANCZOS).getdata())
 def normal_proxy_values(im):
-    # Resize RGB normals as encoded vectors, then measure surviving XY deviation from neutral.
-    # This deliberately rejects source-only micro-noise that vanishes under mip filtering.
     p=im.resize(COMBAT_PROXY,Image.Resampling.LANCZOS)
     return list(p.getdata())
 
@@ -49,14 +47,16 @@ for stem in STEMS:
     rough=load(f'{stem}-roughness.png','L'); rv=sampled(rough)
     if pstdev(rv)<5: raise RuntimeError(f'{stem}: roughness lacks material variation (sd={pstdev(rv):.2f})')
     if not 45<=mean(rv)<=235: raise RuntimeError(f'{stem}: implausible mean roughness ({mean(rv):.1f})')
+    rpv=proxy_values(rough); rp10,rp90=percentile(rpv,.10),percentile(rpv,.90)
+    if rp90-rp10<8: raise RuntimeError(f'{stem}: roughness variation disappears at 64px combat scale ({rp10}..{rp90})')
+    if pstdev(rpv)<3: raise RuntimeError(f'{stem}: roughness becomes visually uniform at 64px combat scale (sd={pstdev(rpv):.2f})')
 
     normal=load(f'{stem}-normal.png','RGB'); nv=sampled(normal)
     blue=mean(v[2] for v in nv); rgdev=mean(abs(v[0]-128)+abs(v[1]-128) for v in nv)
     if blue<150: raise RuntimeError(f'{stem}: normal map is not predominantly +Z (B={blue:.1f})')
     if rgdev<5: raise RuntimeError(f'{stem}: normal map is effectively flat (RG deviation={rgdev:.1f})')
     np=normal_proxy_values(normal)
-    proxy_blue=mean(v[2] for v in np)
-    proxy_rgdev=mean(abs(v[0]-128)+abs(v[1]-128) for v in np)
+    proxy_blue=mean(v[2] for v in np); proxy_rgdev=mean(abs(v[0]-128)+abs(v[1]-128) for v in np)
     if proxy_blue<150: raise RuntimeError(f'{stem}: normal direction degrades at 64px combat scale (B={proxy_blue:.1f})')
     if proxy_rgdev<2.0: raise RuntimeError(f'{stem}: normal relief vanishes at 64px combat scale (RG deviation={proxy_rgdev:.2f})')
 
@@ -70,12 +70,10 @@ for stem in ('gill','spore-sac'):
     if proxy_hot<.002: raise RuntimeError(f'{stem}: emission disappears at 64px combat scale')
     if proxy_hot>.30: raise RuntimeError(f'{stem}: emission blooms across too much of the 64px combat proxy ({proxy_hot:.1%})')
 
-signatures={}
-for stem in STEMS:
-    signatures[stem]=proxy_values(load(f'{stem}-albedo.png','RGB'))
+signatures={stem:proxy_values(load(f'{stem}-albedo.png','RGB')) for stem in STEMS}
 for i,a in enumerate(STEMS):
     for b in STEMS[i+1:]:
         delta=mean(abs(x-y) for x,y in zip(signatures[a],signatures[b]))
         if delta<3.0: raise RuntimeError(f'{a}/{b}: albedo families are visually redundant at combat scale (mean delta={delta:.2f})')
 
-print('VERIFIED Sporeling texture fidelity: 17 maps, 1024px source, 64px combat albedo/normal/emission readability, PBR variation, localized emission, distinct material families',flush=True)
+print('VERIFIED Sporeling texture fidelity: 17 maps, 1024px source, 64px combat albedo/roughness/normal/emission readability, localized emission, distinct material families',flush=True)
