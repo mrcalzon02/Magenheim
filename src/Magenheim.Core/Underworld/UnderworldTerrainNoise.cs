@@ -115,16 +115,26 @@ public static class UnderworldTerrainNoise
     /// long wavelengths still carry the regional geography the design asks for.
     /// </para>
     /// </remarks>
-    public static double ReliefMetres(int seed, double x, double z)
+    /// <param name="regionalWeight">
+    /// How much of the large-wavelength geography this column receives, 0 to 1. The coarse octaves
+    /// carry mountain barriers and deep basins; at full strength they swing well over a hundred
+    /// metres, which is correct for the outer provinces and wrong for the arrival basin, where it
+    /// would flood the Fungal Forest and strand the player. Attenuating them toward the centre is
+    /// what keeps the first biome dry and walkable while the rest of the realm stays enormous.
+    /// </param>
+    public static double ReliefMetres(int seed, double x, double z, double regionalWeight)
     {
         if (double.IsNaN(x) || double.IsInfinity(x) || double.IsNaN(z) || double.IsInfinity(z)) return 0d;
+        if (double.IsNaN(regionalWeight)) regionalWeight = 0d;
+        regionalWeight = regionalWeight < 0d ? 0d : regionalWeight > 1d ? 1d : regionalWeight;
 
         var total = 0d;
         var octaveSeed = seed;
         for (var octave = 0; octave < ReliefFeatureMetres.Length; octave++)
         {
             var frequency = 1d / ReliefFeatureMetres[octave];
-            total += Value(octaveSeed, x * frequency, z * frequency) * ReliefAmplitudeMetres[octave];
+            var amplitude = ReliefAmplitudeMetres[octave] * (ReliefIsRegional[octave] ? regionalWeight : 1d);
+            total += Value(octaveSeed, x * frequency, z * frequency) * amplitude;
             octaveSeed = unchecked((int)Mix((uint)octaveSeed));
         }
         return total;
@@ -142,9 +152,11 @@ public static class UnderworldTerrainNoise
     }
 
     // Wavelength in metres, coarsest first: regional basins and walls, ridges, hills, hummocks,
-    // then footstep-scale break-up.
+    // then footstep-scale break-up. The first three are regional and fade out toward the arrival
+    // basin; the last three are local and always present, so no part of the realm is ever a plane.
     private static readonly double[] ReliefFeatureMetres = { 2048d, 768d, 256d, 96d, 32d, 11d };
-    private static readonly double[] ReliefAmplitudeMetres = { 26d, 12d, 6d, 3d, 1.4d, 0.6d };
+    private static readonly double[] ReliefAmplitudeMetres = { 72d, 40d, 20d, 10d, 5d, 2d };
+    private static readonly bool[] ReliefIsRegional = { true, true, true, false, false, false };
 
     private static double Smooth(double value) => value * value * (3d - 2d * value);
 }

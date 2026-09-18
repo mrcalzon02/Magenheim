@@ -43,6 +43,7 @@ internal static class UnderworldTerrainRuntime
         if (_patched) return;
         var harmony = new Harmony(MagenheimPlugin.PluginGuid + ".gameplay");
         harmony.PatchAll(typeof(UnderworldTerrainWorldPatch));
+        harmony.PatchAll(typeof(UnderworldBiomeSectorPatch));
         harmony.PatchAll(typeof(UnderworldTerrainHeightPatch));
         harmony.PatchAll(typeof(UnderworldTerrainBiomePatch));
         _patched = true;
@@ -118,6 +119,39 @@ internal static class UnderworldTerrainRuntime
             ? Heightmap.Biome.Meadows
             : vanillaBiome;
     }
+
+    /// <summary>
+    /// The biome sector for a map-space cell, which is the answer almost everything except terrain
+    /// height actually consumes.
+    /// </summary>
+    /// <remarks>
+    /// Overriding <see cref="SelectVanillaBiome"/> alone made the game disagree with itself. The
+    /// sector out at the reserved region is Ocean, so <c>Player.UpdateBiome</c> logged
+    /// "GetBiome error Ocean -> Meadows" every tick, <c>SpawnSystem.UpdateSpawnList</c> threw a
+    /// NullReferenceException every tick, ocean fish spawned on dry Underworld ground, and the sky,
+    /// weather and ground texture all stayed Ashlands, because
+    /// <c>EnvMan.GetEnvironmentOverride</c> and <c>Heightmap.RebuildRenderMesh</c> read the sector
+    /// rather than the biome.
+    ///
+    /// Every caller reaches the sector through the (int, int, bool) overload, so this is the single
+    /// place to answer. <c>BiomeSector.EmptyMeadows</c> is vanilla's own shared instance, built as
+    /// <c>new BiomeSector(null, Meadows)</c> and already returned by this same method for cells it
+    /// cannot resolve, so handing it back is a path every consumer already handles. It also now
+    /// agrees with what <see cref="SelectVanillaBiome"/> reports.
+    ///
+    /// This runs on HeightmapBuilder's worker thread as well as the main thread, so it stays on
+    /// static maths and a static field read.
+    /// </remarks>
+    internal static BiomeSector SelectBiomeSector(int gridX, int gridY, BiomeSector vanillaSector)
+    {
+        var services = _services;
+        if (services is null || _world is null) return vanillaSector;
+        var wx = AltBiomeWorldData.MapSpaceToWorldSpace((float)gridX);
+        var wz = AltBiomeWorldData.MapSpaceToWorldSpace((float)gridY);
+        return UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, wx, wz)
+            ? BiomeSector.EmptyMeadows
+            : vanillaSector;
+    }
 }
 
 // ZNet.Awake calls WorldGenerator.Initialize on the main thread when a world loads, before any
@@ -128,6 +162,18 @@ internal static class UnderworldTerrainRuntime
 internal static class UnderworldTerrainWorldPatch
 {
     private static void Postfix(World world) => UnderworldTerrainRuntime.CaptureWorld(world);
+}
+
+// Every biome-sector caller -- Player, Minimap, EnvMan, SpawnSystem, SpawnArea, ZoneSystem
+// vegetation placement, HeightmapBuilder and Heightmap's render mesh -- reaches the sector through
+// this (int, int, bool) overload, so patching it alone keeps the whole game consistent about what
+// the reserved region is.
+[HarmonyPatch(typeof(WorldGenerator), nameof(WorldGenerator.GetBiomeSector),
+    new Type[] { typeof(int), typeof(int), typeof(bool) })]
+internal static class UnderworldBiomeSectorPatch
+{
+    private static void Postfix(int gridx, int gridy, ref BiomeSector __result) =>
+        __result = UnderworldTerrainRuntime.SelectBiomeSector(gridx, gridy, __result);
 }
 
 // Valheim 1.0.12 takes the biome mask out-parameter and two optional generation flags, so the

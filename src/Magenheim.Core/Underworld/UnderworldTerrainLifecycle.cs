@@ -38,7 +38,10 @@ public static class UnderworldTerrainLifecycle
 {
     // Headroom for the deepest Fracture ravine and the highest wall mass. The old 48m ceiling was
     // sized for a model that produced barely a metre of visible relief.
-    public const double MaximumTerrainDelta = 120d;
+    public const double MaximumTerrainDelta = 300d;
+
+    /// <summary>Radius fraction by which regional relief reaches full strength.</summary>
+    public const double RegionalReliefRadiusFraction = 0.42d;
 
     /// <summary>
     /// The elevation the Underworld generates around, in world metres.
@@ -84,7 +87,8 @@ public static class UnderworldTerrainLifecycle
 
         // Relief comes from the shared noise authority in metres, so the same landform is produced
         // for a column no matter which adapter asks for it.
-        var relief = UnderworldTerrainNoise.ReliefMetres(derivedSeed32, sample.X, sample.Z);
+        var relief = UnderworldTerrainNoise.ReliefMetres(derivedSeed32, sample.X, sample.Z,
+            RegionalReliefWeight(distance, domain.RadiusMeters));
         var delta = BiomeDelta(biome, relief);
 
         // Blend the terrain shape around the protected Fungal Forest basin. This prevents a single
@@ -135,6 +139,21 @@ public static class UnderworldTerrainLifecycle
             3 => UnderworldTerrainBiome.FractureZones,
             _ => UnderworldTerrainBiome.GreatDecay,
         };
+    }
+
+    /// <summary>
+    /// How much large-wavelength geography a column receives. Zero inside the protected central
+    /// basin, ramping to full by <see cref="RegionalReliefRadiusFraction"/>, so the player arrives on
+    /// gentle dry ground and the mountain barriers and deep basins belong to the outer provinces.
+    /// </summary>
+    private static double RegionalReliefWeight(double distance, double radius)
+    {
+        var inner = radius * CentralFungalRadiusFraction;
+        var outer = radius * RegionalReliefRadiusFraction;
+        if (distance <= inner) return 0d;
+        if (distance >= outer) return 1d;
+        var t = (distance - inner) / (outer - inner);
+        return t * t * (3d - 2d * t);
     }
 
     private static double FungalTransition(double distance, double radius)
