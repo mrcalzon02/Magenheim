@@ -12,6 +12,7 @@ namespace Magenheim.Runtime;
 internal static class UnderworldMapLayerRuntime
 {
     internal const int UnderworldExplorationResolution = 512;
+    internal const double DefaultRevealRadiusMeters = 100d;
 
     private static UnderworldRuntimeServices? _services;
     private static ManualLogSource? _log;
@@ -41,10 +42,7 @@ internal static class UnderworldMapLayerRuntime
             : MagenheimMapLayer.Surface;
     }
 
-    internal static void FollowPlayerLayer()
-    {
-        Select(PlayerLayer());
-    }
+    internal static void FollowPlayerLayer() => Select(PlayerLayer());
 
     internal static void Select(MagenheimMapLayer layer)
     {
@@ -53,10 +51,6 @@ internal static class UnderworldMapLayerRuntime
         _log?.LogDebug("Magenheim map layer selected: " + layer + ".");
     }
 
-    /// <summary>
-    /// Resolves the active logical Underworld fog state for the current player/world pair. The
-    /// surface map deliberately remains vanilla-owned. Switching maps never aliases exploration.
-    /// </summary>
     internal static bool TryGetUnderworldExploration(out UnderworldExplorationState state)
     {
         state = null!;
@@ -71,10 +65,15 @@ internal static class UnderworldMapLayerRuntime
             return true;
         }
 
-        var fresh = new UnderworldExplorationState(
-            MagenheimMapLayer.Underworld,
-            UnderworldExplorationResolution,
-            UnderworldExplorationResolution);
+        // Do not silently discard dirty fog if the active player/world identity changes in-process.
+        if (_underworldExploration is not null)
+        {
+            try { SaveUnderworldExploration(); }
+            catch (Exception exception) { _log?.LogWarning("Failed to persist outgoing Underworld exploration: " + exception.Message); }
+        }
+
+        var fresh = new UnderworldExplorationState(MagenheimMapLayer.Underworld,
+            UnderworldExplorationResolution, UnderworldExplorationResolution);
         if (services.ExplorationStateStore.TryRestore(playerId, identity, fresh, out var diagnostic))
             _log?.LogDebug("Restored Underworld logical-map exploration for active player/world.");
         else if (!string.IsNullOrWhiteSpace(diagnostic))
@@ -84,6 +83,31 @@ internal static class UnderworldMapLayerRuntime
         _explorationIdentityKey = key;
         state = fresh;
         return true;
+    }
+
+    /// <summary>
+    /// Reveals logical Underworld fog around a physical world position. The host displacement is
+    /// removed before cell selection; surface positions never mutate Underworld discovery state.
+    /// Returns the number of newly revealed cells.
+    /// </summary>
+    internal static int RevealUnderworldAtWorldPosition(double worldX, double worldZ,
+        double radiusMeters = DefaultRevealRadiusMeters)
+    {
+        if (radiusMeters < 0d || double.IsNaN(radiusMeters) || double.IsInfinity(radiusMeters))
+            throw new ArgumentOutOfRangeException(nameof(radiusMeters));
+        var services = _services;
+        if (services is null || !UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, worldX, worldZ) ||
+            !TryGetUnderworldExploration(out var exploration)) return 0;
+
+        var logical = UnderworldSpatialDomain.ToLogicalColumn(services.SpatialDomain, worldX, worldZ);
+        var viewport = UnderworldMapPresentation.CreateUnderworldViewport(services.SpatialDomain,
+            exploration.Width, exploration.Height);
+        if (!UnderworldMapPresentation.TryLogicalToCell(viewport, logical.X, logical.Z, out var cellX, out var cellY))
+            return 0;
+
+        var metresPerCell = services.SpatialDomain.RadiusMeters * 2d / Math.Min(exploration.Width, exploration.Height);
+        var radiusCells = (int)Math.Ceiling(radiusMeters / metresPerCell);
+        return exploration.RevealCircle(cellX, cellY, radiusCells);
     }
 
     internal static bool SaveUnderworldExploration()
@@ -103,17 +127,8 @@ internal static class UnderworldMapLayerRuntime
             point = new MagenheimMapPoint(worldX, worldZ);
             return _selectedLayer == MagenheimMapLayer.Surface;
         }
-
-        try
-        {
-            point = UnderworldMapProjection.WorldToLayer(services.SpatialDomain, _selectedLayer, worldX, worldZ);
-            return true;
-        }
-        catch (InvalidOperationException)
-        {
-            point = default;
-            return false;
-        }
+        try { point = UnderworldMapProjection.WorldToLayer(services.SpatialDomain, _selectedLayer, worldX, worldZ); return true; }
+        catch (InvalidOperationException) { point = default; return false; }
     }
 
     internal static bool TryProjectSelectedMapToWorld(double mapX, double mapZ, out MagenheimMapPoint point)
@@ -124,17 +139,8 @@ internal static class UnderworldMapLayerRuntime
             point = new MagenheimMapPoint(mapX, mapZ);
             return _selectedLayer == MagenheimMapLayer.Surface;
         }
-
-        try
-        {
-            point = UnderworldMapProjection.LayerToWorld(services.SpatialDomain, _selectedLayer, mapX, mapZ);
-            return true;
-        }
-        catch (InvalidOperationException)
-        {
-            point = default;
-            return false;
-        }
+        try { point = UnderworldMapProjection.LayerToWorld(services.SpatialDomain, _selectedLayer, mapX, mapZ); return true; }
+        catch (InvalidOperationException) { point = default; return false; }
     }
 
     internal static void Reset()
