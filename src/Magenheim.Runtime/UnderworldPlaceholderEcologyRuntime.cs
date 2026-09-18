@@ -88,27 +88,39 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
 
     private void SpawnDonor(Vector3 position, UnderworldTerrainBiome biome, int variant)
     {
-        UnderworldVanillaDonorCatalog.Donor donor;
-        try { donor = UnderworldVanillaDonorCatalog.Select(biome, variant); }
-        catch (InvalidOperationException exception)
+        UnderworldVanillaDonorCatalog.Donor donor = default;
+        GameObject? source = null;
+        var selectedVariant = variant;
+
+        for (var attempt = 0; attempt < 8 && source is null; attempt++)
         {
-            _log?.LogWarning(exception.Message);
-            return;
+            selectedVariant = variant + attempt;
+            try { donor = UnderworldVanillaDonorCatalog.Select(biome, selectedVariant); }
+            catch (InvalidOperationException exception)
+            {
+                _log?.LogWarning(exception.Message);
+                return;
+            }
+            source = ResolveDonor(donor.PrefabName);
         }
 
-        var source = ResolveDonor(donor.PrefabName);
         if (source is null) return;
-
-        var node = BuildVisualClone(source, donor, variant);
+        var node = BuildVisualClone(source, donor, selectedVariant);
         if (node is null) return;
 
         node.name = $"Magenheim_UnderworldDonor_{biome}_{donor.PrefabName}";
         node.transform.position = position + Vector3.up * donor.GroundOffset;
         node.transform.rotation = Quaternion.Euler(
-            Mathf.Abs(variant % 7) - 3f,
-            Mathf.Abs(variant * 37 % 360),
-            Mathf.Abs(variant % 9) - 4f);
-        node.transform.localScale = UnderworldVanillaDonorCatalog.Scale(donor, variant);
+            Mathf.Abs(selectedVariant % 7) - 3f,
+            Mathf.Abs(selectedVariant * 37 % 360),
+            Mathf.Abs(selectedVariant % 9) - 4f);
+
+        var scale = UnderworldVanillaDonorCatalog.Scale(donor, selectedVariant);
+        node.transform.localScale = scale;
+        var lightScale = Mathf.Clamp(Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z)), 1f, 12f);
+        foreach (var light in node.GetComponentsInChildren<Light>(true))
+            light.range *= lightScale;
+
         _spawned.Add(node);
     }
 
