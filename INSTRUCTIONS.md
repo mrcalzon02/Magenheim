@@ -29,6 +29,12 @@ Live verified repository state outranks stale conversation, scheduled prompts, o
 - Normal elemental identities are Earth, Fire, Frost, Storm, Venom, Radiance, Seidr, and Spirit.
 - Fate and boss resonance are later special systems, not ordinary geode elements.
 
+## Underworld objective statement — do not reinterpret
+
+**The Underworld is not another continent next door, and it is definitely not a second save that requires quitting Valheim and loading another world. It is a second logical world layer inside the same persistent Valheim game world.**
+
+The reserved ~40 km host region is an engine implementation detail: physical storage, terrain streaming and ZDO space. It must not become player-facing geography. Surface and Underworld share one simulation/save/session, while Magenheim owns layer projection, logical biome identity, independent exploration/cloud state, map pins and the tabbed Surface | Underworld map presentation. When vanilla finite-map or biome-sector assumptions disagree with that logical layer, keep the minimum safe vanilla compatibility answer and route Magenheim gameplay/presentation through the logical authority. Do not redesign the Underworld as an adjacent surface continent merely to satisfy vanilla map assumptions.
+
 ## The Underworld is one world, one save — non-negotiable
 
 The Underworld is a **region of the same Valheim world and the same save file** as the surface,
