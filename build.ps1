@@ -13,17 +13,13 @@ $env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
 
 $pluginSource = Join-Path $PSScriptRoot 'src/Magenheim.Runtime/MagenheimPlugin.cs'
 $pluginVersionLine = Select-String -LiteralPath $pluginSource -Pattern 'internal const string PluginVersion = "([^"]+)";' | Select-Object -First 1
-if (!$pluginVersionLine -or $pluginVersionLine.Matches.Count -eq 0) {
-    throw "Unable to read PluginVersion from $pluginSource"
-}
+if (!$pluginVersionLine -or $pluginVersionLine.Matches.Count -eq 0) { throw "Unable to read PluginVersion from $pluginSource" }
 $pluginVersion = $pluginVersionLine.Matches[0].Groups[1].Value
 if ([string]::IsNullOrWhiteSpace($pluginVersion)) { throw 'Resolved Magenheim plugin version is empty.' }
 if ($pluginVersion -notmatch '^\d+\.\d+\.\d+$') { throw 'Invalid package version.' }
 $release = Get-Content -LiteralPath "$PSScriptRoot/release.json" -Raw | ConvertFrom-Json
 if ([string]$release.version -ne $pluginVersion) { throw 'Update release.json for the current plugin version before packaging.' }
-if ([string]::IsNullOrWhiteSpace($release.description) -or $release.description.Length -gt 250) {
-    throw 'Release description must contain 1-250 characters describing this version.'
-}
+if ([string]::IsNullOrWhiteSpace($release.description) -or $release.description.Length -gt 250) { throw 'Release description must contain 1-250 characters describing this version.' }
 [xml]$runtimeProject = Get-Content -LiteralPath "$PSScriptRoot/src/Magenheim.Runtime/Magenheim.Runtime.csproj"
 if ([string]$runtimeProject.Project.PropertyGroup.Version -ne $pluginVersion) { throw 'Assembly/plugin version mismatch.' }
 $restoreOptions = @()
@@ -45,19 +41,19 @@ try {
         & "$PSScriptRoot/tools/blender.ps1" $creatureGate
         if ($LASTEXITCODE -ne 0) { throw "Creature source validation failed: $creatureGate" }
     }
+    # The Sporeling review renderer is intentionally part of local acceptance: source metrics alone
+    # cannot prove silhouette, foot contact, cap/gill separation or animation readability. It clears
+    # stale plates first and fails if all twelve current-r4 review frames are not freshly rendered.
+    & "$PSScriptRoot/tools/blender.ps1" render-underworld-sporeling-review
+    if ($LASTEXITCODE -ne 0) { throw 'Sporeling visual review rendering failed.' }
     & python "$PSScriptRoot/tools/verify-model-scale.py"
     if ($LASTEXITCODE -ne 0) { throw 'Model scale validation failed.' }
     & python "$PSScriptRoot/tools/verify-weapon-materials.py"
     if ($LASTEXITCODE -ne 0) { throw 'Weapon material validation failed.' }
     foreach ($modelGate in @(
-        'verify-model-geometry',
-        'verify-model-surface-continuity',
-        'verify-held-model-orientation',
-        'verify-held-model-grip-direction',
-        'verify-geode-topology',
-        'verify-geode-shell-topology',
-        'verify-deep-fracture-caverns',
-        'verify-earth-assets')) {
+        'verify-model-geometry','verify-model-surface-continuity','verify-held-model-orientation',
+        'verify-held-model-grip-direction','verify-geode-topology','verify-geode-shell-topology',
+        'verify-deep-fracture-caverns','verify-earth-assets')) {
         & python "$PSScriptRoot/tools/$modelGate.py"
         if ($LASTEXITCODE -ne 0) { throw "Model validation failed: $modelGate" }
     }
@@ -74,18 +70,12 @@ try {
     if (Test-Path -LiteralPath $package) {
         $resolvedPackage = (Resolve-Path -LiteralPath $package).Path
         $distRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'dist'))
-        if ([IO.Path]::GetDirectoryName($resolvedPackage) -ne $distRoot -or
-            (Get-Item -LiteralPath $package).Attributes -band [IO.FileAttributes]::ReparsePoint) {
-            throw 'Package cleanup target must be a direct, non-linked child of project dist.'
-        }
+        if ([IO.Path]::GetDirectoryName($resolvedPackage) -ne $distRoot -or (Get-Item -LiteralPath $package).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Package cleanup target must be a direct, non-linked child of project dist.' }
         Remove-Item -LiteralPath $package -Recurse -Force
     }
-    $plugin = Join-Path $package 'Magenheim'
-    New-Item -ItemType Directory -Force -Path $plugin | Out-Null
+    $plugin = Join-Path $package 'Magenheim'; New-Item -ItemType Directory -Force -Path $plugin | Out-Null
     $output = Join-Path $PSScriptRoot 'src/Magenheim.Runtime/bin/Release/net462'
-    foreach ($assembly in @('Magenheim.dll', 'Magenheim.Core.dll')) {
-        Copy-Item -LiteralPath (Join-Path $output $assembly) -Destination $plugin -Force
-    }
+    foreach ($assembly in @('Magenheim.dll', 'Magenheim.Core.dll')) { Copy-Item -LiteralPath (Join-Path $output $assembly) -Destination $plugin -Force }
     Copy-Item -LiteralPath (Join-Path $output 'assets') -Destination $plugin -Recurse -Force
     Copy-Item -LiteralPath (Join-Path $output 'default-data') -Destination $plugin -Recurse -Force
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TESTING.md') -Destination $package -Force
@@ -94,22 +84,12 @@ try {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'icon.png') -Destination $package -Force
     New-Item -ItemType Directory -Force -Path "$package/assets/earth", "$package/docs/validation" | Out-Null
     Copy-Item -Path "$PSScriptRoot/assets/earth/*preview.png" -Destination "$package/assets/earth" -Force
-    foreach ($record in @('2026-09-14-earth-content-package.md', '2026-09-14-workshop-content.md', '2026-09-15-inventory-changed-reflection-repair.md')) {
-        Copy-Item -LiteralPath "$PSScriptRoot/docs/validation/$record" -Destination "$package/docs/validation" -Force
-    }
-    $manifest = @{
-        name = 'Magenheim'; version_number = $pluginVersion;
-        website_url = 'https://github.com/mrcalzon02/Magenheim';
-        description = [string]$release.description;
-        dependencies = @('denikson-BepInExPack_Valheim-5.4.2350', 'ValheimModding-Jotunn-2.30.0', 'ValheimModding-JsonDotNET-13.0.4')
-    }
+    foreach ($record in @('2026-09-14-earth-content-package.md', '2026-09-14-workshop-content.md', '2026-09-15-inventory-changed-reflection-repair.md')) { Copy-Item -LiteralPath "$PSScriptRoot/docs/validation/$record" -Destination "$package/docs/validation" -Force }
+    $manifest = @{ name='Magenheim'; version_number=$pluginVersion; website_url='https://github.com/mrcalzon02/Magenheim'; description=[string]$release.description; dependencies=@('denikson-BepInExPack_Valheim-5.4.2350','ValheimModding-Jotunn-2.30.0','ValheimModding-JsonDotNET-13.0.4') }
     $manifest | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $package 'manifest.json')
-    $hashes = @(Get-ChildItem -LiteralPath $package -File -Recurse | Sort-Object FullName | ForEach-Object {
-        [ordered]@{ path = $_.FullName.Substring($package.Length + 1).Replace('\', '/'); sha256 = (Get-FileHash -LiteralPath $_.FullName).Hash }
-    })
+    $hashes = @(Get-ChildItem -LiteralPath $package -File -Recurse | Sort-Object FullName | ForEach-Object { [ordered]@{ path=$_.FullName.Substring($package.Length + 1).Replace('\','/'); sha256=(Get-FileHash -LiteralPath $_.FullName).Hash } })
     ConvertTo-Json -InputObject $hashes -Depth 3 | Set-Content -LiteralPath (Join-Path $package 'checksums.json')
     Compress-Archive -Path "$package/*" -DestinationPath "$package.zip" -Force
     Get-FileHash -LiteralPath (Join-Path $plugin 'Magenheim.dll'),(Join-Path $plugin 'Magenheim.Core.dll')
-    Write-Output "Built Magenheim $pluginVersion"
-    Write-Output "Test package: $package.zip"
+    Write-Output "Built Magenheim $pluginVersion"; Write-Output "Test package: $package.zip"
 } finally { Pop-Location }
