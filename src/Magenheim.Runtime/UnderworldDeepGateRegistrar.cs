@@ -8,7 +8,8 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Creates Magenheim's Deep Gate by cloning the shipped Valheim 1.0 Aesir Passage gate geometry.
+/// Creates Magenheim's Deep Gate by cloning the shipped Morkhalla jotun gate geometry, which is
+/// the Deep North passage Valheim surfaces to players as the "Aesir Passage" map pin.
 /// The vanilla object is never mutated. Boss/offering behaviour is removed from the clone so the
 /// Magenheim transition authority can own interaction and persistence independently.
 /// </summary>
@@ -16,14 +17,14 @@ internal sealed class UnderworldDeepGateRegistrar : IDisposable
 {
     internal const string PrefabName = "Magenheim_DeepGate";
 
+    // "Aesir Passage" is not a prefab name in Valheim 1.0.12 -- it is the localized display string
+    // for the hud_pin_dnboss map pin, and no asset with "aesir" in its name exists in the build at
+    // all, so the original name list could never resolve. The Deep North boss location it names is
+    // internally Morkhalla, and its jotun gate is the geometry this pin points at.
     private static readonly string[] PreferredDonorNames =
     {
-        "AesirPassage",
-        "Aesir_Passage",
-        "AesirPassage_Gate",
-        "Aesir_Passage_Gate",
-        "AesirGate",
-        "Aesir_Gate",
+        "Morkhalla_jotun_gate",
+        "Morkborg_gate",
     };
 
     private static readonly HashSet<string> ForbiddenGameplayComponents = new(StringComparer.Ordinal)
@@ -74,11 +75,11 @@ internal sealed class UnderworldDeepGateRegistrar : IDisposable
                 return;
             }
 
-            var donor = ResolveAesirGateDonor()
-                ?? throw new InvalidOperationException("Valheim 1.0 Aesir Passage gate geometry was not found. Magenheim will not substitute unrelated geometry.");
+            var donor = ResolveDeepNorthGateDonor()
+                ?? throw new InvalidOperationException("Morkhalla jotun gate geometry (the Aesir Passage donor) was not found. Magenheim will not substitute unrelated geometry.");
 
             var gate = PrefabManager.Instance.CreateClonedPrefab(PrefabName, donor);
-            if (!gate) throw new InvalidOperationException($"Jotunn failed to clone Aesir Passage donor '{donor.name}'.");
+            if (!gate) throw new InvalidOperationException($"Jotunn failed to clone Deep North gate donor '{donor.name}'.");
 
             RemoveVanillaEncounterAuthority(gate);
             ApplyUnderworldMaterials(gate);
@@ -93,7 +94,7 @@ internal sealed class UnderworldDeepGateRegistrar : IDisposable
                 throw new InvalidOperationException($"Jotunn refused Deep Gate prefab registration for '{PrefabName}'.");
 
             _registered = true;
-            _log.LogInfo($"Registered '{PrefabName}' from Valheim final-gate donor '{donor.name}' with independent Magenheim materials and encounter authority removed.");
+            _log.LogInfo($"Registered '{PrefabName}' from Deep North gate donor '{donor.name}' with independent Magenheim materials and encounter authority removed.");
         }
         catch (Exception exception)
         {
@@ -106,7 +107,7 @@ internal sealed class UnderworldDeepGateRegistrar : IDisposable
         }
     }
 
-    private static GameObject? ResolveAesirGateDonor()
+    private static GameObject? ResolveDeepNorthGateDonor()
     {
         foreach (var name in PreferredDonorNames)
         {
@@ -114,13 +115,13 @@ internal sealed class UnderworldDeepGateRegistrar : IDisposable
             if (prefab && HasGateGeometry(prefab)) return prefab;
         }
 
-        // Valheim 1.0 is new and internal child names may move between patches. Restrict fallback
-        // discovery to assets explicitly carrying the Aesir identity; never silently clone another gate.
+        // Internal child names may move between patches. Restrict fallback discovery to assets
+        // explicitly carrying the Morkhalla identity that the Aesir Passage pin names; never
+        // silently clone an unrelated gate such as the final-boss or dvergr town gates.
         return Resources.FindObjectsOfTypeAll<GameObject>()
             .Where(candidate => candidate &&
-                candidate.name.IndexOf("aesir", StringComparison.OrdinalIgnoreCase) >= 0 &&
-                (candidate.name.IndexOf("gate", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                 candidate.name.IndexOf("passage", StringComparison.OrdinalIgnoreCase) >= 0))
+                candidate.name.IndexOf("morkhalla", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                candidate.name.IndexOf("gate", StringComparison.OrdinalIgnoreCase) >= 0)
             .Where(HasGateGeometry)
             .OrderByDescending(candidate => candidate.GetComponentsInChildren<Renderer>(true).Length)
             .FirstOrDefault();
@@ -173,7 +174,7 @@ internal sealed class UnderworldDeepGateRegistrar : IDisposable
     private static void RethemeMaterial(Material material)
     {
         // Preserve the donor's normal/metallic/UV work while replacing its readable surface language.
-        // These are independent material instances, so no vanilla Aesir Passage material is mutated.
+        // These are independent material instances, so no vanilla Morkhalla material is mutated.
         var stone = new Color(0.105f, 0.115f, 0.135f, 1f);
         var mineral = new Color(0.20f, 0.075f, 0.31f, 1f);
         if (material.HasProperty("_Color")) material.SetColor("_Color", stone);
