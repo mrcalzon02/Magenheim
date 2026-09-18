@@ -2,6 +2,45 @@
 
 Priority is dependency order. Broken intended behavior and repository divergence outrank new scope.
 
+## P0.-1 — Underworld world-hosting correction (TOP PRIORITY, raised 2026-09-17, user directive)
+
+The Underworld was implemented as a **separate save file** that the player reaches by quitting to
+the main menu. That is not the design and never was the intent: it must be a region of the same
+world and same save, concurrent with the surface, hosted in a reserved coordinate band the way
+Valheim's own instanced dungeon interiors are. See `INSTRUCTIONS.md` and the rewritten
+`docs/UNDERWORLD_DESIGN.md` §6, which are now the binding authorities.
+
+Root cause of the divergence: `UNDERWORLD_DESIGN.md` §6 itself specified "a separate persistent
+world instance" and speculated about "controlled world-context switching". Work was then built
+faithfully against that text. The document was the defect, so correcting only the code would have
+let the next session rebuild it.
+
+What survived and must be kept: `UnderworldSpatialDomain` (the logical-to-host band mapping, still
+wired into `UnderworldWorldCenterRegistrar` and `ValheimUnderworldTransitionPlacementHost`), the
+six-biome terrain authority, the `GetBiomeHeight`/`GetBiome` postfixes, the Conclave, creatures,
+flora and progression work. None of that is wasted.
+
+- [ ] **Remove the physical world-switch layer.** `UnderworldPhysicalWorldSwitchDriver`,
+  `UnderworldWorldSwitchDispatchRuntime`, `UnderworldPhysicalWorldSwitchCoordinator`,
+  `ValheimPhysicalUnderworldWorldContextController`, `UnderworldWorldPairManifestStore` and the
+  `IUnderworldPhysicalWorldLoader` boundary — roughly 360 lines across five files, plus the
+  `.worldpair` manifests written into the plugin config directory.
+- [ ] **Re-ground the Conclave on the reserved host band.** The center was moved off `HostBaseY` to
+  sit on derived-world terrain; that specific change is what turned a region of the live world into
+  a second save. Restore band-hosted placement.
+- [ ] **Make layer travel a teleport within the world.** Entry and return resolve through
+  `UnderworldSpatialDomain` and the persisted surface source anchor, with no save load anywhere in
+  the path.
+- [ ] **Confirm the terrain-shaping band bounds against the reserved host band.** The
+  `GetBiomeHeight`/`GetBiome` postfixes currently key off an admitted session; they must instead key
+  off the host band so surface coordinates are untouched in the same session.
+- [ ] **Decide the seed question explicitly.** §6 derives the Underworld seed from the surface seed
+  so the same world always yields the same Underworld, while §10 forbids the Underworld being
+  navigable by copying the surface map. Confirm derived-not-identical is what is wanted, and record
+  it.
+- [ ] **Purge the separate-save language from the remaining docs and validation records** so no
+  future session reads it as authority.
+
 ## P0.0 — Live play defects from the 0.0.52 session (TOP PRIORITY, raised 2026-09-16)
 
 The first live acceptance pass against an installed build. These outrank P0.1 and everything

@@ -29,6 +29,30 @@ Live verified repository state outranks stale conversation, scheduled prompts, o
 - Normal elemental identities are Earth, Fire, Frost, Storm, Venom, Radiance, Seidr, and Spirit.
 - Fate and boss resonance are later special systems, not ordinary geode elements.
 
+## The Underworld is one world, one save — non-negotiable
+
+The Underworld is a **region of the same Valheim world and the same save file** as the surface,
+hosted in a reserved coordinate band exactly the way Valheim's own instanced dungeon interiors are.
+Both layers are resident in the same running session at the same time. Travel between them is a
+teleport within the world.
+
+- Never introduce a second save, a derived save name, a world-pair manifest, a "physical world
+  switch", or a second server process as the mechanism for layer separation.
+- Never call `ZNet.LoadWorld`, `WorldGenerator.Initialize` or `FejdStartup` paths to change worlds.
+- Never produce a design in which the player must leave the session to reach the Underworld.
+- Valheim's `ZNet`, `ZoneSystem`, `WorldGenerator` and `ZDOMan` are per-world singletons. Two
+  simultaneously loaded worlds are impossible in one process; do not attempt or plan around it.
+- `UnderworldSpatialDomain` in `Magenheim.Core` is the authority for the logical-to-host coordinate
+  mapping. Terrain inside the band comes from Valheim's own generator via the
+  `WorldGenerator.GetBiomeHeight`/`GetBiome` postfixes, reshaped to Underworld biomes from a seed
+  deterministically derived from the surface seed.
+
+This was got wrong once: `docs/UNDERWORLD_DESIGN.md` §6 previously specified a separate persistent
+world instance, an implementation was built against it, and the result could only be entered by
+quitting to the main menu and loading a different save. §6 now records the corrected architecture.
+If any document, handoff or backlog item disagrees with this section, this section wins and the
+other document is the defect.
+
 ## Architecture
 
 - `Magenheim.Core` owns deterministic rules and must remain independent of Unity, Valheim, BepInEx, and Jötunn.

@@ -108,35 +108,77 @@ Examples:
 - the road that vanishes into the Great Decay;
 - the fracture crossed by the broken ancient bridge.
 
-## 6. Separate persistent world instance
+## 6. One world, one save: the Underworld is an instanced region
 
-The design target remains a **separate persistent world instance** rather than an overlay physically under the surface terrain.
+**The Underworld is a region of the same Valheim world and the same save file as the surface. It is
+not a second save, not a second server, and not a world the player loads instead of theirs.**
 
-Conceptually:
+This section previously specified a "separate persistent world instance" and speculated about
+"controlled world-context switching". That was wrong, it was built, and it produced an Underworld
+that could only be reached by quitting to the main menu and loading a different save — which defeats
+the entire purpose. The corrected architecture below is binding. Do not reintroduce the old model.
 
-```text
-Surface world
-  identity: <world>
-  seed: <seed>
+### 6.1 The mechanism already exists in Valheim: dungeon interiors
 
-Derived Underworld
-  identity: <world>:underworld
-  parent: <surface world identity>
-  seed: HASH(<surface seed> + "MAGENHEIM_UNDERWORLD")
-```
+Valheim's instanced dungeons are the working precedent, and they are *not* separate worlds. Verified
+against the installed 1.0.12 assemblies:
 
-The exact Valheim loading/runtime implementation must be proven experimentally before code authority is declared, but several invariants are required from the start:
+| Element | What it does |
+|---|---|
+| `Location.m_hasInterior`, `m_interiorRadius` | Marks a location as owning an interior volume |
+| `Location.m_interiorEnvironment` | Gives that volume its own sky, fog and lighting |
+| `Location.m_interiorTransform`, `m_useCustomInteriorTransform` | Places the interior away from the surface footprint |
+| `Location.m_generator` (`DungeonGenerator`) | Builds the interior contents |
+| `DungeonGenerator.m_zoneCenter`, `m_zoneSize` | The interior occupies a reserved coordinate volume |
+| `ZoneSystem::SpawnLocation` | Places it; the **same** `ZoneSystem` then streams it |
 
-- the same parent world always derives the same Underworld seed;
-- Underworld terrain and placed-state persistence are independent from the surface world;
-- player character state follows the player between world layers;
-- map discovery is stored separately;
-- Underworld structures, resource depletion, player construction and progression persist;
-- multiplayer host/server authority determines canonical world state;
-- returning to the surface restores the correct corresponding world context;
-- a transition failure must not corrupt either world.
+A dungeon interior lives at coordinates far from surface play, inside the one running world. It is
+streamed by the same `ZoneSystem` (`m_zones`, `m_generatedZones`, `m_locationInstances`) and
+persisted as ordinary ZDOs in the same `.db`. Both the surface and every dungeon interior are
+resident in the same session at the same time. Third-party dungeon-map mods work precisely because
+the interior is normal world space with a known coordinate offset.
 
-The implementation may ultimately require controlled world-context switching rather than two simultaneously running ZoneSystems. The design intentionally does not pretend that detail is solved before runtime prototyping.
+### 6.2 The Underworld is that pattern at world scale
+
+The Underworld applies the same instancing, with two differences: the reserved volume is
+world-sized rather than room-sized, and its contents come from Valheim's own terrain generator
+rather than from a room list.
+
+- The playable layer uses logical Underworld coordinates. Runtime adapters map those into a reserved
+  host band immediately before placement or generation. This is `UnderworldSpatialDomain` in
+  `Magenheim.Core`, which is the authority for that mapping.
+- Terrain inside the band is produced by Valheim's own world generator, reshaped through Harmony
+  postfixes on `WorldGenerator.GetBiomeHeight` and `WorldGenerator.GetBiome`, so the Underworld is a
+  real generated landmass with the six Underworld biomes rather than a hand-placed set.
+- Surface coordinates outside the band pass through completely unmodified.
+
+### 6.3 Required invariants
+
+- One `ZNet`, one `ZoneSystem`, one `WorldGenerator`, one `ZDOMan`, one `.fwl`/`.db` pair. These are
+  per-world singletons in Valheim; two simultaneously loaded worlds are not possible in one process
+  and must never be attempted.
+- Both layers are resident concurrently. A player standing on the surface and a player in the
+  Underworld are in the same running world at the same time.
+- Travel between layers is a **teleport within the world**. It is never a save load, never a
+  reconnect, and never a return to the main menu.
+- The Underworld seed is deterministically derived from the surface world's seed, so the same
+  surface world always produces the same Underworld. It is deliberately not the surface seed used
+  verbatim, because §10 requires that the player cannot navigate below by copying their surface map.
+- Underworld placed state, construction, resource depletion and progression persist as ordinary ZDOs
+  in the shared save, distinguished by their location in the reserved band.
+- Multiplayer needs no second server and no special session handling. Normal ZDO and `ZNetView`
+  ownership applies because there is only ever one world.
+- Map and exploration state are still separated per layer (§25). That is a presentation and
+  discovery-state concern, not a reason to separate the save.
+
+### 6.4 Explicitly forbidden
+
+- A second save file, a derived save name, or any world-pair manifest that points at one.
+- `IUnderworldPhysicalWorldLoader` or any equivalent "physical world switch" abstraction.
+- Calling `ZNet.LoadWorld`, `WorldGenerator.Initialize` or `FejdStartup` paths to change worlds.
+- Any design that requires the player to leave the session to reach the Underworld.
+- A second dedicated server process as the mechanism for layer separation.
+
 
 ## 7. Entry and the Descent
 
