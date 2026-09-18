@@ -1,6 +1,8 @@
 using System;
 using BepInEx.Logging;
+using HarmonyLib;
 using Magenheim.Core.Underworld;
+using UnityEngine;
 
 namespace Magenheim.Runtime;
 
@@ -30,6 +32,7 @@ internal static class UnderworldMapLayerRuntime
         _selectedLayer = MagenheimMapLayer.Surface;
         _underworldExploration = null;
         _explorationIdentityKey = null;
+        UnderworldExplorationPlayerPatch.Reset();
     }
 
     internal static MagenheimMapLayer PlayerLayer()
@@ -47,6 +50,15 @@ internal static class UnderworldMapLayerRuntime
     internal static void Select(MagenheimMapLayer layer)
     {
         if (_selectedLayer == layer) return;
+
+        // A layer transition is a persistence boundary. Save before Surface becomes authoritative so
+        // portal travel, logout transitions and world changes cannot strand the latest fog mutations.
+        if (_selectedLayer == MagenheimMapLayer.Underworld && _underworldExploration is not null)
+        {
+            try { SaveUnderworldExploration(); }
+            catch (Exception exception) { _log?.LogWarning("Failed to persist Underworld exploration while leaving layer: " + exception.Message); }
+        }
+
         _selectedLayer = layer;
         _log?.LogDebug("Magenheim map layer selected: " + layer + ".");
     }
@@ -152,5 +164,58 @@ internal static class UnderworldMapLayerRuntime
         _explorationIdentityKey = null;
         _services = null;
         _log = null;
+        UnderworldExplorationPlayerPatch.Reset();
+    }
+}
+
+/// <summary>
+/// Thin local-player lifecycle hook for logical Underworld discovery. Remote Player instances are
+/// intentionally ignored: exploration is per local profile/world and must not be mutated by another
+/// peer's replicated movement. Work is throttled independently of Player.Update's frame cadence.
+/// </summary>
+[HarmonyPatch(typeof(Player), "Update", new Type[0])]
+internal static class UnderworldExplorationPlayerPatch
+{
+    private const float RevealIntervalSeconds = 0.75f;
+    private const float PersistenceIntervalSeconds = 30f;
+    private static float _nextRevealAt;
+    private static float _nextPersistenceAt;
+    private static bool _dirty;
+
+    private static void Postfix(Player __instance)
+    {
+        if (!ReferenceEquals(__instance, Player.m_localPlayer)) return;
+
+        var now = Time.unscaledTime;
+        if (now < _nextRevealAt) return;
+        _nextRevealAt = now + RevealIntervalSeconds;
+
+        try
+        {
+            UnderworldMapLayerRuntime.FollowPlayerLayer();
+            if (UnderworldMapLayerRuntime.SelectedLayer != MagenheimMapLayer.Underworld) return;
+
+            var position = __instance.transform.position;
+            if (UnderworldMapLayerRuntime.RevealUnderworldAtWorldPosition(position.x, position.z) > 0)
+                _dirty = true;
+
+            if (_dirty && now >= _nextPersistenceAt)
+            {
+                if (UnderworldMapLayerRuntime.SaveUnderworldExploration()) _dirty = false;
+                _nextPersistenceAt = now + PersistenceIntervalSeconds;
+            }
+        }
+        catch (Exception exception)
+        {
+            // Never let optional map bookkeeping break Valheim's Player.Update lifecycle.
+            MagenheimPlugin.Log?.LogWarning("Underworld exploration lifecycle update failed: " + exception.Message);
+        }
+    }
+
+    internal static void Reset()
+    {
+        _nextRevealAt = 0f;
+        _nextPersistenceAt = 0f;
+        _dirty = false;
     }
 }
