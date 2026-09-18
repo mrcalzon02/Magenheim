@@ -108,6 +108,54 @@ Launching the profile without r2modman's GUI requires Doorstop **command-line ar
 The `DOORSTOP_*` environment variables do not work with Doorstop 4.4.0 and launch the game vanilla
 and silently; confirm injection by checking that the profile's `LogOutput.log` mtime advanced.
 
+## Second pass — worldgen crash, and both donor decisions resolved
+
+After the first pass, a new-world load **hard-crashed the player**, with both `LogOutput.log` and
+`Player.log` stopping at `ZNet.LoadWorld: aefegfhiem` / `missing /worlds/aefegfhiem/_main.0.db2`
+and no dump written. The world never reached disk.
+
+**Cause: the crash was exposed, not caused, by repairing the patch signatures.** Before that repair
+both terrain patches resolved to zero methods, so the postfixes had never actually run. Once
+attached, they ran on `HeightmapBuilder`'s worker thread — Cecil confirms `HeightmapBuilder` owns a
+`Thread m_builder` and that its `Build` method is what calls `WorldGenerator.GetBiomeHeight` — while
+reading `ZNet.instance`, `ZNet.World` and `ZoneSystem.instance`, which are main-thread-only Unity
+calls.
+
+`UnderworldTerrainRuntime` now resolves the admitted session once on the main thread from a
+`WorldGenerator.Initialize(World)` postfix (`ZNet.Awake` calls it before any terrain is requested)
+and the generation hooks read only that immutable snapshot plus pure math. `Mathf.PerlinNoise`,
+`Clamp01` and `Lerp` stay, because Valheim's own `GetBiomeHeight` calls the same native math on that
+thread. Capturing once also makes shaping deterministic across chunks. Patch-target count is now 25.
+
+Both donor questions were decided by the user and are now runtime-verified at startup:
+
+- **Deep Gate → `Morkhalla_jotun_gate`.** Registers: `Registered 'Magenheim_DeepGate' from Deep North
+  gate donor 'Morkhalla_jotun_gate'`.
+- **Annoyance Wisp → `FrostWisp`.** FrostWisp satisfies the Character/BaseAI/ZNetView guard, which
+  then exposed a defect the chassis failure had masked for as long as it existed: every binder in
+  `DeepFractureLegacyCoreBinder` looked for a legacy `magenheim.fracture.creature.*.visual` root,
+  but `ModelAssets.Load` names the root `magenheim.<model id>.visual` and the model id carries the
+  elemental alignment, so no binder could ever have matched. The root is now resolved by that naming
+  convention and must be unique. Result: **104 additive Deep Fracture creature variants registered**.
+
+Startup is now clean: **zero Magenheim errors and zero registrar exceptions**.
+
+Two further repairs in the same pass:
+
+- **`Model material shader missing`.** Pre-existing — it appears six times in the 2026-09-16 session
+  too, so it did not cause the crash, but it killed the Deep Fracture location, Dark Throne location
+  and Deep Fracture room registrars, and `UnderworldWorldCenterRegistrar.CreateStoneMaterial` threw
+  on the same lookup, which would have stopped the Conclave being built at all. Valheim ships its
+  shaders in addressable bundles and omits Unity's built-in Standard shader, so
+  `Shader.Find("Standard")` is null in the built player. `ModelAssets` now owns one resolver over
+  `Custom/StaticRock`, `Custom/Piece`, `Custom/Vegetation`, `Custom/Creature` and `Standard` — all
+  four Custom shaders ship in this build's asset manifest — with a loaded-shader scan behind it,
+  still failing closed. **Not yet runtime-verified: these paths only run at world load.**
+- **Sporeling detail floor.** Upstream `2791acf` raised the gate's floor to 4000 source triangles
+  without updating `author-underworld-sporeling.py`, which produced 2280, so the gate could not pass
+  from the committed generator. Raised tessellation only — no proportion, anatomy, material or rig
+  change — to 4336 triangles.
+
 ## Open decisions — two registrars still fail at startup
 
 Both carry deliberate author guards that refuse to substitute content, so neither should be resolved
@@ -172,5 +220,5 @@ This requires driving Valheim's menu, which this session cannot do.
 
 ## Next action
 
-Decide the two donor questions above, then run the in-game sequence. Everything up to and including
+Both donor questions are decided and applied. Run the in-game sequence below. Everything up to and including
 plugin startup is reproducible with `./install-local.ps1`.
