@@ -47,7 +47,7 @@ internal static class UnderworldMapLayerRuntime
         if (_selectedLayer == MagenheimMapLayer.Underworld && _underworldExploration is not null)
         {
             try { SaveUnderworldExploration(); }
-            catch (Exception exception) { Warn("Failed to persist Underworld exploration while leaving layer: " + exception.Message); }
+            catch (Exception exception) { Warn("Failed to persist Underworld exploration while leaving selected layer: " + exception.Message); }
         }
         _selectedLayer = layer;
         if (layer == MagenheimMapLayer.Underworld) UnderworldMapPresentationRuntime.ForceRefresh();
@@ -145,6 +145,7 @@ internal static class UnderworldExplorationPlayerPatch
     private static float _nextRevealAt;
     private static float _nextPersistenceAt;
     private static bool _dirty;
+    private static MagenheimMapLayer _lastPhysicalLayer = MagenheimMapLayer.Surface;
 
     private static void Postfix(Player __instance)
     {
@@ -154,7 +155,19 @@ internal static class UnderworldExplorationPlayerPatch
         _nextRevealAt = now + RevealIntervalSeconds;
         try
         {
-            if (UnderworldMapLayerRuntime.PlayerLayer() != MagenheimMapLayer.Underworld) return;
+            var physicalLayer = UnderworldMapLayerRuntime.PlayerLayer();
+            if (_lastPhysicalLayer == MagenheimMapLayer.Underworld && physicalLayer != MagenheimMapLayer.Underworld)
+            {
+                // Selected map tabs are intentionally independent from the player's physical layer.
+                // Persist against the physical transition itself so walking/teleporting out cannot
+                // strand up to a persistence interval of discoveries merely because the player left
+                // the Underworld map tab selected.
+                if (_dirty && UnderworldMapLayerRuntime.SaveUnderworldExploration()) _dirty = false;
+                _nextPersistenceAt = now + PersistenceIntervalSeconds;
+            }
+            _lastPhysicalLayer = physicalLayer;
+            if (physicalLayer != MagenheimMapLayer.Underworld) return;
+
             var position = __instance.transform.position;
             if (UnderworldMapLayerRuntime.RevealUnderworldAtWorldPosition(position.x, position.z) > 0) _dirty = true;
             if (_dirty && now >= _nextPersistenceAt)
@@ -166,5 +179,11 @@ internal static class UnderworldExplorationPlayerPatch
         catch (Exception exception) { UnderworldMapLayerRuntime.Warn("Underworld exploration lifecycle update failed: " + exception.Message); }
     }
 
-    internal static void Reset() { _nextRevealAt = 0f; _nextPersistenceAt = 0f; _dirty = false; }
+    internal static void Reset()
+    {
+        _nextRevealAt = 0f;
+        _nextPersistenceAt = 0f;
+        _dirty = false;
+        _lastPhysicalLayer = MagenheimMapLayer.Surface;
+    }
 }
