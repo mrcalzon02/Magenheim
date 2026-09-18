@@ -33,7 +33,6 @@ internal static class UnderworldTerrainRuntime
         log.LogInfo("Underworld terrain generation hooks installed for GetBiomeHeight/GetBiome.");
     }
 
-    /// <summary>Main-thread capture of the active world. Never call this off the main thread.</summary>
     internal static void CaptureWorld(World? world)
     {
         var services = _services;
@@ -45,16 +44,21 @@ internal static class UnderworldTerrainRuntime
         _log?.LogInfo($"Underworld terrain shaping active for seed {world.m_seed} in the reserved region at ({domain.HostCenterX:0}, {domain.HostCenterZ:0}), playable radius {domain.RadiusMeters:0}m.");
     }
 
-    /// <summary>
-    /// Returns the main-thread-captured surface seed used by terrain generation. Map presentation
-    /// consumes this snapshot rather than reading World/ZNet independently, keeping terrain and the
-    /// logical map on exactly one seed authority.
-    /// </summary>
     internal static bool TryGetCapturedSeed(out int seed)
     {
         var world = _world;
         if (world is null) { seed = default; return false; }
         seed = world.Seed;
+        return true;
+    }
+
+    /// <summary>Builds player-facing map data from the exact spatial-domain and seed authorities used by terrain.</summary>
+    internal static bool TryBuildBiomeRaster(int width, int height, out UnderworldTerrainBiome[] raster)
+    {
+        var services = _services;
+        var world = _world;
+        if (services is null || world is null) { raster = Array.Empty<UnderworldTerrainBiome>(); return false; }
+        raster = UnderworldMapRaster.BuildBiomeRaster(services.SpatialDomain, world.Seed, width, height);
         return true;
     }
 
