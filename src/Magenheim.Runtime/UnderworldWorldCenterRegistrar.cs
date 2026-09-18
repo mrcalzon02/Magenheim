@@ -58,9 +58,10 @@ internal static class UnderworldWorldCenterRegistrar
 
     private static Vector3 ResolveGroundedCenterPosition(UnderworldHostAnchor host)
     {
-        // A physical derived world owns its own terrain coordinates. HostBaseY is retained for the
-        // legacy reserved-band mapping contract, but using ~8192m as a Unity position in a separate
-        // world would leave the Conclave and arrival point floating far above generated terrain.
+        // host.X/host.Z already carry the reserved region's offset, and the GetBiomeHeight postfix
+        // shapes exactly those columns, so querying the live world generator here grounds the
+        // Conclave on Underworld terrain inside the player's own world and save. Nothing about this
+        // path loads or derives a second world.
         var x = (float)host.X;
         var z = (float)host.Z;
         var y = ZoneSystem.instance is null ? 30f : ZoneSystem.instance.m_waterLevel + 2f;

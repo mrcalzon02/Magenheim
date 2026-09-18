@@ -16,6 +16,20 @@ public sealed record UnderworldSpatialDomainDefinition(
     string MappingAlgorithm,
     string Fingerprint);
 
+/// <summary>A horizontal world column, in region-local coordinates.</summary>
+public readonly struct UnderworldColumn
+{
+    public UnderworldColumn(double x, double z)
+    {
+        X = x;
+        Z = z;
+    }
+
+    public double X { get; }
+
+    public double Z { get; }
+}
+
 public sealed record UnderworldHostAnchor(
     string WorldId,
     double X,
@@ -207,6 +221,32 @@ public static class UnderworldSpatialDomain
         return horizontalSquared <= radiusSquared &&
                y >= domain.HostBaseY + domain.LogicalMinY &&
                y <= domain.HostBaseY + domain.LogicalMaxY;
+    }
+
+    /// <summary>
+    /// Whether a world (x, z) column falls inside the reserved Underworld region. Terrain generation
+    /// runs per column with no vertical context, so this is the test the generation hooks use to
+    /// decide whether a column belongs to the Underworld or to untouched surface world.
+    /// </summary>
+    public static bool ContainsHostColumn(UnderworldSpatialDomainDefinition domain, double x, double z)
+    {
+        ValidateDefinition(domain);
+        if (!IsFinite(x) || !IsFinite(z)) return false;
+        var dx = x - domain.HostCenterX;
+        var dz = z - domain.HostCenterZ;
+        return dx * dx + dz * dz <= domain.RadiusMeters * domain.RadiusMeters;
+    }
+
+    /// <summary>Converts a world column into the region-local coordinates the terrain rules expect.</summary>
+    /// <remarks>
+    /// Returns a named struct rather than a value tuple on purpose: Magenheim.Runtime targets net462,
+    /// where System.ValueTuple is a facade assembly that Valheim and BepInEx do not ship, so a tuple
+    /// crossing this boundary fails to load at runtime.
+    /// </remarks>
+    public static UnderworldColumn ToLogicalColumn(UnderworldSpatialDomainDefinition domain, double x, double z)
+    {
+        ValidateDefinition(domain);
+        return new UnderworldColumn(x - domain.HostCenterX, z - domain.HostCenterZ);
     }
 
     private static void ValidateFields(
