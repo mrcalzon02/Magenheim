@@ -2,7 +2,7 @@
 """Generate deterministic 1024px source textures for the Fungal Forest Capcrawler."""
 from pathlib import Path
 from math import sin, cos, sqrt, atan2, pi
-from PIL import Image, ImageChops
+from PIL import Image, ImageStat
 import random
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -65,10 +65,17 @@ if len(files)!=16: raise RuntimeError(f'Expected 16 Capcrawler texture maps, fou
 for p in files:
     with Image.open(p) as im:
         if im.size!=(SIZE,SIZE): raise RuntimeError(f'{p.name}: wrong dimensions {im.size}')
-        proxy=im.convert('L').resize((READABILITY_SIZE,READABILITY_SIZE),Image.Resampling.LANCZOS)
-        lo,hi=proxy.getextrema()
-        if hi-lo<8: raise RuntimeError(f'{p.name}: detail collapses at combat scale {(lo,hi)}')
-        if p.name.endswith('-emission.png'):
-            cov=sum(v>=8 for v in proxy.getdata())/(READABILITY_SIZE*READABILITY_SIZE)
+        proxy=im.resize((READABILITY_SIZE,READABILITY_SIZE),Image.Resampling.LANCZOS)
+        luma=proxy.convert('L'); lo,hi=luma.getextrema(); sigma=ImageStat.Stat(luma).stddev[0]
+        if hi-lo<8 or sigma<2.0: raise RuntimeError(f'{p.name}: detail collapses at combat scale range={hi-lo}, sigma={sigma:.2f}')
+        if p.name.endswith('-normal.png'):
+            rgb_proxy=proxy.convert('RGB'); stat=ImageStat.Stat(rgb_proxy)
+            xy_dev=(stat.stddev[0]**2+stat.stddev[1]**2)**.5
+            if xy_dev<2.2: raise RuntimeError(f'{p.name}: normal relief collapses at combat scale xy-dev={xy_dev:.2f}')
+            if stat.mean[2]<150: raise RuntimeError(f'{p.name}: normal map loses +Z orientation at combat scale z={stat.mean[2]:.1f}')
+        elif p.name.endswith('-roughness.png') and (hi-lo<12 or sigma<3.0):
+            raise RuntimeError(f'{p.name}: roughness response collapses at combat scale range={hi-lo}, sigma={sigma:.2f}')
+        elif p.name.endswith('-emission.png'):
+            cov=sum(v>=8 for v in luma.getdata())/(READABILITY_SIZE*READABILITY_SIZE)
             if not .01<=cov<=.55: raise RuntimeError(f'{p.name}: emission coverage {cov:.1%} is not localized')
-print(f'AUTHORED Capcrawler PBR texture set: {len(files)} maps at {SIZE}x{SIZE}; material relief survives {READABILITY_SIZE}px combat proxy -> {OUT}',flush=True)
+print(f'AUTHORED Capcrawler PBR texture set: {len(files)} maps at {SIZE}x{SIZE}; albedo, roughness, normal and emission structure survive {READABILITY_SIZE}px combat proxy -> {OUT}',flush=True)
