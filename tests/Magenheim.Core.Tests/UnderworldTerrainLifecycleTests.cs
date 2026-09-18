@@ -71,6 +71,35 @@ internal static class UnderworldTerrainLifecycleTests
         Assert(innerEdge.Hazard01 < transition.Hazard01 + 0.0001d,
             "Hazard must ramp outward rather than spike at the central biome boundary.");
 
+        // The Underworld shipped once as a featureless flat plane the player could walk forever.
+        // Cause was float precision: the runtime folded the world seed into the sample coordinate
+        // before calling Mathf.PerlinNoise, which put every column at the same rounded input. These
+        // two assertions are the regression gate for that whole class.
+        const int precisionSeed = 1675883973;
+        var nearOrigin = UnderworldTerrainNoise.Fractal01(precisionSeed, 0d, 0d);
+        var offsetA = UnderworldTerrainNoise.Fractal01(precisionSeed, 40000d, 0d);
+        var offsetB = UnderworldTerrainNoise.Fractal01(precisionSeed, 40001d, 0d);
+        Assert(Math.Abs(offsetA - offsetB) > 1e-9d && nearOrigin >= 0d && nearOrigin <= 1d,
+            "Terrain noise must still vary metre to metre at the reserved region's world offset.");
+
+        var lowest = double.MaxValue;
+        var highest = double.MinValue;
+        var relief = 0;
+        for (var step = 0; step < 96; step++)
+        {
+            var x = -domain.RadiusMeters * 0.5d + step * (domain.RadiusMeters / 96d);
+            var probe = UnderworldTerrainLifecycle.Evaluate(domain,
+                new UnderworldTerrainSample(x, 0d, 512d, 30d, 0d,
+                    UnderworldTerrainNoise.Fractal01(precisionSeed, x, 512d)), precisionSeed);
+            if (!probe.Admitted) continue;
+            relief++;
+            if (probe.Height < lowest) lowest = probe.Height;
+            if (probe.Height > highest) highest = probe.Height;
+        }
+        Assert(relief > 48, "A transect across the region must admit terrain to measure.");
+        Assert(highest - lowest > 8d,
+            "Underworld terrain must have real relief across a transect, not generate as a flat plane.");
+
         return assertions;
     }
 }

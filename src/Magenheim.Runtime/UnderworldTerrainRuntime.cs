@@ -101,9 +101,9 @@ internal static class UnderworldTerrainRuntime
         var domain = services.SpatialDomain;
         var local = UnderworldSpatialDomain.ToLogicalColumn(domain, wx, wy);
         var seed = world.Seed;
-        var noise = Mathf.PerlinNoise(
-            ((float)local.X + seed * 0.0137f) * 0.00115f,
-            ((float)local.Z - seed * 0.0091f) * 0.00115f);
+        // Fractal lattice noise in metres. Mathf.PerlinNoise with the seed folded into the
+        // coordinate put every column at the same float-rounded input and generated a flat plane.
+        var noise = UnderworldTerrainNoise.Fractal01(seed, local.X, local.Z);
         return UnderworldTerrainLifecycle.Evaluate(domain,
             new UnderworldTerrainSample(local.X, 0d, local.Z, world.WaterLevel, 0d, noise),
             seed);

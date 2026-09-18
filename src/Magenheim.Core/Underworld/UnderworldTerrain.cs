@@ -99,13 +99,6 @@ public static class UnderworldTerrain
         var c = Hash(seed, ix, iz + 1); var d = Hash(seed, ix + 1, iz + 1);
         return (a + (b - a) * u) * (1 - v) + (c + (d - c) * u) * v;
     }
-    private static double Hash(int seed, int x, int z)
-    {
-        unchecked
-        {
-            var n = (uint)seed ^ ((uint)x * 0x9e3779b9u) ^ ((uint)z * 0x85ebca6bu);
-            n ^= n >> 16; n *= 0x7feb352du; n ^= n >> 15; n *= 0x846ca68bu; n ^= n >> 16;
-            return n / (double)uint.MaxValue * 2 - 1;
-        }
-    }
+    // Identical arithmetic to the previous inline copy, now sourced from the shared authority.
+    private static double Hash(int seed, int x, int z) => UnderworldTerrainNoise.Lattice(seed, x, z);
 }
