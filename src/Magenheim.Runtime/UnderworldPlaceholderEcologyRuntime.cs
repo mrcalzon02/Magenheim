@@ -17,6 +17,8 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
     private ManualLogSource? _log;
     private readonly List<GameObject> _spawned=new();
     private readonly Dictionary<UnderworldTerrainBiome,Material> _materials=new();
+    private readonly Dictionary<string,Mesh> _meshes=new();
+    private bool _meshLoadFailed;
     private string _admitted=string.Empty;
     private Vector3 _lastBuildPosition;
     private float _nextAt;
@@ -46,7 +48,7 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         {
             var angle=(float)(random.NextDouble()*Math.PI*2d);var distance=24f+(float)random.NextDouble()*155f;
             var x=center.x+Mathf.Cos(angle)*distance;var z=center.z+Mathf.Sin(angle)*distance;
-            var biome=generator.GetBiome(x,z);var vanilla=generator.GetBiomeHeight(biome,x,z);
+            var biome=generator.GetBiome(x,z);var vanilla=generator.GetBiomeHeight(biome,x,z,out _);
             var sample=UnderworldTerrainRuntime.SampleTerrain(x,z,vanilla);if(!sample.Admitted)continue;
             SpawnMarker(new Vector3(x,(float)sample.Height,z),sample.Biome,i+seed);
         }
@@ -55,22 +57,36 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
 
     private void SpawnMarker(Vector3 position,UnderworldTerrainBiome biome,int variant)
     {
-        var primitive=biome switch
-        {
-            UnderworldTerrainBiome.FungalForest=>PrimitiveType.Sphere,
-            UnderworldTerrainBiome.BlackwaterDeep=>PrimitiveType.Cylinder,
-            UnderworldTerrainBiome.SulfurousWastes=>PrimitiveType.Capsule,
-            UnderworldTerrainBiome.FrozenCaverns=>PrimitiveType.Cube,
-            UnderworldTerrainBiome.FractureZones=>PrimitiveType.Cube,
-            _=>PrimitiveType.Sphere
-        };
-        var node=GameObject.CreatePrimitive(primitive);node.name="Magenheim_UnderworldPlaceholder_"+biome;
+        // Silhouettes are instanced from the authored model library rather than generated from
+        // Unity primitives: Magenheim geometry comes from the editable Blender/GLB sets, and the
+        // asset gate rejects runtime shape builders. Only two Underworld scenery meshes exist so
+        // far, so biomes are distinguished by mesh choice, scale and tint until the real flora
+        // assets land.
+        var mesh=MeshFor(biome);if(mesh is null)return;
+        var node=new GameObject("Magenheim_UnderworldPlaceholder_"+biome);
         node.transform.position=position+Vector3.up*(1.5f+Math.Abs(variant%4));
         node.transform.rotation=Quaternion.Euler(Math.Abs(variant%17),Math.Abs(variant*37%360),Math.Abs(variant%11));
         node.transform.localScale=Scale(biome,variant);
-        var renderer=node.GetComponent<Renderer>();var material=MaterialFor(biome);if(renderer&&material is not null)renderer.sharedMaterial=material;
-        var collider=node.GetComponent<Collider>();if(collider&&biome==UnderworldTerrainBiome.FungalForest)collider.enabled=false;
+        node.AddComponent<MeshFilter>().sharedMesh=mesh;
+        var renderer=node.AddComponent<MeshRenderer>();var material=MaterialFor(biome);if(material is not null)renderer.sharedMaterial=material;
+        // Fungal caps stayed walk-through before the mesh change; keep that traversal behaviour.
+        if(biome!=UnderworldTerrainBiome.FungalForest)node.AddComponent<MeshCollider>().sharedMesh=mesh;
         _spawned.Add(node);
+    }
+
+    private Mesh? MeshFor(UnderworldTerrainBiome biome)
+    {
+        var id=biome==UnderworldTerrainBiome.FungalForest?"underworld-dais":"underworld-standing-stone";
+        if(_meshes.TryGetValue(id,out var cached))return cached;
+        if(_meshLoadFailed)return null;
+        try{var mesh=ModelAssets.LoadSingleMesh(id);_meshes[id]=mesh;return mesh;}
+        catch(Exception exception)
+        {
+            // Fail loud once and stop: this is disposable test dressing, so it must not spam the
+            // log or throw out of Update every frame when the packaged model library is incomplete.
+            _meshLoadFailed=true;_log?.LogError($"Underworld placeholder ecology disabled; model '{id}' failed to load: {exception.Message}");
+            return null;
+        }
     }
 
     private static Vector3 Scale(UnderworldTerrainBiome biome,int v)
@@ -90,15 +106,30 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
     private Material? MaterialFor(UnderworldTerrainBiome biome)
     {
         if(_materials.TryGetValue(biome,out var cached)&&cached)return cached;
-        var shader=ResolvePlaceholderShader();if(shader is null)return null;\n        var material=new Material(shader){name="Magenheim_UnderworldPlaceholder_"+biome};\n        var tint=biome switch\n        {
+        var shader=ResolvePlaceholderShader();if(shader is null)return null;
+        var material=new Material(shader){name="Magenheim_UnderworldPlaceholder_"+biome};
+        var tint=biome switch
+        {
             UnderworldTerrainBiome.FungalForest=>new Color(0.20f,0.48f,0.26f),
             UnderworldTerrainBiome.BlackwaterDeep=>new Color(0.06f,0.12f,0.18f),
             UnderworldTerrainBiome.SulfurousWastes=>new Color(0.55f,0.30f,0.08f),
             UnderworldTerrainBiome.FrozenCaverns=>new Color(0.48f,0.70f,0.82f),
             UnderworldTerrainBiome.FractureZones=>new Color(0.38f,0.16f,0.46f),
-            _=>new Color(0.24f,0.18f,0.20f)\n        };\n        if(material.HasProperty("_Color"))material.SetColor("_Color",tint);\n        if(material.HasProperty("_BaseColor"))material.SetColor("_BaseColor",tint);\n        if(material.HasProperty("_Glossiness"))material.SetFloat("_Glossiness",0.18f);\n        _materials[biome]=material;return material;
+            _=>new Color(0.24f,0.18f,0.20f)
+        };
+        if(material.HasProperty("_Color"))material.SetColor("_Color",tint);
+        if(material.HasProperty("_BaseColor"))material.SetColor("_BaseColor",tint);
+        if(material.HasProperty("_Glossiness"))material.SetFloat("_Glossiness",0.18f);
+        _materials[biome]=material;return material;
     }
 
-    private static Shader? ResolvePlaceholderShader()\n    {\n        foreach(var name in new[]{"Custom/StaticRock","Custom/Piece","Custom/Vegetation","Standard"})\n        {var shader=Shader.Find(name);if(shader is not null)return shader;}\n        return null;\n    }\n\n    private void ClearMarkers(){foreach(var item in _spawned)if(item)Destroy(item);_spawned.Clear();}
+    private static Shader? ResolvePlaceholderShader()
+    {
+        foreach(var name in new[]{"Custom/StaticRock","Custom/Piece","Custom/Vegetation","Standard"})
+        {var shader=Shader.Find(name);if(shader is not null)return shader;}
+        return null;
+    }
+
+    private void ClearMarkers(){foreach(var item in _spawned)if(item)Destroy(item);_spawned.Clear();}
     private void OnDestroy(){ClearMarkers();foreach(var material in _materials.Values)if(material)Destroy(material);_materials.Clear();}
 }

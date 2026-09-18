@@ -9,10 +9,12 @@ for later Unity/Valheim rigging instead of being fused into an unriggable statue
 from pathlib import Path
 from math import pi, sin, cos
 import bpy
+from mathutils import Vector
 
 ROOT=Path(__file__).resolve().parents[1]
 OUTDIR=ROOT/'assets/models/source'; OUTDIR.mkdir(parents=True,exist_ok=True)
 OUT=OUTDIR/'enemy-stone-guardian.blend'
+CHARACTER_HEIGHT_M=3.4
 
 def mat(name,color,rough,metal=0.0,emission=None):
     m=bpy.data.materials.new(name); m.diffuse_color=(*color,1); m.use_nodes=True
@@ -75,8 +77,25 @@ for i in range(14):
 
 meshes=[o for o in bpy.context.scene.objects if o.type=='MESH']
 if len(meshes)<35: raise RuntimeError(f'Stone Guardian fidelity regression: only {len(meshes)} mesh parts')
+
+# The masses above are authored in a working frame whose soles hang below Z=0 and whose crown
+# reaches ~4.28m, so the chassis contradicted the 3.4m character height this script declares.
+# Normalise once, at the end: scale uniformly to the declared height and drop the soles onto
+# Z=0. Doing it here keeps every authored proportion, material and part separation intact while
+# making the declared contract literally true for the acceptance gate and for later rigging.
+_pts=[o.matrix_world@Vector(c) for o in meshes for c in o.bound_box]
+_lo_z=min(p[2] for p in _pts); _height=max(p[2] for p in _pts)-_lo_z
+if _height<=0: raise RuntimeError('Stone Guardian chassis has no vertical extent')
+_k=CHARACTER_HEIGHT_M/_height
+for o in meshes:
+    o.location=(o.location.x*_k,o.location.y*_k,(o.location.z-_lo_z)*_k)
+    o.scale=(o.scale.x*_k,o.scale.y*_k,o.scale.z*_k)
+bpy.ops.object.select_all(action='DESELECT')
+for o in meshes: o.select_set(True)
+bpy.context.view_layer.objects.active=meshes[0]
+bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
 bpy.context.scene['magenheim_model_id']='enemy-stone-guardian'; bpy.context.scene['magenheim_creature_chassis']='StoneGuardian'
-bpy.context.scene['magenheim_character_height_m']=3.4; bpy.context.scene['magenheim_rig_contract']='separate_head_pelvis_chest_limbs_joints_core'
+bpy.context.scene['magenheim_character_height_m']=CHARACTER_HEIGHT_M; bpy.context.scene['magenheim_rig_contract']='separate_head_pelvis_chest_limbs_joints_core'
 bpy.context.scene['magenheim_fidelity']='hero-creature-r1'; bpy.context.scene['magenheim_crystal_growth_count']=len(growth)
 bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(OUT),compress=True)
 print(f'AUTHORED enemy-stone-guardian: {len(meshes)} parts, rig-separated high-fidelity chassis -> {OUT.name}',flush=True)

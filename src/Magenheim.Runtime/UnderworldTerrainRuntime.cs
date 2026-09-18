@@ -45,7 +45,7 @@ internal static class UnderworldTerrainRuntime
 
         var noise = Mathf.PerlinNoise((wx + identity.DerivedSeed32 * 0.0137f) * 0.00115f,
             (wy - identity.DerivedSeed32 * 0.0091f) * 0.00115f);
-        var waterLevel = ZoneSystem.m_instance is null ? 30f : ZoneSystem.m_instance.m_waterLevel;
+        var waterLevel = ZoneSystem.instance is null ? 30f : ZoneSystem.instance.m_waterLevel;
         var sample = new UnderworldTerrainSample(wx, 0d, wy, vanillaHeight, 0d,
             Math.Max(0d, waterLevel - vanillaHeight), noise);
         var result = UnderworldTerrainLifecycle.Evaluate(domain, sample, identity.DerivedSeed32);
@@ -68,7 +68,7 @@ internal static class UnderworldTerrainRuntime
                 out var identity, out var layer, out _) || identity is null || layer != UnderworldLayer.Underworld) return default;
         var noise = Mathf.PerlinNoise((wx + identity.DerivedSeed32 * 0.0137f) * 0.00115f,
             (wy - identity.DerivedSeed32 * 0.0091f) * 0.00115f);
-        var waterLevel = ZoneSystem.m_instance is null ? 30f : ZoneSystem.m_instance.m_waterLevel;
+        var waterLevel = ZoneSystem.instance is null ? 30f : ZoneSystem.instance.m_waterLevel;
         return UnderworldTerrainLifecycle.Evaluate(services.SpatialDomain,
             new UnderworldTerrainSample(wx, 0d, wy, vanillaHeight, 0d, Math.Max(0d, waterLevel - vanillaHeight), noise),
             identity.DerivedSeed32);
@@ -85,16 +85,27 @@ internal static class UnderworldTerrainRuntime
     }
 }
 
+// Valheim 1.0.12 takes the biome mask out-parameter and two optional generation flags, so the
+// three-argument signature this patch used to declare no longer resolves to any installed method.
+// An attribute cannot hold a by-ref Type, so the out-parameter is declared through Harmony's
+// parallel ArgumentType array.
 [HarmonyPatch(typeof(WorldGenerator), nameof(WorldGenerator.GetBiomeHeight),
-    new Type[] { typeof(Heightmap.Biome), typeof(float), typeof(float) })]
+    new Type[] { typeof(Heightmap.Biome), typeof(float), typeof(float), typeof(Color), typeof(bool), typeof(bool) },
+    new ArgumentType[]
+    {
+        ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Normal,
+        ArgumentType.Out, ArgumentType.Normal, ArgumentType.Normal,
+    })]
 internal static class UnderworldTerrainHeightPatch
 {
     private static void Postfix(float wx, float wy, ref float __result) =>
         __result = UnderworldTerrainRuntime.ShapeHeight(wx, wy, __result);
 }
 
+// 1.0.12 added the optional ocean-level and water-always-ocean arguments to the float overload;
+// the two-argument form no longer identifies an installed method.
 [HarmonyPatch(typeof(WorldGenerator), nameof(WorldGenerator.GetBiome),
-    new Type[] { typeof(float), typeof(float) })]
+    new Type[] { typeof(float), typeof(float), typeof(float), typeof(bool) })]
 internal static class UnderworldTerrainBiomePatch
 {
     private static void Postfix(float wx, float wy, ref Heightmap.Biome __result) =>

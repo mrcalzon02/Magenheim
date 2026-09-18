@@ -36,7 +36,14 @@ $log = Join-Path $LogDirectory ("{0}-{1}.log" -f $Tool, (Get-Date -Format 'yyyyM
 $arguments = @('--background', '--factory-startup', '--python', $script)
 if ($ToolArgs) { $arguments += '--'; $arguments += $ToolArgs }
 
-& $Blender @arguments > $log 2>&1
+# Windows PowerShell 5.1 wraps every native stderr line in an ErrorRecord, so under the
+# script-scope 'Stop' preference the first one terminates this wrapper before the log is even
+# written. Blender writes DeprecationWarnings to stderr on a completely successful run, so a
+# passing gate reported a build failure. Let the redirect capture both streams, then decide from
+# the log below, which is what this wrapper was already designed to do.
+$previousPreference = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
+try { & $Blender @arguments > $log 2>&1 } finally { $ErrorActionPreference = $previousPreference }
 $code = $LASTEXITCODE
 
 # Blender exits 0 even when the script raised, so surface the failure explicitly.

@@ -122,7 +122,22 @@ public static class UnderworldTerrainLifecycle
         return 1d - t;
     }
 
-    private static double SeedRotation(int seed) => ((uint)seed / (double)uint.MaxValue) * Math.PI * 2d;
+    // Mapping the raw seed linearly across the uint range made province rotation useless in
+    // practice: ordinary small seeds all landed within ~1e-6 rad of zero, so every such world
+    // received an identical province layout. Avalanche the seed first, using the same finalizer
+    // as UnderworldTerrain.Hash, so neighbouring seeds rotate to unrelated angles.
+    private static double SeedRotation(int seed) => Avalanche(unchecked((uint)seed)) / ((double)uint.MaxValue + 1d) * Math.PI * 2d;
+
+    private static uint Avalanche(uint value)
+    {
+        unchecked
+        {
+            value ^= value >> 16; value *= 0x7feb352du;
+            value ^= value >> 15; value *= 0x846ca68bu;
+            value ^= value >> 16;
+            return value;
+        }
+    }
 
     private static double TerrainDelta(UnderworldTerrainBiome biome, double noise, double slope, double waterDepth)
     {

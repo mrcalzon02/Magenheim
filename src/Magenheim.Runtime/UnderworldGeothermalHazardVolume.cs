@@ -60,7 +60,9 @@ internal sealed class UnderworldGeothermalHazardVolume : MonoBehaviour
         return next;
     }
 
-    internal static float ReadHeat(Player player)
+    // Declared nullable because this overload already treats a missing player as zero heat; the
+    // non-null signature only forced callers holding a Player? to invent a redundant guard.
+    internal static float ReadHeat(Player? player)
     {
         if (player == null) return 0f;
         return ReadHeat(player.GetComponent<ZNetView>());

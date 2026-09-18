@@ -1,8 +1,18 @@
 param([string]$RuntimeDll, [string]$GameManagedPath, [string]$BepInExPath)
 $ErrorActionPreference = 'Stop'
 Add-Type -Path (Join-Path $BepInExPath 'core/Mono.Cecil.dll')
-$runtimeAssembly = [Mono.Cecil.AssemblyDefinition]::ReadAssembly($RuntimeDll)
-$gameAssembly = [Mono.Cecil.AssemblyDefinition]::ReadAssembly((Join-Path $GameManagedPath 'assembly_valheim.dll'))
+# Cecil needs to resolve an attribute argument's declaring assembly before it can decode an
+# enum-typed value. Without 0Harmony.dll on the search path a HarmonyPatch attribute carrying an
+# ArgumentType[] decodes as zero constructor arguments, which surfaced as a misleading
+# "unsupported patch declaration" rather than as the unreadable blob it actually was.
+$resolver = New-Object Mono.Cecil.DefaultAssemblyResolver
+foreach ($directory in @((Split-Path -Parent $RuntimeDll), $GameManagedPath, (Join-Path $BepInExPath 'core'))) {
+    if (Test-Path -LiteralPath $directory) { $resolver.AddSearchDirectory($directory) }
+}
+$readerParameters = New-Object Mono.Cecil.ReaderParameters
+$readerParameters.AssemblyResolver = $resolver
+$runtimeAssembly = [Mono.Cecil.AssemblyDefinition]::ReadAssembly($RuntimeDll, $readerParameters)
+$gameAssembly = [Mono.Cecil.AssemblyDefinition]::ReadAssembly((Join-Path $GameManagedPath 'assembly_valheim.dll'), $readerParameters)
 try {
     $count = 0
     foreach ($type in $runtimeAssembly.MainModule.Types) {
@@ -19,7 +29,27 @@ try {
                 $candidates = @($target.Methods | Where-Object Name -eq $methodName)
                 if ($arguments.Count -gt 2) {
                     if ($arguments[2].Type.FullName -ne 'System.Type[]') { throw 'Unsupported patch signature format.' }
-                    $signature = @($arguments[2].Value | ForEach-Object { $_.Value.FullName }) -join ','
+                    $declared = @($arguments[2].Value | ForEach-Object { $_.Value.FullName })
+                    # An attribute cannot carry a by-ref Type, so Harmony expresses ref/out/pointer
+                    # parameters in a parallel ArgumentType[]. Without decoding it, any target with
+                    # an out-parameter resolves to zero methods and looks like patch drift.
+                    if ($arguments.Count -gt 3) {
+                        if ($arguments[3].Type.FullName -ne 'HarmonyLib.ArgumentType[]') { throw 'Unsupported patch argument-type format.' }
+                        $kinds = @($arguments[3].Value | ForEach-Object { [int]$_.Value })
+                        if ($kinds.Count -ne $declared.Count) {
+                            throw "Patch $($provider.FullName) declares $($declared.Count) argument types and $($kinds.Count) argument kinds."
+                        }
+                        for ($i = 0; $i -lt $declared.Count; $i++) {
+                            switch ($kinds[$i]) {
+                                0 { }
+                                1 { $declared[$i] = $declared[$i] + '&' }
+                                2 { $declared[$i] = $declared[$i] + '&' }
+                                3 { $declared[$i] = $declared[$i] + '*' }
+                                default { throw "Unsupported Harmony argument kind $($kinds[$i]) on $($provider.FullName)." }
+                            }
+                        }
+                    }
+                    $signature = $declared -join ','
                     $candidates = @($candidates | Where-Object {
                         (@($_.Parameters | ForEach-Object { $_.ParameterType.FullName }) -join ',') -ceq $signature
                     })
