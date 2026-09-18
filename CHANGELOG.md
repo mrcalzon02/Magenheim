@@ -1,3 +1,25 @@
+## 0.0.69 — Underworld starts with Valheim's own visual language
+
+- Replaced the two authored placeholder meshes used by the local Underworld ecology preview with
+  biome-specific palettes of **Valheim runtime donor prefabs**. Fungal Forest starts from Yggdrasil
+  shoots and vanilla luminous mushrooms; Blackwater from Mistlands cliffs, stone fingers and roots;
+  Sulfurous Wastes from Ashlands rocks, scorched trees and brush; Frozen Caverns from mountain rock,
+  ice and black-ice shards; Fracture Zones from Mistlands/rock formations; Great Decay from vanilla
+  root masses and scorched growth.
+- Donors are resolved from Valheim through Jötunn at runtime. Magenheim does not package their
+  meshes, textures, materials or prefab data and does not replace any vanilla prefab registration.
+- The preview rebuilds only render meshes, shared materials, lights and LOD groups into local,
+  disposable objects. Gameplay, network, harvesting, AI and donor destruction components are not
+  copied. A conservative collider is added only to entries explicitly marked solid.
+- Missing/renamed donors fail neutral and retry later; palette fallback prevents one missing prefab
+  from punching a permanent hole in a biome. Oversized glowing donors scale their light radius so
+  canopy-sized mushrooms remain readable.
+- UNDERWORLD_FLORA_TERRAIN_PLAN.md now makes the production order binding: vanilla donor
+  composition first, donor kitbashing/material variants second, Magenheim-authored gap-fill assets
+  third, external permissive assets only after those passes.
+- This is source-complete ecology-preview work only. Runtime appearance, placement density,
+  collisions, LOD behaviour and frame cost remain **unaccepted until a live Valheim test**.
+
 ## 0.0.68 — Staves that fire
 
 Six of the eight Master staves depleted stamina and produced nothing; Radiance and Earth worked. The
