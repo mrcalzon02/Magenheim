@@ -1,6 +1,18 @@
 # Current source candidate — 0.0.63 / schema 5 (2026-09-18)
 
-`main` and `origin/main` were both at `df27a65` at session start, with nothing to reconcile.
+`main` and `origin/main` were both at `df27a65` at session start. `origin/main` then advanced to
+`720bb5d` mid-session with two Capcrawler authoring commits; the session's seven commits were
+rebased onto it and the combined tree was rebuilt rather than assumed compatible. No file overlap:
+their commits touch only `tools/author-underworld-capcrawler.py`. Session end `origin/main` is
+`f08c82aacb7a779674b60134bab821a30f89753d`, verified by independent `git ls-remote` readback, with
+`refs/heads/main` still the only remote branch.
+
+0.0.63 is installed and SHA-256 verified in the active Central Fuckery profile from that exact
+tree: `Magenheim.dll` `3ED3F47C216FD89EF92070C039C98F3DA4EBE1AF24C179245738C62B3C2634C2`. The
+launcher entry reads back as `Magenheim v0.0.63 by Local (enabled)` with the 0.0.63 description.
+Prior payload backup `backups/Local-Magenheim-20260918-095723.zip`; catalog backup
+`backups/mods-20260918-095735-183.yml`. Other mods, profile settings and enablement are unchanged.
+This is verified catalog data, not an observed launcher UI and not a game start.
 
 **`main` did not build, and did not compile.** Roughly 50 commits had landed since the last
 successful build, and `build.ps1 -Offline` failed six times over before this session repaired it:
