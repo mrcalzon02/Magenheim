@@ -25,6 +25,7 @@ import re
 import struct
 import sys
 import zlib
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -39,6 +40,7 @@ ENFORCE_ICON_TARGET = os.environ.get('MAGENHEIM_ENFORCE_ICON_TARGET', '').strip(
 
 failures: list[str] = []
 legacy_resolution: list[str] = []
+resolution_counts: Counter[int] = Counter()
 
 
 def decode_png(path: Path) -> tuple[int, int, int]:
@@ -93,6 +95,7 @@ for path in icon_files:
     except Exception as error:  # noqa: BLE001 - report the exact decode failure
         failures.append(f'{path.name}: undecodable ({error})')
         continue
+    resolution_counts[width] += 1
     if colour != 6:
         failures.append(f'{path.name}: colour type {colour}, expected 6 (RGBA)')
     if width != height:
@@ -135,6 +138,10 @@ if failures:
     for failure in failures:
         print('  - ' + failure, file=sys.stderr)
     sys.exit(1)
+
+if resolution_counts:
+    distribution = ', '.join(f'{size}px={count}' for size, count in sorted(resolution_counts.items()))
+    print(f'ICON RESOLUTION DISTRIBUTION: {distribution}')
 
 if legacy_resolution:
     mode = 'enforced' if ENFORCE_ICON_TARGET else 'notice-only'
