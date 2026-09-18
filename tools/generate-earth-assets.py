@@ -6,7 +6,7 @@ import math
 import os
 import random
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageStat
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'assets' / 'earth'
@@ -17,6 +17,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 # the icon's presentation footprint in Unity.
 ICON_SIZE = max(256, int(os.environ.get('MAGENHEIM_EARTH_ICON_SIZE', '256')))
 PREVIEW_ICON_SIZE = max(ICON_SIZE, int(os.environ.get('MAGENHEIM_EARTH_PREVIEW_ICON_SIZE', str(ICON_SIZE))))
+GAMEPLAY_READABILITY_SIZE = 64
 
 def sub(a, b): return tuple(x-y for x,y in zip(a,b))
 def cross(a,b): return (a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0])
@@ -42,6 +43,22 @@ def font(size, bold=False):
         except (OSError, IOError):
             pass
     return ImageFont.load_default()
+
+def validate_gameplay_icon(name, icon):
+    """Reject source art whose silhouette or facet read disappears at inventory scale."""
+    proxy=icon.resize((GAMEPLAY_READABILITY_SIZE,GAMEPLAY_READABILITY_SIZE),Image.Resampling.LANCZOS)
+    alpha=proxy.getchannel('A'); bbox=alpha.getbbox()
+    if not bbox: raise RuntimeError(f'{name}: icon has no visible silhouette at {GAMEPLAY_READABILITY_SIZE}px')
+    coverage=sum(1 for value in alpha.getdata() if value>=96)/(GAMEPLAY_READABILITY_SIZE**2)
+    if not .16<=coverage<=.72:
+        raise RuntimeError(f'{name}: {coverage:.1%} opaque coverage is outside the 16-72% inventory readability envelope')
+    rgb=proxy.convert('RGB'); pixels=[p for p,a in zip(rgb.getdata(),alpha.getdata()) if a>=96]
+    luminance=[.2126*r+.7152*g+.0722*b for r,g,b in pixels]
+    contrast=max(luminance)-min(luminance) if luminance else 0
+    deviation=ImageStat.Stat(proxy.convert('L'),mask=alpha).stddev[0]
+    if contrast<28 or deviation<7:
+        raise RuntimeError(f'{name}: facet/material contrast collapses at {GAMEPLAY_READABILITY_SIZE}px (range={contrast:.1f}, stddev={deviation:.1f})')
+    print(f'{name}: gameplay readability {coverage:.1%} coverage, luminance range {contrast:.1f}, stddev {deviation:.1f}')
 
 def geode():
     points, faces, colors = [], [], []
@@ -127,6 +144,7 @@ def emit(name, raw, outward=False):
     (OUT/f'{name}.obj').write_text('\n'.join(obj)+'\n')
     (OUT/f'{name}.mtl').write_text(f'newmtl {name}\nKd 1 1 1\nmap_Kd {name}.png\n')
     icon=render(points,faces,colors)
+    validate_gameplay_icon(name,icon)
     icon.resize((ICON_SIZE,ICON_SIZE),Image.Resampling.LANCZOS).save(OUT/f'{name}.icon.png')
     return icon,len(faces)
 
@@ -159,6 +177,7 @@ def main():
     skill=icons[1].copy(); d=ImageDraw.Draw(skill)
     d.polygon([(105,95),(128,76),(365,353),(337,385)],fill=(113,81,47,255))
     d.polygon([(312,321),(343,298),(402,373),(390,412),(354,397)],fill=(199,194,171,255))
+    validate_gameplay_icon('crystal-shaping',skill)
     skill.resize((ICON_SIZE,ICON_SIZE),Image.Resampling.LANCZOS).save(OUT/'crystal-shaping.icon.png')
     skill.resize((256,256),Image.Resampling.LANCZOS).save(ROOT/'icon.png')
 
