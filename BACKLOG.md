@@ -219,7 +219,65 @@ below. Items marked REGRESSION were introduced by the asset work in this session
 - [x] **Staves need icons derived from their current models.** DONE 0.0.54. `tools/render-staff-icons.py` renders all 32 icons from the same `.blend` the runtime mesh is exported from. Twelve never existed (Earth, Fire, Storm), three were corrupt, and seventeen predated the C1 rebuild. Fire and Storm set no icon at all and inherited the `StaffIceShards` donor icon; Radiance, Seidr and Spirit used a tinted generic `crystal` icon. All eight families now resolve `m_icons` from their own asset name.
 - [ ] **All item descriptions must be mechanically informative and player-facing.** One clear statement of what the item does, in the player's language, not the implementation's.
 - [x] **Staves must take damage and degrade like normal weapons and tools.** DONE 0.0.54. Staves clone `StaffIceShards`, which spends Eitr rather than durability, so the clones inherited none and never degraded. `Magenheim.Core/CrystalStaffDurability.cs` owns the pure tier -> service-life rule (Simple 150, +75 per tier) with fail-closed tier resolution; all eight registrars set `m_useDurability`, `m_maxDurability`, `m_durabilityPerLevel`, `m_durabilityDrain` and `m_useDurabilityDrain`. The field set was read off the installed `SharedData` by reflection, not assumed. Live wear/repair acceptance is still open.
-- [x] **REGRESSION: crystal buildables are texturally broken.** FIXED 0.0.53. Introduced by the generic retro-texture pass. Models whose UVs were smart-projected carry packed islands, so a coherent noise map lands as discontinuous patchwork across island boundaries. Models with purpose-authored UVs (geode, crystal tiers, caverns, passages) are unaffected. Either make the retro map fine-grained and low-contrast so island seams cannot read, or revert the pass on the affected families.
+- [ ] **REGRESSION: crystal buildables are texturally broken.** *Claimed fixed in 0.0.53; live play on 2026-09-18 shows it is not.* See the 2026-09-18 section above for the cause, which is the runtime `GeneratedSurfaceTextures` sweep rather than the retro-texture pass alone. Original 0.0.53 note follows. Introduced by the generic retro-texture pass. Models whose UVs were smart-projected carry packed islands, so a coherent noise map lands as discontinuous patchwork across island boundaries. Models with purpose-authored UVs (geode, crystal tiers, caverns, passages) are unaffected. Either make the retro map fine-grained and low-contrast so island seams cannot read, or revert the pass on the affected families.
+
+### Raised 2026-09-18 — live play against installed 0.0.64 (user report)
+
+First runtime evidence since 0.0.52. The build loaded clean: `Magenheim 0.0.64` in the log, **zero
+Magenheim errors or warnings**, all staff and projectile prefabs registered, no exceptions during
+play. Surface play only — Meadows and Black Forest, Day 1 — so **nothing about the Underworld
+region, the biome sector, the map or travel was exercised**, and 0.0.63's sector repair remains
+entirely unverified.
+
+- [ ] **Six of eight Master staves do nothing; Radiance works.** User: Storm, Venom, Spirit, Fire
+  and Frost deplete stamina with no visible effect; Earth fires visible projectiles that do nothing;
+  Radiance "works quite well against the undead". Established from the installed assemblies and the
+  log, so these are *not* the cause: the weapon's damage does reach the projectile
+  (`Attack.FireProjectileBurst` sets `hitData.m_damage = weapon.GetDamage()` and `Projectile.Setup`
+  copies it over the prefab's own `m_damage`, so `StaffEffectPayloads.CreateProjectile` zeroing
+  `m_damage` is harmless); stamina is consumed *inside* `FireProjectileBurst` before the projectile
+  is instantiated, so the burst ran and a projectile object was created; and nulling the projectile's
+  `m_statusEffect` is safe because `Projectile.Awake` guards it before hashing.
+  **Leading hypothesis is the balance data, not the plumbing.** Radiance Master is an outlier on
+  every axis against the five that fail:
+
+  | Master staff | damage | × multiplier | effective | velocity | spread° | bolts × bursts |
+  |---|---|---|---|---|---|---|
+  | Radiance | 18 pierce + 38 spirit | 1.00 | **56** | **66** | **0.12** | 1 × 1 |
+  | Earth | 20 blunt | 0.92 | 18.4 | 26 | 3 | — |
+  | Spirit | 16 | 0.40 | 6.4 | 44 | 10 | 4 × 3 |
+  | Fire | 9 | 0.70 | 6.3 | 34 | 9 | 3 × 3 |
+  | Frost | 5 | 0.75 | 3.75 | 40 | 7 | 2 × 6 |
+  | Venom | 8 | 0.35 | 2.8 | 26 | 16 | 3 × 3 |
+
+  A 2.8-damage bolt at 26 m/s with 16° of scatter, under the gravity inherited from the
+  `StaffIceShards` projectile, lands short and wide of anything aimed at. That reads exactly as
+  "depletes stamina, does nothing", and Earth's higher damage and 3° spread reads as "fires
+  projectiles that do nothing". **Not proven.** What it does not explain is why five families show
+  no *visible* projectile at all. Settle it with one instrumented run: log the resolved attack
+  configuration per staff at registration, and a line per shot, then read it back.
+- [ ] **Crystal placeables are still texturally broken in game while correct in preview. CAUSE
+  FOUND.** The model preview and the game do not use the same material path.
+  `render-model-catalog.py` renders the authored Blender materials through the authored UVs.
+  At runtime, `GeneratedSurfaceTextures.RepairOwnedVisuals` — hooked to
+  `PrefabManager.OnPrefabsRegistered` — sweeps **every** Magenheim-owned material in memory and
+  replaces `mainTexture` with a procedurally generated 256px surface, at `mainTextureScale = 1`,
+  chosen by keyword-matching the *material name* through `Classify`. Two consequences, both visible:
+  a coherent generated texture sampled through packed smart-projected UV islands reads as patchwork
+  across every island seam; and the keyword table mis-assigns families, because `Classify` maps
+  `rim`, `band`, `collar`, `brace` and `rail` to Metal and `core`, `focus`, `light` and `growth` to
+  Crystal, so a material's *name* decides its surface rather than its intent. This is the same
+  defect that 0.0.55 fixed for weapons — 76 of 79 weapon materials contradicted their declared
+  intent — by authoring real texture families and rewriting the family token so the runtime
+  classifier agrees. **The placeables never received that treatment.** The 0.0.53 entry above
+  claiming crystal buildables were fixed is therefore wrong, and is corrected here.
+- [ ] **Geode: the inner open face pushes through the outer shell around the sides.** The crystal
+  interior geometry breaches the silhouette of the closed shell rather than being contained by it.
+- [ ] **Geode size variation has regressed.** Placement scale variety was present in earlier builds
+  and is now inconsistent. Check the placement definition's scale range against what the worldgen
+  registrar actually applies.
+- [ ] **Geode interior material needs far stronger per-biome colour separation.** The interiors do
+  not read as biome-distinct at play distance.
 
 ### Raised 2026-09-17 — custom weapon scale and fidelity (user directive)
 
