@@ -1,3 +1,34 @@
+## 0.0.63 — Underworld biome sector, and a build that runs
+
+The Underworld's biome-sector override never took effect, and `main` could not be built. Both are
+fixed; neither is yet confirmed in play.
+
+- **The sector override was bound to the wrong overload.** Almost nothing except terrain height
+  reads `GetBiome` — weather, sky, ground texture, spawns, vegetation, the minimap and the HUD biome
+  all read `GetBiomeSector` — so with the sector still Ocean the game disagreed with itself out in
+  the region. The patch sat on `GetBiomeSector(int gridx, int gridy, bool clamp)`, which clamps its
+  grid indices into [0, 2047] unconditionally, its own `clamp` argument never being read. The biome
+  map spans only ±12282m and the region is at 40000, so grid 4356 clamped to 2047 and containment
+  was tested 27.7km away. It could never pass, and the diagnostic probe, which only logged when it
+  did, could never have said so. Settled from the installed assemblies instead. The region does
+  **not** have to move: both world-space overloads still carry the true coordinate, and nothing in
+  the game reaches the grid overload except those two, so the override moved there.
+- **`main` failed its own build twice before reaching the compiler, and three more times after.**
+  None of 2026-09-18's work up to `df27a65` had been built. The icon gate demanded 6% frame coverage
+  from staff icons that are hairline shafts — six could not have passed at any framing — and now
+  measures placement and ink density separately, proven against four synthetic defect probes. The
+  Sporeling textures were four generator commits and five gate commits stale, and regenerating
+  exposed two real defects in the generator: emission with no focal highlights, and flesh authored
+  in the same hue as the spore sac. The source blend was stale because its author had never run on
+  Blender 5.0, which removed `Action.fcurves`; fixing that revealed an animation gate that had never
+  executed, which in turn revealed that all ten actions were being discarded on save for want of a
+  fake user. The review renderer had never run either, for the same class of reason.
+- A Pillow deprecation warning on stderr was failing the build after a gate had already passed,
+  because Windows PowerShell 5.1 turns native stderr into a terminating error. Fixed at the API and
+  at `build.ps1`.
+
+Nothing here is runtime-accepted. The game has not been launched against this build.
+
 ## 0.0.62 — Fungal Forest flora foundation
 
 - Correct the Underworld plan to use one shared custom cavern-roof skybox.

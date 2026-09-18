@@ -1,4 +1,4 @@
 {
-  "version": "0.0.62",
-  "description": "0.0.62: Begins Fungal Forest flora with validated species definitions and terrain placement rules. Preserves one shared custom cavern skybox across biomes. Flora assets, spawning and harvesting remain pending."
+  "version": "0.0.63",
+  "description": "0.0.63: Binds the Underworld biome-sector override to WorldGenerator world-space overloads. The previous grid-space patch sat behind a clamp into the 2048-cell biome map, so the reserved region at 40000m could never pass containment."
 }

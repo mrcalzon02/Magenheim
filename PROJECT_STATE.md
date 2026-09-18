@@ -1,3 +1,46 @@
+# Current source candidate — 0.0.63 / schema 5 (2026-09-18)
+
+`main` and `origin/main` were both at `df27a65` at session start, with nothing to reconcile.
+
+**`main` did not build, and did not compile.** Roughly 50 commits had landed since the last
+successful build, and `build.ps1 -Offline` failed six times over before this session repaired it:
+a call to `UnderworldMapPresentation.CellToLogical` that has never existed, a read of
+`UnderworldExplorationState.ExploredCount` that has never existed, two nullable-flow errors, an icon
+gate that six correctly-framed staff icons could not satisfy at any framing, a Sporeling texture set
+four generator commits and five gate commits stale whose generator could not satisfy its own gate, a
+source blend stale because its author had never once run against the installed Blender 5.0, a review
+renderer that had never produced a plate for the same class of reason, and a Pillow deprecation
+warning on stderr that killed the build after a gate had already reported success. All repaired at
+source. Evidence: `docs/validation/2026-09-18-main-build-gate-repair.md`.
+
+**The Underworld biome-sector override is fixed in source.** This was the open defect the
+2026-09-17 handoff named as the next task, and it was settled from the installed assemblies rather
+than from the live `[sector probe]`, which could never have fired. The patch was bound to
+`WorldGenerator.GetBiomeSector(int gridx, int gridy, bool clamp)`, which clamps its grid indices
+into [0, 2047] unconditionally — its own `clamp` argument is never read — and writes them with
+`starg`, so the postfix read the clamped value. The biome map spans only ±12282m and the region is
+at 40000, so containment was tested 27.7km outside the region and could never pass. **The region
+does not have to move:** both world-space overloads still carry the true coordinate and nothing in
+the game reaches the grid overload except those two, so the override moved there. The probe is
+removed. Evidence: `docs/validation/2026-09-18-underworld-biome-sector-world-space-binding.md`.
+
+38,320 deterministic Core assertions pass; 281 model assets import twice; runtime compiles with zero
+warnings and zero errors; 28 Harmony patch targets and 13 literal plus 42 helper-wrapped reflection
+bindings verify against the installed assemblies.
+
+**Nothing here is runtime-accepted.** The game has not been launched against 0.0.63. Specifically
+unverified: that the HUD stops logging `GetBiome error Ocean -> Meadows`, that
+`SpawnSystem.UpdateSpawnList` stops throwing, that ocean fish stop spawning on dry Underworld
+ground, that the ground texture stops reading as Ashlands, and that weather and sky change in the
+region. Those are the observations the next live session should make, in the region, with
+`-console`.
+
+The controlling priority is `BACKLOG.md` **P0.-2** (the open freshness-gate item) and **P0.-1**
+(per-layer map state, Underworld sky, the magenta Deep Gate, re-grounding the Conclave, and making
+layer travel a teleport).
+
+---
+
 # Current source candidate — 0.0.62 / schema 5 (2026-09-17)
 
 Begins Underworld flora F1a: validated Glowcap, Spirestalk and Shelfwood data, canonical

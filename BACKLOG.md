@@ -2,6 +2,86 @@
 
 Priority is dependency order. Broken intended behavior and repository divergence outrank new scope.
 
+## P0.-2 — `main` did not build (raised 2026-09-18)
+
+`main` at `df27a65` failed its own `build.ps1` six times over, and did not compile. Nothing
+committed after those defects landed could have been built, packaged or installed, so the whole of
+2026-09-18's work up to `df27a65` was unverified against the build. P0.1 requires a build before
+push; that did not happen.
+
+- [x] **`main` did not compile — five errors across Core and Runtime. FIXED 0.0.63.**
+  `UnderworldMapRaster.cs` called `UnderworldMapPresentation.CellToLogical`, which has never
+  existed; the method is `CellCenterToLogical`, and the wrong name appears exactly once in
+  repository history, in `100619f` (08:12), the commit that introduced the caller.
+  `UnderworldMapPresentationRuntime` read `UnderworldExplorationState.ExploredCount` twice, which
+  did not exist either — it is now a real incrementally-maintained property on the Core state, since
+  its purpose is to let the fog texture skip a rewrite without rescanning every cell, and computing
+  it per frame in the runtime would defeat that. `UnderworldMapLayerRuntime` had two nullable-flow
+  errors on the `identity` out-parameter, closed with the `|| identity is null` guard the rest of
+  the runtime already uses. Six commits landed on top of the first of these.
+
+- [x] **Icon gate was unsatisfiable for six staff icons. FIXED 0.0.63.** `verify-icon-assets.py`
+  required 6% of the frame to carry alpha. All 32 staff icons are framed identically -- visible
+  bounding box 78.5%-84.4% wide, 64.5%-69.9% tall -- but frame coverage runs 3.6%-9.9% because a
+  staff is a hairline shaft and the tiers differ only in head mass. Six fell under the line, and no
+  framing change could have lifted them: spirit-simple needs about 1.65x linear scale to pass, which
+  crops the staff out of frame. The gate now measures three things instead of one -- frame coverage
+  for a blank or filled-square render, visible bounding-box area for a subject rendered too small or
+  off-centre, and ink density inside that box for an outline or ghost render. Proven on four
+  synthetic probes that each trip a different rule, so the replacement is strictly more
+  discriminating than the single floor it replaces, not a relaxation.
+- [x] **Sporeling texture gate was tightened five times without regenerating the assets. FIXED
+  0.0.63.** `gill-emission.png` and the other sixteen maps were last written at `33dc47a`
+  (2026-09-17 16:25). Four generator commits and five gate commits landed after that, and
+  regenerating from the authoritative generator today changed all seventeen files. The gate was
+  being tuned against stale output. Regenerating alone did not fix it -- the generator itself could
+  not satisfy its own gate, producing 0.09% hot pixels against a 0.2% floor -- so the glow gain was
+  raised from 3.0 to 4.5 at the source, which is where the defect was.
+- [x] **The Sporeling author had never run on Blender 5.0. FIXED 0.0.63.**
+  `verify-underworld-sporeling` rejected `production-creature-r2` where the author writes
+  `production-creature-r4`: the committed `.blend` was last written at `1ed1d89` (2026-09-17 17:04)
+  and two author commits landed after it. The reason it was never regenerated is that the author
+  could not run — Blender 4.4 moved an action's F-Curves into slotted channelbags and 5.0 removed
+  `Action.fcurves` outright, so `72bea2c`, which added the animation actions, raised AttributeError
+  on every invocation. Both the author and the gate now read F-Curves through
+  `action.layers[].strips[].channelbags[].fcurves`, preferring the legacy collection when it exists.
+  The animation gate added by `3d4158d` had also never executed: it did `REQ_ACTIONS - set(actions)`
+  with `REQ_ACTIONS` a dict, which is a TypeError, hidden because the fidelity check above it always
+  raised first on the stale blend. With that fixed the gate ran for the first time and caught a
+  third defect: every action was authored and then discarded, because each loses its only user when
+  the next is assigned to the rig and Blender does not write zero-user datablocks — they now carry a
+  fake user. Re-authored and verified: 41 mesh parts, 28 bones, 10 actions actually present in the
+  saved file.
+- [x] **The Sporeling review renderer had never run either. FIXED 0.0.63.** `BLENDER_EEVEE_NEXT` was
+  EEVEE's identifier only for Blender 4.2-4.5; 5.0 offers
+  `('BLENDER_EEVEE','BLENDER_WORKBENCH','CYCLES')`, so assigning it raised a `TypeError` and the
+  renderer added by `0a728f1` and wired into the build by `ffeed60` had never produced a plate. The
+  engine is now resolved from the enum rather than named for a version — the same shape
+  `render-deep-fracture-caverns.py` already uses. Twelve review plates render for the first time.
+- [ ] **Nothing ties a generated asset to the generator that owns it.** Three of this section's
+  defects are the same shape: a generator or its gate evolves while the committed output does not,
+  and only a full build notices — the Sporeling textures were five gate commits and four generator
+  commits stale, the source blend two author commits stale. `verify-model-assets.py` already
+  compares model payloads against their sources; generated *textures*, *icons* and *source blends*
+  have no equivalent freshness check. A gate that regenerates into a temporary directory and
+  compares hashes would have caught all three on the first commit rather than the fiftieth. It needs
+  each generator to accept an output-directory override, which most do not, so it is real work
+  rather than a one-line addition.
+- [ ] **`build.ps1` compiles last.** Roughly ten minutes of Blender and asset gates run before the
+  compiler is ever invoked, so a one-word CS0117 costs a full cycle to surface. A fast
+  `dotnet build src/Magenheim.Core` at the top would report it in seconds. Low priority next to the
+  freshness gate above, and it is a workflow improvement rather than a defect.
+- [x] **`build.ps1` treated native stderr as failure under Windows PowerShell 5.1. FIXED 0.0.63.**
+  With both asset defects repaired the build still died at the same line, this time with the gate
+  reporting success: Pillow 12.3.0 deprecated `Image.Image.getdata`, and PowerShell 5.1 wraps every
+  native stderr line in an ErrorRecord, which terminates the script under
+  `$ErrorActionPreference = 'Stop'` even though the tool exited 0. `tools/blender.ps1` already
+  documented the same trap for Blender. Fixed at both levels: a `flat(im)` helper prefers Pillow's
+  `get_flattened_data` and falls back to `getdata`, added to all four tools that called the
+  deprecated API (which Pillow 14 removes outright), and `build.ps1` relaxes the preference to
+  `Continue` for the gate block only — where every call already checks `$LASTEXITCODE` and each
+  `.ps1` gate throws — restoring `Stop` before the packaging section's cmdlets.
+
 ## P0.-1 — Underworld world-hosting correction (TOP PRIORITY, raised 2026-09-17, user directive)
 
 The Underworld was implemented as a **separate save file** that the player reaches by quitting to
@@ -29,15 +109,24 @@ flora and progression work. None of that is wasted.
   `seed32-quarter-turn-offset-v2`, centre (40000, 0), radius 8000m, `HostBaseY` 0 so Underworld
   terrain generates at ordinary altitudes. A vertical band at the same (x, z) could host objects but
   never terrain, which is the dead end that produced the separate save.
-- [ ] **Make the biome sector agree with the region. TOP of this section.** Almost everything except
-  terrain height reads `WorldGenerator.GetBiomeSector`, not `GetBiome`: weather, sky, ground texture,
-  spawns, vegetation, minimap and the HUD biome. The sector is still Ocean out there, so the game
-  disagrees with itself — `Player.UpdateBiome` logs `GetBiome error Ocean -> Meadows` every tick,
-  `SpawnSystem.UpdateSpawnList` throws every tick, and ocean fish spawn on dry ground. A patch exists
-  and resolves but does not take effect; a throttled `[sector probe]` is in place to say why. Note
-  the biome map is a 2048 texture at 12m per pixel spanning only +/-12282m, so the region at 40000
-  may simply be outside it — if so the region centre has to be re-decided, which is a user call. The temporary probe is now worker-thread-safe (uses `Environment.TickCount`, not `UnityEngine.Time`) so obtaining that evidence cannot itself violate the HeightmapBuilder threading boundary. See
-  `docs/validation/2026-09-17-underworld-same-world-region-handoff.md`.
+- [x] **Make the biome sector agree with the region. SOURCE-FIXED 0.0.63, live acceptance open.**
+  Almost everything except terrain height reads `WorldGenerator.GetBiomeSector`, not `GetBiome`:
+  weather, sky, ground texture, spawns, vegetation, minimap and the HUD biome. Root cause settled
+  from installed-assembly IL, not from the live probe: the patch was bound to
+  `GetBiomeSector(int gridx, int gridy, bool clamp)`, which clamps its grid indices into [0, 2047]
+  **unconditionally** — its own `clamp` argument is never read — and writes them with `starg`, so the
+  postfix read the clamped value. The biome map is 2048 cells at 12m, spanning only +/-12282m, and
+  the region sits at x = 40000: grid 4356 clamped to 2047, which converts back to 12282m, so
+  containment was tested 27.7km outside the region and could never pass. The probe only logged when
+  containment passed, so it could never have produced the evidence either.
+  **The region does not have to move.** Both world-space overloads still carry the true coordinate,
+  and a scan of every `GetBiomeSector` call site in `valheim_Data/Managed` shows nothing reaches the
+  grid overload except those two overloads themselves. The override is now bound to
+  `GetBiomeSector(float, float, bool)` and `GetBiomeSector(Vector3, bool)`; the grid patch and the
+  probe are removed. Harmony patch targets 27 -> 28. Unverified in play: that the HUD stops logging
+  `GetBiome error Ocean -> Meadows`, that `SpawnSystem.UpdateSpawnList` stops throwing, that ocean
+  fish stop spawning on dry ground, and that ground texture, weather and sky change. See
+  `docs/validation/2026-09-18-underworld-biome-sector-world-space-binding.md`.
 - [ ] **Per-layer map state.** `Minimap::GenerateWorldMap` sizes its texture to the vanilla world, so
   the region is off the canvas: no unfurling cloud and both layers share one plane. Design section 25
   already requires separate exploration state per layer.
