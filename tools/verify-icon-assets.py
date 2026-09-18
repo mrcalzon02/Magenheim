@@ -17,8 +17,27 @@ MAGENHEIM_ICON_TARGET_SIZE to a larger square size for higher-resolution review/
 Set MAGENHEIM_ENFORCE_ICON_TARGET=1 for asset-release/acceptance passes: every shipped icon
 below the configured target then becomes a hard failure. Normal compatibility builds continue
 to enumerate legacy-resolution debt without destructively blocking unrelated development.
-Silhouette coverage defaults to 6%-94%; review environments may narrow that window with
-MAGENHEIM_ICON_MIN_COVERAGE / MAGENHEIM_ICON_MAX_COVERAGE without changing checked-in policy.
+An icon is judged on three measures, not one. A single "fraction of the frame with alpha" floor
+cannot express what this check is for: it conflates how a subject is placed with how thick the
+subject is. Every one of the 32 staff icons is framed the same way -- visible bounding box 78.5%
+to 84.4% of the icon wide, 64.5% to 69.9% tall -- yet frame coverage runs from 3.6% to 9.9%,
+because a staff is a hairline shaft and the tiers differ only in how much mass the head carries.
+A flat 6% floor therefore rejected the six thinnest correctly-rendered staves, and no change to
+render-staff-icons.py could have satisfied it: raising spirit-simple past 6% needs roughly 1.65x
+linear scale, which crops the staff out of frame. The three measures separate the defects:
+
+  * frame coverage -- catches a blank or near-blank render, and (at the top) an icon that is
+    effectively a filled square with no silhouette;
+  * visible bounding-box area -- catches a subject rendered tiny or pushed into a corner, which
+    frame coverage alone cannot distinguish from a correctly framed thin one;
+  * ink density inside that bounding box -- catches an outline-only or ghost render whose box is
+    large but whose subject is not actually there.
+
+Review environments may tighten any of them with MAGENHEIM_ICON_MIN_COVERAGE,
+MAGENHEIM_ICON_MAX_COVERAGE, MAGENHEIM_ICON_MIN_BOX_FILL and MAGENHEIM_ICON_MIN_INK_DENSITY
+without changing checked-in policy. Note that low ink density across the whole staff family
+(6.4%-18.8%, against 47%-85% for every other icon) is real readability debt recorded in
+BACKLOG.md; it is an icon-composition problem, not something a threshold can decide.
 Exits non-zero on structural failures so build.ps1 fails the build.
 """
 import json
@@ -54,8 +73,13 @@ def coverage_setting(name: str, default: float) -> float:
     return value
 
 
-MIN_VISIBLE_ALPHA_COVERAGE = coverage_setting('MAGENHEIM_ICON_MIN_COVERAGE', 0.06)
+# Floors sit below the measured minimum of the shipped library with real margin, so they reject
+# a broken render rather than a thin one. Observed today across 44 icons: frame coverage 3.64%
+# minimum, bounding-box area 30.5% minimum, ink density inside the box 6.4% minimum.
+MIN_VISIBLE_ALPHA_COVERAGE = coverage_setting('MAGENHEIM_ICON_MIN_COVERAGE', 0.015)
 MAX_VISIBLE_ALPHA_COVERAGE = coverage_setting('MAGENHEIM_ICON_MAX_COVERAGE', 0.94)
+MIN_VISIBLE_BOX_FILL = coverage_setting('MAGENHEIM_ICON_MIN_BOX_FILL', 0.22)
+MIN_VISIBLE_INK_DENSITY = coverage_setting('MAGENHEIM_ICON_MIN_INK_DENSITY', 0.04)
 if MIN_VISIBLE_ALPHA_COVERAGE >= MAX_VISIBLE_ALPHA_COVERAGE:
     raise SystemExit(
         'MAGENHEIM_ICON_MIN_COVERAGE must be lower than MAGENHEIM_ICON_MAX_COVERAGE '
@@ -110,13 +134,19 @@ def decode_png(path: Path) -> tuple[int, int, int, bytes]:
     return width, height, colour, raw
 
 
-def alpha_coverage(raw: bytes, width: int, height: int) -> float:
-    """Decode PNG filters enough to measure the actual visible RGBA silhouette without Pillow."""
+def silhouette_metrics(raw: bytes, width: int, height: int) -> tuple[float, float, float]:
+    """Decode PNG filters enough to measure the actual visible RGBA silhouette without Pillow.
+
+    Returns (frame coverage, visible bounding-box area as a fraction of the icon, ink density
+    inside that bounding box). An icon with no visible pixels at all returns zeros, which fails
+    every floor.
+    """
     stride = width * 4
     previous = bytearray(stride)
     visible = 0
+    min_x, max_x, min_y, max_y = width, -1, height, -1
     cursor = 0
-    for _ in range(height):
+    for y in range(height):
         filter_type = raw[cursor]
         cursor += 1
         encoded = raw[cursor:cursor + stride]
@@ -142,9 +172,21 @@ def alpha_coverage(raw: bytes, width: int, height: int) -> float:
             else:
                 raise ValueError(f'unsupported PNG filter {filter_type}')
             row[i] = decoded
-        visible += sum(row[i] >= 24 for i in range(3, stride, 4))
+        lit = [i >> 2 for i in range(3, stride, 4) if row[i] >= 24]
+        if lit:
+            visible += len(lit)
+            if lit[0] < min_x:
+                min_x = lit[0]
+            if lit[-1] > max_x:
+                max_x = lit[-1]
+            if y < min_y:
+                min_y = y
+            max_y = y
         previous = row
-    return visible / (width * height)
+    if max_x < 0:
+        return 0.0, 0.0, 0.0
+    box = (max_x - min_x + 1) * (max_y - min_y + 1)
+    return visible / (width * height), box / (width * height), visible / box
 
 
 # 1. Every shipped icon must decode completely, carry real alpha, and occupy a useful inventory silhouette.
@@ -162,11 +204,15 @@ for path in icon_files:
         failures.append(f'{path.name}: colour type {colour}, expected 6 (RGBA)')
     elif width == height:
         try:
-            coverage = alpha_coverage(raw, width, height)
+            coverage, box_fill, ink_density = silhouette_metrics(raw, width, height)
             if coverage < MIN_VISIBLE_ALPHA_COVERAGE:
-                failures.append(f'{path.name}: visible silhouette occupies only {coverage:.1%} of the icon')
+                failures.append(f'{path.name}: visible silhouette occupies only {coverage:.1%} of the icon; the render is effectively blank')
             elif coverage > MAX_VISIBLE_ALPHA_COVERAGE:
                 failures.append(f'{path.name}: visible silhouette occupies {coverage:.1%}; icon is effectively a filled square')
+            elif box_fill < MIN_VISIBLE_BOX_FILL:
+                failures.append(f'{path.name}: subject occupies only {box_fill:.1%} of the icon area; it is rendered too small or off-centre')
+            elif ink_density < MIN_VISIBLE_INK_DENSITY:
+                failures.append(f'{path.name}: only {ink_density:.1%} of the subject bounding box is drawn; the render is an outline or a ghost')
         except Exception as error:  # noqa: BLE001
             failures.append(f'{path.name}: cannot evaluate visible silhouette ({error})')
     if width != height:
@@ -223,5 +269,6 @@ if legacy_resolution:
 print(f'PASS: {len(icon_files)} icons decode as square RGBA >={LEGACY_ICON_FLOOR}px with useful alpha silhouettes; '
       f'{len(staff_models)} staff models carry a matching icon; '
       f'all literal EarthAssets.Icon references resolve; target={ICON_TARGET_SIZE}px; '
-      f'coverage={MIN_VISIBLE_ALPHA_COVERAGE:.0%}-{MAX_VISIBLE_ALPHA_COVERAGE:.0%}; '
+      f'coverage={MIN_VISIBLE_ALPHA_COVERAGE:.1%}-{MAX_VISIBLE_ALPHA_COVERAGE:.0%}, '
+      f'box_fill>={MIN_VISIBLE_BOX_FILL:.0%}, ink_density>={MIN_VISIBLE_INK_DENSITY:.0%}; '
       f'enforce_target={ENFORCE_ICON_TARGET}.')
