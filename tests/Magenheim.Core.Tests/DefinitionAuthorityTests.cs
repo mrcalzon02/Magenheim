@@ -73,6 +73,7 @@ internal static class DefinitionAuthorityTests
         assertions += UnderworldTransitionStateCodecTests.Run();
         assertions += UnderworldSpatialDomainTests.Run();
         assertions += UnderworldTerrainLifecycleTests.Run();
+        assertions += UnderworldMapProjectionTests.Run();
         return assertions;
     }
 }
