@@ -11,6 +11,13 @@ files=[out/'source'/(x+'.blend') for x in args] if args else sorted((out/'source
 for file in files:
  if file.resolve().parent != (out/'source').resolve():raise ValueError('Invalid model path')
  bpy.ops.wm.open_mainfile(filepath=str(file))
+ # Blender restores the mode a file was saved in, and a hand-edited source is very often saved in
+ # Edit Mode. origin_set below then fails with "Operation cannot be performed in edit mode" and the
+ # whole export dies, which is how a manual geode edit went unexported. Editing a source by hand is
+ # normal; refusing to export it is not.
+ if bpy.context.mode!='OBJECT':
+  try:bpy.ops.object.mode_set(mode='OBJECT')
+  except RuntimeError:pass
  scene=bpy.context.scene
  bindings={p['path']:p for p in json.loads(scene.get('binding_metadata','[]'))}
  if 'binding_metadata' in scene:del scene['binding_metadata']
@@ -31,9 +38,22 @@ for file in files:
   texture=None
   for node in material.node_tree.nodes:
    if node.type=='TEX_IMAGE' and node.image:
-    image=node.image;texture=hashlib.sha256(image.name.encode()).hexdigest()[:16]+'.png'
+    image=node.image
     if min(image.size)<256:raise ValueError(f'{file.name}/{image.name}: packed source texture must be at least 256px')
-    image.filepath_raw=str(out/'textures'/texture);image.file_format='PNG';image.save();
+    # Name the texture by its CONTENT, not by the Blender image's name. Hashing the name meant every
+    # image called the same thing across different .blend files wrote to the same PNG and each export
+    # overwrote the last: 281 models and 3,680 parts collapsed onto 45 texture files, one of them
+    # shared by 125 models. In Blender each model showed its own image; in game they all sampled
+    # whichever model exported last, which is why buildables looked perfect in the source and wrong
+    # in the world. Hashing content still deduplicates genuinely identical images, which is the only
+    # sharing that was ever intended.
+    staging=out/'textures'/('.staging-'+file.stem+'-'+str(len(parts))+'.png')
+    image.filepath_raw=str(staging);image.file_format='PNG';image.save()
+    texture=hashlib.sha256(staging.read_bytes()).hexdigest()[:16]+'.png'
+    final=out/'textures'/texture
+    if final.exists():staging.unlink()
+    else:staging.replace(final)
+    image.filepath_raw=str(final);
     if file.stem.startswith('earth-'):
      image.filepath_raw=str(root/'assets/earth'/(file.stem[6:]+'.png'));image.save()
     image.pack();break
@@ -41,6 +61,13 @@ for file in files:
           emission=[v*bs.inputs['Emission Strength'].default_value for v in bs.inputs['Emission Color'].default_value[:3]],texture=texture)
   vertices=[];normals=[];uv=[];triangles=[];normal_matrix=obj.matrix_world.to_3x3().inverted().transposed()
   for face in mesh.loop_triangles:
+   # Drop triangles with no world-space area. verify-model-assets rejects these, and they render
+   # nothing, but they cannot always be removed at the source: the exporter emits the *evaluated*
+   # mesh, so a sliver produced by a modifier is not present in the .blend to delete. The stone
+   # guardian's armour chip carried four, one of them exactly zero. Dropping them here removes
+   # nothing visible and leaves the gate to catch anything that still gets through.
+   fa,fb,fc=(obj.matrix_world@mesh.vertices[mesh.loops[li].vertex_index].co for li in face.loops)
+   if (fb-fa).cross(fc-fa).length<=1e-11:continue
    # Preserve authored split/smooth normals; mirrored transforms need reversed
    # winding so exported fronts agree with the inverse-transpose normals.
    loops=list(face.loops)

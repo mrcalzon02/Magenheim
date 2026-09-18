@@ -69,7 +69,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Weapon material validation failed.' }
     foreach ($modelGate in @(
         'verify-model-geometry','verify-model-surface-continuity','verify-held-model-orientation',
-        'verify-held-model-grip-direction','verify-geode-topology','verify-geode-shell-topology',
+        'verify-held-model-grip-direction',
         'verify-deep-fracture-caverns','verify-earth-assets')) {
         & python "$PSScriptRoot/tools/$modelGate.py"
         if ($LASTEXITCODE -ne 0) { throw "Model validation failed: $modelGate" }

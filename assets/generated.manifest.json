@@ -99,6 +99,33 @@
         "assets/models/source/underworld-creature-sporeling.blend": null
       },
       "hash": "generator-only"
+    },
+    {
+      "id": "weapon-icons",
+      "generator": "tools/render-weapon-icons.py",
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-Command",
+        "& './tools/blender.ps1' render-weapon-icons"
+      ],
+      "outputs": [
+        "assets/earth/crystal-weapon-*.icon.png"
+      ],
+      "generator_sha256": "81d764240e9c1ab91012203e39eb3b3fa7992af2fc4ac278541f78a8a82baaf7",
+      "output_sha256": {
+        "assets/earth/crystal-weapon-atgeir.icon.png": null,
+        "assets/earth/crystal-weapon-axe.icon.png": null,
+        "assets/earth/crystal-weapon-battleaxe.icon.png": null,
+        "assets/earth/crystal-weapon-bow.icon.png": null,
+        "assets/earth/crystal-weapon-crossbow.icon.png": null,
+        "assets/earth/crystal-weapon-greatsword.icon.png": null,
+        "assets/earth/crystal-weapon-knife.icon.png": null,
+        "assets/earth/crystal-weapon-mace.icon.png": null,
+        "assets/earth/crystal-weapon-spear.icon.png": null,
+        "assets/earth/crystal-weapon-sword.icon.png": null
+      },
+      "hash": "generator-only"
     }
   ]
 }

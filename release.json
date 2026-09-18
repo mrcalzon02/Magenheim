@@ -1,4 +1,4 @@
 {
-  "version": "0.0.68",
-  "description": "0.0.68: Six Master staves fired nothing because Valheim only fires a multi-burst projectile attack while the attack is still live, and the donor single-shot animation ends first. Their authored volleys now release intact."
+  "version": "0.0.71",
+  "description": "0.0.71: Model textures are now named by content instead of by the Blender image name, removing a latent overwrite hazard in the exporter. Full library re-export. No behavioural change on its own."
 }

@@ -89,7 +89,11 @@ internal sealed class CrystalWeaponRegistrar : IDisposable
         shared.m_durabilityPerLevel = DurabilityPerQuality;
         shared.m_damages = PhysicalOnly(sourceDamage);
         shared.m_damagesPerLevel = PhysicalOnly(sourceDamagePerLevel);
-        shared.m_icons = new[] { CrystalWeaponIcons.Icon(definition.ModelId) };
+        // Rendered from the same .blend the runtime mesh is exported from, the way the staff
+        // family already works. CrystalWeaponIcons.cs drew these procedurally in C#, so they
+        // described the weapons only as well as code could draw them and drifted the moment a
+        // model was re-authored. tools/render-weapon-icons.py owns them now.
+        shared.m_icons = new[] { EarthAssets.Icon(definition.ModelId) };
 
         CrystalWeaponVisuals.Apply(item.ItemPrefab, definition.ModelId);
 
