@@ -1,132 +1,273 @@
 using System;
 using System.Collections.Generic;
 using BepInEx.Logging;
+using Jotunn.Managers;
 using Magenheim.Core.Underworld;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Cheap, disposable runtime dressing for the first live Underworld test. Markers are generated
-/// around the local player so they are actually observable during traversal instead of being
-/// scattered thousands of metres away. Nothing is networked or persisted.
+/// Disposable local Underworld ecology preview assembled from Valheim-owned donor prefabs.
+/// Donors are resolved from the running game and rebuilt as stripped render-only copies: no
+/// vanilla prefab identity is replaced, no vanilla meshes/textures are packaged by Magenheim,
+/// and no donor gameplay/network components are carried into the preview objects.
 /// </summary>
 internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
 {
     private UnderworldRuntimeServices? _services;
     private ManualLogSource? _log;
-    private readonly List<GameObject> _spawned=new();
-    private readonly Dictionary<UnderworldTerrainBiome,Material> _materials=new();
-    private readonly Dictionary<string,Mesh> _meshes=new();
-    private bool _meshLoadFailed;
-    private string _admitted=string.Empty;
+    private readonly List<GameObject> _spawned = new();
+    private readonly Dictionary<string, GameObject> _donorSources = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _missingDonors = new(StringComparer.Ordinal);
+    private string _admitted = string.Empty;
     private Vector3 _lastBuildPosition;
     private float _nextAt;
-    private const float RebuildDistance=180f;
+    private const float RebuildDistance = 180f;
 
-    internal void Configure(UnderworldRuntimeServices services,ManualLogSource log)
-    { _services=services??throw new ArgumentNullException(nameof(services));_log=log??throw new ArgumentNullException(nameof(log)); }
+    internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
+    {
+        _services = services ?? throw new ArgumentNullException(nameof(services));
+        _log = log ?? throw new ArgumentNullException(nameof(log));
+    }
 
     private void Update()
     {
-        if(Time.unscaledTime<_nextAt)return;_nextAt=Time.unscaledTime+3f;
-        if(_services is null||ZNet.instance is null||ZNet.World is null)return;
-        if(!UnderworldRuntimeIdentityResolver.TryResolveWorldSession(_services.SpatialDomain,ZNet.instance,ZNet.World,
-            out var identity,out var layer,out _)||identity is null||layer!=UnderworldLayer.Underworld){ClearMarkers();_admitted=string.Empty;return;}
-        var player=Player.m_localPlayer;if(player is null)return;
-        var first=!string.Equals(_admitted,identity.DerivedWorldId,StringComparison.Ordinal);
-        if(!first&&Vector3.Distance(player.transform.position,_lastBuildPosition)<RebuildDistance)return;
-        _admitted=identity.DerivedWorldId;_lastBuildPosition=player.transform.position;BuildLocalPatch(player.transform.position,identity);
-    }
+        if (Time.unscaledTime < _nextAt) return;
+        _nextAt = Time.unscaledTime + 3f;
+        if (_services is null || ZNet.instance is null || ZNet.World is null) return;
 
-    private void BuildLocalPatch(Vector3 center,UnderworldWorldIdentity identity)
-    {
-        ClearMarkers();var generator=WorldGenerator.instance;if(generator is null)return;
-        var seed=identity.DerivedSeed32^(Mathf.RoundToInt(center.x/90f)*73856093)^(Mathf.RoundToInt(center.z/90f)*19349663);
-        var random=new System.Random(seed);
-        for(var i=0;i<42;i++)
+        if (!UnderworldRuntimeIdentityResolver.TryResolveWorldSession(
+                _services.SpatialDomain, ZNet.instance, ZNet.World,
+                out var identity, out var layer, out _) ||
+            identity is null || layer != UnderworldLayer.Underworld)
         {
-            var angle=(float)(random.NextDouble()*Math.PI*2d);var distance=24f+(float)random.NextDouble()*155f;
-            var x=center.x+Mathf.Cos(angle)*distance;var z=center.z+Mathf.Sin(angle)*distance;
-            var biome=generator.GetBiome(x,z);var vanilla=generator.GetBiomeHeight(biome,x,z,out _);
-            var sample=UnderworldTerrainRuntime.SampleTerrain(x,z,vanilla);if(!sample.Admitted)continue;
-            SpawnMarker(new Vector3(x,(float)sample.Height,z),sample.Biome,i+seed);
+            ClearMarkers();
+            _admitted = string.Empty;
+            return;
         }
-        _log?.LogDebug($"Refreshed {_spawned.Count} local Underworld placeholder ecology markers near ({center.x:0},{center.z:0}).");
+
+        var player = Player.m_localPlayer;
+        if (player is null) return;
+
+        var first = !string.Equals(_admitted, identity.DerivedWorldId, StringComparison.Ordinal);
+        if (!first && Vector3.Distance(player.transform.position, _lastBuildPosition) < RebuildDistance) return;
+
+        _admitted = identity.DerivedWorldId;
+        _lastBuildPosition = player.transform.position;
+        BuildLocalPatch(player.transform.position, identity);
     }
 
-    private void SpawnMarker(Vector3 position,UnderworldTerrainBiome biome,int variant)
+    private void BuildLocalPatch(Vector3 center, UnderworldWorldIdentity identity)
     {
-        // Silhouettes are instanced from the authored model library rather than generated from
-        // Unity primitives: Magenheim geometry comes from the editable Blender/GLB sets, and the
-        // asset gate rejects runtime shape builders. Only two Underworld scenery meshes exist so
-        // far, so biomes are distinguished by mesh choice, scale and tint until the real flora
-        // assets land.
-        var mesh=MeshFor(biome);if(mesh is null)return;
-        var node=new GameObject("Magenheim_UnderworldPlaceholder_"+biome);
-        node.transform.position=position+Vector3.up*(1.5f+Math.Abs(variant%4));
-        node.transform.rotation=Quaternion.Euler(Math.Abs(variant%17),Math.Abs(variant*37%360),Math.Abs(variant%11));
-        node.transform.localScale=Scale(biome,variant);
-        node.AddComponent<MeshFilter>().sharedMesh=mesh;
-        var renderer=node.AddComponent<MeshRenderer>();var material=MaterialFor(biome);if(material is not null)renderer.sharedMaterial=material;
-        // Fungal caps stayed walk-through before the mesh change; keep that traversal behaviour.
-        if(biome!=UnderworldTerrainBiome.FungalForest)node.AddComponent<MeshCollider>().sharedMesh=mesh;
+        ClearMarkers();
+        var generator = WorldGenerator.instance;
+        if (generator is null) return;
+
+        var seed = identity.DerivedSeed32 ^
+            (Mathf.RoundToInt(center.x / 90f) * 73856093) ^
+            (Mathf.RoundToInt(center.z / 90f) * 19349663);
+        var random = new System.Random(seed);
+
+        for (var i = 0; i < 56; i++)
+        {
+            var angle = (float)(random.NextDouble() * Math.PI * 2d);
+            var distance = 18f + (float)random.NextDouble() * 165f;
+            var x = center.x + Mathf.Cos(angle) * distance;
+            var z = center.z + Mathf.Sin(angle) * distance;
+            var surfaceBiome = generator.GetBiome(x, z);
+            var vanillaHeight = generator.GetBiomeHeight(surfaceBiome, x, z, out _);
+            var sample = UnderworldTerrainRuntime.SampleTerrain(x, z, vanillaHeight);
+            if (!sample.Admitted) continue;
+            SpawnDonor(new Vector3(x, (float)sample.Height, z), sample.Biome, i + seed);
+        }
+
+        _log?.LogDebug(
+            $"Refreshed {_spawned.Count} vanilla-donor Underworld ecology objects near ({center.x:0},{center.z:0}).");
+    }
+
+    private void SpawnDonor(Vector3 position, UnderworldTerrainBiome biome, int variant)
+    {
+        UnderworldVanillaDonorCatalog.Donor donor;
+        try { donor = UnderworldVanillaDonorCatalog.Select(biome, variant); }
+        catch (InvalidOperationException exception)
+        {
+            _log?.LogWarning(exception.Message);
+            return;
+        }
+
+        var source = ResolveDonor(donor.PrefabName);
+        if (source is null) return;
+
+        var node = BuildVisualClone(source, donor, variant);
+        if (node is null) return;
+
+        node.name = $"Magenheim_UnderworldDonor_{biome}_{donor.PrefabName}";
+        node.transform.position = position + Vector3.up * donor.GroundOffset;
+        node.transform.rotation = Quaternion.Euler(
+            Mathf.Abs(variant % 7) - 3f,
+            Mathf.Abs(variant * 37 % 360),
+            Mathf.Abs(variant % 9) - 4f);
+        node.transform.localScale = UnderworldVanillaDonorCatalog.Scale(donor, variant);
         _spawned.Add(node);
     }
 
-    private Mesh? MeshFor(UnderworldTerrainBiome biome)
+    private GameObject? ResolveDonor(string prefabName)
     {
-        var id=biome==UnderworldTerrainBiome.FungalForest?"underworld-dais":"underworld-standing-stone";
-        if(_meshes.TryGetValue(id,out var cached))return cached;
-        if(_meshLoadFailed)return null;
-        try{var mesh=ModelAssets.LoadSingleMesh(id);_meshes[id]=mesh;return mesh;}
-        catch(Exception exception)
+        if (_donorSources.TryGetValue(prefabName, out var cached) && cached) return cached;
+        if (_missingDonors.Contains(prefabName)) return null;
+
+        var source = PrefabManager.Instance.GetPrefab(prefabName);
+        if (source is null)
         {
-            // Fail loud once and stop: this is disposable test dressing, so it must not spam the
-            // log or throw out of Update every frame when the packaged model library is incomplete.
-            _meshLoadFailed=true;_log?.LogError($"Underworld placeholder ecology disabled; model '{id}' failed to load: {exception.Message}");
+            _missingDonors.Add(prefabName);
+            _log?.LogWarning(
+                $"Underworld donor '{prefabName}' is unavailable in this Valheim build; skipping that palette entry.");
             return null;
+        }
+
+        _donorSources[prefabName] = source;
+        return source;
+    }
+
+    private GameObject? BuildVisualClone(
+        GameObject source,
+        UnderworldVanillaDonorCatalog.Donor donor,
+        int variant)
+    {
+        var root = new GameObject($"Magenheim_UnderworldDonorVisual_{source.name}_{variant}");
+        var transformMap = new Dictionary<Transform, Transform>();
+        var rendererMap = new Dictionary<Renderer, Renderer>();
+        var copiedRenderers = 0;
+
+        CopyNode(source.transform, root.transform, false, transformMap, rendererMap, ref copiedRenderers);
+        if (copiedRenderers == 0)
+        {
+            Destroy(root);
+            if (_missingDonors.Add(source.name))
+                _log?.LogWarning($"Underworld donor '{source.name}' contained no supported mesh renderers.");
+            return null;
+        }
+
+        RebuildLodGroups(source, transformMap, rendererMap);
+        if (donor.Collidable) AddConservativeCollider(root);
+        return root;
+    }
+
+    private static void CopyNode(
+        Transform source,
+        Transform target,
+        bool copyTransform,
+        IDictionary<Transform, Transform> transformMap,
+        IDictionary<Renderer, Renderer> rendererMap,
+        ref int copiedRenderers)
+    {
+        transformMap[source] = target;
+
+        if (copyTransform)
+        {
+            target.localPosition = source.localPosition;
+            target.localRotation = source.localRotation;
+            target.localScale = source.localScale;
+            target.gameObject.SetActive(source.gameObject.activeSelf);
+        }
+
+        var sourceFilter = source.GetComponent<MeshFilter>();
+        var sourceRenderer = source.GetComponent<MeshRenderer>();
+        if (sourceFilter is not null && sourceFilter.sharedMesh is not null && sourceRenderer is not null)
+        {
+            var targetFilter = target.gameObject.AddComponent<MeshFilter>();
+            targetFilter.sharedMesh = sourceFilter.sharedMesh;
+
+            var targetRenderer = target.gameObject.AddComponent<MeshRenderer>();
+            targetRenderer.sharedMaterials = sourceRenderer.sharedMaterials;
+            targetRenderer.enabled = sourceRenderer.enabled;
+            targetRenderer.shadowCastingMode = sourceRenderer.shadowCastingMode;
+            targetRenderer.receiveShadows = sourceRenderer.receiveShadows;
+            targetRenderer.lightProbeUsage = sourceRenderer.lightProbeUsage;
+            targetRenderer.reflectionProbeUsage = sourceRenderer.reflectionProbeUsage;
+            rendererMap[sourceRenderer] = targetRenderer;
+            copiedRenderers++;
+        }
+
+        var sourceLight = source.GetComponent<Light>();
+        if (sourceLight is not null && sourceLight.enabled)
+        {
+            var targetLight = target.gameObject.AddComponent<Light>();
+            targetLight.type = sourceLight.type;
+            targetLight.color = sourceLight.color;
+            targetLight.intensity = sourceLight.intensity;
+            targetLight.range = sourceLight.range;
+            targetLight.spotAngle = sourceLight.spotAngle;
+            targetLight.shadows = sourceLight.shadows;
+            targetLight.cullingMask = sourceLight.cullingMask;
+        }
+
+        for (var i = 0; i < source.childCount; i++)
+        {
+            var sourceChild = source.GetChild(i);
+            var targetChild = new GameObject(sourceChild.name).transform;
+            targetChild.SetParent(target, false);
+            CopyNode(sourceChild, targetChild, true, transformMap, rendererMap, ref copiedRenderers);
         }
     }
 
-    private static Vector3 Scale(UnderworldTerrainBiome biome,int v)
+    private static void RebuildLodGroups(
+        GameObject source,
+        IReadOnlyDictionary<Transform, Transform> transformMap,
+        IReadOnlyDictionary<Renderer, Renderer> rendererMap)
     {
-        v=Math.Abs(v);
-        return biome switch
+        foreach (var sourceGroup in source.GetComponentsInChildren<LODGroup>(true))
         {
-            UnderworldTerrainBiome.FungalForest=>new Vector3(2.5f+(v%3),3f+(v%5),2.5f+(v%3)),
-            UnderworldTerrainBiome.BlackwaterDeep=>new Vector3(1.2f,5f+(v%4)*2f,1.2f),
-            UnderworldTerrainBiome.SulfurousWastes=>new Vector3(1.8f,4f+(v%3)*1.5f,1.8f),
-            UnderworldTerrainBiome.FrozenCaverns=>new Vector3(1.2f,6f+(v%5)*1.5f,1.2f),
-            UnderworldTerrainBiome.FractureZones=>new Vector3(1.4f,7f+(v%4)*2f,1.4f),
-            _=>new Vector3(2f+(v%3),2f+(v%3),2f+(v%3))
-        };
+            if (!transformMap.TryGetValue(sourceGroup.transform, out var targetTransform)) continue;
+            var sourceLods = sourceGroup.GetLODs();
+            var targetLods = new LOD[sourceLods.Length];
+
+            for (var i = 0; i < sourceLods.Length; i++)
+            {
+                var mapped = new List<Renderer>();
+                foreach (var renderer in sourceLods[i].renderers)
+                    if (renderer is not null && rendererMap.TryGetValue(renderer, out var targetRenderer))
+                        mapped.Add(targetRenderer);
+
+                targetLods[i] = new LOD(sourceLods[i].screenRelativeTransitionHeight, mapped.ToArray())
+                {
+                    fadeTransitionWidth = sourceLods[i].fadeTransitionWidth
+                };
+            }
+
+            var targetGroup = targetTransform.gameObject.AddComponent<LODGroup>();
+            targetGroup.localReferencePoint = sourceGroup.localReferencePoint;
+            targetGroup.size = sourceGroup.size;
+            targetGroup.fadeMode = sourceGroup.fadeMode;
+            targetGroup.animateCrossFading = sourceGroup.animateCrossFading;
+            targetGroup.SetLODs(targetLods);
+            targetGroup.RecalculateBounds();
+        }
     }
 
-    private Material? MaterialFor(UnderworldTerrainBiome biome)
+    private static void AddConservativeCollider(GameObject root)
     {
-        if(_materials.TryGetValue(biome,out var cached)&&cached)return cached;
-        var shader=ResolvePlaceholderShader();if(shader is null)return null;
-        var material=new Material(shader){name="Magenheim_UnderworldPlaceholder_"+biome};
-        var tint=biome switch
+        foreach (var filter in root.GetComponentsInChildren<MeshFilter>(true))
         {
-            UnderworldTerrainBiome.FungalForest=>new Color(0.20f,0.48f,0.26f),
-            UnderworldTerrainBiome.BlackwaterDeep=>new Color(0.06f,0.12f,0.18f),
-            UnderworldTerrainBiome.SulfurousWastes=>new Color(0.55f,0.30f,0.08f),
-            UnderworldTerrainBiome.FrozenCaverns=>new Color(0.48f,0.70f,0.82f),
-            UnderworldTerrainBiome.FractureZones=>new Color(0.38f,0.16f,0.46f),
-            _=>new Color(0.24f,0.18f,0.20f)
-        };
-        if(material.HasProperty("_Color"))material.SetColor("_Color",tint);
-        if(material.HasProperty("_BaseColor"))material.SetColor("_BaseColor",tint);
-        if(material.HasProperty("_Glossiness"))material.SetFloat("_Glossiness",0.18f);
-        _materials[biome]=material;return material;
+            if (filter.sharedMesh is null) continue;
+            var collider = filter.gameObject.AddComponent<MeshCollider>();
+            collider.sharedMesh = filter.sharedMesh;
+            return;
+        }
     }
 
-    // Shares ModelAssets' resolver so there is one list of usable shaders, while keeping this
-    // disposable dressing fail-neutral: no shader simply means no placeholder material.
-    private static Shader? ResolvePlaceholderShader() => ModelAssets.FindSurfaceShader();
+    private void ClearMarkers()
+    {
+        foreach (var item in _spawned)
+            if (item) Destroy(item);
+        _spawned.Clear();
+    }
 
-    private void ClearMarkers(){foreach(var item in _spawned)if(item)Destroy(item);_spawned.Clear();}
-    private void OnDestroy(){ClearMarkers();foreach(var material in _materials.Values)if(material)Destroy(material);_materials.Clear();}
+    private void OnDestroy()
+    {
+        ClearMarkers();
+        _donorSources.Clear();
+        _missingDonors.Clear();
+    }
 }
