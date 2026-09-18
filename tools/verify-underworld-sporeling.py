@@ -45,11 +45,23 @@ for name,m in materials.items():
 for name in ('SporelingGill','SporelingSporeSac'):
     if len([n for n in materials[name].node_tree.nodes if n.type=='TEX_IMAGE' and n.image])<4: raise RuntimeError(f'{name}: localized emission missing')
 REQ_ACTIONS={'Sporeling_Idle':72,'Sporeling_Walk':32,'Sporeling_Scuttle':24,'Sporeling_Turn':24,'Sporeling_Alert':30,'Sporeling_Bite':22,'Sporeling_Hit':16,'Sporeling_Stagger':28,'Sporeling_DeathSporePuff':52,'Sporeling_Emerge':42}
-actions={a.name:a for a in bpy.data.actions}; missing_actions=REQ_ACTIONS-set(actions)
+def action_fcurves(act):
+    """Blender 4.4 moved an action's F-Curves into slotted channelbags; 5.0 removed Action.fcurves."""
+    legacy=getattr(act,'fcurves',None)
+    if legacy is not None: return list(legacy)
+    curves=[]
+    for layer in act.layers:
+        for strip in layer.strips:
+            for bag in getattr(strip,'channelbags',()): curves.extend(bag.fcurves)
+    return curves
+
+# REQ_ACTIONS is a dict, and `dict - set` is a TypeError: this block had never run, because the
+# fidelity check above always raised first on a stale .blend.
+actions={a.name:a for a in bpy.data.actions}; missing_actions=set(REQ_ACTIONS)-set(actions)
 if missing_actions: raise RuntimeError('Missing authored actions: '+', '.join(sorted(missing_actions)))
 for name,end in REQ_ACTIONS.items():
     a=actions[name]
-    if int(a.frame_start)!=1 or int(a.frame_end)!=end or not a.fcurves: raise RuntimeError(f'{name}: invalid authored action')
+    if int(a.frame_start)!=1 or int(a.frame_end)!=end or not action_fcurves(a): raise RuntimeError(f'{name}: invalid authored action')
 pts=[o.matrix_world@v.co for o in meshes for v in o.data.vertices]; span=[max(p[i] for p in pts)-min(p[i] for p in pts) for i in range(3)]
 if max(span)>.80 or span[2]<.30: raise RuntimeError(f'Unexpected creature bounds: {span}')
 print(f'VERIFIED Sporeling r4 source gate: meshes={len(meshes)} triangles={triangles} bones={len(bones)} actions={len(REQ_ACTIONS)} UV=SporelingUV textures={len(REQ_TEX)}',flush=True)

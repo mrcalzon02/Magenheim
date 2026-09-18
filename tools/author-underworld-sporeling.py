@@ -86,6 +86,22 @@ for (s,pair),(hip,knee,ankle,toe) in leg_points.items(): c=bone(f'{s}_Coxa{pair}
 for side in ('L','R'): sign=-1 if side=='L' else 1; bone(f'Frond_{side}',(sign*.035,.18,.29),(sign*.082,.29,.36),head)
 bone('AttackOrigin',(0,.20,.22),(0,.31,.22),head); bone('SporeFX',(0,-.18,.28),(0,-.32,.28),abd); bone('HitCenter',(0,0,.20),(0,0,.30),root); bpy.ops.object.mode_set(mode='OBJECT'); arm.show_in_front=True
 
+def action_fcurves(act):
+    """Blender 4.4 moved an action's F-Curves into slotted channelbags; 5.0 removed Action.fcurves.
+
+    Reading the legacy property raised AttributeError on Blender 5.0.0, so every run of this author
+    since the animation actions were added had failed and the committed .blend went stale behind two
+    author commits without anything noticing. Prefer the legacy collection when it exists so the
+    script still runs on older Blender.
+    """
+    legacy=getattr(act,'fcurves',None)
+    if legacy is not None: return list(legacy)
+    curves=[]
+    for layer in act.layers:
+        for strip in layer.strips:
+            for bag in getattr(strip,'channelbags',()): curves.extend(bag.fcurves)
+    return curves
+
 def action(name,frames,poses):
     act=bpy.data.actions.new(name); arm.animation_data_create(); arm.animation_data.action=act
     for frame,bone_poses in poses.items():
@@ -93,8 +109,12 @@ def action(name,frames,poses):
             pb=arm.pose.bones.get(bname)
             if not pb: raise RuntimeError(f'{name}: missing animation bone {bname}')
             pb.rotation_mode='XYZ'; pb.rotation_euler=rotation; pb.keyframe_insert('rotation_euler',frame=frame,group=bname)
-    for fc in act.fcurves:
+    for fc in action_fcurves(act):
         for kp in fc.keyframe_points: kp.interpolation='BEZIER'
+    # Each action loses its only user when the next one is assigned to the rig, and the last loses
+    # it when the rig is cleared below. Blender does not write zero-user datablocks, so without a
+    # fake user all ten actions were authored and then dropped on save.
+    act.use_fake_user=True
     act.frame_start=frames[0]; act.frame_end=frames[1]; return act
 
 def gait_pose(amount):

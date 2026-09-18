@@ -26,7 +26,13 @@ def area(name,loc,energy,size):
     data=bpy.data.lights.new(name,'AREA'); data.energy=energy; data.shape='DISK'; data.size=size; o=bpy.data.objects.new(name,data); sc.collection.objects.link(o); o.location=loc; o.rotation_euler=(Vector((0,0,.22))-o.location).to_track_quat('-Z','Y').to_euler()
 area('REVIEW_Key',(-1.2,-1.0,1.45),520,1.0); area('REVIEW_Fill',(1.0,-.35,.85),240,.75); area('REVIEW_Rim',(0,1.15,1.0),360,.65)
 cam_data=bpy.data.cameras.new('REVIEW_Camera'); cam=bpy.data.objects.new('REVIEW_Camera',cam_data); sc.collection.objects.link(cam); sc.camera=cam; cam_data.type='ORTHO'; cam_data.ortho_scale=.72
-sc.render.engine='BLENDER_EEVEE_NEXT'; sc.render.resolution_x=768; sc.render.resolution_y=768; sc.render.resolution_percentage=100; sc.render.image_settings.file_format='PNG'; sc.render.film_transparent=False; sc.view_settings.look='AgX - Medium High Contrast'
+# EEVEE's identifier was BLENDER_EEVEE_NEXT only for 4.2-4.5; Blender 5.0 offers
+# ('BLENDER_EEVEE','BLENDER_WORKBENCH','CYCLES') and assigning the 4.x name is a TypeError, so this
+# renderer had never run against the installed Blender. Resolve it from the enum instead of naming
+# a version.
+_engines={e.identifier for e in bpy.types.RenderSettings.bl_rna.properties['engine'].enum_items}
+sc.render.engine='BLENDER_EEVEE_NEXT' if 'BLENDER_EEVEE_NEXT' in _engines else 'BLENDER_EEVEE'
+sc.render.resolution_x=768; sc.render.resolution_y=768; sc.render.resolution_percentage=100; sc.render.image_settings.file_format='PNG'; sc.render.film_transparent=False; sc.view_settings.look='AgX - Medium High Contrast'
 arm=next((o for o in sc.objects if o.type=='ARMATURE'),None)
 if not arm: raise RuntimeError('Sporeling review requires one armature')
 
