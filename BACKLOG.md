@@ -58,15 +58,36 @@ push; that did not happen.
   renderer added by `0a728f1` and wired into the build by `ffeed60` had never produced a plate. The
   engine is now resolved from the enum rather than named for a version — the same shape
   `render-deep-fracture-caverns.py` already uses. Twelve review plates render for the first time.
-- [ ] **Nothing ties a generated asset to the generator that owns it.** Three of this section's
-  defects are the same shape: a generator or its gate evolves while the committed output does not,
-  and only a full build notices — the Sporeling textures were five gate commits and four generator
-  commits stale, the source blend two author commits stale. `verify-model-assets.py` already
-  compares model payloads against their sources; generated *textures*, *icons* and *source blends*
-  have no equivalent freshness check. A gate that regenerates into a temporary directory and
-  compares hashes would have caught all three on the first commit rather than the fiftieth. It needs
-  each generator to accept an output-directory override, which most do not, so it is real work
-  rather than a one-line addition.
+- [x] **Generated assets are now tied to the generators that own them. DONE 0.0.64.**
+  `tools/verify-generated-freshness.py` plus `assets/generated.manifest.json` record, per generator,
+  the SHA-256 of the generator itself and the set of files it owns. A changed generator, or a file
+  added or removed outside the generator, fails the build; for reproducible generators a changed
+  output does too. Verification is pure hashing — no Blender, no regeneration — so it runs first in
+  `build.ps1`, ahead of the ten minutes of gates that used to be the only way to discover staleness.
+  `--update` *runs the recorded command* before recording anything, so the manifest cannot be
+  brought back into agreement without regenerating. Proven on both defect classes: an edited
+  generator and a hand-edited output each fail, and the tree restores clean. No output-directory
+  override was needed after all — recording hashes beside the generator answers the same question
+  without touching a single generator.
+  **Blender output is not reproducible, and the gate says so rather than pretending.** Re-rendering
+  the 32 staff icons produced 20 files differing from the committed ones, but 16 of those differ by
+  a single LSB on a handful of pixels — render jitter — and only 4 had really changed. An exact
+  content hash would cry wolf on half the family after every render, and a gate that cries wolf gets
+  refreshed blindly. Blender-backed entries therefore use `generator-only`: exact generator hash,
+  recorded output names, no content hash, with the lost hand-edit detection stated in the tool.
+  Pure-Python generators keep full content hashing — the Sporeling texture set is byte-reproducible
+  across runs and is verified that way.
+  **The gate found real staleness on its first run.** `staff-storm-crystal`, `staff-fire-crystal`,
+  `staff-venom-crystal` and `staff-radiance-crystal` differ from what `render-staff-icons.py` now
+  produces by about 10% of their pixels, with RGB deltas above 220 — not jitter. All four are the
+  same tier across four families, which points at a model change those icons never picked up.
+- [ ] **Extend freshness coverage to the rest of the generated library.** Covered today: Sporeling
+  textures, the Sporeling source blend, the 32 staff icons. Not yet covered: `generate-earth-assets.py`
+  (its outputs were last written 2026-09-14 and the generator has changed since, so seeding it means
+  deciding whether ~90 committed files should be regenerated — a content decision, not a gate one),
+  `generate-underworld-capcrawler-textures.py` (its output directory does not exist yet), and the
+  fungal-forest and model-library generators. Model payloads are already covered separately by
+  `verify-model-assets.py`.
 - [ ] **`build.ps1` compiles last.** Roughly ten minutes of Blender and asset gates run before the
   compiler is ever invoked, so a one-word CS0117 costs a full cycle to surface. A fast
   `dotnet build src/Magenheim.Core` at the top would report it in seconds. Low priority next to the

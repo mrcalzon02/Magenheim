@@ -1,3 +1,33 @@
+# Current source candidate — 0.0.64 / schema 5 (2026-09-18)
+
+Closes the defect class 0.0.63 spent the session repairing: a generator or its gate moving on while
+the committed output did not. `tools/verify-generated-freshness.py` and
+`assets/generated.manifest.json` record, per generator, the hash of the generator and the set of
+files it owns, and run first in `build.ps1` because verification is pure hashing. `--update` runs
+the generator before recording, so the manifest cannot be reconciled without regenerating.
+
+The gate found real staleness on its first run: the crystal tier of the Storm, Fire, Venom and
+Radiance staves differ from what `render-staff-icons.py` now produces by about 10% of their pixels,
+with RGB deltas above 220. Same tier across four families — a model change those four icons never
+picked up. Re-rendered and committed.
+
+Blender output is not reproducible, and the gate records that rather than pretending otherwise:
+re-rendering all 32 icons produced 20 files differing from the committed ones, of which 16 differed
+by a single LSB on a handful of pixels. Blender-backed entries are therefore checked on generator
+hash and output names only, which still catches the defect that occurred three times, and gives up
+hand-edit detection explicitly. Pure-Python generators keep full content hashing; the Sporeling
+texture set is byte-reproducible across runs and is verified that way. Coverage today is the
+Sporeling textures, the Sporeling source blend and the 32 staff icons; the remaining generators are
+an open item in `BACKLOG.md` P0.-2.
+
+Also repaired: `tools/blender.ps1` treated Blender 5.0's benign `Error: Not freed memory blocks`
+shutdown line as a script failure, which intermittently failed renders that had already succeeded.
+
+No runtime behaviour changed in 0.0.64 beyond the four re-rendered icons. Nothing is
+runtime-accepted; the game has still not been launched against 0.0.63 or 0.0.64.
+
+---
+
 # Current source candidate — 0.0.63 / schema 5 (2026-09-18)
 
 `main` and `origin/main` were both at `df27a65` at session start. `origin/main` then advanced to

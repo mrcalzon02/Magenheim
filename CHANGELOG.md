@@ -1,3 +1,25 @@
+## 0.0.64 — Generated assets answer to their generators
+
+0.0.63 repaired three defects of the same shape: a generator or its gate moved on while the
+committed output did not, and only a full build noticed. This closes that class.
+
+- **`tools/verify-generated-freshness.py`** records, per generator, the hash of the generator itself
+  and the set of files it owns. A changed generator, or a file added or removed outside it, fails
+  the build. Verification is pure hashing — no Blender, no regeneration — so it runs *first*, ahead
+  of the ten minutes of gates that used to be the only way to find staleness. Refreshing the
+  manifest runs the generator, so it cannot be brought back into agreement without regenerating.
+- **It found four stale icons on its first run.** The crystal tier of the Storm, Fire, Venom and
+  Radiance staves differ from what the renderer now produces by about 10% of their pixels. Same tier
+  across four families: a model change those icons never picked up. Re-rendered.
+- **Blender output is not reproducible, and the gate admits it.** Re-rendering all 32 staff icons
+  produced 20 files differing from the committed ones, but 16 of those differed by a single LSB on a
+  handful of pixels. An exact content hash would cry wolf on half the family after every render, and
+  a gate that cries wolf gets refreshed blindly. Blender-backed entries are checked on generator
+  hash and output names only; pure-Python generators keep full content hashing.
+- `tools/blender.ps1` treated Blender 5.0's benign `Error: Not freed memory blocks` shutdown line as
+  a script failure. It appears intermittently, and it failed a staff-icon render that had already
+  reported all 32 icons saved.
+
 ## 0.0.63 — Underworld biome sector, and a build that runs
 
 The Underworld's biome-sector override never took effect, and `main` could not be built. Both are
