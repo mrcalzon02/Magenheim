@@ -123,12 +123,9 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         _materials[biome]=material;return material;
     }
 
-    private static Shader? ResolvePlaceholderShader()
-    {
-        foreach(var name in new[]{"Custom/StaticRock","Custom/Piece","Custom/Vegetation","Standard"})
-        {var shader=Shader.Find(name);if(shader is not null)return shader;}
-        return null;
-    }
+    // Shares ModelAssets' resolver so there is one list of usable shaders, while keeping this
+    // disposable dressing fail-neutral: no shader simply means no placeholder material.
+    private static Shader? ResolvePlaceholderShader() => ModelAssets.FindSurfaceShader();
 
     private void ClearMarkers(){foreach(var item in _spawned)if(item)Destroy(item);_spawned.Clear();}
     private void OnDestroy(){ClearMarkers();foreach(var material in _materials.Values)if(material)Destroy(material);_materials.Clear();}

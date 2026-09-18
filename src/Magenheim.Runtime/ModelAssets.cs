@@ -17,6 +17,41 @@ internal static class ModelAssets
     private static readonly Dictionary<string, Texture2D> Textures = new();
     private static string DirectoryPath => Path.Combine(Path.GetDirectoryName(typeof(ModelAssets).Assembly.Location)!, "assets", "models");
 
+    // Valheim ships its shaders in addressable bundles and does not include Unity's built-in
+    // Standard shader, so Shader.Find("Standard") returns null in the built player. That took out
+    // every caller that needed a material for a prefab with no renderer of its own -- the Deep
+    // Fracture and Dark Throne location/room visuals, and the Underworld Conclave stonework.
+    private static readonly string[] SurfaceShaderNames =
+    {
+        "Custom/StaticRock",
+        "Custom/Piece",
+        "Custom/Vegetation",
+        "Custom/Creature",
+        "Standard",
+    };
+
+    /// <summary>Finds a usable opaque surface shader from the running game, or null if none is loaded.</summary>
+    internal static Shader? FindSurfaceShader()
+    {
+        foreach (var name in SurfaceShaderNames)
+        {
+            var shader = Shader.Find(name);
+            if (shader) return shader;
+        }
+
+        // Shader.Find only sees shaders that are already loaded, so a bundle-resident shader can be
+        // missed by name even while it is resident. Check the loaded set before giving up.
+        var loaded = Resources.FindObjectsOfTypeAll<Shader>();
+        foreach (var name in SurfaceShaderNames)
+            foreach (var shader in loaded)
+                if (shader && shader.name == name) return shader;
+        return null;
+    }
+
+    internal static Shader ResolveSurfaceShader() =>
+        FindSurfaceShader() ?? throw new InvalidOperationException(
+            "No Magenheim surface shader is available; expected one of " + string.Join(", ", SurfaceShaderNames) + ".");
+
     internal static Mesh LoadSingleMesh(string id)
     {
         if (string.IsNullOrEmpty(id) || Path.GetFileName(id) != id) throw new ArgumentException("Invalid model identity.", nameof(id));
@@ -34,7 +69,7 @@ internal static class ModelAssets
         if (string.IsNullOrEmpty(id) || Path.GetFileName(id) != id) throw new ArgumentException("Invalid model identity.", nameof(id));
         var original = prefab.GetComponentsInChildren<Renderer>(true);
         var source = original.Where(r => !(r is ParticleSystemRenderer)).Select(r => r.sharedMaterial).FirstOrDefault(m => m);
-        if (!source) source = new Material(Shader.Find("Standard") ?? throw new InvalidOperationException("Model material shader missing."));
+        if (!source) source = new Material(ResolveSurfaceShader());
         if (!Documents.TryGetValue(id, out var document))
         {
             document = JObject.Parse(File.ReadAllText(Path.Combine(DirectoryPath, "runtime", id + ".model.json")));

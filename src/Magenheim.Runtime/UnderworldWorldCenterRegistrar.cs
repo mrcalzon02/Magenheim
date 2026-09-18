@@ -112,7 +112,7 @@ internal static class UnderworldWorldCenterRegistrar
 
     private static Material CreateStoneMaterial()
     {
-        var shader = Shader.Find("Standard") ?? throw new InvalidOperationException("Unity Standard shader unavailable for Underworld standing stones.");
+        var shader = ModelAssets.ResolveSurfaceShader();
         var material = new Material(shader) { name = "Magenheim_UnderworldStandingStone_Material", color = new Color(0.075f, 0.082f, 0.095f, 1f) };
         material.SetFloat("_Metallic", 0.12f);
         material.SetFloat("_Glossiness", 0.24f);

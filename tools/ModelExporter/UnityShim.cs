@@ -27,6 +27,10 @@ public class Component : Object
 public enum PrimitiveType { Cube, Cylinder, Sphere }
 public struct Vector3Int { public int x,y,z; public Vector3Int(int x,int y,int z){this.x=x;this.y=y;this.z=z;} }
 public class Shader:Object { public static Shader Find(string name)=>new(){name=name}; }
+// Headless stand-in for the loaded-object scan ModelAssets falls back to when Shader.Find misses.
+// Shader.Find above always succeeds here, so returning nothing keeps the shim honest: the scan is
+// only ever reached in the real player.
+public static class Resources { public static T[] FindObjectsOfTypeAll<T>()=>System.Array.Empty<T>(); }
 public class GameObject : Object
 {
     private readonly List<Component> _components = new();
