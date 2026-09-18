@@ -212,7 +212,7 @@ public static class UnderworldSpatialDomain
         double y,
         double z)
     {
-        ValidateDefinition(domain);
+        RequireDomain(domain);
         if (!IsFinite(x) || !IsFinite(y) || !IsFinite(z)) return false;
         var radiusSquared = domain.RadiusMeters * domain.RadiusMeters;
         var dx = x - domain.HostCenterX;
@@ -230,7 +230,7 @@ public static class UnderworldSpatialDomain
     /// </summary>
     public static bool ContainsHostColumn(UnderworldSpatialDomainDefinition domain, double x, double z)
     {
-        ValidateDefinition(domain);
+        RequireDomain(domain);
         if (!IsFinite(x) || !IsFinite(z)) return false;
         var dx = x - domain.HostCenterX;
         var dz = z - domain.HostCenterZ;
@@ -245,8 +245,22 @@ public static class UnderworldSpatialDomain
     /// </remarks>
     public static UnderworldColumn ToLogicalColumn(UnderworldSpatialDomainDefinition domain, double x, double z)
     {
-        ValidateDefinition(domain);
+        RequireDomain(domain);
         return new UnderworldColumn(x - domain.HostCenterX, z - domain.HostCenterZ);
+    }
+
+    /// <summary>
+    /// The O(1) guard for per-sample calls. <see cref="ValidateDefinition"/> recomputes the
+    /// definition's SHA-256 fingerprint, which is correct at a construction boundary and ruinous on
+    /// a hot path: the containment and column helpers run once per terrain column, so validating
+    /// inside them put a SHA256.Create plus a full hash on every heightmap sample in the world and
+    /// hung Valheim during location placement until Windows closed it as unresponsive. A definition
+    /// can only be produced through ValidateAndFreeze, which validates, and the record is immutable,
+    /// so re-verifying per sample bought nothing.
+    /// </summary>
+    private static void RequireDomain(UnderworldSpatialDomainDefinition domain)
+    {
+        if (domain is null) throw new ArgumentNullException(nameof(domain));
     }
 
     private static void ValidateFields(

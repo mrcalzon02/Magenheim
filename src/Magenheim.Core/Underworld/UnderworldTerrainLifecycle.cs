@@ -63,7 +63,9 @@ public static class UnderworldTerrainLifecycle
         UnderworldTerrainSample sample,
         int derivedSeed32)
     {
-        UnderworldSpatialDomain.ValidateDefinition(domain);
+        // Deliberately not ValidateDefinition: that recomputes a SHA-256 fingerprint and this runs
+        // once per terrain column. The definition is validated when it is constructed.
+        if (domain is null) throw new ArgumentNullException(nameof(domain));
         if (!Finite(sample.X) || !Finite(sample.Y) || !Finite(sample.Z) ||
             !Finite(sample.WaterLevel) || !Finite(sample.SlopeDegrees) || !Finite(sample.Noise01))
             return default;

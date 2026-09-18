@@ -26,7 +26,6 @@ internal static class ModelAssets
         "Custom/StaticRock",
         "Custom/Piece",
         "Custom/Vegetation",
-        "Custom/Creature",
         "Standard",
     };
 

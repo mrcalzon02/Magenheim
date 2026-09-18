@@ -36,6 +36,9 @@ internal static class UnderworldTerrainRuntime
     {
         _services = services ?? throw new ArgumentNullException(nameof(services));
         _log = log ?? throw new ArgumentNullException(nameof(log));
+        // Validate the spatial domain exactly once here. The per-column helpers deliberately skip it
+        // because it recomputes a SHA-256 fingerprint.
+        UnderworldSpatialDomain.ValidateDefinition(services.SpatialDomain);
         _world = null;
         if (_patched) return;
         var harmony = new Harmony(MagenheimPlugin.PluginGuid + ".gameplay");
