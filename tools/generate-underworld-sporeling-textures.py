@@ -10,6 +10,15 @@ OUT=ROOT/'assets/textures/underworld/creatures/sporeling'; OUT.mkdir(parents=Tru
 SIZE=1024
 READABILITY_SIZE=64
 
+def flat(im):
+    """Pillow 12.3 deprecates Image.getdata and removes it in 14; older Pillow lacks the successor.
+
+    The warning is not cosmetic: Windows PowerShell 5.1 turns any native stderr line into an
+    ErrorRecord, so a DeprecationWarning fails build.ps1 even when the tool exits 0.
+    """
+    reader=getattr(im,'get_flattened_data',None)
+    return list(reader() if reader else im.getdata())
+
 def clamp(v): return max(0,min(255,int(v)))
 def field(seed, base, amp, grain=18, motif='flesh'):
     """Layer broad form, material-specific mesostructure and restrained micrograin."""
@@ -74,14 +83,23 @@ def save_material(stem,seed,base,tint,rough_base,motif,emission=False):
             mag=sqrt(dx*dx+dy*dy+1); q[x,y]=(clamp((-.5*dx/mag+.5)*255),clamp((-.5*dy/mag+.5)*255),clamp((.5/mag+.5)*255))
     normal.save(OUT/f'{stem}-normal.png')
     if emission:
-        glow=field(seed+303,48,52,3,motif).point(lambda v: 0 if v<70 else clamp((v-70)*3.0)); mask=Image.new('L',(SIZE,SIZE),0); mp=mask.load()
+        # Gain 4.5, not 3.0: the glow field is multiplied by the ridge mask, so a pixel is only a
+        # focal highlight when both are high at once. At gain 3.0 that product almost never
+        # saturated -- 0.09% of the gill map read above half brightness, against the 0.2% the
+        # fidelity gate requires for readable focal highlights. 4.5 raises the gill to 0.80% hot
+        # while lit coverage moves only 6.1% -> 7.5%, so the emission stays localized to the gills.
+        glow=field(seed+303,48,52,3,motif).point(lambda v: 0 if v<70 else clamp((v-70)*4.5)); mask=Image.new('L',(SIZE,SIZE),0); mp=mask.load()
         for y in range(SIZE):
             for x in range(SIZE):
                 v=150+90*cos(x/32+sin(y/113)*1.7)+28*cos(y/91) if motif=='gill' else 128+80*sin(x/83+sin(y/119))+46*cos(y/71+x/137)
                 mp[x,y]=clamp(max(0,v-150)*2.4)
         ImageChops.multiply(glow,mask).save(OUT/f'{stem}-emission.png')
 
-save_material('flesh',11,118,(.72,.57,.78),188,'flesh')
+# Flesh was (.72,.57,.78), which is the same hue as the spore sac's (.83,.65,.91) at a lower
+# brightness: both magenta-forward, normalized RGB delta 0.008 against the 0.025 the fidelity gate
+# requires, so at combat scale the creature's body and its identity organ read as one material.
+# Dropping the blue makes flesh a warm tissue tone and leaves the sac as the only magenta.
+save_material('flesh',11,118,(.78,.60,.66),188,'flesh')
 save_material('cap-chitin',23,105,(.55,.86,.88),165,'chitin')
 save_material('joint',37,72,(.60,.56,.66),220,'joint')
 save_material('gill',41,120,(.62,.96,.87),142,'gill',True)
@@ -97,6 +115,6 @@ for p in files:
         proxy=luma.resize((READABILITY_SIZE,READABILITY_SIZE),Image.Resampling.LANCZOS); proxy_extrema=proxy.getextrema()
         if proxy_extrema[1]-proxy_extrema[0]<8: raise RuntimeError(f'{p.name}: detail collapses at gameplay scale {proxy_extrema}')
         if p.name.endswith('-emission.png'):
-            coverage=sum(1 for v in proxy.getdata() if v>=8)/(READABILITY_SIZE*READABILITY_SIZE)
+            coverage=sum(1 for v in flat(proxy) if v>=8)/(READABILITY_SIZE*READABILITY_SIZE)
             if coverage<.01 or coverage>.70: raise RuntimeError(f'{p.name}: emission coverage {coverage:.1%} is not localized/readable')
 print(f'AUTHORED Sporeling dual-band PBR texture set: {len(files)} maps at {SIZE}x{SIZE}; broad normal and roughness identity survives {READABILITY_SIZE}px combat proxy -> {OUT}',flush=True)
