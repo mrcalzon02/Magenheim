@@ -19,7 +19,7 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
     private ManualLogSource? _log;
     private readonly List<GameObject> _spawned = new();
     private readonly Dictionary<string, GameObject> _donorSources = new(StringComparer.Ordinal);
-    private readonly HashSet<string> _missingDonors = new(StringComparer.Ordinal);
+    private readonly HashSet<string> _warnedDonors = new(StringComparer.Ordinal);
     private string _admitted = string.Empty;
     private Vector3 _lastBuildPosition;
     private float _nextAt;
@@ -115,14 +115,12 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
     private GameObject? ResolveDonor(string prefabName)
     {
         if (_donorSources.TryGetValue(prefabName, out var cached) && cached) return cached;
-        if (_missingDonors.Contains(prefabName)) return null;
-
         var source = PrefabManager.Instance.GetPrefab(prefabName);
         if (source is null)
         {
-            _missingDonors.Add(prefabName);
-            _log?.LogWarning(
-                $"Underworld donor '{prefabName}' is unavailable in this Valheim build; skipping that palette entry.");
+            if (_warnedDonors.Add(prefabName))
+                _log?.LogWarning(
+                    $"Underworld donor '{prefabName}' is not available yet or is absent in this Valheim build; skipping this placement and retrying later.");
             return null;
         }
 
@@ -144,7 +142,7 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         if (copiedRenderers == 0)
         {
             Destroy(root);
-            if (_missingDonors.Add(source.name))
+            if (_warnedDonors.Add(source.name))
                 _log?.LogWarning($"Underworld donor '{source.name}' contained no supported mesh renderers.");
             return null;
         }
@@ -268,6 +266,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
     {
         ClearMarkers();
         _donorSources.Clear();
-        _missingDonors.Clear();
+        _warnedDonors.Clear();
     }
 }
