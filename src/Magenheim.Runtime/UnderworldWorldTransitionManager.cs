@@ -4,7 +4,7 @@ using Magenheim.Core.Underworld;
 
 namespace Magenheim.Runtime;
 
-/// <summary>Runtime orchestration for durable transitions across the paired physical Valheim worlds.</summary>
+/// <summary>Runtime orchestration for durable transitions between Surface and reserved Underworld regions of one Valheim world.</summary>
 internal sealed class UnderworldWorldTransitionManager
 {
     private readonly IUnderworldTransitionHost _host; private readonly ManualLogSource _log;
@@ -16,7 +16,6 @@ internal sealed class UnderworldWorldTransitionManager
         if(!UnderworldProgressionAuthority.IsUnlocked)throw new InvalidOperationException("Deep Gate transition rejected: the Nowhere King has not been defeated in this world.");
         _host.Persist(preparedState,identity);
         try{return ContinuePrepared(preparedState,identity,operationId,authorityFingerprint);}
-        catch(UnderworldPhysicalWorldSwitchRequiredException){_log.LogInfo($"Underworld transition '{operationId}' is durably prepared and awaiting its physical target world.");throw;}
         catch(Exception failure){_log.LogWarning($"Underworld transition '{operationId}' failed; attempting source recovery: {failure.Message}");return Recover(preparedState,identity,operationId,authorityFingerprint,failure);}
     }
     internal UnderworldPlayerLayerState ResumeOrRecover(UnderworldPlayerLayerState state,UnderworldWorldIdentity identity,string currentAuthorityFingerprint)
@@ -24,7 +23,7 @@ internal sealed class UnderworldWorldTransitionManager
         UnderworldTransitionRules.ValidatePersistedState(state,identity);var active=state.ActiveTransition;if(active is null)return state;
         if(!string.Equals(active.AuthorityFingerprint,currentAuthorityFingerprint,StringComparison.Ordinal))return Recover(state,identity,active.OperationId,active.AuthorityFingerprint,new InvalidOperationException("Gameplay authority changed while an Underworld transition was incomplete."));
         if(active.Phase==UnderworldTransitionPhase.RecoveryRequired)return RecoverMarked(state,identity,active.OperationId,active.AuthorityFingerprint);
-        if(active.Phase==UnderworldTransitionPhase.Prepared){try{return ContinuePrepared(state,identity,active.OperationId,active.AuthorityFingerprint);}catch(UnderworldPhysicalWorldSwitchRequiredException){throw;}catch(Exception failure){return Recover(state,identity,active.OperationId,active.AuthorityFingerprint,failure);}}
+        if(active.Phase==UnderworldTransitionPhase.Prepared){try{return ContinuePrepared(state,identity,active.OperationId,active.AuthorityFingerprint);}catch(Exception failure){return Recover(state,identity,active.OperationId,active.AuthorityFingerprint,failure);}}
         return Recover(state,identity,active.OperationId,active.AuthorityFingerprint,new InvalidOperationException("Recovered an interrupted Underworld transition from a non-resumable phase."));
     }
     private UnderworldPlayerLayerState ContinuePrepared(UnderworldPlayerLayerState state,UnderworldWorldIdentity identity,string operationId,string authorityFingerprint)
