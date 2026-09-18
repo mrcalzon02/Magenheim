@@ -44,11 +44,11 @@ internal sealed class UnderworldFungalProvisionRegistrar : IDisposable
                 health: 78f, stamina: 48f, eitr: 22f, duration: 1800f, regen: 4f);
 
             RegisterRecipe("Magenheim_Recipe_Underworld_GlowcapStew", UnderworldFungalProvisionCatalog.GlowcapStew,
-                ("MushroomMagecap", 2), ("RoyalJelly", 1), ("Sap", 1));
+                Requirement("MushroomMagecap", 2), Requirement("RoyalJelly", 1), Requirement("Sap", 1));
             RegisterRecipe("Magenheim_Recipe_Underworld_MycelialBroth", UnderworldFungalProvisionCatalog.MycelialBroth,
-                ("MushroomMagecap", 2), ("MushroomJotunPuffs", 2), ("Sap", 1));
+                Requirement("MushroomMagecap", 2), Requirement("MushroomJotunPuffs", 2), Requirement("Sap", 1));
             RegisterRecipe("Magenheim_Recipe_Underworld_HeartcapRation", UnderworldFungalProvisionCatalog.HeartcapRation,
-                ("MushroomMagecap", 2), ("RoyalJelly", 2), ("MisthareSupreme", 1));
+                Requirement("MushroomMagecap", 2), Requirement("RoyalJelly", 2), Requirement("MisthareSupreme", 1));
 
             _registered = true;
             _log.LogInfo("Registered the three canonical Fungal Forest provisions and cauldron recipes for Spore Communion.");
@@ -87,7 +87,20 @@ internal sealed class UnderworldFungalProvisionRegistrar : IDisposable
             throw new InvalidOperationException($"Jotunn refused fungal provision '{prefab}'.");
     }
 
-    private static void RegisterRecipe(string name, string item, params (string Prefab, int Amount)[] requirements)
+    // Deliberately a named struct rather than a value tuple. Magenheim.Runtime targets net462, where
+    // System.ValueTuple is a separate facade assembly that Valheim/BepInEx do not ship, so any method
+    // mentioning a tuple failed to JIT with TypeLoadException before its body -- and therefore before
+    // its own try/catch -- could run. Every other registrar already uses a small named pair type.
+    private readonly struct ProvisionRequirement
+    {
+        internal ProvisionRequirement(string prefab, int amount) { Prefab = prefab; Amount = amount; }
+        internal string Prefab { get; }
+        internal int Amount { get; }
+    }
+
+    private static ProvisionRequirement Requirement(string prefab, int amount) => new(prefab, amount);
+
+    private static void RegisterRecipe(string name, string item, params ProvisionRequirement[] requirements)
     {
         foreach (var requirement in requirements) RequirePrefab(requirement.Prefab);
         var station = ResolveCauldron();
