@@ -20,11 +20,11 @@ wired into `UnderworldWorldCenterRegistrar` and `ValheimUnderworldTransitionPlac
 six-biome terrain authority, the `GetBiomeHeight`/`GetBiome` postfixes, the Conclave, creatures,
 flora and progression work. None of that is wasted.
 
-- [ ] **Remove the physical world-switch layer.** `UnderworldPhysicalWorldSwitchDriver`,
+- [x] **Remove the physical world-switch layer. DONE 2026-09-17.** Removed `UnderworldPhysicalWorldSwitchDriver`,
   `UnderworldWorldSwitchDispatchRuntime`, `UnderworldPhysicalWorldSwitchCoordinator`,
-  `ValheimPhysicalUnderworldWorldContextController`, `UnderworldWorldPairManifestStore` and the
-  `IUnderworldPhysicalWorldLoader` boundary — roughly 360 lines across five files, plus the
-  `.worldpair` manifests written into the plugin config directory.
+  `UnderworldWorldPairManifestStore`, the loader boundary and the unfinished `UnderworldTravelRuntime` branch.
+  Runtime composition now owns one same-world context plus the existing durable transition/placement/recovery graph.
+  Existing `.worldpair` files from older test builds are inert legacy config and are no longer read or written.
 - [x] **Reserved region converted from a vertical band to a horizontal region.** DONE: schema 2,
   `seed32-quarter-turn-offset-v2`, centre (40000, 0), radius 8000m, `HostBaseY` 0 so Underworld
   terrain generates at ordinary altitudes. A vertical band at the same (x, z) could host objects but
