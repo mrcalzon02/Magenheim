@@ -1,4 +1,4 @@
 {
-  "version": "0.0.73",
-  "description": "0.0.73: The six crystal tier icons, rough through master plus shards, are rendered from the rebuilt 3D tier models instead of the hand-authored 128px art that predated them."
+  "version": "0.0.74",
+  "description": "0.0.74: Structural placeables rendered as flat speckled sheets because our materials inherited the donor metallic, occlusion and moss maps, sampled through our UVs. Only the shader and our own colour and texture survive now."
 }

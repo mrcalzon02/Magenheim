@@ -150,6 +150,17 @@ internal static class ModelAssets
         mesh.RecalculateBounds(); mesh.RecalculateTangents(); Meshes.Add(key, mesh); return mesh;
     }
 
+    /// <summary>
+    /// Texture slots a donor material can carry that describe the donor's surface, not ours.
+    /// Valheim's piece and rock shaders add moss, snow and rain on top of the Standard set.
+    /// </summary>
+    private static readonly string[] DonorMapsToClear =
+    {
+        "_BumpMap", "_MetallicGlossMap", "_SpecGlossMap", "_OcclusionMap", "_ParallaxMap",
+        "_DetailMask", "_DetailAlbedoMap", "_DetailNormalMap", "_EmissionMap",
+        "_MossTex", "_StyleTex", "_SnowTex", "_RainTex",
+    };
+
     private static Material LoadMaterial(string key, JToken data, Material source)
     {
         if (Materials.TryGetValue(key, out var cached)) return cached;
@@ -171,7 +182,20 @@ internal static class ModelAssets
         }
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", (float)data["metallic"]!);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", 1f - (float)data["roughness"]!);
-        if (material.HasProperty("_BumpMap")) material.SetTexture("_BumpMap", null); material.DisableKeyword("_NORMALMAP");
+        // Strip every auxiliary map the donor material brought with it. `new Material(source)` copies
+        // the donor's shader *and* all of its texture slots -- normal, metallic/gloss, occlusion,
+        // detail, and Valheim's moss overlay on piece shaders -- which were authored for the donor's
+        // geometry and its UVs, not ours. Overriding only mainTexture left those maps sampling our
+        // crystal facets through unrelated UVs, which is why structural placeables read in game as
+        // flat, uniformly lit sheets with a fine speckle while the source looks correct. Only the
+        // shader and our own colour/texture should survive.
+        foreach (var map in DonorMapsToClear)
+            if (material.HasProperty(map)) material.SetTexture(map, null);
+        foreach (var keyword in new[] { "_NORMALMAP", "_METALLICGLOSSMAP", "_DETAIL_MULX2", "_PARALLAXMAP", "_EMISSION" })
+            material.DisableKeyword(keyword);
+        // Moss is blend-driven on Valheim piece shaders, so nulling its texture is not enough.
+        foreach (var blend in new[] { "_MossBlend", "_MossAlpha", "_AddSnow", "_AddRain" })
+            if (material.HasProperty(blend)) material.SetFloat(blend, 0f);
         var emission = Colour(data["emission"]!);
         if (material.HasProperty("_EmissionColor")) material.SetColor("_EmissionColor", emission);
         if (emission.r + emission.g + emission.b > 0) material.EnableKeyword("_EMISSION"); else material.DisableKeyword("_EMISSION");
