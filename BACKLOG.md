@@ -36,7 +36,7 @@ flora and progression work. None of that is wasted.
   `SpawnSystem.UpdateSpawnList` throws every tick, and ocean fish spawn on dry ground. A patch exists
   and resolves but does not take effect; a throttled `[sector probe]` is in place to say why. Note
   the biome map is a 2048 texture at 12m per pixel spanning only +/-12282m, so the region at 40000
-  may simply be outside it — if so the region centre has to be re-decided, which is a user call. See
+  may simply be outside it — if so the region centre has to be re-decided, which is a user call. The temporary probe is now worker-thread-safe (uses `Environment.TickCount`, not `UnityEngine.Time`) so obtaining that evidence cannot itself violate the HeightmapBuilder threading boundary. See
   `docs/validation/2026-09-17-underworld-same-world-region-handoff.md`.
 - [ ] **Per-layer map state.** `Minimap::GenerateWorldMap` sizes its texture to the vanilla world, so
   the region is off the canvas: no unfurling cloud and both layers share one plane. Design section 25
@@ -56,15 +56,10 @@ flora and progression work. None of that is wasted.
 - [ ] **Make layer travel a teleport within the world.** Entry and return resolve through
   `UnderworldSpatialDomain` and the persisted surface source anchor, with no save load anywhere in
   the path.
-- [ ] **Confirm the terrain-shaping band bounds against the reserved host band.** The
-  `GetBiomeHeight`/`GetBiome` postfixes currently key off an admitted session; they must instead key
-  off the host band so surface coordinates are untouched in the same session.
+- [x] **Confirm the terrain-shaping band bounds against the reserved host band. DONE.** The runtime now keys `GetBiomeHeight`/`GetBiome` shaping directly from `ContainsHostColumn`; surface columns pass through untouched in the same session. Live play has verified the region generates and streams at the reserved host coordinates.
 - [x] **Seed question decided 2026-09-17 (user).** The Underworld uses the surface seed **verbatim**;
   the map differs because the generation algorithm differs. Recorded in `INSTRUCTIONS.md` and §6.
-- [ ] **Make terrain generation use the surface seed verbatim.** `UnderworldTerrainRuntime` and
-  `UnderworldTerrainLifecycle` currently shape from `identity.DerivedSeed32`, a hash of the surface
-  seed. Feed them the surface seed instead. Decide separately whether the quarter-turn rotation in
-  `UnderworldSpatialDomain` should still key off a derived value or be dropped.
+- [x] **Make terrain generation use the surface seed verbatim. DONE.** `UnderworldTerrainRuntime` captures the active surface `World.m_seed` on the main thread and feeds that seed into the deterministic terrain authority. The map differs because the generation algorithm differs.
 - [ ] **Purge the separate-save language from the remaining docs and validation records** so no
   future session reads it as authority.
 
