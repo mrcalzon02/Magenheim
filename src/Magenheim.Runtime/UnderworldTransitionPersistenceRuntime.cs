@@ -11,7 +11,7 @@ internal sealed class StoredUnderworldTransitionHost:IUnderworldTransitionHost
     internal StoredUnderworldTransitionHost(UnderworldTransitionStateStore store,IUnderworldTransitionPlacementHost placement){_store=store??throw new ArgumentNullException(nameof(store));_placement=placement??throw new ArgumentNullException(nameof(placement));}
     public void Persist(UnderworldPlayerLayerState state,UnderworldWorldIdentity identity)=>_store.Save(state,identity);public void EnsureTargetContext(UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor)=>_placement.EnsureTargetContext(identity,layer,anchor);public void PlacePlayer(UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor)=>_placement.PlacePlayer(identity,layer,anchor);public bool ObservePlayerPlacement(UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor)=>_placement.ObservePlayerPlacement(identity,layer,anchor);
 }
-internal enum UnderworldRecoveryLoadResult{Missing,Stable,PendingWorldSwitch,Recovered,Failed}
+internal enum UnderworldRecoveryLoadResult{Missing,Stable,Recovered,Failed}
 internal sealed class UnderworldTransitionRecoveryRuntime
 {
     private readonly UnderworldTransitionStateStore _store;private readonly UnderworldWorldTransitionManager _manager;private readonly ManualLogSource _log;
@@ -24,11 +24,7 @@ internal sealed class UnderworldTransitionRecoveryRuntime
         {
             var active=persisted.ActiveTransition;state=_manager.ResumeOrRecover(persisted,identity,currentAuthorityFingerprint);
             if(active is null){diagnostic="Loaded stable Underworld layer state.";return UnderworldRecoveryLoadResult.Stable;}
-            diagnostic=state.ActiveTransition is null?"Completed or recovered persisted Underworld transition after physical-world admission.":"Persisted Underworld transition remains active.";return UnderworldRecoveryLoadResult.Recovered;
-        }
-        catch(UnderworldPhysicalWorldSwitchRequiredException switchRequired)
-        {
-            state=persisted;diagnostic=$"Persisted Underworld transition is valid and awaits physical world switch {switchRequired.CurrentLayer} -> {switchRequired.TargetLayer}.";_log.LogInfo(diagnostic);return UnderworldRecoveryLoadResult.PendingWorldSwitch;
+            diagnostic=state.ActiveTransition is null?"Completed or recovered persisted Underworld transition in the admitted world.":"Persisted Underworld transition remains active.";return UnderworldRecoveryLoadResult.Recovered;
         }
         catch(Exception exception){state=null;diagnostic="Underworld persisted-state resume/recovery failed closed: "+exception.Message;_log.LogError(diagnostic);return UnderworldRecoveryLoadResult.Failed;}
     }
