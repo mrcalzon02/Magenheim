@@ -35,9 +35,43 @@ internal static class GeneratedSurfaceTextures
         return texture;
     }
 
+    /// <summary>
+    /// Reduces a namespaced material name to the token that actually describes its surface.
+    /// </summary>
+    /// <remarks>
+    /// Model materials are named `magenheim.&lt;family&gt;.&lt;model-id&gt;.&lt;semantic&gt;[.&lt;index&gt;]`, and
+    /// <see cref="Classify"/> matches substrings, so the model id was deciding the surface of every
+    /// material on the model. `architecture-crystal-hearth` contains "earth", which is tested before
+    /// "iron" and before "crystal", so the hearth's iron banding and all six of its rainbow crystals
+    /// classified as Stone. Any id containing "banner" forced Cloth, any containing "core" forced
+    /// Crystal, and so on. Measured across the committed library: 326 of 1979 owned materials —
+    /// 16.5% — classify differently once the id is excluded, 119 of them Metal wrongly read as
+    /// Stone and 67 Crystal wrongly read as Stone. That is what made the crystal placeables read as
+    /// a patchwork of unrelated surfaces in game while the authored preview looked correct.
+    ///
+    /// A trailing numeric segment is an instance index, not a surface, so it is dropped first. A
+    /// semantic passed in directly by a caller has no dots and survives unchanged.
+    /// </remarks>
+    private static string SemanticToken(string semantic)
+    {
+        if (string.IsNullOrEmpty(semantic)) return string.Empty;
+        var segments = semantic.Split('.');
+        var last = segments.Length - 1;
+        while (last > 0 && IsIndex(segments[last])) last--;
+        return segments[last];
+    }
+
+    private static bool IsIndex(string segment)
+    {
+        if (segment.Length == 0) return false;
+        foreach (var character in segment)
+            if (character < '0' || character > '9') return false;
+        return true;
+    }
+
     private static SurfaceKind Classify(string semantic)
     {
-        var key = (semantic ?? string.Empty).ToLowerInvariant();
+        var key = SemanticToken(semantic ?? string.Empty).ToLowerInvariant();
         if (ContainsAny(key, "water", "liquid", "solution")) return SurfaceKind.Liquid;
         if (ContainsAny(key, "hide", "leather", "pelt")) return SurfaceKind.Leather;
         if (ContainsAny(key, "stone", "marble", "rock", "earth", "strata", "slate", "basalt")) return SurfaceKind.Stone;

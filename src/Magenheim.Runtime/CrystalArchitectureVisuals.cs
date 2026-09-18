@@ -15,9 +15,53 @@ internal static class CrystalArchitectureVisuals
     internal const string CrystalFoundation8 = "architecture-crystal-foundation-8m";
     internal static GameObject Apply(GameObject prefab, string modelId) {
         var root=ModelAssets.Load(prefab,modelId,preserveParticles:true);
-        if(modelId==CrystalHearth)TintVanillaFlame(prefab);
+        if(modelId==CrystalHearth){TintVanillaFlame(prefab);FitFlameToPiece(prefab,root);}
         return root;
     }
+
+    /// <summary>
+    /// Rescales the donor's retained fire to the Magenheim hearth it now sits in.
+    /// </summary>
+    /// <remarks>
+    /// <c>preserveParticles</c> keeps the donor's particle systems untouched while the visible mesh
+    /// is replaced, and nothing reconciled the two: the flame kept the size it was authored for on a
+    /// donor of a different footprint, and in play it towered over the piece. The ratio is measured
+    /// rather than assumed, from the donor's own disabled renderers against the loaded model, so it
+    /// stays correct if either the donor or the hearth model is re-authored.
+    /// </remarks>
+    private static void FitFlameToPiece(GameObject prefab, GameObject root)
+    {
+        if (!prefab || !root) return;
+        if (!TryMeasure(root.GetComponentsInChildren<Renderer>(true), null, out var piece)) return;
+        if (!TryMeasure(prefab.GetComponentsInChildren<Renderer>(true), root.transform, out var donor)) return;
+        if (donor.size.y <= 0.01f || piece.size.y <= 0.01f) return;
+
+        // Height is the axis the flame reads on. Clamp so a pathological donor cannot invert the
+        // fire into a spark or blow it up further than it already was.
+        var ratio = Mathf.Clamp(piece.size.y / donor.size.y, 0.2f, 1f);
+        if (ratio > 0.98f) return;
+        foreach (var system in prefab.GetComponentsInChildren<ParticleSystem>(true))
+        {
+            var transform = system.transform;
+            if (transform == prefab.transform) continue;
+            transform.localScale *= ratio;
+        }
+    }
+
+    private static bool TryMeasure(Renderer[] renderers, Transform? exclude, out Bounds bounds)
+    {
+        bounds = default;
+        var found = false;
+        foreach (var renderer in renderers)
+        {
+            if (!renderer || renderer is ParticleSystemRenderer) continue;
+            if (exclude is not null && renderer.transform.IsChildOf(exclude)) continue;
+            if (!found) { bounds = renderer.bounds; found = true; }
+            else bounds.Encapsulate(renderer.bounds);
+        }
+        return found && bounds.size.sqrMagnitude > 0f;
+    }
+
 private static void TintVanillaFlame(GameObject prefab)
     {
         var gradient = new Gradient();
@@ -31,6 +75,19 @@ private static void TintVanillaFlame(GameObject prefab)
             },
             new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, .75f), new GradientAlphaKey(0f, 1f) });
 
+        // The spectrum has to be distributed across the particles alive at any instant, not swept
+        // along one particle's lifetime. On colorOverLifetime every particle is born at key 0 -- red
+        // -- reaches green only at 33% and blue at 50%, while the alpha keys hold it opaque to 75%
+        // and fade it out by 100%. Each particle therefore spends its bright phase in the red-to-
+        // green half and dies out through blue and purple, so the fire read as red with an
+        // occasional green flicker rather than as a rainbow. RandomColor picks each particle's
+        // colour from the gradient at birth; colorOverLifetime is reduced to the alpha fade so it
+        // no longer overrides that choice.
+        var fade = new Gradient();
+        fade.SetKeys(
+            new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+            new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, .75f), new GradientAlphaKey(0f, 1f) });
+
         var tinted = 0;
         foreach (var system in prefab.GetComponentsInChildren<ParticleSystem>(true))
         {
@@ -39,9 +96,12 @@ private static void TintVanillaFlame(GameObject prefab)
             if (name.IndexOf("sparks", StringComparison.OrdinalIgnoreCase) >= 0) continue;
             var colorOverLifetime = system.colorOverLifetime;
             colorOverLifetime.enabled = true;
-            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(gradient);
+            colorOverLifetime.color = new ParticleSystem.MinMaxGradient(fade);
             var main = system.main;
-            main.startColor = new ParticleSystem.MinMaxGradient(Color.white);
+            main.startColor = new ParticleSystem.MinMaxGradient(gradient)
+            {
+                mode = ParticleSystemGradientMode.RandomColor,
+            };
             tinted++;
         }
         var lightColors = new[] { new Color(1f, .22f, .12f), new Color(.16f, .72f, 1f), new Color(.78f, .22f, 1f) };

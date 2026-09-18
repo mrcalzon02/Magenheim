@@ -256,8 +256,13 @@ entirely unverified.
   projectiles that do nothing". **Not proven.** What it does not explain is why five families show
   no *visible* projectile at all. Settle it with one instrumented run: log the resolved attack
   configuration per staff at registration, and a line per shot, then read it back.
-- [ ] **Crystal placeables are still texturally broken in game while correct in preview. CAUSE
-  FOUND.** The model preview and the game do not use the same material path.
+- [x] **Crystal placeables are still texturally broken in game while correct in preview. FIXED
+  0.0.66.** Measured: 326 of 1979 owned model materials — 16.5% — were classified by their model
+  id rather than their own surface, because material names embed the id and `Classify` matches
+  substrings. 119 Metal read as Stone, 67 Crystal read as Stone, 24 Crystal read as Cloth. The
+  classifier now uses the trailing semantic token with an instance index dropped. The authored-UV
+  half of the problem is separate and still open below.
+  Original cause note:** The model preview and the game do not use the same material path.
   `render-model-catalog.py` renders the authored Blender materials through the authored UVs.
   At runtime, `GeneratedSurfaceTextures.RepairOwnedVisuals` — hooked to
   `PrefabManager.OnPrefabsRegistered` — sweeps **every** Magenheim-owned material in memory and
@@ -278,6 +283,67 @@ entirely unverified.
   registrar actually applies.
 - [ ] **Geode interior material needs far stronger per-biome colour separation.** The interiors do
   not read as biome-distinct at play distance.
+
+### Raised 2026-09-18 — second live pass, 0.0.64 (user report)
+
+Reported good: axe, battleaxe and bow read correctly in hand; the Crystal Sentinel build and model
+read correctly; the banners read correctly; the Crystal Hearth is much improved and working.
+
+- [ ] **The held-model gates measure self-consistency, not correctness. CAUSE FOUND.**
+  `verify-held-model-orientation.py` and `verify-held-model-grip-direction.py` assert a convention —
+  long axis local +Y, grip at −Y, working end at +Y — that has never been validated against how
+  Valheim actually presents a held item. Every weapon passes both gates, and more than half are
+  visibly wrong in hand, in *different* ways. Measured from the committed runtime payloads:
+
+  | weapon | in hand | long axis | X | Y | Z | grip/work vertex mass |
+  |---|---|---|---|---|---|---|
+  | axe | correct | Y | 0.50 | 1.17 | 0.12 | 1260 / 1776 |
+  | battleaxe | correct | Y | 0.90 | 1.56 | 0.14 | 1260 / 3775 |
+  | bow | correct | Y | 0.29 | 1.85 | 0.10 | 972 / 972 |
+  | crossbow | **backwards** | **X** | 1.32 | 0.93 | 0.17 | 864 / 864 |
+  | greatsword | **sideways** | Y | 0.54 | 2.08 | 0.23 | 420 / 888 |
+  | knife | **wrong** | Y | 0.19 | 0.93 | 0.13 | 498 / 545 |
+  | mace | **wrong** | Y | 0.41 | 1.30 | 0.42 | 1092 / 2688 |
+  | spear | **wrong** | Y | 0.15 | 1.98 | 0.14 | 420 / 612 |
+  | sword | not reported | Y | 0.31 | 1.56 | 0.14 | 156 / 1092 |
+  | atgeir | not reported | Y | 0.59 | 2.26 | 0.16 | 420 / 774 |
+
+  Three specific findings fall out. **The crossbow is exempt from both gates** — the orientation gate
+  explicitly exempts bows and crossbows from the long-axis test, and the grip gate's name list omits
+  both — so nothing has ever checked which way it faces, which is why it points its rear at the
+  target. Its long axis is X while every other weapon uses Y, and it is centred on that axis, so no
+  forward direction was ever established. **The knife is near-symmetric** at 498/545, a ratio of
+  1.09 against the grip gate's 1.30 reversal threshold, so it is reported ambiguous rather than
+  failed and passes by default. **Roll is unconstrained**: greatsword reads sideways, and nothing in
+  either gate constrains rotation *about* the long axis, so blade-plane orientation is untested.
+  The fix is not another geometry gate against the same assumed convention. The convention itself
+  has to be established from a vanilla weapon's attach-space orientation first, then the sources
+  re-authored against it, then gated.
+- [x] **Crystal Hearth flame is far too large. FIXED 0.0.65.** `CrystalArchitectureVisuals.Apply` loads the model
+  with `preserveParticles: true`, which retains the donor's particle systems untouched while the
+  visible mesh is replaced. Nothing reconciles the retained particle scale or `startSize` with the
+  Magenheim hearth's footprint, so the flame is sized for the donor rather than the piece.
+- [x] **Crystal Hearth flame reads red, not rainbow. FIXED 0.0.65.** `TintVanillaFlame` puts the
+  seven-key spectrum on `colorOverLifetime`, so the gradient is swept across each particle's *life*
+  rather than distributed across the particles present at any instant. Every particle is born red
+  at key 0, reaches green only at 33% and blue at 50%, while the alpha keys hold full opacity to 75%
+  and fade to zero by 100% — so each particle spends its bright phase in the red-to-green half and
+  dies out through blue, purple and pink. The fire therefore reads predominantly red with occasional
+  green, which is exactly what was reported. Distribute the spectrum across particles — a random
+  `main.startColor` between two gradients — instead of sweeping it over one particle's lifetime.
+- [ ] **Crystal Sentinel does not shoot skeletons in default target-everything mode.**
+  `CrystalSentinelRegistrar` sets no targeting field at all: `m_targetPlayers`, `m_targetTamed`,
+  `m_targetEnemies`, `m_configTargets` and `m_targetCharacters` are inherited wholesale from
+  `piece_turret`, and `CrystalSentinelVisuals.Apply` uses `hideOriginal`, which disables renderers
+  only and leaves `m_eye`, `m_turretBody` and `m_turretNeck` intact, so the aiming rig is untouched.
+  This is therefore vanilla Ballista behaviour unless something else interferes. One cheap test
+  settles which: place a vanilla Ballista in the same spot with the same skeletons. If it also
+  ignores them, this is not ours; if it engages them, the difference is in our clone.
+- [ ] **Crystal weapons still carry generated placeholder textures.** Reported against the staff
+  approach, which is considered correct. Needs clarifying whether "the snapshotting the staffs are
+  using" means their Blender-rendered icons or their material treatment, because the remedy differs:
+  `render-staff-icons.py` renders icons from the same `.blend` the runtime mesh is exported from,
+  while `author-weapon-textures.py` generates weapon surfaces procedurally in Pillow.
 
 ### Raised 2026-09-17 — custom weapon scale and fidelity (user directive)
 

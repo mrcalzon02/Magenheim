@@ -1,3 +1,36 @@
+## 0.0.66 — Materials stop being named by their model
+
+Crystal placeables looked correct in the authored preview and arrived in game as a patchwork of
+unrelated surfaces. The preview and the game do not share a material path: at runtime
+`GeneratedSurfaceTextures` replaces each owned material's texture with a generated surface chosen by
+substring-matching the material's **name** — and model materials are named
+`magenheim.<family>.<model-id>.<semantic>`, so the model id was deciding every material on the model.
+
+`architecture-crystal-hearth` contains "earth", which is tested before "iron" and before "crystal",
+so the hearth's iron banding and all six rainbow crystals were textured as stone. Any id containing
+"banner" forced cloth; any containing "core" forced crystal. Measured across the committed library,
+**326 of 1979 owned materials — 16.5% — classify differently once the model id is excluded**: 119
+Metal wrongly read as Stone, 67 Crystal wrongly read as Stone, 24 Crystal wrongly read as Cloth.
+Classification now uses the material's own trailing semantic token, with an instance index dropped.
+
+## 0.0.65 — Crystal Hearth flame, and two diagnostics
+
+- **The hearth flame was sized for its donor, not for the piece.** `preserveParticles` keeps the
+  donor's particle systems untouched while the visible mesh is replaced, and nothing reconciled the
+  two. The flame is now scaled by a measured ratio of the donor's own renderer bounds against the
+  loaded model, so it stays correct if either is re-authored.
+- **The flame read red because the rainbow was swept along each particle's life.** On
+  `colorOverLifetime` every particle is born red, reaches green only at 33% and blue at 50%, while
+  the alpha keys hold it opaque to 75% and fade it out by 100% — so each particle spent its bright
+  phase in the red-to-green half and died out through blue and purple. The spectrum is now
+  distributed across particles at birth and `colorOverLifetime` reduced to the alpha fade.
+- Two temporary diagnostics, so one run settles two defect classes that static analysis could not.
+  `StaffAttackAudit` reports the attack configuration every staff actually shipped with.
+  `HeldItemOrientationProbe` reports the attach-space transform of each held item, vanilla and
+  Magenheim alike, because measuring the crossbow disproved the held-model gates' assumed
+  convention rather than the asset: its prod already sits at the +Y end the convention calls
+  "working", and it still points its rear at the target.
+
 ## 0.0.64 — Generated assets answer to their generators
 
 0.0.63 repaired three defects of the same shape: a generator or its gate moved on while the

@@ -1,4 +1,4 @@
 {
-  "version": "0.0.64",
-  "description": "0.0.64: Adds a build-time freshness gate tying generated assets to the generators that own them, and refreshes four stale crystal-tier staff icons it found. Blender entries are gated on generator hash, because Blender output is not reproducible."
+  "version": "0.0.66",
+  "description": "0.0.66: Fixes 326 of 1979 model materials being classified by their model id instead of their own surface, which is why crystal placeables read as a patchwork. A hearth iron band and its crystals were all textured as stone."
 }
