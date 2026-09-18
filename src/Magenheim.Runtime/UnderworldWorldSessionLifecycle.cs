@@ -26,9 +26,8 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         var znet=ZNet.instance;
         if(znet is null||!znet.IsServer()){_reconciledWorldUid=currentWorldUid;return;}
         if(!_services.TryResolveLocalSession(out var identity,out _,out var playerId,out var sessionDiagnostic)||identity is null){_log.LogDebug($"Underworld transition admission deferred: {sessionDiagnostic}");return;}
-        var result=_services.WorldSwitchDriver.ReconcileAdmittedSession(playerId,identity,fingerprint,out _,out var pending,out var diagnostic);
+        var result=_services.RecoveryRuntime.LoadAndResume(playerId,identity,fingerprint,out _,out var diagnostic);
         if(result==UnderworldRecoveryLoadResult.Failed){_log.LogError($"Underworld transition admission failed closed: {diagnostic}");_reconciledWorldUid=currentWorldUid;return;}
-        if(result==UnderworldRecoveryLoadResult.PendingWorldSwitch){_log.LogWarning(pending is null?$"Underworld transition remains pending after admission: {diagnostic}":$"Underworld transition awaits physical save '{pending.TargetSaveName}': {diagnostic}");_reconciledWorldUid=currentWorldUid;return;}
         _log.LogDebug($"Underworld transition admission reconciled: {diagnostic}");_reconciledWorldUid=currentWorldUid;
     }
     private void TryAdmitWorldCenter()
