@@ -37,14 +37,16 @@ ICON_TARGET_SIZE = max(256, int(os.environ.get('MAGENHEIM_ICON_TARGET_SIZE', '25
 ENFORCE_ICON_TARGET = os.environ.get('MAGENHEIM_ENFORCE_ICON_TARGET', '').strip().lower() in {
     '1', 'true', 'yes', 'on'
 }
+MIN_VISIBLE_ALPHA_COVERAGE = 0.06
+MAX_VISIBLE_ALPHA_COVERAGE = 0.94
 
 failures: list[str] = []
 legacy_resolution: list[str] = []
 resolution_counts: Counter[int] = Counter()
 
 
-def decode_png(path: Path) -> tuple[int, int, int]:
-    """Walk the PNG chunk stream, verifying every CRC. Returns (width, height, colour_type)."""
+def decode_png(path: Path) -> tuple[int, int, int, bytes]:
+    """Walk the PNG chunk stream, verifying every CRC. Returns dimensions, colour type and raw scanlines."""
     data = path.read_bytes()
     if data[:8] != b'\x89PNG\r\n\x1a\n':
         raise ValueError('not a PNG')
@@ -64,6 +66,8 @@ def decode_png(path: Path) -> tuple[int, int, int]:
         if kind == b'IHDR':
             width, height, depth, colour = struct.unpack('>IIBB', body[:10])
             size = (width, height, depth, colour)
+            if depth != 8:
+                raise ValueError(f'unsupported bit depth {depth}; shipped icons must be 8-bit RGBA')
         elif kind == b'IDAT':
             idat += body
         elif kind == b'IEND':
@@ -75,29 +79,74 @@ def decode_png(path: Path) -> tuple[int, int, int]:
         raise ValueError('no IHDR')
     if not saw_end:
         raise ValueError('no IEND')
-    # Decompressing proves the pixel stream is complete, not merely CRC-clean.
     width, height, depth, colour = size
     channels = {0: 1, 2: 3, 3: 1, 4: 2, 6: 4}[colour]
     expected = height * (1 + width * channels * depth // 8)
     raw = zlib.decompress(bytes(idat))
     if len(raw) != expected:
         raise ValueError(f'pixel stream is {len(raw)} bytes, expected {expected}')
-    return width, height, colour
+    return width, height, colour, raw
 
 
-# 1. Every shipped icon must decode completely and carry a real alpha channel.
+def alpha_coverage(raw: bytes, width: int, height: int) -> float:
+    """Decode PNG filters enough to measure the actual visible RGBA silhouette without Pillow."""
+    stride = width * 4
+    previous = bytearray(stride)
+    visible = 0
+    cursor = 0
+    for _ in range(height):
+        filter_type = raw[cursor]
+        cursor += 1
+        encoded = raw[cursor:cursor + stride]
+        cursor += stride
+        row = bytearray(stride)
+        for i, value in enumerate(encoded):
+            left = row[i - 4] if i >= 4 else 0
+            up = previous[i]
+            upper_left = previous[i - 4] if i >= 4 else 0
+            if filter_type == 0:
+                decoded = value
+            elif filter_type == 1:
+                decoded = (value + left) & 0xff
+            elif filter_type == 2:
+                decoded = (value + up) & 0xff
+            elif filter_type == 3:
+                decoded = (value + ((left + up) // 2)) & 0xff
+            elif filter_type == 4:
+                p = left + up - upper_left
+                pa, pb, pc = abs(p - left), abs(p - up), abs(p - upper_left)
+                predictor = left if pa <= pb and pa <= pc else (up if pb <= pc else upper_left)
+                decoded = (value + predictor) & 0xff
+            else:
+                raise ValueError(f'unsupported PNG filter {filter_type}')
+            row[i] = decoded
+        visible += sum(row[i] >= 24 for i in range(3, stride, 4))
+        previous = row
+    return visible / (width * height)
+
+
+# 1. Every shipped icon must decode completely, carry real alpha, and occupy a useful inventory silhouette.
 icon_files = sorted(ICONS.glob('*.icon.png'))
 if not icon_files:
     failures.append(f'No icons found under {ICONS}.')
 for path in icon_files:
     try:
-        width, height, colour = decode_png(path)
+        width, height, colour, raw = decode_png(path)
     except Exception as error:  # noqa: BLE001 - report the exact decode failure
         failures.append(f'{path.name}: undecodable ({error})')
         continue
     resolution_counts[width] += 1
     if colour != 6:
         failures.append(f'{path.name}: colour type {colour}, expected 6 (RGBA)')
+    elif width == height:
+        try:
+            coverage = alpha_coverage(raw, width, height)
+            if coverage < MIN_VISIBLE_ALPHA_COVERAGE:
+                failures.append(f'{path.name}: visible silhouette occupies only {coverage:.1%} of the icon')
+            elif coverage > MAX_VISIBLE_ALPHA_COVERAGE:
+                failures.append(f'{path.name}: visible silhouette occupies {coverage:.1%}; icon is effectively a filled square')
+        except Exception as error:  # noqa: BLE001
+            failures.append(f'{path.name}: cannot evaluate visible silhouette ({error})')
     if width != height:
         failures.append(f'{path.name}: {width}x{height} is not square')
     if width < LEGACY_ICON_FLOOR:
@@ -149,7 +198,7 @@ if legacy_resolution:
     for item in legacy_resolution:
         print('  - ' + item)
 
-print(f'PASS: {len(icon_files)} icons decode as square RGBA >={LEGACY_ICON_FLOOR}px; '
+print(f'PASS: {len(icon_files)} icons decode as square RGBA >={LEGACY_ICON_FLOOR}px with useful alpha silhouettes; '
       f'{len(staff_models)} staff models carry a matching icon; '
       f'all literal EarthAssets.Icon references resolve; target={ICON_TARGET_SIZE}px; '
       f'enforce_target={ENFORCE_ICON_TARGET}.')
