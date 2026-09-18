@@ -23,7 +23,7 @@ for p in sorted(TEX.glob('*.png')):
 bpy.ops.wm.open_mainfile(filepath=str(MODEL)); sc=bpy.context.scene
 if sc.get('magenheim_model_id')!='underworld-creature-sporeling': raise RuntimeError('Wrong model identity')
 if sc.get('magenheim_host_rig')!='HOST-SWARM-HEXAPOD': raise RuntimeError('Wrong host rig')
-if sc.get('magenheim_fidelity')!='production-creature-r2': raise RuntimeError(f"Expected production-creature-r2, got {sc.get('magenheim_fidelity')}")
+if sc.get('magenheim_fidelity')!='production-creature-r3': raise RuntimeError(f"Expected production-creature-r3, got {sc.get('magenheim_fidelity')}")
 if sc.get('magenheim_skinning')!='rigid-segment-weighted': raise RuntimeError('Sporeling skinning contract is not explicit')
 arms=[o for o in sc.objects if o.type=='ARMATURE']
 if len(arms)!=1: raise RuntimeError(f'Expected one armature, found {len(arms)}')
@@ -59,7 +59,18 @@ for name in ('SporelingGill','SporelingSporeSac'):
 pts=[o.matrix_world @ v.co for o in meshes for v in o.data.vertices]
 mins=[min(p[i] for p in pts) for i in range(3)]; maxs=[max(p[i] for p in pts) for i in range(3)]; span=[maxs[i]-mins[i] for i in range(3)]
 if max(span)>0.80 or span[2]<0.30: raise RuntimeError(f'Unexpected creature bounds: {span}')
+REQ_ACTIONS={'Sporeling_Idle':72,'Sporeling_Scuttle':24,'Sporeling_Alert':30,'Sporeling_Bite':22,'Sporeling_Hit':16,'Sporeling_Stagger':28,'Sporeling_DeathSporePuff':52,'Sporeling_Emerge':42}
+actions={a.name:a for a in bpy.data.actions}
+missing_actions=REQ_ACTIONS-set(actions)
+if missing_actions: raise RuntimeError('Missing authored actions: '+', '.join(sorted(missing_actions)))
+for name,end in REQ_ACTIONS.items():
+    a=actions[name]
+    if int(a.frame_start)!=1 or int(a.frame_end)!=end: raise RuntimeError(f'{name}: unexpected frame range {a.frame_start}-{a.frame_end}')
+    keyed={fc.group.name for fc in a.fcurves if fc.group}
+    if not keyed: raise RuntimeError(f'{name}: no keyed pose bones')
+for name in ('Sporeling_Scuttle','Sporeling_Bite','Sporeling_DeathSporePuff'):
+    if len(actions[name].fcurves)<6: raise RuntimeError(f'{name}: insufficient articulated animation channels')
 manifest=set(str(sc.get('magenheim_animation_manifest','')).split(','))
 for clip in ('idle','walk','scuttle','bite','death-spore-puff'):
     if clip not in manifest: raise RuntimeError(f'Animation contract missing {clip}')
-print(f'VERIFIED Sporeling r2 source gate: meshes={len(meshes)} triangles={triangles} bones={len(bones)} bounds={tuple(round(x,3) for x in span)} textures={len(REQ_TEX)} materials={len(materials)}',flush=True)
+print(f'VERIFIED Sporeling r3 source gate: meshes={len(meshes)} triangles={triangles} bones={len(bones)} bounds={tuple(round(x,3) for x in span)} textures={len(REQ_TEX)} materials={len(materials)}',flush=True)
