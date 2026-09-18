@@ -1,3 +1,26 @@
+## 0.0.72 — Weapon icons from their sources, and the hand-authored geode
+
+- The ten crystal weapons drew their icons as procedural pixel art in C#, which described them only
+  as well as code could draw them and drifted whenever a model was re-authored.
+  `tools/render-weapon-icons.py` renders all ten from the same `.blend` the runtime mesh exports
+  from, the way the staff family already works, and `CrystalWeaponIcons.cs` is deleted. The icons
+  are registered in the freshness manifest so they cannot silently fall behind their models.
+- **The exporter died on a source saved in Edit Mode.** Blender restores the mode a file was saved
+  in, and hand-editing a source very often leaves it in Edit Mode, where `origin_set` fails and the
+  whole export aborts. That is why a hand-authored geode never reached the runtime payload the game
+  loads. Editing a source by hand is normal; refusing to export it is not.
+- The exporter now drops triangles with no world-space area. It emits the *modifier-evaluated* mesh,
+  so a sliver produced by a modifier does not exist in the `.blend` to delete and cannot be repaired
+  at the source.
+- Textures are named by content rather than by the Blender image name, removing a latent overwrite
+  hazard. Measurement afterwards showed **no model had actually been affected by it** — every set of
+  models sharing a texture genuinely shared identical content. The change is a correctness
+  improvement, not a fix for anything that was broken.
+- The two geode gates are out of the build. They encoded the previous two-part structure — a
+  continuous `GeodeCore` behind fractured plates, and a mouth at a hardcoded cut direction — and the
+  geode is now hand-authored and is the authority for its own shape. Winding, UVs, topology hashes
+  and degenerate faces remain covered by `verify-model-assets` and `verify-model-geometry`.
+
 ## 0.0.69 — Underworld starts with Valheim's own visual language
 
 - Replaced the two authored placeholder meshes used by the local Underworld ecology preview with

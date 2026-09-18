@@ -1,4 +1,4 @@
 {
-  "version": "0.0.71",
-  "description": "0.0.71: Model textures are now named by content instead of by the Blender image name, removing a latent overwrite hazard in the exporter. Full library re-export. No behavioural change on its own."
+  "version": "0.0.72",
+  "description": "0.0.72: Crystal weapon icons rendered from their Blender sources, the hand-authored geode shipped, and an exporter that no longer dies on a source saved in Edit Mode. Combined with the 0.0.69 donor ecology pass."
 }
