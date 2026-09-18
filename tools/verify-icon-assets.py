@@ -17,6 +17,8 @@ MAGENHEIM_ICON_TARGET_SIZE to a larger square size for higher-resolution review/
 Set MAGENHEIM_ENFORCE_ICON_TARGET=1 for asset-release/acceptance passes: every shipped icon
 below the configured target then becomes a hard failure. Normal compatibility builds continue
 to enumerate legacy-resolution debt without destructively blocking unrelated development.
+Silhouette coverage defaults to 6%-94%; review environments may narrow that window with
+MAGENHEIM_ICON_MIN_COVERAGE / MAGENHEIM_ICON_MAX_COVERAGE without changing checked-in policy.
 Exits non-zero on structural failures so build.ps1 fails the build.
 """
 import json
@@ -37,8 +39,28 @@ ICON_TARGET_SIZE = max(256, int(os.environ.get('MAGENHEIM_ICON_TARGET_SIZE', '25
 ENFORCE_ICON_TARGET = os.environ.get('MAGENHEIM_ENFORCE_ICON_TARGET', '').strip().lower() in {
     '1', 'true', 'yes', 'on'
 }
-MIN_VISIBLE_ALPHA_COVERAGE = 0.06
-MAX_VISIBLE_ALPHA_COVERAGE = 0.94
+
+
+def coverage_setting(name: str, default: float) -> float:
+    raw = os.environ.get(name)
+    if raw is None or not raw.strip():
+        return default
+    try:
+        value = float(raw)
+    except ValueError as error:
+        raise SystemExit(f'{name} must be a decimal fraction between 0 and 1, got {raw!r}') from error
+    if not 0.0 < value < 1.0:
+        raise SystemExit(f'{name} must be strictly between 0 and 1, got {value}')
+    return value
+
+
+MIN_VISIBLE_ALPHA_COVERAGE = coverage_setting('MAGENHEIM_ICON_MIN_COVERAGE', 0.06)
+MAX_VISIBLE_ALPHA_COVERAGE = coverage_setting('MAGENHEIM_ICON_MAX_COVERAGE', 0.94)
+if MIN_VISIBLE_ALPHA_COVERAGE >= MAX_VISIBLE_ALPHA_COVERAGE:
+    raise SystemExit(
+        'MAGENHEIM_ICON_MIN_COVERAGE must be lower than MAGENHEIM_ICON_MAX_COVERAGE '
+        f'(got {MIN_VISIBLE_ALPHA_COVERAGE} >= {MAX_VISIBLE_ALPHA_COVERAGE})'
+    )
 
 failures: list[str] = []
 legacy_resolution: list[str] = []
@@ -201,4 +223,5 @@ if legacy_resolution:
 print(f'PASS: {len(icon_files)} icons decode as square RGBA >={LEGACY_ICON_FLOOR}px with useful alpha silhouettes; '
       f'{len(staff_models)} staff models carry a matching icon; '
       f'all literal EarthAssets.Icon references resolve; target={ICON_TARGET_SIZE}px; '
+      f'coverage={MIN_VISIBLE_ALPHA_COVERAGE:.0%}-{MAX_VISIBLE_ALPHA_COVERAGE:.0%}; '
       f'enforce_target={ENFORCE_ICON_TARGET}.')
