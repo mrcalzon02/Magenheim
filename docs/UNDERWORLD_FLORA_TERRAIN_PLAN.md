@@ -99,6 +99,30 @@ inherits from day one rather than needing a later uplift pass:
 | Namespacing | `magenheim.underworld.*`. Additive only; no vanilla registration is rewritten, disabled or reordered. |
 | Data | Materials, recipes and station requirements belong in the validated, fingerprinted definition snapshot, not in registrar literals. |
 
+### 3.1 Donor-first biome production order
+
+Underworld environment production now begins with **Valheim-owned runtime donors before new
+geometry**. This is an implementation-order rule, not a lowering of the final art bar.
+
+1. **Vanilla donor pass.** Assemble each biome from existing Valheim rocks, roots, trees,
+   mushrooms, ice and scorched vegetation by resolving those prefabs from the running game.
+   Donor meshes, textures and materials stay owned by Valheim and are not copied into the
+   Magenheim package.
+2. **Vanilla kitbash pass.** Scale, rotate, mirror and combine donor visuals into new silhouettes.
+   Material variants may be created at runtime from donor materials where that is sufficient.
+   No vanilla prefab identity or registration is modified.
+3. **Custom gap-fill pass.** Author Magenheim geometry only where the donor library cannot carry
+   the required silhouette, interaction or gameplay state: Motherbloom-scale fungal trees,
+   purpose-built sulfur vents, biome-specific bramble masses, harvestable special resources,
+   boss landmarks and equivalent signature assets.
+4. **External permissive-source pass.** CC0 or otherwise compatible third-party assets are a
+   later option after vanilla donors and Magenheim-authored gap fills have been evaluated. They
+   are not the starting palette.
+
+The disposable local ecology preview is the first consumer of this rule. It intentionally uses
+stripped visual copies of runtime donor prefabs so the six biomes can be composed and judged
+before custom production expands.
+
 Assets are exported through `export-model-assets.py`, and re-exported only when actually
 authored, because export is content-stable but not byte-stable.
 
@@ -190,12 +214,13 @@ The end of the progression, and it should feel like an ending.
 
 The flagship system, and the one that most changes how the Underworld feels.
 
-### 5.1 Why they are not vanilla trees recoloured
+### 5.1 Why the final flagship species graduate beyond donor copies
 
 A fungal tree has no branches, no bark grain and no leaf card. Its structure is a stalk and a
-cap, its material is soft and fibrous, and its light comes from inside. Cloning a `Beech` and
-tinting it green produces a green beech. These need their own geometry, their own material
-language and their own felling behaviour.
+cap, its material is soft and fibrous, and its light comes from inside. A donor tree is useful for establishing density, scale, collision expectations and visual
+rhythm, but a simple recolour is not the final target. Once the vanilla-donor composition pass
+has proven the biome, flagship fungal trees graduate to their own geometry, material language
+and felling behaviour where the required stalk/cap silhouette cannot be achieved by kitbash.
 
 ### 5.2 Species
 
