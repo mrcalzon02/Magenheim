@@ -1,0 +1,104 @@
+{
+  "comment": "Generated assets and the generators that own them. Verified by tools/verify-generated-freshness.py; refresh with --update, which re-runs the recorded command before recording anything. Do not hand-edit the hashes.",
+  "generators": [
+    {
+      "id": "underworld-sporeling-textures",
+      "generator": "tools/generate-underworld-sporeling-textures.py",
+      "command": [
+        "python",
+        "tools/generate-underworld-sporeling-textures.py"
+      ],
+      "outputs": [
+        "assets/textures/underworld/creatures/sporeling/*.png"
+      ],
+      "generator_sha256": "5b732ea7524308f3d1215bac2891f150b486b443f0c85d9eeb78a48271b6c62e",
+      "output_sha256": {
+        "assets/textures/underworld/creatures/sporeling/cap-chitin-albedo.png": "074d4ea60531d054e2a37cd71a9e4451d81d1207941c0a01a3bd93d1c3fe149c",
+        "assets/textures/underworld/creatures/sporeling/cap-chitin-normal.png": "2c71e7a4dd3462f1c832fd863900d02c6a05fd728a5d9df1eff519add2187f8d",
+        "assets/textures/underworld/creatures/sporeling/cap-chitin-roughness.png": "81a745fb2f36cc718d4b644f79cf1d4471f6ad53c7fb3c9364d779a2f78bd8ab",
+        "assets/textures/underworld/creatures/sporeling/flesh-albedo.png": "73b0599ef839ecde33530311fea39ded0cf72afffe09b32666780b029b9c2c5c",
+        "assets/textures/underworld/creatures/sporeling/flesh-normal.png": "9b2ea1fe7481a29564787d98e330881e4890be18285a9b02fe103e0717ae7fbc",
+        "assets/textures/underworld/creatures/sporeling/flesh-roughness.png": "a121b45c96c4b56b40d0dcbe1b58f1a1abc324b952433d2f0947ce37d02d29d0",
+        "assets/textures/underworld/creatures/sporeling/gill-albedo.png": "694ea154e3ee79d7a45edc6f93cf9867931dd596ce2679af79e76e27beb45d08",
+        "assets/textures/underworld/creatures/sporeling/gill-emission.png": "215f113d0cbc40ca45d8b72351e85ee4af7af1a75321e92c99c732087e25945a",
+        "assets/textures/underworld/creatures/sporeling/gill-normal.png": "0b860ac4a927d3306d3b8951f54d374019642fd43fb71a20750efd14722fc8ed",
+        "assets/textures/underworld/creatures/sporeling/gill-roughness.png": "67be27fa636a395d67bdb88034777ba413de39c6068673a99ffc7b2840dce110",
+        "assets/textures/underworld/creatures/sporeling/joint-albedo.png": "8c0778b78a89dd9a15cc5779680742b516f8b78d4ea297afb93ff50d23495e2f",
+        "assets/textures/underworld/creatures/sporeling/joint-normal.png": "a44e4feca800d1fe4ee70794363d6e4ccbc8365629cd4005a72f22398adaaae0",
+        "assets/textures/underworld/creatures/sporeling/joint-roughness.png": "f91271643be0ee057a49580ce3167c5ab1deb127d96e2947132f64797bd8e5e6",
+        "assets/textures/underworld/creatures/sporeling/spore-sac-albedo.png": "6843887ba76912169b10ce1472b57e99fed1b2e197aa25ec861ad3993a05695b",
+        "assets/textures/underworld/creatures/sporeling/spore-sac-emission.png": "979be553eef1cb529490f89ff8f3ec9568bd09d8f3dde1414f356c6d64d3ac0f",
+        "assets/textures/underworld/creatures/sporeling/spore-sac-normal.png": "07b3ee6c6716af02a0e37771bd794c3f25dea7ebd8f5d84059d3eb63f3ec4817",
+        "assets/textures/underworld/creatures/sporeling/spore-sac-roughness.png": "0b037106b84885d1505938967fe98c4ce85f04ad5bf2403f2f550a46a7384c75"
+      },
+      "hash": "bytes"
+    },
+    {
+      "id": "staff-icons",
+      "generator": "tools/render-staff-icons.py",
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-Command",
+        "& './tools/blender.ps1' render-staff-icons"
+      ],
+      "outputs": [
+        "assets/earth/staff-*.icon.png"
+      ],
+      "generator_sha256": "d300f9bb5cb401fdd0027eddcafa3f857d9639e1290458109cfaf3eade0847b6",
+      "output_sha256": {
+        "assets/earth/staff-earth-advanced.icon.png": null,
+        "assets/earth/staff-earth-crystal.icon.png": null,
+        "assets/earth/staff-earth-master.icon.png": null,
+        "assets/earth/staff-earth-simple.icon.png": null,
+        "assets/earth/staff-fire-advanced.icon.png": null,
+        "assets/earth/staff-fire-crystal.icon.png": null,
+        "assets/earth/staff-fire-master.icon.png": null,
+        "assets/earth/staff-fire-simple.icon.png": null,
+        "assets/earth/staff-frost-advanced.icon.png": null,
+        "assets/earth/staff-frost-crystal.icon.png": null,
+        "assets/earth/staff-frost-master.icon.png": null,
+        "assets/earth/staff-frost-simple.icon.png": null,
+        "assets/earth/staff-radiance-advanced.icon.png": null,
+        "assets/earth/staff-radiance-crystal.icon.png": null,
+        "assets/earth/staff-radiance-master.icon.png": null,
+        "assets/earth/staff-radiance-simple.icon.png": null,
+        "assets/earth/staff-seidr-advanced.icon.png": null,
+        "assets/earth/staff-seidr-crystal.icon.png": null,
+        "assets/earth/staff-seidr-master.icon.png": null,
+        "assets/earth/staff-seidr-simple.icon.png": null,
+        "assets/earth/staff-spirit-advanced.icon.png": null,
+        "assets/earth/staff-spirit-crystal.icon.png": null,
+        "assets/earth/staff-spirit-master.icon.png": null,
+        "assets/earth/staff-spirit-simple.icon.png": null,
+        "assets/earth/staff-storm-advanced.icon.png": null,
+        "assets/earth/staff-storm-crystal.icon.png": null,
+        "assets/earth/staff-storm-master.icon.png": null,
+        "assets/earth/staff-storm-simple.icon.png": null,
+        "assets/earth/staff-venom-advanced.icon.png": null,
+        "assets/earth/staff-venom-crystal.icon.png": null,
+        "assets/earth/staff-venom-master.icon.png": null,
+        "assets/earth/staff-venom-simple.icon.png": null
+      },
+      "hash": "generator-only"
+    },
+    {
+      "id": "underworld-sporeling-source",
+      "generator": "tools/author-underworld-sporeling.py",
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-Command",
+        "& './tools/blender.ps1' author-underworld-sporeling"
+      ],
+      "outputs": [
+        "assets/models/source/underworld-creature-sporeling.blend"
+      ],
+      "generator_sha256": "c35ab3f8c6f4d1b9baa8db31ae06ed28d77c3e2b8ca2df08320d8f961db9fdbc",
+      "output_sha256": {
+        "assets/models/source/underworld-creature-sporeling.blend": null
+      },
+      "hash": "generator-only"
+    }
+  ]
+}

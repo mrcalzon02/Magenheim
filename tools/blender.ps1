@@ -47,7 +47,10 @@ try { & $Blender @arguments > $log 2>&1 } finally { $ErrorActionPreference = $pr
 $code = $LASTEXITCODE
 
 # Blender exits 0 even when the script raised, so surface the failure explicitly.
-$failed = Select-String -Path $log -Pattern 'Traceback \(most recent call last\)|SystemError|^Error:' -SimpleMatch:$false
+# "Error: Not freed memory blocks" is Blender's own shutdown accounting, not a script failure, and
+# it appears intermittently on Blender 5.0 -- it failed a staff-icon render that had already
+# reported all 32 icons saved. Excluding that one line keeps the ^Error: rule for real failures.
+$failed = Select-String -Path $log -Pattern 'Traceback \(most recent call last\)|SystemError|^Error:(?! Not freed memory blocks)' -SimpleMatch:$false
 $done = (Select-String -Path $log -Pattern '^(EXPORTED|RENDERED|RESCALED|AUTHORED|REVISED|REPAIRED)' ).Count
 
 Write-Host ("{0}: exit={1} completed={2} log={3}" -f $Tool, $code, $done, $log)
