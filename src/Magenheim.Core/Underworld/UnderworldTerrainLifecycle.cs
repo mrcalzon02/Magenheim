@@ -16,9 +16,8 @@ public readonly record struct UnderworldTerrainSample(
     double X,
     double Y,
     double Z,
-    double BaseHeight,
+    double WaterLevel,
     double SlopeDegrees,
-    double WaterDepth,
     double Noise01);
 
 public readonly record struct UnderworldTerrainResult(
@@ -38,6 +37,23 @@ public readonly record struct UnderworldTerrainResult(
 public static class UnderworldTerrainLifecycle
 {
     public const double MaximumTerrainDelta = 48d;
+
+    /// <summary>
+    /// The elevation the Underworld generates around, in world metres.
+    /// </summary>
+    /// <remarks>
+    /// Terrain used to be produced as a bounded delta on the vanilla height of the same column. That
+    /// only worked while the Underworld was imagined as replacing an ordinary world. The reserved
+    /// region sits far beyond <c>waterEdge</c>, where vanilla returns edge-of-map deep ocean, so
+    /// shaping relative to it generated an Underworld hundreds of metres under water -- the player
+    /// arrived to find no terrain at all. The region now generates its own absolute elevation, which
+    /// is what Valheim itself does for Deep North via <c>deepNorthYOffset</c>.
+    ///
+    /// 45m sits above the 30m water line by more than the Fungal Forest's downward delta, so the
+    /// first biome is dry land, while Blackwater Deep (-18 to -34) becomes a genuine sea, Fracture
+    /// Zones cut below the waterline and rise into walls, and the Great Decay reads as wetland.
+    /// </remarks>
+    public const double BaseElevationMeters = 45d;
     public const double MaximumSlopeDegrees = 75d;
     public const double CentralFungalRadiusFraction = 0.16d;
     public const double FungalTransitionRadiusFraction = 0.22d;
@@ -49,8 +65,7 @@ public static class UnderworldTerrainLifecycle
     {
         UnderworldSpatialDomain.ValidateDefinition(domain);
         if (!Finite(sample.X) || !Finite(sample.Y) || !Finite(sample.Z) ||
-            !Finite(sample.BaseHeight) || !Finite(sample.SlopeDegrees) ||
-            !Finite(sample.WaterDepth) || !Finite(sample.Noise01))
+            !Finite(sample.WaterLevel) || !Finite(sample.SlopeDegrees) || !Finite(sample.Noise01))
             return default;
 
         var radiusSquared = domain.RadiusMeters * domain.RadiusMeters;
@@ -62,28 +77,32 @@ public static class UnderworldTerrainLifecycle
         var noise = Clamp(sample.Noise01, 0d, 1d);
         var distance = Math.Sqrt(sample.X * sample.X + sample.Z * sample.Z);
         var biome = SelectBiome(sample.X, sample.Z, distance, domain.RadiusMeters, derivedSeed32);
-        var delta = TerrainDelta(biome, noise, slope, sample.WaterDepth);
-        var water = Math.Max(0d, sample.WaterDepth);
-        var cover = Cover(biome, noise, slope, water);
-        var hazard = Hazard(biome, noise, water);
+        var delta = TerrainDelta(biome, noise, slope);
 
-        // Blend the terrain shape, cover and hazard around the protected Fungal Forest basin.
-        // This prevents a single sample step across a biome province boundary from producing a
-        // cliff or an immediate lethal hazard while keeping the outer province identity intact.
+        // Blend the terrain shape around the protected Fungal Forest basin. This prevents a single
+        // sample step across a biome province boundary from producing a cliff while keeping the
+        // outer province identity intact.
         var fungalBlend = FungalTransition(distance, domain.RadiusMeters);
         if (fungalBlend > 0d && biome != UnderworldTerrainBiome.FungalForest)
+            delta = Lerp(delta, TerrainDelta(UnderworldTerrainBiome.FungalForest, noise, slope), fungalBlend);
+
+        // Water depth follows from the generated ground, so seas and wetlands are a consequence of
+        // the terrain rather than an input copied from whatever vanilla had at this column.
+        var height = BaseElevationMeters + Clamp(delta, -MaximumTerrainDelta, MaximumTerrainDelta);
+        var water = Math.Max(0d, sample.WaterLevel - height);
+
+        var cover = Cover(biome, noise, slope, water);
+        var hazard = Hazard(biome, noise, water);
+        if (fungalBlend > 0d && biome != UnderworldTerrainBiome.FungalForest)
         {
-            var fungalDelta = TerrainDelta(UnderworldTerrainBiome.FungalForest, noise, slope, water);
-            var fungalCover = Cover(UnderworldTerrainBiome.FungalForest, noise, slope, water);
-            delta = Lerp(delta, fungalDelta, fungalBlend);
-            cover = Lerp(cover, fungalCover, fungalBlend);
+            cover = Lerp(cover, Cover(UnderworldTerrainBiome.FungalForest, noise, slope, water), fungalBlend);
             hazard = Lerp(hazard, 0d, fungalBlend);
         }
 
         return new UnderworldTerrainResult(
             true,
             biome,
-            sample.BaseHeight + Clamp(delta, -MaximumTerrainDelta, MaximumTerrainDelta),
+            height,
             water,
             Clamp(cover, 0d, 1d),
             Clamp(hazard, 0d, 1d));
@@ -139,13 +158,13 @@ public static class UnderworldTerrainLifecycle
         }
     }
 
-    private static double TerrainDelta(UnderworldTerrainBiome biome, double noise, double slope, double waterDepth)
+    private static double TerrainDelta(UnderworldTerrainBiome biome, double noise, double slope)
     {
         var centered = noise * 2d - 1d;
         return biome switch
         {
             UnderworldTerrainBiome.FungalForest => centered * 10d - slope * 0.04d,
-            UnderworldTerrainBiome.BlackwaterDeep => -18d - noise * 16d - Math.Max(0d, waterDepth) * 0.15d,
+            UnderworldTerrainBiome.BlackwaterDeep => -18d - noise * 16d,
             UnderworldTerrainBiome.SulfurousWastes => centered * 14d + noise * noise * 12d,
             UnderworldTerrainBiome.FrozenCaverns => centered * 8d - slope * 0.02d,
             UnderworldTerrainBiome.FractureZones => centered * 34d + (noise > 0.72d ? 10d : -6d),

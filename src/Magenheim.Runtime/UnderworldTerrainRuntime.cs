@@ -102,8 +102,7 @@ internal static class UnderworldTerrainRuntime
             ((float)local.X + seed * 0.0137f) * 0.00115f,
             ((float)local.Z - seed * 0.0091f) * 0.00115f);
         return UnderworldTerrainLifecycle.Evaluate(domain,
-            new UnderworldTerrainSample(local.X, 0d, local.Z, vanillaHeight, 0d,
-                Math.Max(0d, world.WaterLevel - vanillaHeight), noise),
+            new UnderworldTerrainSample(local.X, 0d, local.Z, world.WaterLevel, 0d, noise),
             seed);
     }
 
