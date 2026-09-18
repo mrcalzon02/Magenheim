@@ -36,7 +36,9 @@ public readonly record struct UnderworldTerrainResult(
 /// </summary>
 public static class UnderworldTerrainLifecycle
 {
-    public const double MaximumTerrainDelta = 48d;
+    // Headroom for the deepest Fracture ravine and the highest wall mass. The old 48m ceiling was
+    // sized for a model that produced barely a metre of visible relief.
+    public const double MaximumTerrainDelta = 120d;
 
     /// <summary>
     /// The elevation the Underworld generates around, in world metres.
@@ -79,14 +81,18 @@ public static class UnderworldTerrainLifecycle
         var noise = Clamp(sample.Noise01, 0d, 1d);
         var distance = Math.Sqrt(sample.X * sample.X + sample.Z * sample.Z);
         var biome = SelectBiome(sample.X, sample.Z, distance, domain.RadiusMeters, derivedSeed32);
-        var delta = TerrainDelta(biome, noise, slope);
+
+        // Relief comes from the shared noise authority in metres, so the same landform is produced
+        // for a column no matter which adapter asks for it.
+        var relief = UnderworldTerrainNoise.ReliefMetres(derivedSeed32, sample.X, sample.Z);
+        var delta = BiomeDelta(biome, relief);
 
         // Blend the terrain shape around the protected Fungal Forest basin. This prevents a single
         // sample step across a biome province boundary from producing a cliff while keeping the
         // outer province identity intact.
         var fungalBlend = FungalTransition(distance, domain.RadiusMeters);
         if (fungalBlend > 0d && biome != UnderworldTerrainBiome.FungalForest)
-            delta = Lerp(delta, TerrainDelta(UnderworldTerrainBiome.FungalForest, noise, slope), fungalBlend);
+            delta = Lerp(delta, BiomeDelta(UnderworldTerrainBiome.FungalForest, relief), fungalBlend);
 
         // Water depth follows from the generated ground, so seas and wetlands are a consequence of
         // the terrain rather than an input copied from whatever vanilla had at this column.
@@ -150,20 +156,25 @@ public static class UnderworldTerrainLifecycle
     private static double SeedRotation(int seed) =>
         UnderworldTerrainNoise.Mix(unchecked((uint)seed)) / ((double)uint.MaxValue + 1d) * Math.PI * 2d;
 
-    private static double TerrainDelta(UnderworldTerrainBiome biome, double noise, double slope)
+    /// <summary>
+    /// A biome's height offset from the region's base elevation, plus how strongly it expresses the
+    /// shared relief. Amplitude is a multiplier on real metres, so a biome's character is "how
+    /// dramatic is the landform here", not "how large is this arbitrary scalar".
+    /// </summary>
+    private static double BiomeDelta(UnderworldTerrainBiome biome, double relief) => biome switch
     {
-        var centered = noise * 2d - 1d;
-        return biome switch
-        {
-            UnderworldTerrainBiome.FungalForest => centered * 10d - slope * 0.04d,
-            UnderworldTerrainBiome.BlackwaterDeep => -18d - noise * 16d,
-            UnderworldTerrainBiome.SulfurousWastes => centered * 14d + noise * noise * 12d,
-            UnderworldTerrainBiome.FrozenCaverns => centered * 8d - slope * 0.02d,
-            UnderworldTerrainBiome.FractureZones => centered * 34d + (noise > 0.72d ? 10d : -6d),
-            UnderworldTerrainBiome.GreatDecay => -6d + centered * 12d - noise * 5d,
-            _ => 0d,
-        };
-    }
+        // Rolling, habitable, sits above the waterline: the first biome must be walkable.
+        UnderworldTerrainBiome.FungalForest => 6d + relief * 0.55d,
+        // Sits below the water line so the basin fills and reads as a sea.
+        UnderworldTerrainBiome.BlackwaterDeep => -30d + relief * 0.40d,
+        UnderworldTerrainBiome.SulfurousWastes => 8d + relief * 0.85d,
+        UnderworldTerrainBiome.FrozenCaverns => 4d + relief * 0.65d,
+        // Deliberately the most extreme: ravines cut below the waterline, wall masses tower.
+        UnderworldTerrainBiome.FractureZones => relief * 1.5d,
+        // Low and damp, so the wetlands the design asks for appear without special-casing water.
+        UnderworldTerrainBiome.GreatDecay => -10d + relief * 0.45d,
+        _ => 0d,
+    };
 
     private static double Cover(UnderworldTerrainBiome biome, double noise, double slope, double waterDepth) => biome switch
     {

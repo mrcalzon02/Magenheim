@@ -100,6 +100,38 @@ internal static class UnderworldTerrainLifecycleTests
         Assert(highest - lowest > 8d,
             "Underworld terrain must have real relief across a transect, not generate as a flat plane.");
 
+        // Region-scale relief is not enough on its own: the first flat Underworld still varied by
+        // ~12m across 8km while a 50m screen varied by 0.02m, which is a plane to anyone standing on
+        // it. Assert relief at the scale the player actually perceives.
+        var screenLow = double.MaxValue;
+        var screenHigh = double.MinValue;
+        for (var step = 0; step <= 50; step++)
+        {
+            var probe = UnderworldTerrainLifecycle.Evaluate(domain,
+                new UnderworldTerrainSample(step, 0d, 0d, 30d, 0d,
+                    UnderworldTerrainNoise.Fractal01(precisionSeed, step, 0d)), precisionSeed);
+            if (!probe.Admitted) continue;
+            if (probe.Height < screenLow) screenLow = probe.Height;
+            if (probe.Height > screenHigh) screenHigh = probe.Height;
+        }
+        Assert(screenHigh - screenLow > 0.3d,
+            "Underworld terrain must show relief across a 50m screen, not only across kilometres.");
+
+        // Relief must stay walkable: a metre step that climbs more than about a metre is a wall.
+        var steepest = 0d;
+        var previous = double.NaN;
+        for (var step = 0; step <= 400; step++)
+        {
+            var probe = UnderworldTerrainLifecycle.Evaluate(domain,
+                new UnderworldTerrainSample(step, 0d, 96d, 30d, 0d,
+                    UnderworldTerrainNoise.Fractal01(precisionSeed, step, 96d)), precisionSeed);
+            if (!probe.Admitted) continue;
+            if (!double.IsNaN(previous)) steepest = Math.Max(steepest, Math.Abs(probe.Height - previous));
+            previous = probe.Height;
+        }
+        Assert(steepest > 0.02d && steepest < 1d,
+            "Central-basin relief must be visible but walkable metre to metre.");
+
         return assertions;
     }
 }

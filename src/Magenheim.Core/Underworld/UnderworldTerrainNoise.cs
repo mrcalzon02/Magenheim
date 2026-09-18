@@ -98,5 +98,53 @@ public static class UnderworldTerrainNoise
         return normalized < 0d ? 0d : normalized > 1d ? 1d : normalized;
     }
 
+    /// <summary>
+    /// Terrain relief in metres, summed over octaves that each carry their own metre amplitude.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This exists because normalising fractal noise to [0, 1] and then multiplying by a single
+    /// amplitude produces terrain nobody can see. Measured from the shipped model: a Fungal Forest
+    /// screen 50m across varied by 0.02m, and the steepest one-metre step over 400m was 0.015m, or
+    /// 0.85 degrees. The fine octaves were present but each was a fraction of an already small total,
+    /// so the Underworld read as a flat plane however many octaves were added.
+    /// </para>
+    /// <para>
+    /// Giving every octave an amplitude in metres fixes the scale directly. The table spans macro
+    /// basins and wall masses down to footstep-scale relief, so the ground reads as ground while the
+    /// long wavelengths still carry the regional geography the design asks for.
+    /// </para>
+    /// </remarks>
+    public static double ReliefMetres(int seed, double x, double z)
+    {
+        if (double.IsNaN(x) || double.IsInfinity(x) || double.IsNaN(z) || double.IsInfinity(z)) return 0d;
+
+        var total = 0d;
+        var octaveSeed = seed;
+        for (var octave = 0; octave < ReliefFeatureMetres.Length; octave++)
+        {
+            var frequency = 1d / ReliefFeatureMetres[octave];
+            total += Value(octaveSeed, x * frequency, z * frequency) * ReliefAmplitudeMetres[octave];
+            octaveSeed = unchecked((int)Mix((uint)octaveSeed));
+        }
+        return total;
+    }
+
+    /// <summary>Largest relief this table can produce, in metres, for bounds checking.</summary>
+    public static double MaximumReliefMetres
+    {
+        get
+        {
+            var total = 0d;
+            foreach (var amplitude in ReliefAmplitudeMetres) total += amplitude;
+            return total;
+        }
+    }
+
+    // Wavelength in metres, coarsest first: regional basins and walls, ridges, hills, hummocks,
+    // then footstep-scale break-up.
+    private static readonly double[] ReliefFeatureMetres = { 2048d, 768d, 256d, 96d, 32d, 11d };
+    private static readonly double[] ReliefAmplitudeMetres = { 26d, 12d, 6d, 3d, 1.4d, 0.6d };
+
     private static double Smooth(double value) => value * value * (3d - 2d * value);
 }
