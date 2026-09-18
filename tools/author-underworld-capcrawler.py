@@ -11,7 +11,9 @@ def image(stem,kind):
  p=TEX/f'{stem}-{kind}.png'
  if not p.exists(): raise RuntimeError(f'Missing texture {p}; run generate-underworld-capcrawler-textures.py first')
  im=bpy.data.images.load(str(p),check_existing=True)
- if kind in ('normal','roughness','emission'): im.colorspace_settings.name='Non-Color'
+ # Only scalar/vector data maps are non-color. Emission is authored color and must
+ # retain its sRGB response or the fungal glow shifts/dulls versus its source art.
+ if kind in ('normal','roughness'): im.colorspace_settings.name='Non-Color'
  return im
 
 def material(name,stem,emit=False):
