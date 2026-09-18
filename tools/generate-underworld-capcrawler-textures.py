@@ -10,6 +10,15 @@ OUT=ROOT/'assets/textures/underworld/creatures/capcrawler'; OUT.mkdir(parents=Tr
 SIZE=1024
 READABILITY_SIZE=64
 
+def flat(im):
+    """Pillow 12.3 deprecates Image.getdata and removes it in 14; older Pillow lacks the successor.
+
+    The warning is not cosmetic: Windows PowerShell 5.1 turns any native stderr line into an
+    ErrorRecord, so a DeprecationWarning fails build.ps1 even when the tool exits 0.
+    """
+    reader=getattr(im,'get_flattened_data',None)
+    return list(reader() if reader else im.getdata())
+
 def clamp(v): return max(0,min(255,int(v)))
 def relief(motif,x,y):
     nx=x/SIZE; ny=y/SIZE
@@ -76,6 +85,6 @@ for p in files:
         elif p.name.endswith('-roughness.png') and (hi-lo<12 or sigma<3.0):
             raise RuntimeError(f'{p.name}: roughness response collapses at combat scale range={hi-lo}, sigma={sigma:.2f}')
         elif p.name.endswith('-emission.png'):
-            cov=sum(v>=8 for v in luma.getdata())/(READABILITY_SIZE*READABILITY_SIZE)
+            cov=sum(v>=8 for v in flat(luma))/(READABILITY_SIZE*READABILITY_SIZE)
             if not .01<=cov<=.55: raise RuntimeError(f'{p.name}: emission coverage {cov:.1%} is not localized')
 print(f'AUTHORED Capcrawler PBR texture set: {len(files)} maps at {SIZE}x{SIZE}; albedo, roughness, normal and emission structure survive {READABILITY_SIZE}px combat proxy -> {OUT}',flush=True)

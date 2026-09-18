@@ -30,10 +30,18 @@ def percentile(values,q):
 def sampled(im,step=8):
     p=im.load(); return [p[x,y] for y in range(0,im.height,step) for x in range(0,im.width,step)]
 def proxy(im): return im.resize(COMBAT_PROXY,Image.Resampling.LANCZOS)
-def proxy_values(im): return list(luminance(proxy(im)).getdata())
-def normal_proxy_values(im): return list(proxy(im).getdata())
+def flat(im):
+    """Pillow 12.3 deprecates Image.getdata and removes it in 14; older Pillow lacks the successor.
+
+    The warning is not cosmetic here: Windows PowerShell 5.1 turns any native stderr line into an
+    ErrorRecord, so a DeprecationWarning failed build.ps1 even though this gate exited 0.
+    """
+    reader=getattr(im,'get_flattened_data',None)
+    return list(reader() if reader else im.getdata())
+def proxy_values(im): return flat(luminance(proxy(im)))
+def normal_proxy_values(im): return flat(proxy(im))
 def channel_means(im):
-    vals=list(proxy(im.convert('RGB')).getdata()); n=len(vals)
+    vals=flat(proxy(im.convert('RGB'))); n=len(vals)
     return tuple(sum(v[i] for v in vals)/n for i in range(3))
 
 def chroma_signature(im):

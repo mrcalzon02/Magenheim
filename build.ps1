@@ -30,6 +30,14 @@ if ($Offline) {
 
 Push-Location $PSScriptRoot
 try {
+    # Windows PowerShell 5.1 wraps every native stderr line in an ErrorRecord, so under
+    # $ErrorActionPreference = 'Stop' a gate that merely warns terminates the build even when it
+    # exited 0. Pillow 12.3.0's getdata DeprecationWarning did exactly that, after the Sporeling
+    # texture gate had already printed VERIFIED. tools/blender.ps1 documents the same trap for
+    # Blender. Every native call in this block is followed by an explicit $LASTEXITCODE check and
+    # each .ps1 gate sets its own 'Stop' and throws, so the exit code remains the decision and
+    # nothing is lost. Restored before packaging, where cmdlet failures must still terminate.
+    $ErrorActionPreference = 'Continue'
     & "$PSScriptRoot/tests/LauncherMetadata.Tests.ps1"
     & python "$PSScriptRoot/tools/verify-model-assets.py"
     if ($LASTEXITCODE -ne 0) { throw 'Model asset validation failed.' }
@@ -68,6 +76,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Core tests failed.' }
     & $DotNet build src/Magenheim.Runtime -c Release @restoreOptions "-p:BepInExPath=$ProfileRoot/BepInEx" "-p:ValheimManagedPath=$GameRoot/valheim_Data/Managed"
     if ($LASTEXITCODE -ne 0) { throw 'Runtime build failed.' }
+    $ErrorActionPreference = 'Stop'
     & "$PSScriptRoot/tools/verify-patch-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
     & "$PSScriptRoot/tools/verify-reflection-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
 

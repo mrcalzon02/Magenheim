@@ -8,6 +8,16 @@ import random
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageStat
 
+def flat(im):
+    """Pillow 12.3 deprecates Image.getdata and removes it in 14; older Pillow lacks the successor.
+
+    The warning is not cosmetic: Windows PowerShell 5.1 turns any native stderr line into an
+    ErrorRecord, so a DeprecationWarning fails build.ps1 even when the tool exits 0.
+    """
+    reader=getattr(im,'get_flattened_data',None)
+    return list(reader() if reader else im.getdata())
+
+
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'assets' / 'earth'
 OUT.mkdir(parents=True, exist_ok=True)
@@ -49,10 +59,10 @@ def validate_gameplay_icon(name, icon):
     proxy=icon.resize((GAMEPLAY_READABILITY_SIZE,GAMEPLAY_READABILITY_SIZE),Image.Resampling.LANCZOS)
     alpha=proxy.getchannel('A'); bbox=alpha.getbbox()
     if not bbox: raise RuntimeError(f'{name}: icon has no visible silhouette at {GAMEPLAY_READABILITY_SIZE}px')
-    coverage=sum(1 for value in alpha.getdata() if value>=96)/(GAMEPLAY_READABILITY_SIZE**2)
+    coverage=sum(1 for value in flat(alpha) if value>=96)/(GAMEPLAY_READABILITY_SIZE**2)
     if not .16<=coverage<=.72:
         raise RuntimeError(f'{name}: {coverage:.1%} opaque coverage is outside the 16-72% inventory readability envelope')
-    rgb=proxy.convert('RGB'); pixels=[p for p,a in zip(rgb.getdata(),alpha.getdata()) if a>=96]
+    rgb=proxy.convert('RGB'); pixels=[p for p,a in zip(flat(rgb),flat(alpha)) if a>=96]
     luminance=[.2126*r+.7152*g+.0722*b for r,g,b in pixels]
     contrast=max(luminance)-min(luminance) if luminance else 0
     deviation=ImageStat.Stat(proxy.convert('L'),mask=alpha).stddev[0]
