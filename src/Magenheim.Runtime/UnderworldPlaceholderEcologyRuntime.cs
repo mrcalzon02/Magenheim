@@ -31,7 +31,7 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
     {
         if(Time.unscaledTime<_nextAt)return;_nextAt=Time.unscaledTime+3f;
         if(_services is null||ZNet.instance is null||ZNet.World is null)return;
-        if(!UnderworldRuntimeIdentityResolver.TryResolveWorldSession(_services.WorldPairStore,ZNet.instance,ZNet.World,
+        if(!UnderworldRuntimeIdentityResolver.TryResolveWorldSession(_services.SpatialDomain,ZNet.instance,ZNet.World,
             out var identity,out var layer,out _)||identity is null||layer!=UnderworldLayer.Underworld){ClearMarkers();_admitted=string.Empty;return;}
         var player=Player.m_localPlayer;if(player is null)return;
         var first=!string.Equals(_admitted,identity.DerivedWorldId,StringComparison.Ordinal);

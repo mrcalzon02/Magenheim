@@ -12,12 +12,12 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal sealed class ValheimPhysicalUnderworldWorldContextController : IUnderworldWorldContextController
 {
-    private readonly UnderworldWorldPairManifestStore _pairStore;
+    private readonly UnderworldSpatialDomainDefinition _spatialDomain;
     private readonly ManualLogSource _log;
 
-    internal ValheimPhysicalUnderworldWorldContextController(UnderworldWorldPairManifestStore pairStore, ManualLogSource log)
+    internal ValheimPhysicalUnderworldWorldContextController(UnderworldSpatialDomainDefinition spatialDomain, ManualLogSource log)
     {
-        _pairStore = pairStore ?? throw new ArgumentNullException(nameof(pairStore));
+        _spatialDomain = spatialDomain ?? throw new ArgumentNullException(nameof(spatialDomain));
         _log = log ?? throw new ArgumentNullException(nameof(log));
     }
 
@@ -51,7 +51,7 @@ internal sealed class ValheimPhysicalUnderworldWorldContextController : IUnderwo
         var znet = ZNet.instance;
         var world = ZNet.World;
         if (znet is null || world is null) { diagnostic = "Valheim network/world metadata is unavailable."; return false; }
-        return UnderworldRuntimeIdentityResolver.TryResolveWorldSession(_pairStore, znet, world, out identity, out layer, out diagnostic);
+        return UnderworldRuntimeIdentityResolver.TryResolveWorldSession(_spatialDomain, znet, world, out identity, out layer, out diagnostic);
     }
 
     private static bool SamePair(UnderworldWorldIdentity left, UnderworldWorldIdentity right) =>

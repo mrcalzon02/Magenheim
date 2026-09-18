@@ -49,7 +49,7 @@ internal static class DeepBoonRuntime
             Remove(player);
             return false;
         }
-        if (!UnderworldRuntimeIdentityResolver.TryResolveWorldSession(_services.WorldPairStore, ZNet.instance, world, out var identity, out var layer, out diagnostic) || identity is null)
+        if (!UnderworldRuntimeIdentityResolver.TryResolveWorldSession(_services.SpatialDomain, ZNet.instance, world, out var identity, out var layer, out diagnostic) || identity is null)
         {
             Remove(player);
             return false;
