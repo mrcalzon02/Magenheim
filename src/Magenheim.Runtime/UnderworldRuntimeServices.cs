@@ -13,13 +13,14 @@ internal sealed class UnderworldRuntimeServices
         UnderworldSpatialDomainDefinition spatialDomain,
         UnderworldTransitionStateStore stateStore,
         UnderworldDeepBoonSelectionStore deepBoonSelectionStore,
+        UnderworldExplorationStateStore explorationStateStore,
         ValheimUnderworldWorldContextController worldContext,
         ValheimUnderworldTransitionPlacementHost placementHost,
         StoredUnderworldTransitionHost transitionHost,
         UnderworldWorldTransitionManager transitionManager,
         UnderworldTransitionRecoveryRuntime recoveryRuntime)
     {
-        SpatialDomain=spatialDomain;StateStore=stateStore;DeepBoonSelectionStore=deepBoonSelectionStore;
+        SpatialDomain=spatialDomain;StateStore=stateStore;DeepBoonSelectionStore=deepBoonSelectionStore;ExplorationStateStore=explorationStateStore;
         _worldContext=worldContext;PlacementHost=placementHost;TransitionHost=transitionHost;
         TransitionManager=transitionManager;RecoveryRuntime=recoveryRuntime;
     }
@@ -27,6 +28,7 @@ internal sealed class UnderworldRuntimeServices
     internal UnderworldSpatialDomainDefinition SpatialDomain{get;}
     internal UnderworldTransitionStateStore StateStore{get;}
     internal UnderworldDeepBoonSelectionStore DeepBoonSelectionStore{get;}
+    internal UnderworldExplorationStateStore ExplorationStateStore{get;}
     internal ValheimUnderworldTransitionPlacementHost PlacementHost{get;}
     internal StoredUnderworldTransitionHost TransitionHost{get;}
     internal UnderworldWorldTransitionManager TransitionManager{get;}
@@ -40,12 +42,13 @@ internal sealed class UnderworldRuntimeServices
         var spatialDomain=UnderworldSpatialDomain.CreateDefault();
         var stateStore=new UnderworldTransitionStateStore(Path.Combine(root,"underworld-transitions"),log);
         var deepBoonSelectionStore=new UnderworldDeepBoonSelectionStore(Path.Combine(root,"underworld-deep-boon-selections"),log);
+        var explorationStateStore=new UnderworldExplorationStateStore(Path.Combine(root,"underworld-exploration"),log);
         var worldContext=new ValheimUnderworldWorldContextController(spatialDomain,log);
         var placementHost=new ValheimUnderworldTransitionPlacementHost(worldContext,spatialDomain,log);
         var transitionHost=new StoredUnderworldTransitionHost(stateStore,placementHost);
         var transitionManager=new UnderworldWorldTransitionManager(transitionHost,log);
         var recoveryRuntime=new UnderworldTransitionRecoveryRuntime(stateStore,transitionManager,log);
-        var services=new UnderworldRuntimeServices(spatialDomain,stateStore,deepBoonSelectionStore,worldContext,placementHost,transitionHost,transitionManager,recoveryRuntime);
+        var services=new UnderworldRuntimeServices(spatialDomain,stateStore,deepBoonSelectionStore,explorationStateStore,worldContext,placementHost,transitionHost,transitionManager,recoveryRuntime);
         UnderworldTerrainRuntime.Configure(services,log);
         return services;
     }
