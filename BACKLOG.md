@@ -258,6 +258,10 @@ Full evidence and root causes: `docs/RENDERING_AND_CONTENT_DEFECTS.md`. Source r
 
 Continue remaining elemental/magic content only when it does not outrank broken intended behavior or validation gates above. The archived detailed design remains recovery material, not evidence of implementation. Current source already contains substantial elemental staff work beyond the original Earth vertical-slice baseline; live source and validation records outrank this historical phase label.
 
+## Underworld framework objective
+
+**Target architecture: not an adjacent continent and not another save. The Underworld is a second logical world layer inside the same persistent game world.** The ~40 km reserved region is physical hosting space only. Framework work must converge on logical biome authority, host-to-layer map projection, independent exploration/cloud state, and a tabbed Surface | Underworld map. Vanilla biome-sector/map behavior is a compatibility substrate, not the player-facing source of truth.
+
 ## P4 — The Underworld expansion track
 
 Durable authorities: `docs/UNDERWORLD_DESIGN.md` and `docs/UNDERWORLD_IMPLEMENTATION_PLAN.md`.
