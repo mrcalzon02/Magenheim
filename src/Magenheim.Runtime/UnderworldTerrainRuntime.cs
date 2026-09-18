@@ -1,6 +1,4 @@
 using System;
-using System.Diagnostics;
-using System.Threading;
 using BepInEx.Logging;
 using HarmonyLib;
 using Magenheim.Core.Underworld;
@@ -26,11 +24,12 @@ internal static class UnderworldTerrainRuntime
         if (_patched) return;
         var harmony = new Harmony(MagenheimPlugin.PluginGuid + ".gameplay");
         harmony.PatchAll(typeof(UnderworldTerrainWorldPatch));
-        harmony.PatchAll(typeof(UnderworldBiomeSectorPatch));
+        harmony.PatchAll(typeof(UnderworldBiomeSectorColumnPatch));
+        harmony.PatchAll(typeof(UnderworldBiomeSectorPointPatch));
         harmony.PatchAll(typeof(UnderworldTerrainHeightPatch));
         harmony.PatchAll(typeof(UnderworldTerrainBiomePatch));
         _patched = true;
-        log.LogInfo("Underworld terrain generation hooks installed for GetBiomeHeight/GetBiome.");
+        log.LogInfo("Underworld terrain generation hooks installed for GetBiomeHeight/GetBiome/GetBiomeSector.");
     }
 
     internal static void CaptureWorld(World? world)
@@ -96,36 +95,50 @@ internal static class UnderworldTerrainRuntime
         return UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, wx, wy) ? Heightmap.Biome.Meadows : vanillaBiome;
     }
 
-    private static long _nextSectorDiagnosticTimestamp;
-    internal static BiomeSector SelectBiomeSector(int gridX, int gridY, BiomeSector vanillaSector)
+    /// <summary>
+    /// Keeps the biome sector agreeing with <see cref="SelectVanillaBiome"/> inside the reserved
+    /// region. Almost nothing except terrain height reads GetBiome: weather, sky, ground texture,
+    /// spawns, vegetation, the minimap and the HUD biome all read the sector, so an unoverridden
+    /// sector makes the game disagree with itself.
+    /// </summary>
+    /// <remarks>
+    /// This must bind to the two world-space overloads of WorldGenerator.GetBiomeSector and never to
+    /// GetBiomeSector(int gridx, int gridy, bool clamp), which is what it was bound to before and
+    /// could not work. Both world-space overloads convert through
+    /// AltBiomeWorldData.WorldSpaceToMapSpace(x) = (x - 6) / 12 + 1024 into the 2048-cell biome map,
+    /// and the grid overload then clamps that index into [0, 2047] unconditionally -- its own clamp
+    /// argument is never read. The map therefore addresses only +/-12282m while the reserved region
+    /// sits at x = 40000: grid 4356 clamps to 2047, which converts back to 12282m, so a postfix on
+    /// the grid overload is handed a column outside the region and containment can never pass. That
+    /// is why the previous patch resolved, reported no Harmony failure, and never took effect.
+    /// Nothing in assembly_valheim.dll calls the grid overload except those two world-space
+    /// overloads, so binding to them covers every consumer with the coordinate still intact.
+    ///
+    /// BiomeSector.EmptyMeadows is vanilla's own Meadows sentinel, constructed with a null world, so
+    /// Biome and BiomeType.Biome both read Meadows and AltBiomes is an empty but non-null list.
+    /// Player.UpdateBiome reads BiomeType.Biome and Heightmap.GetBiomeColor enumerates AltBiomes
+    /// before falling back to Biome, so both consumers are satisfied.
+    ///
+    /// HeightmapBuilder.Build reaches this through GetBiomeHeight on a worker thread, so this path
+    /// must stay on the immutable snapshot and pure maths with no UnityEngine.Object access.
+    /// </remarks>
+    internal static BiomeSector SelectBiomeSector(double wx, double wz, BiomeSector vanillaSector)
     {
         var services = _services;
         if (services is null || _world is null) return vanillaSector;
-        var wx = AltBiomeWorldData.MapSpaceToWorldSpace((float)gridX);
-        var wz = AltBiomeWorldData.MapSpaceToWorldSpace((float)gridY);
-        var inside = UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, wx, wz);
-        if (inside && TryAcquireSectorDiagnosticWindow())
-            _log?.LogWarning($"[sector probe] grid=({gridX},{gridY}) world=({wx:0.0},{wz:0.0}) inside={inside} vanilla={(vanillaSector is null ? "<null>" : vanillaSector.Biome.ToString())} vanillaType={(vanillaSector?.BiomeType is null ? "<null>" : vanillaSector.BiomeType.Biome.ToString())} meadows={(BiomeSector.EmptyMeadows is null ? "<null>" : BiomeSector.EmptyMeadows.Biome.ToString())} meadowsType={(BiomeSector.EmptyMeadows?.BiomeType is null ? "<null>" : BiomeSector.EmptyMeadows.BiomeType.Biome.ToString())}");
-        return (inside ? BiomeSector.EmptyMeadows ?? vanillaSector : vanillaSector)!;
-    }
-
-    private static bool TryAcquireSectorDiagnosticWindow()
-    {
-        var now = Stopwatch.GetTimestamp(); var interval = Stopwatch.Frequency * 5L;
-        while (true)
-        {
-            var next = Interlocked.Read(ref _nextSectorDiagnosticTimestamp);
-            if (now < next) return false;
-            if (Interlocked.CompareExchange(ref _nextSectorDiagnosticTimestamp, now + interval, next) == next) return true;
-        }
+        if (!UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, wx, wz)) return vanillaSector;
+        return (BiomeSector.EmptyMeadows ?? vanillaSector)!;
     }
 }
 
 [HarmonyPatch(typeof(WorldGenerator), nameof(WorldGenerator.Initialize), new Type[] { typeof(World) })]
 internal static class UnderworldTerrainWorldPatch { private static void Postfix(World world) => UnderworldTerrainRuntime.CaptureWorld(world); }
 
-[HarmonyPatch(typeof(WorldGenerator), nameof(WorldGenerator.GetBiomeSector), new Type[] { typeof(int), typeof(int), typeof(bool) })]
-internal static class UnderworldBiomeSectorPatch { private static void Postfix(int gridx, int gridy, ref BiomeSector __result) => __result = UnderworldTerrainRuntime.SelectBiomeSector(gridx, gridy, __result); }
+[HarmonyPatch(typeof(WorldGenerator), nameof(WorldGenerator.GetBiomeSector), new Type[] { typeof(float), typeof(float), typeof(bool) })]
+internal static class UnderworldBiomeSectorColumnPatch { private static void Postfix(float wx, float wy, ref BiomeSector __result) => __result = UnderworldTerrainRuntime.SelectBiomeSector(wx, wy, __result); }
+
+[HarmonyPatch(typeof(WorldGenerator), nameof(WorldGenerator.GetBiomeSector), new Type[] { typeof(Vector3), typeof(bool) })]
+internal static class UnderworldBiomeSectorPointPatch { private static void Postfix(Vector3 worldPos, ref BiomeSector __result) => __result = UnderworldTerrainRuntime.SelectBiomeSector(worldPos.x, worldPos.z, __result); }
 
 [HarmonyPatch(typeof(WorldGenerator), nameof(WorldGenerator.GetBiomeHeight), new Type[] { typeof(Heightmap.Biome), typeof(float), typeof(float), typeof(Color), typeof(bool), typeof(bool) }, new ArgumentType[] { ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Out, ArgumentType.Normal, ArgumentType.Normal })]
 internal static class UnderworldTerrainHeightPatch { private static void Postfix(float wx, float wy, ref float __result) => __result = UnderworldTerrainRuntime.ShapeHeight(wx, wy, __result); }
