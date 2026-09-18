@@ -35,7 +35,7 @@ def field(seed, base, amp, grain=18, motif='flesh'):
 def rgb_from_luma(luma,tint): return Image.merge('RGB',tuple(luma.point(lambda v,c=c: clamp(v*c)) for c in tint))
 
 def gameplay_relief(motif,x,y):
-    """Low-frequency relief deliberately survives 1024->64 mip filtering."""
+    """Low-frequency material structure deliberately survives 1024->64 mip filtering."""
     nx=x/SIZE; ny=y/SIZE
     if motif=='flesh': return .70*sin(ny*2*pi*7+sin(nx*2*pi*2)*.8)+.30*sin((nx+ny)*2*pi*5)
     if motif=='chitin':
@@ -46,9 +46,19 @@ def gameplay_relief(motif,x,y):
     if motif=='sac': return .62*cos((nx+ny)*2*pi*5)+.38*sin(nx*2*pi*6+sin(ny*2*pi*3))
     return 0
 
+def roughness_map(seed,base,motif):
+    """Give each tissue a broad specular identity that remains visible through mip filtering."""
+    fine=field(seed,base,12,4,motif); fp=fine.load(); out=Image.new('L',(SIZE,SIZE)); op=out.load()
+    amp={'flesh':15,'chitin':22,'joint':11,'gill':20,'sac':17}[motif]
+    # Invert selected motifs: raised wet gills/sac catch more light while dry chitin ridges scatter it.
+    sign=-1 if motif in ('gill','sac') else 1
+    for y in range(SIZE):
+        for x in range(SIZE): op[x,y]=clamp(fp[x,y]+sign*amp*gameplay_relief(motif,x,y))
+    return out
+
 def save_material(stem,seed,base,tint,rough_base,motif,emission=False):
     height=field(seed,base,27,7,motif); rgb_from_luma(height,tint).save(OUT/f'{stem}-albedo.png')
-    field(seed+101,rough_base,20,5,motif).save(OUT/f'{stem}-roughness.png')
+    roughness_map(seed+101,rough_base,motif).save(OUT/f'{stem}-roughness.png')
     p=height.load(); normal=Image.new('RGB',(SIZE,SIZE)); q=normal.load(); strength=2.4
     # Fine source height supplies close-up texture; gameplay_relief supplies a second, broad
     # normal band so the material still reads after engine mip filtering at combat distance.
@@ -89,4 +99,4 @@ for p in files:
         if p.name.endswith('-emission.png'):
             coverage=sum(1 for v in proxy.getdata() if v>=8)/(READABILITY_SIZE*READABILITY_SIZE)
             if coverage<.01 or coverage>.70: raise RuntimeError(f'{p.name}: emission coverage {coverage:.1%} is not localized/readable')
-print(f'AUTHORED Sporeling dual-band texture set: {len(files)} maps at {SIZE}x{SIZE}; broad normal relief survives {READABILITY_SIZE}px combat proxy -> {OUT}',flush=True)
+print(f'AUTHORED Sporeling dual-band PBR texture set: {len(files)} maps at {SIZE}x{SIZE}; broad normal and roughness identity survives {READABILITY_SIZE}px combat proxy -> {OUT}',flush=True)
