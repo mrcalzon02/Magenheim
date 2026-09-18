@@ -160,9 +160,13 @@ flora and progression work. None of that is wasted.
 - [x] **Terrain relief. DONE.** Region generates, streams and reads as real landscape: 3.50m across a
   50m screen in the central basin with a 0.37m steepest metre-step, 159m across the region in
   Fracture Zones from -68m ravines to +92m walls. Blackwater is 100% submerged, Fungal Forest 0%.
-- [ ] **Re-ground the Conclave on the reserved host region.** The center was moved off `HostBaseY` to
-  sit on derived-world terrain; that specific change is what turned a region of the live world into
-  a second save. Restore band-hosted placement.
+- [x] **Re-ground the Conclave on the reserved host region. ALREADY DONE; verified 2026-09-18.**
+  `UnderworldWorldCenterRegistrar.Create` maps the logical centre through
+  `UnderworldSpatialDomain.ToHostAnchor` and grounds it with
+  `WorldGenerator.GetBiomeHeight` at those host coordinates — the same columns the terrain postfix
+  shapes — so the Conclave stands on Underworld terrain inside the player's own world and save. The
+  derived-world placement this item was raised against is gone. Left checked rather than deleted so
+  the next session does not re-open it. Live placement is still unobserved.
 - [ ] **Layer travel is already a teleport. It has no caller. (Re-diagnosed 2026-09-18.)** The
   mechanism is finished and correct: `ValheimUnderworldTransitionPlacementHost.PlacePlayer` maps the
   logical anchor through `UnderworldSpatialDomain.ToHostAnchor` and calls `Player.TeleportTo` inside
@@ -181,8 +185,10 @@ flora and progression work. None of that is wasted.
     `UnderworldUnlockRules.IsUnlocked`, and the runtime holds the verified flag
     (`UnderworldProgressionAuthority.IsUnlocked`) rather than the snapshot. Give Core an explicit
     verified-unlock parameter. **Do not synthesize a defeated encounter to satisfy the signature.**
-  - a return-side endpoint at the Conclave with `UnderworldGateRole.ReturnToSurface`, running
-    `BeginReturn` against the persisted `SurfaceReturnAnchor`;
+  - the return-side endpoint already exists — `UnderworldWorldCenterRegistrar` instantiates a Deep
+    Gate at `ReturnGateOffset` with `UnderworldGateRole.ReturnToSurface` — so it needs the same
+    interactable, running `BeginReturn` against the persisted `SurfaceReturnAnchor`. Both endpoints
+    are built and placed; neither can be used;
   - `TryPlaceLocalUnderworldPlayer` then has to yield to the transition's own placement, or the two
     will fight over where an arriving player stands.
   Do not land the entry side without the return side.
