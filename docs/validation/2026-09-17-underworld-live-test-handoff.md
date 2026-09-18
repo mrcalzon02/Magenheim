@@ -1,5 +1,12 @@
 # Underworld live-test handoff — 2026-09-17
 
+> **SUPERSEDED — do not execute.** This handoff was written against the separate-save architecture
+> the user has since rejected. It is retained as evidence of what was attempted and observed, not as
+> instructions. The binding architecture is the one-world, one-save invariant in `INSTRUCTIONS.md`,
+> and the current handoff is
+> `docs/validation/2026-09-17-underworld-same-world-region-handoff.md`. Where this file disagrees
+> with `INSTRUCTIONS.md`, this file is the defect.
+
 ## Authority and repository state
 
 - Repository: `mrcalzon02/Magenheim`

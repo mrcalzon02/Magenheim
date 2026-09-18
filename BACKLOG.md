@@ -163,15 +163,43 @@ flora and progression work. None of that is wasted.
 - [ ] **Re-ground the Conclave on the reserved host region.** The center was moved off `HostBaseY` to
   sit on derived-world terrain; that specific change is what turned a region of the live world into
   a second save. Restore band-hosted placement.
-- [ ] **Make layer travel a teleport within the world.** Entry and return resolve through
-  `UnderworldSpatialDomain` and the persisted surface source anchor, with no save load anywhere in
-  the path.
+- [ ] **Layer travel is already a teleport. It has no caller. (Re-diagnosed 2026-09-18.)** The
+  mechanism is finished and correct: `ValheimUnderworldTransitionPlacementHost.PlacePlayer` maps the
+  logical anchor through `UnderworldSpatialDomain.ToHostAnchor` and calls `Player.TeleportTo` inside
+  the same session, `UnderworldWorldTransitionManager` drives prepare -> target-ready -> place ->
+  observe -> commit with recovery to the source anchor on any failure, and there is no `LoadWorld`,
+  `FejdStartup` or `.worldpair` left anywhere in `src/`. What is missing is that **nothing calls it**:
+  `ExecutePrepared` has no caller, and neither `BeginEnter` nor `BeginReturn` is invoked from the
+  runtime. A player reaches the Underworld today only by being moved into the region by other means,
+  after which `UnderworldRuntimeIdentityResolver` infers the layer from position and
+  `UnderworldWorldSessionLifecycle.TryPlaceLocalUnderworldPlayer` performs a one-shot *test* arrival
+  at the Conclave. The remaining work is the caller, not the mechanism:
+  - an `Interactable` on the Deep Gate, following the `DeepFractureTraversalPortal` pattern already
+    in the codebase, that resolves the session, captures the player's current surface anchor as the
+    source, and runs `BeginEnter` + `ExecutePrepared`;
+  - `UnderworldTransitionRules.BeginEnter` takes a `DarkThroneEncounterSnapshot` only to evaluate
+    `UnderworldUnlockRules.IsUnlocked`, and the runtime holds the verified flag
+    (`UnderworldProgressionAuthority.IsUnlocked`) rather than the snapshot. Give Core an explicit
+    verified-unlock parameter. **Do not synthesize a defeated encounter to satisfy the signature.**
+  - a return-side endpoint at the Conclave with `UnderworldGateRole.ReturnToSurface`, running
+    `BeginReturn` against the persisted `SurfaceReturnAnchor`;
+  - `TryPlaceLocalUnderworldPlayer` then has to yield to the transition's own placement, or the two
+    will fight over where an arriving player stands.
+  Do not land the entry side without the return side.
 - [x] **Confirm the terrain-shaping band bounds against the reserved host band. DONE.** The runtime now keys `GetBiomeHeight`/`GetBiome` shaping directly from `ContainsHostColumn`; surface columns pass through untouched in the same session. Live play has verified the region generates and streams at the reserved host coordinates.
 - [x] **Seed question decided 2026-09-17 (user).** The Underworld uses the surface seed **verbatim**;
   the map differs because the generation algorithm differs. Recorded in `INSTRUCTIONS.md` and §6.
 - [x] **Make terrain generation use the surface seed verbatim. DONE.** `UnderworldTerrainRuntime` captures the active surface `World.m_seed` on the main thread and feeds that seed into the deterministic terrain authority. The map differs because the generation algorithm differs.
-- [ ] **Purge the separate-save language from the remaining docs and validation records** so no
-  future session reads it as authority.
+- [x] **Purge the separate-save language from the remaining docs and validation records. DONE
+  2026-09-18.** Audited every file mentioning a separate save, a derived save, a world pair, a
+  physical world switch or `LoadWorld`. The design and plan documents are clean — every hit in
+  `UNDERWORLD_DESIGN.md` is the corrected text that forbids it, and `MISTLANDS_CRYSTAL_FOES_PLAN.md`'s
+  "second save format" is about creature persistence. The real risk was two 2026-09-17 validation
+  records: a *handoff* written against the rejected architecture, which a future session could open
+  and execute as instructions, and the run record that executes it. Both now carry a superseded
+  banner pointing at `INSTRUCTIONS.md` and the same-world handoff. Their contents are deliberately
+  left intact — they are the evidence of how the dead end was found, and the execution protocol
+  forbids deleting evidence to tidy a record.
 
 ## P0.0 — Live play defects from the 0.0.52 session (TOP PRIORITY, raised 2026-09-16)
 

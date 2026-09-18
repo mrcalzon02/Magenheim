@@ -1,5 +1,11 @@
 # Underworld live test — first local build, install and run — 2026-09-17
 
+> **Historical run record against a superseded architecture.** Its observations are real and worth
+> reading — they are how the separate-save dead end was found — but the `.worldpair` manifests,
+> derived saves and `ZNet.LoadWorld` route described below no longer exist in the code and must not
+> be treated as current design. See `INSTRUCTIONS.md` and
+> `docs/validation/2026-09-17-underworld-same-world-region-handoff.md`.
+
 Executes `docs/validation/2026-09-17-underworld-live-test-handoff.md`. This is the first local
 compile of the remotely authored Underworld work, as that handoff predicted.
 
