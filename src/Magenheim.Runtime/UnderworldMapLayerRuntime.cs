@@ -38,6 +38,8 @@ internal static class UnderworldMapLayerRuntime
             && layer == UnderworldLayer.Underworld ? MagenheimMapLayer.Underworld : MagenheimMapLayer.Surface;
     }
 
+    // Explicit convenience for transitions/open-map defaults only. Do not call this from the
+    // exploration tick: selected map tab and physical player layer are intentionally independent.
     internal static void FollowPlayerLayer() => Select(PlayerLayer());
 
     internal static void Select(MagenheimMapLayer layer)
@@ -148,8 +150,11 @@ internal static class UnderworldExplorationPlayerPatch
         _nextRevealAt = now + RevealIntervalSeconds;
         try
         {
-            UnderworldMapLayerRuntime.FollowPlayerLayer();
-            if (UnderworldMapLayerRuntime.SelectedLayer != MagenheimMapLayer.Underworld) return;
+            // Exploration follows the player's physical layer, never the map tab currently being
+            // viewed. Otherwise opening Surface while physically below would stop Underworld fog
+            // revelation, and the periodic tick would also make a user-selected tab impossible by
+            // forcibly snapping selection back to the player's layer every 0.75 seconds.
+            if (UnderworldMapLayerRuntime.PlayerLayer() != MagenheimMapLayer.Underworld) return;
             var position = __instance.transform.position;
             if (UnderworldMapLayerRuntime.RevealUnderworldAtWorldPosition(position.x, position.z) > 0) _dirty = true;
             if (_dirty && now >= _nextPersistenceAt)
