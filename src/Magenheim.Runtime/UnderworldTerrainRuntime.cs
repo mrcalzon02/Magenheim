@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Threading;
 using BepInEx.Logging;
 using HarmonyLib;
 using Magenheim.Core.Underworld;
@@ -142,7 +144,7 @@ internal static class UnderworldTerrainRuntime
     /// This runs on HeightmapBuilder's worker thread as well as the main thread, so it stays on
     /// static maths and a static field read.
     /// </remarks>
-    private static float _nextSectorDiagnosticAt;
+    private static long _nextSectorDiagnosticTimestamp;
 
     internal static BiomeSector SelectBiomeSector(int gridX, int gridY, BiomeSector vanillaSector)
     {
@@ -152,12 +154,12 @@ internal static class UnderworldTerrainRuntime
         var wz = AltBiomeWorldData.MapSpaceToWorldSpace((float)gridY);
         var inside = UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, wx, wz);
 
-        // Temporary instrumentation. The sector override was reasoned about twice and wrong twice;
-        // this records what the postfix actually sees so the next change is evidence-led. Throttled
-        // hard because this is called per heightmap column.
-        if (inside && Time.unscaledTime >= _nextSectorDiagnosticAt)
+        // Temporary instrumentation. GetBiomeSector is also reached from HeightmapBuilder's
+        // worker thread, so this probe must not touch UnityEngine.Time (or any UnityEngine.Object).
+        // Stopwatch is process-monotonic managed state and Interlocked makes the throttle safe when
+        // main-thread and worker-thread callers race through this method.
+        if (inside && TryAcquireSectorDiagnosticWindow())
         {
-            _nextSectorDiagnosticAt = Time.unscaledTime + 5f;
             _log?.LogWarning(
                 $"[sector probe] grid=({gridX},{gridY}) world=({wx:0.0},{wz:0.0}) inside={inside} " +
                 $"vanilla={(vanillaSector is null ? "<null>" : vanillaSector.Biome.ToString())} " +
@@ -170,6 +172,19 @@ internal static class UnderworldTerrainRuntime
         // null-forgiveness is honest: outside the region this hands back exactly what vanilla
         // returned, whatever that was.
         return (inside ? BiomeSector.EmptyMeadows ?? vanillaSector : vanillaSector)!;
+    }
+
+    private static bool TryAcquireSectorDiagnosticWindow()
+    {
+        var now = Stopwatch.GetTimestamp();
+        var interval = Stopwatch.Frequency * 5L;
+        while (true)
+        {
+            var next = Interlocked.Read(ref _nextSectorDiagnosticTimestamp);
+            if (now < next) return false;
+            if (Interlocked.CompareExchange(ref _nextSectorDiagnosticTimestamp, now + interval, next) == next)
+                return true;
+        }
     }
 }
 
