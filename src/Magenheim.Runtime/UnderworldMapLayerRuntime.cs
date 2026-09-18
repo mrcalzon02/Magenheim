@@ -26,6 +26,7 @@ internal static class UnderworldMapLayerRuntime
         _selectedLayer = MagenheimMapLayer.Surface;
         _underworldExploration = null;
         _explorationIdentityKey = null;
+        UnderworldMapPresentationRuntime.Reset();
         UnderworldExplorationPlayerPatch.Reset();
         new Harmony(MagenheimPlugin.PluginGuid + ".gameplay").PatchAll(typeof(UnderworldExplorationPlayerPatch));
     }
@@ -38,8 +39,6 @@ internal static class UnderworldMapLayerRuntime
             && layer == UnderworldLayer.Underworld ? MagenheimMapLayer.Underworld : MagenheimMapLayer.Surface;
     }
 
-    // Explicit convenience for transitions/open-map defaults only. Do not call this from the
-    // exploration tick: selected map tab and physical player layer are intentionally independent.
     internal static void FollowPlayerLayer() => Select(PlayerLayer());
 
     internal static void Select(MagenheimMapLayer layer)
@@ -51,6 +50,7 @@ internal static class UnderworldMapLayerRuntime
             catch (Exception exception) { Warn("Failed to persist Underworld exploration while leaving layer: " + exception.Message); }
         }
         _selectedLayer = layer;
+        if (layer == MagenheimMapLayer.Underworld) UnderworldMapPresentationRuntime.ForceRefresh();
         _log?.LogDebug("Magenheim map layer selected: " + layer + ".");
     }
 
@@ -78,6 +78,7 @@ internal static class UnderworldMapLayerRuntime
             _log?.LogDebug("Starting fresh Underworld logical-map exploration: " + diagnostic);
         _underworldExploration = fresh;
         _explorationIdentityKey = key;
+        UnderworldMapPresentationRuntime.ForceRefresh();
         state = fresh;
         return true;
     }
@@ -91,7 +92,9 @@ internal static class UnderworldMapLayerRuntime
         var viewport = UnderworldMapPresentation.CreateUnderworldViewport(services.SpatialDomain, exploration.Width, exploration.Height);
         if (!UnderworldMapPresentation.TryLogicalToCell(viewport, logical.X, logical.Z, out var cellX, out var cellY)) return 0;
         var metresPerCell = services.SpatialDomain.RadiusMeters * 2d / Math.Min(exploration.Width, exploration.Height);
-        return exploration.RevealCircle(cellX, cellY, (int)Math.Ceiling(radiusMeters / metresPerCell));
+        var revealed = exploration.RevealCircle(cellX, cellY, (int)Math.Ceiling(radiusMeters / metresPerCell));
+        if (revealed > 0) UnderworldMapPresentationRuntime.RefreshFogTexture();
+        return revealed;
     }
 
     internal static bool SaveUnderworldExploration()
@@ -124,6 +127,7 @@ internal static class UnderworldMapLayerRuntime
     {
         try { SaveUnderworldExploration(); }
         catch (Exception exception) { Warn("Failed to persist Underworld exploration during shutdown: " + exception.Message); }
+        UnderworldMapPresentationRuntime.Reset();
         _selectedLayer = MagenheimMapLayer.Surface;
         _underworldExploration = null;
         _explorationIdentityKey = null;
@@ -150,10 +154,6 @@ internal static class UnderworldExplorationPlayerPatch
         _nextRevealAt = now + RevealIntervalSeconds;
         try
         {
-            // Exploration follows the player's physical layer, never the map tab currently being
-            // viewed. Otherwise opening Surface while physically below would stop Underworld fog
-            // revelation, and the periodic tick would also make a user-selected tab impossible by
-            // forcibly snapping selection back to the player's layer every 0.75 seconds.
             if (UnderworldMapLayerRuntime.PlayerLayer() != MagenheimMapLayer.Underworld) return;
             var position = __instance.transform.position;
             if (UnderworldMapLayerRuntime.RevealUnderworldAtWorldPosition(position.x, position.z) > 0) _dirty = true;
