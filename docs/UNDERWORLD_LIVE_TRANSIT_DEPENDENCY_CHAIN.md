@@ -1,6 +1,6 @@
-# Underworld Live Transit Dependency Chain
+# Underworld Live Transit Dependency Chain — SUPERSEDED ARCHIVE
 
-**Recorded:** 2026-09-17  
+**SUPERSEDED 2026-09-17:** This file records the abandoned separate-save implementation and must not be used as current implementation authority. The binding architecture is `INSTRUCTIONS.md`: one Valheim world, one save, reserved horizontal Underworld region, same-session teleport travel. The physical-loader/world-pair chain below is retained only as development archaeology.\n\n**Recorded:** 2026-09-17  
 **Authority:** implementation/acceptance archive for the separate persistent Underworld world-instance program.  
 **Scope:** records the exact dependency chain required before a dev command, Deep Gate, or other caller may claim a working Surface ↔ Underworld transit.
 
