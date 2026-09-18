@@ -35,18 +35,17 @@ internal static class UnderworldMapPresentationRuntime
     }
 
     /// <summary>
-    /// Materializes the pure logical biome raster as a Unity texture. The raster and terrain consume
-    /// the same captured surface seed; no host coordinate and no second/derived seed enters here.
+    /// Materializes the pure logical biome raster as a Unity texture. Terrain supplies the raster
+    /// from its canonical spatial-domain and captured surface-seed authorities, so no host coordinate,
+    /// duplicate domain, or second/derived seed enters player-facing map presentation.
     /// </summary>
     internal static bool RefreshBiomeTexture()
     {
         if (!UnderworldTerrainRuntime.TryGetCapturedSeed(out var seed)) return false;
         if (!UnderworldMapLayerRuntime.TryGetUnderworldExploration(out var exploration)) return false;
-        if (_biomeTexture is not null && _biomeSeed == seed &&
-            _biomeTexture.width == exploration.Width && _biomeTexture.height == exploration.Height) return false;
+        if (_biomeTexture is not null && _biomeSeed == seed && _biomeTexture.width == exploration.Width && _biomeTexture.height == exploration.Height) return false;
+        if (!UnderworldTerrainRuntime.TryBuildBiomeRaster(exploration.Width, exploration.Height, out var raster)) return false;
 
-        var domain = UnderworldSpatialDomain.CreateDefault();
-        var raster = UnderworldMapRaster.BuildBiomeRaster(domain, seed, exploration.Width, exploration.Height);
         Destroy(ref _biomeTexture);
         _biomeTexture = NewTexture(exploration.Width, exploration.Height, "Magenheim_UnderworldBiomes", FilterMode.Bilinear);
         var pixels = new Color32[raster.Length];
@@ -71,8 +70,7 @@ internal static class UnderworldMapPresentationRuntime
         var explored = new Color32(0, 0, 0, 0);
         var clouded = new Color32(0, 0, 0, 255);
         for (var y = 0; y < exploration.Height; y++)
-        for (var x = 0; x < exploration.Width; x++)
-            pixels[y * exploration.Width + x] = exploration.IsExplored(x, y) ? explored : clouded;
+        for (var x = 0; x < exploration.Width; x++) pixels[y * exploration.Width + x] = exploration.IsExplored(x, y) ? explored : clouded;
         _fogTexture!.SetPixels32(pixels);
         _fogTexture.Apply(false, false);
         _lastExploredCount = exploration.ExploredCount;
@@ -91,23 +89,18 @@ internal static class UnderworldMapPresentationRuntime
 
     private static Texture2D NewTexture(int width, int height, string name, FilterMode filterMode) => new(width, height, TextureFormat.RGBA32, false, true)
     {
-        name = name,
-        filterMode = filterMode,
-        wrapMode = TextureWrapMode.Clamp,
+        name = name, filterMode = filterMode, wrapMode = TextureWrapMode.Clamp,
     };
 
     internal static void Reset()
     {
-        Destroy(ref _fogTexture);
-        Destroy(ref _biomeTexture);
-        _lastExploredCount = -1;
-        _biomeSeed = null;
+        Destroy(ref _fogTexture); Destroy(ref _biomeTexture);
+        _lastExploredCount = -1; _biomeSeed = null;
     }
 
     private static void Destroy(ref Texture2D? texture)
     {
         if (texture is null) return;
-        UnityEngine.Object.Destroy(texture);
-        texture = null;
+        UnityEngine.Object.Destroy(texture); texture = null;
     }
 }
