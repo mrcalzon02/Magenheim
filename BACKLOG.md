@@ -29,6 +29,27 @@ flora and progression work. None of that is wasted.
   `seed32-quarter-turn-offset-v2`, centre (40000, 0), radius 8000m, `HostBaseY` 0 so Underworld
   terrain generates at ordinary altitudes. A vertical band at the same (x, z) could host objects but
   never terrain, which is the dead end that produced the separate save.
+- [ ] **Make the biome sector agree with the region. TOP of this section.** Almost everything except
+  terrain height reads `WorldGenerator.GetBiomeSector`, not `GetBiome`: weather, sky, ground texture,
+  spawns, vegetation, minimap and the HUD biome. The sector is still Ocean out there, so the game
+  disagrees with itself — `Player.UpdateBiome` logs `GetBiome error Ocean -> Meadows` every tick,
+  `SpawnSystem.UpdateSpawnList` throws every tick, and ocean fish spawn on dry ground. A patch exists
+  and resolves but does not take effect; a throttled `[sector probe]` is in place to say why. Note
+  the biome map is a 2048 texture at 12m per pixel spanning only +/-12282m, so the region at 40000
+  may simply be outside it — if so the region centre has to be re-decided, which is a user call. See
+  `docs/validation/2026-09-17-underworld-same-world-region-handoff.md`.
+- [ ] **Per-layer map state.** `Minimap::GenerateWorldMap` sizes its texture to the vanilla world, so
+  the region is off the canvas: no unfurling cloud and both layers share one plane. Design section 25
+  already requires separate exploration state per layer.
+- [ ] **Underworld sky and environment.** A Meadows-consistent sector stops the Ashlands burning
+  storm but Meadows sky is not the Underworld's sky. Custom environment and skybox.
+- [ ] **Deep Gate renders magenta.** It clones `Morkhalla_jotun_gate` and registers, but magenta
+  means a broken shader, so either the donor or `ApplyUnderworldMaterials` is wrong. Diff the donor's
+  real materials. "Aesir Passage" is only the localized string for the `hud_pin_dnboss` pin; no 1.0.12
+  asset carries that name.
+- [x] **Terrain relief. DONE.** Region generates, streams and reads as real landscape: 3.50m across a
+  50m screen in the central basin with a 0.37m steepest metre-step, 159m across the region in
+  Fracture Zones from -68m ravines to +92m walls. Blackwater is 100% submerged, Fungal Forest 0%.
 - [ ] **Re-ground the Conclave on the reserved host region.** The center was moved off `HostBaseY` to
   sit on derived-world terrain; that specific change is what turned a region of the live world into
   a second save. Restore band-hosted placement.
