@@ -35,6 +35,11 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Model asset validation failed.' }
     & python "$PSScriptRoot/tools/verify-icon-assets.py"
     if ($LASTEXITCODE -ne 0) { throw 'Icon asset validation failed.' }
+    # Texture quality is a package gate, not an optional artist report. This runs without Blender
+    # and rejects flat/clipped PBR maps, over-broad emission and material families that collapse
+    # into the same combat-distance read before creature source/render acceptance begins.
+    & python "$PSScriptRoot/tools/verify-underworld-sporeling-textures.py"
+    if ($LASTEXITCODE -ne 0) { throw 'Sporeling texture fidelity validation failed.' }
     # Creature source fidelity gates require Blender rather than Python's standard runtime.
     # They inspect only Magenheim-owned source art and never mutate vanilla/foreign content.
     foreach ($creatureGate in @('verify-stone-guardian','verify-underworld-sporeling')) {
