@@ -50,9 +50,10 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
         // Mapping validates world identity, finite coordinates and reserved Underworld bounds before
         // context activation, so an invalid target cannot switch logical layers first and fail later.
         UnderworldSpatialDomain.ToHostAnchor(_spatialDomain, identity, layer, anchor);
+        // Surface and Underworld are regions of the same loaded world. EnsureActive validates
+        // world identity only; the target layer cannot become observable until PlacePlayer moves
+        // the player across the spatial-domain boundary.
         _worldContext.EnsureActive(identity, layer);
-        if (!_worldContext.IsActive(identity, layer))
-            throw new InvalidOperationException("Valheim did not observe the requested Underworld world context as active.");
     }
 
     public void PlacePlayer(UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor)
