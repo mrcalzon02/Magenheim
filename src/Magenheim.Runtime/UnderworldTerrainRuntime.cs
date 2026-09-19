@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>Runtime bridge from Valheim world generation into deterministic Underworld terrain authority.</summary>
+/// <summary>Runtime bridge into deterministic Underworld terrain authority.</summary>
 internal static class UnderworldTerrainRuntime
 {
     private static UnderworldRuntimeServices? _services;
@@ -19,7 +19,8 @@ internal static class UnderworldTerrainRuntime
     {
         _services = services ?? throw new ArgumentNullException(nameof(services));
         _log = log ?? throw new ArgumentNullException(nameof(log));
-        UnderworldSpatialDomain.ValidateDefinition(services.SpatialDomain);
+        _ = services.TerrainDomain ?? throw new InvalidOperationException("Native Underworld terrain domain is unavailable.");
+        UnderworldSpatialDomain.ValidateDefinition(services.SpatialDomain); // legacy placement adapter only
         _world = null;
         if (_patched) return;
         var harmony = new Harmony(MagenheimPlugin.PluginGuid + ".gameplay");
@@ -29,7 +30,7 @@ internal static class UnderworldTerrainRuntime
         harmony.PatchAll(typeof(UnderworldTerrainHeightPatch));
         harmony.PatchAll(typeof(UnderworldTerrainBiomePatch));
         _patched = true;
-        log.LogInfo("Underworld terrain generation hooks installed for GetBiomeHeight/GetBiome/GetBiomeSector.");
+        log.LogInfo("Native Underworld terrain authority configured; legacy Surface worldgen hooks remain isolated pending instance-chunk adapter replacement.");
     }
 
     internal static void CaptureWorld(World? world)
@@ -39,59 +40,54 @@ internal static class UnderworldTerrainRuntime
         if (services is null || world is null) return;
         var waterLevel = ZoneSystem.instance is null ? 30f : ZoneSystem.instance.m_waterLevel;
         _world = new WorldSnapshot(world.m_seed, waterLevel);
-        var domain = services.SpatialDomain;
-        _log?.LogInfo($"Underworld terrain shaping prepared for seed {world.m_seed} in the reserved region at ({domain.HostCenterX:0}, {domain.HostCenterZ:0}), playable radius {domain.RadiusMeters:0}m; runtime admission is controlled by the shared instance lifecycle.");
+        _log?.LogInfo($"Underworld instance terrain context prepared; playable radius {services.TerrainDomain.RadiusMeters:0}m. Surface host placement is not terrain authority.");
     }
 
     internal static bool TryGetCapturedSeed(out int seed)
     {
-        var world = _world;
-        if (world is null) { seed = default; return false; }
-        seed = world.Seed;
-        return true;
+        var services = _services;
+        var identity = services?.InstanceLifecycle.Identity;
+        if (identity is not null) { seed = identity.DerivedSeed32; return true; }
+        seed = default;
+        return false;
     }
 
-    /// <summary>Builds player-facing map data from the exact spatial-domain and seed authorities used by terrain.</summary>
-    internal static bool TryBuildBiomeRaster(int width, int height, out UnderworldTerrainBiome[] raster)
+    /// <summary>Samples terrain directly in native Underworld instance coordinates.</summary>
+    internal static UnderworldTerrainResult SampleInstanceTerrain(double x, double y, double z, double slopeDegrees = 0d)
     {
         var services = _services;
         var world = _world;
-        if (services is null || world is null || !InstanceAvailable(services)) { raster = Array.Empty<UnderworldTerrainBiome>(); return false; }
-        raster = UnderworldMapRaster.BuildBiomeRaster(services.SpatialDomain, world.Seed, width, height);
+        var identity = services?.InstanceLifecycle.Identity;
+        if (services is null || world is null || identity is null || !InstanceAvailable(services)) return default;
+        var seed = identity.DerivedSeed32;
+        var noise = UnderworldTerrainNoise.Fractal01(seed, x, z);
+        return UnderworldTerrainLifecycle.Evaluate(
+            services.TerrainDomain,
+            new UnderworldTerrainSample(x, y, z, world.WaterLevel, slopeDegrees, noise),
+            seed);
+    }
+
+    /// <summary>Builds player-facing map data. Legacy raster migration is tracked separately.</summary>
+    internal static bool TryBuildBiomeRaster(int width, int height, out UnderworldTerrainBiome[] raster)
+    {
+        var services = _services;
+        var identity = services?.InstanceLifecycle.Identity;
+        if (services is null || identity is null || !InstanceAvailable(services)) { raster = Array.Empty<UnderworldTerrainBiome>(); return false; }
+        raster = UnderworldMapRaster.BuildBiomeRaster(services.SpatialDomain, identity.DerivedSeed32, width, height);
         return true;
     }
 
+    // Everything below this line is the quarantined legacy Surface-host adapter. New gameplay
+    // consumers must use SampleInstanceTerrain and must never call these methods.
     internal static float ShapeHeight(float wx, float wy, float vanillaHeight)
     {
         var services = _services; var world = _world;
         if (services is null || world is null || !InstanceAvailable(services)) return vanillaHeight;
         var domain = services.SpatialDomain;
         if (!UnderworldSpatialDomain.ContainsHostColumn(domain, wx, wy)) return vanillaHeight;
-        var result = Evaluate(services, world, wx, wy, vanillaHeight);
-        return result.Admitted ? (float)result.Height : vanillaHeight;
-    }
-
-    internal static UnderworldTerrainResult SampleTerrain(float wx, float wy, float vanillaHeight)
-    {
-        var services = _services; var world = _world;
-        if (services is null || world is null || !InstanceAvailable(services)) return default;
-        if (!UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, wx, wy)) return default;
-        return Evaluate(services, world, wx, wy, vanillaHeight);
-    }
-
-    private static bool InstanceAvailable(UnderworldRuntimeServices services)
-    {
-        var phase = services.InstanceLifecycle.Phase;
-        return phase == UnderworldInstancePhase.Admitting || phase == UnderworldInstancePhase.Active;
-    }
-
-    private static UnderworldTerrainResult Evaluate(UnderworldRuntimeServices services, WorldSnapshot world, float wx, float wy, float vanillaHeight)
-    {
-        var domain = services.SpatialDomain;
         var local = UnderworldSpatialDomain.ToLogicalColumn(domain, wx, wy);
-        var seed = world.Seed;
-        var noise = UnderworldTerrainNoise.Fractal01(seed, local.X, local.Z);
-        return UnderworldTerrainLifecycle.Evaluate(domain, new UnderworldTerrainSample(local.X, 0d, local.Z, world.WaterLevel, 0d, noise), seed);
+        var result = SampleInstanceTerrain(local.X, 0d, local.Z);
+        return result.Admitted ? (float)result.Height : vanillaHeight;
     }
 
     internal static Heightmap.Biome SelectVanillaBiome(float wx, float wy, Heightmap.Biome vanillaBiome)
@@ -107,6 +103,12 @@ internal static class UnderworldTerrainRuntime
         if (services is null || _world is null || !InstanceAvailable(services)) return vanillaSector;
         if (!UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, wx, wz)) return vanillaSector;
         return (BiomeSector.EmptyMeadows ?? vanillaSector)!;
+    }
+
+    private static bool InstanceAvailable(UnderworldRuntimeServices services)
+    {
+        var phase = services.InstanceLifecycle.Phase;
+        return phase == UnderworldInstancePhase.Admitting || phase == UnderworldInstancePhase.Active;
     }
 }
 
