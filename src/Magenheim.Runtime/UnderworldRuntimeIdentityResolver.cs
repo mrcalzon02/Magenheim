@@ -5,20 +5,7 @@ using Magenheim.Core.Underworld;
 
 namespace Magenheim.Runtime;
 
-/// <summary>
-/// Resolves the active world's Underworld identity and which layer the local player is standing in.
-/// </summary>
-/// <remarks>
-/// Layer is a property of <em>position</em>, not of which save is loaded. The Underworld is a
-/// reserved region of this same world, so a player is in the Underworld exactly when their column
-/// lies inside that region. This previously keyed off a derived save name in a world-pair manifest,
-/// which is the separate-save model and is why every Underworld system stayed inert unless the
-/// player had loaded a different save entirely.
-///
-/// Every caller runs on the main thread, so reading <c>Player.m_localPlayer</c> here is safe. The
-/// terrain generation hooks deliberately do not use this type: they run on HeightmapBuilder's worker
-/// thread and test the column directly against the spatial domain instead.
-/// </remarks>
+/// <summary>Resolves the parent-world-derived identity used by the dedicated Underworld instance.</summary>
 internal static class UnderworldRuntimeIdentityResolver
 {
     internal static bool TryResolveLocalSession(UnderworldSpatialDomainDefinition domain, out UnderworldWorldIdentity? identity, out UnderworldLayer layer, out string playerId, out string diagnostic)
@@ -57,14 +44,12 @@ internal static class UnderworldRuntimeIdentityResolver
         return true;
     }
 
-    internal static bool TryResolveWorldSession(UnderworldSpatialDomainDefinition domain, ZNet znet, object world, out UnderworldWorldIdentity? identity, out UnderworldLayer layer, out string diagnostic)
+    /// <summary>Resolves identity without making any claim about active Surface/Underworld context.</summary>
+    internal static bool TryResolveWorldIdentity(ZNet znet, object world, out UnderworldWorldIdentity? identity, out string diagnostic)
     {
-        if (domain is null) throw new ArgumentNullException(nameof(domain));
         if (znet is null) throw new ArgumentNullException(nameof(znet));
         if (world is null) throw new ArgumentNullException(nameof(world));
-
         identity = null;
-        layer = UnderworldLayer.Surface;
 
         var worldType = world.GetType();
         var seedName = ReadField<string>(worldType, world, "m_seedName");
@@ -80,12 +65,21 @@ internal static class UnderworldRuntimeIdentityResolver
         }
 
         identity = UnderworldWorldIdentityFactory.Derive(parentWorldId, parentSeed);
-        layer = ResolveLocalLayer(domain);
         diagnostic = string.Empty;
         return true;
     }
 
-    /// <summary>Which layer the local player currently occupies, decided purely by their position.</summary>
+    [Obsolete("Layer is instance context, not player position. Migrate callers to explicit context authority.")]
+    internal static bool TryResolveWorldSession(UnderworldSpatialDomainDefinition domain, ZNet znet, object world, out UnderworldWorldIdentity? identity, out UnderworldLayer layer, out string diagnostic)
+    {
+        if (domain is null) throw new ArgumentNullException(nameof(domain));
+        layer = UnderworldLayer.Surface;
+        if (!TryResolveWorldIdentity(znet, world, out identity, out diagnostic)) return false;
+        layer = ResolveLocalLayer(domain);
+        return true;
+    }
+
+    [Obsolete("Layer is instance context, not player position. This legacy detector exists only for callers awaiting migration.")]
     internal static UnderworldLayer ResolveLocalLayer(UnderworldSpatialDomainDefinition domain)
     {
         if (domain is null) throw new ArgumentNullException(nameof(domain));
