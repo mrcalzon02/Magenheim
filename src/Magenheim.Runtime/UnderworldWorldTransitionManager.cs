@@ -28,7 +28,7 @@ internal sealed class UnderworldWorldTransitionManager
         ValidateOperation(active, operationId, authorityFingerprint);
         if (!UnderworldProgressionAuthority.IsUnlocked) throw new InvalidOperationException("Deep Gate transition rejected: the Nowhere King has not been defeated in this world.");
 
-        PrepareInstanceLifecycle(identity, preparedState.PlayerId, active);
+        PrepareInstanceLifecycle(identity, active);
         _host.Persist(preparedState, identity);
         try { return ContinuePrepared(preparedState, identity, operationId, authorityFingerprint); }
         catch (Exception failure)
@@ -72,45 +72,26 @@ internal sealed class UnderworldWorldTransitionManager
             throw new InvalidOperationException("Runtime did not observe both the requested world context and player placement at the Underworld transition target.");
         var committed = UnderworldTransitionRules.Commit(ready, operationId, authorityFingerprint);
         _host.Persist(committed, identity);
-        CompleteInstanceTransition(identity, state.PlayerId, active.TargetLayer);
+        CompleteInstanceTransition(identity, active.TargetLayer);
         _log.LogInfo($"Underworld transition '{operationId}' committed to {committed.CurrentLayer}.");
         return committed;
     }
 
-    private void PrepareInstanceLifecycle(UnderworldWorldIdentity identity, string playerId, UnderworldTransitionIntent active)
+    private void PrepareInstanceLifecycle(UnderworldWorldIdentity identity, UnderworldTransitionIntent active)
     {
-        if (active.TargetLayer == UnderworldLayer.Underworld)
-        {
-            if (_instanceLifecycle.Phase == UnderworldInstancePhase.Inactive) _instanceLifecycle.BeginAdmission(identity);
-            else if (_instanceLifecycle.Phase == UnderworldInstancePhase.Active)
-            {
-                RequireAdmittedIdentity(identity);
-                return;
-            }
-            else if (_instanceLifecycle.Phase != UnderworldInstancePhase.Admitting) throw new InvalidOperationException($"Underworld admission cannot start while instance lifecycle is {_instanceLifecycle.Phase}.");
-            return;
-        }
-        if (active.SourceLayer == UnderworldLayer.Underworld && active.TargetLayer == UnderworldLayer.Surface)
-        {
-            EnsureActiveOccupant(identity, playerId);
-            if (_instanceLifecycle.IsLastOccupant(playerId)) _instanceLifecycle.BeginRelease(identity);
-        }
+        if (active.TargetLayer != UnderworldLayer.Underworld) return;
+
+        if (_instanceLifecycle.Phase == UnderworldInstancePhase.Inactive)
+            _instanceLifecycle.BeginAdmission(identity);
+        else if (_instanceLifecycle.Phase == UnderworldInstancePhase.Active)
+            RequireAdmittedIdentity(identity);
+        else if (_instanceLifecycle.Phase != UnderworldInstancePhase.Admitting)
+            throw new InvalidOperationException($"Underworld admission cannot start while instance lifecycle is {_instanceLifecycle.Phase}.");
     }
 
     private void RehydrateStableLifecycle(UnderworldPlayerLayerState state, UnderworldWorldIdentity identity)
     {
-        if (state.CurrentLayer == UnderworldLayer.Surface)
-        {
-            if (_instanceLifecycle.Phase == UnderworldInstancePhase.Active && _instanceLifecycle.ContainsOccupant(state.PlayerId))
-                _instanceLifecycle.RemoveOccupant(identity, state.PlayerId);
-            if (_instanceLifecycle.Phase == UnderworldInstancePhase.Active && _instanceLifecycle.OccupantCount == 0)
-            {
-                _instanceLifecycle.BeginRelease(identity);
-                _instanceLifecycle.CompleteRelease(identity);
-            }
-            return;
-        }
-
+        if (state.CurrentLayer == UnderworldLayer.Surface) return;
         if (state.CurrentLayer != UnderworldLayer.Underworld)
             throw new InvalidOperationException($"Cannot rehydrate unsupported stable Underworld layer '{state.CurrentLayer}'.");
 
@@ -121,9 +102,8 @@ internal sealed class UnderworldWorldTransitionManager
         }
         else if (_instanceLifecycle.Phase != UnderworldInstancePhase.Active)
             throw new InvalidOperationException($"Stable Underworld state conflicts with instance lifecycle phase {_instanceLifecycle.Phase}.");
-        else RequireAdmittedIdentity(identity);
-
-        _instanceLifecycle.RegisterOccupant(identity, state.PlayerId);
+        else
+            RequireAdmittedIdentity(identity);
     }
 
     private void ReconcileLifecycleForResume(UnderworldPlayerLayerState state, UnderworldWorldIdentity identity, UnderworldTransitionIntent active)
@@ -131,38 +111,25 @@ internal sealed class UnderworldWorldTransitionManager
         if (_instanceLifecycle.Phase == UnderworldInstancePhase.Inactive)
         {
             _instanceLifecycle.BeginAdmission(identity);
-            if (active.SourceLayer == UnderworldLayer.Underworld) _instanceLifecycle.MarkActive(identity);
+            if (active.SourceLayer == UnderworldLayer.Underworld)
+                _instanceLifecycle.MarkActive(identity);
         }
-        else RequireAdmittedIdentity(identity);
+        else
+            RequireAdmittedIdentity(identity);
 
-        if (active.SourceLayer == UnderworldLayer.Underworld)
-        {
-            if (_instanceLifecycle.Phase == UnderworldInstancePhase.Admitting) _instanceLifecycle.MarkActive(identity);
-            if (_instanceLifecycle.Phase == UnderworldInstancePhase.Active)
-            {
-                _instanceLifecycle.RegisterOccupant(identity, state.PlayerId);
-                if (active.TargetLayer == UnderworldLayer.Surface && _instanceLifecycle.IsLastOccupant(state.PlayerId)) _instanceLifecycle.BeginRelease(identity);
-            }
-        }
+        if (active.SourceLayer == UnderworldLayer.Underworld &&
+            _instanceLifecycle.Phase == UnderworldInstancePhase.Admitting)
+            _instanceLifecycle.MarkActive(identity);
     }
 
-    private void CompleteInstanceTransition(UnderworldWorldIdentity identity, string playerId, UnderworldLayer targetLayer)
+    private void CompleteInstanceTransition(UnderworldWorldIdentity identity, UnderworldLayer targetLayer)
     {
-        if (targetLayer == UnderworldLayer.Underworld)
-        {
-            if (_instanceLifecycle.Phase == UnderworldInstancePhase.Admitting) _instanceLifecycle.MarkActive(identity);
-            if (_instanceLifecycle.Phase != UnderworldInstancePhase.Active) throw new InvalidOperationException($"Underworld entry committed while lifecycle is {_instanceLifecycle.Phase}.");
-            _instanceLifecycle.RegisterOccupant(identity, playerId);
-            return;
-        }
+        if (targetLayer != UnderworldLayer.Underworld) return;
 
-        if (_instanceLifecycle.Phase == UnderworldInstancePhase.Releasing)
-        {
-            _instanceLifecycle.RemoveOccupant(identity, playerId);
-            _instanceLifecycle.CompleteRelease(identity);
-        }
-        else if (_instanceLifecycle.Phase == UnderworldInstancePhase.Active)
-            _instanceLifecycle.RemoveOccupant(identity, playerId);
+        if (_instanceLifecycle.Phase == UnderworldInstancePhase.Admitting)
+            _instanceLifecycle.MarkActive(identity);
+        if (_instanceLifecycle.Phase != UnderworldInstancePhase.Active)
+            throw new InvalidOperationException($"Underworld entry committed while lifecycle is {_instanceLifecycle.Phase}.");
     }
 
     private void MarkLifecycleFault(UnderworldWorldIdentity identity, Exception failure)
@@ -171,38 +138,22 @@ internal sealed class UnderworldWorldTransitionManager
             _instanceLifecycle.MarkFaulted(identity, failure.Message);
     }
 
-    private void RestoreLifecycleAfterRecovery(UnderworldWorldIdentity identity, string playerId, UnderworldLayer sourceLayer)
+    private void RestoreLifecycleAfterRecovery(UnderworldWorldIdentity identity, UnderworldLayer sourceLayer)
     {
         if (sourceLayer == UnderworldLayer.Underworld)
         {
-            if (_instanceLifecycle.Phase == UnderworldInstancePhase.Inactive) _instanceLifecycle.BeginAdmission(identity);
-            if (_instanceLifecycle.Phase == UnderworldInstancePhase.Admitting) _instanceLifecycle.MarkActive(identity);
-            else if (_instanceLifecycle.Phase != UnderworldInstancePhase.Active) _instanceLifecycle.RestoreActive(identity);
-            _instanceLifecycle.RegisterOccupant(identity, playerId);
+            if (_instanceLifecycle.Phase == UnderworldInstancePhase.Inactive)
+                _instanceLifecycle.BeginAdmission(identity);
+            if (_instanceLifecycle.Phase == UnderworldInstancePhase.Admitting)
+                _instanceLifecycle.MarkActive(identity);
+            else if (_instanceLifecycle.Phase != UnderworldInstancePhase.Active)
+                _instanceLifecycle.RestoreActive(identity);
             return;
         }
 
-        if (_instanceLifecycle.Phase == UnderworldInstancePhase.Faulted) _instanceLifecycle.RestoreActive(identity);
-        if (_instanceLifecycle.Phase == UnderworldInstancePhase.Active && _instanceLifecycle.ContainsOccupant(playerId))
-            _instanceLifecycle.RemoveOccupant(identity, playerId);
-        if (_instanceLifecycle.Phase == UnderworldInstancePhase.Active && _instanceLifecycle.OccupantCount == 0)
-        {
-            _instanceLifecycle.BeginRelease(identity);
-            _instanceLifecycle.CompleteRelease(identity);
-        }
-    }
-
-    private void EnsureActiveOccupant(UnderworldWorldIdentity identity, string playerId)
-    {
-        if (_instanceLifecycle.Phase == UnderworldInstancePhase.Inactive)
-        {
-            _instanceLifecycle.BeginAdmission(identity);
-            _instanceLifecycle.MarkActive(identity);
-        }
-        if (_instanceLifecycle.Phase != UnderworldInstancePhase.Active)
-            throw new InvalidOperationException($"Underworld return requires an active lifecycle, not {_instanceLifecycle.Phase}.");
-        RequireAdmittedIdentity(identity);
-        _instanceLifecycle.RegisterOccupant(identity, playerId);
+        // Surface recovery is per-player. It must not tear down the persistent Underworld instance.
+        if (_instanceLifecycle.Phase == UnderworldInstancePhase.Faulted)
+            _instanceLifecycle.RestoreActive(identity);
     }
 
     private void RequireAdmittedIdentity(UnderworldWorldIdentity identity)
@@ -237,7 +188,7 @@ internal sealed class UnderworldWorldTransitionManager
         if (!_host.ObservePlayerPlacement(identity, active.SourceLayer, active.SourceAnchor)) throw new InvalidOperationException("Underworld recovery could not verify source world context and placement; recovery state remains persisted.");
         var recovered = UnderworldTransitionRules.RecoverToSource(state, operationId, authorityFingerprint);
         _host.Persist(recovered, identity);
-        RestoreLifecycleAfterRecovery(identity, state.PlayerId, active.SourceLayer);
+        RestoreLifecycleAfterRecovery(identity, active.SourceLayer);
         _log.LogInfo($"Underworld transition '{operationId}' recovered to {recovered.CurrentLayer}.");
         return recovered;
     }
