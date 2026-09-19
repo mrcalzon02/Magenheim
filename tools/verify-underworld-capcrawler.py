@@ -62,12 +62,21 @@ for name,m in mats.items():
  if len(imgs)<3 or not any(n.type=='NORMAL_MAP' for n in m.node_tree.nodes): raise RuntimeError(f'{name}: incomplete PBR nodes')
  if any(link.from_node.type=='TEX_COORD' and link.from_socket.name=='Generated' for link in m.node_tree.links): raise RuntimeError(f'{name}: Generated coordinates forbidden')
 if len([n for n in mats['CapcrawlerGill'].node_tree.nodes if n.type=='TEX_IMAGE' and n.image])<4: raise RuntimeError('Gill emission missing')
+def action_fcurves(act):
+ """Read animation curves on both legacy Blender and the 4.4+/5.x slotted action API."""
+ legacy=getattr(act,'fcurves',None)
+ if legacy is not None: return list(legacy)
+ curves=[]
+ for layer in act.layers:
+  for strip in layer.strips:
+   for bag in getattr(strip,'channelbags',()): curves.extend(bag.fcurves)
+ return curves
 actions={a.name:a for a in bpy.data.actions}; missing=set(REQ_ACTIONS)-set(actions)
 if missing: raise RuntimeError('Missing actions: '+', '.join(sorted(missing)))
 for name,end in REQ_ACTIONS.items():
- a=actions[name]
+ a=actions[name]; curves=action_fcurves(a)
  if int(a.frame_start)!=1 or int(a.frame_end)!=end: raise RuntimeError(f'{name}: wrong frame range')
- if not a.fcurves: raise RuntimeError(f'{name}: no animation curves')
+ if not curves: raise RuntimeError(f'{name}: no animation curves')
 for name in ('Capcrawler_Scuttle','Capcrawler_AttackFront','Capcrawler_Death'):
- if len(actions[name].fcurves)<6: raise RuntimeError(f'{name}: insufficient articulation')
+ if len(action_fcurves(actions[name]))<6: raise RuntimeError(f'{name}: insufficient articulation')
 print(f'VERIFIED Capcrawler r4 source gate: meshes={len(meshes)} triangles={triangles} bones={len(bones)} materials={len(mats)} actions={len(REQ_ACTIONS)} extent={extent} layered_armor=7',flush=True)
