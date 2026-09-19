@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
@@ -29,13 +31,35 @@ internal static class HeldModelAlignment
 {
     private const float DegenerateExtent = 1e-4f;
 
-    internal static Quaternion Measure(Transform attach, Bounds donor, Bounds replacement)
+    /// <summary>
+    /// Models whose forward axis is not their longest axis, so bounds ranking cannot find it.
+    /// </summary>
+    /// <remarks>
+    /// The crossbow is the case that proves the limit of measuring alone. Its prod spans 1.32m
+    /// across while its stock runs only 0.93m fore-and-aft, so the widest axis is lateral and
+    /// rank-matching maps the prod onto the donor's stock. Measured from the committed payload, the
+    /// prod sits at the +Y end and the stock runs along Y, so Y is forward. Declaring that is
+    /// honest; guessing a rotation for it would not be.
+    /// </remarks>
+    private static readonly Dictionary<string, int> ForwardAxisOverride = new(StringComparer.Ordinal)
+    {
+        ["crystal-weapon-crossbow"] = 1,
+    };
+
+    internal static Quaternion Measure(Transform attach, Bounds donor, Bounds replacement, int? forwardAxis = null)
     {
         if (attach is null) return Quaternion.identity;
         if (!Usable(donor) || !Usable(replacement)) return Quaternion.identity;
 
         var donorOrder = AxisOrder(donor.size);
         var ourOrder = AxisOrder(replacement.size);
+        if (forwardAxis is int forward)
+        {
+            // Promote the declared forward axis to first rank so it maps onto the donor's longest.
+            var promoted = new List<int> { forward };
+            promoted.AddRange(ourOrder.Where(a => a != forward));
+            ourOrder = promoted.ToArray();
+        }
 
         // Map our longest extent onto the donor's longest, our shortest onto the donor's shortest,
         // and the remaining axis follows. Signs come from which side of the attach origin the mass
@@ -45,7 +69,11 @@ internal static class HeldModelAlignment
         {
             var from = ourOrder[rank];
             var to = donorOrder[rank];
-            var sign = Sign(donor.center[to]) * Sign(replacement.center[from]);
+            // Direction comes from which end of the axis reaches furthest from the attach origin --
+            // the hand is the origin and a held implement extends away from it, so the far extreme
+            // is the working end. The centre of mass was the earlier cue and it is unstable: a
+            // battleaxe whose head and haft nearly balance about the hand flipped upside down.
+            var sign = Reach(donor.min[to], donor.max[to]) * Reach(replacement.min[from], replacement.max[from]);
             var column = Vector4.zero;
             column[to] = sign;
             rotation.SetColumn(from, column);
@@ -60,7 +88,7 @@ internal static class HeldModelAlignment
             var weakestEvidence = float.MaxValue;
             for (var rank = 0; rank < 3; rank++)
             {
-                var evidence = Mathf.Abs(donor.center[donorOrder[rank]]) + Mathf.Abs(replacement.center[ourOrder[rank]]);
+                var evidence = donor.size[donorOrder[rank]] + replacement.size[ourOrder[rank]];
                 if (evidence >= weakestEvidence) continue;
                 weakestEvidence = evidence;
                 weakest = rank;
@@ -110,8 +138,24 @@ internal static class HeldModelAlignment
         if (attach is null || root is null) return;
         if (!TryMeasureBounds(attach, donorRenderers, null, root.transform, out var donor)) return;
         if (!TryMeasureBounds(attach, root.GetComponentsInChildren<Renderer>(true), root.transform, null, out var replacement)) return;
-        var correction = Measure(attach, donor, replacement);
+        var correction = Measure(attach, donor, replacement,
+            ForwardAxisOverride.TryGetValue(id, out var declared) ? declared : (int?)null);
         root.transform.localRotation = correction * root.transform.localRotation;
+
+        // Rotation alone leaves the model seated wherever its own origin happens to be. Magenheim
+        // sources are centred on their bounds, so the hand grips the middle of the weapon: on a
+        // knife that is the crystal rather than the hilt. Re-measure after rotating and slide the
+        // model so the end nearest the attach point sits where the donor puts its own near end,
+        // which is where Valheim's animations expect a grip.
+        if (TryMeasureBounds(attach, root.GetComponentsInChildren<Renderer>(true), root.transform, null, out var rotated))
+        {
+            var axis = AxisOrder(donor.size)[0];
+            var offset = Vector3.zero;
+            offset[axis] = NearEnd(donor.min[axis], donor.max[axis]) - NearEnd(rotated.min[axis], rotated.max[axis]);
+            for (var other = 0; other < 3; other++)
+                if (other != axis) offset[other] = donor.center[other] - rotated.center[other];
+            root.transform.localPosition += offset;
+        }
         Report(log, id, correction);
     }
 
@@ -139,5 +183,10 @@ internal static class HeldModelAlignment
         return order;
     }
 
-    private static float Sign(float value) => value < 0f ? -1f : 1f;
+    /// <summary>+1 when the axis reaches further in the positive direction from the attach origin.</summary>
+    private static float Reach(float min, float max) => Mathf.Abs(max) >= Mathf.Abs(min) ? 1f : -1f;
+
+    /// <summary>The bounds extreme closest to the attach origin: where a held implement is gripped.</summary>
+    private static float NearEnd(float min, float max) => Mathf.Abs(min) <= Mathf.Abs(max) ? min : max;
+
 }

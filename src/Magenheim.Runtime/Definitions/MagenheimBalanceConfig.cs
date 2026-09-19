@@ -172,7 +172,11 @@ internal static class MagenheimBalanceConfig
             effectiveGroupMax,
             effectiveGroupRadius,
             config.Bind(section, "GroundOffset", baseline.GroundOffset,
-                "Vertical placement offset; negative values bury the object slightly.").Value);
+                "Vertical placement offset; negative values bury the object slightly.").Value,
+            config.Bind(section, "RandomTilt", baseline.RandomTilt,
+                "Random lean applied to each placed geode, in degrees (0 stands every geode upright).").Value,
+            config.Bind(section, "GroundTiltChance", baseline.GroundTiltChance,
+                "Probability 0..1 that a placed geode also adopts the slope of the ground beneath it.").Value);
     }
 
     private static WorldgenCompatibilityPolicy ReadWorldgenCompatibility(

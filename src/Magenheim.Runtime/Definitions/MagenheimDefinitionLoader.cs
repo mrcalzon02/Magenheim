@@ -145,7 +145,9 @@ internal static class MagenheimDefinitionLoader
             document.GroupSizeMin,
             document.GroupSizeMax,
             document.GroupRadius,
-            document.GroundOffset);
+            document.GroundOffset,
+            document.RandomTilt,
+            document.GroundTiltChance);
     }
 
     private static WorldgenCompatibilityPolicy ToWorldgenCompatibility(WorldgenCompatibilityDocument document)
@@ -389,6 +391,12 @@ internal static class MagenheimDefinitionLoader
 
         [JsonProperty("groundOffset", Required = Required.Always)]
         public double GroundOffset { get; set; }
+
+        [JsonProperty("randomTilt")]
+        public double RandomTilt { get; set; }
+
+        [JsonProperty("groundTiltChance")]
+        public double GroundTiltChance { get; set; }
     }
 
     private sealed class SocketEffectRuleDocument

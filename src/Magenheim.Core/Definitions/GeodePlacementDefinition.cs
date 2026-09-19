@@ -28,7 +28,9 @@ public sealed record GeodePlacementDefinition(
     int GroupSizeMin,
     int GroupSizeMax,
     double GroupRadius,
-    double GroundOffset)
+    double GroundOffset,
+    double RandomTilt,
+    double GroundTiltChance)
 {
     public static GeodePlacementDefinition ConservativeMeadows { get; } = new(
         BlockCheck: true,
@@ -56,7 +58,13 @@ public sealed record GeodePlacementDefinition(
         GroupSizeMin: 1,
         GroupSizeMax: 1,
         GroupRadius: 0d,
-        GroundOffset: -0.10d);
+        GroundOffset: -0.10d,
+        // Every geode stood perfectly upright, which reads as placed rather than found. Vanilla
+        // rocks lean, so geodes should too: a random lean of up to 22 degrees, and a 70% chance of
+        // also taking the ground's own slope. MinTilt/MaxTilt above are a filter on where a geode
+        // may spawn; these two are the rotation of the object itself.
+        RandomTilt: 22d,
+        GroundTiltChance: 0.70d);
 
     public void Validate(string geodeId)
     {
@@ -84,6 +92,12 @@ public sealed record GeodePlacementDefinition(
         ValidateOrderedRuntimeFloat(ForestThresholdMin, ForestThresholdMax, id, "forest threshold");
 
         ValidateOrderedRuntimeFloat(ScaleMin, ScaleMax, id, "scale");
+        RequireRuntimeFloat(RandomTilt, id, nameof(RandomTilt));
+        if (RandomTilt < 0d || RandomTilt > 180d)
+            throw new InvalidOperationException($"Geode '{id}' random tilt must lie between 0 and 180 degrees.");
+        RequireRuntimeFloat(GroundTiltChance, id, nameof(GroundTiltChance));
+        if (GroundTiltChance < 0d || GroundTiltChance > 1d)
+            throw new InvalidOperationException($"Geode '{id}' ground tilt chance must lie between 0 and 1.");
         if (ScaleMin <= 0d)
             throw new InvalidOperationException($"Geode '{id}' placement scale must be greater than zero.");
 

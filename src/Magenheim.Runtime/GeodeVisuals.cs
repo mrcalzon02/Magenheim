@@ -1,11 +1,43 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Jotunn.Managers;
 using Magenheim.Core;
 using Magenheim.Core.DeepFractures;
 using UnityEngine;
 namespace Magenheim.Runtime;
 internal static class GeodeVisuals {
+    private const string VanillaRockPrefab = "Rock_4";
+    private static Material? _shellMaterial;
+    private static bool _shellMaterialResolved;
+
+    /// <summary>The vanilla rock surface material instance itself, shared rather than copied.</summary>
+    /// <remarks>
+    /// This is a deliberate dependency. Assigning the instance -- not `new Material(...)` of it --
+    /// makes the geode shell literally the same surface as Valheim's own rocks, so the moss layer
+    /// comes along, and any edit a seasonality or retexture mod makes to stone reaches our geodes
+    /// with no work on our side. The accepted cost is that a mod which breaks rock rendering breaks
+    /// geodes with it. Nothing may ever write to this material: one SetColor here would repaint
+    /// every rock in the world, so the shell is assigned and then left alone.
+    /// </remarks>
+    private static Material? ShellMaterial() {
+        if (_shellMaterialResolved) return _shellMaterial;
+        _shellMaterialResolved = true;
+        var rock = PrefabManager.Instance?.GetPrefab(VanillaRockPrefab);
+        if (rock is null) return _shellMaterial = null;
+        // LOD0 is the full-detail stone surface; the lower levels bake detail away.
+        var group = rock.GetComponentInChildren<LODGroup>(true);
+        var levels = group is not null ? group.GetLODs() : Array.Empty<LOD>();
+        var renderers = levels.Length > 0 && levels[0].renderers is { Length: > 0 }
+            ? levels[0].renderers
+            : rock.GetComponentsInChildren<MeshRenderer>(true);
+        foreach (var renderer in renderers) {
+            if (!renderer || renderer.sharedMaterial is null) continue;
+            _shellMaterial = renderer.sharedMaterial; break;
+        }
+        return _shellMaterial;
+    }
+
     private const int IconSize = 256;
     private const int IconDesignSize = 128;
     private const int IconScale = IconSize / IconDesignSize;
@@ -13,8 +45,10 @@ internal static class GeodeVisuals {
     internal static void Apply(GameObject prefab,Color interiorTint,float scale=1f,bool worldObject=false) {
         var root=ModelAssets.Load(prefab,"geode-sample",item:!worldObject,scale:scale);
         if(worldObject){root.transform.localPosition=new Vector3(0,.5f*scale,0);foreach(var c in prefab.GetComponentsInChildren<Collider>(true))if(!c.isTrigger)c.enabled=false;var collider=prefab.AddComponent<SphereCollider>();collider.center=new Vector3(0,.5f*scale,0);collider.radius=.63f*scale;}
+        var shell=ShellMaterial();
         foreach(var renderer in root.GetComponentsInChildren<Renderer>(true)) {
-            var source=renderer.sharedMaterial;if(source.name.IndexOf(".interior-",StringComparison.Ordinal)<0)continue;
+            var source=renderer.sharedMaterial;if(source is null)continue;
+            if(source.name.IndexOf(".interior-",StringComparison.Ordinal)<0){if(shell is not null)renderer.sharedMaterial=shell;continue;}
             var bright=source.name.IndexOf("interior-bright-",StringComparison.Ordinal)>=0;var tint=bright?Color.Lerp(interiorTint,Color.white,.28f):interiorTint;
             var material=new Material(source);material.color=tint;if(material.HasProperty("_EmissionColor"))material.SetColor("_EmissionColor",tint*(bright?.34f:.22f));renderer.sharedMaterial=material;
         }

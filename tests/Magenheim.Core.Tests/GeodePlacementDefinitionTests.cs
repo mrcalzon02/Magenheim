@@ -47,6 +47,30 @@ internal static class GeodePlacementDefinitionTests
         Assert(ref assertions, invalidTiltRejected,
             "Placement tilt outside the runtime 0..90 range must fail definition admission.");
 
+        var invalidObjectTiltRejected = false;
+        try
+        {
+            CreateSnapshot(GeodePlacementDefinition.ConservativeMeadows with { RandomTilt = 181d });
+        }
+        catch (InvalidOperationException)
+        {
+            invalidObjectTiltRejected = true;
+        }
+        Assert(ref assertions, invalidObjectTiltRejected,
+            "Object lean beyond a half turn must fail definition admission.");
+
+        var invalidGroundTiltChanceRejected = false;
+        try
+        {
+            CreateSnapshot(GeodePlacementDefinition.ConservativeMeadows with { GroundTiltChance = 1.5d });
+        }
+        catch (InvalidOperationException)
+        {
+            invalidGroundTiltChanceRejected = true;
+        }
+        Assert(ref assertions, invalidGroundTiltChanceRejected,
+            "Ground tilt chance outside 0..1 must fail definition admission.");
+
         var unrepresentableFloatRejected = false;
         try
         {

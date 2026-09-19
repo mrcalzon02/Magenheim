@@ -395,6 +395,8 @@ public static class MagenheimDefinitionValidator
             .Append(placement.InForest ? "1" : "0").Append('|')
             .Append(placement.ForestThresholdMin.ToString("R", CultureInfo.InvariantCulture)).Append('|')
             .Append(placement.ForestThresholdMax.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.RandomTilt.ToString("R", CultureInfo.InvariantCulture)).Append('|')
+            .Append(placement.GroundTiltChance.ToString("R", CultureInfo.InvariantCulture)).Append('|')
             .Append(placement.ScaleMin.ToString("R", CultureInfo.InvariantCulture)).Append('|')
             .Append(placement.ScaleMax.ToString("R", CultureInfo.InvariantCulture)).Append('|')
             .Append(placement.GroupSizeMin).Append('|')

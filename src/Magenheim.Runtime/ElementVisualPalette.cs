@@ -74,8 +74,26 @@ internal static class ElementVisualPalette
             blue += color.b * fraction;
         }
 
-        return new Color((float)red, (float)green, (float)blue, 1f);
+        // A weighted mean of several saturated hues lands near grey, which is why every biome's
+        // geode read as the same dull mineral regardless of its elements. Bias the mean toward the
+        // dominant element so the biome's signature mineral actually shows, then restore the
+        // saturation the averaging removed. Hue still comes from the full weighted mix, so a geode
+        // with a secondary element is still visibly different from one without it.
+        var mean = new Color((float)red, (float)green, (float)blue, 1f);
+        var signature = Tint(DominantElement(geode));
+        Color.RGBToHSV(Color.Lerp(mean, signature, DominantBias), out var hue, out var saturation, out var value);
+        return Color.HSVToRGB(
+            hue,
+            Mathf.Clamp01(saturation * SaturationGain + SaturationFloor),
+            Mathf.Clamp(value, ValueFloor, ValueCeiling));
     }
+
+    /// <summary>How far the averaged tint is pulled toward the dominant element's own colour.</summary>
+    private const float DominantBias = 0.45f;
+    private const float SaturationGain = 1.85f;
+    private const float SaturationFloor = 0.14f;
+    private const float ValueFloor = 0.52f;
+    private const float ValueCeiling = 0.94f;
 
     internal static string GeodeVariant(GeodeDefinition geode) =>
         "geode-" + geode.Biome.ToLowerInvariant().Replace(" ", string.Empty);

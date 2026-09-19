@@ -177,6 +177,14 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
         };
 
         var customVegetation = new CustomVegetation(worldPrefab, fixReference: false, vegetationConfig);
+
+        // Jotunn's VegetationConfig exposes MinTilt/MaxTilt, which filter the ground slope a geode
+        // may spawn on, but nothing for the rotation of the object itself. Those live on the
+        // underlying ZoneVegetation, which Jotunn does expose, so set them there.
+        customVegetation.Vegetation.m_randTilt = ToRuntimeFloat(placement.RandomTilt, nameof(placement.RandomTilt));
+        customVegetation.Vegetation.m_chanceToUseGroundTilt =
+            ToRuntimeFloat(placement.GroundTiltChance, nameof(placement.GroundTiltChance));
+
         if (!ZoneManager.Instance.AddCustomVegetation(customVegetation))
         {
             throw new InvalidOperationException(
@@ -227,6 +235,12 @@ internal sealed class GeodeWorldgenRegistrar : IDisposable
             ?? throw new InvalidOperationException($"Geode world prefab '{prefabName}' has no ZNetView component.");
 
         SetRequiredField(zNetView, "m_persistent", true, prefabName);
+        // ZoneSystem.PlaceVegetation picks a size per geode and stores it with ZNetView.SetLocalScale,
+        // but ZNetView.Awake only reads that back out of the ZDO when m_syncInitialScale is set.
+        // Without it a geode is correctly varied the moment its zone generates and snaps back to 1.0
+        // the first time you walk away and return, which is why the size spread looked like it came
+        // and went rather than being simply absent.
+        SetRequiredField(zNetView, "m_syncInitialScale", true, prefabName);
     }
 
     private static void ConfigureDestructible(GameObject prefab, string prefabName)
