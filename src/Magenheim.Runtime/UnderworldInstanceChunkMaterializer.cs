@@ -14,10 +14,12 @@ namespace Magenheim.Runtime;
 internal sealed class UnderworldInstanceChunkMaterializer
 {
     private const float TerrainUvMetersPerTile = 4f;
+    private const int TerrainTextureSize = 32;
     private readonly UnderworldRuntimeServices _services;
     private readonly ManualLogSource _log;
     private readonly Dictionary<UnderworldInstanceChunkKey, GameObject> _materialized = new();
     private readonly Dictionary<UnderworldTerrainBiome, Material> _biomeMaterials = new();
+    private readonly Dictionary<UnderworldTerrainBiome, Texture2D> _biomeTextures = new();
     private GameObject? _root;
 
     internal UnderworldInstanceChunkMaterializer(UnderworldRuntimeServices services, ManualLogSource log)
@@ -57,6 +59,9 @@ internal sealed class UnderworldInstanceChunkMaterializer
         foreach (var material in _biomeMaterials.Values)
             if (material) UnityEngine.Object.Destroy(material);
         _biomeMaterials.Clear();
+        foreach (var texture in _biomeTextures.Values)
+            if (texture) UnityEngine.Object.Destroy(texture);
+        _biomeTextures.Clear();
     }
 
     private void EnsureRoot()
@@ -88,9 +93,6 @@ internal sealed class UnderworldInstanceChunkMaterializer
                 (float)((bounds.MinimumZ + localZ) / TerrainUvMetersPerTile));
         }
 
-        // Presentation consumes the authoritative biome payload instead of reclassifying terrain.
-        // A cell is assigned from its four corners by deterministic majority vote (ties prefer the
-        // north-west corner), giving biome boundaries stable geometry regardless of chunk load order.
         var trianglesByBiome = new Dictionary<UnderworldTerrainBiome, List<int>>();
         for (var z = 0; z < edge - 1; z++)
         for (var x = 0; x < edge - 1; x++)
@@ -192,11 +194,75 @@ internal sealed class UnderworldInstanceChunkMaterializer
         if (_biomeMaterials.TryGetValue(biome, out var material) && material) return material;
         material = new Material(ModelAssets.ResolveSurfaceShader()) { name = $"Magenheim_Underworld_Terrain_{biome}" };
         var color = BiomeColor(biome);
-        if (material.HasProperty("_Color")) material.SetColor("_Color", color);
-        if (material.HasProperty("_BaseColor")) material.SetColor("_BaseColor", color);
+        if (material.HasProperty("_Color")) material.SetColor("_Color", Color.white);
+        if (material.HasProperty("_BaseColor")) material.SetColor("_BaseColor", Color.white);
+        var texture = GetBiomeTexture(biome, color);
+        if (material.HasProperty("_MainTex")) material.SetTexture("_MainTex", texture);
+        if (material.HasProperty("_BaseMap")) material.SetTexture("_BaseMap", texture);
+        if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", BiomeSmoothness(biome));
+        if (material.HasProperty("_Smoothness")) material.SetFloat("_Smoothness", BiomeSmoothness(biome));
         _biomeMaterials[biome] = material;
         return material;
     }
+
+    private Texture2D GetBiomeTexture(UnderworldTerrainBiome biome, Color baseColor)
+    {
+        if (_biomeTextures.TryGetValue(biome, out var existing) && existing) return existing;
+        var texture = new Texture2D(TerrainTextureSize, TerrainTextureSize, TextureFormat.RGBA32, true)
+        {
+            name = $"Magenheim_Underworld_Terrain_{biome}_Detail",
+            wrapMode = TextureWrapMode.Repeat,
+            filterMode = FilterMode.Bilinear,
+            anisoLevel = 4
+        };
+        var pixels = new Color32[TerrainTextureSize * TerrainTextureSize];
+        for (var y = 0; y < TerrainTextureSize; y++)
+        for (var x = 0; x < TerrainTextureSize; x++)
+        {
+            var coarse = Hash01(x / 4, y / 4, (int)biome * 97);
+            var fine = Hash01(x, y, (int)biome * 193);
+            var structure = BiomeStructure(biome, x, y);
+            var shade = Mathf.Clamp(0.72f + coarse * 0.22f + fine * 0.10f + structure, 0.48f, 1.18f);
+            pixels[y * TerrainTextureSize + x] = (Color32)new Color(
+                Mathf.Clamp01(baseColor.r * shade),
+                Mathf.Clamp01(baseColor.g * shade),
+                Mathf.Clamp01(baseColor.b * shade), 1f);
+        }
+        texture.SetPixels32(pixels);
+        texture.Apply(true, false);
+        _biomeTextures[biome] = texture;
+        return texture;
+    }
+
+    private static float Hash01(int x, int y, int seed)
+    {
+        unchecked
+        {
+            var n = x * 374761393 + y * 668265263 + seed * 1442695041;
+            n = (n ^ (n >> 13)) * 1274126177;
+            return ((n ^ (n >> 16)) & 0x7fffffff) / 2147483647f;
+        }
+    }
+
+    private static float BiomeStructure(UnderworldTerrainBiome biome, int x, int y) => biome switch
+    {
+        UnderworldTerrainBiome.FungalForest => ((x + y * 2) % 11 == 0) ? 0.14f : 0f,
+        UnderworldTerrainBiome.BlackwaterDeep => (y % 8 < 2) ? -0.10f : 0.02f,
+        UnderworldTerrainBiome.SulfurousWastes => ((x * 3 + y) % 13 < 2) ? 0.16f : -0.02f,
+        UnderworldTerrainBiome.FrozenCaverns => (Math.Abs(x - y) % 9 == 0) ? 0.18f : 0f,
+        UnderworldTerrainBiome.FractureZones => (Math.Abs(x * 2 - y) % 13 < 2) ? -0.18f : 0.02f,
+        UnderworldTerrainBiome.GreatDecay => ((x + y) % 7 == 0) ? -0.12f : 0.01f,
+        _ => 0f,
+    };
+
+    private static float BiomeSmoothness(UnderworldTerrainBiome biome) => biome switch
+    {
+        UnderworldTerrainBiome.BlackwaterDeep => 0.52f,
+        UnderworldTerrainBiome.FrozenCaverns => 0.44f,
+        UnderworldTerrainBiome.FungalForest => 0.18f,
+        UnderworldTerrainBiome.GreatDecay => 0.12f,
+        _ => 0.22f,
+    };
 
     private static Color BiomeColor(UnderworldTerrainBiome biome) => biome switch
     {
