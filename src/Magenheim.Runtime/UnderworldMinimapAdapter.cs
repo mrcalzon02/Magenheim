@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using HarmonyLib;
 using Magenheim.Core.Underworld;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace Magenheim.Runtime;
 internal sealed class UnderworldMinimapAdapter : MonoBehaviour
 {
     private const string RootName = "Magenheim_UnderworldMapPresentation";
+    private readonly Dictionary<Minimap.PinData, Vector3> _projectedPins = new();
     private Minimap? _minimap;
     private GameObject? _root;
     private GameObject? _selector;
@@ -70,6 +72,7 @@ internal sealed class UnderworldMinimapAdapter : MonoBehaviour
 
     private void Select(MagenheimMapLayer layer)
     {
+        if (layer != MagenheimMapLayer.Underworld) RestoreProjectedPins();
         UnderworldMapLayerRuntime.Select(layer);
         ApplySelection(true);
     }
@@ -78,13 +81,20 @@ internal sealed class UnderworldMinimapAdapter : MonoBehaviour
     {
         var available = UnderworldMapLayerRuntime.IsUnderworldMapAvailable();
         if (!available && UnderworldMapLayerRuntime.SelectedLayer == MagenheimMapLayer.Underworld)
+        {
+            RestoreProjectedPins();
             UnderworldMapLayerRuntime.Select(MagenheimMapLayer.Surface);
+        }
 
         if (_selector) _selector.SetActive(available);
         var layer = UnderworldMapLayerRuntime.SelectedLayer;
         if (!force && available == _lastAvailable && layer == _lastLayer)
         {
-            if (layer == MagenheimMapLayer.Underworld) BindTextures();
+            if (layer == MagenheimMapLayer.Underworld)
+            {
+                BindTextures();
+                ProjectUnderworldPins();
+            }
             return;
         }
 
@@ -96,10 +106,40 @@ internal sealed class UnderworldMinimapAdapter : MonoBehaviour
         {
             UnderworldMapPresentationRuntime.ForceRefresh();
             BindTextures();
+            ProjectUnderworldPins();
         }
+        else RestoreProjectedPins();
 
         SetButtonState(_surfaceButton, !underworld);
         SetButtonState(_underworldButton, underworld);
+    }
+
+    /// <summary>
+    /// Projects only the live presentation copy of each pin. The original world position is retained
+    /// here and restored before leaving the logical layer, so vanilla save data and foreign pin
+    /// providers never observe Magenheim logical coordinates as authoritative world coordinates.
+    /// Pins outside the Underworld host domain are left untouched; visibility filtering can be added
+    /// separately without coupling persistence to presentation.
+    /// </summary>
+    private void ProjectUnderworldPins()
+    {
+        if (_minimap is null) return;
+        foreach (var pin in RuntimeGameApi.GetMapPins(_minimap))
+        {
+            if (pin is null || _projectedPins.ContainsKey(pin)) continue;
+            var world = pin.m_pos;
+            if (!UnderworldMapLayerRuntime.TryProjectWorldToSelectedMap(world.x, world.z, out var logical)) continue;
+            _projectedPins.Add(pin, world);
+            pin.m_pos = new Vector3((float)logical.X, world.y, (float)logical.Z);
+        }
+    }
+
+    private void RestoreProjectedPins()
+    {
+        if (_projectedPins.Count == 0) return;
+        foreach (var entry in _projectedPins)
+            if (entry.Key is not null) entry.Key.m_pos = entry.Value;
+        _projectedPins.Clear();
     }
 
     private void BindTextures()
@@ -159,8 +199,11 @@ internal sealed class UnderworldMinimapAdapter : MonoBehaviour
         rect.offsetMax = Vector2.zero;
     }
 
+    private void OnDisable() => RestoreProjectedPins();
+
     private void OnDestroy()
     {
+        RestoreProjectedPins();
         if (_root) Destroy(_root);
         if (_selector) Destroy(_selector);
     }
