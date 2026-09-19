@@ -14,7 +14,6 @@ public sealed class UnderworldInstanceLifecycle
 
     public UnderworldInstancePhase Phase { get; private set; } = UnderworldInstancePhase.Inactive;
     public UnderworldWorldIdentity? Identity => _identity;
-    public string? FaultReason { get; private set; }
 
     public void BeginAdmission(UnderworldWorldIdentity identity)
     {
@@ -23,7 +22,6 @@ public sealed class UnderworldInstanceLifecycle
             throw new InvalidOperationException("Underworld instance admission requires an inactive lifecycle.");
 
         _identity = identity;
-        FaultReason = null;
         Phase = UnderworldInstancePhase.Admitting;
     }
 
@@ -35,30 +33,9 @@ public sealed class UnderworldInstanceLifecycle
         Phase = UnderworldInstancePhase.Active;
     }
 
-    public void RestoreActive(UnderworldWorldIdentity identity)
-    {
-        RequireIdentity(identity);
-        if (Phase == UnderworldInstancePhase.Inactive)
-            throw new InvalidOperationException("An inactive Underworld instance cannot be restored active.");
-        FaultReason = null;
-        Phase = UnderworldInstancePhase.Active;
-    }
-
-    public void MarkFaulted(UnderworldWorldIdentity identity, string reason)
-    {
-        RequireIdentity(identity);
-        if (Phase == UnderworldInstancePhase.Inactive)
-            throw new InvalidOperationException("An inactive Underworld instance cannot fault.");
-        if (string.IsNullOrWhiteSpace(reason))
-            throw new ArgumentException("A fault reason is required.", nameof(reason));
-        FaultReason = reason.Trim();
-        Phase = UnderworldInstancePhase.Faulted;
-    }
-
     public void Reset()
     {
         _identity = null;
-        FaultReason = null;
         Phase = UnderworldInstancePhase.Inactive;
     }
 
@@ -79,5 +56,4 @@ public enum UnderworldInstancePhase
     Inactive = 0,
     Admitting = 1,
     Active = 2,
-    Faulted = 4,
 }
