@@ -2,15 +2,12 @@ using System;
 
 namespace Magenheim.Core.Underworld;
 
-/// <summary>
-/// Deterministic logical-map rasterization. The raster is built from logical Underworld coordinates
-/// and the surface world's seed; physical host coordinates never enter this boundary.
-/// </summary>
+/// <summary>Deterministic rasterization in native Underworld instance coordinates.</summary>
 public static class UnderworldMapRaster
 {
     public static UnderworldTerrainBiome[] BuildBiomeRaster(
-        UnderworldSpatialDomainDefinition domain,
-        int surfaceSeed,
+        UnderworldInstanceTerrainDomain domain,
+        int instanceSeed,
         int width,
         int height,
         UnderworldTerrainBiome outsideBiome = UnderworldTerrainBiome.FungalForest)
@@ -28,14 +25,37 @@ public static class UnderworldMapRaster
             var index = UnderworldMapProjection.CellIndex(width, height, x, y);
             if (logical.X * logical.X + logical.Z * logical.Z > domain.RadiusMeters * domain.RadiusMeters)
             {
-                // Corners of the square texture lie outside the circular playable domain. The caller
-                // owns masking/presentation; no fake physical geography is generated there.
                 result[index] = outsideBiome;
                 continue;
             }
-            result[index] = UnderworldMapProjection.UnderworldBiomeAt(
-                domain, surfaceSeed, logical.X, logical.Z);
+
+            var terrain = UnderworldTerrainLifecycle.Evaluate(
+                domain,
+                new UnderworldTerrainSample(
+                    logical.X,
+                    0d,
+                    logical.Z,
+                    UnderworldTerrainLifecycle.BaseElevationMeters,
+                    0d,
+                    UnderworldTerrainNoise.Fractal01(instanceSeed, logical.X, logical.Z)),
+                instanceSeed);
+            if (!terrain.Admitted)
+                throw new InvalidOperationException("Native Underworld terrain rejected an in-domain map cell.");
+            result[index] = terrain.Biome;
         }
         return result;
+    }
+
+    [Obsolete("Use the native UnderworldInstanceTerrainDomain overload. Host placement is not map authority.")]
+    public static UnderworldTerrainBiome[] BuildBiomeRaster(
+        UnderworldSpatialDomainDefinition domain,
+        int instanceSeed,
+        int width,
+        int height,
+        UnderworldTerrainBiome outsideBiome = UnderworldTerrainBiome.FungalForest)
+    {
+        if (domain is null) throw new ArgumentNullException(nameof(domain));
+        var native = UnderworldInstanceTerrainDomain.ValidateAndFreeze(domain.RadiusMeters, domain.LogicalMinY, domain.LogicalMaxY);
+        return BuildBiomeRaster(native, instanceSeed, width, height, outsideBiome);
     }
 }
