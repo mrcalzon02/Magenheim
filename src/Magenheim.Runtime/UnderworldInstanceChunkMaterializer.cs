@@ -20,6 +20,7 @@ internal sealed class UnderworldInstanceChunkMaterializer
     private readonly Dictionary<UnderworldInstanceChunkKey, GameObject> _materialized = new();
     private readonly Dictionary<UnderworldTerrainBiome, Material> _biomeMaterials = new();
     private readonly Dictionary<UnderworldTerrainBiome, Texture2D> _biomeTextures = new();
+    private readonly Dictionary<UnderworldTerrainBiome, Texture2D> _biomeNormalTextures = new();
     private GameObject? _root;
 
     internal UnderworldInstanceChunkMaterializer(UnderworldRuntimeServices services, ManualLogSource log)
@@ -62,6 +63,9 @@ internal sealed class UnderworldInstanceChunkMaterializer
         foreach (var texture in _biomeTextures.Values)
             if (texture) UnityEngine.Object.Destroy(texture);
         _biomeTextures.Clear();
+        foreach (var texture in _biomeNormalTextures.Values)
+            if (texture) UnityEngine.Object.Destroy(texture);
+        _biomeNormalTextures.Clear();
     }
 
     private void EnsureRoot()
@@ -199,6 +203,11 @@ internal sealed class UnderworldInstanceChunkMaterializer
         var texture = GetBiomeTexture(biome, color);
         if (material.HasProperty("_MainTex")) material.SetTexture("_MainTex", texture);
         if (material.HasProperty("_BaseMap")) material.SetTexture("_BaseMap", texture);
+        var normal = GetBiomeNormalTexture(biome);
+        if (material.HasProperty("_BumpMap")) material.SetTexture("_BumpMap", normal);
+        if (material.HasProperty("_NormalMap")) material.SetTexture("_NormalMap", normal);
+        if (material.HasProperty("_BumpScale")) material.SetFloat("_BumpScale", BiomeNormalStrength(biome));
+        material.EnableKeyword("_NORMALMAP");
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", BiomeSmoothness(biome));
         if (material.HasProperty("_Smoothness")) material.SetFloat("_Smoothness", BiomeSmoothness(biome));
         _biomeMaterials[biome] = material;
@@ -208,21 +217,12 @@ internal sealed class UnderworldInstanceChunkMaterializer
     private Texture2D GetBiomeTexture(UnderworldTerrainBiome biome, Color baseColor)
     {
         if (_biomeTextures.TryGetValue(biome, out var existing) && existing) return existing;
-        var texture = new Texture2D(TerrainTextureSize, TerrainTextureSize, TextureFormat.RGBA32, true)
-        {
-            name = $"Magenheim_Underworld_Terrain_{biome}_Detail",
-            wrapMode = TextureWrapMode.Repeat,
-            filterMode = FilterMode.Bilinear,
-            anisoLevel = 4
-        };
+        var texture = NewTerrainTexture($"Magenheim_Underworld_Terrain_{biome}_Detail", false);
         var pixels = new Color32[TerrainTextureSize * TerrainTextureSize];
         for (var y = 0; y < TerrainTextureSize; y++)
         for (var x = 0; x < TerrainTextureSize; x++)
         {
-            var coarse = Hash01(x / 4, y / 4, (int)biome * 97);
-            var fine = Hash01(x, y, (int)biome * 193);
-            var structure = BiomeStructure(biome, x, y);
-            var shade = Mathf.Clamp(0.72f + coarse * 0.22f + fine * 0.10f + structure, 0.48f, 1.18f);
+            var shade = TerrainDetailHeight(biome, x, y);
             pixels[y * TerrainTextureSize + x] = (Color32)new Color(
                 Mathf.Clamp01(baseColor.r * shade),
                 Mathf.Clamp01(baseColor.g * shade),
@@ -232,6 +232,52 @@ internal sealed class UnderworldInstanceChunkMaterializer
         texture.Apply(true, false);
         _biomeTextures[biome] = texture;
         return texture;
+    }
+
+    private Texture2D GetBiomeNormalTexture(UnderworldTerrainBiome biome)
+    {
+        if (_biomeNormalTextures.TryGetValue(biome, out var existing) && existing) return existing;
+        var texture = NewTerrainTexture($"Magenheim_Underworld_Terrain_{biome}_Normal", true);
+        var pixels = new Color32[TerrainTextureSize * TerrainTextureSize];
+        var slope = BiomeNormalSlope(biome);
+        for (var y = 0; y < TerrainTextureSize; y++)
+        for (var x = 0; x < TerrainTextureSize; x++)
+        {
+            var left = TerrainDetailHeight(biome, WrapTexel(x - 1), y);
+            var right = TerrainDetailHeight(biome, WrapTexel(x + 1), y);
+            var down = TerrainDetailHeight(biome, x, WrapTexel(y - 1));
+            var up = TerrainDetailHeight(biome, x, WrapTexel(y + 1));
+            var normal = new Vector3((left - right) * slope, (down - up) * slope, 1f).normalized;
+            pixels[y * TerrainTextureSize + x] = new Color32(
+                (byte)Mathf.RoundToInt((normal.x * .5f + .5f) * 255f),
+                (byte)Mathf.RoundToInt((normal.y * .5f + .5f) * 255f),
+                (byte)Mathf.RoundToInt((normal.z * .5f + .5f) * 255f), 255);
+        }
+        texture.SetPixels32(pixels);
+        texture.Apply(true, false);
+        _biomeNormalTextures[biome] = texture;
+        return texture;
+    }
+
+    private static Texture2D NewTerrainTexture(string name, bool linear)
+    {
+        return new Texture2D(TerrainTextureSize, TerrainTextureSize, TextureFormat.RGBA32, true, linear)
+        {
+            name = name,
+            wrapMode = TextureWrapMode.Repeat,
+            filterMode = FilterMode.Bilinear,
+            anisoLevel = 4
+        };
+    }
+
+    private static int WrapTexel(int value) => (value + TerrainTextureSize) % TerrainTextureSize;
+
+    private static float TerrainDetailHeight(UnderworldTerrainBiome biome, int x, int y)
+    {
+        var coarse = Hash01(x / 4, y / 4, (int)biome * 97);
+        var fine = Hash01(x, y, (int)biome * 193);
+        var structure = BiomeStructure(biome, x, y);
+        return Mathf.Clamp(0.72f + coarse * 0.22f + fine * 0.10f + structure, 0.48f, 1.18f);
     }
 
     private static float Hash01(int x, int y, int seed)
@@ -262,6 +308,26 @@ internal sealed class UnderworldInstanceChunkMaterializer
         UnderworldTerrainBiome.FungalForest => 0.18f,
         UnderworldTerrainBiome.GreatDecay => 0.12f,
         _ => 0.22f,
+    };
+
+    private static float BiomeNormalStrength(UnderworldTerrainBiome biome) => biome switch
+    {
+        UnderworldTerrainBiome.BlackwaterDeep => 0.45f,
+        UnderworldTerrainBiome.FrozenCaverns => 0.65f,
+        UnderworldTerrainBiome.SulfurousWastes => 1.05f,
+        UnderworldTerrainBiome.FractureZones => 1.15f,
+        UnderworldTerrainBiome.GreatDecay => 0.9f,
+        _ => 0.8f,
+    };
+
+    private static float BiomeNormalSlope(UnderworldTerrainBiome biome) => biome switch
+    {
+        UnderworldTerrainBiome.BlackwaterDeep => 1.8f,
+        UnderworldTerrainBiome.FrozenCaverns => 2.5f,
+        UnderworldTerrainBiome.SulfurousWastes => 4.2f,
+        UnderworldTerrainBiome.FractureZones => 4.8f,
+        UnderworldTerrainBiome.GreatDecay => 3.6f,
+        _ => 3.2f,
     };
 
     private static Color BiomeColor(UnderworldTerrainBiome biome) => biome switch
