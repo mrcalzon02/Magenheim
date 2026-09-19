@@ -99,7 +99,7 @@ internal sealed class UnderworldInstanceChunkMaterializer
         mesh.vertices = vertices;
         mesh.uv = uv;
         mesh.SetTriangles(triangles, 0, true);
-        mesh.RecalculateNormals();
+        mesh.normals = BuildAuthoritativeNormals(sample, bounds.MinimumX, bounds.MinimumZ, grid.VertexSpacingMeters);
         mesh.RecalculateBounds();
 
         var node = new GameObject(mesh.name);
@@ -110,6 +110,53 @@ internal sealed class UnderworldInstanceChunkMaterializer
         node.AddComponent<MeshCollider>().sharedMesh = mesh;
         _materialized.Add(sample.Key, node);
         _log.LogDebug($"Materialized native Underworld chunk {sample.Key.X},{sample.Key.Z} with {triangles.Count / 3} terrain triangles.");
+    }
+
+    /// <summary>
+    /// Computes normals from deterministic terrain samples in absolute instance space rather than
+    /// from each mesh's private triangle set. Shared border vertices therefore receive identical
+    /// normals regardless of chunk load order, eliminating the lighting seam produced by
+    /// Mesh.RecalculateNormals at independently materialized chunk boundaries.
+    /// </summary>
+    private static Vector3[] BuildAuthoritativeNormals(
+        UnderworldInstanceChunkSample sample,
+        double minimumX,
+        double minimumZ,
+        double spacing)
+    {
+        var edge = sample.VerticesPerEdge;
+        var normals = new Vector3[checked(edge * edge)];
+        for (var z = 0; z < edge; z++)
+        for (var x = 0; x < edge; x++)
+        {
+            var index = z * edge + x;
+            if (!sample.Admitted[index])
+            {
+                normals[index] = Vector3.up;
+                continue;
+            }
+
+            var worldX = minimumX + x * spacing;
+            var worldZ = minimumZ + z * spacing;
+            var center = sample.Heights[index];
+            var left = SampleHeightOrFallback(worldX - spacing, worldZ, center);
+            var right = SampleHeightOrFallback(worldX + spacing, worldZ, center);
+            var down = SampleHeightOrFallback(worldX, worldZ - spacing, center);
+            var up = SampleHeightOrFallback(worldX, worldZ + spacing, center);
+
+            // Tangents span two sample intervals. Their cross product points upward and remains
+            // identical for the same absolute vertex when it is represented by adjacent chunks.
+            var tangentX = new Vector3((float)(spacing * 2d), (float)(right - left), 0f);
+            var tangentZ = new Vector3(0f, (float)(up - down), (float)(spacing * 2d));
+            normals[index] = Vector3.Cross(tangentZ, tangentX).normalized;
+        }
+        return normals;
+    }
+
+    private static double SampleHeightOrFallback(double x, double z, double fallback)
+    {
+        var terrain = UnderworldTerrainRuntime.SampleInstanceTerrain(x, 0d, z);
+        return terrain.Admitted ? terrain.Height : fallback;
     }
 
     private Material GetTerrainMaterial()
