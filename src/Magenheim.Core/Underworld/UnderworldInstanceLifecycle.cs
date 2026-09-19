@@ -37,6 +37,15 @@ public sealed class UnderworldInstanceLifecycle
         Phase = UnderworldInstancePhase.Active;
     }
 
+    public void RestoreActive(UnderworldWorldIdentity identity)
+    {
+        RequireIdentity(identity);
+        if (Phase == UnderworldInstancePhase.Inactive)
+            throw new InvalidOperationException("An inactive Underworld instance cannot be restored active.");
+        FaultReason = null;
+        Phase = UnderworldInstancePhase.Active;
+    }
+
     public void RegisterOccupant(UnderworldWorldIdentity identity, string playerId)
     {
         RequireIdentity(identity);
