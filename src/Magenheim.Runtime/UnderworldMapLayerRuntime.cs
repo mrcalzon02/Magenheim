@@ -28,7 +28,7 @@ internal static class UnderworldMapLayerRuntime
         _explorationIdentityKey = null;
         UnderworldMapPresentationRuntime.Reset();
         UnderworldExplorationPlayerPatch.Reset();
-        new Harmony(MagenheimPlugin.PluginGuid + ".gameplay").PatchAll(typeof(UnderworldExplorationPlayerPatch));
+        var harmony = new Harmony(MagenheimPlugin.PluginGuid + ".gameplay");\n        harmony.PatchAll(typeof(UnderworldExplorationPlayerPatch));\n        harmony.PatchAll(typeof(UnderworldMinimapAwakePatch));
     }
 
     internal static MagenheimMapLayer PlayerLayer()
