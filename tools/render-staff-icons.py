@@ -17,6 +17,11 @@ therefore rendered around the authored mesh. This is icon composition, not repla
 geometry: runtime mesh, proportions, UVs and materials stay untouched, while thin shafts
 retain a readable edge after inventory downsampling. Only silhouette/border lines are
 selected; internal triangulation is deliberately excluded so texture detail stays clean.
+
+The renderer now measures its own finished alpha silhouette before accepting an icon.
+This is intentionally stricter than the general icon compatibility gate: the treatment
+exists to improve the staff family's known 6.4%-18.8% bounding-box ink-density debt, so
+a render that still lands below 8% is a failed composition rather than a successful PNG.
 """
 import bpy, json, math, sys
 from pathlib import Path
@@ -28,6 +33,8 @@ OUT = ROOT / 'assets/earth'
 SIZE = 256
 SAMPLES = 96
 OUTLINE_PX = 1.35
+MIN_STAFF_INK_DENSITY = .08
+MIN_EDGE_CLEARANCE = .012
 
 # Catalog ids are spelled two ways across the staff families. Icons are always named by
 # the asset name the registrars pass to EarthAssets.Icon.
@@ -58,7 +65,41 @@ def configure_readability_outline(scene):
     style.thickness = OUTLINE_PX
 
 
-def frame_and_render(entry, out_path: Path) -> None:
+def verify_rendered_readability(name: str, path: Path) -> tuple[float, float, float]:
+    """Measure the actual saved render, including Freestyle, rather than source bounds.
+
+    Returns frame coverage, ink density inside the visible bounding box, and minimum edge
+    clearance. Alpha >= 24/255 matches verify-icon-assets.py so authoring and build gates
+    judge the same visible pixels.
+    """
+    image = bpy.data.images.load(str(path), check_existing=False)
+    try:
+        width, height = image.size[:]
+        if (width, height) != (SIZE, SIZE):
+            raise RuntimeError(f'{name}: rendered {width}x{height}, expected {SIZE}x{SIZE}')
+        rgba = list(image.pixels)
+        threshold = 24.0 / 255.0
+        xs=[]; ys=[]
+        for y in range(height):
+            row=y*width*4
+            for x in range(width):
+                if rgba[row+x*4+3] >= threshold:
+                    xs.append(x); ys.append(y)
+        if not xs:
+            raise RuntimeError(f'{name}: render is transparent')
+        visible=len(xs); box=(max(xs)-min(xs)+1)*(max(ys)-min(ys)+1)
+        coverage=visible/(width*height); ink=visible/box
+        clearance=min(min(xs)/width,(width-1-max(xs))/width,min(ys)/height,(height-1-max(ys))/height)
+        if ink < MIN_STAFF_INK_DENSITY:
+            raise RuntimeError(f'{name}: staff ink density {ink:.1%} remains below {MIN_STAFF_INK_DENSITY:.0%}; silhouette treatment is not doing its job')
+        if clearance < MIN_EDGE_CLEARANCE:
+            raise RuntimeError(f'{name}: edge clearance {clearance:.1%} is below {MIN_EDGE_CLEARANCE:.1%}; outline is cropped')
+        return coverage, ink, clearance
+    finally:
+        bpy.data.images.remove(image)
+
+
+def frame_and_render(entry, out_path: Path) -> tuple[float, float, float]:
     bpy.ops.wm.read_factory_settings(use_empty=True)
     scene = bpy.context.scene
     scene.render.engine = 'CYCLES'
@@ -87,11 +128,7 @@ def frame_and_render(entry, out_path: Path) -> None:
     for obj in objects:
         scene.collection.objects.link(obj)
 
-    # Library-loaded world matrices are stale until the objects enter an evaluated scene.
     bpy.context.view_layer.update()
-
-    # Lay the staff along the inventory diagonal the way Valheim presents long weapons,
-    # then tip it toward the camera so the head reads as volume rather than silhouette.
     rot = (Matrix.Rotation(math.radians(-32), 4, 'Z')
            @ Matrix.Rotation(math.radians(-68), 4, 'X')
            @ Matrix.Rotation(math.radians(18), 4, 'Y'))
@@ -108,7 +145,6 @@ def frame_and_render(entry, out_path: Path) -> None:
     if extent <= 0:
         raise SystemExit(f"{entry['id']}: degenerate bounding box")
 
-    # Leave a small margin so the alpha edge and silhouette line never touch the icon border.
     placement = Matrix.Scale(1.86 / extent, 4) @ Matrix.Translation(-center)
     for obj in objects:
         obj.matrix_world = placement @ obj.matrix_world
@@ -133,6 +169,7 @@ def frame_and_render(entry, out_path: Path) -> None:
 
     scene.render.filepath = str(out_path)
     bpy.ops.render.render(write_still=True)
+    return verify_rendered_readability(asset_name(entry['id']), out_path)
 
 
 def main() -> None:
@@ -145,13 +182,18 @@ def main() -> None:
     if requested:
         staff = [e for e in staff if asset_name(e['id']) in requested or e['id'] in requested]
 
+    results=[]
     for entry in sorted(staff, key=lambda e: asset_name(e['id'])):
         name = asset_name(entry['id'])
         target = OUT / f'{name}.icon.png'
-        frame_and_render(entry, target)
-        print('RENDERED', name, flush=True)
+        coverage,ink,clearance=frame_and_render(entry,target)
+        results.append((name,coverage,ink,clearance))
+        print(f'RENDERED {name}: coverage={coverage:.1%} ink={ink:.1%} edge={clearance:.1%}', flush=True)
 
-    print(f'Rendered {len(staff)} staff icons at {SIZE}px into {OUT}', flush=True)
+    worst=min(results,key=lambda r:r[2]) if results else None
+    if worst:
+        print(f'READABILITY FLOOR {worst[0]}: ink={worst[2]:.1%}, edge={worst[3]:.1%}',flush=True)
+    print(f'Rendered and readability-gated {len(staff)} staff icons at {SIZE}px into {OUT}', flush=True)
 
 
 main()
