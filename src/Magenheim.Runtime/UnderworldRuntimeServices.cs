@@ -11,6 +11,7 @@ internal sealed class UnderworldRuntimeServices
 
     private UnderworldRuntimeServices(
         UnderworldSpatialDomainDefinition spatialDomain,
+        UnderworldInstanceTerrainDomain terrainDomain,
         UnderworldTransitionStateStore stateStore,
         UnderworldDeepBoonSelectionStore deepBoonSelectionStore,
         UnderworldExplorationStateStore explorationStateStore,
@@ -21,12 +22,15 @@ internal sealed class UnderworldRuntimeServices
         UnderworldWorldTransitionManager transitionManager,
         UnderworldTransitionRecoveryRuntime recoveryRuntime)
     {
-        SpatialDomain=spatialDomain;StateStore=stateStore;DeepBoonSelectionStore=deepBoonSelectionStore;ExplorationStateStore=explorationStateStore;InstanceLifecycle=instanceLifecycle;
+        SpatialDomain=spatialDomain;TerrainDomain=terrainDomain;StateStore=stateStore;DeepBoonSelectionStore=deepBoonSelectionStore;ExplorationStateStore=explorationStateStore;InstanceLifecycle=instanceLifecycle;
         _worldContext=worldContext;PlacementHost=placementHost;TransitionHost=transitionHost;
         TransitionManager=transitionManager;RecoveryRuntime=recoveryRuntime;
     }
 
+    /// <summary>Legacy engine-placement adapter. Never use this as Underworld gameplay authority.</summary>
     internal UnderworldSpatialDomainDefinition SpatialDomain{get;}
+    /// <summary>Native instance-local terrain authority. Coordinates consumed through this domain are Underworld coordinates.</summary>
+    internal UnderworldInstanceTerrainDomain TerrainDomain{get;}
     internal UnderworldTransitionStateStore StateStore{get;}
     internal UnderworldDeepBoonSelectionStore DeepBoonSelectionStore{get;}
     internal UnderworldExplorationStateStore ExplorationStateStore{get;}
@@ -42,6 +46,7 @@ internal sealed class UnderworldRuntimeServices
         if(log is null)throw new ArgumentNullException(nameof(log));
         var root=Path.Combine(Path.GetFullPath(pluginConfigDirectory),"Magenheim");
         var spatialDomain=UnderworldSpatialDomain.CreateDefault();
+        var terrainDomain=UnderworldInstanceTerrainDomain.CreateDefault();
         var stateStore=new UnderworldTransitionStateStore(Path.Combine(root,"underworld-transitions"),log);
         var deepBoonSelectionStore=new UnderworldDeepBoonSelectionStore(Path.Combine(root,"underworld-deep-boon-selections"),log);
         var explorationStateStore=new UnderworldExplorationStateStore(Path.Combine(root,"underworld-exploration"),log);
@@ -51,7 +56,7 @@ internal sealed class UnderworldRuntimeServices
         var transitionHost=new StoredUnderworldTransitionHost(stateStore,placementHost);
         var transitionManager=new UnderworldWorldTransitionManager(transitionHost,instanceLifecycle,log);
         var recoveryRuntime=new UnderworldTransitionRecoveryRuntime(stateStore,transitionManager,log);
-        var services=new UnderworldRuntimeServices(spatialDomain,stateStore,deepBoonSelectionStore,explorationStateStore,instanceLifecycle,worldContext,placementHost,transitionHost,transitionManager,recoveryRuntime);
+        var services=new UnderworldRuntimeServices(spatialDomain,terrainDomain,stateStore,deepBoonSelectionStore,explorationStateStore,instanceLifecycle,worldContext,placementHost,transitionHost,transitionManager,recoveryRuntime);
         UnderworldTerrainRuntime.Configure(services,log);
         return services;
     }
