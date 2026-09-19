@@ -110,7 +110,7 @@ internal static class UnderworldMapLayerRuntime
         if (radiusMeters < 0d || double.IsNaN(radiusMeters) || double.IsInfinity(radiusMeters)) throw new ArgumentOutOfRangeException(nameof(radiusMeters));
         var services = _services;
         if (services is null || !IsUnderworldMapAvailable() || !TryGetUnderworldExploration(out var exploration)) return 0;
-        var viewport = UnderworldMapPresentation.CreateUnderworldViewport(services.SpatialDomain, exploration.Width, exploration.Height);
+        var viewport = UnderworldMapPresentation.CreateUnderworldViewport(services.TerrainDomain, exploration.Width, exploration.Height);
         if (!UnderworldMapPresentation.TryLogicalToCell(viewport, instanceX, instanceZ, out var cellX, out var cellY)) return 0;
         var metresPerCell = services.SpatialDomain.RadiusMeters * 2d / Math.Min(exploration.Width, exploration.Height);
         var revealed = exploration.RevealCircle(cellX, cellY, (int)Math.Ceiling(radiusMeters / metresPerCell));

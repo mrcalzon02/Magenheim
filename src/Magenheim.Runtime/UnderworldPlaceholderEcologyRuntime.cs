@@ -47,9 +47,9 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             return;
         }
 
-        if (!UnderworldRuntimeIdentityResolver.TryResolveWorldSession(
-                _services.SpatialDomain, ZNet.instance, ZNet.World,
-                out var identity, out var layer, out _) ||
+        // Layer comes only from the explicit instance-context authority now, never inferred from
+        // position/domain -- TryResolveWorldSession(domain, znet, world, ...) no longer exists.
+        if (!_services.TryResolveLocalSession(out var identity, out var layer, out _, out _) ||
             identity is null || layer != UnderworldLayer.Underworld ||
             !string.Equals(identity.DerivedWorldId, lifecycle.Identity.DerivedWorldId, StringComparison.Ordinal) ||
             !string.Equals(identity.ParentWorldId, lifecycle.Identity.ParentWorldId, StringComparison.Ordinal) ||

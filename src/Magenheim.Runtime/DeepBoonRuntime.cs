@@ -41,7 +41,7 @@ internal static class DeepBoonRuntime
         if (player is null) { diagnostic = "Deep Boon runtime reconciliation requires a player."; return false; }
         if (_services is null || ZNet.instance is null || !ZNet.instance.IsServer()) { diagnostic = "Deep Boon runtime reconciliation requires server authority."; return false; }
         var world = ZNet.World;
-        // Split the null check out: short-circuiting past TryResolveWorldSession would leave
+        // Split the null check out: short-circuiting past TryResolveLocalSession would leave
         // its out parameters, including diagnostic, definitely unassigned.
         if (world is null)
         {
@@ -49,7 +49,9 @@ internal static class DeepBoonRuntime
             Remove(player);
             return false;
         }
-        if (!UnderworldRuntimeIdentityResolver.TryResolveWorldSession(_services.SpatialDomain, ZNet.instance, world, out var identity, out var layer, out diagnostic) || identity is null)
+        // Layer comes only from the explicit instance-context authority now, never inferred from
+        // position/domain -- TryResolveWorldSession(domain, znet, world, ...) no longer exists.
+        if (!_services.TryResolveLocalSession(out var identity, out var layer, out _, out diagnostic) || identity is null)
         {
             Remove(player);
             return false;

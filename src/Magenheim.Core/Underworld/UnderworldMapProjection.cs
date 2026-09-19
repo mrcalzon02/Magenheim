@@ -60,8 +60,13 @@ public static class UnderworldMapProjection
     {
         if (logicalX * logicalX + logicalZ * logicalZ > domain.RadiusMeters * domain.RadiusMeters)
             throw new InvalidOperationException("Underworld map point lies outside the playable radius.");
+        // UnderworldTerrainLifecycle.Evaluate(UnderworldSpatialDomainDefinition, ...) is obsolete;
+        // this is the same bridge its own (obsolete) implementation used internally, inlined so this
+        // caller compiles against the native instance-domain overload instead of the deprecated one.
+        var instanceDomain = UnderworldInstanceTerrainDomain.ValidateAndFreeze(
+            domain.RadiusMeters, domain.LogicalMinY, domain.LogicalMaxY);
         var result = UnderworldTerrainLifecycle.Evaluate(
-            domain,
+            instanceDomain,
             new UnderworldTerrainSample(logicalX, 0d, logicalZ, UnderworldTerrainLifecycle.BaseElevationMeters, 0d,
                 UnderworldTerrainNoise.Fractal01(surfaceSeed, logicalX, logicalZ)),
             surfaceSeed);

@@ -102,9 +102,11 @@ internal static class UnderworldDeepBoonSelectionRpc
     {
         if (_services is null || ZNet.instance is null || !ZNet.instance.IsServer()) { diagnostic = "Deep Boon mutation requires server authority."; return false; }
         var world = ZNet.World;
-        // Short-circuiting past TryResolveWorldSession would leave diagnostic unassigned.
+        // Short-circuiting past TryResolveLocalSession would leave diagnostic unassigned.
         if (world is null) { diagnostic = "Deep Boon mutation requires a loaded world."; return false; }
-        if (!UnderworldRuntimeIdentityResolver.TryResolveWorldSession(_services.SpatialDomain, ZNet.instance, world, out var identity, out var layer, out diagnostic) || identity is null) return false;
+        // Layer comes only from the explicit instance-context authority now, never inferred from
+        // position/domain -- TryResolveWorldSession(domain, znet, world, ...) no longer exists.
+        if (!_services.TryResolveLocalSession(out var identity, out var layer, out _, out diagnostic) || identity is null) return false;
         if (layer != UnderworldLayer.Underworld) { diagnostic = "Deep Boons may only be selected within the paired Underworld."; return false; }
         var playerId = player.GetPlayerID().ToString(CultureInfo.InvariantCulture);
         var persistedId = default(string);

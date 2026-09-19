@@ -13,7 +13,12 @@ internal static class UnderworldMapPresentationTests
         }
 
         var domain = UnderworldSpatialDomain.CreateDefault();
-        var view = UnderworldMapPresentation.CreateUnderworldViewport(domain, 512, 512);
+        // CreateUnderworldViewport(UnderworldSpatialDomainDefinition, ...) is obsolete; bridge the
+        // same way its own (obsolete) implementation does internally. domain.RadiusMeters below is
+        // unaffected -- both domain types expose it.
+        var instanceDomain = UnderworldInstanceTerrainDomain.ValidateAndFreeze(
+            domain.RadiusMeters, domain.LogicalMinY, domain.LogicalMaxY);
+        var view = UnderworldMapPresentation.CreateUnderworldViewport(instanceDomain, 512, 512);
         Assert(view.Layer == MagenheimMapLayer.Underworld, "viewport must identify the logical Underworld tab");
         Assert(view.CenterX == 0d && view.CenterZ == 0d, "host offset must never enter map-space presentation");
         Assert(UnderworldMapPresentation.TryLogicalToCell(view, 0d, 0d, out var cx, out var cy) && cx == 256 && cy == 256,

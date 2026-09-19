@@ -13,24 +13,29 @@ internal static class UnderworldTerrainLifecycleTests
         }
 
         var domain = UnderworldSpatialDomain.CreateDefault();
-        var center = UnderworldTerrainLifecycle.Evaluate(domain,
+        // Evaluate(UnderworldSpatialDomainDefinition, ...) is obsolete; bridge the same way
+        // its own (obsolete) implementation does internally. domain.RadiusMeters below is
+        // unaffected -- both domain types expose it.
+        var instanceDomain = UnderworldInstanceTerrainDomain.ValidateAndFreeze(
+            domain.RadiusMeters, domain.LogicalMinY, domain.LogicalMaxY);
+        var center = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
             new UnderworldTerrainSample(0d, 0d, 0d, 30d, 8d, 0.5d), 12345);
         Assert(center.Admitted, "Logical origin must be admitted to Underworld terrain generation.");
         Assert(center.Biome == UnderworldTerrainBiome.FungalForest,
             "The central admission basin must remain Fungal Forest regardless of seed.");
         Assert(center.Hazard01 == 0d, "First-biome terrain must not introduce a damage hazard.");
 
-        var outside = UnderworldTerrainLifecycle.Evaluate(domain,
+        var outside = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
             new UnderworldTerrainSample(domain.RadiusMeters + 1d, 0d, 0d, 30d, 0d, 0.5d), 1);
         Assert(!outside.Admitted, "Terrain outside the reserved Underworld radius must fail closed.");
 
-        var malformed = UnderworldTerrainLifecycle.Evaluate(domain,
+        var malformed = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
             new UnderworldTerrainSample(0d, 0d, 0d, double.NaN, 0d, 0.5d), 1);
         Assert(!malformed.Admitted, "Malformed terrain samples must fail closed.");
 
         var sample = new UnderworldTerrainSample(domain.RadiusMeters * 0.6d, 0d, 0d, 30d, 20d, 0.9d);
-        var first = UnderworldTerrainLifecycle.Evaluate(domain, sample, 777);
-        var repeat = UnderworldTerrainLifecycle.Evaluate(domain, sample, 777);
+        var first = UnderworldTerrainLifecycle.Evaluate(instanceDomain, sample, 777);
+        var repeat = UnderworldTerrainLifecycle.Evaluate(instanceDomain, sample, 777);
         Assert(first == repeat, "Terrain evaluation must be deterministic for the same seed and sample.");
         Assert(Math.Abs(first.Height - UnderworldTerrainLifecycle.BaseElevationMeters) <= UnderworldTerrainLifecycle.MaximumTerrainDelta + 0.0001d,
             "Terrain shaping must remain inside the bounded height delta around the region's base elevation.");
@@ -40,7 +45,7 @@ internal static class UnderworldTerrainLifecycleTests
         var foundDifferentBiome = false;
         for (var seed = 778; seed < 810; seed++)
         {
-            var candidate = UnderworldTerrainLifecycle.Evaluate(domain, sample, seed);
+            var candidate = UnderworldTerrainLifecycle.Evaluate(instanceDomain, sample, seed);
             if (candidate.Biome != first.Biome)
             {
                 foundDifferentBiome = true;
@@ -49,7 +54,7 @@ internal static class UnderworldTerrainLifecycleTests
         }
         Assert(foundDifferentBiome, "Derived seed must rotate outer biome provinces.");
 
-        var wet = UnderworldTerrainLifecycle.Evaluate(domain,
+        var wet = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
             new UnderworldTerrainSample(0d, 0d, 0d, 0d, 10d, 0.4d), 1);
         Assert(wet.WaterDepth == 0d, "Ground generated above the water line must report no water depth.");
 
@@ -58,13 +63,13 @@ internal static class UnderworldTerrainLifecycleTests
         var transitionRadius = domain.RadiusMeters *
             ((UnderworldTerrainLifecycle.CentralFungalRadiusFraction + UnderworldTerrainLifecycle.FungalTransitionRadiusFraction) * 0.5d);
         var transitionSample = new UnderworldTerrainSample(transitionRadius, 0d, 0d, 30d, 18d, 0.9d);
-        var transition = UnderworldTerrainLifecycle.Evaluate(domain, transitionSample, 777);
+        var transition = UnderworldTerrainLifecycle.Evaluate(instanceDomain, transitionSample, 777);
         Assert(transition.Admitted && transition.Biome != UnderworldTerrainBiome.FungalForest,
             "Transition-band samples must retain their outer province identity.");
         Assert(transition.Hazard01 >= 0d && transition.Hazard01 < 0.8d,
             "Transition band must attenuate hostile biome hazard near the protected center.");
 
-        var innerEdge = UnderworldTerrainLifecycle.Evaluate(domain,
+        var innerEdge = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
             transitionSample with { X = domain.RadiusMeters * (UnderworldTerrainLifecycle.CentralFungalRadiusFraction + 0.0001d) }, 777);
         Assert(Math.Abs(innerEdge.Height - UnderworldTerrainLifecycle.BaseElevationMeters) < UnderworldTerrainLifecycle.MaximumTerrainDelta,
             "Crossing the central biome edge must not create a maximum-delta terrain cliff.");
@@ -88,7 +93,7 @@ internal static class UnderworldTerrainLifecycleTests
         for (var step = 0; step < 96; step++)
         {
             var x = -domain.RadiusMeters * 0.5d + step * (domain.RadiusMeters / 96d);
-            var probe = UnderworldTerrainLifecycle.Evaluate(domain,
+            var probe = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
                 new UnderworldTerrainSample(x, 0d, 512d, 30d, 0d,
                     UnderworldTerrainNoise.Fractal01(precisionSeed, x, 512d)), precisionSeed);
             if (!probe.Admitted) continue;
@@ -107,7 +112,7 @@ internal static class UnderworldTerrainLifecycleTests
         var screenHigh = double.MinValue;
         for (var step = 0; step <= 50; step++)
         {
-            var probe = UnderworldTerrainLifecycle.Evaluate(domain,
+            var probe = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
                 new UnderworldTerrainSample(step, 0d, 0d, 30d, 0d,
                     UnderworldTerrainNoise.Fractal01(precisionSeed, step, 0d)), precisionSeed);
             if (!probe.Admitted) continue;
@@ -122,7 +127,7 @@ internal static class UnderworldTerrainLifecycleTests
         var previous = double.NaN;
         for (var step = 0; step <= 400; step++)
         {
-            var probe = UnderworldTerrainLifecycle.Evaluate(domain,
+            var probe = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
                 new UnderworldTerrainSample(step, 0d, 96d, 30d, 0d,
                     UnderworldTerrainNoise.Fractal01(precisionSeed, step, 96d)), precisionSeed);
             if (!probe.Admitted) continue;
