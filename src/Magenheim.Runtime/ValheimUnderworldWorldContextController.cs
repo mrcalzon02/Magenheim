@@ -5,19 +5,20 @@ using Magenheim.Core.Underworld;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Owns the active logical gameplay context independently of the player's physical transform.
-/// Surface/Underworld membership is an instance transition decision; it must never be inferred
-/// from a hidden Surface coordinate band.
+/// Owns the currently selected Magenheim instance-world context independently of the player's
+/// physical transform. This is a transition/context boundary only: native Underworld terrain,
+/// exploration and persistence remain owned by their dedicated instance authorities and must
+/// never be inferred from or projected into Surface coordinates.
 /// </summary>
 internal sealed class ValheimUnderworldWorldContextController : IUnderworldWorldContextController
 {
     private readonly ManualLogSource _log;
+    private readonly object _gate = new();
     private UnderworldWorldIdentity? _activeIdentity;
     private UnderworldLayer _activeLayer = UnderworldLayer.Surface;
 
-    internal ValheimUnderworldWorldContextController(UnderworldSpatialDomainDefinition spatialDomain, ManualLogSource log)
+    internal ValheimUnderworldWorldContextController(ManualLogSource log)
     {
-        _ = spatialDomain ?? throw new ArgumentNullException(nameof(spatialDomain)); // compatibility ctor; placement is not context authority.
         _log = log ?? throw new ArgumentNullException(nameof(log));
     }
 
@@ -29,21 +30,35 @@ internal sealed class ValheimUnderworldWorldContextController : IUnderworldWorld
         if (!SameWorld(liveIdentity, identity))
             throw new InvalidOperationException("The active Valheim parent world does not match the Underworld transition identity.");
 
-        _activeIdentity = identity;
-        _activeLayer = layer;
-        _log.LogDebug($"Activated logical Magenheim context {layer} for instance {identity.DerivedWorldId}.");
+        lock (_gate)
+        {
+            if (_activeIdentity is not null && !SameInstance(_activeIdentity, identity))
+                throw new InvalidOperationException(
+                    $"Magenheim world context is already bound to Underworld instance '{_activeIdentity.DerivedWorldId}' and cannot be rebound to '{identity.DerivedWorldId}' before world unload.");
+
+            if (_activeIdentity is not null && _activeLayer == layer)
+                return;
+
+            _activeIdentity = identity;
+            _activeLayer = layer;
+            _log.LogDebug($"Activated Magenheim instance context {layer} for instance {identity.DerivedWorldId}.");
+        }
     }
 
     public bool IsActive(UnderworldWorldIdentity identity, UnderworldLayer layer)
     {
-        if (identity is null || _activeIdentity is null || _activeLayer != layer) return false;
-        return SameInstance(_activeIdentity, identity);
+        if (identity is null) return false;
+        lock (_gate)
+            return _activeIdentity is not null && _activeLayer == layer && SameInstance(_activeIdentity, identity);
     }
 
     internal void ResetForWorldUnload()
     {
-        _activeIdentity = null;
-        _activeLayer = UnderworldLayer.Surface;
+        lock (_gate)
+        {
+            _activeIdentity = null;
+            _activeLayer = UnderworldLayer.Surface;
+        }
         _log.LogDebug("Released explicit Underworld instance context for world unload.");
     }
 

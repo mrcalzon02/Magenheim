@@ -10,7 +10,6 @@ internal sealed class UnderworldRuntimeServices
     private readonly ValheimUnderworldWorldContextController _worldContext;
 
     private UnderworldRuntimeServices(
-        UnderworldSpatialDomainDefinition spatialDomain,
         UnderworldInstanceTerrainDomain terrainDomain,
         UnderworldTransitionStateStore stateStore,
         UnderworldDeepBoonSelectionStore deepBoonSelectionStore,
@@ -20,15 +19,16 @@ internal sealed class UnderworldRuntimeServices
         ValheimUnderworldTransitionPlacementHost placementHost,
         StoredUnderworldTransitionHost transitionHost,
         UnderworldWorldTransitionManager transitionManager,
-        UnderworldTransitionRecoveryRuntime recoveryRuntime)
+        UnderworldTransitionRecoveryRuntime recoveryRuntime,
+        ManualLogSource log)
     {
-        SpatialDomain=spatialDomain;TerrainDomain=terrainDomain;StateStore=stateStore;DeepBoonSelectionStore=deepBoonSelectionStore;ExplorationStateStore=explorationStateStore;InstanceLifecycle=instanceLifecycle;
+        TerrainDomain=terrainDomain;StateStore=stateStore;DeepBoonSelectionStore=deepBoonSelectionStore;ExplorationStateStore=explorationStateStore;InstanceLifecycle=instanceLifecycle;
         _worldContext=worldContext;PlacementHost=placementHost;TransitionHost=transitionHost;
         TransitionManager=transitionManager;RecoveryRuntime=recoveryRuntime;
+        ChunkStreaming=new UnderworldInstanceChunkStreamingRuntime(this,log);
+        ChunkMaterializer=new UnderworldInstanceChunkMaterializer(this,log);
     }
 
-    /// <summary>Legacy engine-placement adapter. Never use this as Underworld gameplay authority.</summary>
-    internal UnderworldSpatialDomainDefinition SpatialDomain{get;}
     /// <summary>Native instance-local terrain authority. Coordinates consumed through this domain are Underworld coordinates.</summary>
     internal UnderworldInstanceTerrainDomain TerrainDomain{get;}
     internal UnderworldTransitionStateStore StateStore{get;}
@@ -39,24 +39,27 @@ internal sealed class UnderworldRuntimeServices
     internal StoredUnderworldTransitionHost TransitionHost{get;}
     internal UnderworldWorldTransitionManager TransitionManager{get;}
     internal UnderworldTransitionRecoveryRuntime RecoveryRuntime{get;}
+    /// <summary>Native instance chunk residency and deterministic payload authority.</summary>
+    internal UnderworldInstanceChunkStreamingRuntime ChunkStreaming{get;}
+    /// <summary>Unity presentation of resident native chunks; never a terrain-authority source.</summary>
+    internal UnderworldInstanceChunkMaterializer ChunkMaterializer{get;}
 
     internal static UnderworldRuntimeServices Create(string pluginConfigDirectory,ManualLogSource log)
     {
         if(string.IsNullOrWhiteSpace(pluginConfigDirectory))throw new ArgumentException("Plugin config directory is required for Underworld persistence.",nameof(pluginConfigDirectory));
         if(log is null)throw new ArgumentNullException(nameof(log));
         var root=Path.Combine(Path.GetFullPath(pluginConfigDirectory),"Magenheim");
-        var spatialDomain=UnderworldSpatialDomain.CreateDefault();
         var terrainDomain=UnderworldInstanceTerrainDomain.CreateDefault();
         var stateStore=new UnderworldTransitionStateStore(Path.Combine(root,"underworld-transitions"),log);
         var deepBoonSelectionStore=new UnderworldDeepBoonSelectionStore(Path.Combine(root,"underworld-deep-boon-selections"),log);
         var explorationStateStore=new UnderworldExplorationStateStore(Path.Combine(root,"underworld-exploration"),log);
         var instanceLifecycle=new UnderworldInstanceLifecycle();
-        var worldContext=new ValheimUnderworldWorldContextController(spatialDomain,log);
+        var worldContext=new ValheimUnderworldWorldContextController(log);
         var placementHost=new ValheimUnderworldTransitionPlacementHost(worldContext,log);
         var transitionHost=new StoredUnderworldTransitionHost(stateStore,placementHost);
         var transitionManager=new UnderworldWorldTransitionManager(transitionHost,instanceLifecycle,log);
         var recoveryRuntime=new UnderworldTransitionRecoveryRuntime(stateStore,transitionManager,log);
-        var services=new UnderworldRuntimeServices(spatialDomain,terrainDomain,stateStore,deepBoonSelectionStore,explorationStateStore,instanceLifecycle,worldContext,placementHost,transitionHost,transitionManager,recoveryRuntime);
+        var services=new UnderworldRuntimeServices(terrainDomain,stateStore,deepBoonSelectionStore,explorationStateStore,instanceLifecycle,worldContext,placementHost,transitionHost,transitionManager,recoveryRuntime,log);
         UnderworldTerrainRuntime.Configure(services,log);
         return services;
     }
@@ -79,6 +82,6 @@ internal sealed class UnderworldRuntimeServices
     internal bool TryResolveLocalSession(out UnderworldWorldIdentity? identity,out string playerId,out string diagnostic)=>
         UnderworldRuntimeIdentityResolver.TryResolveLocalSession(out identity,out playerId,out diagnostic)&&identity is not null;
 
-    internal void ResetForWorldUnload(){InstanceLifecycle.Reset();_worldContext.ResetForWorldUnload();}
-    internal void Shutdown(){InstanceLifecycle.Reset();_worldContext.ResetForWorldUnload();}
+    internal void ResetForWorldUnload(){ChunkMaterializer.Clear();ChunkStreaming.Clear();InstanceLifecycle.Reset();_worldContext.ResetForWorldUnload();}
+    internal void Shutdown(){ChunkMaterializer.Clear();ChunkStreaming.Clear();InstanceLifecycle.Reset();_worldContext.ResetForWorldUnload();}
 }

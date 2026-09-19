@@ -1,21 +1,23 @@
 # Underworld world-context architecture decision — 2026-09-15
 
-## Decision
+## Status: SUPERSEDED
 
-Magenheim will not hot-swap Valheim's active `World`, `WorldGenerator`, `ZoneSystem`, or `ZNet` context while players remain connected. The Underworld derived identity remains authoritative as a deterministic logical namespace, but the playable layer is hosted inside the already-active parent Valheim world.
+This validation record is retained only as history. Its former conclusion — hosting the playable Underworld as a logical layer inside the parent Surface world — is **not authoritative and must not be implemented**.
 
-This replaces the earlier assumption that the derived identity necessarily required a second live Valheim world/save. Public/current Valheim operational behavior continues to model one active world per running server instance; changing the active world is a restart boundary. Existing mod practice also changes generation data inside the active world rather than exchanging the live network world beneath connected peers.
+The current authority is `INSTRUCTIONS.md`, `docs/UNDERWORLD_DESIGN.md` §6, `docs/UNDERWORLD_INSTANCE_CONTRACT.md`, and `Magenheim.Core.Underworld.UnderworldInstanceContract`.
 
-## Implementation consequence
+## Corrected decision
 
-`ValheimLogicalUnderworldWorldContextController` now implements the final `IUnderworldWorldContextController` framework seam without mutating engine-owned world singletons. It binds once to one deterministic parent/derived identity pair, tracks the authoritative logical layer requested by the transition transaction, fails closed without an active `ZNet` session, rejects cross-world-pair reuse, and can be reset on world unload.
+The Underworld is a dedicated Magenheim-owned instanced world-space. It is not a distant Surface landmass, not a coordinate-projected region of Surface `WorldGenerator`, and not a second save that the player manually selects. Surface and Underworld remain one progression experience while the Underworld owns its own terrain/chunk, biome/environment, exploration, map and persistence authorities.
 
-The existing transition manager, atomic state store, recovery runtime and placement observer remain unchanged. Their derived `WorldId` values are logical Magenheim context identifiers. Runtime generation must place Underworld terrain/interiors into an isolated reserved coordinate/instance domain inside the parent world and must derive all layout decisions from `DerivedSeedFingerprint`/`DerivedSeed32` so the layer remains deterministic and does not collide with ordinary surface generation.
+The active Valheim parent-world metadata may be used to authenticate and deterministically derive the instance identity. It must not be treated as proof that Underworld gameplay is hosted by Surface generation.
 
-## Why this is the smallest safe repair
+`ValheimUnderworldWorldContextController` is therefore only a transition/context-selection boundary. It may bind and validate the deterministic parent/derived identity pair and selected layer, but it is not itself the terrain or instance-world implementation. Native instance terrain is supplied through `UnderworldInstanceTerrainDomain`, `UnderworldInstanceChunkGrid`, `UnderworldInstanceChunkSampler` and `UnderworldInstanceChunkStreamingRuntime`; renderer/materializer and remaining engine integration must consume those native instance payloads without routing them through Surface `WorldGenerator`.
 
-Attempting to mutate the active engine world would require coordinated teardown/reinitialization of network persistence, ZDO ownership, world generation, zone state, peers and saves. There is no repository-proven supported hot-swap contract for that operation. Treating the derived identity as a logical layer preserves every Core transition/persistence invariant already implemented while removing the unsafe engine-lifecycle dependency.
+## Runtime invariant
+
+A runtime session binds to one deterministic derived Underworld identity for the lifetime of the parent-world session. Concurrent or recovered transitions carrying a different derived identity must fail closed rather than silently replacing instance authority. Binding is released only at the parent world-unload/shutdown boundary.
 
 ## Acceptance still required
 
-This decision completes the world-context framework seam at source level, not U2 runtime acceptance. The next slice must define the reserved Underworld spatial domain and deterministic coordinate mapping, then wire the logical controller into plugin lifecycle/reconnect recovery. Disposable-world validation must still prove Surface -> Underworld -> Surface, interruption recovery, reload/reconnect while below, multiplayer isolation and no surface-generation collision before U2 can close.
+Source-level native chunk generation and persistence do not by themselves complete runtime acceptance. U2 remains open until the runtime materializer/engine boundary proves Surface -> Underworld -> Surface, interruption recovery, reload/reconnect while below, multiplayer isolation, dedicated map/exploration behavior, and absence of Surface-generation collision in a disposable live world.

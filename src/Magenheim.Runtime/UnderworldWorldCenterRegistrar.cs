@@ -6,10 +6,9 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Composes the unique Deepstone Conclave presentation for the logical Underworld.
-/// This is deliberately not a ZoneManager location: registering it as ordinary parent-world
-/// worldgen would violate the reserved spatial-domain authority. Admission is owned by the
-/// world-session lifecycle after the derived Underworld identity can be resolved.
+/// Composes the unique Deepstone Conclave presentation at the native Underworld instance origin.
+/// This is deliberately not a ZoneManager location: admission is owned by the world-session
+/// lifecycle after the derived Underworld identity and native terrain authority are active.
 /// </summary>
 internal static class UnderworldWorldCenterRegistrar
 {
@@ -29,17 +28,15 @@ internal static class UnderworldWorldCenterRegistrar
         new("StoneOfDecay", "magenheim.underworld.deepstone.decay"),
     };
 
-    internal static GameObject Create(UnderworldWorldIdentity identity, UnderworldSpatialDomainDefinition spatialDomain, ManualLogSource log)
+    internal static GameObject Create(UnderworldWorldIdentity identity, ManualLogSource log)
     {
         if (identity is null) throw new ArgumentNullException(nameof(identity));
-        if (spatialDomain is null) throw new ArgumentNullException(nameof(spatialDomain));
         if (log is null) throw new ArgumentNullException(nameof(log));
 
         var logical = LogicalCenter with { WorldId = identity.DerivedWorldId };
-        var host = UnderworldSpatialDomain.ToHostAnchor(spatialDomain, identity, UnderworldLayer.Underworld, logical);
         var root = new GameObject(LocationName);
-        root.transform.position = ResolveGroundedCenterPosition(host);
-        root.transform.rotation = Quaternion.Euler(0f, host.HeadingDegrees, 0f);
+        root.transform.position = ResolveGroundedCenterPosition(logical);
+        root.transform.rotation = Quaternion.Euler(0f, logical.HeadingDegrees, 0f);
         BuildStandingStones(root.transform);
 
         var gatePrefab = Jotunn.Managers.PrefabManager.Instance.GetPrefab(UnderworldDeepGateRegistrar.PrefabName)
@@ -52,34 +49,16 @@ internal static class UnderworldWorldCenterRegistrar
         endpoint.Role = UnderworldGateRole.ReturnToSurface;
         if (gate.GetComponent<UnderworldDeepGateProgressionRuntime>() == null) gate.AddComponent<UnderworldDeepGateProgressionRuntime>();
 
-        log.LogInfo($"Admitted Underworld center '{LocationName}' at reserved host ({host.X:0.##}, {host.Y:0.##}, {host.Z:0.##}).");
+        log.LogInfo($"Admitted Underworld center '{LocationName}' at native instance ({root.transform.position.x:0.##}, {root.transform.position.y:0.##}, {root.transform.position.z:0.##}).");
         return root;
     }
 
-    private static Vector3 ResolveGroundedCenterPosition(UnderworldHostAnchor host)
+    private static Vector3 ResolveGroundedCenterPosition(UnderworldAnchor logical)
     {
-        // host.X/host.Z already carry the reserved region's offset, and the GetBiomeHeight postfix
-        // shapes exactly those columns, so querying the live world generator here grounds the
-        // Conclave on Underworld terrain inside the player's own world and save. Nothing about this
-        // path loads or derives a second world.
-        var x = (float)host.X;
-        var z = (float)host.Z;
-        var y = ZoneSystem.instance is null ? 30f : ZoneSystem.instance.m_waterLevel + 2f;
-        var generator = WorldGenerator.instance;
-        if (generator is not null)
-        {
-            try
-            {
-                var biome = generator.GetBiome(x, z);
-                y = generator.GetBiomeHeight(biome, x, z, out _) + 1.25f;
-            }
-            catch
-            {
-                // Admission can race early ZoneSystem/world-generator startup; the waterline fallback
-                // is intentionally playable and the lifecycle will still place the center in-world.
-            }
-        }
-        return new Vector3(x, y, z);
+        var terrain = UnderworldTerrainRuntime.SampleInstanceTerrain(logical.X, logical.Y, logical.Z);
+        if (!terrain.Admitted)
+            throw new InvalidOperationException("Native Underworld terrain authority did not admit the logical world center.");
+        return new Vector3((float)logical.X, (float)terrain.Height + 1.25f, (float)logical.Z);
     }
 
     private static void BuildStandingStones(Transform parent)
