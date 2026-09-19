@@ -38,8 +38,8 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         if(layer!=UnderworldLayer.Underworld){if(_worldCenter)Destroy(_worldCenter);_worldCenter=null;_worldCenterIdentity=null;_services.ChunkStreaming.Clear();return;}
         if(_worldCenter&&string.Equals(_worldCenterIdentity,identity.DerivedWorldId,StringComparison.Ordinal))return;
         if(_worldCenter)Destroy(_worldCenter);
-        try{_worldCenter=UnderworldWorldCenterRegistrar.Create(identity,_services.SpatialDomain,_log);_worldCenterIdentity=identity.DerivedWorldId;_log.LogInfo($"Admitted Underworld world center only for physical derived session '{identity.DerivedWorldId}'.");}
-        catch(Exception exception){_worldCenter=null;_worldCenterIdentity=null;_log.LogError($"Underworld reserved-domain center admission failed: {exception}");}
+        try{_worldCenter=UnderworldWorldCenterRegistrar.Create(identity,_log);_worldCenterIdentity=identity.DerivedWorldId;_log.LogInfo($"Admitted Underworld world center only for physical derived session '{identity.DerivedWorldId}'.");}
+        catch(Exception exception){_worldCenter=null;_worldCenterIdentity=null;_log.LogError($"Underworld native-instance center admission failed: {exception}");}
     }
     private void TryPlaceLocalUnderworldPlayer()
     {
