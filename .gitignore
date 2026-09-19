@@ -7,3 +7,4 @@ backups/
 __pycache__/
 artifacts/
 *.blend1
+build/

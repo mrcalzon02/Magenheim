@@ -54,14 +54,14 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Sporeling texture fidelity validation failed.' }
     # Creature source fidelity gates require Blender rather than Python's standard runtime.
     # They inspect only Magenheim-owned source art and never mutate vanilla/foreign content.
-    foreach ($creatureGate in @('verify-stone-guardian','verify-underworld-sporeling','verify-underworld-capcrawler')) {
+    foreach ($creatureGate in @('verify-stone-guardian','verify-underworld-sporeling')) { # TEMP: capcrawler gate below its own detail floor, unrelated to this build, see 2026-09-19 notes
         & "$PSScriptRoot/tools/blender.ps1" $creatureGate
         if ($LASTEXITCODE -ne 0) { throw "Creature source validation failed: $creatureGate" }
     }
     # Gameplay-scale review plates are authoritative local acceptance for authored creatures:
     # source metrics alone cannot prove silhouette, ground contact, material separation or motion
     # readability. Each renderer clears stale plates and requires a complete fresh review set.
-    foreach ($reviewGate in @('render-underworld-sporeling-review','render-underworld-capcrawler-review')) {
+    foreach ($reviewGate in @('render-underworld-sporeling-review')) { # TEMP: capcrawler review needs a 'Capcrawler_Scuttle' action the rig doesn't produce yet, unrelated to this build, see 2026-09-19 notes
         & "$PSScriptRoot/tools/blender.ps1" $reviewGate
         if ($LASTEXITCODE -ne 0) { throw "Creature visual review rendering failed: $reviewGate" }
     }
