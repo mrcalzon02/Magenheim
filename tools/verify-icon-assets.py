@@ -17,27 +17,29 @@ MAGENHEIM_ICON_TARGET_SIZE to a larger square size for higher-resolution review/
 Set MAGENHEIM_ENFORCE_ICON_TARGET=1 for asset-release/acceptance passes: every shipped icon
 below the configured target then becomes a hard failure. Normal compatibility builds continue
 to enumerate legacy-resolution debt without destructively blocking unrelated development.
-An icon is judged on three measures, not one. A single "fraction of the frame with alpha" floor
+An icon is judged on four measures, not one. A single "fraction of the frame with alpha" floor
 cannot express what this check is for: it conflates how a subject is placed with how thick the
 subject is. Every one of the 32 staff icons is framed the same way -- visible bounding box 78.5%
 to 84.4% of the icon wide, 64.5% to 69.9% tall -- yet frame coverage runs from 3.6% to 9.9%,
 because a staff is a hairline shaft and the tiers differ only in how much mass the head carries.
 A flat 6% floor therefore rejected the six thinnest correctly-rendered staves, and no change to
 render-staff-icons.py could have satisfied it: raising spirit-simple past 6% needs roughly 1.65x
-linear scale, which crops the staff out of frame. The three measures separate the defects:
+linear scale, which crops the staff out of frame. The four measures separate the defects:
 
   * frame coverage -- catches a blank or near-blank render, and (at the top) an icon that is
     effectively a filled square with no silhouette;
-  * visible bounding-box area -- catches a subject rendered tiny or pushed into a corner, which
-    frame coverage alone cannot distinguish from a correctly framed thin one;
+  * visible bounding-box area -- catches a subject rendered too small;
+  * edge clearance -- catches a subject pushed into or cropped by the frame while still having
+    a perfectly plausible bounding-box area;
   * ink density inside that bounding box -- catches an outline-only or ghost render whose box is
     large but whose subject is not actually there.
 
 Review environments may tighten any of them with MAGENHEIM_ICON_MIN_COVERAGE,
-MAGENHEIM_ICON_MAX_COVERAGE, MAGENHEIM_ICON_MIN_BOX_FILL and MAGENHEIM_ICON_MIN_INK_DENSITY
-without changing checked-in policy. Note that low ink density across the whole staff family
-(6.4%-18.8%, against 47%-85% for every other icon) is real readability debt recorded in
-BACKLOG.md; it is an icon-composition problem, not something a threshold can decide.
+MAGENHEIM_ICON_MAX_COVERAGE, MAGENHEIM_ICON_MIN_BOX_FILL, MAGENHEIM_ICON_MIN_EDGE_CLEARANCE and
+MAGENHEIM_ICON_MIN_INK_DENSITY without changing checked-in policy. Note that low ink density
+across the whole staff family (6.4%-18.8%, against 47%-85% for every other icon) is real
+readability debt recorded in BACKLOG.md; it is an icon-composition problem, not something a
+threshold can decide.
 Exits non-zero on structural failures so build.ps1 fails the build.
 """
 import json
@@ -79,6 +81,7 @@ def coverage_setting(name: str, default: float) -> float:
 MIN_VISIBLE_ALPHA_COVERAGE = coverage_setting('MAGENHEIM_ICON_MIN_COVERAGE', 0.015)
 MAX_VISIBLE_ALPHA_COVERAGE = coverage_setting('MAGENHEIM_ICON_MAX_COVERAGE', 0.94)
 MIN_VISIBLE_BOX_FILL = coverage_setting('MAGENHEIM_ICON_MIN_BOX_FILL', 0.22)
+MIN_EDGE_CLEARANCE = coverage_setting('MAGENHEIM_ICON_MIN_EDGE_CLEARANCE', 0.01)
 MIN_VISIBLE_INK_DENSITY = coverage_setting('MAGENHEIM_ICON_MIN_INK_DENSITY', 0.04)
 if MIN_VISIBLE_ALPHA_COVERAGE >= MAX_VISIBLE_ALPHA_COVERAGE:
     raise SystemExit(
@@ -134,12 +137,12 @@ def decode_png(path: Path) -> tuple[int, int, int, bytes]:
     return width, height, colour, raw
 
 
-def silhouette_metrics(raw: bytes, width: int, height: int) -> tuple[float, float, float]:
+def silhouette_metrics(raw: bytes, width: int, height: int) -> tuple[float, float, float, float]:
     """Decode PNG filters enough to measure the actual visible RGBA silhouette without Pillow.
 
     Returns (frame coverage, visible bounding-box area as a fraction of the icon, ink density
-    inside that bounding box). An icon with no visible pixels at all returns zeros, which fails
-    every floor.
+    inside that bounding box, minimum edge clearance). An icon with no visible pixels at all
+    returns zeros, which fails every floor.
     """
     stride = width * 4
     previous = bytearray(stride)
@@ -184,9 +187,11 @@ def silhouette_metrics(raw: bytes, width: int, height: int) -> tuple[float, floa
             max_y = y
         previous = row
     if max_x < 0:
-        return 0.0, 0.0, 0.0
+        return 0.0, 0.0, 0.0, 0.0
     box = (max_x - min_x + 1) * (max_y - min_y + 1)
-    return visible / (width * height), box / (width * height), visible / box
+    edge_clearance = min(min_x / width, (width - 1 - max_x) / width,
+                         min_y / height, (height - 1 - max_y) / height)
+    return visible / (width * height), box / (width * height), visible / box, edge_clearance
 
 
 # 1. Every shipped icon must decode completely, carry real alpha, and occupy a useful inventory silhouette.
@@ -204,13 +209,15 @@ for path in icon_files:
         failures.append(f'{path.name}: colour type {colour}, expected 6 (RGBA)')
     elif width == height:
         try:
-            coverage, box_fill, ink_density = silhouette_metrics(raw, width, height)
+            coverage, box_fill, ink_density, edge_clearance = silhouette_metrics(raw, width, height)
             if coverage < MIN_VISIBLE_ALPHA_COVERAGE:
                 failures.append(f'{path.name}: visible silhouette occupies only {coverage:.1%} of the icon; the render is effectively blank')
             elif coverage > MAX_VISIBLE_ALPHA_COVERAGE:
                 failures.append(f'{path.name}: visible silhouette occupies {coverage:.1%}; icon is effectively a filled square')
             elif box_fill < MIN_VISIBLE_BOX_FILL:
-                failures.append(f'{path.name}: subject occupies only {box_fill:.1%} of the icon area; it is rendered too small or off-centre')
+                failures.append(f'{path.name}: subject occupies only {box_fill:.1%} of the icon area; it is rendered too small')
+            elif edge_clearance < MIN_EDGE_CLEARANCE:
+                failures.append(f'{path.name}: visible subject leaves only {edge_clearance:.1%} edge clearance; it is cropped or too close to the frame')
             elif ink_density < MIN_VISIBLE_INK_DENSITY:
                 failures.append(f'{path.name}: only {ink_density:.1%} of the subject bounding box is drawn; the render is an outline or a ghost')
         except Exception as error:  # noqa: BLE001
@@ -270,5 +277,5 @@ print(f'PASS: {len(icon_files)} icons decode as square RGBA >={LEGACY_ICON_FLOOR
       f'{len(staff_models)} staff models carry a matching icon; '
       f'all literal EarthAssets.Icon references resolve; target={ICON_TARGET_SIZE}px; '
       f'coverage={MIN_VISIBLE_ALPHA_COVERAGE:.1%}-{MAX_VISIBLE_ALPHA_COVERAGE:.0%}, '
-      f'box_fill>={MIN_VISIBLE_BOX_FILL:.0%}, ink_density>={MIN_VISIBLE_INK_DENSITY:.0%}; '
-      f'enforce_target={ENFORCE_ICON_TARGET}.')
+      f'box_fill>={MIN_VISIBLE_BOX_FILL:.0%}, edge_clearance>={MIN_EDGE_CLEARANCE:.1%}, '
+      f'ink_density>={MIN_VISIBLE_INK_DENSITY:.0%}; enforce_target={ENFORCE_ICON_TARGET}.')
