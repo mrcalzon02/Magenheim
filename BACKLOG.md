@@ -110,109 +110,21 @@ push; that did not happen.
   `Continue` for the gate block only — where every call already checks `$LASTEXITCODE` and each
   `.ps1` gate throws — restoring `Stop` before the packaging section's cmdlets.
 
-## P0.-1 — Underworld world-hosting correction (TOP PRIORITY, raised 2026-09-17, user directive)
+## P0.-1 — Underworld instance-world correction (TOP PRIORITY, corrected 2026-09-18)
 
-The Underworld was implemented as a **separate save file** that the player reaches by quitting to
-the main menu. That is not the design and never was the intent: it must be a region of the same
-world and same save, concurrent with the surface, hosted in a reserved coordinate band the way
-Valheim's own instanced dungeon interiors are. See `INSTRUCTIONS.md` and the rewritten
-`docs/UNDERWORLD_DESIGN.md` §6, which are now the binding authorities.
+The Underworld is a **dedicated Magenheim instanced world-space**, not a second manually selected save and not an x=40000 Surface-world continent. The 2026-09-17 horizontal-host-band correction over-corrected the earlier second-save implementation and is now superseded by current user authority and the corrected INSTRUCTIONS.md / UNDERWORLD_DESIGN.md §6.
 
-Root cause of the divergence: `UNDERWORLD_DESIGN.md` §6 itself specified "a separate persistent
-world instance" and speculated about "controlled world-context switching". Work was then built
-faithfully against that text. The document was the defect, so correcting only the code would have
-let the next session rebuild it.
+Preserve the reusable authorities: six-biome terrain rules, deterministic layout, exploration serialization, progression, ecology, transition transaction/recovery, Conclave content and independent minimap textures. Replace adapters whose correctness depends on the 40 km host band.
 
-What survived and must be kept: `UnderworldSpatialDomain` (the logical-to-host band mapping, still
-wired into `UnderworldWorldCenterRegistrar` and `ValheimUnderworldTransitionPlacementHost`), the
-six-biome terrain authority, the `GetBiomeHeight`/`GetBiome` postfixes, the Conclave, creatures,
-flora and progression work. None of that is wasted.
+- [x] **Correct authority documents. DONE 2026-09-18.** INSTRUCTIONS.md and UNDERWORLD_DESIGN.md now make the dedicated instance-world boundary explicit and forbid the x=40000 far-landmass model as final architecture.
+- [x] **Stop extending host-band pin projection. DONE 2026-09-18.** The temporary projected-pin presentation mutation is removed; native instance coordinates will feed the Underworld map.
+- [ ] **Introduce the instance lifecycle authority.** Own instance identity, admission, activation/deactivation, logical origin, chunk address space and recovery without hot-swapping Valheim singleton World/ZNet state.
+- [ ] **Move terrain generation behind an instance chunk provider.** Reuse UnderworldTerrainLifecycle rules, but stop generating the Underworld through distant Surface WorldGenerator.GetBiomeHeight/GetBiome columns.
+- [ ] **Replace host-band placement.** Deep Gate entry/return, Conclave placement, structures and ecology must consume native instance anchors rather than UnderworldSpatialDomain.ToHostAnchor x=40000 placement.
+- [ ] **Reconcile persistence.** Key terrain/chunk, exploration and world-object state to the parent-world + Underworld-instance identity; prove save/load and reconnect without a user-visible second-save workflow.
+- [ ] **Multiplayer admission.** Server owns instance identity/configuration and peer admission; prove Surface and Underworld participants cannot cross-contaminate spawn/environment/map state.
+- [ ] **Runtime acceptance.** Disposable-world Surface -> Underworld -> Surface, interrupted entry recovery, save/reload below, reconnect, host/client and dedicated-server proof.
 
-- [x] **Remove the physical world-switch layer. DONE 2026-09-17.** Removed `UnderworldPhysicalWorldSwitchDriver`,
-  `UnderworldWorldSwitchDispatchRuntime`, `UnderworldPhysicalWorldSwitchCoordinator`,
-  `UnderworldWorldPairManifestStore`, the loader boundary and the unfinished `UnderworldTravelRuntime` branch.
-  Runtime composition now owns one same-world context plus the existing durable transition/placement/recovery graph.
-  Existing `.worldpair` files from older test builds are inert legacy config and are no longer read or written.
-- [x] **Reserved region converted from a vertical band to a horizontal region.** DONE: schema 2,
-  `seed32-quarter-turn-offset-v2`, centre (40000, 0), radius 8000m, `HostBaseY` 0 so Underworld
-  terrain generates at ordinary altitudes. A vertical band at the same (x, z) could host objects but
-  never terrain, which is the dead end that produced the separate save.
-- [x] **Make the biome sector agree with the region. SOURCE-FIXED 0.0.63, live acceptance open.**
-  Almost everything except terrain height reads `WorldGenerator.GetBiomeSector`, not `GetBiome`:
-  weather, sky, ground texture, spawns, vegetation, minimap and the HUD biome. Root cause settled
-  from installed-assembly IL, not from the live probe: the patch was bound to
-  `GetBiomeSector(int gridx, int gridy, bool clamp)`, which clamps its grid indices into [0, 2047]
-  **unconditionally** — its own `clamp` argument is never read — and writes them with `starg`, so the
-  postfix read the clamped value. The biome map is 2048 cells at 12m, spanning only +/-12282m, and
-  the region sits at x = 40000: grid 4356 clamped to 2047, which converts back to 12282m, so
-  containment was tested 27.7km outside the region and could never pass. The probe only logged when
-  containment passed, so it could never have produced the evidence either.
-  **The region does not have to move.** Both world-space overloads still carry the true coordinate,
-  and a scan of every `GetBiomeSector` call site in `valheim_Data/Managed` shows nothing reaches the
-  grid overload except those two overloads themselves. The override is now bound to
-  `GetBiomeSector(float, float, bool)` and `GetBiomeSector(Vector3, bool)`; the grid patch and the
-  probe are removed. Harmony patch targets 27 -> 28. Unverified in play: that the HUD stops logging
-  `GetBiome error Ocean -> Meadows`, that `SpawnSystem.UpdateSpawnList` stops throwing, that ocean
-  fish stop spawning on dry ground, and that ground texture, weather and sky change. See
-  `docs/validation/2026-09-18-underworld-biome-sector-world-space-binding.md`.
-- [ ] **Per-layer map state.** `Minimap::GenerateWorldMap` sizes its texture to the vanilla world, so
-  the region is off the canvas: no unfurling cloud and both layers share one plane. Design section 25
-  already requires separate exploration state per layer.
-- [ ] **Underworld sky and environment.** A Meadows-consistent sector stops the Ashlands burning
-  storm but Meadows sky is not the Underworld's sky. Custom environment and skybox.
-- [ ] **Deep Gate renders magenta.** It clones `Morkhalla_jotun_gate` and registers, but magenta
-  means a broken shader, so either the donor or `ApplyUnderworldMaterials` is wrong. Diff the donor's
-  real materials. "Aesir Passage" is only the localized string for the `hud_pin_dnboss` pin; no 1.0.12
-  asset carries that name.
-- [x] **Terrain relief. DONE.** Region generates, streams and reads as real landscape: 3.50m across a
-  50m screen in the central basin with a 0.37m steepest metre-step, 159m across the region in
-  Fracture Zones from -68m ravines to +92m walls. Blackwater is 100% submerged, Fungal Forest 0%.
-- [x] **Re-ground the Conclave on the reserved host region. ALREADY DONE; verified 2026-09-18.**
-  `UnderworldWorldCenterRegistrar.Create` maps the logical centre through
-  `UnderworldSpatialDomain.ToHostAnchor` and grounds it with
-  `WorldGenerator.GetBiomeHeight` at those host coordinates — the same columns the terrain postfix
-  shapes — so the Conclave stands on Underworld terrain inside the player's own world and save. The
-  derived-world placement this item was raised against is gone. Left checked rather than deleted so
-  the next session does not re-open it. Live placement is still unobserved.
-- [ ] **Layer travel is already a teleport. It has no caller. (Re-diagnosed 2026-09-18.)** The
-  mechanism is finished and correct: `ValheimUnderworldTransitionPlacementHost.PlacePlayer` maps the
-  logical anchor through `UnderworldSpatialDomain.ToHostAnchor` and calls `Player.TeleportTo` inside
-  the same session, `UnderworldWorldTransitionManager` drives prepare -> target-ready -> place ->
-  observe -> commit with recovery to the source anchor on any failure, and there is no `LoadWorld`,
-  `FejdStartup` or `.worldpair` left anywhere in `src/`. What is missing is that **nothing calls it**:
-  `ExecutePrepared` has no caller, and neither `BeginEnter` nor `BeginReturn` is invoked from the
-  runtime. A player reaches the Underworld today only by being moved into the region by other means,
-  after which `UnderworldRuntimeIdentityResolver` infers the layer from position and
-  `UnderworldWorldSessionLifecycle.TryPlaceLocalUnderworldPlayer` performs a one-shot *test* arrival
-  at the Conclave. The remaining work is the caller, not the mechanism:
-  - an `Interactable` on the Deep Gate, following the `DeepFractureTraversalPortal` pattern already
-    in the codebase, that resolves the session, captures the player's current surface anchor as the
-    source, and runs `BeginEnter` + `ExecutePrepared`;
-  - `UnderworldTransitionRules.BeginEnter` takes a `DarkThroneEncounterSnapshot` only to evaluate
-    `UnderworldUnlockRules.IsUnlocked`, and the runtime holds the verified flag
-    (`UnderworldProgressionAuthority.IsUnlocked`) rather than the snapshot. Give Core an explicit
-    verified-unlock parameter. **Do not synthesize a defeated encounter to satisfy the signature.**
-  - the return-side endpoint already exists — `UnderworldWorldCenterRegistrar` instantiates a Deep
-    Gate at `ReturnGateOffset` with `UnderworldGateRole.ReturnToSurface` — so it needs the same
-    interactable, running `BeginReturn` against the persisted `SurfaceReturnAnchor`. Both endpoints
-    are built and placed; neither can be used;
-  - `TryPlaceLocalUnderworldPlayer` then has to yield to the transition's own placement, or the two
-    will fight over where an arriving player stands.
-  Do not land the entry side without the return side.
-- [x] **Confirm the terrain-shaping band bounds against the reserved host band. DONE.** The runtime now keys `GetBiomeHeight`/`GetBiome` shaping directly from `ContainsHostColumn`; surface columns pass through untouched in the same session. Live play has verified the region generates and streams at the reserved host coordinates.
-- [x] **Seed question decided 2026-09-17 (user).** The Underworld uses the surface seed **verbatim**;
-  the map differs because the generation algorithm differs. Recorded in `INSTRUCTIONS.md` and §6.
-- [x] **Make terrain generation use the surface seed verbatim. DONE.** `UnderworldTerrainRuntime` captures the active surface `World.m_seed` on the main thread and feeds that seed into the deterministic terrain authority. The map differs because the generation algorithm differs.
-- [x] **Purge the separate-save language from the remaining docs and validation records. DONE
-  2026-09-18.** Audited every file mentioning a separate save, a derived save, a world pair, a
-  physical world switch or `LoadWorld`. The design and plan documents are clean — every hit in
-  `UNDERWORLD_DESIGN.md` is the corrected text that forbids it, and `MISTLANDS_CRYSTAL_FOES_PLAN.md`'s
-  "second save format" is about creature persistence. The real risk was two 2026-09-17 validation
-  records: a *handoff* written against the rejected architecture, which a future session could open
-  and execute as instructions, and the run record that executes it. Both now carry a superseded
-  banner pointing at `INSTRUCTIONS.md` and the same-world handoff. Their contents are deliberately
-  left intact — they are the evidence of how the dead end was found, and the execution protocol
-  forbids deleting evidence to tidy a record.
 
 ## P0.0 — Live play defects from the 0.0.52 session (TOP PRIORITY, raised 2026-09-16)
 
