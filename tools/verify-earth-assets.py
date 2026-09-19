@@ -16,7 +16,22 @@ names=['geode','rough','simple','crystal','advanced','master','shards','workstat
 legacy_floor=128
 icon_target=max(256,int(os.environ.get('MAGENHEIM_EARTH_ICON_TARGET_SIZE',os.environ.get('MAGENHEIM_ICON_TARGET_SIZE','256'))))
 enforce_target=os.environ.get('MAGENHEIM_ENFORCE_ICON_TARGET','').strip().lower() in {'1','true','yes','on'}
+edge_clearance=max(0.0,min(0.10,float(os.environ.get('MAGENHEIM_ICON_MIN_EDGE_CLEARANCE','0.01'))))
 legacy_icons=[]
+
+def verify_icon_readability(name, icon):
+    """Check framing on the pixels players actually see, not merely source resolution."""
+    proxy=icon.resize((64,64),Image.Resampling.LANCZOS)
+    alpha=proxy.getchannel('A')
+    mask=alpha.point(lambda a: 255 if a>=96 else 0)
+    bbox=mask.getbbox()
+    assert bbox,(name,'icon has no gameplay-scale silhouette')
+    opaque=sum(1 for a in alpha.getdata() if a>=96)/(64*64)
+    assert .08<=opaque<=.78,(name,f'gameplay-scale opaque coverage {opaque:.1%} outside 8-78% envelope')
+    left,top,right,bottom=bbox
+    clearance=min(left,top,64-right,64-bottom)/64
+    assert clearance>=edge_clearance,(name,f'gameplay-scale silhouette is clipped/crowded: {clearance:.1%} edge clearance < {edge_clearance:.1%}')
+
 for name in names:
     data=json.loads((root/f'{name}.mesh.json').read_text())
     v,uv,tri=data['vertices'],data['uv'],data['triangles']
@@ -37,18 +52,20 @@ for name in names:
     assert atlas[0]==atlas[1] and atlas[0]>=256,(name,'atlas must be square and >=256px',atlas)
     icon=Image.open(root/f'{name}.icon.png')
     assert icon.size[0]==icon.size[1] and icon.size[0]>=legacy_floor and icon.mode=='RGBA',(name,f'icon must be square RGBA and >={legacy_floor}px',icon.size,icon.mode)
+    verify_icon_readability(name,icon)
     if icon.size[0]<icon_target:
         legacy_icons.append(f'{name}.icon.png ({icon.size[0]}px < {icon_target}px)')
         assert not enforce_target,(name,f'icon is below enforced {icon_target}px target',icon.size)
     assert icon.getchannel('A').getextrema()==(0,255)
     assert (root/f'{name}.obj').is_file() and (root/f'{name}.mtl').is_file()
-    print(f'{name}: closed outward mesh, valid UVs, >=256px atlas and transparent icon verified ({icon.size[0]}px; target >={icon_target}px)')
+    print(f'{name}: closed outward mesh, valid UVs, >=256px atlas and gameplay-scale icon framing verified ({icon.size[0]}px; target >={icon_target}px)')
 skill=Image.open(root/'crystal-shaping.icon.png')
 assert skill.size[0]==skill.size[1] and skill.size[0]>=legacy_floor and skill.mode=='RGBA',('crystal-shaping',f'icon must be square RGBA and >={legacy_floor}px',skill.size,skill.mode)
+verify_icon_readability('crystal-shaping',skill)
 if skill.size[0]<icon_target:
     legacy_icons.append(f'crystal-shaping.icon.png ({skill.size[0]}px < {icon_target}px)')
     assert not enforce_target,('crystal-shaping',f'icon is below enforced {icon_target}px target',skill.size)
 if legacy_icons:
     print(f'NOTICE: {len(legacy_icons)} Earth icons remain below the {icon_target}px target (enforce={enforce_target}):')
     for item in legacy_icons: print('  - '+item)
-print(f'VERIFIED Earth assets; icon target={icon_target}px; enforce_target={enforce_target}')
+print(f'VERIFIED Earth assets; icon target={icon_target}px; edge_clearance={edge_clearance:.1%}; enforce_target={enforce_target}')
