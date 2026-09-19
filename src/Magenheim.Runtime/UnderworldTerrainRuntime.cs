@@ -40,7 +40,7 @@ internal static class UnderworldTerrainRuntime
         var waterLevel = ZoneSystem.instance is null ? 30f : ZoneSystem.instance.m_waterLevel;
         _world = new WorldSnapshot(world.m_seed, waterLevel);
         var domain = services.SpatialDomain;
-        _log?.LogInfo($"Underworld terrain shaping active for seed {world.m_seed} in the reserved region at ({domain.HostCenterX:0}, {domain.HostCenterZ:0}), playable radius {domain.RadiusMeters:0}m.");
+        _log?.LogInfo($"Underworld terrain shaping prepared for seed {world.m_seed} in the reserved region at ({domain.HostCenterX:0}, {domain.HostCenterZ:0}), playable radius {domain.RadiusMeters:0}m; runtime admission is controlled by the shared instance lifecycle.");
     }
 
     internal static bool TryGetCapturedSeed(out int seed)
@@ -56,7 +56,7 @@ internal static class UnderworldTerrainRuntime
     {
         var services = _services;
         var world = _world;
-        if (services is null || world is null) { raster = Array.Empty<UnderworldTerrainBiome>(); return false; }
+        if (services is null || world is null || !InstanceAvailable(services)) { raster = Array.Empty<UnderworldTerrainBiome>(); return false; }
         raster = UnderworldMapRaster.BuildBiomeRaster(services.SpatialDomain, world.Seed, width, height);
         return true;
     }
@@ -64,7 +64,7 @@ internal static class UnderworldTerrainRuntime
     internal static float ShapeHeight(float wx, float wy, float vanillaHeight)
     {
         var services = _services; var world = _world;
-        if (services is null || world is null) return vanillaHeight;
+        if (services is null || world is null || !InstanceAvailable(services)) return vanillaHeight;
         var domain = services.SpatialDomain;
         if (!UnderworldSpatialDomain.ContainsHostColumn(domain, wx, wy)) return vanillaHeight;
         var result = Evaluate(services, world, wx, wy, vanillaHeight);
@@ -74,9 +74,15 @@ internal static class UnderworldTerrainRuntime
     internal static UnderworldTerrainResult SampleTerrain(float wx, float wy, float vanillaHeight)
     {
         var services = _services; var world = _world;
-        if (services is null || world is null) return default;
+        if (services is null || world is null || !InstanceAvailable(services)) return default;
         if (!UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, wx, wy)) return default;
         return Evaluate(services, world, wx, wy, vanillaHeight);
+    }
+
+    private static bool InstanceAvailable(UnderworldRuntimeServices services)
+    {
+        var phase = services.InstanceLifecycle.Phase;
+        return phase == UnderworldInstancePhase.Admitting || phase == UnderworldInstancePhase.Active || phase == UnderworldInstancePhase.Releasing;
     }
 
     private static UnderworldTerrainResult Evaluate(UnderworldRuntimeServices services, WorldSnapshot world, float wx, float wy, float vanillaHeight)
@@ -91,41 +97,14 @@ internal static class UnderworldTerrainRuntime
     internal static Heightmap.Biome SelectVanillaBiome(float wx, float wy, Heightmap.Biome vanillaBiome)
     {
         var services = _services;
-        if (services is null || _world is null) return vanillaBiome;
+        if (services is null || _world is null || !InstanceAvailable(services)) return vanillaBiome;
         return UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, wx, wy) ? Heightmap.Biome.Meadows : vanillaBiome;
     }
 
-    /// <summary>
-    /// Keeps the biome sector agreeing with <see cref="SelectVanillaBiome"/> inside the reserved
-    /// region. Almost nothing except terrain height reads GetBiome: weather, sky, ground texture,
-    /// spawns, vegetation, the minimap and the HUD biome all read the sector, so an unoverridden
-    /// sector makes the game disagree with itself.
-    /// </summary>
-    /// <remarks>
-    /// This must bind to the two world-space overloads of WorldGenerator.GetBiomeSector and never to
-    /// GetBiomeSector(int gridx, int gridy, bool clamp), which is what it was bound to before and
-    /// could not work. Both world-space overloads convert through
-    /// AltBiomeWorldData.WorldSpaceToMapSpace(x) = (x - 6) / 12 + 1024 into the 2048-cell biome map,
-    /// and the grid overload then clamps that index into [0, 2047] unconditionally -- its own clamp
-    /// argument is never read. The map therefore addresses only +/-12282m while the reserved region
-    /// sits at x = 40000: grid 4356 clamps to 2047, which converts back to 12282m, so a postfix on
-    /// the grid overload is handed a column outside the region and containment can never pass. That
-    /// is why the previous patch resolved, reported no Harmony failure, and never took effect.
-    /// Nothing in assembly_valheim.dll calls the grid overload except those two world-space
-    /// overloads, so binding to them covers every consumer with the coordinate still intact.
-    ///
-    /// BiomeSector.EmptyMeadows is vanilla's own Meadows sentinel, constructed with a null world, so
-    /// Biome and BiomeType.Biome both read Meadows and AltBiomes is an empty but non-null list.
-    /// Player.UpdateBiome reads BiomeType.Biome and Heightmap.GetBiomeColor enumerates AltBiomes
-    /// before falling back to Biome, so both consumers are satisfied.
-    ///
-    /// HeightmapBuilder.Build reaches this through GetBiomeHeight on a worker thread, so this path
-    /// must stay on the immutable snapshot and pure maths with no UnityEngine.Object access.
-    /// </remarks>
     internal static BiomeSector SelectBiomeSector(double wx, double wz, BiomeSector vanillaSector)
     {
         var services = _services;
-        if (services is null || _world is null) return vanillaSector;
+        if (services is null || _world is null || !InstanceAvailable(services)) return vanillaSector;
         if (!UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, wx, wz)) return vanillaSector;
         return (BiomeSector.EmptyMeadows ?? vanillaSector)!;
     }
