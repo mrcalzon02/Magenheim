@@ -522,3 +522,25 @@ is explicitly created, which the merged code assumed rather than checked — fix
 when absent. Once fixed, `staff-spirit-simple` then failed its own 8% ink-density floor by 0.3 points
 (right at a `<` boundary) — `OUTLINE_PX` raised 1.35→1.6, a uniform, in-spirit-of-the-tool parameter
 matching its own stated purpose, re-verified against all 32 icons with margin, not just the one.
+
+### Update, same day: the sword and four staves fixed at the source
+Both items above marked "not fixed"/"left untouched" are now resolved, found by the same method in
+sequence. At the user's explicit request to prioritize local Blender-only verification and icon
+inspection: rendering all 32 staff icons directly showed staff-fire-crystal, staff-storm-crystal,
+staff-radiance-crystal and staff-venom-crystal with their ornate head pointing toward the grip.
+Checking each source's Blender-space Z coordinates against a correctly-built reference
+(Magenheim_Staff_Fire_Simple) confirmed it precisely: pommel at positive Z, head parts at negative Z,
+the exact reverse of the correct asset. Fixed by rotating each of the four sources 180 degrees about
+the world origin and re-exporting; the grip-direction gate now passes outright, with no exclusion
+needed, and `KNOWN_REVERSED_PENDING_REVIEW` is empty again.
+
+The same check applied to the sword's earlier "left untouched" mirror-image signature settled it too:
+its pommel sat at positive Blender Z and its blade at negative Z, the reverse of both the axe and
+knife (which agree with each other). Fixed the same way. A debug render with pommel and blade
+colour-coded confirmed it unambiguously — the plain icon comparison alone was not conclusive, since a
+reasonably-symmetric double-edged blade can look similar from either end under render-weapon-icons.py's
+fixed camera angle. All ten crystal weapons are now confirmed correct in `HeldModelAlignment`'s
+compiled regression test, and the full 281-model catalog was regenerated and reviewed by eye
+end-to-end; nothing else in the library shows this defect.
+
+Shipped as 0.0.79 (staves) and 0.0.80 (sword), both installed and verified.
