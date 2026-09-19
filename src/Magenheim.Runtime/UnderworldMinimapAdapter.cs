@@ -46,7 +46,6 @@ internal sealed class UnderworldMinimapAdapter : MonoBehaviour
         _biomes.raycastTarget = false;
         _fog.raycastTarget = false;
 
-        // Selector is deliberately outside the texture root so map imagery can never intercept it.
         var selector = new GameObject("Magenheim_MapLayerSelector", typeof(RectTransform));
         var selectorRect = selector.GetComponent<RectTransform>();
         selectorRect.SetParent(_minimap.m_largeRoot.transform, false);
@@ -78,7 +77,11 @@ internal sealed class UnderworldMinimapAdapter : MonoBehaviour
         var layer = UnderworldMapLayerRuntime.SelectedLayer;
         if (!force && layer == _lastLayer)
         {
-            if (layer == MagenheimMapLayer.Underworld) BindTextures();
+            if (layer == MagenheimMapLayer.Underworld)
+            {
+                BindTextures();
+                if (_minimap) UnderworldMapPresentationRuntime.ApplySelectedLayerPins(_minimap);
+            }
             return;
         }
 
@@ -89,6 +92,11 @@ internal sealed class UnderworldMinimapAdapter : MonoBehaviour
         {
             UnderworldMapPresentationRuntime.ForceRefresh();
             BindTextures();
+            if (_minimap) UnderworldMapPresentationRuntime.ApplySelectedLayerPins(_minimap);
+        }
+        else
+        {
+            UnderworldMapPresentationRuntime.RestoreProjectedPins();
         }
 
         SetButtonState(_surfaceButton, !underworld);
@@ -152,8 +160,11 @@ internal sealed class UnderworldMinimapAdapter : MonoBehaviour
         rect.offsetMax = Vector2.zero;
     }
 
+    private void OnDisable() => UnderworldMapPresentationRuntime.RestoreProjectedPins();
+
     private void OnDestroy()
     {
+        UnderworldMapPresentationRuntime.RestoreProjectedPins();
         if (_root) Destroy(_root);
     }
 }
