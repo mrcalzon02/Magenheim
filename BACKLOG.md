@@ -86,7 +86,14 @@ push; that did not happen.
   (its outputs were last written 2026-09-14 and the generator has changed since, so seeding it means
   deciding whether ~90 committed files should be regenerated — a content decision, not a gate one),
   `generate-underworld-capcrawler-textures.py` (its output directory does not exist yet), and the
-  fungal-forest and model-library generators. Model payloads are already covered separately by
+  fungal-forest and model-library generators.
+- [ ] **Finish the Earth icon migration rather than merely raising its target.** The rebuilt tier
+  family is now rendered at 256px, but six legacy 128px icons remain: the four workstation/process
+  identities plus the geode/skill-side legacy set reported by the icon gate. Regenerate/re-author
+  those from their authoritative models or dedicated source art, add each generator to the freshness
+  manifest, then run `MAGENHEIM_ENFORCE_ICON_TARGET=1` so the 256px target becomes an acceptance
+  invariant. Do not upscale the old 128px PNGs; that satisfies dimensions without adding readable
+  information and defeats section 14's vanilla-fitness objective. Model payloads are already covered separately by
   `verify-model-assets.py`.
 - [ ] **`build.ps1` compiles last.** Roughly ten minutes of Blender and asset gates run before the
   compiler is ever invoked, so a one-word CS0117 costs a full cycle to surface. A fast
