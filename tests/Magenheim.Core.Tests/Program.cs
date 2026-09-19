@@ -10,6 +10,7 @@ internal static class Program
     private static int Main() { try { RunAll(); return 0; } catch (Exception error) { Console.Error.WriteLine(error); return 1; } }
     private static void RunAll()
     {
+        _assertions += UnderworldInstanceContractTests.Run();
         _assertions += UnderworldFloraTests.Run();
         RefinementAndAreaBoundaries();
         WorldgenCompatibilityBoundaries();
