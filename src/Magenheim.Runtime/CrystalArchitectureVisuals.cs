@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Jotunn.Managers;
 using Magenheim.Core;
 using UnityEngine;
 namespace Magenheim.Runtime;
@@ -13,8 +14,44 @@ internal static class CrystalArchitectureVisuals
     internal const string CrystalFoundation2 = "architecture-crystal-foundation-2m";
     internal const string CrystalFoundation4 = "architecture-crystal-foundation-4m";
     internal const string CrystalFoundation8 = "architecture-crystal-foundation-8m";
+    /// <summary>Vanilla static-rock material, cloned as the surface source for slabs and pillars.</summary>
+    /// <remarks>
+    /// Foundations and beams clone building-piece donors (stone_floor_2x2, wood_beam,
+    /// piece_workbench). Those donors' materials use Valheim's piece shader, which projects its
+    /// surface from world position and ignores the UVs the exporter writes, so a Magenheim mesh
+    /// wearing one renders as a smeared lattice regardless of its own geometry, UVs or texture --
+    /// reported repeatedly from the field, and confirmed by the source .blend and the exported
+    /// runtime payload both being clean when rendered directly. Rock_4's material is a plain static
+    /// surface that honours mesh UVs, which is exactly why the geode shell reads correctly, so the
+    /// same donor is used here. The hearth keeps its existing path untouched: it is confirmed
+    /// working in the field and is not part of this repair.
+    /// </remarks>
+    private const string SurfaceDonorPrefab = "Rock_4";
+    private static Material? _surfaceDonor;
+    private static bool _surfaceDonorResolved;
+
+    internal static Material? SurfaceDonorMaterial() => SurfaceDonor();
+
+    private static Material? SurfaceDonor() {
+        if (_surfaceDonorResolved) return _surfaceDonor;
+        _surfaceDonorResolved = true;
+        var rock = PrefabManager.Instance?.GetPrefab(SurfaceDonorPrefab);
+        if (rock is null) return _surfaceDonor = null;
+        var group = rock.GetComponentInChildren<LODGroup>(true);
+        var levels = group is not null ? group.GetLODs() : Array.Empty<LOD>();
+        var renderers = levels.Length > 0 && levels[0].renderers is { Length: > 0 }
+            ? levels[0].renderers
+            : rock.GetComponentsInChildren<MeshRenderer>(true);
+        foreach (var renderer in renderers) {
+            if (!renderer || renderer.sharedMaterial is null) continue;
+            _surfaceDonor = renderer.sharedMaterial; break;
+        }
+        return _surfaceDonor;
+    }
+
     internal static GameObject Apply(GameObject prefab, string modelId) {
-        var root=ModelAssets.Load(prefab,modelId,preserveParticles:true);
+        var source = modelId == CrystalHearth ? null : SurfaceDonor();
+        var root=ModelAssets.Load(prefab,modelId,preserveParticles:true,materialSource:source);
         if(modelId==CrystalHearth){TintVanillaFlame(prefab);FitFlameToPiece(prefab,root);}
         return root;
     }

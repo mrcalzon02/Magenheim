@@ -1,4 +1,4 @@
 {
-  "version": "0.0.80",
-  "description": "0.0.80: The crystal sword was also built back-to-front (blade at the pommel end), the same defect as the four staves fixed moments ago. Confirmed by a colour-coded debug render, fixed at the source. All ten crystal weapons now confirmed correct."
+  "version": "0.0.83",
+  "description": "0.0.83: Held weapons whose head sits off to one side (axe, battleaxe, atgeir) were shoved sideways out of the hand: seating matched our bounding-box centre to the donor's. It now seats along the haft only."
 }

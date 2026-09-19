@@ -207,11 +207,16 @@ internal static class HeldModelAlignment
         // which is where Valheim's animations expect a grip.
         if (TryMeasureBounds(attach, root.GetComponentsInChildren<Renderer>(true), root.transform, null, out var rotated))
         {
+            // Seat along the long axis only. Centring the other two axes on the donor's centre --
+            // which this did until 2026-09-19 -- moves the grip itself: an axe or battleaxe carries
+            // its head out to one side, so its bounding-box centre sits well off the haft, and
+            // matching that centre to the donor's shoves the haft that same distance out of the
+            // hand. Reported from the field as a battleaxe correctly oriented but "nowhere near the
+            // player's actual hands". Magenheim hafts are already authored centred on the local
+            // origin, which is the attach point, so the lateral axes need no correction at all.
             var axis = AxisOrder(donor.size)[0];
             var offset = Vector3.zero;
             offset[axis] = NearEnd(donor.min[axis], donor.max[axis]) - NearEnd(rotated.min[axis], rotated.max[axis]);
-            for (var other = 0; other < 3; other++)
-                if (other != axis) offset[other] = donor.center[other] - rotated.center[other];
             root.transform.localPosition += offset;
         }
 

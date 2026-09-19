@@ -7,5 +7,11 @@ namespace Magenheim.Runtime;
 internal static class CrystalEnchantingDaisVisuals
 {
 
-    internal static GameObject Apply(GameObject prefab) => ModelAssets.Load(prefab, "crystal-enchanting-dais");
+    /// <summary>
+    /// The dais clones a building-piece donor whose piece shader projects its surface from world
+    /// position and ignores mesh UVs, which is what made it read as a smeared lattice in the field.
+    /// Cloning the same static-rock donor the geode shell and the slabs/pillars use fixes it.
+    /// </summary>
+    internal static GameObject Apply(GameObject prefab) =>
+        ModelAssets.Load(prefab, "crystal-enchanting-dais", materialSource: CrystalArchitectureVisuals.SurfaceDonorMaterial());
 }

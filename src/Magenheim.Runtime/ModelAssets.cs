@@ -70,13 +70,19 @@ internal static class ModelAssets
         return LoadMesh(id + "/0", parts[0]);
     }
 
-    internal static GameObject Load(GameObject prefab, string id, bool item = false, float scale = 1f, bool hideOriginal = true, bool preserveParticles = false, Transform? parent = null)
+    internal static GameObject Load(GameObject prefab, string id, bool item = false, float scale = 1f, bool hideOriginal = true, bool preserveParticles = false, Transform? parent = null, Material? materialSource = null)
     {
         if (!prefab) throw new ArgumentNullException(nameof(prefab));
         if (scale <= 0 || float.IsNaN(scale) || float.IsInfinity(scale)) throw new ArgumentOutOfRangeException(nameof(scale));
         if (string.IsNullOrEmpty(id) || Path.GetFileName(id) != id) throw new ArgumentException("Invalid model identity.", nameof(id));
         var original = prefab.GetComponentsInChildren<Renderer>(true);
-        var source = original.Where(r => !(r is ParticleSystemRenderer)).Select(r => r.sharedMaterial).FirstOrDefault(m => m);
+        // A caller may supply the material to clone. Building-piece donors (stone_floor_2x2,
+        // wood_beam, piece_workbench) carry Valheim's piece shader, which projects its own surface
+        // from world position and ignores the UVs the exporter writes -- on a Magenheim mesh that
+        // renders as a smeared lattice no amount of texture or UV work can correct. Static-rock
+        // donors do not, which is why the geode shell reads correctly. See CrystalArchitectureVisuals.
+        var source = materialSource;
+        if (!source) source = original.Where(r => !(r is ParticleSystemRenderer)).Select(r => r.sharedMaterial).FirstOrDefault(m => m);
         if (!source) source = new Material(ResolveSurfaceShader());
         if (!Documents.TryGetValue(id, out var document))
         {

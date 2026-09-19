@@ -18,11 +18,11 @@ internal static class GeneratedSurfaceTextures
 
     static GeneratedSurfaceTextures() => PrefabManager.OnPrefabsRegistered += RepairOwnedVisuals;
 
-    internal static void Apply(Material material, string semantic)
+    internal static void Apply(Material material, string semantic, Vector2? tiling = null)
     {
         if (material is null) throw new ArgumentNullException(nameof(material));
         material.mainTexture = ForSemantic(semantic);
-        material.mainTextureScale = Vector2.one;
+        material.mainTextureScale = tiling ?? Vector2.one;
         material.mainTextureOffset = Vector2.zero;
     }
 
@@ -159,13 +159,55 @@ internal static class GeneratedSurfaceTextures
     private static float RepeatDistance(float value, float center, float period) { var delta = Mathf.Abs(value - center); return Mathf.Min(delta, period - delta); }
     private static float Hash(int x, int y, int salt) { unchecked { var value = x * 374761393 + y * 668265263 + salt * 1442695041; value = (value ^ (value >> 13)) * 1274126177; value ^= value >> 16; return (value & 0x7fffffff) / (float)int.MaxValue; } }
 
+    /// <summary>
+    /// World size one texture tile should span, so a generated facet/grain cell on the foundation,
+    /// beam and dais pieces reads as a small natural detail instead of a room-sized diagonal grid.
+    /// </summary>
+    /// <remarks>
+    /// 2026-09-19 field report: foundations ("slab") and beams ("pillar") read as a woven-mat lattice
+    /// in game, and the enchanting dais's central crystal the same way, while the hearth and the
+    /// Sentinel -- confirmed correct, explicitly not to be touched -- did not. The shared repair pass
+    /// applied a flat 1:1 tiling to every repaired material, taken unchanged from what already looked
+    /// right on small objects (a hearth's individual crystal spike, a Sentinel's projectile). At 1:1,
+    /// the whole 256px tile -- including Crystal's explicit per-cell edge lattice -- stretches across
+    /// the object's entire UV range, so a small spike shows a fraction of one tile (reads as a facet
+    /// highlight) while a two-to-eight-metre foundation or beam stretches the SAME tile into a
+    /// room-sized grid.
+    ///
+    /// This scale is applied ONLY to <see cref="ScaledByName"/>'s three name prefixes, not by a
+    /// general size rule, specifically so it cannot touch the hearth or anything else confirmed
+    /// working: the hearth's own stone base is 1.52m wide, well past what a size-only rule would
+    /// treat as "needs more tiling", and changing a piece nobody reported broken is exactly the
+    /// mistake this restriction exists to rule out.
+    /// </remarks>
+    private const float TargetTileMeters = 0.18f;
+
+    /// <summary>Owned-material name prefixes the field report named as broken: slab, pillar, dais.</summary>
+    private static readonly string[] ScaledByName =
+    {
+        "magenheim.architecture.architecture-crystal-foundation-",
+        "magenheim.architecture.architecture-crystal-beam-",
+        "magenheim.crystal-enchanting-dais.",
+    };
+
     private static void RepairOwnedVisuals()
     {
+        // A material can be shared by many placed instances of the same piece (every 2m foundation
+        // in the world uses the identical cached Material), so one representative renderer per
+        // material is enough; they are all the same physical size.
+        var rendererByMaterial = new Dictionary<Material, Renderer>();
+        foreach (var renderer in Resources.FindObjectsOfTypeAll<Renderer>())
+        {
+            if (!renderer || renderer is ParticleSystemRenderer) continue;
+            var shared = renderer.sharedMaterial;
+            if (shared && !rendererByMaterial.ContainsKey(shared)) rendererByMaterial[shared] = renderer;
+        }
+
         var repairedMaterials = 0;
         foreach (var material in Resources.FindObjectsOfTypeAll<Material>())
         {
             if (!material || !IsOwnedName(material.name) || !NeedsGeneratedSurface(material.mainTexture)) continue;
-            Apply(material, material.name); repairedMaterials++;
+            Apply(material, material.name, TilingFor(material, rendererByMaterial)); repairedMaterials++;
         }
         var repairedMeshes = 0;
         foreach (var mesh in Resources.FindObjectsOfTypeAll<Mesh>())
@@ -175,6 +217,26 @@ internal static class GeneratedSurfaceTextures
             catch (Exception exception) { Debug.LogWarning($"Magenheim could not generate UV0 for owned mesh '{mesh.name}': {exception.Message}"); }
         }
         if (repairedMaterials > 0 || repairedMeshes > 0) Debug.Log($"Magenheim visual-quality reconciliation upgraded {repairedMaterials} placeholder material(s) and {repairedMeshes} UV-less owned mesh(es).");
+    }
+
+    /// <summary>Tile repeat count from the owning renderer's own second-largest world extent.</summary>
+    /// <remarks>Vector2.one, unchanged, for anything not named in <see cref="ScaledByName"/> -- see its remarks.</remarks>
+    private static Vector2 TilingFor(Material material, Dictionary<Material, Renderer> rendererByMaterial)
+    {
+        var named = false;
+        foreach (var prefix in ScaledByName)
+            if (material.name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) { named = true; break; }
+        if (!named) return Vector2.one;
+        if (!rendererByMaterial.TryGetValue(material, out var renderer)) return Vector2.one;
+        var filter = renderer.GetComponent<MeshFilter>();
+        var mesh = filter ? filter.sharedMesh : null;
+        if (!mesh) return Vector2.one;
+        var size = Vector3.Scale(mesh.bounds.size, renderer.transform.lossyScale);
+        var dims = new[] { size.x, size.y, size.z };
+        Array.Sort(dims); // ascending: [smallest, middle, largest]
+        var width = dims[1]; // the object's own "width", not a thin dimension of an elongated part
+        var repeats = Mathf.Max(1f, width / TargetTileMeters);
+        return new Vector2(repeats, repeats);
     }
 
     private static bool IsOwnedName(string value) => !string.IsNullOrEmpty(value) && value.StartsWith("magenheim", StringComparison.OrdinalIgnoreCase);

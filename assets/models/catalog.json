@@ -7,8 +7,8 @@
     "source": "source/architecture-crystal-beam-2m.blend",
     "glb": "glb/architecture-crystal-beam-2m.glb",
     "runtime": "runtime/architecture-crystal-beam-2m.model.json",
-    "source_sha256": "ba92de8ce79bc22774f7734eb78798e51ee9adc7a876600fa8471877aa06cb8a",
-    "runtime_sha256": "c3ad3b4d3d8eac254e82f25e7b2030523375a2ade3c4c3b6319fed20be5821d6",
+    "source_sha256": "1a87e395122e04ccd90a0e767cd3b4886e87ce6c7fc7b802a9c4a777b16d4079",
+    "runtime_sha256": "cf64ea9c96cf5709d9c608d8bf6c1d4b94ec9b12a59266443e7a9cdf78aa659b",
     "glb_sha256": "156c37e3cbcdf7cc36f48f0d63398ccb2c9701bba02fdc0e0ba5192203171c2e"
   },
   {
@@ -19,8 +19,8 @@
     "source": "source/architecture-crystal-beam-4m.blend",
     "glb": "glb/architecture-crystal-beam-4m.glb",
     "runtime": "runtime/architecture-crystal-beam-4m.model.json",
-    "source_sha256": "677dbbc9ff884fe80cf2e602e06fafd0ef27de35ae7c6d03c3ece13875faf626",
-    "runtime_sha256": "052c1b766d4399bc3740c725f666ca2242720a4978adb58eaeb59a1c73e8702d",
+    "source_sha256": "42ccbe2a47ffea76a1218a8338f82255217369f804e6ea25d972dd5a98a663ef",
+    "runtime_sha256": "642340f97ce325771e73cb55657ee0255b44cd2f8292d79da2d514010c3aecb4",
     "glb_sha256": "564b40900ca2c5a4a57838f45403f641e5d2905f7a0916672d5df8c1078ffb36"
   },
   {
@@ -31,8 +31,8 @@
     "source": "source/architecture-crystal-beam-8m.blend",
     "glb": "glb/architecture-crystal-beam-8m.glb",
     "runtime": "runtime/architecture-crystal-beam-8m.model.json",
-    "source_sha256": "2d3e62d8922d88a676c77fc5faf70ad3d95e79923d030058d879bbf9672f784b",
-    "runtime_sha256": "8bfd9d05e35e3b127c135e6e6d1b71edaba5c0a3eaff5bc50a7ef3e7a721adb9",
+    "source_sha256": "fa3bd72eead20cb23fe8a4f751d544640cfd6acd0d91d566ba0a6fcb70715563",
+    "runtime_sha256": "dca2f0720956c67d8a1356e175d3de0eb5cd57a241c90d216ca932e642eb74a8",
     "glb_sha256": "00381a7efd574b4f413e49fef4b1c6ff025c3b261130de7674d944666dfc90e4"
   },
   {
@@ -43,8 +43,8 @@
     "source": "source/architecture-crystal-foundation-2m.blend",
     "glb": "glb/architecture-crystal-foundation-2m.glb",
     "runtime": "runtime/architecture-crystal-foundation-2m.model.json",
-    "source_sha256": "871240b07b2fc3c5447d8f5afe62daf5d9b2e7adb446c243bec29bf98de7a6cf",
-    "runtime_sha256": "e6c5950217e2a8a792b0725963dbd5d5f2a6925285cfac86ecabfe9e4eb8e560",
+    "source_sha256": "e271e5bdb7813eb1e46ffee385a2b66e5425dc7da7aee05c5615973e2ee44016",
+    "runtime_sha256": "99f063f35b6a6500c902196c43fa32d20d31fdd3170d0b56df03567e76a9463f",
     "glb_sha256": "7d0e654e86d6b6c346aa325b86ec4587c1c15e5a64467cc8898e6a341dff777e"
   },
   {
@@ -55,8 +55,8 @@
     "source": "source/architecture-crystal-foundation-4m.blend",
     "glb": "glb/architecture-crystal-foundation-4m.glb",
     "runtime": "runtime/architecture-crystal-foundation-4m.model.json",
-    "source_sha256": "bd0096c9a956c42ae84b8032bd326c56e90cbcbd55bb51141ccaf24ba89c00fc",
-    "runtime_sha256": "d8d1502a202ae93f97c4a13b67eff01da0d8ac9027862eda3a8e89389e1511c3",
+    "source_sha256": "0b25e1309555a76f338327939c078ed9cd8f7e9653729947bd1fa92e86f1a4d2",
+    "runtime_sha256": "c5d5ba6a06e030768096ac7162d4063ee5784724708cd7c10fea0056139f2828",
     "glb_sha256": "a1cfb1f1f6ba432ad1e5704baeff0e9e531cbba8a483afd525d13537b071aa27"
   },
   {
@@ -67,8 +67,8 @@
     "source": "source/architecture-crystal-foundation-8m.blend",
     "glb": "glb/architecture-crystal-foundation-8m.glb",
     "runtime": "runtime/architecture-crystal-foundation-8m.model.json",
-    "source_sha256": "2955d1517920b5ef3029987dc0127e0f57e24a71e184aa3054143565fce910f3",
-    "runtime_sha256": "e94e952ba5d8ded409c1a1703264e26fece98cf1737f5cf3f5830dd275dbed4f",
+    "source_sha256": "db2cc6b68338f3b371d32e29a9f01995541857a1f3360449611d36f59c2f10e8",
+    "runtime_sha256": "0902c6f1e53329ed4c24c93d6a1383ec547dc57e268ad75f188db207c85b2477",
     "glb_sha256": "b243e8bbd03a8a2997470ca85cd6dfc20ca9b445d57e0597a9c9497066780d6b"
   },
   {
@@ -595,8 +595,8 @@
     "source": "source/crystal-enchanting-dais.blend",
     "glb": "glb/crystal-enchanting-dais.glb",
     "runtime": "runtime/crystal-enchanting-dais.model.json",
-    "source_sha256": "317aaa6e0f7207c394f2c49f1d69fceb509548cc878be482d4d1a4fba8aba1f9",
-    "runtime_sha256": "4e4aa7244b30bd2abf3e1ab26e43b9cba0c1bc8bdd8be93c9ca15df056912490",
+    "source_sha256": "bbce20f44274d02a7320872ecab3213bf53e3c23287b72bca415d0189595ba51",
+    "runtime_sha256": "48bf48e2c17bcf843ffbb7a20c651e70e6b99f6df5b73d3f56258e6fe80ae066",
     "glb_sha256": "ff27afeb92790c57bd12f8f21da7f22a0e72eb6a6e688b5624fb7139c48100bf"
   },
   {
