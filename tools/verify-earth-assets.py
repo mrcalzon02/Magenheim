@@ -9,7 +9,7 @@ import math
 import os
 from collections import Counter
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageStat
 
 root=Path(__file__).resolve().parents[1]/'assets'/'earth'
 names=['geode','rough','simple','crystal','advanced','master','shards','workstation','fracturing-block','faceting-wheel','resonance-frame']
@@ -25,17 +25,22 @@ def flat(im):
     return reader() if reader else im.getdata()
 
 def verify_icon_readability(name, icon):
-    """Check framing on the pixels players actually see, not merely source resolution."""
+    """Check framing and material separation on the pixels players actually see."""
     proxy=icon.resize((64,64),Image.Resampling.LANCZOS)
     alpha=proxy.getchannel('A')
     mask=alpha.point(lambda a: 255 if a>=96 else 0)
     bbox=mask.getbbox()
     assert bbox,(name,'icon has no gameplay-scale silhouette')
-    opaque=sum(1 for a in flat(alpha) if a>=96)/(64*64)
+    visible=[p for p,a in zip(flat(proxy.convert('RGB')),flat(alpha)) if a>=96]
+    opaque=len(visible)/(64*64)
     assert .08<=opaque<=.78,(name,f'gameplay-scale opaque coverage {opaque:.1%} outside 8-78% envelope')
     left,top,right,bottom=bbox
     clearance=min(left,top,64-right,64-bottom)/64
     assert clearance>=edge_clearance,(name,f'gameplay-scale silhouette is clipped/crowded: {clearance:.1%} edge clearance < {edge_clearance:.1%}')
+    luminance=[.2126*r+.7152*g+.0722*b for r,g,b in visible]
+    contrast=max(luminance)-min(luminance)
+    deviation=ImageStat.Stat(proxy.convert('L'),mask=mask).stddev[0]
+    assert contrast>=28 and deviation>=7,(name,f'gameplay-scale material/facet contrast collapses: range={contrast:.1f}, stddev={deviation:.1f}')
 
 for name in names:
     data=json.loads((root/f'{name}.mesh.json').read_text())
@@ -63,7 +68,7 @@ for name in names:
         assert not enforce_target,(name,f'icon is below enforced {icon_target}px target',icon.size)
     assert icon.getchannel('A').getextrema()==(0,255)
     assert (root/f'{name}.obj').is_file() and (root/f'{name}.mtl').is_file()
-    print(f'{name}: closed outward mesh, valid UVs, >=256px atlas and gameplay-scale icon framing verified ({icon.size[0]}px; target >={icon_target}px)')
+    print(f'{name}: closed outward mesh, valid UVs, >=256px atlas and gameplay-scale icon framing/material contrast verified ({icon.size[0]}px; target >={icon_target}px)')
 skill=Image.open(root/'crystal-shaping.icon.png')
 assert skill.size[0]==skill.size[1] and skill.size[0]>=legacy_floor and skill.mode=='RGBA',('crystal-shaping',f'icon must be square RGBA and >={legacy_floor}px',skill.size,skill.mode)
 verify_icon_readability('crystal-shaping',skill)
