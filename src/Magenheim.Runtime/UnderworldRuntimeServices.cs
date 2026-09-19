@@ -49,7 +49,7 @@ internal sealed class UnderworldRuntimeServices
         var worldContext=new ValheimUnderworldWorldContextController(spatialDomain,log);
         var placementHost=new ValheimUnderworldTransitionPlacementHost(worldContext,spatialDomain,log);
         var transitionHost=new StoredUnderworldTransitionHost(stateStore,placementHost);
-        var transitionManager=new UnderworldWorldTransitionManager(transitionHost,log);
+        var transitionManager=new UnderworldWorldTransitionManager(transitionHost,instanceLifecycle,log);
         var recoveryRuntime=new UnderworldTransitionRecoveryRuntime(stateStore,transitionManager,log);
         var services=new UnderworldRuntimeServices(spatialDomain,stateStore,deepBoonSelectionStore,explorationStateStore,instanceLifecycle,worldContext,placementHost,transitionHost,transitionManager,recoveryRuntime);
         UnderworldTerrainRuntime.Configure(services,log);
