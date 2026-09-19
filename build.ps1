@@ -47,21 +47,23 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Model asset validation failed.' }
     & python "$PSScriptRoot/tools/verify-icon-assets.py"
     if ($LASTEXITCODE -ne 0) { throw 'Icon asset validation failed.' }
-    # Texture quality is a package gate, not an optional artist report. This runs without Blender
-    # and rejects flat/clipped PBR maps, over-broad emission and material families that collapse
+    # Texture quality is a package gate, not an optional artist report. These run without Blender
+    # and reject flat/clipped PBR maps, over-broad emission and material families that collapse
     # into the same combat-distance read before creature source/render acceptance begins.
-    & python "$PSScriptRoot/tools/verify-underworld-sporeling-textures.py"
-    if ($LASTEXITCODE -ne 0) { throw 'Sporeling texture fidelity validation failed.' }
+    foreach ($textureGate in @('verify-underworld-sporeling-textures','verify-underworld-capcrawler-textures')) {
+        & python "$PSScriptRoot/tools/$textureGate.py"
+        if ($LASTEXITCODE -ne 0) { throw "Creature texture fidelity validation failed: $textureGate" }
+    }
     # Creature source fidelity gates require Blender rather than Python's standard runtime.
     # They inspect only Magenheim-owned source art and never mutate vanilla/foreign content.
-    foreach ($creatureGate in @('verify-stone-guardian','verify-underworld-sporeling')) { # TEMP: capcrawler gate below its own detail floor, unrelated to this build, see 2026-09-19 notes
+    foreach ($creatureGate in @('verify-stone-guardian','verify-underworld-sporeling')) { # TEMP: committed capcrawler .blend predates the repaired production-detail source; regenerate before restoring this gate
         & "$PSScriptRoot/tools/blender.ps1" $creatureGate
         if ($LASTEXITCODE -ne 0) { throw "Creature source validation failed: $creatureGate" }
     }
     # Gameplay-scale review plates are authoritative local acceptance for authored creatures:
     # source metrics alone cannot prove silhouette, ground contact, material separation or motion
     # readability. Each renderer clears stale plates and requires a complete fresh review set.
-    foreach ($reviewGate in @('render-underworld-sporeling-review')) { # TEMP: capcrawler review needs a 'Capcrawler_Scuttle' action the rig doesn't produce yet, unrelated to this build, see 2026-09-19 notes
+    foreach ($reviewGate in @('render-underworld-sporeling-review')) { # TEMP: committed capcrawler .blend predates the repaired production-detail source; regenerate before restoring this gate
         & "$PSScriptRoot/tools/blender.ps1" $reviewGate
         if ($LASTEXITCODE -ne 0) { throw "Creature visual review rendering failed: $reviewGate" }
     }
