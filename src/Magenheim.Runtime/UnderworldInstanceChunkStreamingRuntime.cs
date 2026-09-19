@@ -31,11 +31,13 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
     internal IReadOnlyDictionary<UnderworldInstanceChunkKey, UnderworldInstanceChunkSample> LoadedChunks => _loaded;
 
     /// <summary>
-    /// Reconciles the resident chunk set around a native instance-space focus point. Returns false
-    /// and clears residency whenever no authoritative Underworld instance is active.
+    /// Reconciles the resident chunk set around every authoritative native instance-space focus point.
+    /// Residency is the union of all focus neighborhoods so one player cannot evict terrain required by
+    /// another. Returns false and clears residency whenever no authoritative Underworld instance is active.
     /// </summary>
-    internal bool Reconcile(double focusX, double focusZ, int radiusChunks = DefaultStreamingRadiusChunks)
+    internal bool Reconcile(IEnumerable<(double X, double Z)> focuses, int radiusChunks = DefaultStreamingRadiusChunks)
     {
+        if (focuses is null) throw new ArgumentNullException(nameof(focuses));
         if (radiusChunks < 0) throw new ArgumentOutOfRangeException(nameof(radiusChunks));
         var identity = _services.InstanceLifecycle.Identity;
         var phase = _services.InstanceLifecycle.Phase;
@@ -49,9 +51,19 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
             Clear();
         _loadedInstanceId = identity.DerivedWorldId;
 
-        var center = _grid.KeyAt(focusX, focusZ);
-        var required = _grid.EnumerateSquare(center, radiusChunks);
-        var requiredSet = new HashSet<UnderworldInstanceChunkKey>(required);
+        var requiredSet = new HashSet<UnderworldInstanceChunkKey>();
+        foreach (var focus in focuses)
+        {
+            var center = _grid.KeyAt(focus.X, focus.Z);
+            foreach (var key in _grid.EnumerateSquare(center, radiusChunks))
+                requiredSet.Add(key);
+        }
+
+        if (requiredSet.Count == 0)
+        {
+            Clear();
+            return true;
+        }
 
         var stale = new List<UnderworldInstanceChunkKey>();
         foreach (var key in _loaded.Keys)
@@ -59,7 +71,7 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
         foreach (var key in stale) _loaded.Remove(key);
 
         var waterLevel = ZoneSystem.instance is null ? 30d : ZoneSystem.instance.m_waterLevel;
-        foreach (var key in required)
+        foreach (var key in requiredSet)
             if (!_loaded.ContainsKey(key))
                 _loaded.Add(key, UnderworldInstanceChunkSampler.Sample(_grid, key, identity.DerivedSeed32, waterLevel));
 
