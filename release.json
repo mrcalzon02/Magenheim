@@ -1,4 +1,4 @@
 {
-  "version": "0.0.75",
-  "description": "0.0.75: Geode shells now stand on Valheim's own rock material, so moss and stone retexture mods apply to them. Size variation survives a reload, geodes lean, biome colour separates, and held weapons seat in the hand instead of only rotating."
+  "version": "0.0.76",
+  "description": "0.0.76: Geode shells stand on Valheim's own rock material, so moss and stone mods apply. Size variation survives a reload, geodes lean, biome colour separates. Held weapons seat in the hand and alignment now logs its frames."
 }

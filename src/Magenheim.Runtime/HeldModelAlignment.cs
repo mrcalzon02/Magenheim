@@ -46,6 +46,17 @@ internal static class HeldModelAlignment
         ["crystal-weapon-crossbow"] = 1,
     };
 
+    /// <summary>Hand-authored trim applied after the measured alignment, in attach space.</summary>
+    /// <remarks>
+    /// Measurement gets a held model into the donor's frame; it cannot know that a grip reads a few
+    /// centimetres low, because the donor's own grip is wherever its artist put it. That last step
+    /// comes from looking at the thing in a hand, so it is authored here rather than derived, and
+    /// the numbers are in attach space to match what Report prints. An entry is a deliberate claim
+    /// that a model needs trim, so the table stays empty until in-game observation puts one in it.
+    /// </remarks>
+    private static readonly Dictionary<string, (Vector3 Rotation, Vector3 Offset)> Trim =
+        new(StringComparer.Ordinal);
+
     internal static Quaternion Measure(Transform attach, Bounds donor, Bounds replacement, int? forwardAxis = null)
     {
         if (attach is null) return Quaternion.identity;
@@ -156,18 +167,34 @@ internal static class HeldModelAlignment
                 if (other != axis) offset[other] = donor.center[other] - rotated.center[other];
             root.transform.localPosition += offset;
         }
-        Report(log, id, correction);
+
+        if (Trim.TryGetValue(id, out var trim))
+        {
+            root.transform.localRotation = Quaternion.Euler(trim.Rotation) * root.transform.localRotation;
+            root.transform.localPosition += trim.Offset;
+        }
+
+        TryMeasureBounds(attach, root.GetComponentsInChildren<Renderer>(true), root.transform, null, out var seated);
+        Report(log, id, correction, donor, seated);
     }
 
-    internal static void Report(Action<string>? log, string id, Quaternion rotation)
+    internal static void Report(Action<string>? log, string id, Quaternion rotation, Bounds donor = default, Bounds seated = default)
     {
         if (log is null) return;
         var euler = rotation.eulerAngles;
         var trivial = Quaternion.Angle(rotation, Quaternion.identity) < 1f;
+        // Both frames are printed because a report from a hand is qualitative -- "a bit low", "too
+        // far back" -- and turning that into a trim value needs to know where the model actually
+        // sits against where the donor sat. Without these two lines the next correction is a guess.
+        var frames = Usable(seated) && Usable(donor)
+            ? $" donor[c={Fmt(donor.center)} s={Fmt(donor.size)}] ours[c={Fmt(seated.center)} s={Fmt(seated.size)}]"
+            : string.Empty;
         log(
             $"Held model '{id}' aligned to its donor by ({euler.x:0.#},{euler.y:0.#},{euler.z:0.#})" +
-            (trivial ? " (already in the donor's frame)" : string.Empty));
+            (trivial ? " (already in the donor's frame)" : string.Empty) + frames);
     }
+
+    private static string Fmt(Vector3 v) => $"{v.x:0.###},{v.y:0.###},{v.z:0.###}";
 
     private static bool Usable(Bounds bounds) =>
         bounds.size.x > DegenerateExtent && bounds.size.y > DegenerateExtent && bounds.size.z > DegenerateExtent;
