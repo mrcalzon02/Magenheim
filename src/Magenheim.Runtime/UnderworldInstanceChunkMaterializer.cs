@@ -174,9 +174,13 @@ internal sealed class UnderworldInstanceChunkMaterializer
     private Material GetTerrainMaterial()
     {
         if (_terrainMaterial) return _terrainMaterial;
-        var shader = Shader.Find("Standard");
-        if (shader is null) throw new InvalidOperationException("Unity Standard shader is unavailable for Underworld terrain materialization.");
-        _terrainMaterial = new Material(shader) { name = "Magenheim_Underworld_Terrain_Runtime" };
+        // Valheim does not ship Unity's built-in Standard shader in the player. Resolve a loaded
+        // game surface shader through the same runtime authority used by Magenheim model assets so
+        // native Underworld terrain can actually materialize in a live Valheim process.
+        _terrainMaterial = new Material(ModelAssets.ResolveSurfaceShader())
+        {
+            name = "Magenheim_Underworld_Terrain_Runtime"
+        };
         return _terrainMaterial;
     }
 
