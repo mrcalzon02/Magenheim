@@ -64,6 +64,17 @@ internal sealed class UnderworldRuntimeServices
         return services;
     }
 
+    /// <summary>Resolves the active world/instance context without requiring a local player. Safe for dedicated-server world services.</summary>
+    internal bool TryResolveWorldSession(out UnderworldWorldIdentity? identity,out UnderworldLayer layer,out string diagnostic)
+    {
+        identity=null;layer=UnderworldLayer.Surface;
+        var znet=ZNet.instance;var world=ZNet.World;
+        if(znet is null||world is null){diagnostic="Valheim network/world metadata is unavailable.";return false;}
+        if(!UnderworldRuntimeIdentityResolver.TryResolveWorldIdentity(znet,world,out var liveIdentity,out diagnostic)||liveIdentity is null)return false;
+        if(!_worldContext.TryGetActiveContext(liveIdentity,out identity,out layer)||identity is null){diagnostic="Magenheim instance layer has not been established by the explicit world-context controller.";return false;}
+        diagnostic=string.Empty;return true;
+    }
+
     /// <summary>Resolves local identity and obtains layer only from the explicit instance-context authority.</summary>
     internal bool TryResolveLocalSession(out UnderworldWorldIdentity? identity,out UnderworldLayer layer,out string playerId,out string diagnostic)
     {
