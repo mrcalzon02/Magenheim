@@ -54,8 +54,15 @@ internal static class HeldModelAlignment
     /// the numbers are in attach space to match what Report prints. An entry is a deliberate claim
     /// that a model needs trim, so the table stays empty until in-game observation puts one in it.
     /// </remarks>
-    private static readonly Dictionary<string, (Vector3 Rotation, Vector3 Offset)> Trim =
-        new(StringComparer.Ordinal);
+    private static readonly Dictionary<string, ModelTrim> Trim = new(StringComparer.Ordinal);
+
+    /// <summary>A trim entry. Explicitly not a tuple: Magenheim.Runtime has no System.ValueTuple.</summary>
+    private readonly struct ModelTrim
+    {
+        internal ModelTrim(Vector3 rotation, Vector3 offset) { Rotation = rotation; Offset = offset; }
+        internal Vector3 Rotation { get; }
+        internal Vector3 Offset { get; }
+    }
 
     internal static Quaternion Measure(Transform attach, Bounds donor, Bounds replacement, int? forwardAxis = null)
     {

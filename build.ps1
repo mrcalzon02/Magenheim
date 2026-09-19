@@ -81,8 +81,10 @@ try {
     & $DotNet build src/Magenheim.Runtime -c Release @restoreOptions "-p:BepInExPath=$ProfileRoot/BepInEx" "-p:ValheimManagedPath=$GameRoot/valheim_Data/Managed"
     if ($LASTEXITCODE -ne 0) { throw 'Runtime build failed.' }
     $ErrorActionPreference = 'Stop'
+    & python "$PSScriptRoot/tools/verify-no-baked-surfaces.py"
     & "$PSScriptRoot/tools/verify-patch-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
     & "$PSScriptRoot/tools/verify-reflection-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
+    & "$PSScriptRoot/tools/verify-runtime-type-availability.ps1" -Assembly "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -ManagedDirectory "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx" -CecilPath "$ProfileRoot/BepInEx/core/Mono.Cecil.dll"
 
     $package = Join-Path $PSScriptRoot "dist/Local-Magenheim-$pluginVersion"
     if (Test-Path -LiteralPath $package) {

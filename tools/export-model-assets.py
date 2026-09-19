@@ -39,6 +39,18 @@ for file in files:
   for node in material.node_tree.nodes:
    if node.type=='TEX_IMAGE' and node.image:
     image=node.image
+    # `magenheim.surface.*` is OUR OWN runtime generator's output, baked back into the source at some
+    # point and thereafter indistinguishable from authored art. It is not art, and treating it as art
+    # is what broke the crystal placeables. Those bakes were taken before the 0.0.66 classifier fix,
+    # when Classify matched the model id, so `architecture-crystal-foundation-2m` contains "crystal"
+    # and every material on it -- darkstone, iron, rainbow-crystal alike -- was frozen as Crystal.
+    # 0.0.66 corrected the classifier but could never reach these models, because the runtime repair
+    # pass only replaces textures of 4px or smaller and these bakes are 256px and file-backed.
+    # Measured across the committed library: 100 of 283 models and 1,303 materials carry one, among
+    # them the crystal dais, foundations, beams and hearth at 100% baked and 0% authored.
+    # Dropping it here emits no texture, which lets the runtime classify the surface correctly at
+    # load from the material's own semantic. Genuinely authored images are untouched.
+    if image.name.startswith('magenheim.surface.'):continue
     if min(image.size)<256:raise ValueError(f'{file.name}/{image.name}: packed source texture must be at least 256px')
     # Name the texture by its CONTENT, not by the Blender image's name. Hashing the name meant every
     # image called the same thing across different .blend files wrote to the same PNG and each export

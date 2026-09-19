@@ -1,4 +1,4 @@
 {
-  "version": "0.0.76",
-  "description": "0.0.76: Geode shells stand on Valheim's own rock material, so moss and stone mods apply. Size variation survives a reload, geodes lean, biome colour separates. Held weapons seat in the hand and alignment now logs its frames."
+  "version": "0.0.77",
+  "description": "0.0.77: Restores content lost in 0.0.76 to one unloadable field, and reimports every model so crystal foundations, beams, dais and hearth stop wearing a misclassified surface baked into their sources before the classifier was fixed."
 }
