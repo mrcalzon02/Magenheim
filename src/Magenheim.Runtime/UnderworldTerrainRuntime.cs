@@ -45,8 +45,7 @@ internal static class UnderworldTerrainRuntime
 
     internal static bool TryGetCapturedSeed(out int seed)
     {
-        var services = _services;
-        var identity = services?.InstanceLifecycle.Identity;
+        var identity = _services?.InstanceLifecycle.Identity;
         if (identity is not null) { seed = identity.DerivedSeed32; return true; }
         seed = default;
         return false;
@@ -78,7 +77,7 @@ internal static class UnderworldTerrainRuntime
     }
 
     // Everything below this line is the quarantined legacy Surface-host adapter. New gameplay
-    // consumers must use SampleInstanceTerrain and must never call these methods.
+    // consumers must use SampleInstanceTerrain. Existing callers remain only until their bounded migration.
     internal static float ShapeHeight(float wx, float wy, float vanillaHeight)
     {
         var services = _services; var world = _world;
@@ -88,6 +87,15 @@ internal static class UnderworldTerrainRuntime
         var local = UnderworldSpatialDomain.ToLogicalColumn(domain, wx, wy);
         var result = SampleInstanceTerrain(local.X, 0d, local.Z);
         return result.Admitted ? (float)result.Height : vanillaHeight;
+    }
+
+    [Obsolete("Legacy host-coordinate adapter. Migrate callers to SampleInstanceTerrain with native instance coordinates.")]
+    internal static UnderworldTerrainResult SampleTerrain(float wx, float wy, float vanillaHeight)
+    {
+        var services = _services;
+        if (services is null || !UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, wx, wy)) return default;
+        var local = UnderworldSpatialDomain.ToLogicalColumn(services.SpatialDomain, wx, wy);
+        return SampleInstanceTerrain(local.X, 0d, local.Z);
     }
 
     internal static Heightmap.Biome SelectVanillaBiome(float wx, float wy, Heightmap.Biome vanillaBiome)
