@@ -49,9 +49,8 @@ internal sealed class UnderworldInstanceChunkMaterializer
 
     internal void Clear()
     {
-        foreach (var pair in _materialized)
-            if (pair.Value) UnityEngine.Object.Destroy(pair.Value);
-        _materialized.Clear();
+        var keys = new List<UnderworldInstanceChunkKey>(_materialized.Keys);
+        foreach (var key in keys) DestroyChunk(key);
         if (_root) UnityEngine.Object.Destroy(_root);
         _root = null;
         if (_terrainMaterial) UnityEngine.Object.Destroy(_terrainMaterial);
@@ -110,6 +109,7 @@ internal sealed class UnderworldInstanceChunkMaterializer
         node.AddComponent<MeshRenderer>().sharedMaterial = GetTerrainMaterial();
         node.AddComponent<MeshCollider>().sharedMesh = mesh;
         _materialized.Add(sample.Key, node);
+        _log.LogDebug($"Materialized native Underworld chunk {sample.Key.X},{sample.Key.Z} with {triangles.Count / 3} terrain triangles.");
     }
 
     private Material GetTerrainMaterial()
