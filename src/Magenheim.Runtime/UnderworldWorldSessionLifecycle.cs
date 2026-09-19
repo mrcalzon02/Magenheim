@@ -26,15 +26,15 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         if(_services is null||_log is null||_reconciledWorldUid==currentWorldUid||fingerprint is null||fingerprint.Trim().Length==0)return;
         var znet=ZNet.instance;
         if(znet is null||!znet.IsServer()){_reconciledWorldUid=currentWorldUid;return;}
-        if(!_services.TryResolveLocalSession(out var identity,out _,out var playerId,out var sessionDiagnostic)||identity is null){_log.LogDebug($"Underworld transition admission deferred: {sessionDiagnostic}");return;}
+        if(!_services.TryResolveLocalSession(out var identity,out _,out var playerId,out var sessionDiagnostic)||identity is null){_log.LogDebug($"Underworld local transition recovery deferred: {sessionDiagnostic}");return;}
         var result=_services.RecoveryRuntime.LoadAndResume(playerId,identity,fingerprint,out _,out var diagnostic);
         if(result==UnderworldRecoveryLoadResult.Failed){_log.LogError($"Underworld transition admission failed closed: {diagnostic}");_reconciledWorldUid=currentWorldUid;return;}
-        _log.LogDebug($"Underworld transition admission reconciled: {diagnostic}");_reconciledWorldUid=currentWorldUid;
+        _log.LogDebug($"Underworld local transition recovery reconciled: {diagnostic}");_reconciledWorldUid=currentWorldUid;
     }
     private void TryAdmitWorldCenter()
     {
         if(_services is null||_log is null)return;
-        if(!_services.TryResolveLocalSession(out var identity,out var layer,out _,out _)||identity is null)return;
+        if(!_services.TryResolveWorldSession(out var identity,out var layer,out _)||identity is null)return;
         if(layer!=UnderworldLayer.Underworld){if(_worldCenter)Destroy(_worldCenter);_worldCenter=null;_worldCenterIdentity=null;_services.ChunkStreaming.Clear();return;}
         if(_worldCenter&&string.Equals(_worldCenterIdentity,identity.DerivedWorldId,StringComparison.Ordinal))return;
         if(_worldCenter)Destroy(_worldCenter);
@@ -53,7 +53,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     private void TryReconcileChunks()
     {
         if(_services is null||Time.unscaledTime<_nextChunkReconcileAt)return;_nextChunkReconcileAt=Time.unscaledTime+0.5f;
-        if(!_services.TryResolveLocalSession(out var identity,out var layer,out _,out _)||identity is null||layer!=UnderworldLayer.Underworld){_services.ChunkStreaming.Clear();return;}
+        if(!_services.TryResolveWorldSession(out var identity,out var layer,out _)||identity is null||layer!=UnderworldLayer.Underworld){_services.ChunkStreaming.Clear();return;}
         var focuses=new List<(double X,double Z)>();
         var znet=ZNet.instance;
         if(znet is not null&&znet.IsServer())
