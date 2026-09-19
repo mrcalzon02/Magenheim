@@ -7,8 +7,10 @@ namespace Magenheim.Core.Underworld;
 
 /// <summary>
 /// Canonical gameplay-significant Underworld authority envelope. Runtime Underworld
-/// mutation must use this composite fingerprint rather than synchronizing content,
-/// construction, and spatial-domain authority independently.
+/// mutation must use this composite fingerprint rather than synchronizing content and
+/// construction authority independently. SpatialDomain is retained only as a validated
+/// legacy engine-adapter input while the obsolete host-band adapter is being removed;
+/// its host coordinates are explicitly not gameplay or instance identity authority.
 /// </summary>
 public sealed record UnderworldAuthoritySnapshot(
     int SchemaVersion,
@@ -19,7 +21,7 @@ public sealed record UnderworldAuthoritySnapshot(
 
 public static class UnderworldAuthorityComposer
 {
-    public const int CurrentSchemaVersion = 2;
+    public const int CurrentSchemaVersion = 3;
 
     public static UnderworldAuthoritySnapshot Compose(
         UnderworldDefinitionSet content,
@@ -39,32 +41,29 @@ public static class UnderworldAuthorityComposer
             throw new InvalidOperationException(
                 $"Unsupported Underworld architecture schema {architecture.SchemaVersion}.");
 
+        // Validate legacy adapter data while it still exists, but never let hidden Surface host
+        // coordinates define the dedicated Underworld instance's gameplay authority.
         UnderworldSpatialDomain.ValidateDefinition(spatialDomain);
         RequireSha256(content.Fingerprint, "Underworld content fingerprint");
         RequireSha256(architecture.Fingerprint, "Underworld architecture fingerprint");
-        RequireSha256(spatialDomain.Fingerprint, "Underworld spatial-domain fingerprint");
 
         return new UnderworldAuthoritySnapshot(
             CurrentSchemaVersion,
             content,
             architecture,
             spatialDomain,
-            ComputeFingerprint(
-                content.Fingerprint,
-                architecture.Fingerprint,
-                spatialDomain.Fingerprint));
+            ComputeFingerprint(content.Fingerprint, architecture.Fingerprint));
     }
 
     private static string ComputeFingerprint(
         string contentFingerprint,
-        string architectureFingerprint,
-        string spatialDomainFingerprint)
+        string architectureFingerprint)
     {
         var payload = new StringBuilder()
             .Append("underworld-authority-schema=").Append(CurrentSchemaVersion).Append('\n')
+            .Append("instance-contract=").Append(UnderworldInstanceContract.ContractId).Append('\n')
             .Append("content=").Append(contentFingerprint).Append('\n')
             .Append("architecture=").Append(architectureFingerprint).Append('\n')
-            .Append("spatial-domain=").Append(spatialDomainFingerprint).Append('\n')
             .ToString();
 
         using var sha256 = SHA256.Create();
