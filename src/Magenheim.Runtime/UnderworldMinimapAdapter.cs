@@ -16,11 +16,13 @@ internal sealed class UnderworldMinimapAdapter : MonoBehaviour
     private const string RootName = "Magenheim_UnderworldMapPresentation";
     private Minimap? _minimap;
     private GameObject? _root;
+    private GameObject? _selector;
     private RawImage? _biomes;
     private RawImage? _fog;
     private Button? _surfaceButton;
     private Button? _underworldButton;
     private MagenheimMapLayer _lastLayer = (MagenheimMapLayer)(-1);
+    private bool _lastAvailable;
 
     internal static void Attach(Minimap minimap)
     {
@@ -46,8 +48,8 @@ internal sealed class UnderworldMinimapAdapter : MonoBehaviour
         _biomes.raycastTarget = false;
         _fog.raycastTarget = false;
 
-        var selector = new GameObject("Magenheim_MapLayerSelector", typeof(RectTransform));
-        var selectorRect = selector.GetComponent<RectTransform>();
+        _selector = new GameObject("Magenheim_MapLayerSelector", typeof(RectTransform));
+        var selectorRect = _selector.GetComponent<RectTransform>();
         selectorRect.SetParent(_minimap.m_largeRoot.transform, false);
         selectorRect.anchorMin = new Vector2(0.5f, 1f);
         selectorRect.anchorMax = new Vector2(0.5f, 1f);
@@ -74,15 +76,21 @@ internal sealed class UnderworldMinimapAdapter : MonoBehaviour
 
     private void ApplySelection(bool force)
     {
+        var available = UnderworldMapLayerRuntime.IsUnderworldMapAvailable();
+        if (!available && UnderworldMapLayerRuntime.SelectedLayer == MagenheimMapLayer.Underworld)
+            UnderworldMapLayerRuntime.Select(MagenheimMapLayer.Surface);
+
+        if (_selector) _selector.SetActive(available);
         var layer = UnderworldMapLayerRuntime.SelectedLayer;
-        if (!force && layer == _lastLayer)
+        if (!force && available == _lastAvailable && layer == _lastLayer)
         {
             if (layer == MagenheimMapLayer.Underworld) BindTextures();
             return;
         }
 
+        _lastAvailable = available;
         _lastLayer = layer;
-        var underworld = layer == MagenheimMapLayer.Underworld;
+        var underworld = available && layer == MagenheimMapLayer.Underworld;
         _root?.SetActive(underworld);
         if (underworld)
         {
@@ -154,6 +162,7 @@ internal sealed class UnderworldMinimapAdapter : MonoBehaviour
     private void OnDestroy()
     {
         if (_root) Destroy(_root);
+        if (_selector) Destroy(_selector);
     }
 }
 
