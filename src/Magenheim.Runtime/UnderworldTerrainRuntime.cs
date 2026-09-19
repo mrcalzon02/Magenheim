@@ -82,7 +82,7 @@ internal static class UnderworldTerrainRuntime
     private static bool InstanceAvailable(UnderworldRuntimeServices services)
     {
         var phase = services.InstanceLifecycle.Phase;
-        return phase == UnderworldInstancePhase.Admitting || phase == UnderworldInstancePhase.Active || phase == UnderworldInstancePhase.Releasing;
+        return phase == UnderworldInstancePhase.Admitting || phase == UnderworldInstancePhase.Active;
     }
 
     private static UnderworldTerrainResult Evaluate(UnderworldRuntimeServices services, WorldSnapshot world, float wx, float wy, float vanillaHeight)

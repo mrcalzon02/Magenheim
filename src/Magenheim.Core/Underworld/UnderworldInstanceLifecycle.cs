@@ -44,22 +44,6 @@ public sealed class UnderworldInstanceLifecycle
         Phase = UnderworldInstancePhase.Active;
     }
 
-    public void BeginRelease(UnderworldWorldIdentity identity)
-    {
-        RequireIdentity(identity);
-        if (Phase != UnderworldInstancePhase.Active)
-            throw new InvalidOperationException("Underworld instance release requires an active instance.");
-        Phase = UnderworldInstancePhase.Releasing;
-    }
-
-    public void CompleteRelease(UnderworldWorldIdentity identity)
-    {
-        RequireIdentity(identity);
-        if (Phase != UnderworldInstancePhase.Releasing)
-            throw new InvalidOperationException("Underworld instance release completion requires a releasing instance.");
-        Reset();
-    }
-
     public void MarkFaulted(UnderworldWorldIdentity identity, string reason)
     {
         RequireIdentity(identity);
@@ -88,7 +72,6 @@ public sealed class UnderworldInstanceLifecycle
             !string.Equals(_identity.DerivedSeedFingerprint, identity.DerivedSeedFingerprint, StringComparison.Ordinal))
             throw new InvalidOperationException("Underworld instance identity changed during its lifecycle.");
     }
-
 }
 
 public enum UnderworldInstancePhase
@@ -96,6 +79,5 @@ public enum UnderworldInstancePhase
     Inactive = 0,
     Admitting = 1,
     Active = 2,
-    Releasing = 3,
     Faulted = 4,
 }
