@@ -61,11 +61,23 @@ internal sealed class UnderworldRuntimeServices
         return services;
     }
 
-    internal bool TryResolveLocalSession(out UnderworldWorldIdentity? identity,out UnderworldLayer layer,out string playerId,out string diagnostic)=>
-        UnderworldRuntimeIdentityResolver.TryResolveLocalSession(SpatialDomain,out identity,out layer,out playerId,out diagnostic)&&identity is not null;
+    /// <summary>Resolves local identity and obtains layer only from the explicit instance-context authority.</summary>
+    internal bool TryResolveLocalSession(out UnderworldWorldIdentity? identity,out UnderworldLayer layer,out string playerId,out string diagnostic)
+    {
+        layer=UnderworldLayer.Surface;
+        if(!UnderworldRuntimeIdentityResolver.TryResolveLocalSession(out identity,out playerId,out diagnostic)||identity is null)return false;
+        if(_worldContext.IsActive(identity,UnderworldLayer.Underworld))layer=UnderworldLayer.Underworld;
+        else if(_worldContext.IsActive(identity,UnderworldLayer.Surface))layer=UnderworldLayer.Surface;
+        else
+        {
+            diagnostic="Local Magenheim layer has not been established by the explicit world-context controller.";
+            identity=null;playerId=string.Empty;return false;
+        }
+        diagnostic=string.Empty;return true;
+    }
 
     internal bool TryResolveLocalSession(out UnderworldWorldIdentity? identity,out string playerId,out string diagnostic)=>
-        TryResolveLocalSession(out identity,out _,out playerId,out diagnostic);
+        UnderworldRuntimeIdentityResolver.TryResolveLocalSession(out identity,out playerId,out diagnostic)&&identity is not null;
 
     internal void ResetForWorldUnload(){InstanceLifecycle.Reset();_worldContext.ResetForWorldUnload();}
     internal void Shutdown(){InstanceLifecycle.Reset();_worldContext.ResetForWorldUnload();}
