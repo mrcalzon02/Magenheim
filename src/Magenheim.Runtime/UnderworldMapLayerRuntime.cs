@@ -91,9 +91,9 @@ internal static class UnderworldMapLayerRuntime
         var fresh = new UnderworldExplorationState(MagenheimMapLayer.Underworld,
             UnderworldExplorationResolution, UnderworldExplorationResolution);
         if (services.ExplorationStateStore.TryRestore(playerId, identity, fresh, out var diagnostic))
-            _log?.LogDebug("Restored Underworld logical-map exploration for active player/world.");
+            _log?.LogDebug("Restored Underworld instance-map exploration for active player/world.");
         else if (!string.IsNullOrWhiteSpace(diagnostic))
-            _log?.LogDebug("Starting fresh Underworld logical-map exploration: " + diagnostic);
+            _log?.LogDebug("Starting fresh Underworld instance-map exploration: " + diagnostic);
         _underworldExploration = fresh;
         _explorationIdentityKey = key;
         UnderworldMapPresentationRuntime.ForceRefresh();
@@ -101,14 +101,17 @@ internal static class UnderworldMapLayerRuntime
         return true;
     }
 
-    internal static int RevealUnderworldAtWorldPosition(double worldX, double worldZ, double radiusMeters = DefaultRevealRadiusMeters)
+    /// <summary>
+    /// Reveals the dedicated Underworld map from native instance coordinates. No Surface host-band
+    /// containment or host-to-logical projection is permitted at this map/exploration boundary.
+    /// </summary>
+    internal static int RevealUnderworldAtInstancePosition(double instanceX, double instanceZ, double radiusMeters = DefaultRevealRadiusMeters)
     {
         if (radiusMeters < 0d || double.IsNaN(radiusMeters) || double.IsInfinity(radiusMeters)) throw new ArgumentOutOfRangeException(nameof(radiusMeters));
         var services = _services;
-        if (services is null || !IsUnderworldMapAvailable() || !UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, worldX, worldZ) || !TryGetUnderworldExploration(out var exploration)) return 0;
-        var logical = UnderworldSpatialDomain.ToLogicalColumn(services.SpatialDomain, worldX, worldZ);
+        if (services is null || !IsUnderworldMapAvailable() || !TryGetUnderworldExploration(out var exploration)) return 0;
         var viewport = UnderworldMapPresentation.CreateUnderworldViewport(services.SpatialDomain, exploration.Width, exploration.Height);
-        if (!UnderworldMapPresentation.TryLogicalToCell(viewport, logical.X, logical.Z, out var cellX, out var cellY)) return 0;
+        if (!UnderworldMapPresentation.TryLogicalToCell(viewport, instanceX, instanceZ, out var cellX, out var cellY)) return 0;
         var metresPerCell = services.SpatialDomain.RadiusMeters * 2d / Math.Min(exploration.Width, exploration.Height);
         var revealed = exploration.RevealCircle(cellX, cellY, (int)Math.Ceiling(radiusMeters / metresPerCell));
         if (revealed > 0) UnderworldMapPresentationRuntime.RefreshFogTexture();
@@ -121,24 +124,6 @@ internal static class UnderworldMapLayerRuntime
         if (services is null || _underworldExploration is null || !services.TryResolveLocalSession(out var identity, out _, out var playerId, out _) || identity is null) return false;
         services.ExplorationStateStore.Save(playerId, identity, _underworldExploration);
         return true;
-    }
-
-    internal static bool TryProjectWorldToSelectedMap(double worldX, double worldZ, out MagenheimMapPoint point)
-    {
-        var services = _services;
-        if (_selectedLayer == MagenheimMapLayer.Underworld && !IsUnderworldMapAvailable()) { point = default; return false; }
-        if (services is null) { point = new MagenheimMapPoint(worldX, worldZ); return _selectedLayer == MagenheimMapLayer.Surface; }
-        try { point = UnderworldMapProjection.WorldToLayer(services.SpatialDomain, _selectedLayer, worldX, worldZ); return true; }
-        catch (InvalidOperationException) { point = default; return false; }
-    }
-
-    internal static bool TryProjectSelectedMapToWorld(double mapX, double mapZ, out MagenheimMapPoint point)
-    {
-        var services = _services;
-        if (_selectedLayer == MagenheimMapLayer.Underworld && !IsUnderworldMapAvailable()) { point = default; return false; }
-        if (services is null) { point = new MagenheimMapPoint(mapX, mapZ); return _selectedLayer == MagenheimMapLayer.Surface; }
-        try { point = UnderworldMapProjection.LayerToWorld(services.SpatialDomain, _selectedLayer, mapX, mapZ); return true; }
-        catch (InvalidOperationException) { point = default; return false; }
     }
 
     internal static void Warn(string message) => _log?.LogWarning(message);
@@ -185,7 +170,7 @@ internal static class UnderworldExplorationPlayerPatch
             if (physicalLayer != MagenheimMapLayer.Underworld) return;
 
             var position = __instance.transform.position;
-            if (UnderworldMapLayerRuntime.RevealUnderworldAtWorldPosition(position.x, position.z) > 0) _dirty = true;
+            if (UnderworldMapLayerRuntime.RevealUnderworldAtInstancePosition(position.x, position.z) > 0) _dirty = true;
             if (_dirty && now >= _nextPersistenceAt)
             {
                 if (UnderworldMapLayerRuntime.SaveUnderworldExploration()) _dirty = false;
