@@ -24,6 +24,7 @@ STAGED = OUT != SOURCE.resolve()
 ICON_SIZE = max(256, int(os.environ.get('MAGENHEIM_EARTH_ICON_SIZE', '256')))
 PREVIEW_ICON_SIZE = max(ICON_SIZE, int(os.environ.get('MAGENHEIM_EARTH_PREVIEW_ICON_SIZE', str(ICON_SIZE))))
 GAMEPLAY_READABILITY_SIZE = 64
+EDGE_CLEARANCE = max(0.0,min(0.10,float(os.environ.get('MAGENHEIM_ICON_MIN_EDGE_CLEARANCE','0.01'))))
 LEGACY_MODEL_ICON_NAMES=('workstation','fracturing-block','faceting-wheel','resonance-frame')
 
 def sub(a, b): return tuple(x-y for x,y in zip(a,b))
@@ -45,16 +46,18 @@ def font(size, bold=False):
 
 def validate_gameplay_icon(name, icon):
     proxy=icon.resize((GAMEPLAY_READABILITY_SIZE,GAMEPLAY_READABILITY_SIZE),Image.Resampling.LANCZOS)
-    alpha=proxy.getchannel('A'); bbox=alpha.getbbox()
+    alpha=proxy.getchannel('A'); mask=alpha.point(lambda a: 255 if a>=96 else 0); bbox=mask.getbbox()
     if not bbox: raise RuntimeError(f'{name}: icon has no visible silhouette at {GAMEPLAY_READABILITY_SIZE}px')
     coverage=sum(1 for value in flat(alpha) if value>=96)/(GAMEPLAY_READABILITY_SIZE**2)
     if not .08<=coverage<=.78: raise RuntimeError(f'{name}: {coverage:.1%} opaque coverage is outside the 8-78% inventory readability envelope')
+    left,top,right,bottom=bbox; clearance=min(left,top,GAMEPLAY_READABILITY_SIZE-right,GAMEPLAY_READABILITY_SIZE-bottom)/GAMEPLAY_READABILITY_SIZE
+    if clearance<EDGE_CLEARANCE: raise RuntimeError(f'{name}: gameplay-scale silhouette is clipped/crowded: {clearance:.1%} edge clearance < {EDGE_CLEARANCE:.1%}')
     rgb=proxy.convert('RGB'); pixels=[p for p,a in zip(flat(rgb),flat(alpha)) if a>=96]
     luminance=[.2126*r+.7152*g+.0722*b for r,g,b in pixels]
     contrast=max(luminance)-min(luminance) if luminance else 0
     deviation=ImageStat.Stat(proxy.convert('L'),mask=alpha).stddev[0]
     if contrast<28 or deviation<7: raise RuntimeError(f'{name}: facet/material contrast collapses at {GAMEPLAY_READABILITY_SIZE}px (range={contrast:.1f}, stddev={deviation:.1f})')
-    print(f'{name}: gameplay readability {coverage:.1%} coverage, luminance range {contrast:.1f}, stddev {deviation:.1f}')
+    print(f'{name}: gameplay readability {coverage:.1%} coverage, {clearance:.1%} edge clearance, luminance range {contrast:.1f}, stddev {deviation:.1f}')
 
 def geode():
     points, faces, colors = [], [], []
