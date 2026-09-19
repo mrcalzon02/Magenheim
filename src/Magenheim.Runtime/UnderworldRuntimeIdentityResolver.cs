@@ -8,16 +8,16 @@ namespace Magenheim.Runtime;
 /// <summary>Resolves the parent-world-derived identity used by the dedicated Underworld instance.</summary>
 internal static class UnderworldRuntimeIdentityResolver
 {
-    internal static bool TryResolveLocalSession(UnderworldSpatialDomainDefinition domain, out UnderworldWorldIdentity? identity, out UnderworldLayer layer, out string playerId, out string diagnostic)
+    /// <summary>Resolves the local player and parent-derived instance identity without inferring a gameplay layer from coordinates.</summary>
+    internal static bool TryResolveLocalSession(out UnderworldWorldIdentity? identity, out string playerId, out string diagnostic)
     {
         identity = null;
-        layer = UnderworldLayer.Surface;
         playerId = string.Empty;
         var znet = ZNet.instance;
         if (znet is null) { diagnostic = "Valheim network/world session is not active."; return false; }
         var world = ZNet.World;
         if (world is null) { diagnostic = "Valheim active world metadata is unavailable."; return false; }
-        if (!TryResolveWorldSession(domain, znet, world, out identity, out layer, out diagnostic)) return false;
+        if (!TryResolveWorldIdentity(znet, world, out identity, out diagnostic)) return false;
 
         var player = Player.m_localPlayer;
         if (player is null)
@@ -26,7 +26,6 @@ internal static class UnderworldRuntimeIdentityResolver
                 ? "A dedicated server has no local player identity; remote admission must resolve the authoritative peer/player separately."
                 : "Valheim local player is not spawned yet.";
             identity = null;
-            layer = UnderworldLayer.Surface;
             return false;
         }
 
@@ -35,7 +34,6 @@ internal static class UnderworldRuntimeIdentityResolver
         {
             diagnostic = "Valheim local player identity resolved to an empty value.";
             identity = null;
-            layer = UnderworldLayer.Surface;
             playerId = string.Empty;
             return false;
         }
@@ -67,28 +65,6 @@ internal static class UnderworldRuntimeIdentityResolver
         identity = UnderworldWorldIdentityFactory.Derive(parentWorldId, parentSeed);
         diagnostic = string.Empty;
         return true;
-    }
-
-    [Obsolete("Layer is instance context, not player position. Migrate callers to explicit context authority.")]
-    internal static bool TryResolveWorldSession(UnderworldSpatialDomainDefinition domain, ZNet znet, object world, out UnderworldWorldIdentity? identity, out UnderworldLayer layer, out string diagnostic)
-    {
-        if (domain is null) throw new ArgumentNullException(nameof(domain));
-        layer = UnderworldLayer.Surface;
-        if (!TryResolveWorldIdentity(znet, world, out identity, out diagnostic)) return false;
-        layer = ResolveLocalLayer(domain);
-        return true;
-    }
-
-    [Obsolete("Layer is instance context, not player position. This legacy detector exists only for callers awaiting migration.")]
-    internal static UnderworldLayer ResolveLocalLayer(UnderworldSpatialDomainDefinition domain)
-    {
-        if (domain is null) throw new ArgumentNullException(nameof(domain));
-        var player = Player.m_localPlayer;
-        if (player is null) return UnderworldLayer.Surface;
-        var position = player.transform.position;
-        return UnderworldSpatialDomain.ContainsHostColumn(domain, position.x, position.z)
-            ? UnderworldLayer.Underworld
-            : UnderworldLayer.Surface;
     }
 
     internal static string ResolveWorldSaveName(object world)
