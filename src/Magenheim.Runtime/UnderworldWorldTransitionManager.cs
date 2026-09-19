@@ -33,7 +33,6 @@ internal sealed class UnderworldWorldTransitionManager
         try { return ContinuePrepared(preparedState, identity, operationId, authorityFingerprint); }
         catch (Exception failure)
         {
-            MarkLifecycleFault(identity, failure);
             _log.LogWarning($"Underworld transition '{operationId}' failed; attempting source recovery: {failure.Message}");
             return Recover(preparedState, identity, operationId, authorityFingerprint, failure);
         }
@@ -55,7 +54,7 @@ internal sealed class UnderworldWorldTransitionManager
         if (active.Phase == UnderworldTransitionPhase.Prepared)
         {
             try { return ContinuePrepared(state, identity, active.OperationId, active.AuthorityFingerprint); }
-            catch (Exception failure) { MarkLifecycleFault(identity, failure); return Recover(state, identity, active.OperationId, active.AuthorityFingerprint, failure); }
+            catch (Exception failure) { return Recover(state, identity, active.OperationId, active.AuthorityFingerprint, failure); }
         }
         return Recover(state, identity, active.OperationId, active.AuthorityFingerprint, new InvalidOperationException("Recovered an interrupted Underworld transition from a non-resumable phase."));
     }
@@ -117,8 +116,7 @@ internal sealed class UnderworldWorldTransitionManager
         else
             RequireAdmittedIdentity(identity);
 
-        if (active.SourceLayer == UnderworldLayer.Underworld &&
-            _instanceLifecycle.Phase == UnderworldInstancePhase.Admitting)
+        if (active.SourceLayer == UnderworldLayer.Underworld && _instanceLifecycle.Phase == UnderworldInstancePhase.Admitting)
             _instanceLifecycle.MarkActive(identity);
     }
 
@@ -130,30 +128,6 @@ internal sealed class UnderworldWorldTransitionManager
             _instanceLifecycle.MarkActive(identity);
         if (_instanceLifecycle.Phase != UnderworldInstancePhase.Active)
             throw new InvalidOperationException($"Underworld entry committed while lifecycle is {_instanceLifecycle.Phase}.");
-    }
-
-    private void MarkLifecycleFault(UnderworldWorldIdentity identity, Exception failure)
-    {
-        if (_instanceLifecycle.Phase != UnderworldInstancePhase.Inactive && _instanceLifecycle.Phase != UnderworldInstancePhase.Faulted)
-            _instanceLifecycle.MarkFaulted(identity, failure.Message);
-    }
-
-    private void RestoreLifecycleAfterRecovery(UnderworldWorldIdentity identity, UnderworldLayer sourceLayer)
-    {
-        if (sourceLayer == UnderworldLayer.Underworld)
-        {
-            if (_instanceLifecycle.Phase == UnderworldInstancePhase.Inactive)
-                _instanceLifecycle.BeginAdmission(identity);
-            if (_instanceLifecycle.Phase == UnderworldInstancePhase.Admitting)
-                _instanceLifecycle.MarkActive(identity);
-            else if (_instanceLifecycle.Phase != UnderworldInstancePhase.Active)
-                _instanceLifecycle.RestoreActive(identity);
-            return;
-        }
-
-        // Surface recovery is per-player. It must not tear down the persistent Underworld instance.
-        if (_instanceLifecycle.Phase == UnderworldInstancePhase.Faulted)
-            _instanceLifecycle.RestoreActive(identity);
     }
 
     private void RequireAdmittedIdentity(UnderworldWorldIdentity identity)
@@ -188,7 +162,6 @@ internal sealed class UnderworldWorldTransitionManager
         if (!_host.ObservePlayerPlacement(identity, active.SourceLayer, active.SourceAnchor)) throw new InvalidOperationException("Underworld recovery could not verify source world context and placement; recovery state remains persisted.");
         var recovered = UnderworldTransitionRules.RecoverToSource(state, operationId, authorityFingerprint);
         _host.Persist(recovered, identity);
-        RestoreLifecycleAfterRecovery(identity, active.SourceLayer);
         _log.LogInfo($"Underworld transition '{operationId}' recovered to {recovered.CurrentLayer}.");
         return recovered;
     }
