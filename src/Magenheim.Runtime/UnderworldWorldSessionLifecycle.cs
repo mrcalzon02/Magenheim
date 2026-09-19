@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BepInEx.Logging;
 using Magenheim.Core.Underworld;
 using UnityEngine;
@@ -53,9 +54,17 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     {
         if(_services is null||Time.unscaledTime<_nextChunkReconcileAt)return;_nextChunkReconcileAt=Time.unscaledTime+0.5f;
         if(!_services.TryResolveLocalSession(out var identity,out var layer,out _,out _)||identity is null||layer!=UnderworldLayer.Underworld){_services.ChunkStreaming.Clear();return;}
-        var player=Player.m_localPlayer;if(player is null)return;
-        var position=player.transform.position;
-        _services.ChunkStreaming.Reconcile(position.x,position.z);
+        var focuses=new List<(double X,double Z)>();
+        var znet=ZNet.instance;
+        if(znet is not null&&znet.IsServer())
+        {
+            foreach(var player in Player.GetAllPlayers())if(player){var position=player.transform.position;focuses.Add((position.x,position.z));}
+        }
+        else
+        {
+            var player=Player.m_localPlayer;if(player){var position=player.transform.position;focuses.Add((position.x,position.z));}
+        }
+        _services.ChunkStreaming.Reconcile(focuses);
     }
     private void TryReconcileDeepBoons()
     {
