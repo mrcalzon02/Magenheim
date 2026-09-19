@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Magenheim.Core.Underworld;
 
@@ -9,11 +10,13 @@ namespace Magenheim.Core.Underworld;
 /// </summary>
 public sealed class UnderworldInstanceLifecycle
 {
+    private readonly HashSet<string> _occupants = new(StringComparer.Ordinal);
     private UnderworldWorldIdentity? _identity;
 
     public UnderworldInstancePhase Phase { get; private set; } = UnderworldInstancePhase.Inactive;
     public UnderworldWorldIdentity? Identity => _identity;
     public string? FaultReason { get; private set; }
+    public int OccupantCount => _occupants.Count;
 
     public void BeginAdmission(UnderworldWorldIdentity identity)
     {
@@ -34,11 +37,37 @@ public sealed class UnderworldInstanceLifecycle
         Phase = UnderworldInstancePhase.Active;
     }
 
+    public void RegisterOccupant(UnderworldWorldIdentity identity, string playerId)
+    {
+        RequireIdentity(identity);
+        if (Phase != UnderworldInstancePhase.Active)
+            throw new InvalidOperationException("Players may be registered only while the Underworld instance is active.");
+        _occupants.Add(RequirePlayerId(playerId));
+    }
+
+    public bool ContainsOccupant(string playerId) => _occupants.Contains(RequirePlayerId(playerId));
+
+    public bool IsLastOccupant(string playerId)
+    {
+        var player = RequirePlayerId(playerId);
+        return _occupants.Count == 1 && _occupants.Contains(player);
+    }
+
+    public void RemoveOccupant(UnderworldWorldIdentity identity, string playerId)
+    {
+        RequireIdentity(identity);
+        if (Phase != UnderworldInstancePhase.Active && Phase != UnderworldInstancePhase.Releasing)
+            throw new InvalidOperationException("Players may leave only an active or releasing Underworld instance.");
+        _occupants.Remove(RequirePlayerId(playerId));
+    }
+
     public void BeginRelease(UnderworldWorldIdentity identity)
     {
         RequireIdentity(identity);
         if (Phase != UnderworldInstancePhase.Active)
             throw new InvalidOperationException("Underworld instance release requires an active instance.");
+        if (_occupants.Count > 1)
+            throw new InvalidOperationException("Underworld instance cannot release while multiple players remain admitted.");
         Phase = UnderworldInstancePhase.Releasing;
     }
 
@@ -47,6 +76,8 @@ public sealed class UnderworldInstanceLifecycle
         RequireIdentity(identity);
         if (Phase != UnderworldInstancePhase.Releasing)
             throw new InvalidOperationException("Underworld instance release completion requires a releasing instance.");
+        if (_occupants.Count != 0)
+            throw new InvalidOperationException("Underworld instance cannot complete release while players remain admitted.");
         Reset();
     }
 
@@ -63,6 +94,7 @@ public sealed class UnderworldInstanceLifecycle
 
     public void Reset()
     {
+        _occupants.Clear();
         _identity = null;
         FaultReason = null;
         Phase = UnderworldInstancePhase.Inactive;
@@ -77,6 +109,13 @@ public sealed class UnderworldInstanceLifecycle
             !string.Equals(_identity.DerivedWorldId, identity.DerivedWorldId, StringComparison.Ordinal) ||
             !string.Equals(_identity.DerivedSeedFingerprint, identity.DerivedSeedFingerprint, StringComparison.Ordinal))
             throw new InvalidOperationException("Underworld instance identity changed during its lifecycle.");
+    }
+
+    private static string RequirePlayerId(string playerId)
+    {
+        var normalized = playerId?.Trim() ?? string.Empty;
+        if (normalized.Length == 0) throw new ArgumentException("A player id is required.", nameof(playerId));
+        return normalized;
     }
 }
 
