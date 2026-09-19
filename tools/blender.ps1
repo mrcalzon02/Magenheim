@@ -46,17 +46,20 @@ $ErrorActionPreference = 'Continue'
 try { & $Blender @arguments > $log 2>&1 } finally { $ErrorActionPreference = $previousPreference }
 $code = $LASTEXITCODE
 
-# Blender exits 0 even when the script raised, so surface the failure explicitly.
+# Blender can report Python failures while still exiting 0, so both the process exit status and
+# known fatal log signatures are authoritative. Conversely, a nonzero native exit must never be
+# converted into a passing asset gate merely because Blender stopped before printing a traceback.
 # "Error: Not freed memory blocks" is Blender's own shutdown accounting, not a script failure, and
 # it appears intermittently on Blender 5.0 -- it failed a staff-icon render that had already
 # reported all 32 icons saved. Excluding that one line keeps the ^Error: rule for real failures.
 $failed = Select-String -Path $log -Pattern 'Traceback \(most recent call last\)|SystemError|^Error:(?! Not freed memory blocks)' -SimpleMatch:$false
-$done = (Select-String -Path $log -Pattern '^(EXPORTED|RENDERED|RESCALED|AUTHORED|REVISED|REPAIRED)' ).Count
+$completionPattern = '^(EXPORTED|RENDERED|RESCALED|AUTHORED|REVISED|REPAIRED|VERIFIED)'
+$done = (Select-String -Path $log -Pattern $completionPattern).Count
 
 Write-Host ("{0}: exit={1} completed={2} log={3}" -f $Tool, $code, $done, $log)
-if ($failed) {
+if ($code -ne 0 -or $failed) {
     Write-Host '--- failure ---'
     Get-Content $log | Select-Object -Last $Tail
     exit 1
 }
-Get-Content $log | Select-String -Pattern '^(EXPORTED|RENDERED|RESCALED|AUTHORED|REVISED|REPAIRED)|^[A-Z][a-z]+ed \d+' | Select-Object -Last 4
+Get-Content $log | Select-String -Pattern "$completionPattern|^[A-Z][a-z]+ed \d+" | Select-Object -Last 4
