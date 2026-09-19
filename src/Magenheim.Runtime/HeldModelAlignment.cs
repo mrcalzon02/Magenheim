@@ -37,6 +37,15 @@ namespace Magenheim.Runtime;
 /// almost evenly about the grip), and the crossbow's declared-forward axis was 9.8% off-centre.
 /// Bounds ranking and Reach() both treat those margins as decisive, when they are measurement noise
 /// on a near-symmetric shape. See <see cref="NearTieMargin"/>.
+///
+/// The sword was the one case this margin correctly left alone: its own mirror-image signature sat
+/// on a real, non-noise 43.7% margin, not something a tolerance should paper over. It turned out to
+/// be exactly the same defect the source was measured for and found: crystal-weapon-sword's blade
+/// was authored at negative Blender Z and its pommel at positive Z, the reverse of the axe and
+/// knife's own established convention (confirmed directly from their source coordinates), so the
+/// asset itself -- not this algorithm -- was reversed. Fixed by rotating the source 180 degrees
+/// about the world origin, the same repair as the four staves fixed the same day, and confirmed by
+/// a debug render with pommel and blade colour-coded before re-export.
 /// </remarks>
 internal static class HeldModelAlignment
 {

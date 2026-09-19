@@ -1,4 +1,4 @@
 {
-  "version": "0.0.79",
-  "description": "0.0.79: Four Crystal-tier staves (Fire/Storm/Radiance/Venom) were built back-to-front, head at the grip end -- found by direct icon inspection, fixed at the source. Weapon icons refreshed to match the reshaped greatsword."
+  "version": "0.0.80",
+  "description": "0.0.80: The crystal sword was also built back-to-front (blade at the pommel end), the same defect as the four staves fixed moments ago. Confirmed by a colour-coded debug render, fixed at the source. All ten crystal weapons now confirmed correct."
 }

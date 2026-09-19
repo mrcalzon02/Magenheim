@@ -34,18 +34,20 @@ Console.WriteLine($"PASS: {count} model assets imported twice; complete parts/UV
 // before any rotation), so a source re-export (e.g. the greatsword reshape on 2026-09-19) is picked
 // up automatically rather than silently tested against stale numbers.
 //
-// Six of nine non-crossbow weapons are independently confirmed correct (axe, greatsword, bow since
-// 0.0.75; battleaxe, spear since the 2026-09-19 tolerant-margin fix; mace, unconfirmed but resolves
-// identically). All six must land on ONE identical rotation -- ours X/Y/Z -> donor X/Z/Y with signs
-// (+1,+1,-1) -- which this test checks by transforming unit vectors rather than comparing Euler
-// angles, since Quaternion.eulerAngles is not implemented in this shim and Euler decomposition has
-// its own ambiguities near 90/270 degrees that have nothing to do with correctness.
+// All nine non-crossbow weapons are now independently confirmed correct (axe, greatsword, bow since
+// 0.0.75; battleaxe, spear, mace since the 2026-09-19 tolerant-margin fix; sword since the same-day
+// source flip below). All nine must land on ONE identical rotation -- ours X/Y/Z -> donor X/Z/Y with
+// signs (+1,+1,-1) -- which this test checks by transforming unit vectors rather than comparing
+// Euler angles, since Quaternion.eulerAngles is not implemented in this shim and Euler decomposition
+// has its own ambiguities near 90/270 degrees that have nothing to do with correctness.
 //
-// The sword is deliberately EXCLUDED from the must-match assertion. It reproduces the exact mirror
-// of the good pattern, on a real 43.7% margin (not measurement noise), and nobody has ever confirmed
-// in game whether the sword is actually right or wrong. Silently forcing it to match would be
-// exactly the "measure, don't guess" violation this whole file exists to avoid. It is still measured
-// and printed so a regression is visible even though it isn't asserted on.
+// The sword reproduced the exact mirror of the good pattern for a while, on a real 43.7% margin
+// (not measurement noise, unlike every other fix here), and nobody had confirmed in game whether it
+// was right or wrong -- so it was measured and printed, not asserted on, rather than forced to match.
+// It turned out to be the same defect as the four staves in the next commit: authored back-to-front,
+// blade at negative Blender Z where the axe and knife both keep theirs at positive Z. Fixed by
+// rotating the source 180 degrees and confirmed by a colour-coded debug render before re-export; it
+// now belongs in mustMatchGood like everything else.
 {
     var donors = new Dictionary<string, Bounds>
     {
@@ -65,6 +67,7 @@ Console.WriteLine($"PASS: {count} model assets imported twice; complete parts/UV
         "crystal-weapon-axe", "crystal-weapon-greatsword", "crystal-weapon-bow",
         "crystal-weapon-battleaxe", "crystal-weapon-spear", "crystal-weapon-mace",
         "crystal-weapon-knife", "crystal-weapon-atgeir", "crystal-weapon-crossbow",
+        "crystal-weapon-sword",
     };
     var fakeAttach = new GameObject("attach").transform;
     var alignmentChecks = 0;
@@ -92,9 +95,7 @@ Console.WriteLine($"PASS: {count} model assets imported twice; complete parts/UV
 
         if (Array.IndexOf(mustMatchGood, id) >= 0 && !good)
             throw new Exception($"HeldModelAlignment regression: '{id}' no longer matches the confirmed rotation (ours X/Y/Z -> donor X/Z/Y, signs +1/+1/-1).");
-        if (id == "crystal-weapon-sword" && good)
-            Console.WriteLine($"NOTE: '{id}' now matches the good pattern too -- the sword's known anomaly may be resolved; worth confirming visually.");
         alignmentChecks++;
     }
-    Console.WriteLine($"PASS: {alignmentChecks} held-model alignments checked against the confirmed rotation (sword measured, not asserted -- unconfirmed in game).");
+    Console.WriteLine($"PASS: {alignmentChecks} held-model alignments checked against the confirmed rotation.");
 }
