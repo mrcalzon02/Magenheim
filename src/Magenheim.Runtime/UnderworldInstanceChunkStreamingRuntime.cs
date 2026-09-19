@@ -6,9 +6,9 @@ using Magenheim.Core.Underworld;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Runtime ownership/streaming authority for native Underworld chunks. This class deliberately
-/// materializes no Unity or Valheim terrain objects; renderer/materializer adapters consume the
-/// immutable chunk samples exposed here. Surface WorldGenerator is not part of this pipeline.
+/// Runtime ownership/streaming authority for native Underworld chunks. Terrain authority remains
+/// materialization-neutral; after residency changes, the downstream Unity materializer is reconciled.
+/// Surface WorldGenerator is not part of this pipeline.
 /// </summary>
 internal sealed class UnderworldInstanceChunkStreamingRuntime
 {
@@ -63,6 +63,7 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
             if (!_loaded.ContainsKey(key))
                 _loaded.Add(key, UnderworldInstanceChunkSampler.Sample(_grid, key, identity.DerivedSeed32, waterLevel));
 
+        _services.ChunkMaterializer.Reconcile();
         return true;
     }
 
@@ -74,5 +75,6 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
         if (_loaded.Count > 0) _log.LogDebug($"Released {_loaded.Count} native Underworld chunk payload(s).");
         _loaded.Clear();
         _loadedInstanceId = null;
+        _services.ChunkMaterializer.Reconcile();
     }
 }
