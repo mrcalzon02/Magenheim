@@ -13,6 +13,7 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal sealed class UnderworldInstanceChunkMaterializer
 {
+    private const float TerrainUvMetersPerTile = 4f;
     private readonly UnderworldRuntimeServices _services;
     private readonly ManualLogSource _log;
     private readonly Dictionary<UnderworldInstanceChunkKey, GameObject> _materialized = new();
@@ -78,8 +79,16 @@ internal sealed class UnderworldInstanceChunkMaterializer
         for (var x = 0; x < edge; x++)
         {
             var index = z * edge + x;
-            vertices[index] = new Vector3(x * grid.VertexSpacingMeters, (float)sample.Heights[index], z * grid.VertexSpacingMeters);
-            uv[index] = new Vector2(x / (float)(edge - 1), z / (float)(edge - 1));
+            var localX = x * grid.VertexSpacingMeters;
+            var localZ = z * grid.VertexSpacingMeters;
+            vertices[index] = new Vector3(localX, (float)sample.Heights[index], localZ);
+
+            // UVs live in absolute instance space rather than restarting at 0..1 on every chunk.
+            // Adjacent chunks therefore share identical coordinates on their common edge and keep
+            // a stable four-metre texel rhythm as streaming changes the resident chunk set.
+            uv[index] = new Vector2(
+                (float)((bounds.MinimumX + localX) / TerrainUvMetersPerTile),
+                (float)((bounds.MinimumZ + localZ) / TerrainUvMetersPerTile));
         }
 
         var triangles = new List<int>((edge - 1) * (edge - 1) * 6);
