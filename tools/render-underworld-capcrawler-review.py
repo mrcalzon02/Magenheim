@@ -15,9 +15,19 @@ if sc.get('magenheim_model_id')!='underworld-creature-capcrawler': raise Runtime
 arm=next((o for o in sc.objects if o.type=='ARMATURE'),None)
 if not arm: raise RuntimeError('Capcrawler armature missing')
 
+# Never let a failed current render pass by counting plates left by an older review.
+for p in OUT.glob('*.png'): p.unlink()
+
 # Review is intentionally neutral: no dramatic fog/color grading that can hide UV,
-# normal, ground-contact, interpenetration, or emission defects.
-sc.render.engine='BLENDER_EEVEE_NEXT'
+# normal, ground-contact, interpenetration, or emission defects. Blender renamed EEVEE's
+# identifier between 4.x and 5.x, so resolve the installed enum instead of pinning a version.
+_engines={e.identifier for e in bpy.types.RenderSettings.bl_rna.properties['engine'].enum_items}
+if 'BLENDER_EEVEE_NEXT' in _engines:
+ sc.render.engine='BLENDER_EEVEE_NEXT'
+elif 'BLENDER_EEVEE' in _engines:
+ sc.render.engine='BLENDER_EEVEE'
+else:
+ raise RuntimeError(f'EEVEE render engine unavailable; installed engines: {sorted(_engines)}')
 sc.render.resolution_x=768; sc.render.resolution_y=768; sc.render.resolution_percentage=100
 sc.render.image_settings.file_format='PNG'; sc.render.film_transparent=False
 sc.world.color=(0.055,0.055,0.055)
@@ -42,9 +52,9 @@ def render(name,loc,target=(0,0,.20),action=None,frame=1):
  sc.render.filepath=str(OUT/f'{name}.png'); bpy.ops.render.render(write_still=True)
  p=OUT/f'{name}.png'
  if not p.exists() or p.stat().st_size<4096: raise RuntimeError(f'Review plate failed: {p}')
+ print(f'RENDERED {name}.png',flush=True)
 
-# Orthographic-like identity views expose silhouette, cap overhang, gill readability,
-# mandible spacing and whether the low crawler still clears the ground.
+# Identity views expose silhouette, cap overhang, gill readability, mandible spacing and clearance.
 render('01-front',(0,1.55,.42))
 render('02-side',(1.55,0,.40))
 render('03-rear',(0,-1.55,.40))
@@ -60,5 +70,5 @@ render('11-guard',(0,1.55,.34),action='Capcrawler_Guard',frame=20)
 render('12-death',(1.25,1.25,.48),action='Capcrawler_Death',frame=30)
 arm.animation_data.action=None
 plates=sorted(OUT.glob('*.png'))
-if len(plates)!=12: raise RuntimeError(f'Expected 12 review plates, found {len(plates)}')
-print(f'RENDERED Capcrawler fidelity review: {len(plates)} plates -> {OUT}',flush=True)
+if len(plates)!=12: raise RuntimeError(f'Expected 12 fresh review plates, found {len(plates)}')
+print(f'RENDERED Capcrawler fidelity review: {len(plates)} fresh plates -> {OUT}',flush=True)
