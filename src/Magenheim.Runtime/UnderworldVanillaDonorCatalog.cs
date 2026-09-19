@@ -30,41 +30,58 @@ internal static class UnderworldVanillaDonorCatalog
                 new Donor("YggaShoot1", .85f, 1.35f, new Vector3(1.15f, 1.35f, 1.15f), -.15f, true),
                 new Donor("YggaShoot2", .9f, 1.45f, new Vector3(1.0f, 1.55f, 1.0f), -.15f, true),
                 new Donor("YggaShoot3", .8f, 1.25f, new Vector3(1.25f, 1.25f, 1.25f), -.15f, true),
+                new Donor("YggaShoot1", 1.0f, 1.55f, new Vector3(1.55f, .82f, 1.35f), -.2f, true),
+                new Donor("YggaShoot2", .75f, 1.15f, new Vector3(.72f, 1.95f, .72f), -.15f, true),
                 new Donor("Pickable_Mushroom_Magecap", 6.5f, 10f, new Vector3(1.5f, 1.1f, 1.5f), -.05f),
+                new Donor("Pickable_Mushroom_Magecap", 5.5f, 8f, new Vector3(.82f, 1.75f, .82f), -.05f),
                 new Donor("Pickable_Mushroom_JotunPuffs", 5f, 8.5f, new Vector3(1.4f, 1.15f, 1.4f), -.05f),
+                new Donor("Pickable_Mushroom_JotunPuffs", 4.5f, 7f, new Vector3(1.8f, .72f, 1.55f), -.05f),
                 new Donor("Pickable_Mushroom_blue", 7f, 12f, new Vector3(1.25f, 1.45f, 1.25f), -.05f),
+                new Donor("Pickable_Mushroom_blue", 5.5f, 9f, new Vector3(.7f, 2.1f, .7f), -.05f),
             },
             [UnderworldTerrainBiome.BlackwaterDeep] =
             new Donor[]
             {
                 new Donor("cliff_mistlands1", 1.1f, 1.8f, new Vector3(1.0f, 1.45f, 1.0f), -.5f, true),
+                new Donor("cliff_mistlands1", .9f, 1.45f, new Vector3(1.75f, .72f, 1.35f), -.55f, true),
                 new Donor("RockFinger", 1.25f, 2.25f, new Vector3(.9f, 1.6f, .9f), -.35f, true),
+                new Donor("RockFinger", 1.0f, 1.7f, new Vector3(.58f, 2.25f, .58f), -.4f, true),
                 new Donor("RockThumb", 1.4f, 2.4f, new Vector3(1.1f, 1.35f, 1.1f), -.35f, true),
                 new Donor("YggdrasilRoot", 1.2f, 2.0f, new Vector3(1.4f, .9f, 1.4f), -.25f, true),
+                new Donor("YggdrasilRoot", 1.0f, 1.65f, new Vector3(2.0f, .55f, 1.45f), -.3f, true),
             },
             [UnderworldTerrainBiome.SulfurousWastes] =
             new Donor[]
             {
                 new Donor("Ashlands_rock1", 1.2f, 2.3f, new Vector3(1.15f, 1.25f, 1.15f), -.35f, true),
+                new Donor("Ashlands_rock1", .9f, 1.65f, new Vector3(1.7f, .7f, 1.3f), -.4f, true),
                 new Donor("Ashlands_rock2", 1.1f, 2.1f, new Vector3(1.3f, 1.1f, 1.3f), -.35f, true),
+                new Donor("Ashlands_rock2", 1.0f, 1.8f, new Vector3(.75f, 1.85f, .75f), -.35f, true),
                 new Donor("cliff_ashlands1", 1.0f, 1.7f, new Vector3(1.0f, 1.55f, 1.0f), -.55f, true),
                 new Donor("AshlandsTree6_big", .75f, 1.2f, new Vector3(.85f, 1.25f, .85f), -.15f, true),
+                new Donor("AshlandsTree6_big", .65f, 1.0f, new Vector3(.58f, 1.75f, .58f), -.15f, true),
                 new Donor("AshlandsBush1", 1.4f, 2.8f, new Vector3(1.1f, .8f, 1.1f), -.05f),
             },
             [UnderworldTerrainBiome.FrozenCaverns] =
             new Donor[]
             {
                 new Donor("rock3_mountain_1", 1.15f, 2.1f, new Vector3(1.0f, 1.45f, 1.0f), -.35f, true),
+                new Donor("rock3_mountain_1", .9f, 1.55f, new Vector3(1.65f, .72f, 1.4f), -.4f, true),
                 new Donor("Ice_floor", 2.0f, 4.0f, new Vector3(1.5f, .45f, 1.5f), -.12f, true),
+                new Donor("Ice_floor", 1.6f, 3.0f, new Vector3(2.2f, .22f, 1.35f), -.1f, true),
                 new Donor("BlackIceShard_01", 1.6f, 3.5f, new Vector3(.8f, 1.8f, .8f), -.15f, true),
+                new Donor("BlackIceShard_01", 1.2f, 2.5f, new Vector3(.48f, 2.65f, .48f), -.15f, true),
                 new Donor("RockFinger", .9f, 1.6f, new Vector3(.75f, 1.75f, .75f), -.35f, true),
             },
             [UnderworldTerrainBiome.FractureZones] =
             new Donor[]
             {
                 new Donor("cliff_mistlands1", 1.1f, 2.0f, new Vector3(1.15f, 1.35f, 1.15f), -.45f, true),
+                new Donor("cliff_mistlands1", .85f, 1.4f, new Vector3(1.9f, .65f, 1.25f), -.5f, true),
                 new Donor("RockFinger", 1.2f, 2.5f, new Vector3(.8f, 1.85f, .8f), -.35f, true),
+                new Donor("RockFinger", 1.0f, 1.8f, new Vector3(.48f, 2.7f, .48f), -.4f, true),
                 new Donor("RockFingerBroken", 1.3f, 2.8f, new Vector3(1.15f, 1.45f, 1.15f), -.35f, true),
+                new Donor("RockFingerBroken", 1.0f, 2.0f, new Vector3(1.7f, .8f, 1.3f), -.4f, true),
                 new Donor("RockThumb", 1.25f, 2.5f, new Vector3(1.0f, 1.5f, 1.0f), -.35f, true),
                 new Donor("rockformation1", 1.4f, 3.0f, new Vector3(1.2f, 1.35f, 1.2f), -.45f, true),
             },
@@ -72,11 +89,16 @@ internal static class UnderworldVanillaDonorCatalog
             new Donor[]
             {
                 new Donor("root07", 1.4f, 2.8f, new Vector3(1.25f, 1.0f, 1.25f), -.2f, true),
+                new Donor("root07", 1.1f, 2.0f, new Vector3(1.9f, .58f, 1.45f), -.25f, true),
                 new Donor("root08", 1.5f, 3.0f, new Vector3(1.1f, 1.2f, 1.1f), -.2f, true),
+                new Donor("root08", 1.15f, 2.1f, new Vector3(.68f, 1.9f, .68f), -.2f, true),
                 new Donor("root11", 1.3f, 2.7f, new Vector3(1.35f, .9f, 1.35f), -.2f, true),
                 new Donor("root12", 1.4f, 2.9f, new Vector3(1.2f, 1.1f, 1.2f), -.2f, true),
+                new Donor("root12", 1.0f, 1.9f, new Vector3(2.1f, .52f, 1.55f), -.25f, true),
                 new Donor("YggdrasilRoot", 1.3f, 2.4f, new Vector3(1.55f, .85f, 1.55f), -.25f, true),
+                new Donor("YggdrasilRoot", 1.0f, 1.8f, new Vector3(2.25f, .48f, 1.5f), -.3f, true),
                 new Donor("AshlandsTree6_big", .8f, 1.35f, new Vector3(1.0f, 1.3f, 1.0f), -.15f, true),
+                new Donor("AshlandsTree6_big", .65f, 1.0f, new Vector3(.62f, 1.8f, .62f), -.15f, true),
                 new Donor("AshlandsBush2", 1.5f, 3.0f, new Vector3(1.2f, .75f, 1.2f), -.05f),
             },
         };
