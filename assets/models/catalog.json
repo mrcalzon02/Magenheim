@@ -697,15 +697,15 @@
   },
   {
     "id": "crystal-weapon-greatsword",
-    "parts": 8,
-    "triangles": 1228,
-    "materials": 8,
+    "parts": 5,
+    "triangles": 1040,
+    "materials": 5,
     "source": "source/crystal-weapon-greatsword.blend",
     "glb": "glb/crystal-weapon-greatsword.glb",
     "runtime": "runtime/crystal-weapon-greatsword.model.json",
-    "source_sha256": "96bbbf6a42d5307eab31877201674e24460c0c219fed2877026b4230c5d5a4bf",
-    "runtime_sha256": "19051cb514e498a3b46cb6c931749fbede00a91390964bd00284ba35e44c816d",
-    "glb_sha256": "a5b7d6fb6f5830fd6a2ad2d11d2fa481d3a2c0889c31bb8494d3d556b8a625de"
+    "source_sha256": "b4337450ca800e5fcae39ba6de9e6c5fbf41791b0d11177ce677b410875c6f0d",
+    "runtime_sha256": "5148d1ab80235a054f754262817875996ebb0c6728ea08ab11fe5feeefe30cd3",
+    "glb_sha256": "a9089d69c2edfa7ea17d280cf20d5d11edc09a7b47f5d89bfdcc52d8b286b3db"
   },
   {
     "id": "crystal-weapon-knife",
