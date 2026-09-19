@@ -28,7 +28,9 @@ internal static class UnderworldMapLayerRuntime
         _explorationIdentityKey = null;
         UnderworldMapPresentationRuntime.Reset();
         UnderworldExplorationPlayerPatch.Reset();
-        var harmony = new Harmony(MagenheimPlugin.PluginGuid + ".gameplay");\n        harmony.PatchAll(typeof(UnderworldExplorationPlayerPatch));\n        harmony.PatchAll(typeof(UnderworldMinimapAwakePatch));
+        var harmony = new Harmony(MagenheimPlugin.PluginGuid + ".gameplay");
+        harmony.PatchAll(typeof(UnderworldExplorationPlayerPatch));
+        harmony.PatchAll(typeof(UnderworldMinimapAwakePatch));
     }
 
     internal static MagenheimMapLayer PlayerLayer()
@@ -59,7 +61,9 @@ internal static class UnderworldMapLayerRuntime
         state = null!;
         var services = _services;
         if (services is null || !services.TryResolveLocalSession(out var identity, out _, out var playerId, out _) || identity is null) return false;
-        var key = identity.ParentWorldId + "\n" + identity.DerivedSeedFingerprint + "\n" + playerId;
+        var key = identity.ParentWorldId + "
+" + identity.DerivedSeedFingerprint + "
+" + playerId;
         if (_underworldExploration is not null && string.Equals(_explorationIdentityKey, key, StringComparison.Ordinal))
         {
             state = _underworldExploration;
