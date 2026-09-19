@@ -58,8 +58,11 @@ for i,y in enumerate((-.24,-.08,.10,.26),1):
   keep(organic(f'Capcrawler_{s}_FootPad{i}',foot,(.042,.052,.018),plate,2),f'{s}_Leg{i}'); keep(segment(f'Capcrawler_{s}_Claw{i}',foot,toe,.012,mand),f'{s}_Leg{i}')
 for side in (-1,1):
  s='L' if side<0 else 'R'; a=(side*.08,.32,.22); b=(side*.13,.47,.17); keep(segment(f'Capcrawler_Mandible_{s}',a,b,.036,mand),f'Mandible_{s}')
+# Emissive gills are the second signature surface after the fungal rim.  Match
+# their geometry density to the armor so emission and normals retain a clean
+# organic profile in close review plates rather than exposing coarse facets.
 for i in range(5):
- x=(i-2)*.065; keep(organic(f'Capcrawler_Gill_{i+1}',(x,.285,.255),(.024,.055,.018),gill,2),'Body')
+ x=(i-2)*.065; keep(organic(f'Capcrawler_Gill_{i+1}',(x,.285,.255),(.024,.055,.018),gill,3),'Body')
 
 bpy.ops.object.armature_add(enter_editmode=True,location=(0,0,0)); arm=bpy.context.object; arm.name='RIG_Capcrawler_HOST_LOW_CRAWLER'; eb=arm.data.edit_bones; root=eb[0]; root.name='Root'; root.head=(0,0,0); root.tail=(0,0,.12)
 def bone(name,h,t,p=None): b=eb.new(name); b.head=h; b.tail=t; b.parent=p; return b
