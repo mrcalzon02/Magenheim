@@ -27,6 +27,7 @@ internal sealed class UnderworldRuntimeServices
         _worldContext=worldContext;PlacementHost=placementHost;TransitionHost=transitionHost;
         TransitionManager=transitionManager;RecoveryRuntime=recoveryRuntime;
         ChunkStreaming=new UnderworldInstanceChunkStreamingRuntime(this,log);
+        ChunkMaterializer=new UnderworldInstanceChunkMaterializer(this,log);
     }
 
     /// <summary>Legacy engine-placement adapter. Never use this as Underworld gameplay authority.</summary>
@@ -43,6 +44,8 @@ internal sealed class UnderworldRuntimeServices
     internal UnderworldTransitionRecoveryRuntime RecoveryRuntime{get;}
     /// <summary>Native instance chunk residency and deterministic payload authority.</summary>
     internal UnderworldInstanceChunkStreamingRuntime ChunkStreaming{get;}
+    /// <summary>Unity presentation of resident native chunks; never a terrain-authority source.</summary>
+    internal UnderworldInstanceChunkMaterializer ChunkMaterializer{get;}
 
     internal static UnderworldRuntimeServices Create(string pluginConfigDirectory,ManualLogSource log)
     {
@@ -83,6 +86,6 @@ internal sealed class UnderworldRuntimeServices
     internal bool TryResolveLocalSession(out UnderworldWorldIdentity? identity,out string playerId,out string diagnostic)=>
         UnderworldRuntimeIdentityResolver.TryResolveLocalSession(out identity,out playerId,out diagnostic)&&identity is not null;
 
-    internal void ResetForWorldUnload(){ChunkStreaming.Clear();InstanceLifecycle.Reset();_worldContext.ResetForWorldUnload();}
-    internal void Shutdown(){ChunkStreaming.Clear();InstanceLifecycle.Reset();_worldContext.ResetForWorldUnload();}
+    internal void ResetForWorldUnload(){ChunkMaterializer.Clear();ChunkStreaming.Clear();InstanceLifecycle.Reset();_worldContext.ResetForWorldUnload();}
+    internal void Shutdown(){ChunkMaterializer.Clear();ChunkStreaming.Clear();InstanceLifecycle.Reset();_worldContext.ResetForWorldUnload();}
 }
