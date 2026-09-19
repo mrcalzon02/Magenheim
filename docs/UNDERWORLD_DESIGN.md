@@ -19,9 +19,9 @@
 
 ## Binding player-facing objective
 
-**The Underworld is not another continent next door, and it is definitely not a second save that requires quitting Valheim and loading another world. It is a second logical world layer inside the same persistent Valheim game world.**
+**The Underworld is a separate instanced world-space owned by Magenheim. It is not another Surface continent, not a 40 km far-landmass, and not player-facing geography translated from distant Surface coordinates.**
 
-Its distant reserved coordinates exist only so Valheim can simulate and persist a second heightfield region in the same session. They are not the geography shown to players. The Underworld has its own logical coordinate projection, biome map, exploration/cloud state and Surface | Underworld map tab. Surface and Underworld therefore share simulation and persistence while remaining distinct maps and world layers to the player. This objective outranks attempts to force the reserved region to behave like an ordinary adjacent vanilla continent.
+The player keeps the same character, inventory, skills and progression across the Deep Gate, but the Underworld owns its own instance coordinate system, terrain/chunk lifecycle, biome/environment state, exploration/cloud state, pins and map. The instance must be entered and exited as a controlled world-space transition. The implementation may share process-level Valheim services where unavoidable, but those services are compatibility substrate rather than permission to collapse the instance back into Surface geography.
 
 ## 1. Executive concept
 
@@ -114,86 +114,45 @@ Examples:
 - the road that vanishes into the Great Decay;
 - the fracture crossed by the broken ancient bridge.
 
-## 6. One world, one save: the Underworld is an instanced region
+## 6. Separate instanced Underworld world-space
 
-**The Underworld is a region of the same Valheim world and the same save file as the surface. It is
-not a second save, not a second server, and not a world the player loads instead of theirs.**
+The Underworld is a dedicated Magenheim gameplay instance. "Separate" here describes world-space, generation, persistence and presentation authority; it does **not** mean that a player should quit to the main menu and manually select another save.
 
-This section previously specified a "separate persistent world instance" and speculated about
-"controlled world-context switching". That was wrong, it was built, and it produced an Underworld
-that could only be reached by quitting to the main menu and loading a different save — which defeats
-the entire purpose. The corrected architecture below is binding. Do not reintroduce the old model.
+The failed implementation history produced two opposite mistakes. The first treated the Underworld as a second ordinary Valheim save and made travel a menu/load operation. The second over-corrected by turning it into an x=40000 horizontal Surface-world landmass and then building projection machinery to hide that fact. Neither is the intended architecture.
 
-### 6.1 The mechanism already exists in Valheim: dungeon interiors
+### 6.1 Instance boundary
 
-Valheim's instanced dungeons are the working precedent, and they are *not* separate worlds. Verified
-against the installed 1.0.12 assemblies:
+The correct precedent is the **isolation semantics** of Valheim dungeon interiors, not the literal coordinates or room generator used by a vanilla dungeon. An Underworld instance has:
 
-| Element | What it does |
-|---|---|
-| `Location.m_hasInterior`, `m_interiorRadius` | Marks a location as owning an interior volume |
-| `Location.m_interiorEnvironment` | Gives that volume its own sky, fog and lighting |
-| `Location.m_interiorTransform`, `m_useCustomInteriorTransform` | Places the interior away from the surface footprint |
-| `Location.m_generator` (`DungeonGenerator`) | Builds the interior contents |
-| `DungeonGenerator.m_zoneCenter`, `m_zoneSize` | The interior occupies a reserved coordinate volume |
-| `ZoneSystem::SpawnLocation` | Places it; the **same** `ZoneSystem` then streams it |
+- its own logical origin and world-scale chunk address space;
+- its own deterministic terrain and biome generation authority;
+- its own environment/sky/fog authority;
+- its own exploration/cloud state and map;
+- instance-scoped structures, ecology and persistent gameplay state;
+- explicit entry/return anchors and transition recovery;
+- multiplayer admission keyed to one authoritative instance identity.
 
-A dungeon interior lives at coordinates far from surface play, inside the one running world. It is
-streamed by the same `ZoneSystem` (`m_zones`, `m_generatedZones`, `m_locationInstances`) and
-persisted as ordinary ZDOs in the same `.db`. Both the surface and every dungeon interior are
-resident in the same session at the same time. Third-party dungeon-map mods work precisely because
-the interior is normal world space with a known coordinate offset.
+Surface world generation must not be extended to create Underworld terrain. In particular, the x=40000 host band, far-landmass biome patches and Surface WorldGenerator heightfield columns are superseded as the final hosting mechanism.
 
-### 6.2 The Underworld is that pattern at world scale
+### 6.2 Runtime hosting rule
 
-The Underworld applies the same instancing, with two differences: the reserved volume is
-world-sized rather than room-sized, and its contents come from Valheim's own terrain generator
-rather than from a room list.
+Valheim exposes process-level singleton services that cannot simply be duplicated safely. That constraint does not redefine the design. Where a singleton can be shared without collapsing isolation, Magenheim may adapt it. Where it cannot, Magenheim owns the instance adapter: chunk materialization, logical coordinate conversion at the engine boundary, persistence keys, environment selection and lifecycle admission.
 
-- The reserved region is offset **horizontally**, not vertically. Valheim terrain is a 2D
-  heightfield — `Heightmap.m_heights` is a flat list and `WorldGenerator.GetBiomeHeight` returns one
-  height per column — so surface ground and Underworld ground can never share an (x, z). Valheim
-  solves this the same way for its own far landmasses: `worldSize = 10000`, `waterEdge = 10500`,
-  `deepNorthMinDistance = 12000` with `deepNorthYOffset = 4000`. The Underworld is another such
-  region, streamed by the same ZoneSystem into the same save.
-- The playable layer uses logical Underworld coordinates. Runtime adapters map those into the
-  reserved region immediately before placement or generation. This is `UnderworldSpatialDomain` in
-  `Magenheim.Core`, which is the authority for that mapping.
-- Terrain inside the band is produced by Valheim's own world generator, reshaped through Harmony
-  postfixes on `WorldGenerator.GetBiomeHeight` and `WorldGenerator.GetBiome`, so the Underworld is a
-  real generated landmass with the six Underworld biomes rather than a hand-placed set.
-- Surface coordinates outside the band pass through completely unmodified.
+Any unavoidable engine-space placement is an opaque implementation detail of the instance allocator. It must not become an ordinary navigable Surface region, must not depend on Ashlands/Deep-North far-landmass behavior, and must not be the authority from which player-facing Underworld coordinates are derived.
 
-### 6.3 Required invariants
+### 6.3 Travel and persistence invariants
 
-- One `ZNet`, one `ZoneSystem`, one `WorldGenerator`, one `ZDOMan`, one `.fwl`/`.db` pair. These are
-  per-world singletons in Valheim; two simultaneously loaded worlds are not possible in one process
-  and must never be attempted.
-- Both layers are resident concurrently. A player standing on the surface and a player in the
-  Underworld are in the same running world at the same time.
-- Travel between layers is a **teleport within the world**. It is never a save load, never a
-  reconnect, and never a return to the main menu.
-- **The Underworld uses the surface world's seed verbatim.** It is the *generation algorithm* that
-  differs, not the seed: the same seed run through the Underworld's biome fields, terrain rules and
-  vertical bands produces an entirely different map. This satisfies §10 — the player cannot navigate
-  below by copying their surface map — without introducing a second seed to keep in sync, and it
-  guarantees that one surface world always yields exactly one Underworld. Do not hash, salt or
-  derive a separate terrain seed.
-- Underworld placed state, construction, resource depletion and progression persist as ordinary ZDOs
-  in the shared save, distinguished by their location in the reserved band.
-- Multiplayer needs no second server and no special session handling. Normal ZDO and `ZNetView`
-  ownership applies because there is only ever one world.
-- Map and exploration state are still separated per layer (§25). That is a presentation and
-  discovery-state concern, not a reason to separate the save.
+Deep Gate travel is a reversible instance transition. Character-level state survives the transition. Underworld terrain/exploration/ecology state persists independently under the parent world's Magenheim data and is restored when the instance is admitted again. A failed admission or placement must return the player to a known Surface recovery anchor rather than strand them between contexts.
 
-### 6.4 Explicitly forbidden
+The following are forbidden as final architecture:
 
-- A second save file, a derived save name, or any world-pair manifest that points at one.
-- `IUnderworldPhysicalWorldLoader` or any equivalent "physical world switch" abstraction.
-- Calling `ZNet.LoadWorld`, `WorldGenerator.Initialize` or `FejdStartup` paths to change worlds.
-- Any design that requires the player to leave the session to reach the Underworld.
-- A second dedicated server process as the mechanism for layer separation.
+- an ordinary Surface continent at x=40000 or any equivalent far-landmass offset;
+- pretending distant Surface coordinates are native Underworld coordinates through map/pin projection;
+- requiring the player to quit to the main menu to enter or leave;
+- aliasing Surface exploration, biome, weather or terrain state as Underworld state;
+- silently creating a second independently selected server/save as the gameplay transition mechanism.
 
+The deterministic Underworld terrain rules, biome catalog, progression, ecology, exploration serialization and transition transaction remain valid inputs. Their host-band-specific adapters must be replaced by the instance lifecycle.
 
 ## 7. Entry and the Descent
 
