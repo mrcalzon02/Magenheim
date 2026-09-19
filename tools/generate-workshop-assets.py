@@ -2,7 +2,7 @@
 import importlib.util
 import math
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
 spec=importlib.util.spec_from_file_location('minerals',Path(__file__).with_name('generate-earth-assets.py'))
 art=importlib.util.module_from_spec(spec);spec.loader.exec_module(art)
@@ -65,16 +65,13 @@ def bench():
             m.box((x,.18,z),(.181,.065,.181),IRON)
     for z in [-.32,.32]: m.box((0,.65,z),(1.53,.16,.11),DARKWOOD)
     for z in [-.32,0,.32]: m.box((0,.93,z),(1.82,.14,.30),LIGHTWOOD)
-    # Thin straps sit on the finished tabletop surface instead of intersecting the plank volume.
     for x in [-.76,.76]: m.box((x,1.0085,0),(.055,.017,.94),IRON)
     for z in [-.22,0,.22]: m.box((0,.24,z),(1.4,.075,.20),WOOD)
-    # Stone work surface, removable wedge, and striking hammer.
     m.box((-.34,1.033,0),(.76,.075,.65),STONE)
     m.mineral('geode',(-.36,1.19,-.04),.68)
     m.box((-.06,1.10,.24),(.30,.045,.035),LIGHTWOOD)
     m.box((-.20,1.12,.24),(.10,.095,.13),IRON)
     m.box((-.55,1.09,.24),(.25,.025,.022),BRONZE)
-    # Recessed specimen tray with low sides and three crystal samples.
     m.box((.49,1.012,0),(.51,.025,.60),DARKWOOD)
     for x in [.225,.755]: m.box((x,1.055,0),(.032,.10,.64),WOOD)
     for z in [-.31,.31]: m.box((.49,1.055,z),(.56,.10,.032),WOOD)
@@ -101,7 +98,6 @@ def wheel():
     m.box((0,.20,0),(.83,.08,.68),DARKWOOD)
     m.box((0,.68,0),(.90,.11,.73),LIGHTWOOD)
     for x in [-.32,.32]:m.box((x,.92,0),(.10,.46,.13),WOOD)
-    # Upright faceting wheel, brass hub and visible axle.
     m.cylinder((0,1.03,0),.34,.16,STONE,20,axis='z')
     m.cylinder((0,1.03,0),.085,.24,BRONZE,10,axis='z')
     m.cylinder((0,1.03,0),.026,.72,IRON,8,axis='z')
@@ -117,7 +113,6 @@ def frame():
         m.box((x,.88,0),(.14,1.65,.14),WOOD)
         for y in [.29,1.45]:m.box((x,y,0),(.16,.07,.16),BRONZE)
     for y in [.40,1.65]:m.box((0,y,0),(1.10,.13,.15),LIGHTWOOD)
-    # Hexagonal suspension cage around a master Earth crystal.
     radius=.39
     for i in range(6):
         angle=math.pi/3*i; mid=angle+math.pi/6
@@ -132,7 +127,9 @@ def frame():
 
 models=[('workstation',"Geologist's Workstation",bench()),('fracturing-block','Fracturing Block',fracture()),('faceting-wheel','Faceting Wheel',wheel()),('resonance-frame','Resonance Frame',frame())]
 sheet=Image.new('RGB',(1600,760),(27,31,30));d=ImageDraw.Draw(sheet)
-title=ImageFont.truetype('C:/Windows/Fonts/segoeuib.ttf',43);font=ImageFont.truetype('C:/Windows/Fonts/segoeui.ttf',24)
+# Use the Earth asset pipeline's cross-platform font resolver. The previous hard-coded
+# C:/Windows font paths made authoritative workshop/icon regeneration fail on Linux/macOS.
+title=art.font(43,bold=True);font=art.font(24)
 d.text((45,30),'MAGENHEIM / GEOLOGIST WORKSHOP',font=title,fill=(235,215,173))
 d.text((48,91),'Original buildable workbench and three station upgrades',font=font,fill=(159,166,151))
 for i,(name,label,model) in enumerate(models):
