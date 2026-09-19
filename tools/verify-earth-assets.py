@@ -19,6 +19,11 @@ enforce_target=os.environ.get('MAGENHEIM_ENFORCE_ICON_TARGET','').strip().lower(
 edge_clearance=max(0.0,min(0.10,float(os.environ.get('MAGENHEIM_ICON_MIN_EDGE_CLEARANCE','0.01'))))
 legacy_icons=[]
 
+def flat(im):
+    """Read pixels without emitting Pillow 12.3's getdata deprecation warning."""
+    reader=getattr(im,'get_flattened_data',None)
+    return reader() if reader else im.getdata()
+
 def verify_icon_readability(name, icon):
     """Check framing on the pixels players actually see, not merely source resolution."""
     proxy=icon.resize((64,64),Image.Resampling.LANCZOS)
@@ -26,7 +31,7 @@ def verify_icon_readability(name, icon):
     mask=alpha.point(lambda a: 255 if a>=96 else 0)
     bbox=mask.getbbox()
     assert bbox,(name,'icon has no gameplay-scale silhouette')
-    opaque=sum(1 for a in alpha.getdata() if a>=96)/(64*64)
+    opaque=sum(1 for a in flat(alpha) if a>=96)/(64*64)
     assert .08<=opaque<=.78,(name,f'gameplay-scale opaque coverage {opaque:.1%} outside 8-78% envelope')
     left,top,right,bottom=bbox
     clearance=min(left,top,64-right,64-bottom)/64
