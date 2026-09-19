@@ -54,15 +54,17 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Sporeling texture fidelity validation failed.' }
     # Creature source fidelity gates require Blender rather than Python's standard runtime.
     # They inspect only Magenheim-owned source art and never mutate vanilla/foreign content.
-    foreach ($creatureGate in @('verify-stone-guardian','verify-underworld-sporeling')) {
+    foreach ($creatureGate in @('verify-stone-guardian','verify-underworld-sporeling','verify-underworld-capcrawler')) {
         & "$PSScriptRoot/tools/blender.ps1" $creatureGate
         if ($LASTEXITCODE -ne 0) { throw "Creature source validation failed: $creatureGate" }
     }
-    # The Sporeling review renderer is intentionally part of local acceptance: source metrics alone
-    # cannot prove silhouette, foot contact, cap/gill separation or animation readability. It clears
-    # stale plates first and fails if all twelve current-r4 review frames are not freshly rendered.
-    & "$PSScriptRoot/tools/blender.ps1" render-underworld-sporeling-review
-    if ($LASTEXITCODE -ne 0) { throw 'Sporeling visual review rendering failed.' }
+    # Gameplay-scale review plates are authoritative local acceptance for authored creatures:
+    # source metrics alone cannot prove silhouette, ground contact, material separation or motion
+    # readability. Each renderer clears stale plates and requires a complete fresh review set.
+    foreach ($reviewGate in @('render-underworld-sporeling-review','render-underworld-capcrawler-review')) {
+        & "$PSScriptRoot/tools/blender.ps1" $reviewGate
+        if ($LASTEXITCODE -ne 0) { throw "Creature visual review rendering failed: $reviewGate" }
+    }
     & python "$PSScriptRoot/tools/verify-model-scale.py"
     if ($LASTEXITCODE -ne 0) { throw 'Model scale validation failed.' }
     & python "$PSScriptRoot/tools/verify-weapon-materials.py"
