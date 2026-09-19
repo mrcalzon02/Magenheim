@@ -96,20 +96,32 @@ internal sealed class UnderworldInstanceChunkMaterializer
         }
 
         var mesh = new Mesh { name = $"Magenheim_Underworld_Chunk_{sample.Key.X}_{sample.Key.Z}" };
-        mesh.vertices = vertices;
-        mesh.uv = uv;
-        mesh.SetTriangles(triangles, 0, true);
-        mesh.normals = BuildAuthoritativeNormals(sample, bounds.MinimumX, bounds.MinimumZ, grid.VertexSpacingMeters);
-        mesh.RecalculateBounds();
+        GameObject? node = null;
+        try
+        {
+            mesh.vertices = vertices;
+            mesh.uv = uv;
+            mesh.SetTriangles(triangles, 0, true);
+            mesh.normals = BuildAuthoritativeNormals(sample, bounds.MinimumX, bounds.MinimumZ, grid.VertexSpacingMeters);
+            mesh.RecalculateBounds();
 
-        var node = new GameObject(mesh.name);
-        node.transform.SetParent(_root!.transform, false);
-        node.transform.localPosition = new Vector3((float)bounds.MinimumX, 0f, (float)bounds.MinimumZ);
-        node.AddComponent<MeshFilter>().sharedMesh = mesh;
-        node.AddComponent<MeshRenderer>().sharedMaterial = GetTerrainMaterial();
-        node.AddComponent<MeshCollider>().sharedMesh = mesh;
-        _materialized.Add(sample.Key, node);
-        _log.LogDebug($"Materialized native Underworld chunk {sample.Key.X},{sample.Key.Z} with {triangles.Count / 3} terrain triangles.");
+            node = new GameObject(mesh.name);
+            node.transform.SetParent(_root!.transform, false);
+            node.transform.localPosition = new Vector3((float)bounds.MinimumX, 0f, (float)bounds.MinimumZ);
+            node.AddComponent<MeshFilter>().sharedMesh = mesh;
+            node.AddComponent<MeshRenderer>().sharedMaterial = GetTerrainMaterial();
+            node.AddComponent<MeshCollider>().sharedMesh = mesh;
+            _materialized.Add(sample.Key, node);
+            _log.LogDebug($"Materialized native Underworld chunk {sample.Key.X},{sample.Key.Z} with {triangles.Count / 3} terrain triangles.");
+        }
+        catch
+        {
+            // Materialization is transactional: a failed Unity component/shader/collider operation must
+            // not leave an untracked node or mesh behind for every subsequent reconciliation attempt.
+            if (node) UnityEngine.Object.Destroy(node);
+            UnityEngine.Object.Destroy(mesh);
+            throw;
+        }
     }
 
     /// <summary>
