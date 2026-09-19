@@ -11,6 +11,13 @@ model again.
 Output is 256x256 RGBA with a transparent background. EarthAssets.CreateIconSprite uses
 a square texture's own width as pixels-per-unit, so 256 is presentation-neutral against
 the historical 128px icons rather than twice the size in the UI.
+
+Staffs are unusually thin inventory subjects. The renderer therefore uses a modest
+icon-only silhouette support pass: a back-facing duplicate of each mesh is expanded
+along vertex normals and rendered dark behind the authored surface. This is an outline,
+not replacement geometry; the source model, runtime mesh, UVs and materials remain
+untouched. It gives sub-pixel shafts enough weight to survive inventory downsampling
+without lying about the staff's proportions or cropping it to satisfy an alpha metric.
 """
 import bpy, json, math, sys
 from pathlib import Path
@@ -21,6 +28,7 @@ MODELS = ROOT / 'assets/models'
 OUT = ROOT / 'assets/earth'
 SIZE = 256
 SAMPLES = 96
+OUTLINE_WORLD = 0.012
 
 # Catalog ids are spelled two ways across the staff families. Icons are always named by
 # the asset name the registrars pass to EarthAssets.Icon.
@@ -29,6 +37,36 @@ def asset_name(model_id: str) -> str:
         _, _, family, tier = model_id.split('_', 3)
         return f'staff-{family.lower()}-{tier.lower()}'
     return model_id
+
+
+def add_readability_outline(scene, objects):
+    """Add non-destructive icon-only back shells around the authored staff geometry."""
+    mat = bpy.data.materials.new('InventoryReadabilityOutline')
+    mat.diffuse_color = (.012, .016, .022, 1)
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes.get('Principled BSDF')
+    if bsdf:
+        bsdf.inputs['Base Color'].default_value = (.012, .016, .022, 1)
+        bsdf.inputs['Roughness'].default_value = .88
+
+    shells = []
+    for source in objects:
+        shell = source.copy()
+        shell.data = source.data.copy()
+        shell.name = source.name + '_IconOutline'
+        scene.collection.objects.link(shell)
+        # Solidify expands around the true authored surface rather than scaling about an
+        # arbitrary object origin. Flip normals + front-face culling leaves only the dark
+        # rim outside the original mesh, so it cannot cover authored texture detail.
+        solid = shell.modifiers.new('InventoryOutlineWidth', 'SOLIDIFY')
+        solid.thickness = OUTLINE_WORLD
+        solid.offset = 1.0
+        for slot in shell.material_slots:
+            slot.material = mat
+        shell.data.materials.clear()
+        shell.data.materials.append(mat)
+        shells.append(shell)
+    return shells
 
 
 def frame_and_render(entry, out_path: Path) -> None:
@@ -80,10 +118,13 @@ def frame_and_render(entry, out_path: Path) -> None:
     if extent <= 0:
         raise SystemExit(f"{entry['id']}: degenerate bounding box")
 
-    # Leave a small margin so the alpha edge never touches the icon border.
+    # Leave a small margin so the alpha edge never touches the icon border. Frame from
+    # authored geometry first; the support rim consumes margin rather than shrinking the staff.
     placement = Matrix.Scale(1.86 / extent, 4) @ Matrix.Translation(-center)
     for obj in objects:
         obj.matrix_world = placement @ obj.matrix_world
+    bpy.context.view_layer.update()
+    add_readability_outline(scene, objects)
     bpy.context.view_layer.update()
 
     camera_data = bpy.data.cameras.new('Camera')
