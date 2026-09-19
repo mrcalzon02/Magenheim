@@ -30,7 +30,7 @@ internal static class UnderworldAuthorityCompositionTests
         Assert(ReferenceEquals(authority.Architecture, architecture),
             "Composite authority must retain the validated architecture snapshot.");
         Assert(ReferenceEquals(authority.SpatialDomain, spatial),
-            "Composite authority must retain the validated spatial-domain snapshot.");
+            "Legacy adapter data remains available only while host-band runtime code is removed.");
 
         var repeat = UnderworldAuthorityComposer.Compose(content, architecture, spatial);
         Assert(repeat.Fingerprint == authority.Fingerprint,
@@ -69,8 +69,8 @@ internal static class UnderworldAuthorityCompositionTests
             spatial.LogicalMaxY,
             spatial.MappingAlgorithm);
         var changedSpatialAuthority = UnderworldAuthorityComposer.Compose(content, architecture, changedSpatial);
-        Assert(changedSpatialAuthority.Fingerprint != authority.Fingerprint,
-            "Gameplay-significant host-domain changes must alter canonical Underworld authority.");
+        Assert(changedSpatialAuthority.Fingerprint == authority.Fingerprint,
+            "Hidden host-adapter coordinates must never alter dedicated Underworld gameplay authority.");
 
         AssertThrows(Assert,
             () => UnderworldAuthorityComposer.Compose(null!, architecture, spatial),
@@ -80,13 +80,13 @@ internal static class UnderworldAuthorityCompositionTests
             "Null architecture authority must fail closed.");
         AssertThrows(Assert,
             () => UnderworldAuthorityComposer.Compose(content, architecture, null!),
-            "Null spatial-domain authority must fail closed.");
+            "Null legacy adapter data must fail closed while the adapter remains wired.");
         AssertThrows(Assert,
             () => UnderworldAuthorityComposer.Compose(
                 content,
                 architecture,
                 spatial with { HostBaseY = spatial.HostBaseY + 1d }),
-            "A forged spatial-domain snapshot must fail closed before composition.");
+            "Forged legacy adapter data must still fail validation while the adapter remains wired.");
 
         return assertions;
     }
