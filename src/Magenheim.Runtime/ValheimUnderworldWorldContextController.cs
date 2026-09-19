@@ -52,6 +52,25 @@ internal sealed class ValheimUnderworldWorldContextController : IUnderworldWorld
             return _activeIdentity is not null && _activeLayer == layer && SameInstance(_activeIdentity, identity);
     }
 
+    /// <summary>Returns the explicit instance context without requiring a local player identity.</summary>
+    internal bool TryGetActiveContext(UnderworldWorldIdentity liveIdentity, out UnderworldWorldIdentity? identity, out UnderworldLayer layer)
+    {
+        if (liveIdentity is null) throw new ArgumentNullException(nameof(liveIdentity));
+        lock (_gate)
+        {
+            if (_activeIdentity is null || !SameInstance(_activeIdentity, liveIdentity))
+            {
+                identity = null;
+                layer = UnderworldLayer.Surface;
+                return false;
+            }
+
+            identity = _activeIdentity;
+            layer = _activeLayer;
+            return true;
+        }
+    }
+
     internal void ResetForWorldUnload()
     {
         lock (_gate)
