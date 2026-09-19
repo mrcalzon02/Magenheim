@@ -24,6 +24,15 @@ out-vertexed one. Surface area avoids both failure modes: a thin blade's two bro
 carry real area, and a small ornament's facets stay small regardless of how finely they are
 tessellated. It also matches the visual quantity a player actually reads as "size" better than a
 count of internal geometry or a solid-body measurement no rendered surface represents.
+
+That same corrected metric then caught a second, real, unrelated defect: Magenheim_Staff_Fire_Crystal,
+Magenheim_Staff_Storm_Crystal, staff-radiance-crystal and staff-venom-crystal each had their entire
+ornate head authored at the POMMEL end and the plain pommel cap authored at the WORKING end -- built
+back-to-front, confirmed independently by their rendered icons (staff-*-crystal.icon.png showed the
+head pointing toward the grip) and by each source's own Blender Z coordinates (pommel at positive Z,
+head parts at negative Z, the exact mirror of every correctly-built staff). Fixed 2026-09-19 by
+rotating each of the four sources 180 degrees about their shared world origin and re-exporting; no
+longer excluded below.
 """
 from pathlib import Path
 import json
@@ -39,19 +48,11 @@ NAMES = (
     "crystal-weapon-knife", "crystal-weapon-atgeir",
 )
 
-# Discovered by this gate's own 2026-09-19 metric correction (see module docstring), not
-# introduced by it: under the old vertex-count metric all four silently passed. Real, and not
-# yet understood well enough to correct blind -- each is a different elemental family's Crystal
-# tier, authored from a different .blend, so this is not one shared shared-asset mistake with one
-# fix. Tracked in PROJECT_STATE.md rather than fixed here; excluding them keeps this gate useful
-# for catching a FUTURE regression on every other asset while not blocking on a pre-existing one
-# this change merely revealed. Remove an entry only after visually confirming its actual model.
-KNOWN_REVERSED_PENDING_REVIEW = frozenset({
-    # path.stem on "<id>.model.json" only strips ".json", leaving ".model" attached -- these
-    # must match that exact form, not the bare model id.
-    "Magenheim_Staff_Fire_Crystal.model", "Magenheim_Staff_Storm_Crystal.model",
-    "staff-radiance-crystal.model", "staff-venom-crystal.model",
-})
+# All four assets this gate once excluded (Fire/Storm/Radiance/Venom Crystal) were fixed
+# 2026-09-19 -- see the module docstring -- and confirmed by render. Nothing is excluded now, but
+# the mechanism stays: a future genuine defect this gate finds gets tracked here by name, in
+# PROJECT_STATE.md, and removed only after a visual confirmation, not by loosening the metric.
+KNOWN_REVERSED_PENDING_REVIEW: frozenset[str] = frozenset()
 
 
 def part_points(part):
