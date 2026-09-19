@@ -45,7 +45,7 @@
       "outputs": [
         "assets/earth/staff-*.icon.png"
       ],
-      "generator_sha256": "d300f9bb5cb401fdd0027eddcafa3f857d9639e1290458109cfaf3eade0847b6",
+      "generator_sha256": "531ac6426814948f4f3653fbbccc3dc8741b483c3ea31bf1576cec95cdc6af74",
       "output_sha256": {
         "assets/earth/staff-earth-advanced.icon.png": null,
         "assets/earth/staff-earth-crystal.icon.png": null,

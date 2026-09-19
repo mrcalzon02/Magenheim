@@ -32,7 +32,7 @@ MODELS = ROOT / 'assets/models'
 OUT = ROOT / 'assets/earth'
 SIZE = 256
 SAMPLES = 96
-OUTLINE_PX = 1.35
+OUTLINE_PX = 1.6
 MIN_STAFF_INK_DENSITY = .08
 MIN_EDGE_CLEARANCE = .012
 
@@ -50,7 +50,15 @@ def configure_readability_outline(scene):
     scene.render.use_freestyle = True
     scene.render.line_thickness = OUTLINE_PX
     settings = bpy.context.view_layer.freestyle_settings
+    # A fresh --factory-startup view layer has no lineset until one is added, and even a lineset
+    # carried over from the source .blend can have no linestyle datablock attached (Freestyle keeps
+    # them as separate IDs) -- either gap surfaces as an AttributeError on style.color below rather
+    # than anything self-explanatory, so both are created explicitly instead of assumed present.
+    if len(settings.linesets) == 0:
+        settings.linesets.new('MagenheimIconSilhouette')
     lineset = settings.linesets[0]
+    if lineset.linestyle is None:
+        lineset.linestyle = bpy.data.linestyles.new('MagenheimIconSilhouetteStyle')
     lineset.select_silhouette = True
     lineset.select_border = True
     lineset.select_crease = False
