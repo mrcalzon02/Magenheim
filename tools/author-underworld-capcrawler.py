@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Author the Fungal Forest Capcrawler production source model and HOST-LOW-CRAWLER rig."""
 from pathlib import Path
-from math import pi, sin, cos, atan2
+from math import pi, atan2
 import bpy
 from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]; OUTDIR=ROOT/'assets/models/source'; OUTDIR.mkdir(parents=True,exist_ok=True)
@@ -20,7 +20,7 @@ def material(name,stem,emit=False):
   t=n.new('ShaderNodeTexImage'); t.image=image(stem,kind); l.new(uv.outputs['UV'],t.inputs['Vector']); l.new(t.outputs['Color'],bs.inputs[socket])
  t=n.new('ShaderNodeTexImage'); t.image=image(stem,'normal'); nm=n.new('ShaderNodeNormalMap'); l.new(uv.outputs['UV'],t.inputs['Vector']); l.new(t.outputs['Color'],nm.inputs['Color']); l.new(nm.outputs['Normal'],bs.inputs['Normal'])
  if emit:
-  e=n.new('ShaderNodeTexImage'); e.image=image(stem,'emission'); l.new(uv.outputs['UV'],e.inputs['Vector']);
+  e=n.new('ShaderNodeTexImage'); e.image=image(stem,'emission'); l.new(uv.outputs['UV'],e.inputs['Vector'])
   if 'Emission Color' in bs.inputs: l.new(e.outputs['Color'],bs.inputs['Emission Color']); bs.inputs['Emission Strength'].default_value=1.8
  return m
 
@@ -44,18 +44,17 @@ parts={}
 def keep(o,b): parts[o.name]=b; return o
 keep(organic('Capcrawler_Body',(0,0,.22),(.29,.38,.13),flesh,3),'Body')
 keep(organic('Capcrawler_Carapace',(0,-.015,.31),(.36,.43,.105),car,3),'Body')
-# Layered fungal rim scutes break the smooth ellipsoid into a readable shelf-fungus shield.
-# They remain Body-bound so the armor reads as one rigid cap while preserving editable source pieces.
 for side in (-1,1):
  s='L' if side<0 else 'R'
- for i,(y,z,sy) in enumerate(((-.24,.305,.105),(-.06,.326,.125),(.13,.320,.115)),1):
-  keep(organic(f'Capcrawler_RimScute_{s}{i}',(side*.315,y,z),(.085,sy,.035),car,2),'Body')
-# A raised rear crown plate gives the cap a front/back read from combat camera height.
+ for i,(y,z,sy) in enumerate(((-.24,.305,.105),(-.06,.326,.125),(.13,.320,.115)),1): keep(organic(f'Capcrawler_RimScute_{s}{i}',(side*.315,y,z),(.085,sy,.035),car,2),'Body')
 keep(organic('Capcrawler_CrownPlate',(0,-.285,.345),(.205,.105,.042),car,2),'Body')
+# Eight broad tarsal pads and short terminal claws make ground contact readable at combat distance.
+# They are separate source pieces but inherit each distal leg bone, avoiding a second deformation chain.
 for i,y in enumerate((-.24,-.08,.10,.26),1):
  for side in (-1,1):
-  s='L' if side<0 else 'R'; hip=(side*.20,y,.22); knee=(side*.34,y+(i-2.5)*.018,.13); foot=(side*.43,y+(i-2.5)*.035,.035)
+  s='L' if side<0 else 'R'; hip=(side*.20,y,.22); knee=(side*.34,y+(i-2.5)*.018,.13); foot=(side*.43,y+(i-2.5)*.035,.035); toe=(side*.475,foot[1]+.008,.024)
   keep(organic(f'Capcrawler_{s}_Coxa{i}',hip,(.045,.05,.035),plate,2),f'{s}_Coxa{i}'); keep(segment(f'Capcrawler_{s}_Leg{i}A',hip,knee,.027,plate),f'{s}_Coxa{i}'); keep(segment(f'Capcrawler_{s}_Leg{i}B',knee,foot,.020,plate),f'{s}_Leg{i}')
+  keep(organic(f'Capcrawler_{s}_FootPad{i}',foot,(.042,.052,.018),plate,2),f'{s}_Leg{i}'); keep(segment(f'Capcrawler_{s}_Claw{i}',foot,toe,.012,mand),f'{s}_Leg{i}')
 for side in (-1,1):
  s='L' if side<0 else 'R'; a=(side*.08,.32,.22); b=(side*.13,.47,.17); keep(segment(f'Capcrawler_Mandible_{s}',a,b,.036,mand),f'Mandible_{s}')
 for i in range(5):
@@ -78,7 +77,7 @@ def action(name,end,poses):
    pb=arm.pose.bones.get(bname)
    if not pb: raise RuntimeError(f'{name}: missing animation bone {bname}')
    pb.rotation_mode='XYZ'; pb.rotation_euler=rot; pb.keyframe_insert('rotation_euler',frame=frame,group=bname)
- for fc in act.fcurves:
+ for fc in getattr(act,'fcurves',()):
   for kp in fc.keyframe_points: kp.interpolation='BEZIER'
  act.frame_start=1; act.frame_end=end; return act
 
@@ -102,9 +101,9 @@ arm.animation_data.action=None
 for name,bname in parts.items():
  o=bpy.data.objects[name]; mod=o.modifiers.new('CapcrawlerArmature','ARMATURE'); mod.object=arm; vg=o.vertex_groups.new(name=bname); vg.add(range(len(o.data.vertices)),1.0,'REPLACE'); o.parent=arm
 meshes=[o for o in bpy.context.scene.objects if o.type=='MESH']
-if len(meshes)<37: raise RuntimeError(f'Capcrawler detail regression: {len(meshes)} mesh parts')
+if len(meshes)<53: raise RuntimeError(f'Capcrawler detail regression: {len(meshes)} mesh parts')
 for o in meshes:
  uv=o.data.uv_layers.get('CapcrawlerUV')
  if not uv or not uv.data: raise RuntimeError(f'Missing explicit UVs: {o.name}')
-sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-capcrawler'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='common'; sc['magenheim_host_rig']='HOST-LOW-CRAWLER'; sc['magenheim_length_m']=.90; sc['magenheim_width_m']=.86; sc['magenheim_fidelity']='production-creature-r4'; sc['magenheim_skinning']='rigid-segment-weighted'; sc['magenheim_uv_contract']='CapcrawlerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,GillFX'; sc['magenheim_authored_actions']='Capcrawler_Idle,Capcrawler_Scuttle,Capcrawler_Turn,Capcrawler_AttackLeft,Capcrawler_AttackRight,Capcrawler_AttackFront,Capcrawler_Guard,Capcrawler_Hit,Capcrawler_Stagger,Capcrawler_Death'; sc['magenheim_animation_manifest']='idle,scuttle,turn,attack-left,attack-right,attack-front,guard,hit,stagger,death'; sc['magenheim_carapace_language']='layered-fungal-rim-scutes+crown'
-bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(OUT),compress=True); print(f'AUTHORED Capcrawler r4: {len(meshes)} meshes / {len(arm.data.bones)} bones / layered fungal armor -> {OUT.name}',flush=True)
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-capcrawler'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='common'; sc['magenheim_host_rig']='HOST-LOW-CRAWLER'; sc['magenheim_length_m']=.90; sc['magenheim_width_m']=.98; sc['magenheim_fidelity']='production-creature-r5'; sc['magenheim_skinning']='rigid-segment-weighted'; sc['magenheim_uv_contract']='CapcrawlerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,GillFX'; sc['magenheim_authored_actions']='Capcrawler_Idle,Capcrawler_Scuttle,Capcrawler_Turn,Capcrawler_AttackLeft,Capcrawler_AttackRight,Capcrawler_AttackFront,Capcrawler_Guard,Capcrawler_Hit,Capcrawler_Stagger,Capcrawler_Death'; sc['magenheim_animation_manifest']='idle,scuttle,turn,attack-left,attack-right,attack-front,guard,hit,stagger,death'; sc['magenheim_carapace_language']='layered-fungal-rim-scutes+crown'; sc['magenheim_ground_contact']='8-tarsal-pads+8-terminal-claws'
+bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(OUT),compress=True); print(f'AUTHORED Capcrawler r5: {len(meshes)} meshes / {len(arm.data.bones)} bones / articulated feet -> {OUT.name}',flush=True)
