@@ -17,8 +17,8 @@ internal sealed class UnderworldInstanceChunkMaterializer
     private readonly UnderworldRuntimeServices _services;
     private readonly ManualLogSource _log;
     private readonly Dictionary<UnderworldInstanceChunkKey, GameObject> _materialized = new();
+    private readonly Dictionary<UnderworldTerrainBiome, Material> _biomeMaterials = new();
     private GameObject? _root;
-    private Material? _terrainMaterial;
 
     internal UnderworldInstanceChunkMaterializer(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -54,8 +54,9 @@ internal sealed class UnderworldInstanceChunkMaterializer
         foreach (var key in keys) DestroyChunk(key);
         if (_root) UnityEngine.Object.Destroy(_root);
         _root = null;
-        if (_terrainMaterial) UnityEngine.Object.Destroy(_terrainMaterial);
-        _terrainMaterial = null;
+        foreach (var material in _biomeMaterials.Values)
+            if (material) UnityEngine.Object.Destroy(material);
+        _biomeMaterials.Clear();
     }
 
     private void EnsureRoot()
@@ -68,7 +69,7 @@ internal sealed class UnderworldInstanceChunkMaterializer
     {
         var edge = sample.VerticesPerEdge;
         var expected = checked(edge * edge);
-        if (sample.Heights.Length != expected || sample.Admitted.Length != expected)
+        if (sample.Heights.Length != expected || sample.Biomes.Length != expected || sample.Admitted.Length != expected)
             throw new InvalidOperationException($"Underworld chunk {sample.Key} has inconsistent terrain payload dimensions.");
 
         var grid = _services.ChunkStreaming.Grid;
@@ -82,16 +83,15 @@ internal sealed class UnderworldInstanceChunkMaterializer
             var localX = x * grid.VertexSpacingMeters;
             var localZ = z * grid.VertexSpacingMeters;
             vertices[index] = new Vector3(localX, (float)sample.Heights[index], localZ);
-
-            // UVs live in absolute instance space rather than restarting at 0..1 on every chunk.
-            // Adjacent chunks therefore share identical coordinates on their common edge and keep
-            // a stable four-metre texel rhythm as streaming changes the resident chunk set.
             uv[index] = new Vector2(
                 (float)((bounds.MinimumX + localX) / TerrainUvMetersPerTile),
                 (float)((bounds.MinimumZ + localZ) / TerrainUvMetersPerTile));
         }
 
-        var triangles = new List<int>((edge - 1) * (edge - 1) * 6);
+        // Presentation consumes the authoritative biome payload instead of reclassifying terrain.
+        // A cell is assigned from its four corners by deterministic majority vote (ties prefer the
+        // north-west corner), giving biome boundaries stable geometry regardless of chunk load order.
+        var trianglesByBiome = new Dictionary<UnderworldTerrainBiome, List<int>>();
         for (var z = 0; z < edge - 1; z++)
         for (var x = 0; x < edge - 1; x++)
         {
@@ -100,6 +100,9 @@ internal sealed class UnderworldInstanceChunkMaterializer
             var c = a + edge;
             var d = c + 1;
             if (!sample.Admitted[a] || !sample.Admitted[b] || !sample.Admitted[c] || !sample.Admitted[d]) continue;
+            var biome = SelectCellBiome(sample.Biomes[a], sample.Biomes[b], sample.Biomes[c], sample.Biomes[d]);
+            if (!trianglesByBiome.TryGetValue(biome, out var triangles))
+                trianglesByBiome.Add(biome, triangles = new List<int>());
             triangles.Add(a); triangles.Add(c); triangles.Add(b);
             triangles.Add(b); triangles.Add(c); triangles.Add(d);
         }
@@ -110,40 +113,52 @@ internal sealed class UnderworldInstanceChunkMaterializer
         {
             mesh.vertices = vertices;
             mesh.uv = uv;
-            mesh.SetTriangles(triangles, 0, true);
             mesh.normals = BuildAuthoritativeNormals(sample, bounds.MinimumX, bounds.MinimumZ, grid.VertexSpacingMeters);
+            mesh.subMeshCount = trianglesByBiome.Count;
+            var materials = new Material[trianglesByBiome.Count];
+            var submesh = 0;
+            var triangleCount = 0;
+            foreach (var pair in trianglesByBiome)
+            {
+                mesh.SetTriangles(pair.Value, submesh, false);
+                materials[submesh] = GetBiomeMaterial(pair.Key);
+                triangleCount += pair.Value.Count / 3;
+                submesh++;
+            }
             mesh.RecalculateBounds();
 
             node = new GameObject(mesh.name);
             node.transform.SetParent(_root!.transform, false);
             node.transform.localPosition = new Vector3((float)bounds.MinimumX, 0f, (float)bounds.MinimumZ);
             node.AddComponent<MeshFilter>().sharedMesh = mesh;
-            node.AddComponent<MeshRenderer>().sharedMaterial = GetTerrainMaterial();
+            node.AddComponent<MeshRenderer>().sharedMaterials = materials;
             node.AddComponent<MeshCollider>().sharedMesh = mesh;
             _materialized.Add(sample.Key, node);
-            _log.LogDebug($"Materialized native Underworld chunk {sample.Key.X},{sample.Key.Z} with {triangles.Count / 3} terrain triangles.");
+            _log.LogDebug($"Materialized native Underworld chunk {sample.Key.X},{sample.Key.Z} with {triangleCount} terrain triangles across {trianglesByBiome.Count} biome surfaces.");
         }
         catch
         {
-            // Materialization is transactional: a failed Unity component/shader/collider operation must
-            // not leave an untracked node or mesh behind for every subsequent reconciliation attempt.
             if (node) UnityEngine.Object.Destroy(node);
             UnityEngine.Object.Destroy(mesh);
             throw;
         }
     }
 
-    /// <summary>
-    /// Computes normals from deterministic terrain samples in absolute instance space rather than
-    /// from each mesh's private triangle set. Shared border vertices therefore receive identical
-    /// normals regardless of chunk load order, eliminating the lighting seam produced by
-    /// Mesh.RecalculateNormals at independently materialized chunk boundaries.
-    /// </summary>
-    private static Vector3[] BuildAuthoritativeNormals(
-        UnderworldInstanceChunkSample sample,
-        double minimumX,
-        double minimumZ,
-        double spacing)
+    private static UnderworldTerrainBiome SelectCellBiome(UnderworldTerrainBiome a, UnderworldTerrainBiome b, UnderworldTerrainBiome c, UnderworldTerrainBiome d)
+    {
+        var candidates = new[] { a, b, c, d };
+        var selected = a;
+        var bestCount = 0;
+        for (var i = 0; i < candidates.Length; i++)
+        {
+            var count = 0;
+            for (var j = 0; j < candidates.Length; j++) if (candidates[j] == candidates[i]) count++;
+            if (count > bestCount) { selected = candidates[i]; bestCount = count; }
+        }
+        return selected;
+    }
+
+    private static Vector3[] BuildAuthoritativeNormals(UnderworldInstanceChunkSample sample, double minimumX, double minimumZ, double spacing)
     {
         var edge = sample.VerticesPerEdge;
         var normals = new Vector3[checked(edge * edge)];
@@ -151,12 +166,7 @@ internal sealed class UnderworldInstanceChunkMaterializer
         for (var x = 0; x < edge; x++)
         {
             var index = z * edge + x;
-            if (!sample.Admitted[index])
-            {
-                normals[index] = Vector3.up;
-                continue;
-            }
-
+            if (!sample.Admitted[index]) { normals[index] = Vector3.up; continue; }
             var worldX = minimumX + x * spacing;
             var worldZ = minimumZ + z * spacing;
             var center = sample.Heights[index];
@@ -164,9 +174,6 @@ internal sealed class UnderworldInstanceChunkMaterializer
             var right = SampleHeightOrFallback(worldX + spacing, worldZ, center);
             var down = SampleHeightOrFallback(worldX, worldZ - spacing, center);
             var up = SampleHeightOrFallback(worldX, worldZ + spacing, center);
-
-            // Tangents span two sample intervals. Their cross product points upward and remains
-            // identical for the same absolute vertex when it is represented by adjacent chunks.
             var tangentX = new Vector3((float)(spacing * 2d), (float)(right - left), 0f);
             var tangentZ = new Vector3(0f, (float)(up - down), (float)(spacing * 2d));
             normals[index] = Vector3.Cross(tangentZ, tangentX).normalized;
@@ -180,18 +187,27 @@ internal sealed class UnderworldInstanceChunkMaterializer
         return terrain.Admitted ? terrain.Height : fallback;
     }
 
-    private Material GetTerrainMaterial()
+    private Material GetBiomeMaterial(UnderworldTerrainBiome biome)
     {
-        if (_terrainMaterial) return _terrainMaterial;
-        // Valheim does not ship Unity's built-in Standard shader in the player. Resolve a loaded
-        // game surface shader through the same runtime authority used by Magenheim model assets so
-        // native Underworld terrain can actually materialize in a live Valheim process.
-        _terrainMaterial = new Material(ModelAssets.ResolveSurfaceShader())
-        {
-            name = "Magenheim_Underworld_Terrain_Runtime"
-        };
-        return _terrainMaterial;
+        if (_biomeMaterials.TryGetValue(biome, out var material) && material) return material;
+        material = new Material(ModelAssets.ResolveSurfaceShader()) { name = $"Magenheim_Underworld_Terrain_{biome}" };
+        var color = BiomeColor(biome);
+        if (material.HasProperty("_Color")) material.SetColor("_Color", color);
+        if (material.HasProperty("_BaseColor")) material.SetColor("_BaseColor", color);
+        _biomeMaterials[biome] = material;
+        return material;
     }
+
+    private static Color BiomeColor(UnderworldTerrainBiome biome) => biome switch
+    {
+        UnderworldTerrainBiome.FungalForest => new Color32(48, 82, 69, 255),
+        UnderworldTerrainBiome.BlackwaterDeep => new Color32(18, 32, 48, 255),
+        UnderworldTerrainBiome.SulfurousWastes => new Color32(105, 78, 38, 255),
+        UnderworldTerrainBiome.FrozenCaverns => new Color32(91, 124, 137, 255),
+        UnderworldTerrainBiome.FractureZones => new Color32(82, 57, 67, 255),
+        UnderworldTerrainBiome.GreatDecay => new Color32(65, 72, 45, 255),
+        _ => new Color32(32, 32, 32, 255),
+    };
 
     private void DestroyChunk(UnderworldInstanceChunkKey key)
     {
