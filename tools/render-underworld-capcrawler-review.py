@@ -32,6 +32,16 @@ sc.render.resolution_x=768; sc.render.resolution_y=768; sc.render.resolution_per
 sc.render.image_settings.file_format='PNG'; sc.render.film_transparent=False
 sc.world.color=(0.055,0.055,0.055)
 
+# A real receiving surface makes foot penetration/hovering and cast-shadow separation visible.
+# The 10 cm checker also gives every plate an immediate scale reference without altering the asset.
+bpy.ops.mesh.primitive_plane_add(size=4.0,location=(0,0,0)); floor=bpy.context.object; floor.name='REVIEW_Ground_10cm'
+fm=bpy.data.materials.new('REVIEW_GroundGrid'); fm.use_nodes=True
+nodes=fm.node_tree.nodes; links=fm.node_tree.links; nodes.clear()
+out=nodes.new('ShaderNodeOutputMaterial'); bs=nodes.new('ShaderNodeBsdfPrincipled'); tex=nodes.new('ShaderNodeTexCoord'); chk=nodes.new('ShaderNodeTexChecker')
+chk.inputs['Color1'].default_value=(0.12,0.12,0.12,1); chk.inputs['Color2'].default_value=(0.20,0.20,0.20,1); chk.inputs['Scale'].default_value=40.0
+bs.inputs['Roughness'].default_value=.82
+links.new(tex.outputs['Generated'],chk.inputs['Vector']); links.new(chk.outputs['Color'],bs.inputs['Base Color']); links.new(bs.outputs['BSDF'],out.inputs['Surface']); floor.data.materials.append(fm)
+
 bpy.ops.object.light_add(type='AREA',location=(2.2,-2.4,2.8)); key=bpy.context.object; key.data.energy=650; key.data.shape='DISK'; key.data.size=2.0
 bpy.ops.object.light_add(type='AREA',location=(-1.8,1.0,1.6)); fill=bpy.context.object; fill.data.energy=260; fill.data.size=1.5
 
@@ -71,4 +81,4 @@ render('12-death',(1.25,1.25,.48),action='Capcrawler_Death',frame=30)
 arm.animation_data.action=None
 plates=sorted(OUT.glob('*.png'))
 if len(plates)!=12: raise RuntimeError(f'Expected 12 fresh review plates, found {len(plates)}')
-print(f'RENDERED Capcrawler fidelity review: {len(plates)} fresh plates -> {OUT}',flush=True)
+print(f'RENDERED Capcrawler fidelity review: {len(plates)} fresh plates with ground/scale reference -> {OUT}',flush=True)
