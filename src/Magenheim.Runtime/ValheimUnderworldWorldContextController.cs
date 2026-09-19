@@ -17,9 +17,8 @@ internal sealed class ValheimUnderworldWorldContextController : IUnderworldWorld
     private UnderworldWorldIdentity? _activeIdentity;
     private UnderworldLayer _activeLayer = UnderworldLayer.Surface;
 
-    internal ValheimUnderworldWorldContextController(UnderworldSpatialDomainDefinition spatialDomain, ManualLogSource log)
+    internal ValheimUnderworldWorldContextController(ManualLogSource log)
     {
-        _ = spatialDomain ?? throw new ArgumentNullException(nameof(spatialDomain)); // compatibility ctor; placement is not context authority.
         _log = log ?? throw new ArgumentNullException(nameof(log));
     }
 
@@ -33,9 +32,6 @@ internal sealed class ValheimUnderworldWorldContextController : IUnderworldWorld
 
         lock (_gate)
         {
-            // One runtime session may bind to exactly one deterministic Underworld instance.  A
-            // concurrent/recovered transition carrying a different derived identity must fail
-            // closed instead of silently replacing the instance underneath another transition.
             if (_activeIdentity is not null && !SameInstance(_activeIdentity, identity))
                 throw new InvalidOperationException(
                     $"Magenheim world context is already bound to Underworld instance '{_activeIdentity.DerivedWorldId}' and cannot be rebound to '{identity.DerivedWorldId}' before world unload.");
