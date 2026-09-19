@@ -12,12 +12,11 @@ Output is 256x256 RGBA with a transparent background. EarthAssets.CreateIconSpri
 a square texture's own width as pixels-per-unit, so 256 is presentation-neutral against
 the historical 128px icons rather than twice the size in the UI.
 
-Staffs are unusually thin inventory subjects. The renderer therefore uses a modest
-icon-only silhouette support pass: a back-facing duplicate of each mesh is expanded
-along vertex normals and rendered dark behind the authored surface. This is an outline,
-not replacement geometry; the source model, runtime mesh, UVs and materials remain
-untouched. It gives sub-pixel shafts enough weight to survive inventory downsampling
-without lying about the staff's proportions or cropping it to satisfy an alpha metric.
+Staffs are unusually thin inventory subjects. A restrained Freestyle silhouette is
+therefore rendered around the authored mesh. This is icon composition, not replacement
+geometry: runtime mesh, proportions, UVs and materials stay untouched, while thin shafts
+retain a readable edge after inventory downsampling. Only silhouette/border lines are
+selected; internal triangulation is deliberately excluded so texture detail stays clean.
 """
 import bpy, json, math, sys
 from pathlib import Path
@@ -28,7 +27,7 @@ MODELS = ROOT / 'assets/models'
 OUT = ROOT / 'assets/earth'
 SIZE = 256
 SAMPLES = 96
-OUTLINE_WORLD = 0.012
+OUTLINE_PX = 1.35
 
 # Catalog ids are spelled two ways across the staff families. Icons are always named by
 # the asset name the registrars pass to EarthAssets.Icon.
@@ -39,34 +38,24 @@ def asset_name(model_id: str) -> str:
     return model_id
 
 
-def add_readability_outline(scene, objects):
-    """Add non-destructive icon-only back shells around the authored staff geometry."""
-    mat = bpy.data.materials.new('InventoryReadabilityOutline')
-    mat.diffuse_color = (.012, .016, .022, 1)
-    mat.use_nodes = True
-    bsdf = mat.node_tree.nodes.get('Principled BSDF')
-    if bsdf:
-        bsdf.inputs['Base Color'].default_value = (.012, .016, .022, 1)
-        bsdf.inputs['Roughness'].default_value = .88
-
-    shells = []
-    for source in objects:
-        shell = source.copy()
-        shell.data = source.data.copy()
-        shell.name = source.name + '_IconOutline'
-        scene.collection.objects.link(shell)
-        # Solidify expands around the true authored surface rather than scaling about an
-        # arbitrary object origin. Flip normals + front-face culling leaves only the dark
-        # rim outside the original mesh, so it cannot cover authored texture detail.
-        solid = shell.modifiers.new('InventoryOutlineWidth', 'SOLIDIFY')
-        solid.thickness = OUTLINE_WORLD
-        solid.offset = 1.0
-        for slot in shell.material_slots:
-            slot.material = mat
-        shell.data.materials.clear()
-        shell.data.materials.append(mat)
-        shells.append(shell)
-    return shells
+def configure_readability_outline(scene):
+    """Configure an icon-only silhouette without modifying loaded source geometry."""
+    scene.render.use_freestyle = True
+    scene.render.line_thickness = OUTLINE_PX
+    settings = bpy.context.view_layer.freestyle_settings
+    lineset = settings.linesets[0]
+    lineset.select_silhouette = True
+    lineset.select_border = True
+    lineset.select_crease = False
+    lineset.select_edge_mark = False
+    lineset.select_external_contour = True
+    lineset.select_material_boundary = False
+    lineset.select_ridge_valley = False
+    lineset.select_suggestive_contour = False
+    style = lineset.linestyle
+    style.color = (.012, .016, .022)
+    style.alpha = .92
+    style.thickness = OUTLINE_PX
 
 
 def frame_and_render(entry, out_path: Path) -> None:
@@ -82,6 +71,7 @@ def frame_and_render(entry, out_path: Path) -> None:
     scene.render.image_settings.file_format = 'PNG'
     scene.render.image_settings.color_mode = 'RGBA'
     scene.view_settings.view_transform = 'AgX'
+    configure_readability_outline(scene)
 
     scene.world = bpy.data.worlds.new('Studio')
     scene.world.use_nodes = True
@@ -118,13 +108,10 @@ def frame_and_render(entry, out_path: Path) -> None:
     if extent <= 0:
         raise SystemExit(f"{entry['id']}: degenerate bounding box")
 
-    # Leave a small margin so the alpha edge never touches the icon border. Frame from
-    # authored geometry first; the support rim consumes margin rather than shrinking the staff.
+    # Leave a small margin so the alpha edge and silhouette line never touch the icon border.
     placement = Matrix.Scale(1.86 / extent, 4) @ Matrix.Translation(-center)
     for obj in objects:
         obj.matrix_world = placement @ obj.matrix_world
-    bpy.context.view_layer.update()
-    add_readability_outline(scene, objects)
     bpy.context.view_layer.update()
 
     camera_data = bpy.data.cameras.new('Camera')
