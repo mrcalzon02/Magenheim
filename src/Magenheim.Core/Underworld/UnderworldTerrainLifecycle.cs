@@ -29,80 +29,43 @@ public readonly record struct UnderworldTerrainResult(
     double Hazard01);
 
 /// <summary>
-/// Pure terrain lifecycle authority for the logical Underworld. Runtime world-generation
-/// adapters provide Valheim's base height/noise samples; this policy decides whether the
-/// sample belongs to the reserved Underworld, assigns one of the six canonical terrain
-/// ecologies, and applies bounded terrain shaping without inventing physical ceiling geometry.
+/// Pure terrain authority for the dedicated Underworld instance. Every coordinate accepted here is
+/// native to that instance. Surface host coordinates cannot participate in terrain admission,
+/// biome selection, relief, water, cover, or hazard decisions.
 /// </summary>
 public static class UnderworldTerrainLifecycle
 {
-    // Headroom for the deepest Fracture ravine and the highest wall mass. The old 48m ceiling was
-    // sized for a model that produced barely a metre of visible relief.
     public const double MaximumTerrainDelta = 300d;
-
-    /// <summary>Radius fraction by which regional relief reaches full strength.</summary>
     public const double RegionalReliefRadiusFraction = 0.42d;
-
-    /// <summary>
-    /// The elevation the Underworld generates around, in world metres.
-    /// </summary>
-    /// <remarks>
-    /// Terrain used to be produced as a bounded delta on the vanilla height of the same column. That
-    /// only worked while the Underworld was imagined as replacing an ordinary world. The reserved
-    /// region sits far beyond <c>waterEdge</c>, where vanilla returns edge-of-map deep ocean, so
-    /// shaping relative to it generated an Underworld hundreds of metres under water -- the player
-    /// arrived to find no terrain at all. The region now generates its own absolute elevation, which
-    /// is what Valheim itself does for Deep North via <c>deepNorthYOffset</c>.
-    ///
-    /// 45m sits above the 30m water line by more than the Fungal Forest's downward delta, so the
-    /// first biome is dry land, while Blackwater Deep (-18 to -34) becomes a genuine sea, Fracture
-    /// Zones cut below the waterline and rise into walls, and the Great Decay reads as wetland.
-    /// </remarks>
     public const double BaseElevationMeters = 45d;
     public const double MaximumSlopeDegrees = 75d;
     public const double CentralFungalRadiusFraction = 0.16d;
     public const double FungalTransitionRadiusFraction = 0.22d;
 
     public static UnderworldTerrainResult Evaluate(
-        UnderworldSpatialDomainDefinition domain,
+        UnderworldInstanceTerrainDomain domain,
         UnderworldTerrainSample sample,
         int derivedSeed32)
     {
-        // Deliberately not ValidateDefinition: that recomputes a SHA-256 fingerprint and this runs
-        // once per terrain column. The definition is validated when it is constructed.
         if (domain is null) throw new ArgumentNullException(nameof(domain));
         if (!Finite(sample.X) || !Finite(sample.Y) || !Finite(sample.Z) ||
             !Finite(sample.WaterLevel) || !Finite(sample.SlopeDegrees) || !Finite(sample.Noise01))
             return default;
-
-        var radiusSquared = domain.RadiusMeters * domain.RadiusMeters;
-        if (sample.X * sample.X + sample.Z * sample.Z > radiusSquared ||
-            sample.Y < domain.LogicalMinY || sample.Y > domain.LogicalMaxY)
-            return default;
+        if (!domain.Contains(sample.X, sample.Y, sample.Z)) return default;
 
         var slope = Clamp(sample.SlopeDegrees, 0d, MaximumSlopeDegrees);
         var noise = Clamp(sample.Noise01, 0d, 1d);
         var distance = Math.Sqrt(sample.X * sample.X + sample.Z * sample.Z);
         var biome = SelectBiome(sample.X, sample.Z, distance, domain.RadiusMeters, derivedSeed32);
-
-        // Relief comes from the shared noise authority in metres, so the same landform is produced
-        // for a column no matter which adapter asks for it.
         var relief = UnderworldTerrainNoise.ReliefMetres(derivedSeed32, sample.X, sample.Z,
             RegionalReliefWeight(distance, domain.RadiusMeters));
         var delta = BiomeDelta(biome, relief);
-
-        // Blend the terrain shape around the protected Fungal Forest basin. This prevents a single
-        // sample step across a biome province boundary from producing a cliff while keeping the
-        // outer province identity intact.
         var fungalBlend = FungalTransition(distance, domain.RadiusMeters);
         if (fungalBlend > 0d && biome != UnderworldTerrainBiome.FungalForest)
             delta = Lerp(delta, BiomeDelta(UnderworldTerrainBiome.FungalForest, relief), fungalBlend);
 
-        // Water depth follows from the generated ground, so seas and wetlands are a consequence of
-        // the terrain rather than an input copied from whatever vanilla had at this column.
         var height = BaseElevationMeters + Clamp(delta, -MaximumTerrainDelta, MaximumTerrainDelta);
         var water = Math.Max(0d, sample.WaterLevel - height);
-
         var cover = Cover(biome, noise, slope, water);
         var hazard = Hazard(biome, noise, water);
         if (fungalBlend > 0d && biome != UnderworldTerrainBiome.FungalForest)
@@ -111,22 +74,29 @@ public static class UnderworldTerrainLifecycle
             hazard = Lerp(hazard, 0d, fungalBlend);
         }
 
-        return new UnderworldTerrainResult(
-            true,
-            biome,
-            height,
-            water,
-            Clamp(cover, 0d, 1d),
-            Clamp(hazard, 0d, 1d));
+        return new UnderworldTerrainResult(true, biome, height, water,
+            Clamp(cover, 0d, 1d), Clamp(hazard, 0d, 1d));
+    }
+
+    /// <summary>
+    /// Temporary compatibility bridge for callers not yet migrated from the obsolete host-domain
+    /// record. Host coordinates are intentionally discarded before entering terrain authority.
+    /// </summary>
+    [Obsolete("Use the native UnderworldInstanceTerrainDomain overload. Host placement is not terrain authority.")]
+    public static UnderworldTerrainResult Evaluate(
+        UnderworldSpatialDomainDefinition legacyDomain,
+        UnderworldTerrainSample sample,
+        int derivedSeed32)
+    {
+        if (legacyDomain is null) throw new ArgumentNullException(nameof(legacyDomain));
+        var instanceDomain = UnderworldInstanceTerrainDomain.ValidateAndFreeze(
+            legacyDomain.RadiusMeters, legacyDomain.LogicalMinY, legacyDomain.LogicalMaxY);
+        return Evaluate(instanceDomain, sample, derivedSeed32);
     }
 
     private static UnderworldTerrainBiome SelectBiome(double x, double z, double distance, double radius, int seed)
     {
-        // Broad angular provinces keep each ecology legible while the seed rotates the map.
-        // The center is always Fungal Forest so first admission cannot strand a player in a
-        // lethal biome; outer terrain transitions through the remaining five provinces.
         if (distance <= radius * CentralFungalRadiusFraction) return UnderworldTerrainBiome.FungalForest;
-
         var angle = Math.Atan2(z, x) + SeedRotation(seed);
         if (angle < 0d) angle += Math.PI * 2d;
         if (angle >= Math.PI * 2d) angle -= Math.PI * 2d;
@@ -141,11 +111,6 @@ public static class UnderworldTerrainLifecycle
         };
     }
 
-    /// <summary>
-    /// How much large-wavelength geography a column receives. Zero inside the protected central
-    /// basin, ramping to full by <see cref="RegionalReliefRadiusFraction"/>, so the player arrives on
-    /// gentle dry ground and the mountain barriers and deep basins belong to the outer provinces.
-    /// </summary>
     private static double RegionalReliefWeight(double distance, double radius)
     {
         var inner = radius * CentralFungalRadiusFraction;
@@ -163,34 +128,20 @@ public static class UnderworldTerrainLifecycle
         if (distance <= inner) return 1d;
         if (distance >= outer) return 0d;
         var t = (distance - inner) / (outer - inner);
-        // Smoothstep keeps both ends derivative-continuous and avoids a visible terrain crease.
         t = t * t * (3d - 2d * t);
         return 1d - t;
     }
 
-    // Mapping the raw seed linearly across the uint range made province rotation useless in
-    // practice: ordinary small seeds all landed within ~1e-6 rad of zero, so every such world
-    // received an identical province layout. Avalanche the seed first so neighbouring seeds rotate
-    // to unrelated angles.
     private static double SeedRotation(int seed) =>
         UnderworldTerrainNoise.Mix(unchecked((uint)seed)) / ((double)uint.MaxValue + 1d) * Math.PI * 2d;
 
-    /// <summary>
-    /// A biome's height offset from the region's base elevation, plus how strongly it expresses the
-    /// shared relief. Amplitude is a multiplier on real metres, so a biome's character is "how
-    /// dramatic is the landform here", not "how large is this arbitrary scalar".
-    /// </summary>
     private static double BiomeDelta(UnderworldTerrainBiome biome, double relief) => biome switch
     {
-        // Rolling, habitable, sits above the waterline: the first biome must be walkable.
         UnderworldTerrainBiome.FungalForest => 6d + relief * 0.55d,
-        // Sits below the water line so the basin fills and reads as a sea.
         UnderworldTerrainBiome.BlackwaterDeep => -30d + relief * 0.40d,
         UnderworldTerrainBiome.SulfurousWastes => 8d + relief * 0.85d,
         UnderworldTerrainBiome.FrozenCaverns => 4d + relief * 0.65d,
-        // Deliberately the most extreme: ravines cut below the waterline, wall masses tower.
         UnderworldTerrainBiome.FractureZones => relief * 1.5d,
-        // Low and damp, so the wetlands the design asks for appear without special-casing water.
         UnderworldTerrainBiome.GreatDecay => -10d + relief * 0.45d,
         _ => 0d,
     };
