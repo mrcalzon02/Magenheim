@@ -48,8 +48,6 @@ for side in (-1,1):
  s='L' if side<0 else 'R'
  for i,(y,z,sy) in enumerate(((-.24,.305,.105),(-.06,.326,.125),(.13,.320,.115)),1): keep(organic(f'Capcrawler_RimScute_{s}{i}',(side*.315,y,z),(.085,sy,.035),car,2),'Body')
 keep(organic('Capcrawler_CrownPlate',(0,-.285,.345),(.205,.105,.042),car,2),'Body')
-# Eight broad tarsal pads and short terminal claws make ground contact readable at combat distance.
-# They are separate source pieces but inherit each distal leg bone, avoiding a second deformation chain.
 for i,y in enumerate((-.24,-.08,.10,.26),1):
  for side in (-1,1):
   s='L' if side<0 else 'R'; hip=(side*.20,y,.22); knee=(side*.34,y+(i-2.5)*.018,.13); foot=(side*.43,y+(i-2.5)*.035,.035); toe=(side*.475,foot[1]+.008,.024)
@@ -70,6 +68,15 @@ for side in (-1,1):
  s='L' if side<0 else 'R'; bone(f'Mandible_{s}',(side*.08,.32,.22),(side*.13,.47,.17),body)
 bone('AttackOrigin',(0,.34,.18),(0,.53,.18),body); bone('HitCenter',(0,0,.16),(0,0,.28),root); bone('GillFX',(0,.27,.24),(0,.39,.24),body); bpy.ops.object.mode_set(mode='OBJECT'); arm.show_in_front=True
 
+def action_fcurves(act):
+ legacy=getattr(act,'fcurves',None)
+ if legacy is not None: return list(legacy)
+ curves=[]
+ for layer in getattr(act,'layers',()):
+  for strip in getattr(layer,'strips',()):
+   for bag in getattr(strip,'channelbags',()): curves.extend(bag.fcurves)
+ return curves
+
 def action(name,end,poses):
  act=bpy.data.actions.new(name); arm.animation_data_create(); arm.animation_data.action=act
  for frame,bone_poses in poses.items():
@@ -77,7 +84,9 @@ def action(name,end,poses):
    pb=arm.pose.bones.get(bname)
    if not pb: raise RuntimeError(f'{name}: missing animation bone {bname}')
    pb.rotation_mode='XYZ'; pb.rotation_euler=rot; pb.keyframe_insert('rotation_euler',frame=frame,group=bname)
- for fc in getattr(act,'fcurves',()):
+ curves=action_fcurves(act)
+ if not curves: raise RuntimeError(f'{name}: keyframes were authored but no animation curves are readable')
+ for fc in curves:
   for kp in fc.keyframe_points: kp.interpolation='BEZIER'
  act.frame_start=1; act.frame_end=end; return act
 
