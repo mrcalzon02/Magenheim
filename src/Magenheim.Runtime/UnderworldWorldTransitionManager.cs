@@ -43,7 +43,11 @@ internal sealed class UnderworldWorldTransitionManager
     {
         UnderworldTransitionRules.ValidatePersistedState(state, identity);
         var active = state.ActiveTransition;
-        if (active is null) return state;
+        if (active is null)
+        {
+            RehydrateStableLifecycle(state, identity);
+            return state;
+        }
         ReconcileLifecycleForResume(identity, active);
         if (!string.Equals(active.AuthorityFingerprint, currentAuthorityFingerprint, StringComparison.Ordinal))
             return Recover(state, identity, active.OperationId, active.AuthorityFingerprint, new InvalidOperationException("Gameplay authority changed while an Underworld transition was incomplete."));
@@ -88,6 +92,32 @@ internal sealed class UnderworldWorldTransitionManager
         }
     }
 
+    private void RehydrateStableLifecycle(UnderworldPlayerLayerState state, UnderworldWorldIdentity identity)
+    {
+        if (state.CurrentLayer == UnderworldLayer.Surface)
+        {
+            if (_instanceLifecycle.Phase != UnderworldInstancePhase.Inactive) _instanceLifecycle.Reset();
+            return;
+        }
+
+        if (state.CurrentLayer != UnderworldLayer.Underworld)
+            throw new InvalidOperationException($"Cannot rehydrate unsupported stable Underworld layer '{state.CurrentLayer}'.");
+
+        if (_instanceLifecycle.Phase == UnderworldInstancePhase.Inactive)
+        {
+            _instanceLifecycle.BeginAdmission(identity);
+            _instanceLifecycle.MarkActive(identity);
+            return;
+        }
+
+        if (_instanceLifecycle.Phase != UnderworldInstancePhase.Active)
+            throw new InvalidOperationException($"Stable Underworld state conflicts with instance lifecycle phase {_instanceLifecycle.Phase}.");
+
+        var admitted = _instanceLifecycle.Identity ?? throw new InvalidOperationException("Active Underworld lifecycle has no admitted identity.");
+        if (!SameIdentity(admitted, identity))
+            throw new InvalidOperationException("Stable Underworld state belongs to a different admitted instance identity.");
+    }
+
     private void ReconcileLifecycleForResume(UnderworldWorldIdentity identity, UnderworldTransitionIntent active)
     {
         if (_instanceLifecycle.Phase == UnderworldInstancePhase.Inactive)
@@ -125,6 +155,11 @@ internal sealed class UnderworldWorldTransitionManager
             _instanceLifecycle.MarkActive(identity);
         }
     }
+
+    private static bool SameIdentity(UnderworldWorldIdentity left, UnderworldWorldIdentity right) =>
+        string.Equals(left.ParentWorldId, right.ParentWorldId, StringComparison.Ordinal) &&
+        string.Equals(left.DerivedWorldId, right.DerivedWorldId, StringComparison.Ordinal) &&
+        string.Equals(left.DerivedSeedFingerprint, right.DerivedSeedFingerprint, StringComparison.Ordinal);
 
     private static void ValidateOperation(UnderworldTransitionIntent active, string operationId, string authorityFingerprint)
     {
