@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Magenheim.Core.Underworld;
 using UnityEngine;
 
@@ -6,9 +7,9 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Runtime presentation authority for the logical Underworld map. This class intentionally owns
-/// only Magenheim-created textures; it never mutates or aliases vanilla Surface exploration data.
-/// The Minimap adapter can therefore swap presentation without turning the ~40 km host region into
-/// player-facing geography.
+/// only Magenheim-created textures and projected pin positions; it never mutates or aliases vanilla
+/// Surface exploration data. The Minimap adapter can therefore swap presentation without turning
+/// the ~40 km host region into player-facing geography.
 /// </summary>
 internal static class UnderworldMapPresentationRuntime
 {
@@ -16,6 +17,7 @@ internal static class UnderworldMapPresentationRuntime
     private static Texture2D? _biomeTexture;
     private static int _lastExploredCount = -1;
     private static int? _biomeSeed;
+    private static readonly Dictionary<Minimap.PinData, Vector3> ProjectedPins = new();
 
     internal static Texture2D? FogTexture => _fogTexture;
     internal static Texture2D? BiomeTexture => _biomeTexture;
@@ -64,6 +66,46 @@ internal static class UnderworldMapPresentationRuntime
         return fog || biome;
     }
 
+    /// <summary>
+    /// Projects pins that physically live in the reserved host domain into logical Underworld
+    /// coordinates while the Underworld tab is selected. Surface/foreign pins are hidden outside
+    /// the logical map rather than deleted. Every touched pin is restored byte-for-byte to its
+    /// original world position before Surface presentation resumes, so vanilla/foreign ownership
+    /// remains authoritative and no save data is rewritten with projected coordinates.
+    /// </summary>
+    internal static void ApplySelectedLayerPins(Minimap map)
+    {
+        if (map == null) return;
+        RestoreProjectedPins();
+
+        if (UnderworldMapLayerRuntime.SelectedLayer != MagenheimMapLayer.Underworld) return;
+        var pins = RuntimeGameApi.GetMapPins(map);
+        for (var i = 0; i < pins.Count; i++)
+        {
+            var pin = pins[i];
+            if (pin == null) continue;
+
+            var original = pin.m_pos;
+            ProjectedPins[pin] = original;
+            if (UnderworldMapLayerRuntime.TryProjectWorldToSelectedMap(original.x, original.z, out var logical))
+                pin.m_pos = new Vector3((float)logical.X, original.y, (float)logical.Z);
+            else
+                pin.m_pos = HiddenPinPosition(original.y);
+        }
+    }
+
+    internal static void RestoreProjectedPins()
+    {
+        if (ProjectedPins.Count == 0) return;
+        foreach (var entry in ProjectedPins)
+        {
+            if (entry.Key != null) entry.Key.m_pos = entry.Value;
+        }
+        ProjectedPins.Clear();
+    }
+
+    private static Vector3 HiddenPinPosition(float y) => new(float.MaxValue * 0.25f, y, float.MaxValue * 0.25f);
+
     private static void WriteFog(UnderworldExplorationState exploration)
     {
         var pixels = new Color32[checked(exploration.Width * exploration.Height)];
@@ -94,6 +136,7 @@ internal static class UnderworldMapPresentationRuntime
 
     internal static void Reset()
     {
+        RestoreProjectedPins();
         Destroy(ref _fogTexture); Destroy(ref _biomeTexture);
         _lastExploredCount = -1; _biomeSeed = null;
     }
