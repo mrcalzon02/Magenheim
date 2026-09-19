@@ -13,7 +13,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont, ImageStat
+from PIL import Image, ImageChops, ImageDraw, ImageFont, ImageStat
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "assets" / "earth"
@@ -27,6 +27,7 @@ TARGETS = (
     "crystal-shaping",
 )
 GAMEPLAY = 64
+EDGE_CLEARANCE = max(0.0, min(0.10, float(os.environ.get("MAGENHEIM_ICON_MIN_EDGE_CLEARANCE", "0.01"))))
 
 
 def font(size: int, bold: bool = False):
@@ -48,13 +49,24 @@ def metrics(image: Image.Image):
     mask = alpha.point(lambda value: 255 if value >= 96 else 0)
     bbox = mask.getbbox()
     if not bbox:
-        return proxy, 0.0, 0.0, 0.0
-    opaque = sum(1 for value in alpha.getdata() if value >= 96)
+        return proxy, 0.0, 0.0, 0.0, 0.0
+    visible = [p for p, a in zip(proxy.convert("RGB").getdata(), alpha.getdata()) if a >= 96]
+    luminance = [.2126*r + .7152*g + .0722*b for r, g, b in visible]
+    opaque = len(visible)
     coverage = opaque / (GAMEPLAY * GAMEPLAY)
     left, top, right, bottom = bbox
     clearance = min(left, top, GAMEPLAY - right, GAMEPLAY - bottom) / GAMEPLAY
-    deviation = ImageStat.Stat(proxy.convert("L"), mask=mask).stddev[0]
-    return proxy, coverage, clearance, deviation
+    deviation = ImageStat.Stat(proxy.convert("L"), mask=alpha).stddev[0]
+    contrast = max(luminance) - min(luminance) if luminance else 0.0
+    return proxy, coverage, clearance, contrast, deviation
+
+
+def legacy_delta(committed: Image.Image, staged: Image.Image) -> float:
+    """Measure whether the staged result contains visible change beyond a nearest-neighbor upscale."""
+    legacy = committed.convert("RGBA").resize(staged.size, Image.Resampling.NEAREST)
+    diff = ImageChops.difference(legacy, staged.convert("RGBA")).convert("RGB")
+    stat = ImageStat.Stat(diff)
+    return sum(stat.mean) / 3.0
 
 
 def main() -> int:
@@ -66,7 +78,7 @@ def main() -> int:
         env["MAGENHEIM_EARTH_OUTPUT_ROOT"] = str(stage)
         subprocess.run([sys.executable, str(GENERATOR)], cwd=ROOT, env=env, check=True)
 
-        width, row_h = 1080, 210
+        width, row_h = 1180, 210
         sheet = Image.new("RGB", (width, 110 + row_h * len(TARGETS)), (27, 30, 29))
         draw = ImageDraw.Draw(sheet)
         draw.text((30, 20), "MAGENHEIM / EARTH ICON MIGRATION REVIEW", font=font(30, True), fill=(235, 219, 181))
@@ -82,21 +94,25 @@ def main() -> int:
                 continue
             staged = Image.open(staged_path).convert("RGBA")
             committed = Image.open(committed_path).convert("RGBA") if committed_path.exists() else Image.new("RGBA", (128, 128))
-            proxy, coverage, clearance, deviation = metrics(staged)
+            proxy, coverage, clearance, contrast, deviation = metrics(staged)
+            delta = legacy_delta(committed, staged)
             draw.text((30, y + 10), name.replace("-", " ").title(), font=font(20, True), fill=(229, 216, 189))
-            draw.text((30, y + 42), f"new {staged.width}x{staged.height}  coverage {coverage:.1%}  edge {clearance:.1%}  contrast σ {deviation:.1f}", font=font(15), fill=(166, 174, 164))
+            draw.text((30, y + 42), f"new {staged.width}x{staged.height}  coverage {coverage:.1%}  edge {clearance:.1%}", font=font(15), fill=(166, 174, 164))
+            draw.text((30, y + 66), f"luma range {contrast:.1f}  sigma {deviation:.1f}  legacy delta {delta:.1f}", font=font(15), fill=(166, 174, 164))
             old = committed.resize((150, 150), Image.Resampling.NEAREST)
             new = staged.resize((150, 150), Image.Resampling.LANCZOS)
             game = proxy.resize((150, 150), Image.Resampling.NEAREST)
-            sheet.paste(old, (465, y + 10), old)
-            sheet.paste(new, (650, y + 10), new)
-            sheet.paste(game, (835, y + 10), game)
+            sheet.paste(old, (565, y + 10), old)
+            sheet.paste(new, (750, y + 10), new)
+            sheet.paste(game, (935, y + 10), game)
             if staged.size[0] < 256 or staged.size[1] < 256:
                 failures.append(f"{name}: regenerated icon is still below 256 px")
             if not (0.08 <= coverage <= 0.78):
                 failures.append(f"{name}: gameplay coverage {coverage:.1%} outside 8-78%")
-            if clearance < 0.01:
-                failures.append(f"{name}: gameplay silhouette crowds the frame ({clearance:.1%})")
+            if clearance < EDGE_CLEARANCE:
+                failures.append(f"{name}: gameplay silhouette crowds the frame ({clearance:.1%} < {EDGE_CLEARANCE:.1%})")
+            if contrast < 28 or deviation < 7:
+                failures.append(f"{name}: gameplay material/facet contrast collapses (range={contrast:.1f}, stddev={deviation:.1f})")
 
         sheet.save(output_arg)
         print(f"Earth icon migration review: {output_arg}")
@@ -104,7 +120,7 @@ def main() -> int:
             for failure in failures:
                 print(f"FAIL: {failure}", file=sys.stderr)
             return 1
-        print("PASS: all six Earth migration targets regenerate at 256 px+ and survive the 64 px readability envelope")
+        print("PASS: all six Earth migration targets match the authoritative 64 px gameplay readability gate")
         return 0
 
 
