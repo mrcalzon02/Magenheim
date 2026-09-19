@@ -22,6 +22,7 @@ public class Component : Object
     public GameObject gameObject = null!;
     public Transform transform => gameObject.transform;
     public T[] GetComponentsInChildren<T>(bool includeInactive=false) where T:Component => gameObject.GetComponentsInChildren<T>(includeInactive);
+    public T? GetComponent<T>() where T : Component => gameObject.GetComponent<T>();
 }
 
 public enum PrimitiveType { Cube, Cylinder, Sphere }
@@ -124,6 +125,17 @@ public class Transform : Component
         var local = localRotation * Vector3.Scale(point, localScale) + localPosition;
         return parent is null ? local : parent.TransformPoint(local);
     }
+
+    /// <summary>Inverse of <see cref="TransformPoint"/>: a world/ancestor-space point into this transform's local space.</summary>
+    public Vector3 InverseTransformPoint(Vector3 point)
+    {
+        var inParentSpace = parent is null ? point : parent.InverseTransformPoint(point);
+        var unrotated = Quaternion.Inverse(localRotation) * (inParentSpace - localPosition);
+        return new Vector3(
+            localScale.x == 0f ? 0f : unrotated.x / localScale.x,
+            localScale.y == 0f ? 0f : unrotated.y / localScale.y,
+            localScale.z == 0f ? 0f : unrotated.z / localScale.z);
+    }
 }
 
 public struct Vector2
@@ -142,6 +154,11 @@ public struct Vector3
 {
     public float x,y,z;
     public Vector3(float x,float y,float z){this.x=x;this.y=y;this.z=z;}
+    public float this[int index]
+    {
+        get => index switch { 0 => x, 1 => y, 2 => z, _ => throw new IndexOutOfRangeException() };
+        set { switch (index) { case 0: x = value; break; case 1: y = value; break; case 2: z = value; break; default: throw new IndexOutOfRangeException(); } }
+    }
     public static Vector3 zero => new(0,0,0); public static Vector3 one => new(1,1,1);
     public static Vector3 up => new(0,1,0); public static Vector3 down => new(0,-1,0);
     public static Vector3 right => new(1,0,0); public static Vector3 left => new(-1,0,0);
@@ -183,6 +200,13 @@ public struct Quaternion
     }
     public static Quaternion operator *(Quaternion a,Quaternion b)=>new(NQuat.Normalize(a.value*b.value));
     public static Vector3 operator *(Quaternion q,Vector3 v){var r=NVec3.Transform(new NVec3(v.x,v.y,v.z),q.value);return new Vector3(r.X,r.Y,r.Z);}
+    public static Quaternion Inverse(Quaternion q)=>new(NQuat.Inverse(q.value));
+    /// <summary>Angle in degrees between two rotations, via the standard dot-product formula.</summary>
+    public static float Angle(Quaternion a,Quaternion b)
+    {
+        var dot=Math.Clamp(MathF.Abs(NQuat.Dot(a.value,b.value)),0f,1f);
+        return MathF.Acos(dot)*2f*Mathf.Rad2Deg;
+    }
     public Vector3 eulerAngles => Vector3.zero;
 }
 
@@ -214,7 +238,20 @@ public static class Mathf
     public static float Lerp(float a,float b,float t)=>a+(b-a)*Clamp01(t);public static int RoundToInt(float v)=>(int)MathF.Round(v);public static int FloorToInt(float v)=>(int)MathF.Floor(v);public static int CeilToInt(float v)=>(int)MathF.Ceiling(v);public static float Pow(float a,float b)=>MathF.Pow(a,b);
 }
 
-public struct Bounds { public Vector3 center,size; }
+public struct Bounds
+{
+    public Vector3 center,size;
+    public Bounds(Vector3 center,Vector3 size){this.center=center;this.size=size;}
+    public Vector3 min => center - size*0.5f;
+    public Vector3 max => center + size*0.5f;
+    public void Encapsulate(Vector3 point)
+    {
+        var lo=min; var hi=max;
+        lo=new Vector3(MathF.Min(lo.x,point.x),MathF.Min(lo.y,point.y),MathF.Min(lo.z,point.z));
+        hi=new Vector3(MathF.Max(hi.x,point.x),MathF.Max(hi.y,point.y),MathF.Max(hi.z,point.z));
+        center=(lo+hi)*0.5f; size=hi-lo;
+    }
+}
 public static class ImageConversion { public static bool LoadImage(Texture2D t,byte[] bytes,bool unreadable)=>bytes.Length>8 && bytes[0]==137 && bytes[1]==80; }
 public class Mesh:Object
 {

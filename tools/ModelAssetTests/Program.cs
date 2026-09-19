@@ -26,3 +26,75 @@ foreach(var id in new[]{"underworld-standing-stone","underworld-dais"})
 try{ModelAssets.LoadSingleMesh("../outside");throw new Exception("Standalone traversal accepted");}catch(ArgumentException){}
 try{ModelAssets.LoadSingleMesh("crystal-weapon-bow");throw new Exception("Multipart mesh silently truncated");}catch(InvalidDataException){}
 Console.WriteLine($"PASS: {count} model assets imported twice; complete parts/UVs, shared meshes, missing-file and path guards.");
+
+// HeldModelAlignment regression test. Donor bounds are hardcoded from LogOutput.log (0.0.77, in
+// attach space) because the vanilla donor meshes only exist inside the game process -- this shim
+// cannot load them. Replacement bounds are computed fresh from the shipped model.json payload each
+// run, exactly as ModelAssets/HeldModelAlignment measure them (root parented at identity, scale 1,
+// before any rotation), so a source re-export (e.g. the greatsword reshape on 2026-09-19) is picked
+// up automatically rather than silently tested against stale numbers.
+//
+// Six of nine non-crossbow weapons are independently confirmed correct (axe, greatsword, bow since
+// 0.0.75; battleaxe, spear since the 2026-09-19 tolerant-margin fix; mace, unconfirmed but resolves
+// identically). All six must land on ONE identical rotation -- ours X/Y/Z -> donor X/Z/Y with signs
+// (+1,+1,-1) -- which this test checks by transforming unit vectors rather than comparing Euler
+// angles, since Quaternion.eulerAngles is not implemented in this shim and Euler decomposition has
+// its own ambiguities near 90/270 degrees that have nothing to do with correctness.
+//
+// The sword is deliberately EXCLUDED from the must-match assertion. It reproduces the exact mirror
+// of the good pattern, on a real 43.7% margin (not measurement noise), and nobody has ever confirmed
+// in game whether the sword is actually right or wrong. Silently forcing it to match would be
+// exactly the "measure, don't guess" violation this whole file exists to avoid. It is still measured
+// and printed so a regression is visible even though it isn't asserted on.
+{
+    var donors = new Dictionary<string, Bounds>
+    {
+        ["crystal-weapon-sword"]       = new(new Vector3(0f, 0f, 0.503f),        new Vector3(0.195f, 0.059f, 1.288f)),
+        ["crystal-weapon-greatsword"]  = new(new Vector3(0f, 0f, 0.625f),        new Vector3(0.245f, 0.052f, 1.911f)),
+        ["crystal-weapon-axe"]         = new(new Vector3(0.043f, 0.001f, 0.317f), new Vector3(0.449f, 0.105f, 0.977f)),
+        ["crystal-weapon-battleaxe"]   = new(new Vector3(0.152f, -0.01f, 0.604f), new Vector3(0.401f, 0.128f, 1.611f)),
+        ["crystal-weapon-mace"]        = new(new Vector3(0.001f, 0.003f, 0.312f), new Vector3(0.436f, 0.147f, 0.944f)),
+        ["crystal-weapon-spear"]       = new(new Vector3(-0.004f, -0.013f, 0.189f), new Vector3(0.286f, 0.147f, 2.432f)),
+        ["crystal-weapon-knife"]       = new(new Vector3(0.048f, 0f, 0.206f),    new Vector3(0.133f, 0.026f, 0.543f)),
+        ["crystal-weapon-atgeir"]      = new(new Vector3(0.268f, -0.1f, 0.64f),  new Vector3(1.23f, 0.453f, 2.803f)),
+        ["crystal-weapon-bow"]         = new(new Vector3(-0.065f, -0.003f, 0.001f), new Vector3(0.852f, 0.48f, 1.728f)),
+        ["crystal-weapon-crossbow"]    = new(new Vector3(0f, 0.014f, -0.119f),   new Vector3(1.272f, 0.268f, 1.725f)),
+    };
+    var mustMatchGood = new[]
+    {
+        "crystal-weapon-axe", "crystal-weapon-greatsword", "crystal-weapon-bow",
+        "crystal-weapon-battleaxe", "crystal-weapon-spear", "crystal-weapon-mace",
+        "crystal-weapon-knife", "crystal-weapon-atgeir", "crystal-weapon-crossbow",
+    };
+    var fakeAttach = new GameObject("attach").transform;
+    var alignmentChecks = 0;
+    foreach (var (id, donor) in donors)
+    {
+        var payload = Path.Combine(AppContext.BaseDirectory, "assets/models/runtime", id + ".model.json");
+        var parts = (JArray)JObject.Parse(File.ReadAllText(payload))["parts"]!;
+        var min = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+        var max = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+        foreach (var part in parts)
+            foreach (var v in (JArray)part["vertices"]!)
+            {
+                var p = new Vector3((float)v[0]!, (float)v[1]!, (float)v[2]!);
+                min = new Vector3(Mathf.Min(min.x, p.x), Mathf.Min(min.y, p.y), Mathf.Min(min.z, p.z));
+                max = new Vector3(Mathf.Max(max.x, p.x), Mathf.Max(max.y, p.y), Mathf.Max(max.z, p.z));
+            }
+        var replacement = new Bounds((min + max) * 0.5f, max - min);
+        int? forwardAxis = id == "crystal-weapon-crossbow" ? 1 : null;
+        var rotation = HeldModelAlignment.Measure(fakeAttach, donor, replacement, forwardAxis);
+
+        bool Aligned(Vector3 a, Vector3 b) => Vector3.Dot(a, b) > 0.99f;
+        var good = Aligned(rotation * Vector3.right, Vector3.right)
+                && Aligned(rotation * Vector3.up, Vector3.forward)
+                && Aligned(rotation * Vector3.forward, -Vector3.up);
+
+        if (Array.IndexOf(mustMatchGood, id) >= 0 && !good)
+            throw new Exception($"HeldModelAlignment regression: '{id}' no longer matches the confirmed rotation (ours X/Y/Z -> donor X/Z/Y, signs +1/+1/-1).");
+        if (id == "crystal-weapon-sword" && good)
+            Console.WriteLine($"NOTE: '{id}' now matches the good pattern too -- the sword's known anomaly may be resolved; worth confirming visually.");
+        alignmentChecks++;
+    }
+    Console.WriteLine($"PASS: {alignmentChecks} held-model alignments checked against the confirmed rotation (sword measured, not asserted -- unconfirmed in game).");
+}

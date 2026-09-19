@@ -1,4 +1,4 @@
 {
-  "version": "0.0.77",
-  "description": "0.0.77: Restores content lost in 0.0.76 to one unloadable field, and reimports every model so crystal foundations, beams, dais and hearth stop wearing a misclassified surface baked into their sources before the classifier was fixed."
+  "version": "0.0.78",
+  "description": "0.0.78: Battleaxe, spear, mace and the crossbow's sign now match the confirmed-correct axe/greatsword/bow rotation. Root cause: bounds ranking treated near-symmetric shapes' own measurement noise as decisive. Greatsword crystal reshaped, flatter."
 }

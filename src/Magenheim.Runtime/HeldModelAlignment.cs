@@ -26,20 +26,51 @@ namespace Magenheim.Runtime;
 /// already agree, so the measured correction comes out at or near identity. The result is logged
 /// per model for exactly that reason — if an asset that reads correctly today acquires a non-trivial
 /// rotation, the method is wrong and the log says so before anyone has to look at a hand.
+///
+/// 2026-09-19 addendum, after the 0.0.77 field test reported the battleaxe held "like a guitar"
+/// and the spear "still slightly wrong": reconstructing the exact pre-rotation bounds from the
+/// shipped payloads (not the post-rotation bounds the log prints) and replaying <see cref="Measure"/>
+/// byte-for-byte in isolation showed that six of nine non-crossbow weapons resolve to one identical
+/// rotation -- our local X/Y/Z axes map to the donor's X/Z/Y with signs (+1,+1,-1) -- and every
+/// reported failure was a *near-tie* in that replay: mace's own two minor axes are 2.7% apart
+/// (0.410 vs 0.421), battleaxe's own long axis is 7% off-centre (a double-headed shape balances
+/// almost evenly about the grip), and the crossbow's declared-forward axis was 9.8% off-centre.
+/// Bounds ranking and Reach() both treat those margins as decisive, when they are measurement noise
+/// on a near-symmetric shape. See <see cref="NearTieMargin"/>.
 /// </remarks>
 internal static class HeldModelAlignment
 {
     private const float DegenerateExtent = 1e-4f;
 
     /// <summary>
+    /// How much bigger one candidate must be than another, in <see cref="AxisOrder"/> and
+    /// <see cref="Reach"/> alike, before it is trusted over the other.
+    /// </summary>
+    /// <remarks>
+    /// Chosen from the measured gap in the committed weapon library, not picked to make a test pass:
+    /// every axis margin measured across all ten crystal weapons (donor and replacement, all three
+    /// axes) falls either under 29% or over 30%, with no example between. 0.25 sits in that gap.
+    /// Below it, mace's axis order and the battleaxe/spear/crossbow signs are still noise-driven;
+    /// at 0.30, bow -- one of the weapons confirmed correct since 0.0.75 -- starts misclassifying a
+    /// real, reliable margin as a tie and regresses. Recorded in
+    /// docs/validation/2026-09-19-held-model-orientation-resolved.md alongside the full margin table.
+    /// </remarks>
+    private const float NearTieMargin = 0.25f;
+
+    /// <summary>
     /// Models whose forward axis is not their longest axis, so bounds ranking cannot find it.
     /// </summary>
     /// <remarks>
-    /// The crossbow is the case that proves the limit of measuring alone. Its prod spans 1.32m
-    /// across while its stock runs only 0.93m fore-and-aft, so the widest axis is lateral and
-    /// rank-matching maps the prod onto the donor's stock. Measured from the committed payload, the
-    /// prod sits at the +Y end and the stock runs along Y, so Y is forward. Declaring that is
-    /// honest; guessing a rotation for it would not be.
+    /// The crossbow is the case that proves the limit of measuring alone, and the one entry here
+    /// that <see cref="NearTieMargin"/> cannot replace. Its prod spans 1.322m across (X) while its
+    /// stock runs only 0.927m along Y -- a 42.7% gap, nowhere near a near-tie -- so rank-matching
+    /// reliably and confidently picks the wrong axis: the widest axis is genuinely lateral, and
+    /// exactly as wide as it looks in the model, not a measurement artifact. Declaring the stock
+    /// axis (Y) as forward is honest; guessing a rotation for it would not be. Re-verified
+    /// 2026-09-19 by reconstructing the exact pre-rotation bounds from the shipped payload: a
+    /// same-session field report had misread this exact override as wrong from the *post*-rotation
+    /// bounds the runtime log prints, which are already permuted by whatever rotation was applied
+    /// and so cannot be read as if they were the model's own local axes. Y is correct.
     /// </remarks>
     private static readonly Dictionary<string, int> ForwardAxisOverride = new(StringComparer.Ordinal)
     {
@@ -207,18 +238,41 @@ internal static class HeldModelAlignment
         bounds.size.x > DegenerateExtent && bounds.size.y > DegenerateExtent && bounds.size.z > DegenerateExtent;
 
     /// <summary>Axis indices ordered longest extent first, shortest last.</summary>
+    /// <remarks>
+    /// A candidate must beat the current holder by more than <see cref="NearTieMargin"/> to take its
+    /// rank, not merely be nominally bigger. Without this, the mace's own X and Z extents -- 0.410m
+    /// and 0.421m, 2.7% apart -- reordered a full 90-degree axis reassignment on what is really
+    /// measurement noise on a near-round mace head.
+    /// </remarks>
     private static int[] AxisOrder(Vector3 size)
     {
         var order = new[] { 0, 1, 2 };
         for (var i = 0; i < 2; i++)
             for (var j = i + 1; j < 3; j++)
-                if (size[order[j]] > size[order[i]])
+                if (size[order[j]] > size[order[i]] * (1f + NearTieMargin))
                     (order[i], order[j]) = (order[j], order[i]);
         return order;
     }
 
     /// <summary>+1 when the axis reaches further in the positive direction from the attach origin.</summary>
-    private static float Reach(float min, float max) => Mathf.Abs(max) >= Mathf.Abs(min) ? 1f : -1f;
+    /// <remarks>
+    /// When the two ends are within <see cref="NearTieMargin"/> of each other, this axis carries no
+    /// reliable "which way is forward" signal on this particular mesh -- a spear's shaft is close to
+    /// round in cross-section, a double-headed battleaxe balances close to evenly about the grip --
+    /// and comparing anyway turns a coin flip into a wrong rotation. This is the exact mechanism
+    /// behind the battleaxe's reported "guitar" hold: its own long-axis extents, 0.750 and 0.806,
+    /// are 7% apart. Defaulting to +1 here is not a guess about that one model; it defers to whichever
+    /// side of the sign product in <see cref="Measure"/> -- donor or replacement -- is NOT a near tie,
+    /// since both sides of that product go through this same function independently.
+    /// </remarks>
+    private static float Reach(float min, float max)
+    {
+        var a = Mathf.Abs(min);
+        var b = Mathf.Abs(max);
+        var denominator = Mathf.Max(a, b);
+        if (denominator > 1e-9f && Mathf.Abs(a - b) / denominator < NearTieMargin) return 1f;
+        return b >= a ? 1f : -1f;
+    }
 
     /// <summary>The bounds extreme closest to the attach origin: where a held implement is gripped.</summary>
     private static float NearEnd(float min, float max) => Mathf.Abs(min) <= Mathf.Abs(max) ? min : max;
