@@ -43,6 +43,12 @@ def font(size: int, bold: bool = False):
     return ImageFont.load_default()
 
 
+def flat_data(image: Image.Image):
+    """Return pixels without Pillow 12's deprecated Image.getdata() path."""
+    getter = getattr(image, "get_flattened_data", None)
+    return getter() if getter is not None else image.getdata()
+
+
 def metrics(image: Image.Image):
     proxy = image.convert("RGBA").resize((GAMEPLAY, GAMEPLAY), Image.Resampling.LANCZOS)
     alpha = proxy.getchannel("A")
@@ -50,7 +56,7 @@ def metrics(image: Image.Image):
     bbox = mask.getbbox()
     if not bbox:
         return proxy, 0.0, 0.0, 0.0, 0.0
-    visible = [p for p, a in zip(proxy.convert("RGB").getdata(), alpha.getdata()) if a >= 96]
+    visible = [p for p, a in zip(flat_data(proxy.convert("RGB")), flat_data(alpha)) if a >= 96]
     luminance = [.2126*r + .7152*g + .0722*b for r, g, b in visible]
     opaque = len(visible)
     coverage = opaque / (GAMEPLAY * GAMEPLAY)
