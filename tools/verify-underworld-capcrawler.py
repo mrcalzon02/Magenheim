@@ -2,9 +2,9 @@
 """Acceptance gate for the authored Fungal Forest Capcrawler source asset."""
 from pathlib import Path
 import bpy
+from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]
 MODEL=ROOT/'assets/models/source/underworld-creature-capcrawler.blend'
-TEX=ROOT/'assets/textures/underworld/creatures/capcrawler'
 REQ_MATS={'CapcrawlerCarapace','CapcrawlerUnderside','CapcrawlerLegPlate','CapcrawlerMandible','CapcrawlerGill'}
 REQ_BONES={'Root','Body','Mandible_L','Mandible_R','AttackOrigin','HitCenter','GillFX'}
 for s in ('L','R'):
@@ -29,6 +29,27 @@ for o in meshes:
  mods=[m for m in o.modifiers if m.type=='ARMATURE' and m.object==arm]
  if len(mods)!=1: raise RuntimeError(f'{o.name}: armature binding broken')
  if not o.vertex_groups or not any(v.groups for v in o.data.vertices): raise RuntimeError(f'{o.name}: unweighted')
+# Silhouette/anatomy gate: preserve the low fungal shield identity instead of allowing
+# later edits to collapse this into a generic oval arthropod.
+def world_bounds(o):
+ pts=[o.matrix_world @ Vector(c) for c in o.bound_box]
+ return tuple(min(p[i] for p in pts) for i in range(3)),tuple(max(p[i] for p in pts) for i in range(3))
+def span(o):
+ lo,hi=world_bounds(o); return tuple(hi[i]-lo[i] for i in range(3))
+body=bpy.data.objects.get('Capcrawler_Body'); cap=bpy.data.objects.get('Capcrawler_Carapace')
+if not body or not cap: raise RuntimeError('Body/carapace anatomy missing')
+bw,bl,bh=span(body); cw,cl,ch=span(cap)
+if cw < bw*1.15 or cl < bl*1.05: raise RuntimeError(f'Carapace no longer overhangs body: cap={cw:.3f}x{cl:.3f}, body={bw:.3f}x{bl:.3f}')
+if ch > cw*.42: raise RuntimeError(f'Carapace too domed for low-crawler silhouette: {ch/cw:.2f}')
+gills=[o for o in meshes if o.name.startswith('Capcrawler_Gill_')]
+mandibles=[o for o in meshes if o.name.startswith('Capcrawler_Mandible_')]
+feet=[o for o in meshes if o.name.startswith('Capcrawler_') and o.name.endswith('B')]
+if len(gills)!=5 or len(mandibles)!=2 or len(feet)!=8: raise RuntimeError(f'Anatomy regression: gills={len(gills)} mandibles={len(mandibles)} distal_legs={len(feet)}')
+foot_z=[world_bounds(o)[0][2] for o in feet]
+if max(foot_z)-min(foot_z)>.025 or min(foot_z)<-.015 or max(foot_z)>.055: raise RuntimeError(f'Ground-contact regression: distal leg minima {min(foot_z):.3f}..{max(foot_z):.3f}m')
+all_lo=[world_bounds(o)[0] for o in meshes]; all_hi=[world_bounds(o)[1] for o in meshes]
+extent=(max(p[0] for p in all_hi)-min(p[0] for p in all_lo),max(p[1] for p in all_hi)-min(p[1] for p in all_lo),max(p[2] for p in all_hi)-min(p[2] for p in all_lo))
+if not (.80<=extent[0]<=1.00 and .80<=extent[1]<=1.10 and extent[2]<=.55): raise RuntimeError(f'Creature silhouette outside authored envelope: {extent}')
 mats={m.name:m for m in bpy.data.materials if m.name in REQ_MATS}
 if set(mats)!=REQ_MATS: raise RuntimeError('Material family incomplete')
 for name,m in mats.items():
@@ -44,4 +65,4 @@ for name,end in REQ_ACTIONS.items():
  if not a.fcurves: raise RuntimeError(f'{name}: no animation curves')
 for name in ('Capcrawler_Scuttle','Capcrawler_AttackFront','Capcrawler_Death'):
  if len(actions[name].fcurves)<6: raise RuntimeError(f'{name}: insufficient articulation')
-print(f'VERIFIED Capcrawler r3 source gate: meshes={len(meshes)} triangles={triangles} bones={len(bones)} materials={len(mats)} actions={len(REQ_ACTIONS)}',flush=True)
+print(f'VERIFIED Capcrawler r3 source gate: meshes={len(meshes)} triangles={triangles} bones={len(bones)} materials={len(mats)} actions={len(REQ_ACTIONS)} extent={extent}',flush=True)
