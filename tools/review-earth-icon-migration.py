@@ -50,6 +50,7 @@ def flat_data(image: Image.Image):
 
 
 def metrics(image: Image.Image):
+    """Measure exactly the same gameplay-visible pixels as verify-earth-assets.py."""
     proxy = image.convert("RGBA").resize((GAMEPLAY, GAMEPLAY), Image.Resampling.LANCZOS)
     alpha = proxy.getchannel("A")
     mask = alpha.point(lambda value: 255 if value >= 96 else 0)
@@ -62,7 +63,9 @@ def metrics(image: Image.Image):
     coverage = opaque / (GAMEPLAY * GAMEPLAY)
     left, top, right, bottom = bbox
     clearance = min(left, top, GAMEPLAY - right, GAMEPLAY - bottom) / GAMEPLAY
-    deviation = ImageStat.Stat(proxy.convert("L"), mask=alpha).stddev[0]
+    # Use the thresholded gameplay-visibility mask, not fractional antialias alpha. Otherwise
+    # translucent edge pixels influence sigma here while the authoritative verifier ignores them.
+    deviation = ImageStat.Stat(proxy.convert("L"), mask=mask).stddev[0]
     contrast = max(luminance) - min(luminance) if luminance else 0.0
     return proxy, coverage, clearance, contrast, deviation
 
