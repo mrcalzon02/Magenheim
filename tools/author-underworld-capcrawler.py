@@ -46,8 +46,11 @@ keep(organic('Capcrawler_Body',(0,0,.22),(.29,.38,.13),flesh,3),'Body')
 keep(organic('Capcrawler_Carapace',(0,-.015,.31),(.36,.43,.105),car,3),'Body')
 for side in (-1,1):
  s='L' if side<0 else 'R'
- for i,(y,z,sy) in enumerate(((-.24,.305,.105),(-.06,.326,.125),(.13,.320,.115)),1): keep(organic(f'Capcrawler_RimScute_{s}{i}',(side*.315,y,z),(.085,sy,.035),car,2),'Body')
-keep(organic('Capcrawler_CrownPlate',(0,-.285,.345),(.205,.105,.042),car,2),'Body')
+ # Rim scutes and crown are the creature's primary silhouette read.  Keep these
+ # armor surfaces at production density so their layered fungal edge survives
+ # gameplay-scale lighting instead of collapsing into smooth pebble shapes.
+ for i,(y,z,sy) in enumerate(((-.24,.305,.105),(-.06,.326,.125),(.13,.320,.115)),1): keep(organic(f'Capcrawler_RimScute_{s}{i}',(side*.315,y,z),(.085,sy,.035),car,3),'Body')
+keep(organic('Capcrawler_CrownPlate',(0,-.285,.345),(.205,.105,.042),car,3),'Body')
 for i,y in enumerate((-.24,-.08,.10,.26),1):
  for side in (-1,1):
   s='L' if side<0 else 'R'; hip=(side*.20,y,.22); knee=(side*.34,y+(i-2.5)*.018,.13); foot=(side*.43,y+(i-2.5)*.035,.035); toe=(side*.475,foot[1]+.008,.024)
