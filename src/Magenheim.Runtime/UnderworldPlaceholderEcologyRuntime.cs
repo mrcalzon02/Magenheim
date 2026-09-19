@@ -12,6 +12,8 @@ namespace Magenheim.Runtime;
 /// Donors are resolved from the running game and rebuilt as stripped render-only copies: no
 /// vanilla prefab identity is replaced, no vanilla meshes/textures are packaged by Magenheim,
 /// and no donor gameplay/network components are carried into the preview objects.
+/// Ecology consumes native Underworld instance coordinates only; Surface WorldGenerator state
+/// and hidden host-band coordinates are not ecology authority.
 /// </summary>
 internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
 {
@@ -37,11 +39,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         _nextAt = Time.unscaledTime + 3f;
         if (_services is null || ZNet.instance is null || ZNet.World is null) return;
 
-        // Host coordinates describe where Valheim may simulate the layer; they do not make an
-        // Underworld instance exist. Ecology is a gameplay consumer and therefore appears only
-        // after the shared lifecycle has completed admission. Releasing/faulted/inactive states
-        // clear disposable visuals immediately instead of leaving a second coordinate-based
-        // definition of instance availability behind.
         var lifecycle = _services.InstanceLifecycle;
         if (lifecycle.Phase != UnderworldInstancePhase.Active || lifecycle.Identity is null)
         {
@@ -66,19 +63,20 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         var player = Player.m_localPlayer;
         if (player is null) return;
 
+        // The active instance context owns this transform. Once admitted, these are native
+        // Underworld coordinates; ecology must never remap them through Surface geography.
+        var instancePosition = player.transform.position;
         var first = !string.Equals(_admitted, identity.DerivedWorldId, StringComparison.Ordinal);
-        if (!first && Vector3.Distance(player.transform.position, _lastBuildPosition) < RebuildDistance) return;
+        if (!first && Vector3.Distance(instancePosition, _lastBuildPosition) < RebuildDistance) return;
 
         _admitted = identity.DerivedWorldId;
-        _lastBuildPosition = player.transform.position;
-        BuildLocalPatch(player.transform.position, identity);
+        _lastBuildPosition = instancePosition;
+        BuildLocalPatch(instancePosition, identity);
     }
 
     private void BuildLocalPatch(Vector3 center, UnderworldWorldIdentity identity)
     {
         ClearMarkers();
-        var generator = WorldGenerator.instance;
-        if (generator is null) return;
 
         var seed = identity.DerivedSeed32 ^
             (Mathf.RoundToInt(center.x / 90f) * 73856093) ^
@@ -91,15 +89,13 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             var distance = 18f + (float)random.NextDouble() * 165f;
             var x = center.x + Mathf.Cos(angle) * distance;
             var z = center.z + Mathf.Sin(angle) * distance;
-            var surfaceBiome = generator.GetBiome(x, z);
-            var vanillaHeight = generator.GetBiomeHeight(surfaceBiome, x, z, out _);
-            var sample = UnderworldTerrainRuntime.SampleTerrain(x, z, vanillaHeight);
+            var sample = UnderworldTerrainRuntime.SampleInstanceTerrain(x, center.y, z);
             if (!sample.Admitted) continue;
             SpawnDonor(new Vector3(x, (float)sample.Height, z), sample.Biome, i + seed);
         }
 
         _log?.LogDebug(
-            $"Refreshed {_spawned.Count} vanilla-donor Underworld ecology objects near ({center.x:0},{center.z:0}).");
+            $"Refreshed {_spawned.Count} vanilla-donor Underworld ecology objects in instance space near ({center.x:0},{center.z:0}).");
     }
 
     private void SpawnDonor(Vector3 position, UnderworldTerrainBiome biome, int variant)
@@ -156,10 +152,7 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         return source;
     }
 
-    private GameObject? BuildVisualClone(
-        GameObject source,
-        UnderworldVanillaDonorCatalog.Donor donor,
-        int variant)
+    private GameObject? BuildVisualClone(GameObject source, UnderworldVanillaDonorCatalog.Donor donor, int variant)
     {
         var root = new GameObject($"Magenheim_UnderworldDonorVisual_{source.name}_{variant}");
         var transformMap = new Dictionary<Transform, Transform>();
@@ -180,16 +173,9 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         return root;
     }
 
-    private static void CopyNode(
-        Transform source,
-        Transform target,
-        bool copyTransform,
-        IDictionary<Transform, Transform> transformMap,
-        IDictionary<Renderer, Renderer> rendererMap,
-        ref int copiedRenderers)
+    private static void CopyNode(Transform source, Transform target, bool copyTransform, IDictionary<Transform, Transform> transformMap, IDictionary<Renderer, Renderer> rendererMap, ref int copiedRenderers)
     {
         transformMap[source] = target;
-
         if (copyTransform)
         {
             target.localPosition = source.localPosition;
@@ -204,7 +190,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         {
             var targetFilter = target.gameObject.AddComponent<MeshFilter>();
             targetFilter.sharedMesh = sourceFilter.sharedMesh;
-
             var targetRenderer = target.gameObject.AddComponent<MeshRenderer>();
             targetRenderer.sharedMaterials = sourceRenderer.sharedMaterials;
             targetRenderer.enabled = sourceRenderer.enabled;
@@ -238,30 +223,20 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         }
     }
 
-    private static void RebuildLodGroups(
-        GameObject source,
-        IReadOnlyDictionary<Transform, Transform> transformMap,
-        IReadOnlyDictionary<Renderer, Renderer> rendererMap)
+    private static void RebuildLodGroups(GameObject source, IReadOnlyDictionary<Transform, Transform> transformMap, IReadOnlyDictionary<Renderer, Renderer> rendererMap)
     {
         foreach (var sourceGroup in source.GetComponentsInChildren<LODGroup>(true))
         {
             if (!transformMap.TryGetValue(sourceGroup.transform, out var targetTransform)) continue;
             var sourceLods = sourceGroup.GetLODs();
             var targetLods = new LOD[sourceLods.Length];
-
             for (var i = 0; i < sourceLods.Length; i++)
             {
                 var mapped = new List<Renderer>();
                 foreach (var renderer in sourceLods[i].renderers)
-                    if (renderer is not null && rendererMap.TryGetValue(renderer, out var targetRenderer))
-                        mapped.Add(targetRenderer);
-
-                targetLods[i] = new LOD(sourceLods[i].screenRelativeTransitionHeight, mapped.ToArray())
-                {
-                    fadeTransitionWidth = sourceLods[i].fadeTransitionWidth
-                };
+                    if (renderer is not null && rendererMap.TryGetValue(renderer, out var targetRenderer)) mapped.Add(targetRenderer);
+                targetLods[i] = new LOD(sourceLods[i].screenRelativeTransitionHeight, mapped.ToArray()) { fadeTransitionWidth = sourceLods[i].fadeTransitionWidth };
             }
-
             var targetGroup = targetTransform.gameObject.AddComponent<LODGroup>();
             targetGroup.localReferencePoint = sourceGroup.localReferencePoint;
             targetGroup.size = sourceGroup.size;
@@ -285,8 +260,7 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
 
     private void ClearMarkers()
     {
-        foreach (var item in _spawned)
-            if (item) Destroy(item);
+        foreach (var item in _spawned) if (item) Destroy(item);
         _spawned.Clear();
     }
 
