@@ -1,5 +1,9 @@
 """Reproducible original meshes, painted texture atlases, and matching inventory icons.
 Requires Python 3 and Pillow. Outputs are checked in; no Python needed by players.
+
+Set MAGENHEIM_EARTH_OUTPUT_ROOT to stage generated files outside the repository. Model-backed
+legacy icon reconstruction always reads its authoritative mesh/atlas inputs from assets/earth, so
+a freshness check can regenerate into a temporary directory without overwriting its own sources.
 """
 import json
 import math
@@ -13,8 +17,10 @@ def flat(im):
     return list(reader() if reader else im.getdata())
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'assets' / 'earth'
+SOURCE = ROOT / 'assets' / 'earth'
+OUT = Path(os.environ.get('MAGENHEIM_EARTH_OUTPUT_ROOT', str(SOURCE))).resolve()
 OUT.mkdir(parents=True, exist_ok=True)
+STAGED = OUT != SOURCE.resolve()
 ICON_SIZE = max(256, int(os.environ.get('MAGENHEIM_EARTH_ICON_SIZE', '256')))
 PREVIEW_ICON_SIZE = max(ICON_SIZE, int(os.environ.get('MAGENHEIM_EARTH_PREVIEW_ICON_SIZE', str(ICON_SIZE))))
 GAMEPLAY_READABILITY_SIZE = 64
@@ -113,14 +119,8 @@ def render(points,faces,colors):
     return img
 
 def render_existing_model_icon(name):
-    """Re-author legacy workstation/process icons from their real mesh + painted atlas.
-
-    The mesh JSON is triangle-expanded, so each three triangle indices map directly to three UVs.
-    Sampling the painted atlas at each face's UV centroid preserves the authored material identity
-    while the common renderer gives these old assets the same framing and 256px detail budget as
-    the mineral family. This is intentionally not an upscale of the old 128px icon.
-    """
-    mesh=json.loads((OUT/f'{name}.mesh.json').read_text()); points=[tuple(p) for p in mesh['vertices']]; uvs=mesh['uv']; indices=mesh['triangles']; atlas=Image.open(OUT/f'{name}.png').convert('RGB'); w,h=atlas.size; faces=[]; colors=[]
+    """Re-author a legacy process icon from authoritative mesh + painted atlas inputs."""
+    mesh=json.loads((SOURCE/f'{name}.mesh.json').read_text()); points=[tuple(p) for p in mesh['vertices']]; uvs=mesh['uv']; indices=mesh['triangles']; atlas=Image.open(SOURCE/f'{name}.png').convert('RGB'); w,h=atlas.size; faces=[]; colors=[]
     for i in range(0,len(indices),3):
         f=tuple(indices[i:i+3]); faces.append(f); u=sum(uvs[j][0] for j in f)/3; v=sum(uvs[j][1] for j in f)/3; colors.append(atlas.getpixel((min(w-1,max(0,int(u*w))),min(h-1,max(0,int((1-v)*h))))))
     icon=render(points,faces,colors); validate_gameplay_icon(name,icon); icon.resize((ICON_SIZE,ICON_SIZE),Image.Resampling.LANCZOS).save(OUT/f'{name}.icon.png'); print(f'{name}: re-authored {ICON_SIZE}px icon from {len(faces)} authored mesh faces + atlas'); return icon
@@ -129,11 +129,13 @@ def main():
     names=['geode','rough','simple','crystal','advanced','master','shards']; icons=[]
     for i,name in enumerate(names):
         icon,count=emit(name,geode() if i==0 else crystal(i-1)); icons.append(icon); print(f'{name}: {count} triangles; mesh + OBJ + 512px atlas + {ICON_SIZE}px icon')
-    skill=icons[1].copy(); d=ImageDraw.Draw(skill); d.polygon([(105,95),(128,76),(365,353),(337,385)],fill=(113,81,47,255)); d.polygon([(312,321),(343,298),(402,373),(390,412),(354,397)],fill=(199,194,171,255)); validate_gameplay_icon('crystal-shaping',skill); skill.resize((ICON_SIZE,ICON_SIZE),Image.Resampling.LANCZOS).save(OUT/'crystal-shaping.icon.png'); skill.resize((256,256),Image.Resampling.LANCZOS).save(ROOT/'icon.png')
+    skill=icons[1].copy(); d=ImageDraw.Draw(skill); d.polygon([(105,95),(128,76),(365,353),(337,385)],fill=(113,81,47,255)); d.polygon([(312,321),(343,298),(402,373),(390,412),(354,397)],fill=(199,194,171,255)); validate_gameplay_icon('crystal-shaping',skill); skill.resize((ICON_SIZE,ICON_SIZE),Image.Resampling.LANCZOS).save(OUT/'crystal-shaping.icon.png')
+    if not STAGED: skill.resize((256,256),Image.Resampling.LANCZOS).save(ROOT/'icon.png')
     for legacy_name in LEGACY_MODEL_ICON_NAMES: render_existing_model_icon(legacy_name)
     sheet=Image.new('RGB',(1600,840),(28,31,30)); d=ImageDraw.Draw(sheet); body_font=font(26); title_font=font(44, bold=True); d.text((46,28),'MAGENHEIM / EARTH MINERALS',font=title_font,fill=(232,215,174)); d.text((48,88),'Original low-poly models, painted atlases, and inventory icons',font=body_font,fill=(153,162,151)); preview_size=PREVIEW_ICON_SIZE; display_size=min(270, preview_size)
     for i,(name,icon) in enumerate(zip(names+['Crystal Shaping'],icons+[skill])):
         x=30+(i%4)*395; y=155+(i//4)*330; preview=icon.resize((preview_size,preview_size),Image.Resampling.LANCZOS); preview=preview.resize((display_size,display_size),Image.Resampling.LANCZOS) if display_size != preview_size else preview; sheet.paste(preview,(x+48,y),preview); d.text((x+45,y+274),name.title(),font=body_font,fill=(228,216,188))
     sheet.save(OUT/'earth-content-preview.png')
+    print(f'Earth asset output: {OUT}' + (' (staged; authoritative inputs preserved)' if STAGED else ''))
 
 if __name__ == '__main__': main()
