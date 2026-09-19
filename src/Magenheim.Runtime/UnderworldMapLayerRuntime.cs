@@ -33,6 +33,21 @@ internal static class UnderworldMapLayerRuntime
         harmony.PatchAll(typeof(UnderworldMinimapAwakePatch));
     }
 
+    internal static bool IsUnderworldMapAvailable()
+    {
+        var services = _services;
+        if (services is null) return false;
+        var lifecycle = services.InstanceLifecycle;
+        if (lifecycle.Phase != UnderworldInstancePhase.Active || lifecycle.Identity is null) return false;
+        if (!services.TryResolveLocalSession(out var sessionIdentity, out _, out _, out _) || sessionIdentity is null) return false;
+        return SameIdentity(lifecycle.Identity, sessionIdentity);
+    }
+
+    private static bool SameIdentity(UnderworldWorldIdentity expected, UnderworldWorldIdentity actual) =>
+        string.Equals(expected.DerivedWorldId, actual.DerivedWorldId, StringComparison.Ordinal) &&
+        string.Equals(expected.ParentWorldId, actual.ParentWorldId, StringComparison.Ordinal) &&
+        string.Equals(expected.DerivedSeedFingerprint, actual.DerivedSeedFingerprint, StringComparison.Ordinal);
+
     internal static MagenheimMapLayer PlayerLayer()
     {
         var services = _services;
@@ -45,6 +60,7 @@ internal static class UnderworldMapLayerRuntime
 
     internal static void Select(MagenheimMapLayer layer)
     {
+        if (layer == MagenheimMapLayer.Underworld && !IsUnderworldMapAvailable()) layer = MagenheimMapLayer.Surface;
         if (_selectedLayer == layer) return;
         if (_selectedLayer == MagenheimMapLayer.Underworld && _underworldExploration is not null)
         {
@@ -61,9 +77,7 @@ internal static class UnderworldMapLayerRuntime
         state = null!;
         var services = _services;
         if (services is null || !services.TryResolveLocalSession(out var identity, out _, out var playerId, out _) || identity is null) return false;
-        var key = identity.ParentWorldId + "
-" + identity.DerivedSeedFingerprint + "
-" + playerId;
+        var key = identity.ParentWorldId + "\n" + identity.DerivedSeedFingerprint + "\n" + playerId;
         if (_underworldExploration is not null && string.Equals(_explorationIdentityKey, key, StringComparison.Ordinal))
         {
             state = _underworldExploration;
@@ -91,7 +105,7 @@ internal static class UnderworldMapLayerRuntime
     {
         if (radiusMeters < 0d || double.IsNaN(radiusMeters) || double.IsInfinity(radiusMeters)) throw new ArgumentOutOfRangeException(nameof(radiusMeters));
         var services = _services;
-        if (services is null || !UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, worldX, worldZ) || !TryGetUnderworldExploration(out var exploration)) return 0;
+        if (services is null || !IsUnderworldMapAvailable() || !UnderworldSpatialDomain.ContainsHostColumn(services.SpatialDomain, worldX, worldZ) || !TryGetUnderworldExploration(out var exploration)) return 0;
         var logical = UnderworldSpatialDomain.ToLogicalColumn(services.SpatialDomain, worldX, worldZ);
         var viewport = UnderworldMapPresentation.CreateUnderworldViewport(services.SpatialDomain, exploration.Width, exploration.Height);
         if (!UnderworldMapPresentation.TryLogicalToCell(viewport, logical.X, logical.Z, out var cellX, out var cellY)) return 0;
@@ -112,6 +126,7 @@ internal static class UnderworldMapLayerRuntime
     internal static bool TryProjectWorldToSelectedMap(double worldX, double worldZ, out MagenheimMapPoint point)
     {
         var services = _services;
+        if (_selectedLayer == MagenheimMapLayer.Underworld && !IsUnderworldMapAvailable()) { point = default; return false; }
         if (services is null) { point = new MagenheimMapPoint(worldX, worldZ); return _selectedLayer == MagenheimMapLayer.Surface; }
         try { point = UnderworldMapProjection.WorldToLayer(services.SpatialDomain, _selectedLayer, worldX, worldZ); return true; }
         catch (InvalidOperationException) { point = default; return false; }
@@ -120,6 +135,7 @@ internal static class UnderworldMapLayerRuntime
     internal static bool TryProjectSelectedMapToWorld(double mapX, double mapZ, out MagenheimMapPoint point)
     {
         var services = _services;
+        if (_selectedLayer == MagenheimMapLayer.Underworld && !IsUnderworldMapAvailable()) { point = default; return false; }
         if (services is null) { point = new MagenheimMapPoint(mapX, mapZ); return _selectedLayer == MagenheimMapLayer.Surface; }
         try { point = UnderworldMapProjection.LayerToWorld(services.SpatialDomain, _selectedLayer, mapX, mapZ); return true; }
         catch (InvalidOperationException) { point = default; return false; }
@@ -162,10 +178,6 @@ internal static class UnderworldExplorationPlayerPatch
             var physicalLayer = UnderworldMapLayerRuntime.PlayerLayer();
             if (_lastPhysicalLayer == MagenheimMapLayer.Underworld && physicalLayer != MagenheimMapLayer.Underworld)
             {
-                // Selected map tabs are intentionally independent from the player's physical layer.
-                // Persist against the physical transition itself so walking/teleporting out cannot
-                // strand up to a persistence interval of discoveries merely because the player left
-                // the Underworld map tab selected.
                 if (_dirty && UnderworldMapLayerRuntime.SaveUnderworldExploration()) _dirty = false;
                 _nextPersistenceAt = now + PersistenceIntervalSeconds;
             }
