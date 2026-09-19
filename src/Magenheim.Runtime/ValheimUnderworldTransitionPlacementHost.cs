@@ -72,9 +72,11 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
     {
         if (identity is null) throw new ArgumentNullException(nameof(identity));
         if (anchor is null) throw new ArgumentNullException(nameof(anchor));
-        if (!double.IsFinite(anchor.X) || !double.IsFinite(anchor.Y) || !double.IsFinite(anchor.Z) || !double.IsFinite(anchor.HeadingDegrees))
+        if (!Finite(anchor.X) || !Finite(anchor.Y) || !Finite(anchor.Z) || !Finite(anchor.HeadingDegrees))
             throw new InvalidOperationException("Transition anchor contains non-finite instance coordinates.");
     }
+
+    private static bool Finite(double value) => !double.IsNaN(value) && !double.IsInfinity(value);
 
     private static float NormalizeHeading(float heading)
     {
