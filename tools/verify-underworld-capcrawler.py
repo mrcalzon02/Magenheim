@@ -14,23 +14,22 @@ if not MODEL.exists(): raise RuntimeError(f'Missing model: {MODEL}')
 bpy.ops.wm.open_mainfile(filepath=str(MODEL)); sc=bpy.context.scene
 if sc.get('magenheim_model_id')!='underworld-creature-capcrawler': raise RuntimeError('Wrong model identity')
 if sc.get('magenheim_host_rig')!='HOST-LOW-CRAWLER': raise RuntimeError('Wrong host rig')
-if sc.get('magenheim_fidelity')!='production-creature-r3': raise RuntimeError('Expected production-creature-r3')
+if sc.get('magenheim_fidelity')!='production-creature-r4': raise RuntimeError('Expected production-creature-r4')
+if sc.get('magenheim_carapace_language')!='layered-fungal-rim-scutes+crown': raise RuntimeError('Layered fungal carapace contract missing')
 arms=[o for o in sc.objects if o.type=='ARMATURE']
 if len(arms)!=1: raise RuntimeError(f'Expected one armature, found {len(arms)}')
 arm=arms[0]; bones=set(arm.data.bones.keys()); missing=REQ_BONES-bones
 if missing: raise RuntimeError('Missing bones: '+', '.join(sorted(missing)))
 meshes=[o for o in sc.objects if o.type=='MESH']
-if len(meshes)<30: raise RuntimeError(f'Detail regression: {len(meshes)} meshes')
+if len(meshes)<37: raise RuntimeError(f'Detail regression: {len(meshes)} meshes')
 triangles=sum(len(p.vertices)-2 for o in meshes for p in o.data.polygons)
-if triangles<4500: raise RuntimeError(f'Source detail floor missed: {triangles} triangles')
+if triangles<5000: raise RuntimeError(f'Source detail floor missed: {triangles} triangles')
 for o in meshes:
  uv=o.data.uv_layers.get('CapcrawlerUV')
  if not uv or len(uv.data)!=len(o.data.loops): raise RuntimeError(f'{o.name}: explicit UV contract broken')
  mods=[m for m in o.modifiers if m.type=='ARMATURE' and m.object==arm]
  if len(mods)!=1: raise RuntimeError(f'{o.name}: armature binding broken')
  if not o.vertex_groups or not any(v.groups for v in o.data.vertices): raise RuntimeError(f'{o.name}: unweighted')
-# Silhouette/anatomy gate: preserve the low fungal shield identity instead of allowing
-# later edits to collapse this into a generic oval arthropod.
 def world_bounds(o):
  pts=[o.matrix_world @ Vector(c) for c in o.bound_box]
  return tuple(min(p[i] for p in pts) for i in range(3)),tuple(max(p[i] for p in pts) for i in range(3))
@@ -41,10 +40,16 @@ if not body or not cap: raise RuntimeError('Body/carapace anatomy missing')
 bw,bl,bh=span(body); cw,cl,ch=span(cap)
 if cw < bw*1.15 or cl < bl*1.05: raise RuntimeError(f'Carapace no longer overhangs body: cap={cw:.3f}x{cl:.3f}, body={bw:.3f}x{bl:.3f}')
 if ch > cw*.42: raise RuntimeError(f'Carapace too domed for low-crawler silhouette: {ch/cw:.2f}')
-gills=[o for o in meshes if o.name.startswith('Capcrawler_Gill_')]
-mandibles=[o for o in meshes if o.name.startswith('Capcrawler_Mandible_')]
-feet=[o for o in meshes if o.name.startswith('Capcrawler_') and o.name.endswith('B')]
+gills=[o for o in meshes if o.name.startswith('Capcrawler_Gill_')]; mandibles=[o for o in meshes if o.name.startswith('Capcrawler_Mandible_')]; feet=[o for o in meshes if o.name.startswith('Capcrawler_') and o.name.endswith('B')]; scutes=[o for o in meshes if o.name.startswith('Capcrawler_RimScute_')]; crown=bpy.data.objects.get('Capcrawler_CrownPlate')
 if len(gills)!=5 or len(mandibles)!=2 or len(feet)!=8: raise RuntimeError(f'Anatomy regression: gills={len(gills)} mandibles={len(mandibles)} distal_legs={len(feet)}')
+if len(scutes)!=6 or not crown: raise RuntimeError(f'Layered armor regression: rim_scutes={len(scutes)} crown={bool(crown)}')
+# Scutes must remain bilateral and visibly outside the soft body, not collapse into decorative bumps.
+for side,sign in (('L',-1),('R',1)):
+ side_scutes=[o for o in scutes if f'_{side}' in o.name]
+ if len(side_scutes)!=3: raise RuntimeError(f'{side} fungal rim incomplete')
+ centers=[(world_bounds(o)[0][0]+world_bounds(o)[1][0])*.5 for o in side_scutes]
+ if sign<0 and max(centers)>-bw*.40: raise RuntimeError('Left rim scutes collapsed into body')
+ if sign>0 and min(centers)<bw*.40: raise RuntimeError('Right rim scutes collapsed into body')
 foot_z=[world_bounds(o)[0][2] for o in feet]
 if max(foot_z)-min(foot_z)>.025 or min(foot_z)<-.015 or max(foot_z)>.055: raise RuntimeError(f'Ground-contact regression: distal leg minima {min(foot_z):.3f}..{max(foot_z):.3f}m')
 all_lo=[world_bounds(o)[0] for o in meshes]; all_hi=[world_bounds(o)[1] for o in meshes]
@@ -65,4 +70,4 @@ for name,end in REQ_ACTIONS.items():
  if not a.fcurves: raise RuntimeError(f'{name}: no animation curves')
 for name in ('Capcrawler_Scuttle','Capcrawler_AttackFront','Capcrawler_Death'):
  if len(actions[name].fcurves)<6: raise RuntimeError(f'{name}: insufficient articulation')
-print(f'VERIFIED Capcrawler r3 source gate: meshes={len(meshes)} triangles={triangles} bones={len(bones)} materials={len(mats)} actions={len(REQ_ACTIONS)} extent={extent}',flush=True)
+print(f'VERIFIED Capcrawler r4 source gate: meshes={len(meshes)} triangles={triangles} bones={len(bones)} materials={len(mats)} actions={len(REQ_ACTIONS)} extent={extent} layered_armor=7',flush=True)
