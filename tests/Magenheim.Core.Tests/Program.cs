@@ -12,6 +12,7 @@ internal static class Program
     {
         _assertions += UnderworldInstanceContractTests.Run();
         _assertions += UnderworldInstanceTerrainDomainTests.Run();
+        _assertions += UnderworldInstanceChunkTests.Run();
         _assertions += UnderworldFloraTests.Run();
         RefinementAndAreaBoundaries();
         WorldgenCompatibilityBoundaries();
