@@ -1,4 +1,4 @@
 {
-  "version": "0.0.78",
-  "description": "0.0.78: Battleaxe, spear, mace and the crossbow's sign now match the confirmed-correct axe/greatsword/bow rotation. Root cause: bounds ranking treated near-symmetric shapes' own measurement noise as decisive. Greatsword crystal reshaped, flatter."
+  "version": "0.0.79",
+  "description": "0.0.79: Four Crystal-tier staves (Fire/Storm/Radiance/Venom) were built back-to-front, head at the grip end -- found by direct icon inspection, fixed at the source. Weapon icons refreshed to match the reshaped greatsword."
 }
