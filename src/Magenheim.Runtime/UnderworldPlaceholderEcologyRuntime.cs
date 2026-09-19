@@ -37,10 +37,26 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         _nextAt = Time.unscaledTime + 3f;
         if (_services is null || ZNet.instance is null || ZNet.World is null) return;
 
+        // Host coordinates describe where Valheim may simulate the layer; they do not make an
+        // Underworld instance exist. Ecology is a gameplay consumer and therefore appears only
+        // after the shared lifecycle has completed admission. Releasing/faulted/inactive states
+        // clear disposable visuals immediately instead of leaving a second coordinate-based
+        // definition of instance availability behind.
+        var lifecycle = _services.InstanceLifecycle;
+        if (lifecycle.Phase != UnderworldInstancePhase.Active || lifecycle.Identity is null)
+        {
+            ClearMarkers();
+            _admitted = string.Empty;
+            return;
+        }
+
         if (!UnderworldRuntimeIdentityResolver.TryResolveWorldSession(
                 _services.SpatialDomain, ZNet.instance, ZNet.World,
                 out var identity, out var layer, out _) ||
-            identity is null || layer != UnderworldLayer.Underworld)
+            identity is null || layer != UnderworldLayer.Underworld ||
+            !string.Equals(identity.DerivedWorldId, lifecycle.Identity.DerivedWorldId, StringComparison.Ordinal) ||
+            !string.Equals(identity.ParentWorldId, lifecycle.Identity.ParentWorldId, StringComparison.Ordinal) ||
+            !string.Equals(identity.DerivedSeedFingerprint, lifecycle.Identity.DerivedSeedFingerprint, StringComparison.Ordinal))
         {
             ClearMarkers();
             _admitted = string.Empty;
