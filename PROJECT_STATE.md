@@ -417,3 +417,44 @@ Current live gates include:
 3. validate runtime area semantics and repeated-load additive worldgen idempotence;
 4. re-run the outstanding geode/workstation live visual gates;
 5. continue persistence validation through save/load, inventory movement/storage, equipment repair/upgrade, death, transfer, and dedicated-server flows.
+
+---
+
+## Open issues logged 2026-09-18 (0.0.77 installed and field-tested)
+
+Sections above this line predate 0.0.38 and are stale; this block is current.
+
+### Held-model orientation — measured, not fixed
+See [docs/validation/2026-09-18-held-model-orientation-field-report.md](docs/validation/2026-09-18-held-model-orientation-field-report.md)
+for the attach-space frames and the analysis. In short: battleaxe now reads as held "like a guitar"
+(0.0.75 traded upside-down for a different wrong orientation), spear is gripped too near the head,
+and the crossbow's `ForwardAxisOverride` declares axis 1 when the measurement says 2. Five weapons
+sit at exactly (90,0,0) and are all correct; every reported failure sits somewhere else, which says
+bounds ranking is unstable on the two axes perpendicular to the weapon. Those five are the
+regression test for any change.
+
+### Crystal placeable surfaces — shipped 0.0.77, unconfirmed
+Foundations, beams, dais and hearth export with no texture as of 0.0.77 and are classified at load
+from each material's own semantic. Not yet looked at in game. If a piece is wrong in a *new* way
+rather than the old flat speckle, the classifier is choosing badly and the material name is the
+place to correct it.
+
+### Geode size and lean — shipped 0.0.76, only visible in fresh terrain
+`m_syncInitialScale` gates both the read and the write of the ZDO scale, so geodes in
+already-generated zones have no stored scale and stay at 1.0 and upright permanently. Only terrain
+generated on 0.0.76 or later will show the variation.
+
+### Smaller open items
+- **HUD `IndexOutOfRangeException`** in `InventoryGui.SetupRequirement` via `Hud.SetupPieceInfo`,
+  fires every frame while a piece with four requirements is selected on the build hammer. Cosmetic
+  but it floods the log. Seen on the Rainbow Crystal Foundation 2x2m (Stone/Crystal/Iron/Stonecutter).
+- **`enemy-stone-guardian`** carries two inverted triangles in `Guardian_ArmorChip_1`. They come
+  from a modifier, so recalculating normals on the source mesh does not remove them. The payload is
+  excluded from the shipped set and nothing references it; fix the winding before wiring it up.
+- **`underworld-creature-sporeling`** likewise has a source but no runtime consumer.
+- **8 orphaned texture files** under `assets/models/textures/`, left in place deliberately. Includes
+  the `magenheim.surface.*` bakes, whose content hashes are the denylist in
+  `tools/verify-no-baked-surfaces.py` — do not delete those without updating that gate's reasoning.
+- Backlog carried forward: staggered staff burst cadence, geode interior biome colouring, per-layer
+  map state, Underworld sky, magenta Deep Gate, layer-travel caller, undefined
+  `$magenheim_deep_gate` map-pin token, installer never prunes stale files.
