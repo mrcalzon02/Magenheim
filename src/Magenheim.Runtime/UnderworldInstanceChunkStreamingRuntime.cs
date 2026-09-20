@@ -18,7 +18,7 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
     private readonly UnderworldInstanceChunkGrid _grid;
     private readonly ManualLogSource _log;
     private readonly Dictionary<UnderworldInstanceChunkKey, UnderworldInstanceChunkSample> _loaded = new();
-    private string? _loadedInstanceId;
+    private string? _loadedInstanceKey;
 
     internal UnderworldInstanceChunkStreamingRuntime(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -47,9 +47,13 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
             return false;
         }
 
-        if (_loadedInstanceId is not null && !string.Equals(_loadedInstanceId, identity.DerivedWorldId, StringComparison.Ordinal))
+        // Chunk coordinates are instance-local and therefore cannot establish ownership by themselves.
+        // Bind residency to the complete paired-world identity so a session handoff can never reuse
+        // samples generated for a different parent/derived seed merely because its DerivedWorldId matches.
+        var instanceKey = InstanceKey(identity);
+        if (_loadedInstanceKey is not null && !string.Equals(_loadedInstanceKey, instanceKey, StringComparison.Ordinal))
             Clear();
-        _loadedInstanceId = identity.DerivedWorldId;
+        _loadedInstanceKey = instanceKey;
 
         var requiredSet = new HashSet<UnderworldInstanceChunkKey>();
         foreach (var focus in focuses)
@@ -86,7 +90,10 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
     {
         if (_loaded.Count > 0) _log.LogDebug($"Released {_loaded.Count} native Underworld chunk payload(s).");
         _loaded.Clear();
-        _loadedInstanceId = null;
+        _loadedInstanceKey = null;
         _services.ChunkMaterializer.Reconcile();
     }
+
+    private static string InstanceKey(UnderworldWorldIdentity identity) =>
+        identity.ParentWorldId + "\n" + identity.DerivedWorldId + "\n" + identity.DerivedSeedFingerprint;
 }
