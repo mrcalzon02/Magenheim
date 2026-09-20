@@ -90,15 +90,11 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         GameObject? candidate = null;
         try
         {
-            var wasRecorded = _services.GeneratedObjectStateStore.IsRecorded(identity, UnderworldWorldCenterRegistrar.GeneratedObjectKind);
             candidate = UnderworldWorldCenterRegistrar.Create(identity, _log);
-            var znet = ZNet.instance;
-            if (znet is not null && znet.IsServer() && !wasRecorded)
-                _services.GeneratedObjectStateStore.RecordGenerated(identity, UnderworldWorldCenterRegistrar.GeneratedObjectKind);
             _worldCenter = candidate;
             candidate = null;
             _worldCenterInstanceKey = instanceKey;
-            _log.LogInfo($"{(wasRecorded ? "Restored" : "Generated")} Underworld world center for instance '{identity.DerivedWorldId}' through native generated-object registry.");
+            _log.LogInfo($"Composed Underworld world center for instance '{identity.DerivedWorldId}'.");
         }
         catch (Exception exception)
         {
