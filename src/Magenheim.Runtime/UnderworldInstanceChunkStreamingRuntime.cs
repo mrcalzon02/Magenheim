@@ -91,10 +91,9 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
                 _loaded.Add(key, UnderworldInstanceChunkSampler.Sample(_grid, key, identity.DerivedSeed32, waterLevel));
 
         _services.ChunkMaterializer.Reconcile();
-        // Structures consume the exact same resident native chunk set as terrain. They are admitted
-        // only after terrain payload/materialization exists, so placement height and biome authority
-        // cannot race a chunk that has not yet been admitted into the derived instance.
-        _services.FungalStructureResidency.Reconcile();
+        // Every registered family consumes this exact derived-instance resident set after terrain
+        // materialization, preventing structure placement from racing or escaping native chunk authority.
+        _services.BiomeStructureResidency.Reconcile();
         return true;
     }
 
@@ -103,7 +102,7 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
 
     internal void Clear()
     {
-        _services.FungalStructureResidency.Clear();
+        _services.BiomeStructureResidency.Clear();
         if (_loaded.Count > 0) _log.LogDebug($"Released {_loaded.Count} native Underworld chunk payload(s).");
         _loaded.Clear();
         _loadedInstanceKey = null;
