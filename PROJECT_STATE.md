@@ -32,6 +32,13 @@ Build: 38,327 Core assertions, 282 model assets imported twice, zero warnings an
 Harmony patch targets, 15 literal plus 42 helper-wrapped reflection bindings, 20 assembly references
 all resolvable, 67 generated files matching their generators.
 
+0.0.85 is installed and SHA-256 verified in the active Central Fuckery profile:
+`Magenheim.dll` `22CE1BB22CEA72CB0284AC2D4277AFA61E722D2F7913B8DE18D9279ABFA0C7D7`. The launcher
+entry reads back as `Magenheim v0.0.85 by Local (enabled)` with the 0.0.85 description. Prior
+payload backup `backups/Local-Magenheim-20260919-223215.zip`; catalog backup
+`backups/mods-20260919-223228-880.yml`. Other mods, profile settings and enablement are unchanged.
+This is verified catalog data, not an observed launcher UI and not a game start.
+
 **Nothing here is runtime-accepted.** The game has not been launched against 0.0.85. Specifically
 unverified in play: that the Structural Crystal's model and icon read correctly in the inventory and
 on the ground, that the eight fusing recipes appear at the Geologist's Workstation, and that all
