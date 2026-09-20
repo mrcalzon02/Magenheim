@@ -19,7 +19,6 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     private long? _observedWorldUid;
     private GameObject? _worldCenter;
     private string? _worldCenterInstanceKey;
-    private string? _gameplayAuthorityFingerprint;
     private float _nextBoonReconcileAt;
 
     internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
@@ -32,14 +31,6 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         _deepGateRegistrar.Register();
         _deepGateLocationRegistrar = new UnderworldDeepGateLocationRegistrar(log);
         _deepGateLocationRegistrar.Register();
-    }
-
-    internal void SetGameplayAuthorityFingerprint(string fingerprint)
-    {
-        if (string.IsNullOrWhiteSpace(fingerprint)) throw new ArgumentException("Gameplay authority fingerprint is required.", nameof(fingerprint));
-        if (_gameplayAuthorityFingerprint is not null && !string.Equals(_gameplayAuthorityFingerprint, fingerprint, StringComparison.Ordinal))
-            throw new InvalidOperationException("Underworld session lifecycle gameplay authority cannot change while the plugin is active.");
-        _gameplayAuthorityFingerprint = fingerprint;
     }
 
     private void Update()
