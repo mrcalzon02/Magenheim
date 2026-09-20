@@ -13,14 +13,13 @@ internal sealed class UnderworldRuntimeServices
         UnderworldInstanceTerrainDomain terrainDomain,
         UnderworldDeepBoonSelectionStore deepBoonSelectionStore,
         UnderworldExplorationStateStore explorationStateStore,
-        UnderworldGeneratedObjectStateStore generatedObjectStateStore,
         UnderworldInstanceLifecycle instanceLifecycle,
         ValheimUnderworldWorldContextController worldContext,
         ManualLogSource log)
     {
-        TerrainDomain=terrainDomain;DeepBoonSelectionStore=deepBoonSelectionStore;ExplorationStateStore=explorationStateStore;GeneratedObjectStateStore=generatedObjectStateStore;InstanceLifecycle=instanceLifecycle;
+        TerrainDomain=terrainDomain;DeepBoonSelectionStore=deepBoonSelectionStore;ExplorationStateStore=explorationStateStore;InstanceLifecycle=instanceLifecycle;
         _worldContext=worldContext;
-        StructureAdmission=new UnderworldStructureAdmissionController(generatedObjectStateStore,log);
+        StructureAdmission=new UnderworldStructureAdmissionController(log);
         ChunkStreaming=new UnderworldInstanceChunkStreamingRuntime(this,log);
         ChunkMaterializer=new UnderworldInstanceChunkMaterializer(this,log);
         FungalStructureResidency=new UnderworldFungalStructureResidencyRuntime(this);
@@ -29,7 +28,6 @@ internal sealed class UnderworldRuntimeServices
     internal UnderworldInstanceTerrainDomain TerrainDomain{get;}
     internal UnderworldDeepBoonSelectionStore DeepBoonSelectionStore{get;}
     internal UnderworldExplorationStateStore ExplorationStateStore{get;}
-    internal UnderworldGeneratedObjectStateStore GeneratedObjectStateStore{get;}
     internal UnderworldInstanceLifecycle InstanceLifecycle{get;}
     internal UnderworldStructureAdmissionController StructureAdmission{get;}
     internal UnderworldInstanceChunkStreamingRuntime ChunkStreaming{get;}
@@ -44,10 +42,9 @@ internal sealed class UnderworldRuntimeServices
         var terrainDomain=UnderworldInstanceTerrainDomain.CreateDefault();
         var deepBoonSelectionStore=new UnderworldDeepBoonSelectionStore(Path.Combine(root,"underworld-deep-boon-selections"),log);
         var explorationStateStore=new UnderworldExplorationStateStore(Path.Combine(root,"underworld-exploration"),log);
-        var generatedObjectStateStore=new UnderworldGeneratedObjectStateStore(Path.Combine(root,"underworld-generated-objects"),log);
         var instanceLifecycle=new UnderworldInstanceLifecycle();
         var worldContext=new ValheimUnderworldWorldContextController(log);
-        var services=new UnderworldRuntimeServices(terrainDomain,deepBoonSelectionStore,explorationStateStore,generatedObjectStateStore,instanceLifecycle,worldContext,log);
+        var services=new UnderworldRuntimeServices(terrainDomain,deepBoonSelectionStore,explorationStateStore,instanceLifecycle,worldContext,log);
         UnderworldTerrainRuntime.Configure(services,log);
         return services;
     }
