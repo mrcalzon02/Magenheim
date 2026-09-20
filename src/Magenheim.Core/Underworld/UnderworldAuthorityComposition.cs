@@ -7,33 +7,31 @@ namespace Magenheim.Core.Underworld;
 
 /// <summary>
 /// Canonical gameplay-significant Underworld authority envelope. Runtime Underworld
-/// mutation must use this composite fingerprint rather than synchronizing content and
-/// construction authority independently. SpatialDomain is retained only as a validated
-/// legacy engine-adapter input while the obsolete host-band adapter is being removed;
-/// its host coordinates are explicitly not gameplay or instance identity authority.
+/// mutation must use this composite fingerprint rather than synchronizing content,
+/// construction and native terrain authority independently.
 /// </summary>
 public sealed record UnderworldAuthoritySnapshot(
     int SchemaVersion,
     UnderworldDefinitionSet Content,
     UnderworldArchitectureDefinitionSet Architecture,
-    UnderworldSpatialDomainDefinition SpatialDomain,
+    UnderworldInstanceTerrainDomain TerrainDomain,
     string Fingerprint);
 
 public static class UnderworldAuthorityComposer
 {
-    public const int CurrentSchemaVersion = 3;
+    public const int CurrentSchemaVersion = 4;
 
     public static UnderworldAuthoritySnapshot Compose(
         UnderworldDefinitionSet content,
         UnderworldArchitectureDefinitionSet architecture,
-        UnderworldSpatialDomainDefinition spatialDomain)
+        UnderworldInstanceTerrainDomain terrainDomain)
     {
         if (content is null)
             throw new ArgumentNullException(nameof(content));
         if (architecture is null)
             throw new ArgumentNullException(nameof(architecture));
-        if (spatialDomain is null)
-            throw new ArgumentNullException(nameof(spatialDomain));
+        if (terrainDomain is null)
+            throw new ArgumentNullException(nameof(terrainDomain));
         if (content.SchemaVersion != UnderworldDefinitionValidator.CurrentSchemaVersion)
             throw new InvalidOperationException(
                 $"Unsupported Underworld content schema {content.SchemaVersion}.");
@@ -41,9 +39,13 @@ public static class UnderworldAuthorityComposer
             throw new InvalidOperationException(
                 $"Unsupported Underworld architecture schema {architecture.SchemaVersion}.");
 
-        // Validate legacy adapter data while it still exists, but never let hidden Surface host
-        // coordinates define the dedicated Underworld instance's gameplay authority.
-        UnderworldSpatialDomain.ValidateDefinition(spatialDomain);
+        var validatedTerrainDomain = UnderworldInstanceTerrainDomain.ValidateAndFreeze(
+            terrainDomain.RadiusMeters,
+            terrainDomain.MinimumY,
+            terrainDomain.MaximumY);
+        if (validatedTerrainDomain != terrainDomain)
+            throw new InvalidOperationException("Underworld native terrain domain must be canonical.");
+
         RequireSha256(content.Fingerprint, "Underworld content fingerprint");
         RequireSha256(architecture.Fingerprint, "Underworld architecture fingerprint");
 
@@ -51,19 +53,23 @@ public static class UnderworldAuthorityComposer
             CurrentSchemaVersion,
             content,
             architecture,
-            spatialDomain,
-            ComputeFingerprint(content.Fingerprint, architecture.Fingerprint));
+            terrainDomain,
+            ComputeFingerprint(content.Fingerprint, architecture.Fingerprint, terrainDomain));
     }
 
     private static string ComputeFingerprint(
         string contentFingerprint,
-        string architectureFingerprint)
+        string architectureFingerprint,
+        UnderworldInstanceTerrainDomain terrainDomain)
     {
         var payload = new StringBuilder()
             .Append("underworld-authority-schema=").Append(CurrentSchemaVersion).Append('\n')
             .Append("instance-contract=").Append(UnderworldInstanceContract.ContractId).Append('\n')
             .Append("content=").Append(contentFingerprint).Append('\n')
             .Append("architecture=").Append(architectureFingerprint).Append('\n')
+            .Append("terrain-radius=").Append(Canonical(terrainDomain.RadiusMeters)).Append('\n')
+            .Append("terrain-min-y=").Append(Canonical(terrainDomain.MinimumY)).Append('\n')
+            .Append("terrain-max-y=").Append(Canonical(terrainDomain.MaximumY)).Append('\n')
             .ToString();
 
         using var sha256 = SHA256.Create();
@@ -73,6 +79,9 @@ public static class UnderworldAuthorityComposer
             result.Append(value.ToString("x2", CultureInfo.InvariantCulture));
         return result.ToString();
     }
+
+    private static string Canonical(double value) =>
+        value.ToString("R", CultureInfo.InvariantCulture);
 
     private static void RequireSha256(string value, string field)
     {
