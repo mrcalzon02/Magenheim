@@ -26,6 +26,8 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
     private Vector3 _lastBuildPosition;
     private float _nextAt;
     private const float RebuildDistance = 180f;
+    private const int EcologyClusterCount = 8;
+    private const int PlacementsPerCluster = 7;
 
     internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -47,8 +49,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             return;
         }
 
-        // Layer comes only from the explicit instance-context authority now, never inferred from
-        // position/domain -- TryResolveWorldSession(domain, znet, world, ...) no longer exists.
         if (!_services.TryResolveLocalSession(out var identity, out var layer, out _, out _) ||
             identity is null || layer != UnderworldLayer.Underworld ||
             !string.Equals(identity.DerivedWorldId, lifecycle.Identity.DerivedWorldId, StringComparison.Ordinal) ||
@@ -63,8 +63,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         var player = Player.m_localPlayer;
         if (player is null) return;
 
-        // The active instance context owns this transform. Once admitted, these are native
-        // Underworld coordinates; ecology must never remap them through Surface geography.
         var instancePosition = player.transform.position;
         var first = !string.Equals(_admitted, identity.DerivedWorldId, StringComparison.Ordinal);
         if (!first && Vector3.Distance(instancePosition, _lastBuildPosition) < RebuildDistance) return;
@@ -83,20 +81,48 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             (Mathf.RoundToInt(center.z / 90f) * 19349663);
         var random = new System.Random(seed);
 
-        for (var i = 0; i < 56; i++)
+        // Compose ecology as deterministic local communities rather than a uniform point cloud.
+        // The anchor biome controls cluster character; individual placements must remain admitted
+        // and in that same biome so groves/outcrops do not smear across native biome boundaries.
+        for (var cluster = 0; cluster < EcologyClusterCount; cluster++)
         {
-            var angle = (float)(random.NextDouble() * Math.PI * 2d);
-            var distance = 18f + (float)random.NextDouble() * 165f;
-            var x = center.x + Mathf.Cos(angle) * distance;
-            var z = center.z + Mathf.Sin(angle) * distance;
-            var sample = UnderworldTerrainRuntime.SampleInstanceTerrain(x, center.y, z);
-            if (!sample.Admitted) continue;
-            SpawnDonor(new Vector3(x, (float)sample.Height, z), sample.Biome, i + seed);
+            var anchorAngle = (float)(random.NextDouble() * Math.PI * 2d);
+            var anchorDistance = 24f + (float)random.NextDouble() * 145f;
+            var anchorX = center.x + Mathf.Cos(anchorAngle) * anchorDistance;
+            var anchorZ = center.z + Mathf.Sin(anchorAngle) * anchorDistance;
+            var anchor = UnderworldTerrainRuntime.SampleInstanceTerrain(anchorX, center.y, anchorZ);
+            if (!anchor.Admitted) continue;
+
+            var radius = ClusterRadius(anchor.Biome);
+            for (var member = 0; member < PlacementsPerCluster; member++)
+            {
+                var angle = (float)(random.NextDouble() * Math.PI * 2d);
+                // sqrt gives area-uniform distribution inside the cluster while preserving a
+                // strong visual center instead of the former world-scale uniform scatter.
+                var distance = Mathf.Sqrt((float)random.NextDouble()) * radius;
+                var x = anchorX + Mathf.Cos(angle) * distance;
+                var z = anchorZ + Mathf.Sin(angle) * distance;
+                var sample = UnderworldTerrainRuntime.SampleInstanceTerrain(x, center.y, z);
+                if (!sample.Admitted || sample.Biome != anchor.Biome) continue;
+                var variant = seed + cluster * 101 + member * 17;
+                SpawnDonor(new Vector3(x, (float)sample.Height, z), sample.Biome, variant);
+            }
         }
 
         _log?.LogDebug(
-            $"Refreshed {_spawned.Count} vanilla-donor Underworld ecology objects in instance space near ({center.x:0},{center.z:0}).");
+            $"Refreshed {_spawned.Count} clustered vanilla-donor Underworld ecology objects in instance space near ({center.x:0},{center.z:0}).");
     }
+
+    private static float ClusterRadius(UnderworldTerrainBiome biome) => biome switch
+    {
+        UnderworldTerrainBiome.FungalForest => 24f,
+        UnderworldTerrainBiome.GreatDecay => 22f,
+        UnderworldTerrainBiome.FrozenCaverns => 18f,
+        UnderworldTerrainBiome.SulfurousWastes => 16f,
+        UnderworldTerrainBiome.FractureZones => 14f,
+        UnderworldTerrainBiome.BlackwaterDeep => 12f,
+        _ => 16f,
+    };
 
     private void SpawnDonor(Vector3 position, UnderworldTerrainBiome biome, int variant)
     {
