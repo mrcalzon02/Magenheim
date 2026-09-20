@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using BepInEx.Logging;
 using Magenheim.Core.Underworld;
@@ -16,6 +17,8 @@ internal interface IUnderworldWorldContextController
 /// Valheim player-placement boundary for Surface and dedicated Underworld instance contexts.
 /// Placement is keyed by the durable Valheim player id so server recovery never aliases a remote
 /// transition onto Player.m_localPlayer. Underworld anchors are native instance coordinates.
+/// Placement acknowledgement is additionally bound to the concrete Player component that accepted
+/// the teleport so a reconnect cannot satisfy an observation issued to an earlier peer incarnation.
 /// </summary>
 internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTransitionPlacementHost
 {
@@ -23,6 +26,7 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
     private const float HeadingToleranceDegrees = 8f;
     private readonly IUnderworldWorldContextController _worldContext;
     private readonly ManualLogSource _log;
+    private readonly Dictionary<string, PlacementReceipt> _pendingPlacements = new(StringComparer.Ordinal);
 
     internal ValheimUnderworldTransitionPlacementHost(IUnderworldWorldContextController worldContext, ManualLogSource log)
     {
@@ -44,22 +48,40 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
 
         var player = ResolvePlayer(playerId) ?? throw new InvalidOperationException($"Valheim player '{playerId}' is unavailable for Underworld placement.");
         var position = new Vector3((float)anchor.X, (float)anchor.Y, (float)anchor.Z);
-        var rotation = Quaternion.Euler(0f, NormalizeHeading((float)anchor.HeadingDegrees), 0f);
+        var heading = NormalizeHeading((float)anchor.HeadingDegrees);
+        var rotation = Quaternion.Euler(0f, heading, 0f);
+
+        // Invalidate any receipt from an earlier attempt before asking Valheim to move the player.
+        // A rejected teleport must never leave an older request eligible for acknowledgement.
+        _pendingPlacements.Remove(playerId);
         if (!player.TeleportTo(position, rotation, false))
             throw new InvalidOperationException("Valheim rejected the requested instance-context player teleport.");
+
+        _pendingPlacements[playerId] = new PlacementReceipt(player.GetInstanceID(), layer, position, heading);
         _log.LogDebug($"{layer} placement requested for player {playerId} at native context position {position} heading {anchor.HeadingDegrees:0.##}.");
     }
 
     public bool ObservePlayerPlacement(string playerId, UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor)
     {
         if (identity is null || anchor is null || !_worldContext.IsActive(identity, layer)) return false;
+        if (!_pendingPlacements.TryGetValue(playerId, out var receipt) || receipt.Layer != layer) return false;
+
         var player = ResolvePlayer(playerId);
-        if (player is null) return false;
+        if (player is null || player.GetInstanceID() != receipt.PlayerInstanceId)
+        {
+            _pendingPlacements.Remove(playerId);
+            return false;
+        }
 
         var target = new Vector3((float)anchor.X, (float)anchor.Y, (float)anchor.Z);
+        var heading = NormalizeHeading((float)anchor.HeadingDegrees);
+        if (Vector3.Distance(receipt.Target, target) > 0.01f || Mathf.Abs(Mathf.DeltaAngle(receipt.Heading, heading)) > 0.01f) return false;
         if (Vector3.Distance(player.transform.position, target) > PositionTolerance) return false;
-        var headingDelta = Mathf.Abs(Mathf.DeltaAngle(player.transform.eulerAngles.y, NormalizeHeading((float)anchor.HeadingDegrees)));
-        return headingDelta <= HeadingToleranceDegrees;
+        var headingDelta = Mathf.Abs(Mathf.DeltaAngle(player.transform.eulerAngles.y, heading));
+        if (headingDelta > HeadingToleranceDegrees) return false;
+
+        _pendingPlacements.Remove(playerId);
+        return true;
     }
 
     private static Player? ResolvePlayer(string playerId)
@@ -88,5 +110,21 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
     {
         var normalized = heading % 360f;
         return normalized < 0f ? normalized + 360f : normalized;
+    }
+
+    private readonly struct PlacementReceipt
+    {
+        internal PlacementReceipt(int playerInstanceId, UnderworldLayer layer, Vector3 target, float heading)
+        {
+            PlayerInstanceId = playerInstanceId;
+            Layer = layer;
+            Target = target;
+            Heading = heading;
+        }
+
+        internal int PlayerInstanceId { get; }
+        internal UnderworldLayer Layer { get; }
+        internal Vector3 Target { get; }
+        internal float Heading { get; }
     }
 }
