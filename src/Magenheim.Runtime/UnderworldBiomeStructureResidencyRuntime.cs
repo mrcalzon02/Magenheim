@@ -132,29 +132,27 @@ internal sealed class FungalSporeCairnFamily : IUnderworldBiomeStructureFamily
         var random = new System.Random(seed);
         try
         {
-            var pedestal = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            pedestal.name = "Pedestal";
-            pedestal.transform.SetParent(root.transform, false);
-            pedestal.transform.localPosition = new Vector3(0f, 0.7f, 0f);
-            pedestal.transform.localScale = new Vector3(2.8f, 0.7f, 2.8f);
-
-            for (var i = 0; i < 3; i++)
+            // Keep the stable family identity/slot, but build its presentation from stripped
+            // Valheim donor visuals. No donor ZDO, AI, drops, wear, or prefab identity crosses
+            // into the derived Underworld instance.
+            for (var i = 0; i < 4; i++)
             {
-                var angle = (float)(random.NextDouble() * Math.PI * 2d);
-                var radius = 1.1f + (float)random.NextDouble() * 1.4f;
-                var height = 2.8f + (float)random.NextDouble() * 2.6f;
-                var stem = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                stem.name = $"Stem_{i}";
-                stem.transform.SetParent(root.transform, false);
-                stem.transform.localPosition = new Vector3(Mathf.Cos(angle) * radius, height * 0.5f + 1.1f, Mathf.Sin(angle) * radius);
-                stem.transform.localScale = new Vector3(0.45f + i * 0.08f, height * 0.5f, 0.45f + i * 0.08f);
+                var variant = seed ^ i * 486187739;
+                var donor = UnderworldDonorVisualFactory.Create(Biome, variant, $"SporeDonor_{i}");
+                donor.transform.SetParent(root.transform, false);
 
-                var cap = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                cap.name = $"Cap_{i}";
-                cap.transform.SetParent(root.transform, false);
-                cap.transform.localPosition = stem.transform.localPosition + Vector3.up * (height * 0.55f);
-                var capScale = 1.8f + (float)random.NextDouble() * 1.3f;
-                cap.transform.localScale = new Vector3(capScale, capScale * 0.38f, capScale);
+                if (i == 0)
+                {
+                    donor.transform.localPosition += new Vector3(0f, 0f, 0f);
+                    continue;
+                }
+
+                var angle = (float)(random.NextDouble() * Math.PI * 2d);
+                var radius = 1.1f + (float)random.NextDouble() * 2.2f;
+                donor.transform.localPosition += new Vector3(Mathf.Cos(angle) * radius, 0f, Mathf.Sin(angle) * radius);
+                donor.transform.localRotation *= Quaternion.Euler(0f, angle * Mathf.Rad2Deg, 0f);
+                var clusterScale = 0.72f + (float)random.NextDouble() * 0.48f;
+                donor.transform.localScale *= clusterScale;
             }
             return root;
         }
