@@ -26,6 +26,8 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
     private Vector3 _lastBuildPosition;
     private float _nextAt;
     private const float RebuildDistance = 180f;
+    private const int EcologyClusterCount = 8;
+    private const int PlacementsPerCluster = 7;
 
     internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -38,7 +40,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         if (Time.unscaledTime < _nextAt) return;
         _nextAt = Time.unscaledTime + 3f;
         if (_services is null || ZNet.instance is null || ZNet.World is null) return;
-
         var lifecycle = _services.InstanceLifecycle;
         if (lifecycle.Phase != UnderworldInstancePhase.Active || lifecycle.Identity is null)
         {
@@ -46,9 +47,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             _admitted = string.Empty;
             return;
         }
-
-        // Layer comes only from the explicit instance-context authority now, never inferred from
-        // position/domain -- TryResolveWorldSession(domain, znet, world, ...) no longer exists.
         if (!_services.TryResolveLocalSession(out var identity, out var layer, out _, out _) ||
             identity is null || layer != UnderworldLayer.Underworld ||
             !string.Equals(identity.DerivedWorldId, lifecycle.Identity.DerivedWorldId, StringComparison.Ordinal) ||
@@ -59,16 +57,11 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             _admitted = string.Empty;
             return;
         }
-
         var player = Player.m_localPlayer;
         if (player is null) return;
-
-        // The active instance context owns this transform. Once admitted, these are native
-        // Underworld coordinates; ecology must never remap them through Surface geography.
         var instancePosition = player.transform.position;
         var first = !string.Equals(_admitted, identity.DerivedWorldId, StringComparison.Ordinal);
         if (!first && Vector3.Distance(instancePosition, _lastBuildPosition) < RebuildDistance) return;
-
         _admitted = identity.DerivedWorldId;
         _lastBuildPosition = instancePosition;
         BuildLocalPatch(instancePosition, identity);
@@ -77,25 +70,114 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
     private void BuildLocalPatch(Vector3 center, UnderworldWorldIdentity identity)
     {
         ClearMarkers();
-
         var seed = identity.DerivedSeed32 ^
             (Mathf.RoundToInt(center.x / 90f) * 73856093) ^
             (Mathf.RoundToInt(center.z / 90f) * 19349663);
         var random = new System.Random(seed);
 
-        for (var i = 0; i < 56; i++)
+        for (var cluster = 0; cluster < EcologyClusterCount; cluster++)
         {
-            var angle = (float)(random.NextDouble() * Math.PI * 2d);
-            var distance = 18f + (float)random.NextDouble() * 165f;
-            var x = center.x + Mathf.Cos(angle) * distance;
-            var z = center.z + Mathf.Sin(angle) * distance;
-            var sample = UnderworldTerrainRuntime.SampleInstanceTerrain(x, center.y, z);
-            if (!sample.Admitted) continue;
-            SpawnDonor(new Vector3(x, (float)sample.Height, z), sample.Biome, i + seed);
-        }
+            var anchorAngle = (float)(random.NextDouble() * Math.PI * 2d);
+            var anchorDistance = 24f + (float)random.NextDouble() * 145f;
+            var anchorX = center.x + Mathf.Cos(anchorAngle) * anchorDistance;
+            var anchorZ = center.z + Mathf.Sin(anchorAngle) * anchorDistance;
+            var anchor = UnderworldTerrainRuntime.SampleInstanceTerrain(anchorX, center.y, anchorZ);
+            if (!anchor.Admitted) continue;
 
-        _log?.LogDebug(
-            $"Refreshed {_spawned.Count} vanilla-donor Underworld ecology objects in instance space near ({center.x:0},{center.z:0}).");
+            var radius = ClusterRadius(anchor.Biome);
+            // Each community now has a readable composition: a near-center landmark, asymmetric
+            // structural forms around it, and small fill gathered into one side-pocket. The pocket
+            // heading is deterministic per cluster so repeated groves/outcrops do not share an axis.
+            var pocketAngle = (float)(random.NextDouble() * Math.PI * 2d);
+            for (var member = 0; member < PlacementsPerCluster; member++)
+            {
+                var placement = ComposePlacement(random, radius, member, pocketAngle);
+                var x = anchorX + placement.x;
+                var z = anchorZ + placement.y;
+                var sample = UnderworldTerrainRuntime.SampleInstanceTerrain(x, center.y, z);
+                if (!sample.Admitted || sample.Biome != anchor.Biome) continue;
+                var variant = seed + cluster * 101 + member * 17;
+                SpawnDonor(new Vector3(x, (float)sample.Height, z), sample.Biome, ComposeVariant(sample.Biome, variant, member));
+            }
+        }
+        _log?.LogDebug($"Refreshed {_spawned.Count} spatially composed vanilla-donor Underworld ecology objects in instance space near ({center.x:0},{center.z:0}).");
+    }
+
+    private static Vector2 ComposePlacement(System.Random random, float radius, int member, float pocketAngle)
+    {
+        if (member == 0)
+        {
+            // Keep the landmark close to the sampled terrain anchor without making every center exact.
+            var angle = (float)(random.NextDouble() * Math.PI * 2d);
+            var distance = (float)random.NextDouble() * radius * 0.12f;
+            return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
+        }
+        if (member <= 4)
+        {
+            // Structural donors form an incomplete, irregular ring. A cluster-wide angular bias
+            // creates arcs rather than the old statistically even disk scatter.
+            var slot = member - 1;
+            var angle = pocketAngle + 0.65f + slot * 1.22f + ((float)random.NextDouble() - 0.5f) * 0.48f;
+            var distance = radius * (0.38f + (float)random.NextDouble() * 0.47f);
+            return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
+        }
+        // Fill donors collect near one edge of the community, producing fungal beds, rubble pockets,
+        // root litter, or small ice shards instead of two more equally important ring members.
+        var fillAngle = pocketAngle + ((float)random.NextDouble() - 0.5f) * 0.55f;
+        var fillDistance = radius * (0.48f + (float)random.NextDouble() * 0.34f);
+        var jitter = new Vector2((float)random.NextDouble() - 0.5f, (float)random.NextDouble() - 0.5f) * radius * 0.14f;
+        return new Vector2(Mathf.Cos(fillAngle), Mathf.Sin(fillAngle)) * fillDistance + jitter;
+    }
+
+    private static float ClusterRadius(UnderworldTerrainBiome biome) => biome switch
+    {
+        UnderworldTerrainBiome.FungalForest => 24f,
+        UnderworldTerrainBiome.GreatDecay => 22f,
+        UnderworldTerrainBiome.FrozenCaverns => 18f,
+        UnderworldTerrainBiome.SulfurousWastes => 16f,
+        UnderworldTerrainBiome.FractureZones => 14f,
+        UnderworldTerrainBiome.BlackwaterDeep => 12f,
+        _ => 16f,
+    };
+
+    private static int ComposeVariant(UnderworldTerrainBiome biome, int variant, int member)
+    {
+        var role = member == 0 ? 0 : member <= 4 ? 1 : 2;
+        var candidates = (biome, role) switch
+        {
+            (UnderworldTerrainBiome.FungalForest, 0) => new[] { 0, 1, 2, 3, 4 },
+            (UnderworldTerrainBiome.FungalForest, 1) => new[] { 5, 7, 9, 0, 2 },
+            (UnderworldTerrainBiome.FungalForest, _) => new[] { 6, 8, 10, 5, 7, 9 },
+            (UnderworldTerrainBiome.BlackwaterDeep, 0) => new[] { 0, 2, 4, 5 },
+            (UnderworldTerrainBiome.BlackwaterDeep, 1) => new[] { 1, 2, 4, 5, 6 },
+            (UnderworldTerrainBiome.BlackwaterDeep, _) => new[] { 1, 3, 6 },
+            (UnderworldTerrainBiome.SulfurousWastes, 0) => new[] { 4, 5, 0, 2 },
+            (UnderworldTerrainBiome.SulfurousWastes, 1) => new[] { 0, 1, 2, 3, 6 },
+            (UnderworldTerrainBiome.SulfurousWastes, _) => new[] { 7, 1, 3 },
+            (UnderworldTerrainBiome.FrozenCaverns, 0) => new[] { 4, 5, 0 },
+            (UnderworldTerrainBiome.FrozenCaverns, 1) => new[] { 0, 2, 4, 6 },
+            (UnderworldTerrainBiome.FrozenCaverns, _) => new[] { 1, 3, 5 },
+            (UnderworldTerrainBiome.FractureZones, 0) => new[] { 7, 4, 2, 0 },
+            (UnderworldTerrainBiome.FractureZones, 1) => new[] { 0, 2, 4, 6 },
+            (UnderworldTerrainBiome.FractureZones, _) => new[] { 1, 3, 5 },
+            (UnderworldTerrainBiome.GreatDecay, 0) => new[] { 0, 2, 4, 5, 7 },
+            (UnderworldTerrainBiome.GreatDecay, 1) => new[] { 0, 2, 4, 5, 7, 9 },
+            (UnderworldTerrainBiome.GreatDecay, _) => new[] { 1, 3, 6, 8, 10, 11 },
+            _ => new[] { 0 },
+        };
+        var roll = variant == int.MinValue ? 0 : Math.Abs(variant);
+        var preferred = candidates[roll % candidates.Length];
+        var paletteSize = biome switch
+        {
+            UnderworldTerrainBiome.FungalForest => 11,
+            UnderworldTerrainBiome.BlackwaterDeep => 7,
+            UnderworldTerrainBiome.SulfurousWastes => 8,
+            UnderworldTerrainBiome.FrozenCaverns => 7,
+            UnderworldTerrainBiome.FractureZones => 8,
+            UnderworldTerrainBiome.GreatDecay => 12,
+            _ => 1,
+        };
+        return roll - roll % paletteSize + preferred;
     }
 
     private void SpawnDonor(Vector3 position, UnderworldTerrainBiome biome, int variant)
@@ -103,7 +185,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         UnderworldVanillaDonorCatalog.Donor donor = default;
         GameObject? source = null;
         var selectedVariant = variant;
-
         for (var attempt = 0; attempt < 8 && source is null; attempt++)
         {
             selectedVariant = variant + attempt;
@@ -115,24 +196,19 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             }
             source = ResolveDonor(donor.PrefabName);
         }
-
         if (source is null) return;
         var node = BuildVisualClone(source, donor, selectedVariant);
         if (node is null) return;
-
         node.name = $"Magenheim_UnderworldDonor_{biome}_{donor.PrefabName}";
         node.transform.position = position + Vector3.up * donor.GroundOffset;
         node.transform.rotation = Quaternion.Euler(
             Mathf.Abs(selectedVariant % 7) - 3f,
             Mathf.Abs(selectedVariant * 37 % 360),
             Mathf.Abs(selectedVariant % 9) - 4f);
-
         var scale = UnderworldVanillaDonorCatalog.Scale(donor, selectedVariant);
         node.transform.localScale = scale;
         var lightScale = Mathf.Clamp(Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z)), 1f, 12f);
-        foreach (var light in node.GetComponentsInChildren<Light>(true))
-            light.range *= lightScale;
-
+        foreach (var light in node.GetComponentsInChildren<Light>(true)) light.range *= lightScale;
         _spawned.Add(node);
     }
 
@@ -142,12 +218,9 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         var source = PrefabManager.Instance.GetPrefab(prefabName);
         if (source is null)
         {
-            if (_warnedDonors.Add(prefabName))
-                _log?.LogWarning(
-                    $"Underworld donor '{prefabName}' is not available yet or is absent in this Valheim build; skipping this placement and retrying later.");
+            if (_warnedDonors.Add(prefabName)) _log?.LogWarning($"Underworld donor '{prefabName}' is not available yet or is absent in this Valheim build; skipping this placement and retrying later.");
             return null;
         }
-
         _donorSources[prefabName] = source;
         return source;
     }
@@ -158,16 +231,13 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         var transformMap = new Dictionary<Transform, Transform>();
         var rendererMap = new Dictionary<Renderer, Renderer>();
         var copiedRenderers = 0;
-
         CopyNode(source.transform, root.transform, false, transformMap, rendererMap, ref copiedRenderers);
         if (copiedRenderers == 0)
         {
             Destroy(root);
-            if (_warnedDonors.Add(source.name))
-                _log?.LogWarning($"Underworld donor '{source.name}' contained no supported mesh renderers.");
+            if (_warnedDonors.Add(source.name)) _log?.LogWarning($"Underworld donor '{source.name}' contained no supported mesh renderers.");
             return null;
         }
-
         RebuildLodGroups(source, transformMap, rendererMap);
         if (donor.Collidable) AddConservativeCollider(root);
         return root;
@@ -183,7 +253,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             target.localScale = source.localScale;
             target.gameObject.SetActive(source.gameObject.activeSelf);
         }
-
         var sourceFilter = source.GetComponent<MeshFilter>();
         var sourceRenderer = source.GetComponent<MeshRenderer>();
         if (sourceFilter is not null && sourceFilter.sharedMesh is not null && sourceRenderer is not null)
@@ -200,7 +269,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             rendererMap[sourceRenderer] = targetRenderer;
             copiedRenderers++;
         }
-
         var sourceLight = source.GetComponent<Light>();
         if (sourceLight is not null && sourceLight.enabled)
         {
@@ -213,7 +281,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             targetLight.shadows = sourceLight.shadows;
             targetLight.cullingMask = sourceLight.cullingMask;
         }
-
         for (var i = 0; i < source.childCount; i++)
         {
             var sourceChild = source.GetChild(i);

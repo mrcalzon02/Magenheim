@@ -40,7 +40,8 @@ internal sealed class UnderworldWorldTransitionManager
         if(active is null){RehydrateStableLifecycle(state,identity);return state;}
         ReconcileLifecycleForResume(identity,active);
         if(!string.Equals(active.AuthorityFingerprint,currentAuthorityFingerprint,StringComparison.Ordinal))return Recover(state,identity,active.OperationId,active.AuthorityFingerprint,new InvalidOperationException("Gameplay authority changed while an Underworld transition was incomplete."));
-        if(active.Phase==UnderworldTransitionPhase.RecoveryRequired)return RecoverMarked(state,identity,active.OperationId,active.AuthorityFingerprint);
+        if(active.Phase==UnderworldTransitionPhase.RecoveryRequired)return ResumeRecovery(state,identity,active.OperationId,active.AuthorityFingerprint);
+        if(active.Phase==UnderworldTransitionPhase.TargetReady)return ResumeTargetReady(state,identity,active.OperationId,active.AuthorityFingerprint);
         if(active.Phase==UnderworldTransitionPhase.Prepared){try{return ContinuePrepared(state,identity,active.OperationId,active.AuthorityFingerprint);}catch(Exception failure){return Recover(state,identity,active.OperationId,active.AuthorityFingerprint,failure);}}
         return Recover(state,identity,active.OperationId,active.AuthorityFingerprint,new InvalidOperationException("Recovered an interrupted Underworld transition from a non-resumable phase."));
     }
@@ -52,7 +53,23 @@ internal sealed class UnderworldWorldTransitionManager
         _host.EnsureTargetContext(identity,active.TargetLayer,active.TargetAnchor);
         var ready=UnderworldTransitionRules.MarkTargetReady(state,operationId,authorityFingerprint);_host.Persist(ready,identity);
         _host.PlacePlayer(state.PlayerId,identity,active.TargetLayer,active.TargetAnchor);
-        if(!_host.ObservePlayerPlacement(state.PlayerId,identity,active.TargetLayer,active.TargetAnchor))throw new InvalidOperationException("Runtime did not observe both the requested world context and player placement at the Underworld transition target.");
+        var observation=_host.ObservePlayerPlacement(state.PlayerId,identity,active.TargetLayer,active.TargetAnchor);
+        if(observation==UnderworldPlacementObservation.Unavailable)throw new InvalidOperationException("Runtime lost the requested Underworld target placement before acknowledgement.");
+        return observation==UnderworldPlacementObservation.Confirmed?CommitTarget(ready,identity,operationId,authorityFingerprint):ready;
+    }
+
+    private UnderworldPlayerLayerState ResumeTargetReady(UnderworldPlayerLayerState state,UnderworldWorldIdentity identity,string operationId,string authorityFingerprint)
+    {
+        var active=state.ActiveTransition??throw new InvalidOperationException("TargetReady transition disappeared before acknowledgement.");
+        var observation=_host.ObservePlayerPlacement(state.PlayerId,identity,active.TargetLayer,active.TargetAnchor);
+        if(observation==UnderworldPlacementObservation.Confirmed)return CommitTarget(state,identity,operationId,authorityFingerprint);
+        if(observation==UnderworldPlacementObservation.Pending)return state;
+        return Recover(state,identity,operationId,authorityFingerprint,new InvalidOperationException("Target placement acknowledgement was unavailable after resume; recovering to the durable source anchor."));
+    }
+
+    private UnderworldPlayerLayerState CommitTarget(UnderworldPlayerLayerState ready,UnderworldWorldIdentity identity,string operationId,string authorityFingerprint)
+    {
+        var active=ready.ActiveTransition??throw new InvalidOperationException("TargetReady transition disappeared before commit.");
         var committed=UnderworldTransitionRules.Commit(ready,operationId,authorityFingerprint);_host.Persist(committed,identity);CompleteInstanceTransition(identity,active.TargetLayer);_log.LogInfo($"Underworld transition '{operationId}' committed to {committed.CurrentLayer}.");return committed;
     }
 
@@ -61,13 +78,23 @@ internal sealed class UnderworldWorldTransitionManager
     private void ReconcileLifecycleForResume(UnderworldWorldIdentity identity,UnderworldTransitionIntent active){_instanceLifecycle.EnsureAdmitted(identity);if(active.SourceLayer==UnderworldLayer.Underworld)_instanceLifecycle.EnsureActive(identity);}
     private void CompleteInstanceTransition(UnderworldWorldIdentity identity,UnderworldLayer targetLayer){if(targetLayer==UnderworldLayer.Underworld)_instanceLifecycle.EnsureActive(identity);}
     private static void ValidateOperation(UnderworldTransitionIntent active,string operationId,string authorityFingerprint){if(!string.Equals(active.OperationId,operationId,StringComparison.Ordinal))throw new InvalidOperationException("Underworld runtime operation id does not match the prepared Core transition.");if(!string.Equals(active.AuthorityFingerprint,authorityFingerprint,StringComparison.Ordinal))throw new InvalidOperationException("Underworld runtime authority fingerprint drifted before execution.");}
-    private UnderworldPlayerLayerState Recover(UnderworldPlayerLayerState state,UnderworldWorldIdentity identity,string operationId,string authorityFingerprint,Exception failure){var required=state.ActiveTransition?.Phase==UnderworldTransitionPhase.RecoveryRequired?state:UnderworldTransitionRules.RequireRecovery(state,operationId,authorityFingerprint,failure.Message);_host.Persist(required,identity);return RecoverMarked(required,identity,operationId,authorityFingerprint);}
-    private UnderworldPlayerLayerState RecoverMarked(UnderworldPlayerLayerState state,UnderworldWorldIdentity identity,string operationId,string authorityFingerprint)
+    private UnderworldPlayerLayerState Recover(UnderworldPlayerLayerState state,UnderworldWorldIdentity identity,string operationId,string authorityFingerprint,Exception failure){var required=state.ActiveTransition?.Phase==UnderworldTransitionPhase.RecoveryRequired?state:UnderworldTransitionRules.RequireRecovery(state,operationId,authorityFingerprint,failure.Message);_host.Persist(required,identity);return ResumeRecovery(required,identity,operationId,authorityFingerprint);}
+
+    private UnderworldPlayerLayerState ResumeRecovery(UnderworldPlayerLayerState state,UnderworldWorldIdentity identity,string operationId,string authorityFingerprint)
     {
         var active=state.ActiveTransition??throw new InvalidOperationException("Recovery requires an active Underworld transition.");
+        var observation=_host.ObservePlayerPlacement(state.PlayerId,identity,active.SourceLayer,active.SourceAnchor);
+        if(observation==UnderworldPlacementObservation.Confirmed)return CompleteRecovery(state,identity,operationId,authorityFingerprint);
+        if(observation==UnderworldPlacementObservation.Pending)return state;
         _host.EnsureTargetContext(identity,active.SourceLayer,active.SourceAnchor);
         _host.PlacePlayer(state.PlayerId,identity,active.SourceLayer,active.SourceAnchor);
-        if(!_host.ObservePlayerPlacement(state.PlayerId,identity,active.SourceLayer,active.SourceAnchor))throw new InvalidOperationException("Underworld recovery could not verify source world context and placement; recovery state remains persisted.");
+        observation=_host.ObservePlayerPlacement(state.PlayerId,identity,active.SourceLayer,active.SourceAnchor);
+        if(observation==UnderworldPlacementObservation.Confirmed)return CompleteRecovery(state,identity,operationId,authorityFingerprint);
+        return state;
+    }
+
+    private UnderworldPlayerLayerState CompleteRecovery(UnderworldPlayerLayerState state,UnderworldWorldIdentity identity,string operationId,string authorityFingerprint)
+    {
         var recovered=UnderworldTransitionRules.RecoverToSource(state,operationId,authorityFingerprint);_host.Persist(recovered,identity);_log.LogInfo($"Underworld transition '{operationId}' recovered to {recovered.CurrentLayer}.");return recovered;
     }
 }
@@ -77,5 +104,5 @@ internal interface IUnderworldTransitionHost
     void Persist(UnderworldPlayerLayerState state,UnderworldWorldIdentity identity);
     void EnsureTargetContext(UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor);
     void PlacePlayer(string playerId,UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor);
-    bool ObservePlayerPlacement(string playerId,UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor);
+    UnderworldPlacementObservation ObservePlayerPlacement(string playerId,UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor);
 }

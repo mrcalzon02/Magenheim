@@ -15,6 +15,7 @@ internal static class UnderworldWorldCenterRegistrar
     internal const string LocationName = "Magenheim_UnderworldWorldCenter";
     internal const string StandingStonesName = "Magenheim_UnderworldStandingStones";
     internal const string DescentMonolithName = "Magenheim_DescentMonolith";
+    internal const string GeneratedObjectKind = "deepstone-conclave";
     internal static readonly Vector3 ReturnGateOffset = new(18f, 0f, 0f);
     internal static readonly UnderworldAnchor LogicalCenter = new("magenheim.underworld.pending", 0d, 0d, 0d, 0f);
 
@@ -35,6 +36,8 @@ internal static class UnderworldWorldCenterRegistrar
 
         var logical = LogicalCenter with { WorldId = identity.DerivedWorldId };
         var root = new GameObject(LocationName);
+        var ownership = root.AddComponent<UnderworldGeneratedObjectIdentity>();
+        ownership.Bind(identity, GeneratedObjectKind);
         root.transform.position = ResolveGroundedCenterPosition(logical);
         root.transform.rotation = Quaternion.Euler(0f, logical.HeadingDegrees, 0f);
         BuildStandingStones(root.transform);
@@ -49,7 +52,7 @@ internal static class UnderworldWorldCenterRegistrar
         endpoint.Role = UnderworldGateRole.ReturnToSurface;
         if (gate.GetComponent<UnderworldDeepGateProgressionRuntime>() == null) gate.AddComponent<UnderworldDeepGateProgressionRuntime>();
 
-        log.LogInfo($"Admitted Underworld center '{LocationName}' at native instance ({root.transform.position.x:0.##}, {root.transform.position.y:0.##}, {root.transform.position.z:0.##}).");
+        log.LogInfo($"Admitted Underworld center '{LocationName}' as native object '{ownership.StableObjectId}' at instance ({root.transform.position.x:0.##}, {root.transform.position.y:0.##}, {root.transform.position.z:0.##}).");
         return root;
     }
 

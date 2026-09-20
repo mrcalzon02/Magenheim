@@ -35,7 +35,9 @@ def structure(name, x, y):
     if name == "fungal_forest":
         return 0.13 * max(0.0, math.sin(qx * .72 + qy * 1.38))
     if name == "blackwater_deep":
-        return -0.08 if int(qy) % 8 < 2 else 0.015
+        # Preserve the subdued drowned-sediment identity while retaining enough broad-band
+        # separation to survive terrain mip reduction at ordinary gameplay distance.
+        return -0.12 if int(qy) % 8 < 2 else 0.03
     if name == "sulfurous_wastes":
         return 0.15 if int(qx * 3 + qy) % 13 < 2 else -0.02
     if name == "frozen_caverns":
