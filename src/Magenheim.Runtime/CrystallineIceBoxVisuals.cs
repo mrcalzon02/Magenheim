@@ -7,5 +7,8 @@ namespace Magenheim.Runtime;
 internal static class CrystallineIceBoxVisuals
 {
 
-    internal static GameObject Apply(GameObject prefab) => ModelAssets.Load(prefab, "crystalline-ice-box");
+    /// <summary>The model id, which is also the icon's asset name.</summary>
+    internal const string ModelId = "crystalline-ice-box";
+
+    internal static GameObject Apply(GameObject prefab) => ModelAssets.Load(prefab, ModelId);
 }

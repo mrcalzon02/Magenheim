@@ -62,7 +62,7 @@ internal sealed class CrystalArchitectureRegistrar : IDisposable
             Category = definition.Category,
             CraftingStation = definition.CraftingStation,
             Requirements = definition.Requirements,
-            Icon = CrystalArchitectureIcons.Icon(definition.ModelId)
+            Icon = EarthAssets.Icon(definition.ModelId)
         };
 
         var custom = new CustomPiece(definition.PrefabName, source, config);

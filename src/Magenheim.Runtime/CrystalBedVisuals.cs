@@ -7,5 +7,8 @@ namespace Magenheim.Runtime;
 internal static class CrystalBedVisuals
 {
 
-    internal static GameObject Apply(GameObject prefab, ElementalAlignment element) => ModelAssets.Load(prefab, "crystal-bed-" + element.ToString().ToLowerInvariant());
+    /// <summary>The model id, which is also the icon's asset name.</summary>
+    internal static string ModelId(ElementalAlignment element) => "crystal-bed-" + element.ToString().ToLowerInvariant();
+
+    internal static GameObject Apply(GameObject prefab, ElementalAlignment element) => ModelAssets.Load(prefab, ModelId(element));
 }

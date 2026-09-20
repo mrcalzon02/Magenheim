@@ -65,7 +65,7 @@ internal sealed class GeologyDecorRegistrar : IDisposable
             Category = "Furniture",
             CraftingStation = "piece_workbench",
             Requirements = definition.Requirements,
-            Icon = GeologyDecorIcons.Icon(definition.ModelId),
+            Icon = EarthAssets.Icon(definition.ModelId),
         };
 
         var custom = new CustomPiece(definition.PrefabName, source, config);

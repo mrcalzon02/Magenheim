@@ -111,7 +111,7 @@ internal sealed class CrystalBedRegistrar : IDisposable
             PieceTable = "Hammer",
             Category = "Crafting",
             CraftingStation = CrystalEnchantingDaisRegistrar.PrefabName,
-            Icon = CrystalBedIcons.Icon(element),
+            Icon = EarthAssets.Icon(CrystalBedVisuals.ModelId(element)),
             Requirements = new[]
             {
                 Cost("BlackMarble", 20),

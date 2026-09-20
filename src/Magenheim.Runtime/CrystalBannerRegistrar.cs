@@ -72,7 +72,7 @@ internal sealed class CrystalBannerRegistrar : IDisposable
             PieceTable = "Hammer",
             Category = "Furniture",
             CraftingStation = "piece_workbench",
-            Icon = CrystalBannerIcons.Icon(style, element),
+            Icon = EarthAssets.Icon(CrystalBannerVisuals.ModelId(style, element)),
             Requirements = new[]
             {
                 Cost("FineWood", 2),

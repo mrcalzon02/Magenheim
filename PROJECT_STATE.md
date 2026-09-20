@@ -1,3 +1,43 @@
+# Current source candidate - 0.0.88 / schema 5 (2026-09-20)
+
+All 62 crystal placeables carry icons rendered from the same `.blend` their runtime mesh exports
+from. Eight `*Icons.cs` classes -- 1,233 lines drawing procedural pixel art in C# -- are deleted and
+replaced by `tools/render-placeable-icons.py`, which asserts its expected count so a placeable
+authored later cannot quietly ship without an icon. Five Visuals classes now expose `ModelId`, so
+the icon and the mesh resolve from one string. `CrystalAlchemyIcons` stays: Crystal Dust and the two
+Eitrwine bottles have no models. `crystal-brazier`, `crystal-lantern` and `crystal-wardstone` are
+excluded because `WorldArtifactVisuals` names them but nothing registers them as pieces.
+
+This is the third time this defect class has been repaired -- staves, then the ten weapons in
+0.0.72, now the placeables.
+
+**`origin/main` had advanced 27 commits and still carried both defects 0.0.86 repaired**: the
+`System.ValueTuple` in the chunk-streaming focus list and the model-asset gate that rejects the
+chunk materializer. Its `release.json` was still 0.0.83. Merged rather than rebased, matching the
+existing history; git auto-merged all three overlapping files without conflict and the result was
+verified rather than assumed -- no ValueTuple anywhere in the runtime, both call sites on the
+struct, 0.0.87 version retained.
+
+The merged tree then failed to build on a third instance of the same family: `ReadOnlySpan<byte>` in
+their new `UnderworldTerrainTextureAssets`. Unity's `ImageConversion.LoadImage` carries a Span
+overload whose resolution needs `System.ReadOnlySpan`1`, absent on net462 without System.Memory.
+`ModelAssets` had already solved this by binding the `byte[]` overload reflectively; that is now a
+named `ModelAssets.LoadImage` used by both callers.
+
+0.0.88 is installed and SHA-256 verified in the active Central Fuckery profile: `Magenheim.dll`
+`FCBE3D7B022669096524A506A952ADA1E46C18DB9E9D6B0A7FFBEEBDF1AB301B`. Launcher entry reads back as
+`Magenheim v0.0.88 by Local (enabled)`. Prior payload backup
+`backups/Local-Magenheim-20260920-074237.zip`; catalog backup `backups/mods-20260920-074249-757.yml`.
+Build: 282 model assets, 38,332 Core assertions, 129 generated files across 6 generators, 117 icons,
+zero warnings, zero errors.
+
+**Nothing since 0.0.85 is runtime-accepted.** Every repair from 0.0.86, 0.0.87 and 0.0.88 is
+source-verified and gate-verified only. The next live session should check the Hammer menu, the
+`inherited the world-projecting` log lines, the `Requirement audit:` line, Sentinel and Crystal Bed
+deconstruction, the four trimmed weapons, the reversed spear, and the hearth's fire.
+
+---
+
 # Current source candidate - 0.0.87 / schema 5 (2026-09-19)
 
 Live play reported the sconce's smearing on the ice box and "a number of the other crystal

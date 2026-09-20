@@ -8,5 +8,10 @@ internal static class CrystalBannerVisuals
 {
 
     internal enum BannerStyle { Standard, Swallowtail, Pennant }
-    internal static GameObject Apply(GameObject prefab, BannerStyle style, ElementalAlignment element) => ModelAssets.Load(prefab, "crystal-banner-" + style.ToString().ToLowerInvariant() + "-" + element.ToString().ToLowerInvariant());
+
+    /// <summary>The model id, which is also the icon's asset name.</summary>
+    internal static string ModelId(BannerStyle style, ElementalAlignment element) =>
+        "crystal-banner-" + style.ToString().ToLowerInvariant() + "-" + element.ToString().ToLowerInvariant();
+
+    internal static GameObject Apply(GameObject prefab, BannerStyle style, ElementalAlignment element) => ModelAssets.Load(prefab, ModelId(style, element));
 }

@@ -71,7 +71,7 @@ internal sealed class FurnitureRegistrar : IDisposable
             Category = "Furniture",
             CraftingStation = "piece_workbench",
             Requirements = definition.Requirements,
-            Icon = FurnitureIcons.Icon(definition.ModelId),
+            Icon = EarthAssets.Icon(definition.ModelId),
         };
 
         var custom = new CustomPiece(definition.PrefabName, source, config);

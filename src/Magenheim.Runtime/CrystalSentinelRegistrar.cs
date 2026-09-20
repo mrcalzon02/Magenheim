@@ -137,7 +137,7 @@ internal sealed class CrystalSentinelRegistrar : IDisposable
             PieceTable = "Hammer",
             Category = "Defence",
             CraftingStation = "piece_artisanstation",
-            Icon = CrystalSentinelIcons.Icon(),
+            Icon = EarthAssets.Icon(CrystalSentinelVisuals.ModelId),
             Requirements = new[]
             {
                 Cost("BlackMetal", 20),

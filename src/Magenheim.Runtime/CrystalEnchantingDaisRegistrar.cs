@@ -56,7 +56,7 @@ internal sealed class CrystalEnchantingDaisRegistrar : IDisposable
                 PieceTable = "Hammer",
                 Category = "Crafting",
                 CraftingStation = WorkshopRegistrar.StationPrefab,
-                Icon = CrystalEnchantingDaisIcons.Icon(),
+                Icon = EarthAssets.Icon(CrystalEnchantingDaisVisuals.ModelId),
                 Requirements = new[]
                 {
                     Cost("Stone", 20),
@@ -74,7 +74,7 @@ internal sealed class CrystalEnchantingDaisRegistrar : IDisposable
             var station = prefab.GetComponent<CraftingStation>()
                 ?? throw new InvalidOperationException("Crystal Enchanting Dais clone has no CraftingStation component.");
             station.m_name = "Crystal Enchanting Dais";
-            station.m_icon = CrystalEnchantingDaisIcons.Icon();
+            station.m_icon = EarthAssets.Icon(CrystalEnchantingDaisVisuals.ModelId);
             station.m_craftRequireRoof = false;
             station.m_craftRequireFire = false;
             station.m_showBasicRecipies = false;

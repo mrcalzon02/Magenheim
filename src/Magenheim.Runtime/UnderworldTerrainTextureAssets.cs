@@ -76,7 +76,7 @@ internal static class UnderworldTerrainTextureAssets
         var texture = new Texture2D(2, 2, TextureFormat.RGBA32, true, linear) { name = name };
         try
         {
-            if (!ImageConversion.LoadImage(texture, File.ReadAllBytes(path), false))
+            if (!ModelAssets.LoadImage(texture, File.ReadAllBytes(path)))
             {
                 UnityEngine.Object.Destroy(texture);
                 return null;

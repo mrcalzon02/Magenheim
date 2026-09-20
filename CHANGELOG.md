@@ -1,3 +1,27 @@
+## 0.0.88 - Placeable icons come from the models
+
+- **All 62 crystal placeables now carry an icon rendered from the same `.blend` their runtime mesh
+  exports from.** The Hammer menu was rows of grey diamonds because eight `*Icons.cs` classes --
+  1,233 lines of it -- drew the icons as procedural pixel art in C#, which describes a crystal
+  foundation exactly as well as a rectangle primitive can. This is the third time this defect has
+  been fixed: the staves first, the ten weapons in 0.0.72, and now the placeables. All eight classes
+  are deleted; `tools/render-placeable-icons.py` replaces them.
+- The five Visuals classes that built their model id inline now expose it as `ModelId`, so the icon
+  and the mesh resolve from one string and cannot drift apart. `CrystalAlchemyIcons` stays: Crystal
+  Dust and the two Eitrwine bottles have no models to render.
+- The renderer asserts its expected count, so a placeable authored tomorrow cannot quietly ship
+  without an icon. `crystal-brazier`, `crystal-lantern` and `crystal-wardstone` are deliberately
+  excluded -- `WorldArtifactVisuals` names them but nothing registers them as pieces.
+- **`ReadOnlySpan<byte>` reached `main` again**, in `UnderworldTerrainTextureAssets`. Unity's
+  `ImageConversion.LoadImage` has a Span overload, and resolving that call needs
+  `System.ReadOnlySpan`1` to exist -- which it does not on net462 without System.Memory, which the
+  game does not ship. `ModelAssets` had already hit this and solved it by binding the `byte[]`
+  overload through reflection; that workaround is now a named `ModelAssets.LoadImage` that both
+  callers use, so the next one finds the answer rather than the error.
+- Merged 27 commits of Underworld work from `origin/main`, which still carried both defects 0.0.86
+  repaired: the `System.ValueTuple` in the chunk streaming focus list, and the model-asset gate that
+  rejects the chunk materializer. The combined tree was rebuilt rather than assumed compatible.
+
 ## 0.0.87 - The placeables stop wearing the donor's shader
 
 - **Crystal placeables inherited Valheim's piece shader from the donors they clone, and it does not

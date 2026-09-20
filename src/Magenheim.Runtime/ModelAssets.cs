@@ -94,6 +94,24 @@ internal static class ModelAssets
     /// Only the shader is replaced. Colour, texture, metallic and roughness all come from the model
     /// payload in LoadMaterial regardless, so nothing authored is lost.
     /// </remarks>
+    /// <summary>Decodes a PNG into a texture without tripping over Unity's Span overload.</summary>
+    /// <remarks>
+    /// ImageConversion.LoadImage has a ReadOnlySpan&lt;byte&gt; overload in current Unity. Resolving
+    /// that call requires System.ReadOnlySpan`1 to exist, and it does not on net462 without
+    /// System.Memory, which the game does not ship -- so a perfectly ordinary
+    /// `ImageConversion.LoadImage(texture, bytes, false)` fails to compile with CS0518 even though
+    /// the byte[] overload it wants is right there. Binding that overload by reflection sidesteps
+    /// the whole overload set. This lived inline in LoadMaterial; it is named here because
+    /// UnderworldTerrainTextureAssets hit the identical wall and shipped unbuilt, and the next
+    /// caller should find the answer rather than the error.
+    /// </remarks>
+    internal static bool LoadImage(Texture2D texture, byte[] data)
+    {
+        var loadImage = typeof(ImageConversion).GetMethod("LoadImage", new[] { typeof(Texture2D), typeof(byte[]), typeof(bool) })
+            ?? throw new MissingMethodException("ImageConversion.LoadImage");
+        return (bool)(loadImage.Invoke(null, new object[] { texture, data, false }) ?? false);
+    }
+
     private static Material? Uncouple(Material? source, string id)
     {
         if (!source || !source.shader || Array.IndexOf(WorldProjectedShaderNames, source.shader.name) < 0)
@@ -230,8 +248,7 @@ internal static class ModelAssets
             if (!Textures.TryGetValue(textureName!, out var texture))
             {
                 texture = new Texture2D(2, 2, TextureFormat.RGBA32, true) { name = textureName, wrapMode = TextureWrapMode.Repeat };
-                var loadImage=typeof(ImageConversion).GetMethod("LoadImage",new[]{typeof(Texture2D),typeof(byte[]),typeof(bool)}) ?? throw new MissingMethodException("ImageConversion.LoadImage");
-                if (!(bool)(loadImage.Invoke(null,new object[]{texture,File.ReadAllBytes(Path.Combine(DirectoryPath,"textures",textureName)),false}) ?? false)) throw new InvalidDataException("Invalid model texture: " + textureName);
+                if (!LoadImage(texture, File.ReadAllBytes(Path.Combine(DirectoryPath,"textures",textureName)))) throw new InvalidDataException("Invalid model texture: " + textureName);
                 Textures.Add(textureName!, texture);
             }
             material.mainTexture = texture;

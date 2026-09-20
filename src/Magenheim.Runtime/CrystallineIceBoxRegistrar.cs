@@ -82,7 +82,7 @@ internal sealed class CrystallineIceBoxRegistrar : IDisposable
                 PieceTable = "Hammer",
                 Category = "Crafting",
                 CraftingStation = CrystalEnchantingDaisRegistrar.PrefabName,
-                Icon = CrystallineIceBoxIcons.Icon(),
+                Icon = EarthAssets.Icon(CrystallineIceBoxVisuals.ModelId),
                 Requirements = new[]
                 {
                     Cost("BlackMarble", 12),

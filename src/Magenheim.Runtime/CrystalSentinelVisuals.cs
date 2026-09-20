@@ -9,7 +9,10 @@ internal static class CrystalSentinelVisuals
     // until one exists; see docs/RENDERING_AND_CONTENT_DEFECTS.md (C5).
     private const string StandardMunitionModel = "sentinel-ammo-radiance";
 
-    internal static GameObject Apply(GameObject prefab) => ModelAssets.Load(prefab, "crystal-sentinel");
+    /// <summary>The model id, which is also the icon's asset name.</summary>
+    internal const string ModelId = "crystal-sentinel";
+
+    internal static GameObject Apply(GameObject prefab) => ModelAssets.Load(prefab, ModelId);
 
     internal static GameObject CreateAmmoVisual(Turret turret, Material source)
     {
