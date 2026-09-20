@@ -21,7 +21,7 @@ internal sealed class UnderworldRuntimeServices
         StructureAdmission=new UnderworldStructureAdmissionController(log);
         ChunkStreaming=new UnderworldInstanceChunkStreamingRuntime(this,log);
         ChunkMaterializer=new UnderworldInstanceChunkMaterializer(this,log);
-        FungalStructureResidency=new UnderworldFungalStructureResidencyRuntime(this);
+        BiomeStructureResidency=new UnderworldBiomeStructureResidencyRuntime(this);
     }
 
     internal UnderworldInstanceTerrainDomain TerrainDomain{get;}
@@ -30,7 +30,7 @@ internal sealed class UnderworldRuntimeServices
     internal UnderworldStructureAdmissionController StructureAdmission{get;}
     internal UnderworldInstanceChunkStreamingRuntime ChunkStreaming{get;}
     internal UnderworldInstanceChunkMaterializer ChunkMaterializer{get;}
-    internal UnderworldFungalStructureResidencyRuntime FungalStructureResidency{get;}
+    internal UnderworldBiomeStructureResidencyRuntime BiomeStructureResidency{get;}
 
     internal static UnderworldRuntimeServices Create(string pluginConfigDirectory,ManualLogSource log)
     {
@@ -75,7 +75,7 @@ internal sealed class UnderworldRuntimeServices
 
     internal void ResetForWorldUnload()
     {
-        FungalStructureResidency.Clear();
+        BiomeStructureResidency.Clear();
         ChunkMaterializer.Clear();
         ChunkStreaming.Clear();
         InstanceLifecycle.Reset();
@@ -84,7 +84,7 @@ internal sealed class UnderworldRuntimeServices
 
     internal void Shutdown()
     {
-        FungalStructureResidency.Clear();
+        BiomeStructureResidency.Clear();
         ChunkMaterializer.Clear();
         ChunkStreaming.Clear();
         InstanceLifecycle.Reset();
