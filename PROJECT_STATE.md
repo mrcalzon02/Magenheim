@@ -1,3 +1,59 @@
+# Current source candidate - 0.0.86 / schema 5 (2026-09-19)
+
+**First live-play acceptance pass in a long while, and it earned its keep.** 0.0.85 was launched in
+the Central Fuckery profile and thirteen observations came back. Three items (axe, bow, crossbow)
+confirmed correct and were deliberately not touched. Nine are repaired here. One is open.
+
+**Unbounded item duplication, repaired.** The Crystal Sentinel refunded its full build cost on every
+hammer strike and was never removed. `Cost("RefinedEitr", 8)` names a prefab Valheim does not have
+-- the refined eitr item is `Eitr` -- so `Piece.Requirement.m_resItem` was null, and
+`Piece.DropResources` threw `ArgumentException` after dropping the other four ingredients and before
+the `ZNetScene.Destroy` at the end of `WearNTear.Destroy`. Twelve evenly spaced repeats in the
+session log. The same typo had reached the Crystal Bed; `CoreWood` (core wood is `RoundLog`) had
+reached the Earth Simple staff. Nine unresolved requirements in total, every one of them reported by
+Jotunn as a `MockResolveFailure` warning nobody read.
+
+`RequirementResolutionAudit` now runs after registration, scans registered Magenheim pieces and
+recipes for unresolved requirements, and reports at error level naming the piece and the position in
+its cost list -- and reports clean when there is nothing to say. It does not throw, because taking
+the registrar chain down is worse than a wrong build cost. It reads the registered objects rather
+than the call sites, so it covers every requirement however it was built, at the cost of not knowing
+the wanted prefab's name.
+
+**Held-model trims are authored from measurement.** The alignment report prints donor and replacement
+frames in attach space, so the fraction of each weapon trailing behind the hand is comparable with
+its donor: battleaxe 51.8%/12.5%, greatsword 34.2%/17.3%, knife 41.9%/12.1%, atgeir 41.6%/27.2% --
+the four reported wrong and the four largest gaps. Each takes ~45% of its full-match delta; full
+donor-matching is what broke the axe in 0.0.83, and the axe sits 28 points off its donor while
+reading correctly. Spear reversed about the attach origin and offset back into its measured
+envelope. Mace and sword were not tested in play and are untouched.
+
+Also repaired: the Crystal Hearth's fire (a `RandomColor` gradient whose alpha ramp made violet
+particles translucent and magenta ones invisible, plus a rescale that never reached particle size
+because the systems do not scale with their hierarchy); the Crystal Enchanting Dais presenting the
+crafting panel and the socketing panel simultaneously; and the Crystal Wall Sconce, six boxes at
+0.38x0.77x0.57 m, rebuilt to 0.17x0.45x0.26 m into the datablocks already bound to its materials so
+the committed textures carry over.
+
+0.0.86 is installed and SHA-256 verified in the active Central Fuckery profile: `Magenheim.dll`
+`6892FEFE68DB1C5BFB74A30B51C16E97F453536021ED2C06E7EFD4D4C863A611`. Launcher entry reads back as
+`Magenheim v0.0.86 by Local (enabled)`. Prior payload backup
+`backups/Local-Magenheim-20260919-233615.zip`; catalog backup `backups/mods-20260919-233625-574.yml`.
+Verified catalog data, not an observed launcher UI and not a game start.
+
+Build: 282 model assets, 38,327 Core assertions, zero warnings, zero errors, all gates pass.
+
+**Open, from the same session:** the crystal placeables draw their Hammer icons as procedural pixel
+art across nine `*Icons.cs` classes -- the defect 0.0.72 fixed for the ten weapons and the staves
+before them. 65 models need rendering; `tools/render-weapon-icons.py` is directly reusable.
+`CrystalAlchemyIcons` is not part of it: Crystal Dust and the Eitrwine bottles have no models.
+
+**Nothing here is runtime-accepted.** The game has not been launched against 0.0.86. The trims in
+particular are first estimates in the reported direction and should be expected to want one more
+pass.
+
+---
+
 # Current source candidate - 0.0.85 / schema 5 (2026-09-19)
 
 Magenheim's recipes no longer spend vanilla Crystal. Thirty costs across six registrars now buy the
