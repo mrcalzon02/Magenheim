@@ -24,8 +24,7 @@ internal static class UnderworldVanillaDonorCatalog
     private static readonly IReadOnlyDictionary<UnderworldTerrainBiome, Donor[]> Donors =
         new Dictionary<UnderworldTerrainBiome, Donor[]>
         {
-            [UnderworldTerrainBiome.FungalForest] =
-            new Donor[]
+            [UnderworldTerrainBiome.FungalForest] = new Donor[]
             {
                 new Donor("YggaShoot1", .85f, 1.35f, new Vector3(1.15f, 1.35f, 1.15f), -.15f, true),
                 new Donor("YggaShoot2", .9f, 1.45f, new Vector3(1.0f, 1.55f, 1.0f), -.15f, true),
@@ -39,8 +38,7 @@ internal static class UnderworldVanillaDonorCatalog
                 new Donor("Pickable_Mushroom_blue", 7f, 12f, new Vector3(1.25f, 1.45f, 1.25f), -.05f),
                 new Donor("Pickable_Mushroom_blue", 5.5f, 9f, new Vector3(.7f, 2.1f, .7f), -.05f),
             },
-            [UnderworldTerrainBiome.BlackwaterDeep] =
-            new Donor[]
+            [UnderworldTerrainBiome.BlackwaterDeep] = new Donor[]
             {
                 new Donor("cliff_mistlands1", 1.1f, 1.8f, new Vector3(1.0f, 1.45f, 1.0f), -.5f, true),
                 new Donor("cliff_mistlands1", .9f, 1.45f, new Vector3(1.75f, .72f, 1.35f), -.55f, true),
@@ -50,8 +48,7 @@ internal static class UnderworldVanillaDonorCatalog
                 new Donor("YggdrasilRoot", 1.2f, 2.0f, new Vector3(1.4f, .9f, 1.4f), -.25f, true),
                 new Donor("YggdrasilRoot", 1.0f, 1.65f, new Vector3(2.0f, .55f, 1.45f), -.3f, true),
             },
-            [UnderworldTerrainBiome.SulfurousWastes] =
-            new Donor[]
+            [UnderworldTerrainBiome.SulfurousWastes] = new Donor[]
             {
                 new Donor("Ashlands_rock1", 1.2f, 2.3f, new Vector3(1.15f, 1.25f, 1.15f), -.35f, true),
                 new Donor("Ashlands_rock1", .9f, 1.65f, new Vector3(1.7f, .7f, 1.3f), -.4f, true),
@@ -62,8 +59,7 @@ internal static class UnderworldVanillaDonorCatalog
                 new Donor("AshlandsTree6_big", .65f, 1.0f, new Vector3(.58f, 1.75f, .58f), -.15f, true),
                 new Donor("AshlandsBush1", 1.4f, 2.8f, new Vector3(1.1f, .8f, 1.1f), -.05f),
             },
-            [UnderworldTerrainBiome.FrozenCaverns] =
-            new Donor[]
+            [UnderworldTerrainBiome.FrozenCaverns] = new Donor[]
             {
                 new Donor("rock3_mountain_1", 1.15f, 2.1f, new Vector3(1.0f, 1.45f, 1.0f), -.35f, true),
                 new Donor("rock3_mountain_1", .9f, 1.55f, new Vector3(1.65f, .72f, 1.4f), -.4f, true),
@@ -73,8 +69,7 @@ internal static class UnderworldVanillaDonorCatalog
                 new Donor("BlackIceShard_01", 1.2f, 2.5f, new Vector3(.48f, 2.65f, .48f), -.15f, true),
                 new Donor("RockFinger", .9f, 1.6f, new Vector3(.75f, 1.75f, .75f), -.35f, true),
             },
-            [UnderworldTerrainBiome.FractureZones] =
-            new Donor[]
+            [UnderworldTerrainBiome.FractureZones] = new Donor[]
             {
                 new Donor("cliff_mistlands1", 1.1f, 2.0f, new Vector3(1.15f, 1.35f, 1.15f), -.45f, true),
                 new Donor("cliff_mistlands1", .85f, 1.4f, new Vector3(1.9f, .65f, 1.25f), -.5f, true),
@@ -85,8 +80,7 @@ internal static class UnderworldVanillaDonorCatalog
                 new Donor("RockThumb", 1.25f, 2.5f, new Vector3(1.0f, 1.5f, 1.0f), -.35f, true),
                 new Donor("rockformation1", 1.4f, 3.0f, new Vector3(1.2f, 1.35f, 1.2f), -.45f, true),
             },
-            [UnderworldTerrainBiome.GreatDecay] =
-            new Donor[]
+            [UnderworldTerrainBiome.GreatDecay] = new Donor[]
             {
                 new Donor("root07", 1.4f, 2.8f, new Vector3(1.25f, 1.0f, 1.25f), -.2f, true),
                 new Donor("root07", 1.1f, 2.0f, new Vector3(1.9f, .58f, 1.45f), -.25f, true),
@@ -107,15 +101,34 @@ internal static class UnderworldVanillaDonorCatalog
     {
         if (!Donors.TryGetValue(biome, out var donors) || donors.Length == 0)
             throw new InvalidOperationException($"No vanilla donor palette exists for {biome}.");
-
         var index = (variant & int.MaxValue) % donors.Length;
         return donors[index];
     }
 
     internal static Vector3 Scale(Donor donor, int variant)
     {
-        var normalized = ((variant & int.MaxValue) % 997) / 996f;
-        var scalar = Mathf.Lerp(donor.MinScale, donor.MaxScale, normalized);
-        return donor.Shape * scalar;
+        // Keep donor selection and physical size variation deterministic, but do not derive both
+        // from the same modulo. That correlation made each repeated donor settle into a visibly
+        // recurring size. Independent hashes also add a restrained horizontal asymmetry so cloned
+        // rocks, roots and mushrooms do not read as identical silhouettes from a distance.
+        var scalar = Mathf.Lerp(donor.MinScale, donor.MaxScale, Hash01(variant, 0x2D3));
+        var xJitter = Mathf.Lerp(.94f, 1.06f, Hash01(variant, 0x51B));
+        var zJitter = Mathf.Lerp(.94f, 1.06f, Hash01(variant, 0x7A9));
+        return Vector3.Scale(donor.Shape * scalar, new Vector3(xJitter, 1f, zJitter));
+    }
+
+    private static float Hash01(int value, int salt)
+    {
+        unchecked
+        {
+            var hash = (uint)value;
+            hash ^= (uint)salt * 0x9E3779B9u;
+            hash ^= hash >> 16;
+            hash *= 0x7FEB352Du;
+            hash ^= hash >> 15;
+            hash *= 0x846CA68Bu;
+            hash ^= hash >> 16;
+            return (hash & 0x00FFFFFFu) / 16777215f;
+        }
     }
 }
