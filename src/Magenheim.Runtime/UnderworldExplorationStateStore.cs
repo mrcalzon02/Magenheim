@@ -50,6 +50,7 @@ internal sealed class UnderworldExplorationStateStore
         ValidateIdentity(playerId, identity);
         if (target is null) throw new ArgumentNullException(nameof(target));
         if (target.Layer != MagenheimMapLayer.Underworld) throw new InvalidOperationException("Magenheim exploration storage may only restore the Underworld logical layer.");
+
         var path = RecordPath(playerId, identity);
         if (TryRead(path, target, out diagnostic)) return true;
         var primary = diagnostic;
@@ -59,6 +60,22 @@ internal sealed class UnderworldExplorationStateStore
             _log.LogWarning(diagnostic);
             return true;
         }
+
+        // Pre-native-instance builds omitted DerivedWorldId from the exploration namespace. Admit
+        // that location only as a migration source; every subsequent Save writes the canonical
+        // full-instance namespace so two derived worlds can never share exploration ownership.
+        var legacyPath = LegacyRecordPath(playerId, identity);
+        if (!string.Equals(path, legacyPath, StringComparison.Ordinal))
+        {
+            if (TryRead(legacyPath, target, out diagnostic) || TryRead(legacyPath + ".bak", target, out diagnostic))
+            {
+                _log.LogWarning("Migrating Underworld exploration state from the legacy partial-identity namespace.");
+                Save(playerId, identity, target);
+                diagnostic = "Migrated legacy Underworld exploration state into the canonical instance namespace.";
+                return true;
+            }
+        }
+
         diagnostic = "No admissible persisted Underworld exploration state. Primary: " + primary + " Backup: " + diagnostic;
         return false;
     }
@@ -71,6 +88,9 @@ internal sealed class UnderworldExplorationStateStore
     }
 
     private string RecordPath(string playerId, UnderworldWorldIdentity identity) =>
+        Path.Combine(_rootDirectory, Hash(identity.ParentWorldId + "\n" + identity.DerivedWorldId + "\n" + identity.DerivedSeedFingerprint), Hash(playerId.Trim()) + ".uwmap");
+
+    private string LegacyRecordPath(string playerId, UnderworldWorldIdentity identity) =>
         Path.Combine(_rootDirectory, Hash(identity.ParentWorldId + "\n" + identity.DerivedSeedFingerprint), Hash(playerId.Trim()) + ".uwmap");
 
     private static void ValidateIdentity(string playerId, UnderworldWorldIdentity identity)
