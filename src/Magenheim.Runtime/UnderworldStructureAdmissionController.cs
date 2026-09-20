@@ -6,18 +6,16 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Shared admission boundary for repeatable native Underworld structures.
-/// Placement identity is derived exclusively from the native chunk grid plus deterministic slot;
-/// Valheim ZoneSystem/ZDO identity and Surface coordinates never participate in ownership.
+/// Thin composition boundary for deterministic native Underworld structures.
+/// It assigns Magenheim instance identity to presentation objects but deliberately owns no
+/// persistence, player lifecycle, network lifecycle, or replacement world-object database.
 /// </summary>
 internal sealed class UnderworldStructureAdmissionController
 {
-    private readonly UnderworldGeneratedObjectStateStore _store;
     private readonly ManualLogSource _log;
 
-    internal UnderworldStructureAdmissionController(UnderworldGeneratedObjectStateStore store, ManualLogSource log)
+    internal UnderworldStructureAdmissionController(ManualLogSource log)
     {
-        _store = store ?? throw new ArgumentNullException(nameof(store));
         _log = log ?? throw new ArgumentNullException(nameof(log));
     }
 
@@ -26,16 +24,13 @@ internal sealed class UnderworldStructureAdmissionController
         string structureKind,
         UnderworldInstanceChunkKey chunk,
         int placementSlot,
-        bool authoritativeServer,
-        Func<GameObject> compose,
-        out bool restored)
+        Func<GameObject> compose)
     {
         if (identity is null) throw new ArgumentNullException(nameof(identity));
         if (string.IsNullOrWhiteSpace(structureKind)) throw new ArgumentException("Underworld structure kind is required.", nameof(structureKind));
         if (compose is null) throw new ArgumentNullException(nameof(compose));
 
         var placementKey = UnderworldStructurePlacementKey.For(chunk, placementSlot);
-        restored = _store.IsRecorded(identity, structureKind, placementKey);
         GameObject? candidate = null;
         try
         {
@@ -46,10 +41,7 @@ internal sealed class UnderworldStructureAdmissionController
             if (ownership is null) ownership = candidate.AddComponent<UnderworldGeneratedObjectIdentity>();
             ownership.Bind(identity, structureKind, placementKey);
 
-            if (authoritativeServer && !restored)
-                _store.RecordGenerated(identity, structureKind, placementKey);
-
-            _log.LogDebug($"{(restored ? "Restored" : "Generated")} native Underworld structure '{structureKind}' at {placementKey} ({ownership.StableObjectId}).");
+            _log.LogDebug($"Composed native Underworld structure '{structureKind}' at {placementKey} ({ownership.StableObjectId}).");
             var admitted = candidate;
             candidate = null;
             return admitted;
