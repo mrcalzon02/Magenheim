@@ -20,6 +20,7 @@ internal interface IUnderworldWorldContextController
 /// Placement acknowledgement is additionally bound to the concrete Player component that accepted
 /// the teleport and a short runtime-only settlement window. Timed-out placements enter a bounded
 /// runtime-only retry delay so a persistent engine/context failure cannot produce a tight teleport loop.
+/// All ephemeral acknowledgement state is discarded at physical-world lifetime boundaries.
 /// </summary>
 internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTransitionPlacementHost
 {
@@ -105,6 +106,13 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
 
         ClearPlacementRuntimeState(playerId);
         return UnderworldPlacementObservation.Confirmed;
+    }
+
+    /// <summary>Discard process-local teleport receipts and retry gates when the physical Valheim world lifetime ends.</summary>
+    internal void ResetForWorldBoundary()
+    {
+        _pendingPlacements.Clear();
+        _retryNotBefore.Clear();
     }
 
     private void ClearPlacementRuntimeState(string playerId)
