@@ -12,29 +12,22 @@ internal static class UnderworldMapRasterTests
             if (!condition) throw new InvalidOperationException($"Underworld map raster assertion {assertions} failed: {message}");
         }
 
-        var domain = UnderworldSpatialDomain.CreateDefault();
-        // BuildBiomeRaster(UnderworldSpatialDomainDefinition, ...) is obsolete; bridge the same way
-        // its own (obsolete) implementation does internally.
-        var instanceDomain = UnderworldInstanceTerrainDomain.ValidateAndFreeze(
-            domain.RadiusMeters, domain.LogicalMinY, domain.LogicalMaxY);
+        var domain = UnderworldInstanceTerrainDomain.CreateDefault();
         const int seed = 12345;
-        var raster = UnderworldMapRaster.BuildBiomeRaster(instanceDomain, seed, 33, 33);
+        var raster = UnderworldMapRaster.BuildBiomeRaster(domain, seed, 33, 33);
         Assert(raster.Length == 1089, "Raster dimensions must be exact.");
         var center = UnderworldMapProjection.CellIndex(33, 33, 16, 16);
         Assert(raster[center] == UnderworldTerrainBiome.FungalForest,
             "Logical map center must rasterize the protected Fungal Forest arrival basin.");
 
-        var repeat = UnderworldMapRaster.BuildBiomeRaster(instanceDomain, seed, 33, 33);
+        var repeat = UnderworldMapRaster.BuildBiomeRaster(domain, seed, 33, 33);
         for (var i = 0; i < raster.Length; i++)
-            Assert(raster[i] == repeat[i], "Same surface seed must produce an identical logical biome raster.");
+            Assert(raster[i] == repeat[i], "Same instance seed must produce an identical logical biome raster.");
 
-        var different = UnderworldMapRaster.BuildBiomeRaster(instanceDomain, seed + 1, 33, 33);
+        var different = UnderworldMapRaster.BuildBiomeRaster(domain, seed + 1, 33, 33);
         var changed = false;
         for (var i = 0; i < raster.Length; i++) changed |= raster[i] != different[i];
-        Assert(changed, "Changing the surface seed must be able to rotate/change the logical Underworld map.");
-
-        // The raster API has no host-coordinate input. This is deliberate: the 40 km reserved
-        // region is simulation/storage space and cannot leak into player-facing map generation.
+        Assert(changed, "Changing the instance seed must be able to rotate/change the logical Underworld map.");
         return assertions;
     }
 }
