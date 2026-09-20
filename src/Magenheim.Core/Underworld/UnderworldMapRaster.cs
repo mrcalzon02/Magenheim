@@ -45,17 +45,4 @@ public static class UnderworldMapRaster
         }
         return result;
     }
-
-    [Obsolete("Use the native UnderworldInstanceTerrainDomain overload. Host placement is not map authority.")]
-    public static UnderworldTerrainBiome[] BuildBiomeRaster(
-        UnderworldSpatialDomainDefinition domain,
-        int instanceSeed,
-        int width,
-        int height,
-        UnderworldTerrainBiome outsideBiome = UnderworldTerrainBiome.FungalForest)
-    {
-        if (domain is null) throw new ArgumentNullException(nameof(domain));
-        var native = UnderworldInstanceTerrainDomain.ValidateAndFreeze(domain.RadiusMeters, domain.LogicalMinY, domain.LogicalMaxY);
-        return BuildBiomeRaster(native, instanceSeed, width, height, outsideBiome);
-    }
 }
