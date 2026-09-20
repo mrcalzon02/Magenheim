@@ -48,6 +48,14 @@ for side in (-1,1):
  s='L' if side<0 else 'R'
  for i,(y,z,sy) in enumerate(((-.24,.305,.105),(-.06,.326,.125),(.13,.320,.115)),1): keep(organic(f'Capcrawler_RimScute_{s}{i}',(side*.315,y,z),(.085,sy,.035),car,3),'Body')
 keep(organic('Capcrawler_CrownPlate',(0,-.285,.345),(.205,.105,.042),car,3),'Body')
+# Fungal silhouette anatomy: dorsal shelf plates break the smooth beetle outline while the rear
+# spore knobs make the creature readable as a fungal symbiote even when the emissive gills are hidden.
+for side in (-1,1):
+ s='L' if side<0 else 'R'
+ for i,(y,sx,sy) in enumerate(((-.16,.13,.075),(.04,.145,.085)),1):
+  keep(organic(f'Capcrawler_ShelfPlate_{s}{i}',(side*.245,y,.382),(sx,sy,.022),car,2),'Body')
+for i,(x,y,z,r) in enumerate(((-.12,.245,.345,.050),(0,.285,.365,.060),(.12,.245,.345,.050)),1):
+ keep(organic(f'Capcrawler_SporeNodule_{i}',(x,y,z),(r,r*.86,r*.72),gill,2),'Body')
 for i,y in enumerate((-.24,-.08,.10,.26),1):
  for side in (-1,1):
   s='L' if side<0 else 'R'; hip=(side*.20,y,.22); knee=(side*.34,y+(i-2.5)*.018,.13); foot=(side*.43,y+(i-2.5)*.035,.035); toe=(side*.475,foot[1]+.008,.024)
@@ -110,9 +118,9 @@ arm.animation_data.action=None
 for name,bname in parts.items():
  o=bpy.data.objects[name]; mod=o.modifiers.new('CapcrawlerArmature','ARMATURE'); mod.object=arm; vg=o.vertex_groups.new(name=bname); vg.add(range(len(o.data.vertices)),1.0,'REPLACE'); o.parent=arm
 meshes=[o for o in bpy.context.scene.objects if o.type=='MESH']
-if len(meshes)<53: raise RuntimeError(f'Capcrawler detail regression: {len(meshes)} mesh parts')
+if len(meshes)<60: raise RuntimeError(f'Capcrawler detail regression: {len(meshes)} mesh parts')
 for o in meshes:
  uv=o.data.uv_layers.get('CapcrawlerUV')
  if not uv or not uv.data: raise RuntimeError(f'Missing explicit UVs: {o.name}')
-sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-capcrawler'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='common'; sc['magenheim_host_rig']='HOST-LOW-CRAWLER'; sc['magenheim_length_m']=.90; sc['magenheim_width_m']=.98; sc['magenheim_fidelity']='production-creature-r6'; sc['magenheim_skinning']='rigid-segment-weighted'; sc['magenheim_uv_contract']='CapcrawlerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,GillFX'; sc['magenheim_authored_actions']='Capcrawler_Idle,Capcrawler_Scuttle,Capcrawler_Turn,Capcrawler_AttackLeft,Capcrawler_AttackRight,Capcrawler_AttackFront,Capcrawler_Guard,Capcrawler_Hit,Capcrawler_Stagger,Capcrawler_Death'; sc['magenheim_animation_manifest']='idle,scuttle,turn,attack-left,attack-right,attack-front,guard,hit,stagger,death'; sc['magenheim_carapace_language']='layered-fungal-rim-scutes+crown'; sc['magenheim_ground_contact']='8-tarsal-pads+8-terminal-claws'; sc['magenheim_leg_rig']='coxa+tibia+tarsus-per-leg'
-bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(OUT),compress=True); print(f'AUTHORED Capcrawler r6: {len(meshes)} meshes / {len(arm.data.bones)} bones / three-joint legs -> {OUT.name}',flush=True)
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-capcrawler'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='common'; sc['magenheim_host_rig']='HOST-LOW-CRAWLER'; sc['magenheim_length_m']=.90; sc['magenheim_width_m']=.98; sc['magenheim_fidelity']='production-creature-r7'; sc['magenheim_skinning']='rigid-segment-weighted'; sc['magenheim_uv_contract']='CapcrawlerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,GillFX'; sc['magenheim_authored_actions']='Capcrawler_Idle,Capcrawler_Scuttle,Capcrawler_Turn,Capcrawler_AttackLeft,Capcrawler_AttackRight,Capcrawler_AttackFront,Capcrawler_Guard,Capcrawler_Hit,Capcrawler_Stagger,Capcrawler_Death'; sc['magenheim_animation_manifest']='idle,scuttle,turn,attack-left,attack-right,attack-front,guard,hit,stagger,death'; sc['magenheim_carapace_language']='layered-fungal-rim-scutes+crown+dorsal-shelves'; sc['magenheim_ground_contact']='8-tarsal-pads+8-terminal-claws'; sc['magenheim_leg_rig']='coxa+tibia+tarsus-per-leg'; sc['magenheim_fungal_signature']='4-dorsal-shelf-plates+3-spore-nodules'
+bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(OUT),compress=True); print(f'AUTHORED Capcrawler r7: {len(meshes)} meshes / {len(arm.data.bones)} bones / fungal silhouette anatomy -> {OUT.name}',flush=True)
