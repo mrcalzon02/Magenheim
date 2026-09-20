@@ -52,6 +52,19 @@ The Surface and Underworld remain part of the same Magenheim progression experie
 
 The 2026-09-17 same-world horizontal-region correction is superseded by the user's 2026-09-18 architecture correction. Any backlog, validation record, handoff or source comment that treats the 40 km horizontal region as the intended final architecture is historical evidence, not authority.
 
+## Delivery discipline — prefer Valheim over Magenheim machinery
+
+The default implementation question is **"does Valheim already handle this?"** Inspect the existing Valheim/Jötunn lifecycle and API before creating Magenheim state, managers, recovery systems, registries, schedulers, serializers, or abstractions.
+
+- Prefer the smallest direct adapter that connects Magenheim content to an existing Valheim capability.
+- Do not mirror player, inventory, character-save, connection, teleport, object-lifetime, networking, zone, or ordinary persistence machinery that Valheim already owns.
+- New framework code requires a concrete missing engine capability or a Magenheim-specific invariant that cannot be expressed through the existing API.
+- A deliverable is player-visible functionality or a necessary direct dependency of it. Internal architecture refinement by itself is not a development milestone.
+- Before adding a manager/state machine/store/controller, identify the Valheim/Jötunn mechanism that was checked and why it is insufficient. If no insufficiency is demonstrated, do not add the layer.
+- Prefer deleting or bypassing redundant Magenheim machinery over making that machinery more sophisticated.
+- Keep implementation slices short: engine capability -> thin adapter -> player-visible behavior -> verification. Stop once the required behavior works.
+- Do not spend a development cycle hardening speculative failure modes in infrastructure that has not yet produced the intended gameplay deliverable.
+
 ## Architecture
 
 - `Magenheim.Core` owns deterministic rules and must remain independent of Unity, Valheim, BepInEx, and Jötunn.
