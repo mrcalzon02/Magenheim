@@ -12,15 +12,10 @@ internal static class UnderworldMapPresentationTests
             if (!condition) throw new InvalidOperationException($"Underworld map presentation assertion {assertions} failed: {message}");
         }
 
-        var domain = UnderworldSpatialDomain.CreateDefault();
-        // CreateUnderworldViewport(UnderworldSpatialDomainDefinition, ...) is obsolete; bridge the
-        // same way its own (obsolete) implementation does internally. domain.RadiusMeters below is
-        // unaffected -- both domain types expose it.
-        var instanceDomain = UnderworldInstanceTerrainDomain.ValidateAndFreeze(
-            domain.RadiusMeters, domain.LogicalMinY, domain.LogicalMaxY);
-        var view = UnderworldMapPresentation.CreateUnderworldViewport(instanceDomain, 512, 512);
+        var domain = UnderworldInstanceTerrainDomain.CreateDefault();
+        var view = UnderworldMapPresentation.CreateUnderworldViewport(domain, 512, 512);
         Assert(view.Layer == MagenheimMapLayer.Underworld, "viewport must identify the logical Underworld tab");
-        Assert(view.CenterX == 0d && view.CenterZ == 0d, "host offset must never enter map-space presentation");
+        Assert(view.CenterX == 0d && view.CenterZ == 0d, "native instance origin must remain map-space origin");
         Assert(UnderworldMapPresentation.TryLogicalToCell(view, 0d, 0d, out var cx, out var cy) && cx == 256 && cy == 256,
             "logical origin must map to the exploration texture center");
         Assert(!UnderworldMapPresentation.TryLogicalToCell(view, domain.RadiusMeters + 1d, 0d, out _, out _),
