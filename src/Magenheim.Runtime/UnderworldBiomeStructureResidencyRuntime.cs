@@ -20,6 +20,7 @@ internal sealed class UnderworldBiomeStructureResidencyRuntime
     {
         _services = services ?? throw new ArgumentNullException(nameof(services));
         Register(new FungalSporeCairnFamily());
+        Register(new FungalRootMassFamily());
         Register(new SulfurVentCairnFamily());
     }
 
@@ -29,8 +30,12 @@ internal sealed class UnderworldBiomeStructureResidencyRuntime
     {
         if (family is null) throw new ArgumentNullException(nameof(family));
         foreach (var existing in _families)
+        {
             if (string.Equals(existing.Kind, family.Kind, StringComparison.Ordinal))
                 throw new InvalidOperationException($"Underworld structure family '{family.Kind}' is already registered.");
+            if (existing.Biome == family.Biome && existing.PlacementSlot == family.PlacementSlot)
+                throw new InvalidOperationException($"Underworld biome '{family.Biome}' already owns placement slot {family.PlacementSlot} through '{existing.Kind}'.");
+        }
         _families.Add(family);
     }
 
@@ -162,7 +167,66 @@ internal sealed class FungalSporeCairnFamily : IUnderworldBiomeStructureFamily
 }
 
 /// <summary>
-/// Second repeatable family proving that the shared registry can host an independent biome,
+/// Second Fungal Forest family. It deliberately occupies a distinct native placement slot so a
+/// single admitted Fungal chunk can independently host both a cairn and a root mass without
+/// identity collisions or a second residency system.
+/// </summary>
+internal sealed class FungalRootMassFamily : IUnderworldBiomeStructureFamily
+{
+    public string Kind => "fungal-root-mass";
+    public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.FungalForest;
+    public int PlacementSlot => 2;
+
+    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
+    {
+        unchecked
+        {
+            var hash = identity.DerivedSeed32 ^ 0x2F6E2B1D;
+            hash = (hash * 397) ^ key.X;
+            hash = (hash * 397) ^ key.Z;
+            hash ^= hash >> 15;
+            return (hash & 7) <= 2;
+        }
+    }
+
+    public GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
+    {
+        var root = new GameObject($"Magenheim_FungalRootMass_{key.X}_{key.Z}");
+        root.transform.position = position;
+        var seed = identity.DerivedSeed32 ^ key.X * 92837111 ^ key.Z * 689287499 ^ 0x2F6E2B1D;
+        var random = new System.Random(seed);
+        try
+        {
+            var heart = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            heart.name = "RootHeart";
+            heart.transform.SetParent(root.transform, false);
+            heart.transform.localPosition = new Vector3(0f, 0.65f, 0f);
+            heart.transform.localScale = new Vector3(2.4f, 1.25f, 2.1f);
+
+            for (var i = 0; i < 6; i++)
+            {
+                var angle = (float)(random.NextDouble() * Math.PI * 2d);
+                var length = 2.8f + (float)random.NextDouble() * 3.8f;
+                var thickness = 0.45f + (float)random.NextDouble() * 0.35f;
+                var rootBranch = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                rootBranch.name = $"Root_{i}";
+                rootBranch.transform.SetParent(root.transform, false);
+                rootBranch.transform.localPosition = new Vector3(Mathf.Cos(angle) * length * 0.42f, 0.35f, Mathf.Sin(angle) * length * 0.42f);
+                rootBranch.transform.localScale = new Vector3(thickness, length * 0.5f, thickness);
+                rootBranch.transform.localRotation = Quaternion.Euler(90f, 0f, angle * Mathf.Rad2Deg);
+            }
+            return root;
+        }
+        catch
+        {
+            UnityEngine.Object.Destroy(root);
+            throw;
+        }
+    }
+}
+
+/// <summary>
+/// Second repeatable biome family proving that the shared registry can host an independent biome,
 /// deterministic slot and durable generated-object identity without another residency runtime.
 /// </summary>
 internal sealed class SulfurVentCairnFamily : IUnderworldBiomeStructureFamily
