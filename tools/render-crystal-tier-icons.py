@@ -22,7 +22,7 @@ SIZE = 256
 SAMPLES = 96
 
 # The tier sources are earth-<tier>.blend and the registrars ask EarthAssets.Icon for <tier>.
-TIERS = ('rough', 'simple', 'crystal', 'advanced', 'master', 'shards')
+TIERS = ('rough', 'simple', 'crystal', 'advanced', 'master', 'shards', 'structural')
 
 
 def asset_name(model_id: str) -> str:

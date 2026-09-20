@@ -1,3 +1,36 @@
+## 0.0.85 - The Structural Crystal, and the end of vanilla Crystal in our recipes
+
+- **Magenheim no longer builds with Moder's crystal.** Thirty recipes across six registrars -- the
+  crystal architecture set, the ten geology decor pieces, the ten crystal weapons, the Crystal
+  Sentinel, the Crystal Enchanting Dais and the Resonance Frame -- cost vanilla `Crystal`. They now
+  cost the Structural Crystal, which is ours.
+- **Structural Crystal**, an unaligned bulk block fused from four elemental crystal shards of any
+  one alignment, at the Geologist's Workstation. The fusing destroys the alignment, the same trade
+  the grinding chain already makes for Crystal Dust: it holds no charge and cannot be socketed, and
+  what it holds instead is load. Four shards rather than the five a Simple crystal costs, because
+  this is bulk stock and everything Magenheim builds is now priced in it.
+  Valheim's crafting UI cannot express "any four shards" as a single requirement, so this is eight
+  recipes, one per alignment, rather than one mixed-input craft.
+- Recipe amounts scale to roughly half their vanilla-Crystal values, rounded up, with a floor of 1
+  -- an 8m foundation goes 32 -> 16, the Crystal Greatsword 34/14 -> 17/7, a wall sconce stays at 1.
+  Each block already costs two rough crystals upstream, so halving keeps the total geode spend close
+  to what it was.
+- The billet is a new model rather than a recoloured tier: two chamfered, flat-faced blocks, the
+  upper one turned off-axis and seated into the lower. Nothing in it is a matrix chunk or a
+  terminated point, because at stack scale the silhouette is the only thing separating building
+  stock from a crystal worth socketing. It carries its own full-range facet map -- the shared tier
+  map spends half its width on host rock the billet does not have, and sampling only the bright half
+  rendered it as a white blob.
+- `export-model-assets.py` now writes the `.obj`/`.mtl` pair beside every earth asset it exports.
+  They used to come from `generate-earth-assets.py`, which the Blender-authored tiers no longer go
+  through, so a model authored today shipped without the pair its gate requires.
+- **Two defects on `main`, both of which had been pushed unbuilt.** `verify-model-assets.py`
+  rejected `UnderworldInstanceChunkMaterializer` for building a mesh in C#; it builds terrain from
+  Core heightfield samples and is not authored art, so the gate now records why each exemption
+  exists and asserts the exempted files still exist. And `Magenheim.Runtime` referenced
+  `System.ValueTuple` again, through the chunk streaming focus list -- it compiles and then throws
+  at registration, taking every registrar behind it with it. Replaced with a struct.
+
 ## 0.0.72 — Weapon icons from their sources, and the hand-authored geode
 
 - The ten crystal weapons drew their icons as procedural pixel art in C#, which described them only

@@ -57,7 +57,7 @@ internal sealed class WorkshopRegistrar : IDisposable
                 craftingStation, new[] { Cost("FineWood", 10), Cost("Stone", 10), Cost("Bronze", 4) });
             AddPiece(ResonancePrefab, "piece_workbench_ext1", "resonance-frame", "Resonance Frame",
                 "A suspended mineral within a metal frame. Geologist's Workstation improvement.",
-                craftingStation, new[] { Cost("FineWood", 10), Cost("Iron", 4), Cost("Crystal", 5) });
+                craftingStation, new[] { Cost("FineWood", 10), Cost("Iron", 4), Cost(StructuralCrystalRegistrar.PrefabName, 3) });
             _registered = true;
             _log.LogInfo("Registered Geologist's Workstation and 3 original station upgrades in Hammer > Crafting.");
         }

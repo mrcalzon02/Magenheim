@@ -61,7 +61,7 @@ internal sealed class CrystalEnchantingDaisRegistrar : IDisposable
                 {
                     Cost("Stone", 20),
                     Cost("Iron", 8),
-                    Cost("Crystal", 8),
+                    Cost(StructuralCrystalRegistrar.PrefabName, 4),
                     Cost(CrystalAlchemyRegistrar.CrystalDustPrefab, 4),
                 }
             };

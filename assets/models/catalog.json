@@ -2544,6 +2544,18 @@
     "glb_sha256": "1a880f492a786796c31a82c0affafadaff1838c3bd4bcddeab95f48c1021d4d8"
   },
   {
+    "id": "earth-structural",
+    "parts": 1,
+    "triangles": 152,
+    "materials": 1,
+    "source": "source/earth-structural.blend",
+    "glb": "glb/earth-structural.glb",
+    "runtime": "runtime/earth-structural.model.json",
+    "source_sha256": "48eb3b2e4290b34daffa6d8f797781df4311c10dfcf3c44ccf72a3a9f27a8bb3",
+    "runtime_sha256": "9cc61c7b89ee89ff633b134fed79c63e6df8a0f641f016ca93672cad947a61ca",
+    "glb_sha256": "2a84d1d593854b0ff78c53e0901b5814e613c0511d34384ce68b05c7ac28ba0e"
+  },
+  {
     "id": "earth-workstation",
     "parts": 1,
     "triangles": 1172,

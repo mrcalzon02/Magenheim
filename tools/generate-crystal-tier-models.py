@@ -1,8 +1,8 @@
-"""Rebuild the crystal progression items: rough, simple, crystal, advanced, master, shards.
+"""Rebuild the crystal items: rough, simple, crystal, advanced, master, shards, structural.
 
     blender --background --factory-startup --python tools/generate-crystal-tier-models.py
 
-Six models carry forty-eight items. EarthContentRegistrar registers every tier for all eight
+Six of these models carry forty-eight items. EarthContentRegistrar registers every tier for all eight
 elements from one shared mesh per tier, tinted per element, plus the shard item. They were
 also the least developed assets in the library: earth-simple was 36 triangles, rough,
 crystal and shards 108, advanced and master 180 - the lowest counts of anything, for the
@@ -16,6 +16,16 @@ The rebuild gives the progression a readable silhouette:
   advanced  a main point with three secondaries, a developing cluster
   master    a radiating cluster of seven terminated points, matrix nearly gone
   shards    six angular fragments
+
+The seventh is not a tier and does not belong to the refinement ladder:
+
+  structural  a stepped, chamfered billet of fused crystal, no host rock at all
+
+It is the one crystal in the family that was manufactured rather than grown, so it is built
+from flat faces and cut edges instead of matrix and terminated points. That silhouette is the
+whole point: a player glancing at a stack must not confuse bulk building stock with a crystal
+worth socketing. It is also the only member with no elemental alignment, so it is never tinted
+and its greyscale map is its final appearance.
 
 Two constraints from the surrounding code, both load-bearing:
 
@@ -209,6 +219,58 @@ def add_shard(target, centre, size, rnd):
     append_solid(target, solid)
 
 
+def add_block(target, base, radius, height, rnd, sides=SIDES, phase=0.0, cap=0.74, waist=1.0):
+    """A cut billet: a chamfered prism with flat, stackable top and bottom faces.
+
+    The tiers are matrix and terminated points because they grew. This one was fused out of
+    shards, so it is built the way a cut block is: a slight waist, a chamfer top and bottom,
+    and two flat faces. `phase` rotates the facet ring so stacked billets do not line up.
+    """
+    levels = [(0.00, cap), (0.13, 0.98), (0.55, waist), (0.87, 0.98), (1.00, cap)]
+    rings = []
+    for t, scale in levels:
+        r = radius * scale * rnd.uniform(0.985, 1.015)
+        y = base[1] + height * t
+        ring = []
+        for k in range(sides):
+            angle = math.tau * k / sides + phase
+            ring.append((base[0] + math.cos(angle) * r, y, base[2] + math.sin(angle) * r))
+        rings.append(ring)
+
+    solid = MeshBuilder()
+
+    # A cut face is flat: it reads as one tone, different from the tone on the face beside it.
+    # So each facet samples the inside of a single band of the map rather than sweeping across
+    # band boundaries -- inset off both edges so interpolation cannot bleed into the neighbour.
+    # Sweeping the full band per facet instead drew a dark border around each one, and the block
+    # came out looking like a pile of cobbles.
+    def facet_uv(offset, t, facet):
+        frac = ((facet % sides) + offset) / float(sides)
+        return (CRYSTAL_U[0] + (CRYSTAL_U[1] - CRYSTAL_U[0]) * frac, 0.06 + 0.88 * t)
+
+    for s in range(len(rings) - 1):
+        lo, hi = rings[s], rings[s + 1]
+        t0, t1 = levels[s][0], levels[s + 1][0]
+        for k in range(sides):
+            n = (k + 1) % sides
+            solid.tri([lo[k], lo[n], hi[n]], [facet_uv(.15, t0, k), facet_uv(.85, t0, k), facet_uv(.85, t1, k)])
+            solid.tri([lo[k], hi[n], hi[k]], [facet_uv(.15, t0, k), facet_uv(.85, t1, k), facet_uv(.15, t1, k)])
+    # The flat top catches the light and the underside sits in shadow, so they take the brightest
+    # and darkest bands rather than borrowing a side facet's tone. The two caps must wind in
+    # opposite directions -- the top faces +Y and the underside -Y. Winding both the same way
+    # leaves one of them inside-out, which reads as a closed solid right up until the Earth asset
+    # gate walks the edges and finds them traversed twice in the same direction.
+    for ring, t, facet, flip in ((rings[0], 0.0, 7, True), (rings[-1], 1.0, 3, False)):
+        for k in range(1, sides - 1):
+            points = [ring[0], ring[k], ring[k + 1]]
+            uvs = [facet_uv(.5, t, facet), facet_uv(.15, t, facet), facet_uv(.85, t, facet)]
+            if flip:
+                points.reverse()
+                uvs.reverse()
+            solid.tri(points, uvs)
+    append_solid(target, solid)
+
+
 def spread(rnd, tilt):
     """A direction leaning off vertical by roughly `tilt` radians."""
     angle = rnd.uniform(0.0, math.tau)
@@ -221,7 +283,7 @@ def spread(rnd, tilt):
 def build_tier(name, rnd):
     mesh = MeshBuilder()
     rnd.seedval = {'rough': 1.0, 'simple': 2.0, 'crystal': 3.0,
-                   'advanced': 4.0, 'master': 5.0, 'shards': 6.0}[name]
+                   'advanced': 4.0, 'master': 5.0, 'shards': 6.0, 'structural': 7.0}[name]
     base = (0.0, BASE_Y + 0.055, 0.0)
 
     if name == 'rough':
@@ -267,6 +329,15 @@ def build_tier(name, rnd):
                       rnd.uniform(-0.04, 0.04))
             add_shard(mesh, centre, rnd.uniform(0.016, 0.032), rnd)
 
+    elif name == 'structural':
+        # Two fused billets, the upper one smaller and turned off-axis, seated 10mm into the
+        # lower so the pair reads as one block fused in two pours rather than two stacked
+        # objects. Nothing here is a point or a matrix chunk: at stack scale the flat top and
+        # the cut step are what separate building stock from a socketable crystal at a glance.
+        add_block(mesh, (0.0, BASE_Y, 0.0), 0.098, 0.150, rnd)
+        add_block(mesh, (0.0, BASE_Y + 0.140, 0.0), 0.058, 0.115, rnd,
+                  phase=math.tau / 16.0, cap=0.70)
+
     return mesh
 
 
@@ -297,6 +368,41 @@ def crystal_map(rnd):
         depth += 0.10 * math.sin(v * math.tau * 2.0 + f * 3.0)
         depth += 0.06 * noise(f, v, 22.0)
         return min(1.0, depth)                          # bright, banded crystal
+    return sample
+
+
+def billet_map(rnd):
+    """Full-range facet shading for the fused billet, which carries no host rock.
+
+    crystal_map splits its width between matrix and crystal because every tier model has both.
+    The billet has none, so it samples only the bright crystal half and renders as a white blob
+    with no tonal range at all -- which is what the first icon showed, and what the Earth asset
+    gate measures at gameplay scale. This map spends its whole range on the crystal: dark at each
+    facet edge, bright across the middle, so adjacent cut faces separate from one another.
+    """
+    lattice = 16
+    grid = [[rnd.random() for _ in range(lattice)] for _ in range(lattice)]
+
+    def noise(u, v, frequency):
+        fx, fy = u * frequency, v * frequency
+        x0, y0 = int(fx) % lattice, int(fy) % lattice
+        x1, y1 = (x0 + 1) % lattice, (y0 + 1) % lattice
+        tx, ty = fx - math.floor(fx), fy - math.floor(fy)
+        tx, ty = tx * tx * (3 - 2 * tx), ty * ty * (3 - 2 * ty)
+        top = grid[x0][y0] * (1 - tx) + grid[x1][y0] * tx
+        bottom = grid[x0][y1] * (1 - tx) + grid[x1][y1] * tx
+        return top * (1 - ty) + bottom * ty
+
+    # Eight flat tones, deliberately not in order around the block, so neighbouring facets always
+    # differ sharply and the silhouette reads as cut rather than moulded.
+    tones = (0.30, 0.88, 0.52, 0.96, 0.38, 0.76, 0.62, 0.20)
+
+    def sample(u, v):
+        f = min(1.0, max(0.0, (u - CRYSTAL_U[0]) / (CRYSTAL_U[1] - CRYSTAL_U[0])))
+        depth = tones[min(int(f * len(tones)), len(tones) - 1)]
+        depth += 0.05 * math.sin(v * math.tau * 2.0)   # faint growth banding up the face
+        depth += 0.04 * noise(f, v, 12.0)
+        return min(1.0, max(0.0, depth))
     return sample
 
 
@@ -361,11 +467,12 @@ def emit(model_id, mesh, sampler):
 
 
 def main():
-    for tier in ('rough', 'simple', 'crystal', 'advanced', 'master', 'shards'):
+    for tier in ('rough', 'simple', 'crystal', 'advanced', 'master', 'shards', 'structural'):
         rnd = random.Random(90210 + sum(ord(c) for c in tier))
         rnd.seedval = 0.0
         mesh = build_tier(tier, rnd)
-        emit('earth-' + tier, mesh, crystal_map(random.Random(4242 + len(tier))))
+        texture = billet_map if tier == 'structural' else crystal_map
+        emit('earth-' + tier, mesh, texture(random.Random(4242 + len(tier))))
 
 
 main()

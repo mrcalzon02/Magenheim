@@ -12,7 +12,7 @@ from pathlib import Path
 from PIL import Image, ImageStat
 
 root=Path(__file__).resolve().parents[1]/'assets'/'earth'
-names=['geode','rough','simple','crystal','advanced','master','shards','workstation','fracturing-block','faceting-wheel','resonance-frame']
+names=['geode','rough','simple','crystal','advanced','master','shards','structural','workstation','fracturing-block','faceting-wheel','resonance-frame']
 legacy_floor=128
 icon_target=max(256,int(os.environ.get('MAGENHEIM_EARTH_ICON_TARGET_SIZE',os.environ.get('MAGENHEIM_ICON_TARGET_SIZE','256'))))
 enforce_target=os.environ.get('MAGENHEIM_ENFORCE_ICON_TARGET','').strip().lower() in {'1','true','yes','on'}

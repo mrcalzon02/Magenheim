@@ -99,6 +99,17 @@ for file in files:
   for part in parts:
    offset=len(vs);vs.extend(part['vertices']);uvs.extend(part['uv']);indices.extend(offset+i for i in part['triangles'])
   (root/'assets/earth'/(file.stem[6:]+'.mesh.json')).write_text(json.dumps(dict(vertices=vs,uv=uvs,triangles=indices),separators=(',',':')))
+  # verify-earth-assets requires an .obj/.mtl pair beside every earth asset. They used to come
+  # from generate-earth-assets.py, which the Blender-authored tiers no longer go through, so a
+  # model authored here would ship without them -- and a hand-kept pair would silently drift from
+  # the mesh it claims to describe. Same format, same source, one tool.
+  name=file.stem[6:]
+  obj=['# Original Magenheim Earth asset; meters; Y up','mtllib '+name+'.mtl','usemtl '+name]
+  obj+=['v '+' '.join('%.6f'%x for x in p) for p in vs]+['vt '+' '.join('%.6f'%x for x in p) for p in uvs]
+  obj+=['f '+' '.join('%d/%d'%(indices[i+j]+1,indices[i+j]+1) for j in range(3)) for i in range(0,len(indices),3)]
+  nl=chr(10)
+  (root/'assets/earth'/(name+'.obj')).write_text(nl.join(obj)+nl)
+  (root/'assets/earth'/(name+'.mtl')).write_text(nl.join(['newmtl '+name,'Kd 1 1 1','map_Kd '+name+'.png','']))
 
  if not parts:raise ValueError('Empty model: '+str(file))
  (out/'runtime'/(file.stem+'.model.json')).write_text(json.dumps(payload,separators=(',',':')))

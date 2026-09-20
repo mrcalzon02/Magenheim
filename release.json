@@ -1,4 +1,4 @@
 {
-  "version": "0.0.84",
-  "description": "0.0.84: Held models are placed exactly as authored. The seating offset displaced every weapon from its authored position, and each reshaping of it fixed one weapon by breaking another. Orientation belongs in the source model."
+  "version": "0.0.85",
+  "description": "0.0.85: Adds the Structural Crystal, an unaligned block fused from four elemental shards, and moves every Magenheim building, decor, station and weapon recipe off vanilla Crystal onto it at roughly half the old amounts."
 }

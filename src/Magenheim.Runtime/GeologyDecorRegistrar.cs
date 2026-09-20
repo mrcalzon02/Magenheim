@@ -188,52 +188,52 @@ internal sealed class GeologyDecorRegistrar : IDisposable
             "Magenheim_Decor_GeodeBowl", GeologyDecorVisuals.GeodeBowl, "Geode Bowl",
             "A low stone specimen bowl holding a small cluster of shaped crystal points.",
             new[] { "piece_table", "wood_floor" },
-            Cost("Stone", 3), Cost("Iron", 1), Cost("Crystal", 2)),
+            Cost("Stone", 3), Cost("Iron", 1), Cost(StructuralCrystalRegistrar.PrefabName, 1)),
         new DecorDefinition(
             "Magenheim_Decor_CutGeodePlaque", GeologyDecorVisuals.CutGeodePlaque, "Cut-Geode Wall Plaque",
             "A framed cut geode mounted as a geological wall specimen.",
             new[] { "woodwall", "wood_wall", "piece_table" },
-            Cost("FineWood", 2), Cost("Stone", 2), Cost("Iron", 1), Cost("Crystal", 2)),
+            Cost("FineWood", 2), Cost("Stone", 2), Cost("Iron", 1), Cost(StructuralCrystalRegistrar.PrefabName, 1)),
         new DecorDefinition(
             "Magenheim_Decor_CrystalEndTable", GeologyDecorVisuals.CrystalEndTable, "Crystal End Table",
             "A compact octagonal stone table with a timber pedestal and crystals tucked beneath the slab.",
             new[] { "piece_table", "wood_floor" },
-            Cost("FineWood", 4), Cost("Stone", 3), Cost("Iron", 1), Cost("Crystal", 1)),
+            Cost("FineWood", 4), Cost("Stone", 3), Cost("Iron", 1), Cost(StructuralCrystalRegistrar.PrefabName, 1)),
         new DecorDefinition(
             "Magenheim_Decor_GeologistStool", GeologyDecorVisuals.GeologistStool, "Geologist's Stool",
             "A three-legged field stool with a stone seat and an underslung crystal specimen.",
             new[] { "piece_chair", "piece_bench01", "wood_floor" },
-            Cost("FineWood", 3), Cost("Stone", 2), Cost("Iron", 1), Cost("Crystal", 1)),
+            Cost("FineWood", 3), Cost("Stone", 2), Cost("Iron", 1), Cost(StructuralCrystalRegistrar.PrefabName, 1)),
         new DecorDefinition(
             "Magenheim_Decor_MineralDisplayCase", GeologyDecorVisuals.MineralDisplayCase, "Mineral Display Case",
             "An iron-framed specimen cabinet displaying cut crystals and a small geode.",
             new[] { "piece_chest_wood", "piece_chest", "piece_table", "wood_floor" },
-            Cost("FineWood", 8), Cost("Stone", 3), Cost("Iron", 4), Cost("Bronze", 2), Cost("Crystal", 4)),
+            Cost("FineWood", 8), Cost("Stone", 3), Cost("Iron", 4), Cost("Bronze", 2), Cost(StructuralCrystalRegistrar.PrefabName, 2)),
         new DecorDefinition(
             "Magenheim_Decor_CrystalWallSconce", GeologyDecorVisuals.CrystalWallSconce, "Crystal Wall Sconce",
             "A stone and bronze wall bracket supporting a luminous faceted crystal.",
             new[] { "woodwall", "wood_wall", "piece_table" },
-            Cost("Stone", 2), Cost("Iron", 1), Cost("Bronze", 1), Cost("Crystal", 1), Cost("Resin", 2)),
+            Cost("Stone", 2), Cost("Iron", 1), Cost("Bronze", 1), Cost(StructuralCrystalRegistrar.PrefabName, 1), Cost("Resin", 2)),
         new DecorDefinition(
             "Magenheim_Decor_StrataMapTable", GeologyDecorVisuals.StrataMapTable, "Strata Map Table",
             "A broad geological survey table inlaid with layered stone strata and a crystal compass point.",
             new[] { "piece_table", "wood_floor" },
-            Cost("FineWood", 8), Cost("Stone", 6), Cost("Bronze", 2), Cost("Crystal", 2)),
+            Cost("FineWood", 8), Cost("Stone", 6), Cost("Bronze", 2), Cost(StructuralCrystalRegistrar.PrefabName, 1)),
         new DecorDefinition(
             "Magenheim_Decor_SpecimenSideboard", GeologyDecorVisuals.SpecimenSideboard, "Specimen Sideboard",
             "A low reinforced cabinet with a stone top reserved for prized mineral samples.",
             new[] { "piece_chest_wood", "piece_chest", "piece_table", "wood_floor" },
-            Cost("FineWood", 8), Cost("Stone", 4), Cost("Iron", 2), Cost("Bronze", 2), Cost("Crystal", 3)),
+            Cost("FineWood", 8), Cost("Stone", 4), Cost("Iron", 2), Cost("Bronze", 2), Cost(StructuralCrystalRegistrar.PrefabName, 2)),
         new DecorDefinition(
             "Magenheim_Decor_CrystalCoatRack", GeologyDecorVisuals.CrystalCoatRack, "Crystal Coat Rack",
             "A free-standing iron-bound timber rack whose hook ends are capped with crystal points.",
             new[] { "piece_table", "wood_floor" },
-            Cost("FineWood", 5), Cost("Stone", 3), Cost("Iron", 2), Cost("Bronze", 1), Cost("Crystal", 3)),
+            Cost("FineWood", 5), Cost("Stone", 3), Cost("Iron", 2), Cost("Bronze", 1), Cost(StructuralCrystalRegistrar.PrefabName, 2)),
         new DecorDefinition(
             "Magenheim_Decor_GeodeHearthMantel", GeologyDecorVisuals.GeodeHearthMantel, "Geode Hearth Mantel",
             "A heavy stone hearth surround crossed by metal bands, mounted geodes, and a crystal seam.",
             new[] { "woodwall", "wood_wall", "piece_table" },
-            Cost("Stone", 12), Cost("Iron", 2), Cost("Bronze", 2), Cost("Crystal", 4)),
+            Cost("Stone", 12), Cost("Iron", 2), Cost("Bronze", 2), Cost(StructuralCrystalRegistrar.PrefabName, 2)),
     };
 
     public void Dispose()

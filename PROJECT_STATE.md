@@ -1,3 +1,44 @@
+# Current source candidate - 0.0.85 / schema 5 (2026-09-19)
+
+Magenheim's recipes no longer spend vanilla Crystal. Thirty costs across six registrars now buy the
+**Structural Crystal**, `Magenheim_StructuralCrystal`: an unaligned bulk block fused from four
+elemental shards of any one alignment at the Geologist's Workstation. Amounts scale to roughly half
+their vanilla-Crystal values (round-half-up, floor of 1), because each block already costs two rough
+crystals upstream. The two remaining `"Crystal"` literals in the runtime are deliberate and are not
+recipes: a donor-name substring match in `DeepFractureRoomVisuals` and our own tier name in
+`StaffAttackAudit`.
+
+Registration order is load-bearing. Jotunn resolves a `PieceConfig` requirement when the
+`CustomPiece` is constructed, so `StructuralCrystalRegistrar` runs immediately after
+`EarthContentRegistrar` -- after the shards exist, before every registrar that costs the block. The
+eight fusing recipes need the Geologist's Workstation, which is registered later still, so they live
+in `ShardRecipeRegistrar` with the other deterministic conversions.
+
+The model is a new asset, `earth-structural`, not a recoloured tier: two chamfered flat-faced blocks,
+152 triangles, 0.196 x 0.255 x 0.196, with its own full-range facet map. Three defects were found and
+fixed by the gates while authoring it, all at source: both cap fans wound the same way so one faced
+inward; the first material sampled only the bright half of the shared tier map and rendered a white
+blob; and the exporter did not write the `.obj`/`.mtl` pair `verify-earth-assets` requires, which it
+now does for every earth asset.
+
+**`main` was broken on arrival and had been pushed unbuilt, again.** `origin/main` was 25 commits
+ahead of the local checkout at session start (`60071e4` -> `7776fce`) and failed `build.ps1` twice
+over: `verify-model-assets.py` rejected `UnderworldInstanceChunkMaterializer` for building a mesh in
+C#, and `verify-runtime-type-availability.ps1` found `System.ValueTuple` referenced through the chunk
+streaming focus list -- the defect class that silently removes every registrar behind it. Both
+repaired at source before any new work was built on top.
+
+Build: 38,327 Core assertions, 282 model assets imported twice, zero warnings and zero errors, 24
+Harmony patch targets, 15 literal plus 42 helper-wrapped reflection bindings, 20 assembly references
+all resolvable, 67 generated files matching their generators.
+
+**Nothing here is runtime-accepted.** The game has not been launched against 0.0.85. Specifically
+unverified in play: that the Structural Crystal's model and icon read correctly in the inventory and
+on the ground, that the eight fusing recipes appear at the Geologist's Workstation, and that all
+thirty migrated recipes show the new requirement rather than a missing one.
+
+---
+
 # Current source candidate — 0.0.69 / schema 5 (2026-09-18)
 
 Underworld environment production now starts from Valheim-owned runtime donors instead of authored

@@ -155,7 +155,7 @@ internal sealed class CrystalWeaponRegistrar : IDisposable
             "Its physical damage remains in the ordinary sword envelope rather than gaining an elemental payload.",
             1500f,
             new[] { "SwordBlackmetal", "SwordSilver", "SwordIron" },
-            Cost("Crystal", 18, 8), Cost("BlackMetal", 12, 6), Cost("FineWood", 2, 1)),
+            Cost(StructuralCrystalRegistrar.PrefabName, 9, 4), Cost("BlackMetal", 12, 6), Cost("FineWood", 2, 1)),
 
         new CrystalWeaponDefinition(
             "Magenheim_Weapon_CrystalGreatsword", CrystalWeaponVisuals.Greatsword,
@@ -164,7 +164,7 @@ internal sealed class CrystalWeaponRegistrar : IDisposable
             "but the fused lattice tolerates an absurd amount of campaigning.",
             1800f,
             new[] { "THSwordKrom", "THSwordSlayer", "THSwordGold" },
-            Cost("Crystal", 30, 12), Cost("BlackMetal", 18, 8), Cost("Iron", 10, 5), Cost("LinenThread", 4, 2)),
+            Cost(StructuralCrystalRegistrar.PrefabName, 15, 6), Cost("BlackMetal", 18, 8), Cost("Iron", 10, 5), Cost("LinenThread", 4, 2)),
 
         new CrystalWeaponDefinition(
             "Magenheim_Weapon_CrystalAxe", CrystalWeaponVisuals.Axe,
@@ -173,7 +173,7 @@ internal sealed class CrystalWeaponRegistrar : IDisposable
             "whose exceptional value is how slowly its edge and body wear.",
             1600f,
             new[] { "AxeBlackMetal", "AxeJotunBane", "AxeIron" },
-            Cost("Crystal", 20, 8), Cost("BlackMetal", 14, 6), Cost("FineWood", 4, 2)),
+            Cost(StructuralCrystalRegistrar.PrefabName, 10, 4), Cost("BlackMetal", 14, 6), Cost("FineWood", 4, 2)),
 
         new CrystalWeaponDefinition(
             "Magenheim_Weapon_CrystalBattleaxe", CrystalWeaponVisuals.Battleaxe,
@@ -182,7 +182,7 @@ internal sealed class CrystalWeaponRegistrar : IDisposable
             "over exotic damage and can survive long expeditions without constant repair.",
             1900f,
             new[] { "BattleaxeBlackmetal", "BattleaxeCrystal", "Battleaxe" },
-            Cost("Crystal", 34, 14), Cost("BlackMetal", 20, 10), Cost("ElderBark", 10, 4)),
+            Cost(StructuralCrystalRegistrar.PrefabName, 17, 7), Cost("BlackMetal", 20, 10), Cost("ElderBark", 10, 4)),
 
         new CrystalWeaponDefinition(
             "Magenheim_Weapon_CrystalMace", CrystalWeaponVisuals.Mace,
@@ -191,7 +191,7 @@ internal sealed class CrystalWeaponRegistrar : IDisposable
             "its advantage is a head that simply refuses to wear out.",
             1700f,
             new[] { "MaceSilver", "MaceIron", "MaceBronze" },
-            Cost("Crystal", 22, 10), Cost("BlackMetal", 12, 6), Cost("Iron", 6, 3), Cost("FineWood", 2, 1)),
+            Cost(StructuralCrystalRegistrar.PrefabName, 11, 5), Cost("BlackMetal", 12, 6), Cost("Iron", 6, 3), Cost("FineWood", 2, 1)),
 
         new CrystalWeaponDefinition(
             "Magenheim_Weapon_CrystalSpear", CrystalWeaponVisuals.Spear,
@@ -200,7 +200,7 @@ internal sealed class CrystalWeaponRegistrar : IDisposable
             "with a reinforced socket designed to survive repeated thrusts and throws.",
             1500f,
             new[] { "SpearCarapace", "SpearWolfFang", "SpearBronze" },
-            Cost("Crystal", 16, 7), Cost("BlackMetal", 8, 4), Cost("YggdrasilWood", 8, 4)),
+            Cost(StructuralCrystalRegistrar.PrefabName, 8, 4), Cost("BlackMetal", 8, 4), Cost("YggdrasilWood", 8, 4)),
 
         new CrystalWeaponDefinition(
             "Magenheim_Weapon_CrystalKnife", CrystalWeaponVisuals.Knife,
@@ -209,7 +209,7 @@ internal sealed class CrystalWeaponRegistrar : IDisposable
             "while surviving far more use than its size suggests.",
             1200f,
             new[] { "KnifeBlackMetal", "KnifeSilver", "KnifeChitin" },
-            Cost("Crystal", 10, 5), Cost("BlackMetal", 8, 4), Cost("FineWood", 2, 1)),
+            Cost(StructuralCrystalRegistrar.PrefabName, 5, 3), Cost("BlackMetal", 8, 4), Cost("FineWood", 2, 1)),
 
         new CrystalWeaponDefinition(
             "Magenheim_Weapon_CrystalAtgeir", CrystalWeaponVisuals.Atgeir,
@@ -218,7 +218,7 @@ internal sealed class CrystalWeaponRegistrar : IDisposable
             "while its crystal-metal spine provides extreme structural endurance.",
             1800f,
             new[] { "AtgeirBlackmetal", "AtgeirHimminAfl", "AtgeirIron" },
-            Cost("Crystal", 28, 12), Cost("BlackMetal", 18, 8), Cost("FineWood", 8, 4), Cost("LinenThread", 4, 2)),
+            Cost(StructuralCrystalRegistrar.PrefabName, 14, 6), Cost("BlackMetal", 18, 8), Cost("FineWood", 8, 4), Cost("LinenThread", 4, 2)),
 
         new CrystalWeaponDefinition(
             "Magenheim_Weapon_CrystalBow", CrystalWeaponVisuals.Bow,
@@ -227,7 +227,7 @@ internal sealed class CrystalWeaponRegistrar : IDisposable
             "the crystal laminate is built to endure thousands of shots.",
             1400f,
             new[] { "BowSpineSnap", "BowDraugrFang", "BowHuntsman" },
-            Cost("Crystal", 20, 8), Cost("FineWood", 12, 5), Cost("LinenThread", 8, 4), Cost("BlackMetal", 4, 2)),
+            Cost(StructuralCrystalRegistrar.PrefabName, 10, 4), Cost("FineWood", 12, 5), Cost("LinenThread", 8, 4), Cost("BlackMetal", 4, 2)),
 
         new CrystalWeaponDefinition(
             "Magenheim_Weapon_CrystalCrossbow", CrystalWeaponVisuals.Crossbow,
@@ -236,7 +236,7 @@ internal sealed class CrystalWeaponRegistrar : IDisposable
             "it is built to remain fieldworthy for an exceptionally long time.",
             1700f,
             new[] { "CrossbowArbalest" },
-            Cost("Crystal", 24, 10), Cost("BlackMetal", 14, 7), Cost("YggdrasilWood", 10, 5), Cost("Iron", 6, 3)),
+            Cost(StructuralCrystalRegistrar.PrefabName, 12, 5), Cost("BlackMetal", 14, 7), Cost("YggdrasilWood", 10, 5), Cost("Iron", 6, 3)),
     };
 
     public void Dispose()

@@ -142,16 +142,18 @@
         "assets/earth/crystal.icon.png",
         "assets/earth/advanced.icon.png",
         "assets/earth/master.icon.png",
-        "assets/earth/shards.icon.png"
+        "assets/earth/shards.icon.png",
+        "assets/earth/structural.icon.png"
       ],
-      "generator_sha256": "634f0d22d5de2e7ab8834ae70b07cedb1cf01ef8508cb17baa72581fc42199a2",
+      "generator_sha256": "00542b4bc82bfd24edfea6c70bb776c1cd256e45af20a62917bd085dd5be668f",
       "output_sha256": {
         "assets/earth/advanced.icon.png": null,
         "assets/earth/crystal.icon.png": null,
         "assets/earth/master.icon.png": null,
         "assets/earth/rough.icon.png": null,
         "assets/earth/shards.icon.png": null,
-        "assets/earth/simple.icon.png": null
+        "assets/earth/simple.icon.png": null,
+        "assets/earth/structural.icon.png": null
       },
       "hash": "generator-only"
     }

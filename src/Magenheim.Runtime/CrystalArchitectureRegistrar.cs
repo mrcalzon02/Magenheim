@@ -186,43 +186,43 @@ internal sealed class CrystalArchitectureRegistrar : IDisposable
             "Crystal Hearth", "A broad stone-and-crystal hearth whose living flame burns in a vivid rainbow spectrum.",
             ArchitectureKind.Hearth, 0f, "Furniture", "piece_stonecutter",
             new[] { "hearth", "fire_pit", "bonfire" },
-            Cost("Stone", 20), Cost("Iron", 4), Cost("Crystal", 12), Cost("SurtlingCore", 2)),
+            Cost("Stone", 20), Cost("Iron", 4), Cost(StructuralCrystalRegistrar.PrefabName, 6), Cost("SurtlingCore", 2)),
         new ArchitectureDefinition(
             "Magenheim_CrystalBeam_2m", CrystalArchitectureVisuals.CrystalBeam2,
             "Rainbow Crystal Beam 2m", "A two-meter structural beam grown from fused rainbow crystal facets.",
             ArchitectureKind.Beam, 2f, "Building", "piece_workbench",
             new[] { "wood_pole", "wood_pole2", "wood_beam", "wood_beam_1" },
-            Cost("Crystal", 3), Cost("Iron", 1)),
+            Cost(StructuralCrystalRegistrar.PrefabName, 2), Cost("Iron", 1)),
         new ArchitectureDefinition(
             "Magenheim_CrystalBeam_4m", CrystalArchitectureVisuals.CrystalBeam4,
             "Rainbow Crystal Beam 4m", "A four-meter structural beam grown from fused rainbow crystal facets.",
             ArchitectureKind.Beam, 4f, "Building", "piece_workbench",
             new[] { "wood_pole", "wood_pole2", "wood_beam", "wood_beam_1" },
-            Cost("Crystal", 6), Cost("Iron", 2)),
+            Cost(StructuralCrystalRegistrar.PrefabName, 3), Cost("Iron", 2)),
         new ArchitectureDefinition(
             "Magenheim_CrystalBeam_8m", CrystalArchitectureVisuals.CrystalBeam8,
             "Rainbow Crystal Beam 8m", "An eight-meter structural beam grown from fused rainbow crystal facets for monumental crystal architecture.",
             ArchitectureKind.Beam, 8f, "Building", "piece_workbench",
             new[] { "wood_pole", "wood_pole2", "wood_beam", "wood_beam_1" },
-            Cost("Crystal", 12), Cost("Iron", 4)),
+            Cost(StructuralCrystalRegistrar.PrefabName, 6), Cost("Iron", 4)),
         new ArchitectureDefinition(
             "Magenheim_CrystalFoundation_2m", CrystalArchitectureVisuals.CrystalFoundation2,
             "Rainbow Crystal Foundation 2x2m", "A two-meter square crystalline foundation with rainbow facets locked inside an iron edge frame.",
             ArchitectureKind.Foundation, 2f, "Building", "piece_stonecutter",
             new[] { "stone_floor_2x2", "blackmarble_floor", "wood_floor" },
-            Cost("Stone", 4), Cost("Crystal", 4), Cost("Iron", 1)),
+            Cost("Stone", 4), Cost(StructuralCrystalRegistrar.PrefabName, 2), Cost("Iron", 1)),
         new ArchitectureDefinition(
             "Magenheim_CrystalFoundation_4m", CrystalArchitectureVisuals.CrystalFoundation4,
             "Rainbow Crystal Foundation 4x4m", "A four-meter square crystalline foundation assembled from broad rainbow facets.",
             ArchitectureKind.Foundation, 4f, "Building", "piece_stonecutter",
             new[] { "stone_floor_2x2", "blackmarble_floor", "wood_floor" },
-            Cost("Stone", 12), Cost("Crystal", 12), Cost("Iron", 3)),
+            Cost("Stone", 12), Cost(StructuralCrystalRegistrar.PrefabName, 6), Cost("Iron", 3)),
         new ArchitectureDefinition(
             "Magenheim_CrystalFoundation_8m", CrystalArchitectureVisuals.CrystalFoundation8,
             "Rainbow Crystal Foundation 8x8m", "An eight-meter square monumental crystalline foundation for large halls and crystal structures.",
             ArchitectureKind.Foundation, 8f, "Building", "piece_stonecutter",
             new[] { "stone_floor_2x2", "blackmarble_floor", "wood_floor" },
-            Cost("Stone", 32), Cost("Crystal", 32), Cost("Iron", 8))
+            Cost("Stone", 32), Cost(StructuralCrystalRegistrar.PrefabName, 16), Cost("Iron", 8))
     };
 
     public void Dispose()
