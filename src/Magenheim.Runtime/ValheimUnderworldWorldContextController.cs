@@ -10,7 +10,7 @@ namespace Magenheim.Runtime;
 /// exploration and persistence remain owned by their dedicated instance authorities and must
 /// never be inferred from or projected into Surface coordinates.
 /// </summary>
-internal sealed class ValheimUnderworldWorldContextController : IUnderworldWorldContextController
+internal sealed class ValheimUnderworldWorldContextController
 {
     private readonly ManualLogSource _log;
     private readonly object _gate = new();
