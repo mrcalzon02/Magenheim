@@ -18,17 +18,19 @@ internal interface IUnderworldWorldContextController
 /// Placement is keyed by the durable Valheim player id so server recovery never aliases a remote
 /// transition onto Player.m_localPlayer. Underworld anchors are native instance coordinates.
 /// Placement acknowledgement is additionally bound to the concrete Player component that accepted
-/// the teleport and a short runtime-only settlement window, so reconnects and stalled teleports
-/// cannot satisfy or indefinitely retain an acknowledgement issued to an earlier placement.
+/// the teleport and a short runtime-only settlement window. Timed-out placements enter a bounded
+/// runtime-only retry delay so a persistent engine/context failure cannot produce a tight teleport loop.
 /// </summary>
 internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTransitionPlacementHost
 {
     private const float PositionTolerance = 1.25f;
     private const float HeadingToleranceDegrees = 8f;
     private const float PlacementSettlementTimeoutSeconds = 15f;
+    private const float PlacementRetryDelaySeconds = 5f;
     private readonly IUnderworldWorldContextController _worldContext;
     private readonly ManualLogSource _log;
     private readonly Dictionary<string, PlacementReceipt> _pendingPlacements = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, float> _retryNotBefore = new(StringComparer.Ordinal);
 
     internal ValheimUnderworldTransitionPlacementHost(IUnderworldWorldContextController worldContext, ManualLogSource log)
     {
@@ -54,6 +56,7 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
         var rotation = Quaternion.Euler(0f, heading, 0f);
 
         _pendingPlacements.Remove(playerId);
+        _retryNotBefore.Remove(playerId);
         if (!player.TeleportTo(position, rotation, false))
             throw new InvalidOperationException("Valheim rejected the requested instance-context player teleport.");
 
@@ -64,12 +67,19 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
     public UnderworldPlacementObservation ObservePlayerPlacement(string playerId, UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor)
     {
         if (identity is null || anchor is null || !_worldContext.IsActive(identity, layer)) return UnderworldPlacementObservation.Unavailable;
-        if (!_pendingPlacements.TryGetValue(playerId, out var receipt) || receipt.Layer != layer) return UnderworldPlacementObservation.Unavailable;
+
+        if (!_pendingPlacements.TryGetValue(playerId, out var receipt) || receipt.Layer != layer)
+        {
+            if (!_retryNotBefore.TryGetValue(playerId, out var retryNotBefore)) return UnderworldPlacementObservation.Unavailable;
+            if (Time.realtimeSinceStartup < retryNotBefore) return UnderworldPlacementObservation.Pending;
+            _retryNotBefore.Remove(playerId);
+            return UnderworldPlacementObservation.Unavailable;
+        }
 
         var player = ResolvePlayer(playerId);
         if (player is null || player.GetInstanceID() != receipt.PlayerInstanceId)
         {
-            _pendingPlacements.Remove(playerId);
+            ClearPlacementRuntimeState(playerId);
             return UnderworldPlacementObservation.Unavailable;
         }
 
@@ -77,23 +87,30 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
         var heading = NormalizeHeading((float)anchor.HeadingDegrees);
         if (Vector3.Distance(receipt.Target, target) > 0.01f || Mathf.Abs(Mathf.DeltaAngle(receipt.Heading, heading)) > 0.01f)
         {
-            _pendingPlacements.Remove(playerId);
+            ClearPlacementRuntimeState(playerId);
             return UnderworldPlacementObservation.Unavailable;
         }
 
         if (Time.realtimeSinceStartup - receipt.IssuedAtRealtime > PlacementSettlementTimeoutSeconds)
         {
             _pendingPlacements.Remove(playerId);
-            _log.LogWarning($"{layer} placement acknowledgement timed out for player {playerId}; durable transition recovery will decide the next action.");
-            return UnderworldPlacementObservation.Unavailable;
+            _retryNotBefore[playerId] = Time.realtimeSinceStartup + PlacementRetryDelaySeconds;
+            _log.LogWarning($"{layer} placement acknowledgement timed out for player {playerId}; durable transition recovery may retry after {PlacementRetryDelaySeconds:0.#} seconds.");
+            return UnderworldPlacementObservation.Pending;
         }
 
         if (Vector3.Distance(player.transform.position, target) > PositionTolerance) return UnderworldPlacementObservation.Pending;
         var headingDelta = Mathf.Abs(Mathf.DeltaAngle(player.transform.eulerAngles.y, heading));
         if (headingDelta > HeadingToleranceDegrees) return UnderworldPlacementObservation.Pending;
 
-        _pendingPlacements.Remove(playerId);
+        ClearPlacementRuntimeState(playerId);
         return UnderworldPlacementObservation.Confirmed;
+    }
+
+    private void ClearPlacementRuntimeState(string playerId)
+    {
+        _pendingPlacements.Remove(playerId);
+        _retryNotBefore.Remove(playerId);
     }
 
     private static Player? ResolvePlayer(string playerId)
