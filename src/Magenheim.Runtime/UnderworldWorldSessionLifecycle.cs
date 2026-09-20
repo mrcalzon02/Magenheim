@@ -63,15 +63,15 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     {
         if(_services is null||Time.unscaledTime<_nextChunkReconcileAt)return;_nextChunkReconcileAt=Time.unscaledTime+0.5f;
         if(!_services.TryResolveWorldSession(out var identity,out var layer,out _)||identity is null||layer!=UnderworldLayer.Underworld){_services.ChunkStreaming.Clear();return;}
-        var focuses=new List<(double X,double Z)>();
+        var focuses=new List<UnderworldChunkFocus>();
         var znet=ZNet.instance;
         if(znet is not null&&znet.IsServer())
         {
-            foreach(var player in Player.GetAllPlayers())if(player){var position=player.transform.position;focuses.Add((position.x,position.z));}
+            foreach(var player in Player.GetAllPlayers())if(player){var position=player.transform.position;focuses.Add(new UnderworldChunkFocus(position.x,position.z));}
         }
         else
         {
-            var player=Player.m_localPlayer;if(player){var position=player.transform.position;focuses.Add((position.x,position.z));}
+            var player=Player.m_localPlayer;if(player){var position=player.transform.position;focuses.Add(new UnderworldChunkFocus(position.x,position.z));}
         }
         _services.ChunkStreaming.Reconcile(focuses);
     }

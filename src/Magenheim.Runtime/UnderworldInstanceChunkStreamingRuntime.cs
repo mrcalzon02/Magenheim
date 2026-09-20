@@ -6,6 +6,25 @@ using Magenheim.Core.Underworld;
 namespace Magenheim.Runtime;
 
 /// <summary>
+/// One native instance-space point that chunk residency is kept loaded around.
+///
+/// Explicitly a struct and not a (double X, double Z) tuple: System.ValueTuple is a separate
+/// facade assembly that Valheim and BepInEx do not ship. A tuple compiles here and then throws
+/// TypeLoadException at registration, which silently removes every registrar behind it.
+/// </summary>
+internal readonly struct UnderworldChunkFocus
+{
+    internal UnderworldChunkFocus(double x, double z)
+    {
+        X = x;
+        Z = z;
+    }
+
+    internal double X { get; }
+    internal double Z { get; }
+}
+
+/// <summary>
 /// Runtime ownership/streaming authority for native Underworld chunks. Terrain authority remains
 /// materialization-neutral; after residency changes, the downstream Unity materializer is reconciled.
 /// Surface WorldGenerator is not part of this pipeline.
@@ -35,7 +54,7 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
     /// Residency is the union of all focus neighborhoods so one player cannot evict terrain required by
     /// another. Returns false and clears residency whenever no authoritative Underworld instance is active.
     /// </summary>
-    internal bool Reconcile(IEnumerable<(double X, double Z)> focuses, int radiusChunks = DefaultStreamingRadiusChunks)
+    internal bool Reconcile(IEnumerable<UnderworldChunkFocus> focuses, int radiusChunks = DefaultStreamingRadiusChunks)
     {
         if (focuses is null) throw new ArgumentNullException(nameof(focuses));
         if (radiusChunks < 0) throw new ArgumentOutOfRangeException(nameof(radiusChunks));
