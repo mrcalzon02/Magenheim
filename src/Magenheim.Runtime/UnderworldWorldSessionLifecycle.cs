@@ -48,8 +48,24 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         var instanceKey=InstanceKey(identity);
         if(_worldCenter&&string.Equals(_worldCenterInstanceKey,instanceKey,StringComparison.Ordinal))return;
         if(_worldCenter)Destroy(_worldCenter);
-        try{_worldCenter=UnderworldWorldCenterRegistrar.Create(identity,_log);_worldCenterInstanceKey=instanceKey;_log.LogInfo($"Admitted Underworld world center only for physical derived session '{identity.DerivedWorldId}'.");}
-        catch(Exception exception){_worldCenter=null;_worldCenterInstanceKey=null;_log.LogError($"Underworld native-instance center admission failed: {exception}");}
+        _worldCenter=null;_worldCenterInstanceKey=null;
+        GameObject? candidate=null;
+        try
+        {
+            var wasRecorded=_services.GeneratedObjectStateStore.IsRecorded(identity,UnderworldWorldCenterRegistrar.GeneratedObjectKind);
+            candidate=UnderworldWorldCenterRegistrar.Create(identity,_log);
+            var znet=ZNet.instance;
+            if(znet is not null&&znet.IsServer()&&!wasRecorded)
+                _services.GeneratedObjectStateStore.RecordGenerated(identity,UnderworldWorldCenterRegistrar.GeneratedObjectKind);
+            _worldCenter=candidate;candidate=null;_worldCenterInstanceKey=instanceKey;
+            _log.LogInfo($"{(wasRecorded?"Restored":"Generated")} Underworld world center for physical derived session '{identity.DerivedWorldId}' through native generated-object registry.");
+        }
+        catch(Exception exception)
+        {
+            if(candidate)Destroy(candidate);
+            _worldCenter=null;_worldCenterInstanceKey=null;
+            _log.LogError($"Underworld native-instance center admission failed: {exception}");
+        }
     }
     private void TryPlaceLocalUnderworldPlayer()
     {
