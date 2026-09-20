@@ -19,30 +19,13 @@ public static class UnderworldMapPresentation
         int explorationHeight)
     {
         if (domain is null) throw new ArgumentNullException(nameof(domain));
-        return CreateUnderworldViewport(domain.RadiusMeters, explorationWidth, explorationHeight);
-    }
-
-    [Obsolete("Use the native UnderworldInstanceTerrainDomain overload. Host placement is not map authority.")]
-    public static UnderworldMapViewport CreateUnderworldViewport(
-        UnderworldSpatialDomainDefinition domain,
-        int explorationWidth,
-        int explorationHeight)
-    {
-        if (domain is null) throw new ArgumentNullException(nameof(domain));
-        return CreateUnderworldViewport(domain.RadiusMeters, explorationWidth, explorationHeight);
-    }
-
-    private static UnderworldMapViewport CreateUnderworldViewport(double radiusMeters, int explorationWidth, int explorationHeight)
-    {
-        if (radiusMeters <= 0d || double.IsNaN(radiusMeters) || double.IsInfinity(radiusMeters))
-            throw new ArgumentOutOfRangeException(nameof(radiusMeters));
         if (explorationWidth <= 0) throw new ArgumentOutOfRangeException(nameof(explorationWidth));
         if (explorationHeight <= 0) throw new ArgumentOutOfRangeException(nameof(explorationHeight));
         return new UnderworldMapViewport(
             MagenheimMapLayer.Underworld,
             0d,
             0d,
-            radiusMeters,
+            domain.RadiusMeters,
             explorationWidth,
             explorationHeight);
     }
