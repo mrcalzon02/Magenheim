@@ -44,6 +44,7 @@ internal sealed class CrystalDaisSocketOverlay : MonoBehaviour
     private RectTransform? _nativeContent;
     private float _nextRefreshAt;
     private bool _refreshRequested = true;
+    private GameObject? _suppressedCraftingPanel;
 
     private SocketEffectDefinitionSet? _socketEffects;
 
@@ -73,6 +74,7 @@ internal sealed class CrystalDaisSocketOverlay : MonoBehaviour
         {
             _selectedEquipment = null;
             if (_nativeRoot) _nativeRoot.SetActive(false);
+            RestoreCraftingPanel();
             _refreshRequested = true;
             return;
         }
@@ -81,6 +83,7 @@ internal sealed class CrystalDaisSocketOverlay : MonoBehaviour
         {
             EnsureNativeUi();
             if (!_nativeRoot || !_nativeContent) return;
+            SuppressCraftingPanel();
             _nativeRoot.SetActive(true);
             _nativeRoot.transform.SetAsLastSibling();
 
@@ -101,10 +104,46 @@ internal sealed class CrystalDaisSocketOverlay : MonoBehaviour
 
     private void OnDestroy()
     {
+        RestoreCraftingPanel();
         if (_nativeRoot) UnityEngine.Object.Destroy(_nativeRoot);
         _nativeRoot = null;
         _nativeContent = null;
         _nativeScroll = null;
+    }
+
+    /// <summary>
+    /// Hides Valheim's crafting panel for as long as the dais panel is up.
+    /// </summary>
+    /// <remarks>
+    /// The dais is a CraftingStation because the Crystalline Ice Box needs it in range to be built,
+    /// and because GetCurrentCraftingStation is how this overlay knows the player is standing at
+    /// one. Being a station also means interacting with it opens the crafting panel, so 0.0.85
+    /// presented the recipe list and the socketing list stacked on top of each other, which live
+    /// play reported as a failure. The dais itself says nothing is crafted or refined here, so the
+    /// recipe list is not merely redundant there, it contradicts the piece.
+    ///
+    /// Only the panel is hidden, never the station: suppressing it here rather than dropping the
+    /// CraftingStation component leaves the Ice Box's build requirement and this overlay's own
+    /// station lookup working. The previous active state is restored the moment the panel is no
+    /// longer wanted, and again on teardown, so a crafting panel is never left hidden at a station
+    /// that does craft.
+    /// </remarks>
+    private void SuppressCraftingPanel()
+    {
+        if (_suppressedCraftingPanel) return;
+        var inventoryGui = InventoryGui.instance;
+        if (!inventoryGui) return;
+        var panel = FieldGameObject(inventoryGui, "m_crafting");
+        if (!panel || !panel.activeSelf) return;
+        panel.SetActive(false);
+        _suppressedCraftingPanel = panel;
+    }
+
+    private void RestoreCraftingPanel()
+    {
+        if (!_suppressedCraftingPanel) { _suppressedCraftingPanel = null; return; }
+        _suppressedCraftingPanel.SetActive(true);
+        _suppressedCraftingPanel = null;
     }
 
     private void EnsureNativeUi()

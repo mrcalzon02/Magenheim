@@ -81,6 +81,14 @@ internal static class CrystalArchitectureVisuals
         {
             var transform = system.transform;
             if (transform == prefab.transform) continue;
+            // Scaling the transform alone is why this had no visible effect and the fire still
+            // towered over the piece. A particle system only inherits its transform's scale into
+            // particle size under Hierarchy scaling; under Shape -- which is what a fire authored
+            // to sit in one specific fireplace typically uses -- the transform scales the emission
+            // volume and the flames stay exactly as big as they were. State the mode rather than
+            // inherit whichever one the donor happened to ship.
+            var main = system.main;
+            main.scalingMode = ParticleSystemScalingMode.Hierarchy;
             transform.localScale *= ratio;
         }
     }
@@ -106,11 +114,20 @@ private static void TintVanillaFlame(GameObject prefab)
             new[]
             {
                 new GradientColorKey(new Color(1f, .12f, .08f), 0f), new GradientColorKey(new Color(1f, .78f, .08f), .16f),
-                new GradientColorKey(new Color(.35f, 1f, .20f), .33f), new GradientColorKey(new Color(.10f, .90f, 1f), .50f),
+                new GradientColorKey(new Color(.30f, .85f, .18f), .33f), new GradientColorKey(new Color(.10f, .90f, 1f), .50f),
                 new GradientColorKey(new Color(.20f, .36f, 1f), .67f), new GradientColorKey(new Color(.72f, .18f, 1f), .84f),
                 new GradientColorKey(new Color(1f, .16f, .62f), 1f)
             },
-            new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, .75f), new GradientAlphaKey(0f, 1f) });
+            // Opaque across the whole span. Under RandomColor a particle samples this gradient at a
+            // random position -- colour *and* alpha -- so a ramp that fades to zero at 1 does not
+            // fade anything over time, it makes every particle drawn from the violet end of the
+            // spectrum translucent and the magenta end invisible. That left the opaque red-to-cyan
+            // half carrying the fire, and additive blending resolved it as green, which is what
+            // play reported. The fade over a particle's life is colorOverLifetime's job below, and
+            // it already does exactly that. Green is also pulled down from full intensity here: it
+            // is the most luminous hue in the ramp and reads brighter than its neighbours even at
+            // equal sampling.
+            new[] { new GradientAlphaKey(1f, 0f), new GradientAlphaKey(1f, 1f) });
 
         // The spectrum has to be distributed across the particles alive at any instant, not swept
         // along one particle's lifetime. On colorOverLifetime every particle is born at key 0 -- red

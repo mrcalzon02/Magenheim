@@ -1,3 +1,51 @@
+## 0.0.86 - Live play, 0.0.85: what the hands and the hammer found
+
+Every item here comes from one in-game session against 0.0.85.
+
+- **The Crystal Sentinel could be deconstructed forever.** Each hammer strike refunded the full
+  build cost and left the piece standing. The cause was `Cost("RefinedEitr", 8)`: Valheim's refined
+  eitr item is `Eitr`, and `RefinedEitr` is not a prefab, so the requirement resolved to null.
+  `WearNTear.Destroy` calls `Piece.DropResources`, which instantiates each requirement in turn and
+  threw on the null one -- after the other four had already hit the ground and before the
+  `ZNetScene.Destroy` at the end of its own caller. Unbounded duplication out of a typo.
+- The same typo had also reached the **Crystal Bed**, and `CoreWood` -- Valheim's core wood is
+  `RoundLog` -- had reached the **Earth Simple staff**. All three corrected.
+- **A requirement audit now runs at startup.** Jotunn was already reporting all three, as nine
+  `MockResolveFailure` warnings inside a 50,000-line log. Magenheim now says it in its own voice at
+  error level, names the piece and the position in its cost list, and says so explicitly when
+  everything resolves, so silence is never ambiguous. It does not throw; taking the registrar chain
+  down would be far worse than a wrong build cost.
+- **Held weapons, trimmed from measurement rather than guesswork.** The alignment report prints both
+  frames in attach space, so "how much of the weapon trails behind the hand" is directly comparable
+  against the donor Valheim animates for. Battleaxe 51.8% against its donor's 12.5%, greatsword
+  34.2% against 17.3%, knife 41.9% against 12.1%, atgeir 41.6% against 27.2% -- the four reported
+  wrong, and the largest four gaps. Each takes about 45% of its full-match delta: clearly in the
+  reported direction, short of the value known to have overshot, since full donor-matching is what
+  broke the axe in 0.0.83. Axe, bow and crossbow were confirmed correct and are untouched; mace and
+  sword were not tested and are deliberately left alone.
+- **The spear was pointing the wrong way.** Valheim holds a spear with the point trailing so the
+  thrust drives it forward; ours pointed ahead, so the animation stabbed with the butt. Reversed
+  about the attach origin and offset back into the envelope it already occupied, which play
+  confirmed was otherwise almost exactly right.
+- **The Crystal Hearth's fire read green and towered over the piece.** Two separate faults. The
+  rainbow gradient faded its alpha to zero at the top of the ramp, and under `RandomColor` that
+  alpha is sampled per particle rather than over time -- so every violet particle was born
+  translucent and every magenta one invisible, leaving the opaque red-to-cyan half to carry the
+  fire, which additive blending resolves as green. And the measured rescale only set
+  `transform.localScale`, which does not reach particle size unless the system scales with its
+  hierarchy; a fire authored for one fireplace does not. Both stated explicitly now.
+- **The Crystal Enchanting Dais opened two menus at once.** It is a CraftingStation so the Ice Box
+  can require it and so this overlay can find it, but the piece says nothing is crafted or refined
+  there, so the recipe list contradicted it. The crafting panel is hidden for as long as the
+  socketing panel is up and restored the moment it is not.
+- **The Crystal Wall Sconce was six boxes at furniture scale** -- a 0.38 x 0.72 m wall plate and a
+  0.52 m crystal. Rebuilt at 0.17 x 0.45 m projecting 0.26 m, with a chamfered plate, a tapering arm
+  that rises as it reaches, an octagonal cup and a faceted lamp. The geometry is rebuilt into the
+  datablocks already bound to each part's material, so the committed textures carry over untouched.
+
+Still open from the same session: the crystal placeables draw their Hammer icons as procedural pixel
+art in C#, the defect 0.0.72 fixed for the ten weapons. Sixty-five models need rendering.
+
 ## 0.0.85 - The Structural Crystal, and the end of vanilla Crystal in our recipes
 
 - **Magenheim no longer builds with Moder's crystal.** Thirty recipes across six registrars -- the

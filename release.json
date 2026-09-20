@@ -1,4 +1,4 @@
 {
-  "version": "0.0.85",
-  "description": "0.0.85: Adds the Structural Crystal, an unaligned block fused from four elemental shards, and moves every Magenheim building, decor, station and weapon recipe off vanilla Crystal onto it at roughly half the old amounts."
+  "version": "0.0.86",
+  "description": "0.0.86: Fixes a Crystal Sentinel duplication exploit caused by a build cost naming a prefab Valheim does not have, trims five held weapons from live observation, reverses the spear, and rebuilds the wall sconce at sconce scale."
 }

@@ -116,7 +116,7 @@ internal sealed class CrystalBedRegistrar : IDisposable
             {
                 Cost("BlackMarble", 20),
                 Cost("YggdrasilWood", 10),
-                Cost("RefinedEitr", 15),
+                Cost("Eitr", 15),
                 Cost("Sap", 10),
                 Cost(masterPrefab, 1),
             }

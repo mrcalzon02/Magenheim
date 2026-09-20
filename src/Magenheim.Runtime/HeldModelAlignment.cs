@@ -94,7 +94,42 @@ internal static class HeldModelAlignment
     /// the numbers are in attach space to match what Report prints. An entry is a deliberate claim
     /// that a model needs trim, so the table stays empty until in-game observation puts one in it.
     /// </remarks>
-    private static readonly Dictionary<string, ModelTrim> Trim = new(StringComparer.Ordinal);
+    /// <remarks continued>
+    /// Filled 2026-09-19 from a live 0.0.85 session. The report line prints both frames in attach
+    /// space, and Z is the long axis for every weapon in the family, so "how much of the weapon
+    /// trails behind the hand" is directly measurable as a fraction of its own length:
+    ///
+    ///     weapon      ours   donor   full-match delta   reported in play
+    ///     battleaxe   51.8%  12.5%   +0.605             a little low on the hilt
+    ///     greatsword  34.2%  17.3%   +0.395             slightly too high, hands inside the hilt
+    ///     knife       41.9%  12.1%   +0.325             rides too high
+    ///     atgeir      41.6%  27.2%   +0.179             off just a bit
+    ///     axe         46.3%  17.6%   +0.372             correct
+    ///     bow         50.0%  49.9%   +0.059             correct
+    ///     spear       42.5%  42.2%   -0.183             position correct, pointing backwards
+    ///
+    /// The delta is an upper bound, not a target. Matching the donor exactly is tempting and wrong:
+    /// the axe sits 28 points off its donor and reads correctly in the hand, and it was precisely
+    /// full donor-matching that pushed the axe +0.37 in 0.0.83 and broke it. What the correct ones
+    /// share is not agreement with the donor but that nobody complained, so these apply about 45%
+    /// of each delta -- unambiguously in the reported direction, short of the value that is known
+    /// to have overshot. The deltas are recorded above so the next pass is a one-number change
+    /// rather than another measurement session. Mace and sword are untested and deliberately absent.
+    ///
+    /// The spear is not a seating error. Valheim's spear is held with the point trailing so the
+    /// thrust drives it forward; ours pointed ahead, so the animation stabbed with the butt. It is
+    /// reversed about the attach origin, and the offset is exactly twice its measured centre
+    /// (2 x 0.148) so the flipped model lands back inside the envelope it already occupied -- which
+    /// play confirmed was almost exactly right.
+    /// </remarks>
+    private static readonly Dictionary<string, ModelTrim> Trim = new(StringComparer.Ordinal)
+    {
+        ["crystal-weapon-battleaxe"] = new ModelTrim(Vector3.zero, new Vector3(0f, 0f, .27f)),
+        ["crystal-weapon-greatsword"] = new ModelTrim(Vector3.zero, new Vector3(0f, 0f, .18f)),
+        ["crystal-weapon-knife"] = new ModelTrim(Vector3.zero, new Vector3(0f, 0f, .15f)),
+        ["crystal-weapon-atgeir"] = new ModelTrim(Vector3.zero, new Vector3(0f, 0f, .08f)),
+        ["crystal-weapon-spear"] = new ModelTrim(new Vector3(180f, 0f, 0f), new Vector3(0f, 0f, .296f)),
+    };
 
     /// <summary>A trim entry. Explicitly not a tuple: Magenheim.Runtime has no System.ValueTuple.</summary>
     private readonly struct ModelTrim

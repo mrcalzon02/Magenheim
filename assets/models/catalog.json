@@ -806,14 +806,14 @@
   {
     "id": "decor-crystal-wall-sconce",
     "parts": 6,
-    "triangles": 868,
+    "triangles": 200,
     "materials": 6,
     "source": "source/decor-crystal-wall-sconce.blend",
     "glb": "glb/decor-crystal-wall-sconce.glb",
     "runtime": "runtime/decor-crystal-wall-sconce.model.json",
-    "source_sha256": "1b7e18fcda84364112c4f595f861287e9d7dcd729960e0a39849bddf346de213",
-    "runtime_sha256": "a08ad6350c7466df24c8b87abe15abdfdfe2bfbed2d36ab729b3ce436e58c6b2",
-    "glb_sha256": "2c2a65a3cbdd7b8b359921a472f391ba95ef5d2bb1d16ff16068684fe1ba1cb5"
+    "source_sha256": "fba8360e6ae35fba43653d7ba6131863db6b0f6b3ce1d1b60d235f1d6b5bec5a",
+    "runtime_sha256": "0d549dfbd8aec8bc69b0e664c87d3e8d60cca0834645bc2a56019e8845856055",
+    "glb_sha256": "4c772c82be6083ecec79ba1eb52c73f1b08e54129ab6549ab2dd72f313208caa"
   },
   {
     "id": "decor-cut-geode-plaque",

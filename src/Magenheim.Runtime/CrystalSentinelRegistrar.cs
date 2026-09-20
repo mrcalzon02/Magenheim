@@ -143,7 +143,7 @@ internal sealed class CrystalSentinelRegistrar : IDisposable
                 Cost("BlackMetal", 20),
                 Cost("YggdrasilWood", 12),
                 Cost("MechanicalSpring", 4),
-                Cost("RefinedEitr", 8),
+                Cost("Eitr", 8),
                 Cost(StructuralCrystalRegistrar.PrefabName, 6),
             }
         };

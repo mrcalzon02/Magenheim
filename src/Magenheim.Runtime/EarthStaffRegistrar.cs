@@ -234,7 +234,7 @@ internal sealed class EarthStaffRegistrar : IDisposable
             "Magenheim_Staff_Earth_Simple", "staff-earth-simple", "Simple Staff of Earth",
             "Stone Pulse: casts a compact seismic focus that ruptures into a blunt radial shockwave. It is a close-range interruption and knockback tool, not a disguised hammer.",
             1, 24f, 12f, .62f, 1.45f, 1.35f, 20f, 2f, PayloadKind.StonePulse,
-            new StaffRequirement("CoreWood", 10), new StaffRequirement("Stone", 12), new StaffRequirement("Magenheim_Crystal_Earth_Simple", 1)),
+            new StaffRequirement("RoundLog", 10), new StaffRequirement("Stone", 12), new StaffRequirement("Magenheim_Crystal_Earth_Simple", 1)),
         new EarthStaffDefinition(
             "Magenheim_Staff_Earth_Crystal", "staff-earth-crystal", "Crystal Staff of Earth",
             "Fault Breaker: bursts beneath the target and fractures physical defenses for four seconds while delivering a heavy stagger impulse.",
