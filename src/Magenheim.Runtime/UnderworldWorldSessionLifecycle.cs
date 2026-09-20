@@ -56,6 +56,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         if (!_observedWorldUid.HasValue)
         {
             _observedWorldUid = currentWorldUid;
+            TryAdmitInstanceAuthority(znet);
             TryAdmitWorldCenter();
             TryReconcileChunkResidency();
             TryReconcileDeepBoons();
@@ -70,9 +71,39 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             _log?.LogInfo($"Underworld physical session boundary changed {previous} -> {currentWorldUid}.");
         }
 
+        TryAdmitInstanceAuthority(znet);
         TryAdmitWorldCenter();
         TryReconcileChunkResidency();
         TryReconcileDeepBoons();
+    }
+
+    private void TryAdmitInstanceAuthority(ZNet znet)
+    {
+        if (_services is null || _log is null) return;
+        if (_services.InstanceLifecycle.Phase == UnderworldInstancePhase.Active) return;
+
+        var world = ZNet.World;
+        if (world is null) return;
+        if (!UnderworldRuntimeIdentityResolver.TryResolveWorldIdentity(znet, world, out var identity, out var diagnostic) || identity is null)
+        {
+            _log.LogWarning($"Underworld instance admission is waiting for authoritative world identity: {diagnostic}");
+            return;
+        }
+
+        try
+        {
+            // Instance lifetime follows the loaded parent-world session, never player population or
+            // Surface coordinates. The lifecycle itself is the sole identity/phase authority.
+            _services.InstanceLifecycle.EnsureAdmitted(identity);
+            _services.InstanceLifecycle.EnsureActive(identity);
+            _log.LogInfo($"Admitted persistent Underworld instance authority '{identity.DerivedWorldId}' for parent world '{identity.ParentWorldId}'.");
+        }
+        catch (Exception exception)
+        {
+            // A mismatched identity is an authority violation, not something to paper over by
+            // resetting/rebinding a live instance. World unload is the only legal reset boundary.
+            _log.LogError($"Underworld instance authority admission failed: {exception}");
+        }
     }
 
     private void TryAdmitWorldCenter()
