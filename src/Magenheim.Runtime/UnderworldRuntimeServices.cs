@@ -26,6 +26,7 @@ internal sealed class UnderworldRuntimeServices
         TerrainDomain=terrainDomain;StateStore=stateStore;DeepBoonSelectionStore=deepBoonSelectionStore;ExplorationStateStore=explorationStateStore;GeneratedObjectStateStore=generatedObjectStateStore;InstanceLifecycle=instanceLifecycle;
         _worldContext=worldContext;PlacementHost=placementHost;TransitionHost=transitionHost;
         TransitionManager=transitionManager;RecoveryRuntime=recoveryRuntime;
+        StructureAdmission=new UnderworldStructureAdmissionController(generatedObjectStateStore,log);
         ChunkStreaming=new UnderworldInstanceChunkStreamingRuntime(this,log);
         ChunkMaterializer=new UnderworldInstanceChunkMaterializer(this,log);
     }
@@ -40,6 +41,7 @@ internal sealed class UnderworldRuntimeServices
     internal StoredUnderworldTransitionHost TransitionHost{get;}
     internal UnderworldWorldTransitionManager TransitionManager{get;}
     internal UnderworldTransitionRecoveryRuntime RecoveryRuntime{get;}
+    internal UnderworldStructureAdmissionController StructureAdmission{get;}
     internal UnderworldInstanceChunkStreamingRuntime ChunkStreaming{get;}
     internal UnderworldInstanceChunkMaterializer ChunkMaterializer{get;}
 
