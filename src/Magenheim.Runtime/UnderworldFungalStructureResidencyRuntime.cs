@@ -7,8 +7,8 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// First repeatable biome-structure consumer of the native Underworld admission framework.
-/// Residency follows native chunk residency; durable generation identity remains in
-/// UnderworldGeneratedObjectStateStore and never falls back to Surface ZoneSystem/ZDO placement.
+/// Residency follows native chunk residency. This adapter owns only deterministic composition and
+/// presentation lifetime; ordinary persistent/networked world state must remain Valheim-owned.
 /// </summary>
 internal sealed class UnderworldFungalStructureResidencyRuntime
 {
@@ -39,7 +39,6 @@ internal sealed class UnderworldFungalStructureResidencyRuntime
             if (!chunks.ContainsKey(pair.Key)) stale.Add(pair.Key);
         foreach (var key in stale) Release(key);
 
-        var authoritative = ZNet.instance is not null && ZNet.instance.IsServer();
         foreach (var pair in chunks)
         {
             if (_resident.ContainsKey(pair.Key) || !Eligible(identity, pair.Key)) continue;
@@ -50,9 +49,8 @@ internal sealed class UnderworldFungalStructureResidencyRuntime
             if (!terrain.Admitted || terrain.Biome != UnderworldTerrainBiome.FungalForest) continue;
 
             var root = _services.StructureAdmission.Admit(
-                identity, StructureKind, pair.Key, PlacementSlot, authoritative,
-                () => ComposeCairn(new Vector3((float)x, (float)terrain.Height, (float)z), identity, pair.Key),
-                out _);
+                identity, StructureKind, pair.Key, PlacementSlot,
+                () => ComposeCairn(new Vector3((float)x, (float)terrain.Height, (float)z), identity, pair.Key));
             _resident.Add(pair.Key, root);
         }
     }
