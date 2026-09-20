@@ -31,6 +31,21 @@ internal static class UnderworldInstanceChunkTests
         Assert(first.Biomes.SequenceEqual(repeat.Biomes), "Chunk biome materialization is deterministic.");
         Assert(typeof(UnderworldInstanceChunkKey).GetProperty("HostCenterX") is null, "Chunk keys cannot encode host placement.");
         Assert(typeof(UnderworldInstanceChunkGrid).GetProperty("SpatialDomain") is null, "Native chunk grid cannot depend on legacy spatial domain.");
+
+        var placement = UnderworldStructurePlacementKey.For(new UnderworldInstanceChunkKey(-2, 7), 3);
+        Assert(placement == "chunk:-2,7/slot:3", "Structure placement keys are canonical native chunk/slot identities.");
+        Assert(placement == UnderworldStructurePlacementKey.For(new UnderworldInstanceChunkKey(-2, 7), 3), "Structure placement keys are deterministic.");
+        Assert(placement != UnderworldStructurePlacementKey.For(new UnderworldInstanceChunkKey(-2, 7), 4), "Different slots cannot alias one generated-object record.");
+        Assert(placement != UnderworldStructurePlacementKey.For(new UnderworldInstanceChunkKey(-1, 7), 3), "Different native chunks cannot alias one generated-object record.");
+        try
+        {
+            UnderworldStructurePlacementKey.For(new UnderworldInstanceChunkKey(0, 0), -1);
+            Assert(false, "Negative structure slots must be rejected.");
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            Assert(true, "Negative structure slots are rejected.");
+        }
         return assertions;
     }
 }
