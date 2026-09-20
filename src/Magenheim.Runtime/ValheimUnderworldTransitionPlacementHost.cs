@@ -18,12 +18,14 @@ internal interface IUnderworldWorldContextController
 /// Placement is keyed by the durable Valheim player id so server recovery never aliases a remote
 /// transition onto Player.m_localPlayer. Underworld anchors are native instance coordinates.
 /// Placement acknowledgement is additionally bound to the concrete Player component that accepted
-/// the teleport so a reconnect cannot satisfy an observation issued to an earlier peer incarnation.
+/// the teleport and a short runtime-only settlement window, so reconnects and stalled teleports
+/// cannot satisfy or indefinitely retain an acknowledgement issued to an earlier placement.
 /// </summary>
 internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTransitionPlacementHost
 {
     private const float PositionTolerance = 1.25f;
     private const float HeadingToleranceDegrees = 8f;
+    private const float PlacementSettlementTimeoutSeconds = 15f;
     private readonly IUnderworldWorldContextController _worldContext;
     private readonly ManualLogSource _log;
     private readonly Dictionary<string, PlacementReceipt> _pendingPlacements = new(StringComparer.Ordinal);
@@ -55,7 +57,7 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
         if (!player.TeleportTo(position, rotation, false))
             throw new InvalidOperationException("Valheim rejected the requested instance-context player teleport.");
 
-        _pendingPlacements[playerId] = new PlacementReceipt(player.GetInstanceID(), layer, position, heading);
+        _pendingPlacements[playerId] = new PlacementReceipt(player.GetInstanceID(), layer, position, heading, Time.realtimeSinceStartup);
         _log.LogDebug($"{layer} placement requested for player {playerId} at native context position {position} heading {anchor.HeadingDegrees:0.##}.");
     }
 
@@ -73,7 +75,19 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
 
         var target = new Vector3((float)anchor.X, (float)anchor.Y, (float)anchor.Z);
         var heading = NormalizeHeading((float)anchor.HeadingDegrees);
-        if (Vector3.Distance(receipt.Target, target) > 0.01f || Mathf.Abs(Mathf.DeltaAngle(receipt.Heading, heading)) > 0.01f) return UnderworldPlacementObservation.Unavailable;
+        if (Vector3.Distance(receipt.Target, target) > 0.01f || Mathf.Abs(Mathf.DeltaAngle(receipt.Heading, heading)) > 0.01f)
+        {
+            _pendingPlacements.Remove(playerId);
+            return UnderworldPlacementObservation.Unavailable;
+        }
+
+        if (Time.realtimeSinceStartup - receipt.IssuedAtRealtime > PlacementSettlementTimeoutSeconds)
+        {
+            _pendingPlacements.Remove(playerId);
+            _log.LogWarning($"{layer} placement acknowledgement timed out for player {playerId}; durable transition recovery will decide the next action.");
+            return UnderworldPlacementObservation.Unavailable;
+        }
+
         if (Vector3.Distance(player.transform.position, target) > PositionTolerance) return UnderworldPlacementObservation.Pending;
         var headingDelta = Mathf.Abs(Mathf.DeltaAngle(player.transform.eulerAngles.y, heading));
         if (headingDelta > HeadingToleranceDegrees) return UnderworldPlacementObservation.Pending;
@@ -112,17 +126,19 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
 
     private readonly struct PlacementReceipt
     {
-        internal PlacementReceipt(int playerInstanceId, UnderworldLayer layer, Vector3 target, float heading)
+        internal PlacementReceipt(int playerInstanceId, UnderworldLayer layer, Vector3 target, float heading, float issuedAtRealtime)
         {
             PlayerInstanceId = playerInstanceId;
             Layer = layer;
             Target = target;
             Heading = heading;
+            IssuedAtRealtime = issuedAtRealtime;
         }
 
         internal int PlayerInstanceId { get; }
         internal UnderworldLayer Layer { get; }
         internal Vector3 Target { get; }
         internal float Heading { get; }
+        internal float IssuedAtRealtime { get; }
     }
 }
