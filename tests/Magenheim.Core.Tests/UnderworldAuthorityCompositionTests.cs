@@ -18,8 +18,8 @@ internal static class UnderworldAuthorityCompositionTests
 
         var content = CreateContent();
         var architecture = UnderworldArchitectureCatalog.CreateInitialStructuralSlice();
-        var spatial = UnderworldSpatialDomain.CreateDefault();
-        var authority = UnderworldAuthorityComposer.Compose(content, architecture, spatial);
+        var terrain = UnderworldInstanceTerrainDomain.CreateDefault();
+        var authority = UnderworldAuthorityComposer.Compose(content, architecture, terrain);
 
         Assert(authority.SchemaVersion == UnderworldAuthorityComposer.CurrentSchemaVersion,
             "Composite authority must expose its schema version.");
@@ -29,10 +29,10 @@ internal static class UnderworldAuthorityCompositionTests
             "Composite authority must retain the validated content snapshot.");
         Assert(ReferenceEquals(authority.Architecture, architecture),
             "Composite authority must retain the validated architecture snapshot.");
-        Assert(ReferenceEquals(authority.SpatialDomain, spatial),
-            "Legacy adapter data remains available only while host-band runtime code is removed.");
+        Assert(ReferenceEquals(authority.TerrainDomain, terrain),
+            "Composite authority must retain the native instance terrain contract.");
 
-        var repeat = UnderworldAuthorityComposer.Compose(content, architecture, spatial);
+        var repeat = UnderworldAuthorityComposer.Compose(content, architecture, terrain);
         Assert(repeat.Fingerprint == authority.Fingerprint,
             "Identical validated component authorities must compose deterministically.");
 
@@ -50,43 +50,40 @@ internal static class UnderworldAuthorityCompositionTests
         var changedArchitecture = UnderworldArchitectureValidator.ValidateAndFreeze(
             UnderworldArchitectureValidator.CurrentSchemaVersion,
             changedPieces);
-        var changedAuthority = UnderworldAuthorityComposer.Compose(content, changedArchitecture, spatial);
+        var changedAuthority = UnderworldAuthorityComposer.Compose(content, changedArchitecture, terrain);
         Assert(changedAuthority.Fingerprint != authority.Fingerprint,
             "Gameplay-significant architecture changes must alter canonical Underworld authority.");
 
         var changedContent = CreateContent("magenheim.underworld.boon.spore_communion_variant");
-        var changedContentAuthority = UnderworldAuthorityComposer.Compose(changedContent, architecture, spatial);
+        var changedContentAuthority = UnderworldAuthorityComposer.Compose(changedContent, architecture, terrain);
         Assert(changedContentAuthority.Fingerprint != authority.Fingerprint,
             "Gameplay-significant biome/boss/Deepstone changes must alter canonical Underworld authority.");
 
-        var changedSpatial = UnderworldSpatialDomain.ValidateAndFreeze(
-            UnderworldSpatialDomain.CurrentSchemaVersion,
-            spatial.RadiusMeters,
-            spatial.HostCenterX,
-            spatial.HostCenterZ,
-            spatial.HostBaseY + 128d,
-            spatial.LogicalMinY,
-            spatial.LogicalMaxY,
-            spatial.MappingAlgorithm);
-        var changedSpatialAuthority = UnderworldAuthorityComposer.Compose(content, architecture, changedSpatial);
-        Assert(changedSpatialAuthority.Fingerprint == authority.Fingerprint,
-            "Hidden host-adapter coordinates must never alter dedicated Underworld gameplay authority.");
+        var changedRadius = UnderworldInstanceTerrainDomain.ValidateAndFreeze(
+            terrain.RadiusMeters + 256d,
+            terrain.MinimumY,
+            terrain.MaximumY);
+        var changedRadiusAuthority = UnderworldAuthorityComposer.Compose(content, architecture, changedRadius);
+        Assert(changedRadiusAuthority.Fingerprint != authority.Fingerprint,
+            "Native playable-radius changes must alter canonical Underworld authority.");
+
+        var changedVerticalDomain = UnderworldInstanceTerrainDomain.ValidateAndFreeze(
+            terrain.RadiusMeters,
+            terrain.MinimumY - 64d,
+            terrain.MaximumY + 64d);
+        var changedVerticalAuthority = UnderworldAuthorityComposer.Compose(content, architecture, changedVerticalDomain);
+        Assert(changedVerticalAuthority.Fingerprint != authority.Fingerprint,
+            "Native vertical-domain changes must alter canonical Underworld authority.");
 
         AssertThrows(Assert,
-            () => UnderworldAuthorityComposer.Compose(null!, architecture, spatial),
+            () => UnderworldAuthorityComposer.Compose(null!, architecture, terrain),
             "Null content authority must fail closed.");
         AssertThrows(Assert,
-            () => UnderworldAuthorityComposer.Compose(content, null!, spatial),
+            () => UnderworldAuthorityComposer.Compose(content, null!, terrain),
             "Null architecture authority must fail closed.");
         AssertThrows(Assert,
             () => UnderworldAuthorityComposer.Compose(content, architecture, null!),
-            "Null legacy adapter data must fail closed while the adapter remains wired.");
-        AssertThrows(Assert,
-            () => UnderworldAuthorityComposer.Compose(
-                content,
-                architecture,
-                spatial with { HostBaseY = spatial.HostBaseY + 1d }),
-            "Forged legacy adapter data must still fail validation while the adapter remains wired.");
+            "Null native terrain authority must fail closed.");
 
         return assertions;
     }
