@@ -200,25 +200,13 @@ internal static class HeldModelAlignment
             ForwardAxisOverride.TryGetValue(id, out var declared) ? declared : (int?)null);
         root.transform.localRotation = correction * root.transform.localRotation;
 
-        // Rotation alone leaves the model seated wherever its own origin happens to be. Magenheim
-        // sources are centred on their bounds, so the hand grips the middle of the weapon: on a
-        // knife that is the crystal rather than the hilt. Re-measure after rotating and slide the
-        // model so the end nearest the attach point sits where the donor puts its own near end,
-        // which is where Valheim's animations expect a grip.
-        if (TryMeasureBounds(attach, root.GetComponentsInChildren<Renderer>(true), root.transform, null, out var rotated))
-        {
-            // Seat along the long axis only. Centring the other two axes on the donor's centre --
-            // which this did until 2026-09-19 -- moves the grip itself: an axe or battleaxe carries
-            // its head out to one side, so its bounding-box centre sits well off the haft, and
-            // matching that centre to the donor's shoves the haft that same distance out of the
-            // hand. Reported from the field as a battleaxe correctly oriented but "nowhere near the
-            // player's actual hands". Magenheim hafts are already authored centred on the local
-            // origin, which is the attach point, so the lateral axes need no correction at all.
-            var axis = AxisOrder(donor.size)[0];
-            var offset = Vector3.zero;
-            offset[axis] = NearEnd(donor.min[axis], donor.max[axis]) - NearEnd(rotated.min[axis], rotated.max[axis]);
-            root.transform.localPosition += offset;
-        }
+        // No seating offset: models are placed exactly as authored. Magenheim hafts put the grip
+        // on the local origin, which is the attach point, and the axe -- confirmed correct in game
+        // -- has its origin 54% along its haft with the battleaxe at 58%, the same convention. The
+        // offset that used to sit here displaced every weapon from its authored placement (the
+        // 0.0.83 log shows the battleaxe seated at z=-0.98 and the axe pushed +0.37) and each
+        // attempt to reshape it fixed one weapon by breaking another. Orientation is corrected in
+        // the source model, not here.
 
         if (Trim.TryGetValue(id, out var trim))
         {
@@ -287,8 +275,5 @@ internal static class HeldModelAlignment
         if (denominator > 1e-9f && Mathf.Abs(a - b) / denominator < NearTieMargin) return 1f;
         return b >= a ? 1f : -1f;
     }
-
-    /// <summary>The bounds extreme closest to the attach origin: where a held implement is gripped.</summary>
-    private static float NearEnd(float min, float max) => Mathf.Abs(min) <= Mathf.Abs(max) ? min : max;
 
 }

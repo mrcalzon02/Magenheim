@@ -1,4 +1,4 @@
 {
-  "version": "0.0.83",
-  "description": "0.0.83: Held weapons whose head sits off to one side (axe, battleaxe, atgeir) were shoved sideways out of the hand: seating matched our bounding-box centre to the donor's. It now seats along the haft only."
+  "version": "0.0.84",
+  "description": "0.0.84: Held models are placed exactly as authored. The seating offset displaced every weapon from its authored position, and each reshaping of it fixed one weapon by breaking another. Orientation belongs in the source model."
 }
