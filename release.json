@@ -1,4 +1,4 @@
 {
-  "version": "0.0.86",
-  "description": "0.0.86: Fixes a Crystal Sentinel duplication exploit caused by a build cost naming a prefab Valheim does not have, trims five held weapons from live observation, reverses the spear, and rebuilds the wall sconce at sconce scale."
+  "version": "0.0.87",
+  "description": "0.0.87: Crystal placeables no longer inherit Valheim's world-projecting piece shader from their donors, which ignored our UVs and smeared every surface. The ice box, decor, furniture, beds, banners and sentinel all carried it."
 }

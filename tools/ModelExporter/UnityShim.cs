@@ -271,7 +271,10 @@ public class Light:Component{public Color color;public float intensity;public fl
 public class Material:Object
 {
     public Color color=Color.white;public Texture? mainTexture;public Vector2 mainTextureScale=Vector2.one;public Vector2 mainTextureOffset=Vector2.zero;public int renderQueue; public Dictionary<string,float> Floats=new(); public Dictionary<string,Color> Colors=new();
-    public Material(){}public Material(Shader shader){}public Material(Material source){name=source.name;color=source.color;mainTexture=source.mainTexture;mainTextureScale=source.mainTextureScale;mainTextureOffset=source.mainTextureOffset;renderQueue=source.renderQueue;}
+    // ModelAssets reads material.shader to detect a donor that projects its surface from world
+    // position instead of sampling mesh UVs, so the shim has to carry one.
+    public Shader? shader;
+    public Material(){}public Material(Shader shader){this.shader=shader;}public Material(Material source){name=source.name;shader=source.shader;color=source.color;mainTexture=source.mainTexture;mainTextureScale=source.mainTextureScale;mainTextureOffset=source.mainTextureOffset;renderQueue=source.renderQueue;}
     public bool HasProperty(string name)=>true;public void SetColor(string name,Color value){Colors[name]=value;if(name=="_Color")color=value;}public void SetFloat(string name,float value){Floats[name]=value;}public void SetInt(string name,int value){Floats[name]=value;}public void SetTexture(string name,Texture? value){}public void EnableKeyword(string keyword){}public void DisableKeyword(string keyword){}public void SetOverrideTag(string tag,string value){}
 }
 

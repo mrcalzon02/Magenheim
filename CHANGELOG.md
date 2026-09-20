@@ -1,3 +1,27 @@
+## 0.0.87 - The placeables stop wearing the donor's shader
+
+- **Crystal placeables inherited Valheim's piece shader from the donors they clone, and it does not
+  sample mesh UVs.** It generates its surface from where the piece stands in the world, which is the
+  right behaviour for a vanilla wall -- long runs tile coherently with no UV work -- and completely
+  wrong for a Magenheim mesh, whose UVs are then never read at all. Geometry, UVs and texture can
+  all be correct and the model still renders as a lattice sliding across its own faces.
+  0.0.74 had already stripped the donor's normal, metallic, occlusion and moss maps for the same
+  underlying reason: they were authored for the donor, not for us. It left the shader, which is the
+  other half of the same defect.
+- `CrystalArchitectureVisuals` and the dais had worked around it by passing Rock_4's material in
+  explicitly, and that repair was never rolled out. The **ice box, the ten decor pieces, the ten
+  furniture pieces, the eight beds, the twenty-four banners and the sentinel** all still inherited
+  it -- reported from play as the sconce's smearing appearing on "a number of the other crystal
+  placeables".
+- The swap now happens once, in `ModelAssets`, where the donor material is resolved: a material
+  whose shader is world-projecting keeps everything except that shader, which is replaced with one
+  that samples UVs. Doing it there rather than at each call site means a placeable authored tomorrow
+  cannot reintroduce the defect by forgetting an argument. Colour, texture, metallic and roughness
+  come from the model payload regardless, so nothing authored is lost, and each substitution is
+  logged with the model id so the next session can see exactly which models were affected.
+- The two existing explicit material sources are left in place. They are no-ops under the new check,
+  and rewiring assets confirmed working in the field to prove a point is not worth the risk.
+
 ## 0.0.86 - Live play, 0.0.85: what the hands and the hammer found
 
 Every item here comes from one in-game session against 0.0.85.

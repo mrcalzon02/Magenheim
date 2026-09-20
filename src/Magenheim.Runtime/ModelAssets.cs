@@ -38,10 +38,32 @@ internal static class ModelAssets
         "Standard",
     };
 
+    /// <summary>
+    /// Shaders that generate their own surface from world position and ignore the mesh's UVs.
+    /// </summary>
+    /// <remarks>
+    /// Valheim's piece shader projects its texture from where the piece stands in the world. On a
+    /// vanilla building piece that is the point -- it keeps long walls and floors tiling coherently
+    /// without any UV work. On a Magenheim mesh it means the UVs the exporter carefully writes are
+    /// never sampled at all, and the model renders as a smeared lattice sliding across its own
+    /// faces: geometry, UVs and texture can all be perfect and it still looks wrong, which is
+    /// exactly how it kept being reported from the field.
+    /// </remarks>
+    private static readonly string[] WorldProjectedShaderNames = { "Custom/Piece" };
+
+    /// <summary>Surface shaders that do sample mesh UVs, in preference order.</summary>
+    /// <remarks>
+    /// Deliberately not <see cref="SurfaceShaderNames"/>: that list contains Custom/Piece as a
+    /// fallback, so searching it to escape Custom/Piece could return Custom/Piece.
+    /// </remarks>
+    private static readonly string[] UvSurfaceShaderNames = { "Custom/StaticRock", "Custom/Vegetation", "Standard" };
+
     /// <summary>Finds a usable opaque surface shader from the running game, or null if none is loaded.</summary>
-    internal static Shader? FindSurfaceShader()
+    internal static Shader? FindSurfaceShader() => FindShader(SurfaceShaderNames);
+
+    private static Shader? FindShader(string[] names)
     {
-        foreach (var name in SurfaceShaderNames)
+        foreach (var name in names)
         {
             var shader = Shader.Find(name);
             if (shader) return shader;
@@ -50,10 +72,37 @@ internal static class ModelAssets
         // Shader.Find only sees shaders that are already loaded, so a bundle-resident shader can be
         // missed by name even while it is resident. Check the loaded set before giving up.
         var loaded = Resources.FindObjectsOfTypeAll<Shader>();
-        foreach (var name in SurfaceShaderNames)
+        foreach (var name in names)
             foreach (var shader in loaded)
                 if (shader && shader.name == name) return shader;
         return null;
+    }
+
+    /// <summary>
+    /// Swaps a world-projecting donor shader for one that samples our UVs.
+    /// </summary>
+    /// <remarks>
+    /// 0.0.74 stripped the donor's normal, metallic, occlusion and moss maps because they were
+    /// authored for the donor's geometry. It left the donor's *shader*, which is the other half of
+    /// the same defect: a piece-shader material ignores mesh UVs outright. CrystalArchitecture and
+    /// the dais worked around it by passing Rock_4's material in explicitly, and that repair was
+    /// never rolled out, so the ice box, the decor set, the furniture set, the beds, the banners and
+    /// the sentinel all still inherited it -- reported from play as the same smearing on the sconce
+    /// and "a number of the other crystal placeables". Doing it here instead of at each call site
+    /// means a placeable authored tomorrow cannot reintroduce it by forgetting an argument.
+    ///
+    /// Only the shader is replaced. Colour, texture, metallic and roughness all come from the model
+    /// payload in LoadMaterial regardless, so nothing authored is lost.
+    /// </remarks>
+    private static Material? Uncouple(Material? source, string id)
+    {
+        if (!source || !source.shader || Array.IndexOf(WorldProjectedShaderNames, source.shader.name) < 0)
+            return source;
+        var replacement = FindShader(UvSurfaceShaderNames);
+        if (!replacement) return source;
+        Log?.Invoke($"Model '{id}' inherited the world-projecting '{source.shader.name}' from its donor; " +
+                    $"surfacing it with '{replacement.name}' so its own UVs are sampled.");
+        return new Material(replacement);
     }
 
     internal static Shader ResolveSurfaceShader() =>
@@ -84,6 +133,7 @@ internal static class ModelAssets
         var source = materialSource;
         if (!source) source = original.Where(r => !(r is ParticleSystemRenderer)).Select(r => r.sharedMaterial).FirstOrDefault(m => m);
         if (!source) source = new Material(ResolveSurfaceShader());
+        source = Uncouple(source, id);
         if (!Documents.TryGetValue(id, out var document))
         {
             document = JObject.Parse(File.ReadAllText(Path.Combine(DirectoryPath, "runtime", id + ".model.json")));

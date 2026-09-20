@@ -1,3 +1,44 @@
+# Current source candidate - 0.0.87 / schema 5 (2026-09-19)
+
+Live play reported the sconce's smearing on the ice box and "a number of the other crystal
+placeables". That is not the geometry defect 0.0.86 repaired on the sconce; it is the donor's
+shader. Valheim's piece shader generates its surface from world position and never samples mesh UVs,
+so a Magenheim mesh wearing one renders as a lattice sliding across its own faces no matter how
+clean its geometry, UVs and texture are.
+
+This was already diagnosed and repaired in `CrystalArchitectureVisuals`, by passing Rock_4's
+material in explicitly, and again for the dais. **The repair was never rolled out.** The ice box,
+the ten decor pieces, the ten furniture pieces, the eight beds, the twenty-four banners and the
+sentinel all still inherited it. 0.0.74 had stripped the donor's normal/metallic/occlusion/moss maps
+for the same underlying reason -- authored for the donor, not for us -- and left the shader, which
+is the other half of the same defect.
+
+`ModelAssets.Uncouple` now replaces a world-projecting shader on the resolved donor material once,
+where that material is resolved, so a placeable authored later cannot reintroduce the defect by
+forgetting a constructor argument. Only the shader changes; colour, texture, metallic and roughness
+come from the model payload regardless. Each substitution is logged with the model id, so the next
+session's log names exactly which models were carrying it rather than leaving it to inference. The
+two existing explicit material sources are left in place: they are no-ops under the new check, and
+rewiring assets confirmed working in the field to prove a point is not worth the risk.
+
+`Material.shader` had to be added to `tools/ModelExporter/UnityShim.cs`, because ModelAssetTests
+compiles `ModelAssets.cs` against the shim rather than against UnityEngine.
+
+The first attempt did not build: CS8603, because the compiler reads the `!source` Unity-null guard
+as a null test and the method returned `Material`. Caught by TreatWarningsAsErrors before packaging.
+
+0.0.87 is installed and SHA-256 verified in the active Central Fuckery profile: `Magenheim.dll`
+`637B496828D3D414E30306065DE7054D3427EF13227CC6A7776AAD731C61B51B`. Launcher entry reads back as
+`Magenheim v0.0.87 by Local (enabled)`. Prior payload backup
+`backups/Local-Magenheim-20260919-234401.zip`; catalog backup `backups/mods-20260919-234411-981.yml`.
+Build: 282 model assets, 38,327 Core assertions, zero warnings, zero errors, all gates pass.
+
+**Nothing here is runtime-accepted.** The next session should check the log for the
+`inherited the world-projecting` lines, which enumerate precisely which placeables were affected.
+The open item from 0.0.86 stands: 65 placeable Hammer icons are still procedural pixel art in C#.
+
+---
+
 # Current source candidate - 0.0.86 / schema 5 (2026-09-19)
 
 **First live-play acceptance pass in a long while, and it earned its keep.** 0.0.85 was launched in
