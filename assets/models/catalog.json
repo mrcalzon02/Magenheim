@@ -3362,25 +3362,37 @@
   {
     "id": "underworld-dais",
     "parts": 1,
-    "triangles": 956,
+    "triangles": 1116,
     "materials": 1,
     "source": "source/underworld-dais.blend",
     "glb": "glb/underworld-dais.glb",
     "runtime": "runtime/underworld-dais.model.json",
-    "source_sha256": "ef3d65876885af4449c4c24b4064814a9c9bcc02601fb057a71f1679e03b1172",
-    "runtime_sha256": "4656297416b3fb8f3a03b93038115cb552109f0dda31529c658accd914fcb839",
-    "glb_sha256": "5e6ffcc14a718458b4815ef6f7352cf2a13f2667182875ce04d2d9f859447d4a"
+    "source_sha256": "834992dd40c84bd25e40b97c802d6a2324fca44036374a24dadb55e744ac365f",
+    "runtime_sha256": "00e45ec9f68443a32faa4f6b0333e19aa6257772836f05380d9f19f7ca27790f",
+    "glb_sha256": "6848d8bcf0230de5144d8eb05bb1b1885d3d51aa86b05fa1b8dc8c9fe2d83757"
+  },
+  {
+    "id": "underworld-descent-monolith",
+    "parts": 1,
+    "triangles": 184,
+    "materials": 1,
+    "source": "source/underworld-descent-monolith.blend",
+    "glb": "glb/underworld-descent-monolith.glb",
+    "runtime": "runtime/underworld-descent-monolith.model.json",
+    "source_sha256": "f1d930d7baaaaf4139864e9e607e9facf37d0817c2658761ceca18cc01d78da0",
+    "runtime_sha256": "41230682b6f761b2b1f0aaddd1c531485fac859fdecb1eb222827c0dfbaace0a",
+    "glb_sha256": "a9ead70c836256329f80722935fb3efe28dab69e5d0f63b7e9014ffd2df77372"
   },
   {
     "id": "underworld-standing-stone",
     "parts": 1,
-    "triangles": 332,
+    "triangles": 226,
     "materials": 1,
     "source": "source/underworld-standing-stone.blend",
     "glb": "glb/underworld-standing-stone.glb",
     "runtime": "runtime/underworld-standing-stone.model.json",
-    "source_sha256": "9f5239d1fc5752d2f2508d5c55c6973acd55471fd9ef47d9b9998bafdbd37eba",
-    "runtime_sha256": "6443ae26a6e67190616421fb8bece304083b2671bd992eec98c82706d01d0961",
-    "glb_sha256": "cd8f7e6777f3115e4893e9de5153a21f87b0800c55fac705e8a8670d27a4fb80"
+    "source_sha256": "a6ba6b681ca140f246648f58675c6edb09808bc8f7e9c07ebf9547a47bf672b3",
+    "runtime_sha256": "455fd1d3b29a067499a3d84d132c8b9115bdcd6f4d16ee8753d18bf108716565",
+    "glb_sha256": "52a87745044b76af7271cc574a60204814644d1a1cab7a2afd5ead6ecb4aef0c"
   }
 ]
