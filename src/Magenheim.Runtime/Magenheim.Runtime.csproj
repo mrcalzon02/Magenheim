@@ -40,6 +40,11 @@
           Link="assets/earth/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../assets/models/runtime/*.model.json" Link="assets/models/runtime/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../assets/models/textures/*.png" Link="assets/models/textures/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Authored 256px Underworld PBR terrain families. Keep these as loose packaged assets so
+         the runtime can prefer production artwork while retaining procedural textures as fallback. -->
+    <None Include="../../assets/textures/underworld/terrain/*.png"
+          Link="assets/textures/underworld/terrain/%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../default-data/foundation.json"
           Link="default-data/foundation.json"
           CopyToOutputDirectory="PreserveNewest" />
