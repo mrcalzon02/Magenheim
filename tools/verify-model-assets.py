@@ -88,8 +88,24 @@ for file in sorted((assets/'runtime').glob('*.model.json')):
    for key in ('POSITION','NORMAL','TEXCOORD_0'):assert key in primitive['attributes'],(id,key)
  rows.append(dict(id=id,parts=len(doc['parts']),triangles=triangles,materials=len(materials),source='source/'+source.name,glb='glb/'+glb.name,runtime='runtime/'+file.name,source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),runtime_sha256=hashlib.sha256(file.read_bytes()).hexdigest(),glb_sha256=hashlib.sha256(data).hexdigest()))
 assert len(rows)==281,('Unexpected asset coverage',len(rows))
+# Magenheim imports authored geometry; it does not generate stand-in shapes at runtime. The rule
+# is about *art*: a cube or cylinder built in C# is a model that was never authored. It is not a
+# ban on constructing a UnityEngine.Mesh, which is also how authored data and generated terrain
+# reach the renderer. Each exemption therefore carries the reason it is not art substitution, so
+# adding one is a deliberate act rather than appending a name to a tuple.
+MESH_BUILDERS={
+ 'ModelAssets.cs':'builds the Mesh that an authored .model.json payload is imported into',
+ 'EarthAssets.cs':'builds the Mesh that an authored .mesh.json payload is imported into',
+ 'ModelExportRuntime.cs':'reads meshes back out of the running game for export',
+ 'UnderworldInstanceChunkMaterializer.cs':'builds Underworld terrain from Core-authoritative '
+  'heightfield samples. Terrain is generated per chunk from a seed and cannot be authored in '
+  'Blender, and this file owns presentation only: heights, biomes and admission all arrive from '
+  'Magenheim.Core.Underworld.',
+}
+for name in MESH_BUILDERS:
+ assert (root/'src/Magenheim.Runtime'/name).exists(),('Exempted mesh builder no longer exists',name)
 for file in (root/'src/Magenheim.Runtime').glob('*.cs'):
- if file.name in ('ModelAssets.cs','EarthAssets.cs','ModelExportRuntime.cs'):continue
+ if file.name in MESH_BUILDERS:continue
  text=file.read_text(encoding="utf-8-sig");assert 'CreatePrimitive(' not in text and 'new Mesh' not in text,('Runtime shape builder remains',file.name)
 (assets/'catalog.json').write_text(json.dumps(rows,indent=2))
 with (assets/'catalog.tsv').open('w',newline='') as f:
