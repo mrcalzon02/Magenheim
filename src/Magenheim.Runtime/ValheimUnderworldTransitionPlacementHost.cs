@@ -29,13 +29,6 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
         _log = log ?? throw new ArgumentNullException(nameof(log));
     }
 
-    [Obsolete("Spatial host mapping is no longer part of transition placement; use the native-instance constructor.")]
-    internal ValheimUnderworldTransitionPlacementHost(IUnderworldWorldContextController worldContext, UnderworldSpatialDomainDefinition spatialDomain, ManualLogSource log)
-        : this(worldContext, log)
-    {
-        _ = spatialDomain ?? throw new ArgumentNullException(nameof(spatialDomain));
-    }
-
     public void EnsureTargetContext(UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor)
     {
         ValidateAnchor(identity, anchor);
