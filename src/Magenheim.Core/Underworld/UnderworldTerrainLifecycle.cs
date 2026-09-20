@@ -78,22 +78,6 @@ public static class UnderworldTerrainLifecycle
             Clamp(cover, 0d, 1d), Clamp(hazard, 0d, 1d));
     }
 
-    /// <summary>
-    /// Temporary compatibility bridge for callers not yet migrated from the obsolete host-domain
-    /// record. Host coordinates are intentionally discarded before entering terrain authority.
-    /// </summary>
-    [Obsolete("Use the native UnderworldInstanceTerrainDomain overload. Host placement is not terrain authority.")]
-    public static UnderworldTerrainResult Evaluate(
-        UnderworldSpatialDomainDefinition legacyDomain,
-        UnderworldTerrainSample sample,
-        int derivedSeed32)
-    {
-        if (legacyDomain is null) throw new ArgumentNullException(nameof(legacyDomain));
-        var instanceDomain = UnderworldInstanceTerrainDomain.ValidateAndFreeze(
-            legacyDomain.RadiusMeters, legacyDomain.LogicalMinY, legacyDomain.LogicalMaxY);
-        return Evaluate(instanceDomain, sample, derivedSeed32);
-    }
-
     private static UnderworldTerrainBiome SelectBiome(double x, double z, double distance, double radius, int seed)
     {
         if (distance <= radius * CentralFungalRadiusFraction) return UnderworldTerrainBiome.FungalForest;
