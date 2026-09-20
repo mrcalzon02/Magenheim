@@ -12,12 +12,7 @@ internal static class UnderworldTerrainLifecycleTests
             if (!condition) throw new InvalidOperationException($"Underworld terrain lifecycle assertion {assertions} failed: {message}");
         }
 
-        var domain = UnderworldSpatialDomain.CreateDefault();
-        // Evaluate(UnderworldSpatialDomainDefinition, ...) is obsolete; bridge the same way
-        // its own (obsolete) implementation does internally. domain.RadiusMeters below is
-        // unaffected -- both domain types expose it.
-        var instanceDomain = UnderworldInstanceTerrainDomain.ValidateAndFreeze(
-            domain.RadiusMeters, domain.LogicalMinY, domain.LogicalMaxY);
+        var instanceDomain = UnderworldInstanceTerrainDomain.CreateDefault();
         var center = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
             new UnderworldTerrainSample(0d, 0d, 0d, 30d, 8d, 0.5d), 12345);
         Assert(center.Admitted, "Logical origin must be admitted to Underworld terrain generation.");
@@ -26,14 +21,14 @@ internal static class UnderworldTerrainLifecycleTests
         Assert(center.Hazard01 == 0d, "First-biome terrain must not introduce a damage hazard.");
 
         var outside = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
-            new UnderworldTerrainSample(domain.RadiusMeters + 1d, 0d, 0d, 30d, 0d, 0.5d), 1);
-        Assert(!outside.Admitted, "Terrain outside the reserved Underworld radius must fail closed.");
+            new UnderworldTerrainSample(instanceDomain.RadiusMeters + 1d, 0d, 0d, 30d, 0d, 0.5d), 1);
+        Assert(!outside.Admitted, "Terrain outside the native Underworld radius must fail closed.");
 
         var malformed = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
             new UnderworldTerrainSample(0d, 0d, 0d, double.NaN, 0d, 0.5d), 1);
         Assert(!malformed.Admitted, "Malformed terrain samples must fail closed.");
 
-        var sample = new UnderworldTerrainSample(domain.RadiusMeters * 0.6d, 0d, 0d, 30d, 20d, 0.9d);
+        var sample = new UnderworldTerrainSample(instanceDomain.RadiusMeters * 0.6d, 0d, 0d, 30d, 20d, 0.9d);
         var first = UnderworldTerrainLifecycle.Evaluate(instanceDomain, sample, 777);
         var repeat = UnderworldTerrainLifecycle.Evaluate(instanceDomain, sample, 777);
         Assert(first == repeat, "Terrain evaluation must be deterministic for the same seed and sample.");
@@ -58,9 +53,7 @@ internal static class UnderworldTerrainLifecycleTests
             new UnderworldTerrainSample(0d, 0d, 0d, 0d, 10d, 0.4d), 1);
         Assert(wet.WaterDepth == 0d, "Ground generated above the water line must report no water depth.");
 
-        // The protected center should transition into hostile provinces instead of stepping
-        // immediately from safe terrain to the full outer biome displacement/hazard.
-        var transitionRadius = domain.RadiusMeters *
+        var transitionRadius = instanceDomain.RadiusMeters *
             ((UnderworldTerrainLifecycle.CentralFungalRadiusFraction + UnderworldTerrainLifecycle.FungalTransitionRadiusFraction) * 0.5d);
         var transitionSample = new UnderworldTerrainSample(transitionRadius, 0d, 0d, 30d, 18d, 0.9d);
         var transition = UnderworldTerrainLifecycle.Evaluate(instanceDomain, transitionSample, 777);
@@ -70,29 +63,25 @@ internal static class UnderworldTerrainLifecycleTests
             "Transition band must attenuate hostile biome hazard near the protected center.");
 
         var innerEdge = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
-            transitionSample with { X = domain.RadiusMeters * (UnderworldTerrainLifecycle.CentralFungalRadiusFraction + 0.0001d) }, 777);
+            transitionSample with { X = instanceDomain.RadiusMeters * (UnderworldTerrainLifecycle.CentralFungalRadiusFraction + 0.0001d) }, 777);
         Assert(Math.Abs(innerEdge.Height - UnderworldTerrainLifecycle.BaseElevationMeters) < UnderworldTerrainLifecycle.MaximumTerrainDelta,
             "Crossing the central biome edge must not create a maximum-delta terrain cliff.");
         Assert(innerEdge.Hazard01 < transition.Hazard01 + 0.0001d,
             "Hazard must ramp outward rather than spike at the central biome boundary.");
 
-        // The Underworld shipped once as a featureless flat plane the player could walk forever.
-        // Cause was float precision: the runtime folded the world seed into the sample coordinate
-        // before calling Mathf.PerlinNoise, which put every column at the same rounded input. These
-        // two assertions are the regression gate for that whole class.
         const int precisionSeed = 1675883973;
         var nearOrigin = UnderworldTerrainNoise.Fractal01(precisionSeed, 0d, 0d);
         var offsetA = UnderworldTerrainNoise.Fractal01(precisionSeed, 40000d, 0d);
         var offsetB = UnderworldTerrainNoise.Fractal01(precisionSeed, 40001d, 0d);
         Assert(Math.Abs(offsetA - offsetB) > 1e-9d && nearOrigin >= 0d && nearOrigin <= 1d,
-            "Terrain noise must still vary metre to metre at the reserved region's world offset.");
+            "Terrain noise must still vary metre to metre at large coordinates.");
 
         var lowest = double.MaxValue;
         var highest = double.MinValue;
         var relief = 0;
         for (var step = 0; step < 96; step++)
         {
-            var x = -domain.RadiusMeters * 0.5d + step * (domain.RadiusMeters / 96d);
+            var x = -instanceDomain.RadiusMeters * 0.5d + step * (instanceDomain.RadiusMeters / 96d);
             var probe = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
                 new UnderworldTerrainSample(x, 0d, 512d, 30d, 0d,
                     UnderworldTerrainNoise.Fractal01(precisionSeed, x, 512d)), precisionSeed);
@@ -101,13 +90,10 @@ internal static class UnderworldTerrainLifecycleTests
             if (probe.Height < lowest) lowest = probe.Height;
             if (probe.Height > highest) highest = probe.Height;
         }
-        Assert(relief > 48, "A transect across the region must admit terrain to measure.");
+        Assert(relief > 48, "A transect across the instance must admit terrain to measure.");
         Assert(highest - lowest > 8d,
             "Underworld terrain must have real relief across a transect, not generate as a flat plane.");
 
-        // Region-scale relief is not enough on its own: the first flat Underworld still varied by
-        // ~12m across 8km while a 50m screen varied by 0.02m, which is a plane to anyone standing on
-        // it. Assert relief at the scale the player actually perceives.
         var screenLow = double.MaxValue;
         var screenHigh = double.MinValue;
         for (var step = 0; step <= 50; step++)
@@ -122,7 +108,6 @@ internal static class UnderworldTerrainLifecycleTests
         Assert(screenHigh - screenLow > 0.3d,
             "Underworld terrain must show relief across a 50m screen, not only across kilometres.");
 
-        // Relief must stay walkable: a metre step that climbs more than about a metre is a wall.
         var steepest = 0d;
         var previous = double.NaN;
         for (var step = 0; step <= 400; step++)
