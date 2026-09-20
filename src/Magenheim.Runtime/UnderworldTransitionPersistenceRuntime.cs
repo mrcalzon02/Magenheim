@@ -4,12 +4,12 @@ using Magenheim.Core.Underworld;
 
 namespace Magenheim.Runtime;
 
-internal interface IUnderworldTransitionPlacementHost{void EnsureTargetContext(UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor);void PlacePlayer(UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor);bool ObservePlayerPlacement(UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor);}
+internal interface IUnderworldTransitionPlacementHost{void EnsureTargetContext(UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor);void PlacePlayer(string playerId,UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor);bool ObservePlayerPlacement(string playerId,UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor);}
 internal sealed class StoredUnderworldTransitionHost:IUnderworldTransitionHost
 {
     private readonly UnderworldTransitionStateStore _store;private readonly IUnderworldTransitionPlacementHost _placement;
     internal StoredUnderworldTransitionHost(UnderworldTransitionStateStore store,IUnderworldTransitionPlacementHost placement){_store=store??throw new ArgumentNullException(nameof(store));_placement=placement??throw new ArgumentNullException(nameof(placement));}
-    public void Persist(UnderworldPlayerLayerState state,UnderworldWorldIdentity identity)=>_store.Save(state,identity);public void EnsureTargetContext(UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor)=>_placement.EnsureTargetContext(identity,layer,anchor);public void PlacePlayer(UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor)=>_placement.PlacePlayer(identity,layer,anchor);public bool ObservePlayerPlacement(UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor)=>_placement.ObservePlayerPlacement(identity,layer,anchor);
+    public void Persist(UnderworldPlayerLayerState state,UnderworldWorldIdentity identity)=>_store.Save(state,identity);public void EnsureTargetContext(UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor)=>_placement.EnsureTargetContext(identity,layer,anchor);public void PlacePlayer(string playerId,UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor)=>_placement.PlacePlayer(playerId,identity,layer,anchor);public bool ObservePlayerPlacement(string playerId,UnderworldWorldIdentity identity,UnderworldLayer layer,UnderworldAnchor anchor)=>_placement.ObservePlayerPlacement(playerId,identity,layer,anchor);
 }
 internal enum UnderworldRecoveryLoadResult{Missing,Stable,Recovered,Failed}
 internal sealed class UnderworldTransitionRecoveryRuntime
