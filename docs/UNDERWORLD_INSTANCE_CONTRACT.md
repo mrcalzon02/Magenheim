@@ -14,6 +14,7 @@ with this catalog is architectural drift and must be corrected before adding fea
 - Independent Underworld persistence namespace beneath the parent Magenheim world.
 - Deep Gate travel is an instance transition that preserves character/inventory/skills/progression.
 - Multiplayer peers join the same authoritative instance identity without player-count lifecycle authority.
+- Deep Gate player movement remains a thin adapter over Valheim player/network authority; Magenheim does not own a persistent player-layer or player-transition lifecycle.
 
 ## Forbidden
 
@@ -23,6 +24,8 @@ with this catalog is architectural drift and must be corrected before adding fea
 - Reusing the Surface map as the Underworld map.
 - Creating, releasing, activating, or deactivating the Underworld according to player population.
 - Requiring the player to select or load a second ordinary Valheim save.
+- Persisting Magenheim-owned per-player Surface/Underworld layer truth or reconstructing instance state/residency from player transition records.
+- Expanding gate transfer safety into occupancy tracking, player-population reconstruction, or a parallel player lifecycle/recovery system.
 
 ## Adapter boundary
 

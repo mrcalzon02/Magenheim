@@ -26,8 +26,8 @@ internal readonly struct UnderworldChunkFocus
 
 /// <summary>
 /// Runtime ownership/streaming authority for native Underworld chunks. Terrain authority remains
-/// materialization-neutral; after residency changes, the downstream Unity materializer is reconciled.
-/// Surface WorldGenerator is not part of this pipeline.
+/// materialization-neutral; after residency changes, downstream Unity presentation and native
+/// biome-structure residency are reconciled. Surface WorldGenerator is not part of this pipeline.
 /// </summary>
 internal sealed class UnderworldInstanceChunkStreamingRuntime
 {
@@ -49,11 +49,6 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
     internal UnderworldInstanceChunkGrid Grid => _grid;
     internal IReadOnlyDictionary<UnderworldInstanceChunkKey, UnderworldInstanceChunkSample> LoadedChunks => _loaded;
 
-    /// <summary>
-    /// Reconciles the resident chunk set around every authoritative native instance-space focus point.
-    /// Residency is the union of all focus neighborhoods so one player cannot evict terrain required by
-    /// another. Returns false and clears residency whenever no authoritative Underworld instance is active.
-    /// </summary>
     internal bool Reconcile(IEnumerable<UnderworldChunkFocus> focuses, int radiusChunks = DefaultStreamingRadiusChunks)
     {
         if (focuses is null) throw new ArgumentNullException(nameof(focuses));
@@ -66,9 +61,6 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
             return false;
         }
 
-        // Chunk coordinates are instance-local and therefore cannot establish ownership by themselves.
-        // Bind residency to the complete paired-world identity so a session handoff can never reuse
-        // samples generated for a different parent/derived seed merely because its DerivedWorldId matches.
         var instanceKey = InstanceKey(identity);
         if (_loadedInstanceKey is not null && !string.Equals(_loadedInstanceKey, instanceKey, StringComparison.Ordinal))
             Clear();
@@ -99,6 +91,9 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
                 _loaded.Add(key, UnderworldInstanceChunkSampler.Sample(_grid, key, identity.DerivedSeed32, waterLevel));
 
         _services.ChunkMaterializer.Reconcile();
+        // Every registered family consumes this exact derived-instance resident set after terrain
+        // materialization, preventing structure placement from racing or escaping native chunk authority.
+        _services.BiomeStructureResidency.Reconcile();
         return true;
     }
 
@@ -107,6 +102,7 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
 
     internal void Clear()
     {
+        _services.BiomeStructureResidency.Clear();
         if (_loaded.Count > 0) _log.LogDebug($"Released {_loaded.Count} native Underworld chunk payload(s).");
         _loaded.Clear();
         _loadedInstanceKey = null;

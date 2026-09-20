@@ -42,6 +42,8 @@ The Surface and Underworld remain part of the same Magenheim progression experie
 - Do **not** expose, project, or disguise distant Surface-world coordinates as Underworld geography.
 - The instance owns its own logical origin and chunk/terrain coordinate system. Player-facing Underworld coordinates are native instance coordinates, not translated Surface coordinates.
 - Deep Gate travel is an instance transition. It must preserve the player's character state and provide a reversible return path without requiring ordinary traversal through Surface geography.
+- **Do not build a Magenheim-owned player-layer/occupancy/transition-recovery subsystem.** Deep Gate code is a thin transport boundary only: request entry/return, hand the existing Valheim player object to the instance adapter, and let normal Valheim player/network/save authority continue to own that player. Do not persist `CurrentLayer`, infer terrain residency from per-player transition records, enumerate players to reconstruct instance state, or gate instance lifetime on player transition bookkeeping.
+- Interrupted-transfer protection may retain only the minimum ephemeral data required to avoid stranding a player during the gate operation; it must not become a parallel player state machine or a source of instance/world truth.
 - Persistence must be explicit and independently keyed for the Underworld instance. Never silently alias Surface exploration, map, terrain-generation or environment state.
 - Multiplayer authority must admit peers into the same authoritative Underworld instance identity and reject mismatched instance/configuration state.
 - Existing deterministic Underworld biome, terrain-shape, exploration, progression, ecology and transition rules are reusable. The obsolete **40 km host-band adapter is not**.
@@ -49,6 +51,19 @@ The Surface and Underworld remain part of the same Magenheim progression experie
 - If Valheim's singleton world machinery cannot directly host this abstraction, Magenheim must own the instance/chunk adapter rather than redefining the Underworld as a remote continent merely to fit the singleton.
 
 The 2026-09-17 same-world horizontal-region correction is superseded by the user's 2026-09-18 architecture correction. Any backlog, validation record, handoff or source comment that treats the 40 km horizontal region as the intended final architecture is historical evidence, not authority.
+
+## Delivery discipline — prefer Valheim over Magenheim machinery
+
+The default implementation question is **"does Valheim already handle this?"** Inspect the existing Valheim/Jötunn lifecycle and API before creating Magenheim state, managers, recovery systems, registries, schedulers, serializers, or abstractions.
+
+- Prefer the smallest direct adapter that connects Magenheim content to an existing Valheim capability.
+- Do not mirror player, inventory, character-save, connection, teleport, object-lifetime, networking, zone, or ordinary persistence machinery that Valheim already owns.
+- New framework code requires a concrete missing engine capability or a Magenheim-specific invariant that cannot be expressed through the existing API.
+- A deliverable is player-visible functionality or a necessary direct dependency of it. Internal architecture refinement by itself is not a development milestone.
+- Before adding a manager/state machine/store/controller, identify the Valheim/Jötunn mechanism that was checked and why it is insufficient. If no insufficiency is demonstrated, do not add the layer.
+- Prefer deleting or bypassing redundant Magenheim machinery over making that machinery more sophisticated.
+- Keep implementation slices short: engine capability -> thin adapter -> player-visible behavior -> verification. Stop once the required behavior works.
+- Do not spend a development cycle hardening speculative failure modes in infrastructure that has not yet produced the intended gameplay deliverable.
 
 ## Architecture
 
