@@ -90,7 +90,6 @@ internal sealed class UnderworldRuntimeServices
 
     internal void Shutdown()
     {
-        PlacementHost.ResetForWorldBoundary();
         FungalStructureResidency.Clear();
         ChunkMaterializer.Clear();
         ChunkStreaming.Clear();
