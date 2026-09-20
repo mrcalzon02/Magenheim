@@ -82,3 +82,16 @@ No further architecture-hardening pass is allowed on a subsystem that fails this
 3. Audit custom exploration storage against Valheim player/custom-data storage.
 4. Audit Underworld ecology/structure residency for places where normal Valheim/Jötunn prefab, spawn, and ZNetView behavior can replace custom lifecycle code.
 5. Only then reconnect Deep Gate interaction as a thin transport adapter and proceed to terrain/biome/content deliverables.
+
+
+## Explicit parity rule — map/fog and mod interoperability
+
+The Underworld must not implement a parallel minimap, fog-of-war, reveal radius, exploration cadence, pin engine, or map UI. Those are Valheim mechanics.
+
+When the active Magenheim world context is the Underworld, the adapter must present the Underworld instance's terrain/world data to the **same Valheim Minimap code paths and calls** used by the Surface. This is an interoperability requirement, not merely a visual requirement. A mod that patches or changes Valheim's normal exploration radius, map reveal behavior, pin behavior, or other minimap mechanics must reach the Underworld through the same patched Valheim function.
+
+Therefore the previous custom Underworld exploration state, codec, filesystem store, Player.Update reveal loop, custom fog texture generation, custom minimap overlay, and layer-selector UI have been deleted. Do not recreate equivalents under new names.
+
+The permitted custom seam is only instance context/data routing: make Valheim's existing map/minimap/world calls read the active Underworld instance data while the player is in that instance, then restore the Surface context when leaving. The implementation should patch/redirect the narrowest world-data boundary possible rather than copy the body or behavior of Valheim's map functions.
+
+This parity rule applies beyond maps: whenever Valheim already owns a mechanic, Magenheim supplies Underworld-specific data/context to that mechanic instead of implementing a second mechanic.
