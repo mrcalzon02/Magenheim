@@ -13,105 +13,68 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal static class UnderworldVanillaDonorCatalog
 {
-    internal readonly record struct Donor(
-        string PrefabName,
-        float MinScale,
-        float MaxScale,
-        Vector3 Shape,
-        float GroundOffset = 0f,
-        bool Collidable = false);
+    internal readonly record struct Donor(string PrefabName, float MinScale, float MaxScale, Vector3 Shape, float GroundOffset = 0f, bool Collidable = false);
 
-    private static readonly IReadOnlyDictionary<UnderworldTerrainBiome, Donor[]> Donors =
-        new Dictionary<UnderworldTerrainBiome, Donor[]>
+    private static readonly IReadOnlyDictionary<UnderworldTerrainBiome, Donor[]> Donors = new Dictionary<UnderworldTerrainBiome, Donor[]>
+    {
+        [UnderworldTerrainBiome.FungalForest] = new Donor[]
         {
-            [UnderworldTerrainBiome.FungalForest] = new Donor[]
-            {
-                new Donor("YggaShoot1", .85f, 1.35f, new Vector3(1.15f, 1.35f, 1.15f), -.15f, true),
-                new Donor("YggaShoot2", .9f, 1.45f, new Vector3(1.0f, 1.55f, 1.0f), -.15f, true),
-                new Donor("YggaShoot3", .8f, 1.25f, new Vector3(1.25f, 1.25f, 1.25f), -.15f, true),
-                new Donor("YggaShoot1", 1.0f, 1.55f, new Vector3(1.55f, .82f, 1.35f), -.2f, true),
-                new Donor("YggaShoot2", .75f, 1.15f, new Vector3(.72f, 1.95f, .72f), -.15f, true),
-                new Donor("Pickable_Mushroom_Magecap", 6.5f, 10f, new Vector3(1.5f, 1.1f, 1.5f), -.05f),
-                new Donor("Pickable_Mushroom_Magecap", 5.5f, 8f, new Vector3(.82f, 1.75f, .82f), -.05f),
-                new Donor("Pickable_Mushroom_JotunPuffs", 5f, 8.5f, new Vector3(1.4f, 1.15f, 1.4f), -.05f),
-                new Donor("Pickable_Mushroom_JotunPuffs", 4.5f, 7f, new Vector3(1.8f, .72f, 1.55f), -.05f),
-                new Donor("Pickable_Mushroom_blue", 7f, 12f, new Vector3(1.25f, 1.45f, 1.25f), -.05f),
-                new Donor("Pickable_Mushroom_blue", 5.5f, 9f, new Vector3(.7f, 2.1f, .7f), -.05f),
-            },
-            [UnderworldTerrainBiome.BlackwaterDeep] = new Donor[]
-            {
-                new Donor("cliff_mistlands1", 1.1f, 1.8f, new Vector3(1.0f, 1.45f, 1.0f), -.5f, true),
-                new Donor("cliff_mistlands1", .9f, 1.45f, new Vector3(1.75f, .72f, 1.35f), -.55f, true),
-                new Donor("RockFinger", 1.25f, 2.25f, new Vector3(.9f, 1.6f, .9f), -.35f, true),
-                new Donor("RockFinger", 1.0f, 1.7f, new Vector3(.58f, 2.25f, .58f), -.4f, true),
-                new Donor("RockThumb", 1.4f, 2.4f, new Vector3(1.1f, 1.35f, 1.1f), -.35f, true),
-                new Donor("YggdrasilRoot", 1.2f, 2.0f, new Vector3(1.4f, .9f, 1.4f), -.25f, true),
-                new Donor("YggdrasilRoot", 1.0f, 1.65f, new Vector3(2.0f, .55f, 1.45f), -.3f, true),
-            },
-            [UnderworldTerrainBiome.SulfurousWastes] = new Donor[]
-            {
-                new Donor("Ashlands_rock1", 1.2f, 2.3f, new Vector3(1.15f, 1.25f, 1.15f), -.35f, true),
-                new Donor("Ashlands_rock1", .9f, 1.65f, new Vector3(1.7f, .7f, 1.3f), -.4f, true),
-                new Donor("Ashlands_rock2", 1.1f, 2.1f, new Vector3(1.3f, 1.1f, 1.3f), -.35f, true),
-                new Donor("Ashlands_rock2", 1.0f, 1.8f, new Vector3(.75f, 1.85f, .75f), -.35f, true),
-                new Donor("cliff_ashlands1", 1.0f, 1.7f, new Vector3(1.0f, 1.55f, 1.0f), -.55f, true),
-                new Donor("AshlandsTree6_big", .75f, 1.2f, new Vector3(.85f, 1.25f, .85f), -.15f, true),
-                new Donor("AshlandsTree6_big", .65f, 1.0f, new Vector3(.58f, 1.75f, .58f), -.15f, true),
-                new Donor("AshlandsBush1", 1.4f, 2.8f, new Vector3(1.1f, .8f, 1.1f), -.05f),
-            },
-            [UnderworldTerrainBiome.FrozenCaverns] = new Donor[]
-            {
-                new Donor("rock3_mountain_1", 1.15f, 2.1f, new Vector3(1.0f, 1.45f, 1.0f), -.35f, true),
-                new Donor("rock3_mountain_1", .9f, 1.55f, new Vector3(1.65f, .72f, 1.4f), -.4f, true),
-                new Donor("Ice_floor", 2.0f, 4.0f, new Vector3(1.5f, .45f, 1.5f), -.12f, true),
-                new Donor("Ice_floor", 1.6f, 3.0f, new Vector3(2.2f, .22f, 1.35f), -.1f, true),
-                new Donor("BlackIceShard_01", 1.6f, 3.5f, new Vector3(.8f, 1.8f, .8f), -.15f, true),
-                new Donor("BlackIceShard_01", 1.2f, 2.5f, new Vector3(.48f, 2.65f, .48f), -.15f, true),
-                new Donor("RockFinger", .9f, 1.6f, new Vector3(.75f, 1.75f, .75f), -.35f, true),
-            },
-            [UnderworldTerrainBiome.FractureZones] = new Donor[]
-            {
-                new Donor("cliff_mistlands1", 1.1f, 2.0f, new Vector3(1.15f, 1.35f, 1.15f), -.45f, true),
-                new Donor("cliff_mistlands1", .85f, 1.4f, new Vector3(1.9f, .65f, 1.25f), -.5f, true),
-                new Donor("RockFinger", 1.2f, 2.5f, new Vector3(.8f, 1.85f, .8f), -.35f, true),
-                new Donor("RockFinger", 1.0f, 1.8f, new Vector3(.48f, 2.7f, .48f), -.4f, true),
-                new Donor("RockFingerBroken", 1.3f, 2.8f, new Vector3(1.15f, 1.45f, 1.15f), -.35f, true),
-                new Donor("RockFingerBroken", 1.0f, 2.0f, new Vector3(1.7f, .8f, 1.3f), -.4f, true),
-                new Donor("RockThumb", 1.25f, 2.5f, new Vector3(1.0f, 1.5f, 1.0f), -.35f, true),
-                new Donor("rockformation1", 1.4f, 3.0f, new Vector3(1.2f, 1.35f, 1.2f), -.45f, true),
-            },
-            [UnderworldTerrainBiome.GreatDecay] = new Donor[]
-            {
-                new Donor("root07", 1.4f, 2.8f, new Vector3(1.25f, 1.0f, 1.25f), -.2f, true),
-                new Donor("root07", 1.1f, 2.0f, new Vector3(1.9f, .58f, 1.45f), -.25f, true),
-                new Donor("root08", 1.5f, 3.0f, new Vector3(1.1f, 1.2f, 1.1f), -.2f, true),
-                new Donor("root08", 1.15f, 2.1f, new Vector3(.68f, 1.9f, .68f), -.2f, true),
-                new Donor("root11", 1.3f, 2.7f, new Vector3(1.35f, .9f, 1.35f), -.2f, true),
-                new Donor("root12", 1.4f, 2.9f, new Vector3(1.2f, 1.1f, 1.2f), -.2f, true),
-                new Donor("root12", 1.0f, 1.9f, new Vector3(2.1f, .52f, 1.55f), -.25f, true),
-                new Donor("YggdrasilRoot", 1.3f, 2.4f, new Vector3(1.55f, .85f, 1.55f), -.25f, true),
-                new Donor("YggdrasilRoot", 1.0f, 1.8f, new Vector3(2.25f, .48f, 1.5f), -.3f, true),
-                new Donor("AshlandsTree6_big", .8f, 1.35f, new Vector3(1.0f, 1.3f, 1.0f), -.15f, true),
-                new Donor("AshlandsTree6_big", .65f, 1.0f, new Vector3(.62f, 1.8f, .62f), -.15f, true),
-                new Donor("AshlandsBush2", 1.5f, 3.0f, new Vector3(1.2f, .75f, 1.2f), -.05f),
-            },
-        };
+            new("YggaShoot1", .85f, 1.35f, new(1.15f, 1.35f, 1.15f), -.15f, true), new("YggaShoot2", .9f, 1.45f, new(1f, 1.55f, 1f), -.15f, true), new("YggaShoot3", .8f, 1.25f, new(1.25f, 1.25f, 1.25f), -.15f, true),
+            new("YggaShoot1", 1f, 1.55f, new(1.55f, .82f, 1.35f), -.2f, true), new("YggaShoot2", .75f, 1.15f, new(.72f, 1.95f, .72f), -.15f, true),
+            new("Pickable_Mushroom_Magecap", 6.5f, 10f, new(1.5f, 1.1f, 1.5f), -.05f), new("Pickable_Mushroom_Magecap", 5.5f, 8f, new(.82f, 1.75f, .82f), -.05f),
+            new("Pickable_Mushroom_JotunPuffs", 5f, 8.5f, new(1.4f, 1.15f, 1.4f), -.05f), new("Pickable_Mushroom_JotunPuffs", 4.5f, 7f, new(1.8f, .72f, 1.55f), -.05f),
+            new("Pickable_Mushroom_blue", 7f, 12f, new(1.25f, 1.45f, 1.25f), -.05f), new("Pickable_Mushroom_blue", 5.5f, 9f, new(.7f, 2.1f, .7f), -.05f),
+        },
+        [UnderworldTerrainBiome.BlackwaterDeep] = new Donor[]
+        {
+            new("cliff_mistlands1", 1.1f, 1.8f, new(1f, 1.45f, 1f), -.5f, true), new("cliff_mistlands1", .9f, 1.45f, new(1.75f, .72f, 1.35f), -.55f, true),
+            new("RockFinger", 1.25f, 2.25f, new(.9f, 1.6f, .9f), -.35f, true), new("RockFinger", 1f, 1.7f, new(.58f, 2.25f, .58f), -.4f, true), new("RockThumb", 1.4f, 2.4f, new(1.1f, 1.35f, 1.1f), -.35f, true),
+            new("YggdrasilRoot", 1.2f, 2f, new(1.4f, .9f, 1.4f), -.25f, true), new("YggdrasilRoot", 1f, 1.65f, new(2f, .55f, 1.45f), -.3f, true),
+        },
+        [UnderworldTerrainBiome.SulfurousWastes] = new Donor[]
+        {
+            new("Ashlands_rock1", 1.2f, 2.3f, new(1.15f, 1.25f, 1.15f), -.35f, true), new("Ashlands_rock1", .9f, 1.65f, new(1.7f, .7f, 1.3f), -.4f, true),
+            new("Ashlands_rock2", 1.1f, 2.1f, new(1.3f, 1.1f, 1.3f), -.35f, true), new("Ashlands_rock2", 1f, 1.8f, new(.75f, 1.85f, .75f), -.35f, true),
+            new("cliff_ashlands1", 1f, 1.7f, new(1f, 1.55f, 1f), -.55f, true), new("AshlandsTree6_big", .75f, 1.2f, new(.85f, 1.25f, .85f), -.15f, true),
+            new("AshlandsTree6_big", .65f, 1f, new(.58f, 1.75f, .58f), -.15f, true), new("AshlandsBush1", 1.4f, 2.8f, new(1.1f, .8f, 1.1f), -.05f),
+        },
+        [UnderworldTerrainBiome.FrozenCaverns] = new Donor[]
+        {
+            new("rock3_mountain_1", 1.15f, 2.1f, new(1f, 1.45f, 1f), -.35f, true), new("rock3_mountain_1", .9f, 1.55f, new(1.65f, .72f, 1.4f), -.4f, true),
+            new("Ice_floor", 2f, 4f, new(1.5f, .45f, 1.5f), -.12f, true), new("Ice_floor", 1.6f, 3f, new(2.2f, .22f, 1.35f), -.1f, true),
+            new("BlackIceShard_01", 1.6f, 3.5f, new(.8f, 1.8f, .8f), -.15f, true), new("BlackIceShard_01", 1.2f, 2.5f, new(.48f, 2.65f, .48f), -.15f, true), new("RockFinger", .9f, 1.6f, new(.75f, 1.75f, .75f), -.35f, true),
+        },
+        [UnderworldTerrainBiome.FractureZones] = new Donor[]
+        {
+            new("cliff_mistlands1", 1.1f, 2f, new(1.15f, 1.35f, 1.15f), -.45f, true), new("cliff_mistlands1", .85f, 1.4f, new(1.9f, .65f, 1.25f), -.5f, true),
+            new("RockFinger", 1.2f, 2.5f, new(.8f, 1.85f, .8f), -.35f, true), new("RockFinger", 1f, 1.8f, new(.48f, 2.7f, .48f), -.4f, true),
+            new("RockFingerBroken", 1.3f, 2.8f, new(1.15f, 1.45f, 1.15f), -.35f, true), new("RockFingerBroken", 1f, 2f, new(1.7f, .8f, 1.3f), -.4f, true),
+            new("RockThumb", 1.25f, 2.5f, new(1f, 1.5f, 1f), -.35f, true), new("rockformation1", 1.4f, 3f, new(1.2f, 1.35f, 1.2f), -.45f, true),
+        },
+        [UnderworldTerrainBiome.GreatDecay] = new Donor[]
+        {
+            new("root07", 1.4f, 2.8f, new(1.25f, 1f, 1.25f), -.2f, true), new("root07", 1.1f, 2f, new(1.9f, .58f, 1.45f), -.25f, true),
+            new("root08", 1.5f, 3f, new(1.1f, 1.2f, 1.1f), -.2f, true), new("root08", 1.15f, 2.1f, new(.68f, 1.9f, .68f), -.2f, true), new("root11", 1.3f, 2.7f, new(1.35f, .9f, 1.35f), -.2f, true),
+            new("root12", 1.4f, 2.9f, new(1.2f, 1.1f, 1.2f), -.2f, true), new("root12", 1f, 1.9f, new(2.1f, .52f, 1.55f), -.25f, true),
+            new("YggdrasilRoot", 1.3f, 2.4f, new(1.55f, .85f, 1.55f), -.25f, true), new("YggdrasilRoot", 1f, 1.8f, new(2.25f, .48f, 1.5f), -.3f, true),
+            new("AshlandsTree6_big", .8f, 1.35f, new(1f, 1.3f, 1f), -.15f, true), new("AshlandsTree6_big", .65f, 1f, new(.62f, 1.8f, .62f), -.15f, true), new("AshlandsBush2", 1.5f, 3f, new(1.2f, .75f, 1.2f), -.05f),
+        },
+    };
 
     internal static Donor Select(UnderworldTerrainBiome biome, int variant)
     {
-        if (!Donors.TryGetValue(biome, out var donors) || donors.Length == 0)
-            throw new InvalidOperationException($"No vanilla donor palette exists for {biome}.");
-        var index = (variant & int.MaxValue) % donors.Length;
-        return donors[index];
+        if (!Donors.TryGetValue(biome, out var donors) || donors.Length == 0) throw new InvalidOperationException($"No vanilla donor palette exists for {biome}.");
+        return donors[(variant & int.MaxValue) % donors.Length];
     }
 
     internal static Vector3 Scale(Donor donor, int variant)
     {
-        // Keep donor selection and physical size variation deterministic, but do not derive both
-        // from the same modulo. That correlation made each repeated donor settle into a visibly
-        // recurring size. Independent hashes also add a restrained horizontal asymmetry so cloned
-        // rocks, roots and mushrooms do not read as identical silhouettes from a distance.
-        var scalar = Mathf.Lerp(donor.MinScale, donor.MaxScale, Hash01(variant, 0x2D3));
+        // Three deterministic visual-mass tiers make clustered ecology read as a composition:
+        // sparse landmark forms, a dominant middle canopy/formation, and smaller understory/fill.
+        // Tier selection is independently salted so it does not correlate with donor selection.
+        var massRoll = Hash01(variant, 0x1C7);
+        var mass = massRoll < .16f ? 1.28f : massRoll < .70f ? 1f : .72f;
+        var scalar = Mathf.Lerp(donor.MinScale, donor.MaxScale, Hash01(variant, 0x2D3)) * mass;
         var xJitter = Mathf.Lerp(.94f, 1.06f, Hash01(variant, 0x51B));
         var zJitter = Mathf.Lerp(.94f, 1.06f, Hash01(variant, 0x7A9));
         return Vector3.Scale(donor.Shape * scalar, new Vector3(xJitter, 1f, zJitter));
