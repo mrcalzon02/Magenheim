@@ -7,9 +7,9 @@ internal enum UnderworldGateRole
 }
 
 /// <summary>
-/// Declares which side of the paired Deep Gate a prefab instance represents. The actual target
-/// is never a free coordinate: entry persists the exact surface source anchor and the return side
-/// resolves that persisted anchor through UnderworldTransitionRules.BeginReturn.
+/// Marks which side of the Deep Gate this prefab represents.
+/// It carries no player state or transition lifecycle; gate interaction delegates ordinary player
+/// movement to Valheim and only switches the Magenheim-owned Underworld instance adapter.
 /// </summary>
 internal sealed class UnderworldGateEndpoint : UnityEngine.MonoBehaviour
 {
