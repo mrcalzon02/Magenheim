@@ -114,15 +114,15 @@ push; that did not happen.
 
 The Underworld is a **dedicated Magenheim instanced world-space**, not a second manually selected save and not an x=40000 Surface-world continent. The 2026-09-17 horizontal-host-band correction over-corrected the earlier second-save implementation and is now superseded by current user authority and the corrected INSTRUCTIONS.md / UNDERWORLD_DESIGN.md §6.
 
-Preserve the reusable authorities: six-biome terrain rules, deterministic layout, exploration serialization, progression, ecology, transition transaction/recovery, Conclave content and independent minimap textures. Replace adapters whose correctness depends on the 40 km host band.
+Preserve the reusable authorities: six-biome terrain rules, deterministic layout, exploration serialization, progression, ecology, Conclave content and independent minimap textures. The per-player transition transaction/recovery subsystem is superseded and quarantined; only a thin Deep Gate transport adapter may replace it.
 
 - [x] **Correct authority documents. DONE 2026-09-18.** INSTRUCTIONS.md and UNDERWORLD_DESIGN.md now make the dedicated instance-world boundary explicit and forbid the x=40000 far-landmass model as final architecture.
 - [x] **Stop extending host-band pin projection. DONE 2026-09-18.** The temporary projected-pin presentation mutation is removed; native instance coordinates will feed the Underworld map.
 - [ ] **Introduce the instance lifecycle authority.** Own instance identity, admission, activation/deactivation, logical origin, chunk address space and recovery without hot-swapping Valheim singleton World/ZNet state.
 - [ ] **Move terrain generation behind an instance chunk provider.** Reuse UnderworldTerrainLifecycle rules, but stop generating the Underworld through distant Surface WorldGenerator.GetBiomeHeight/GetBiome columns.
 - [ ] **Replace host-band placement.** Deep Gate entry/return, Conclave placement, structures and ecology must consume native instance anchors rather than UnderworldSpatialDomain.ToHostAnchor x=40000 placement.
-- [ ] **Reconcile persistence.** Key terrain/chunk, exploration and world-object state to the parent-world + Underworld-instance identity; prove save/load and reconnect without a user-visible second-save workflow.
-- [ ] **Multiplayer admission.** Server owns instance identity/configuration and peer admission; prove Surface and Underworld participants cannot cross-contaminate spawn/environment/map state.
+- [ ] **Reconcile instance persistence.** Key terrain/chunk, exploration and world-object state to the parent-world + Underworld-instance identity. Do not persist Magenheim-owned player-layer/transition truth.
+- [ ] **Multiplayer instance admission.** Server owns instance identity/configuration synchronization. Use Valheim player/network authority rather than reconstructing instance state from per-player transition records.
 - [ ] **Runtime acceptance.** Disposable-world Surface -> Underworld -> Surface, interrupted entry recovery, save/reload below, reconnect, host/client and dedicated-server proof.
 
 
@@ -473,7 +473,7 @@ Continue remaining elemental/magic content only when it does not outrank broken 
 
 ## Underworld framework objective
 
-**Target architecture: not an adjacent continent and not another save. The Underworld is a second logical world layer inside the same persistent game world.** The ~40 km reserved region is physical hosting space only. Framework work must converge on logical biome authority, host-to-layer map projection, independent exploration/cloud state, and a tabbed Surface | Underworld map. Vanilla biome-sector/map behavior is a compatibility substrate, not the player-facing source of truth.
+**Target architecture: a dedicated Magenheim-owned instanced world-space, not an adjacent continent, coordinate-projected Surface layer, or second manually selected save.** Framework work converges on native instance terrain/chunks, biome/environment authority, independent persistence/exploration/map state, and a thin Deep Gate transport adapter. Per-player layer/transition persistence is explicitly out of scope; see `docs/validation/2026-09-20-underworld-player-transition-drift-cutoff.md`.
 
 ## P4 — The Underworld expansion track
 
@@ -485,8 +485,8 @@ This is expansion scope and remains subordinate to broken intended behavior and 
 - [x] Commit the detailed Underworld implementation program, including biome framework, creature ecology, six-boss progression, Deepstone Conclave and milestone gates.
 - [x] U0: reconcile live definition, fingerprint, world-state, network and Nowhere King completion authorities; see docs/validation/2026-09-15-underworld-authority-integration.md. Runtime completion adapter remains a prerequisite to U2.
 - [x] U1: compile/test the Core skeleton and embed six-boss progression plus A0 architecture in canonical schema-5 JSON/fingerprint authority; no runtime world registration.
-- [ ] U2: prove the derived-world transition architecture in a disposable environment before biome production.
-- [ ] U3: harden persistent world/map/multiplayer transition state.
+- [ ] U2: prove dedicated instance admission/materialization in a disposable environment before biome production.
+- [ ] U3: harden instance persistence, independent map/exploration state, and multiplayer instance synchronization. Do not build persistent player-transition state.
 - [ ] U4: prove Macro Basin + Wall Mass + inaccessible Roof Shelf + cavern-sky/fog illusion.
 - [ ] U5-U7: implement generic biome, ecology, boss and Deepstone frameworks.
 - [ ] U8-U9: complete Fungal Forest vertical slice and The First Bloom progression loop.
