@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -11,7 +10,8 @@ namespace Magenheim.Runtime;
 /// <summary>
 /// Magenheim-owned durable registry for generated objects in one derived Underworld instance.
 /// This store is deliberately independent of Valheim ZoneSystem/ZDO persistence: the parent world
-/// must not become persistence authority for native Underworld structures.
+/// must not become persistence authority for native Underworld structures. Repeatable structure kinds
+/// are keyed by deterministic instance-local placement identity, not merely by structure kind.
 /// </summary>
 internal sealed class UnderworldGeneratedObjectStateStore
 {
@@ -27,16 +27,20 @@ internal sealed class UnderworldGeneratedObjectStateStore
         _log = log ?? throw new ArgumentNullException(nameof(log));
     }
 
-    internal bool IsRecorded(UnderworldWorldIdentity identity, string objectKind)
+    internal bool IsRecorded(UnderworldWorldIdentity identity, string objectKind) => IsRecorded(identity, objectKind, string.Empty);
+
+    internal bool IsRecorded(UnderworldWorldIdentity identity, string objectKind, string placementKey)
     {
         Validate(identity, objectKind);
-        return TryRead(identity, objectKind, out _);
+        return TryRead(identity, objectKind, placementKey, out _);
     }
 
-    internal void RecordGenerated(UnderworldWorldIdentity identity, string objectKind)
+    internal void RecordGenerated(UnderworldWorldIdentity identity, string objectKind) => RecordGenerated(identity, objectKind, string.Empty);
+
+    internal void RecordGenerated(UnderworldWorldIdentity identity, string objectKind, string placementKey)
     {
         Validate(identity, objectKind);
-        var stableId = UnderworldGeneratedObjectIdentity.BuildStableObjectId(identity, objectKind);
+        var stableId = UnderworldGeneratedObjectIdentity.BuildStableObjectId(identity, objectKind, placementKey);
         var path = RecordPath(identity, stableId);
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         var payload = Encode(identity, objectKind, stableId);
@@ -57,9 +61,9 @@ internal sealed class UnderworldGeneratedObjectStateStore
         finally { if (temporary.Length != 0 && File.Exists(temporary)) File.Delete(temporary); }
     }
 
-    private bool TryRead(UnderworldWorldIdentity identity, string objectKind, out string stableId)
+    private bool TryRead(UnderworldWorldIdentity identity, string objectKind, string placementKey, out string stableId)
     {
-        stableId = UnderworldGeneratedObjectIdentity.BuildStableObjectId(identity, objectKind);
+        stableId = UnderworldGeneratedObjectIdentity.BuildStableObjectId(identity, objectKind, placementKey);
         var path = RecordPath(identity, stableId);
         foreach (var candidate in new[] { path, path + ".bak" })
         {
