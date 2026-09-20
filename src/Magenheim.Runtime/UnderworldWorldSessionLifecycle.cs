@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BepInEx.Logging;
 using Magenheim.Core.Underworld;
 using UnityEngine;
@@ -12,6 +13,8 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
 {
+    private const float ChunkResidencyReconcileSeconds = 0.5f;
+
     private UnderworldRuntimeServices? _services;
     private UnderworldDeepGateRegistrar? _deepGateRegistrar;
     private UnderworldDeepGateLocationRegistrar? _deepGateLocationRegistrar;
@@ -20,6 +23,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     private GameObject? _worldCenter;
     private string? _worldCenterInstanceKey;
     private float _nextBoonReconcileAt;
+    private float _nextChunkResidencyReconcileAt;
 
     internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -53,6 +57,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         {
             _observedWorldUid = currentWorldUid;
             TryAdmitWorldCenter();
+            TryReconcileChunkResidency();
             TryReconcileDeepBoons();
             return;
         }
@@ -66,6 +71,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         }
 
         TryAdmitWorldCenter();
+        TryReconcileChunkResidency();
         TryReconcileDeepBoons();
     }
 
@@ -95,8 +101,8 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             // Admission is the first point at which the dedicated instance has both a stable
             // identity and a physical presentation root. Seed residency from native instance
             // origin here so the chunk provider/materializer/structure pipeline is actually
-            // driven. Do not derive this focus from a Surface player transform: that would
-            // silently reintroduce host-world coordinates into instance terrain authority.
+            // driven. Moving residency is reconciled separately and is permitted to consume
+            // transforms only after the explicit context says those transforms are instance-space.
             if (!_services.ChunkStreaming.Reconcile(new[] { new UnderworldChunkFocus(0d, 0d) }))
                 throw new InvalidOperationException("Native Underworld chunk residency rejected an active instance admission.");
 
@@ -112,6 +118,43 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             _worldCenter = null;
             _worldCenterInstanceKey = null;
             _log.LogError($"Underworld native-instance center admission failed: {exception}");
+        }
+    }
+
+    private void TryReconcileChunkResidency()
+    {
+        if (_services is null || Time.unscaledTime < _nextChunkResidencyReconcileAt) return;
+        _nextChunkResidencyReconcileAt = Time.unscaledTime + ChunkResidencyReconcileSeconds;
+
+        if (_services.InstanceLifecycle.Phase != UnderworldInstancePhase.Active || _services.InstanceLifecycle.Identity is null)
+            return;
+
+        // The origin remains resident for the conclave/return gate. Player transforms are legal
+        // chunk focuses only while the explicit world-context adapter identifies the loaded
+        // presentation as the paired Underworld. This guard is the important boundary: Surface
+        // transforms must never be interpreted as native instance coordinates.
+        var focuses = new List<UnderworldChunkFocus> { new(0d, 0d) };
+        if (_services.TryResolveWorldSession(out var contextIdentity, out var layer, out _) &&
+            contextIdentity is not null && layer == UnderworldLayer.Underworld)
+        {
+            foreach (var player in Player.GetAllPlayers())
+            {
+                if (!player) continue;
+                var position = player.transform.position;
+                focuses.Add(new UnderworldChunkFocus(position.x, position.z));
+            }
+        }
+
+        try
+        {
+            if (!_services.ChunkStreaming.Reconcile(focuses))
+                _log?.LogWarning("Native Underworld chunk residency rejected an active instance-space focus reconciliation.");
+        }
+        catch (Exception exception)
+        {
+            // Keep the already admitted instance alive. Reconcile is repeatable and the next pass
+            // can recover after a transient presentation/materialization failure.
+            _log?.LogError($"Underworld native chunk residency reconciliation failed: {exception}");
         }
     }
 
@@ -133,6 +176,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         _worldCenterInstanceKey = null;
         DeepBoonRuntime.Reset();
         _nextBoonReconcileAt = 0f;
+        _nextChunkResidencyReconcileAt = 0f;
         _services?.ResetForWorldUnload();
     }
 
