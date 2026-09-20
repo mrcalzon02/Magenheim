@@ -72,15 +72,19 @@ internal static class UnderworldVanillaDonorCatalog
         // Three deterministic visual-mass tiers make clustered ecology read as a composition:
         // sparse landmark forms, a dominant middle canopy/formation, and smaller understory/fill.
         // Each silhouette axis has independently salted micro-variation so repeated copies of the
-        // same Valheim donor do not retain an identical outline. Vertical variation stays restrained
-        // to preserve the donor's authored identity and conservative collider assumptions.
+        // same Valheim donor do not retain an identical outline. Vertical variation stays restrained.
+        // Normalize the jitter volume so deformation changes proportion rather than accidentally
+        // changing the donor's visual mass a second time on top of the explicit mass tier.
         var massRoll = Hash01(variant, 0x1C7);
         var mass = massRoll < .16f ? 1.28f : massRoll < .70f ? 1f : .72f;
         var scalar = Mathf.Lerp(donor.MinScale, donor.MaxScale, Hash01(variant, 0x2D3)) * mass;
         var xJitter = Mathf.Lerp(.92f, 1.08f, Hash01(variant, 0x51B));
         var yJitter = Mathf.Lerp(.96f, 1.04f, Hash01(variant, 0x63D));
         var zJitter = Mathf.Lerp(.92f, 1.08f, Hash01(variant, 0x7A9));
-        return Vector3.Scale(donor.Shape * scalar, new Vector3(xJitter, yJitter, zJitter));
+        var jitterVolume = xJitter * yJitter * zJitter;
+        var correction = jitterVolume > .0001f ? Mathf.Pow(1f / jitterVolume, 1f / 3f) : 1f;
+        var silhouette = new Vector3(xJitter * correction, yJitter * correction, zJitter * correction);
+        return Vector3.Scale(donor.Shape * scalar, silhouette);
     }
 
     private static float Hash01(int value, int salt)
