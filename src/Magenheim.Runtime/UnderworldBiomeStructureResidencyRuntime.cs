@@ -20,6 +20,7 @@ internal sealed class UnderworldBiomeStructureResidencyRuntime
     {
         _services = services ?? throw new ArgumentNullException(nameof(services));
         Register(new FungalSporeCairnFamily());
+        Register(new SulfurVentCairnFamily());
     }
 
     internal int ResidentCount => _resident.Count;
@@ -149,6 +150,70 @@ internal sealed class FungalSporeCairnFamily : IUnderworldBiomeStructureFamily
                 cap.transform.localPosition = stem.transform.localPosition + Vector3.up * (height * 0.55f);
                 var capScale = 1.8f + (float)random.NextDouble() * 1.3f;
                 cap.transform.localScale = new Vector3(capScale, capScale * 0.38f, capScale);
+            }
+            return root;
+        }
+        catch
+        {
+            UnityEngine.Object.Destroy(root);
+            throw;
+        }
+    }
+}
+
+/// <summary>
+/// Second repeatable family proving that the shared registry can host an independent biome,
+/// deterministic slot and durable generated-object identity without another residency runtime.
+/// </summary>
+internal sealed class SulfurVentCairnFamily : IUnderworldBiomeStructureFamily
+{
+    public string Kind => "sulfur-vent-cairn";
+    public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.SulfurousWastes;
+    public int PlacementSlot => 1;
+
+    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
+    {
+        unchecked
+        {
+            var hash = identity.DerivedSeed32 ^ 0x51F15EED;
+            hash = (hash * 397) ^ key.X;
+            hash = (hash * 397) ^ key.Z;
+            hash ^= hash >> 16;
+            return (hash & 3) == 1;
+        }
+    }
+
+    public GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
+    {
+        var root = new GameObject($"Magenheim_SulfurVentCairn_{key.X}_{key.Z}");
+        root.transform.position = position;
+        var seed = identity.DerivedSeed32 ^ key.X * 83492791 ^ key.Z * 297121507 ^ 0x51F15EED;
+        var random = new System.Random(seed);
+        try
+        {
+            var basin = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            basin.name = "VentBasin";
+            basin.transform.SetParent(root.transform, false);
+            basin.transform.localPosition = new Vector3(0f, 0.35f, 0f);
+            basin.transform.localScale = new Vector3(3.4f, 0.35f, 3.4f);
+
+            for (var i = 0; i < 4; i++)
+            {
+                var angle = (float)(random.NextDouble() * Math.PI * 2d);
+                var radius = 0.7f + (float)random.NextDouble() * 1.7f;
+                var height = 1.8f + (float)random.NextDouble() * 3.4f;
+                var vent = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                vent.name = $"SulfurVent_{i}";
+                vent.transform.SetParent(root.transform, false);
+                vent.transform.localPosition = new Vector3(Mathf.Cos(angle) * radius, height * 0.5f + 0.5f, Mathf.Sin(angle) * radius);
+                var width = 0.35f + (float)random.NextDouble() * 0.35f;
+                vent.transform.localScale = new Vector3(width, height * 0.5f, width);
+
+                var throat = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                throat.name = $"VentThroat_{i}";
+                throat.transform.SetParent(root.transform, false);
+                throat.transform.localPosition = vent.transform.localPosition + Vector3.up * (height * 0.52f);
+                throat.transform.localScale = new Vector3(width * 1.5f, 0.22f, width * 1.5f);
             }
             return root;
         }
