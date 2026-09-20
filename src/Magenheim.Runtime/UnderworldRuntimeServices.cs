@@ -30,21 +30,17 @@ internal sealed class UnderworldRuntimeServices
         ChunkMaterializer=new UnderworldInstanceChunkMaterializer(this,log);
     }
 
-    /// <summary>Native instance-local terrain authority. Coordinates consumed through this domain are Underworld coordinates.</summary>
     internal UnderworldInstanceTerrainDomain TerrainDomain{get;}
     internal UnderworldTransitionStateStore StateStore{get;}
     internal UnderworldDeepBoonSelectionStore DeepBoonSelectionStore{get;}
     internal UnderworldExplorationStateStore ExplorationStateStore{get;}
-    /// <summary>Magenheim-owned durable registry for deterministic native-instance generated objects.</summary>
     internal UnderworldGeneratedObjectStateStore GeneratedObjectStateStore{get;}
     internal UnderworldInstanceLifecycle InstanceLifecycle{get;}
     internal ValheimUnderworldTransitionPlacementHost PlacementHost{get;}
     internal StoredUnderworldTransitionHost TransitionHost{get;}
     internal UnderworldWorldTransitionManager TransitionManager{get;}
     internal UnderworldTransitionRecoveryRuntime RecoveryRuntime{get;}
-    /// <summary>Native instance chunk residency and deterministic payload authority.</summary>
     internal UnderworldInstanceChunkStreamingRuntime ChunkStreaming{get;}
-    /// <summary>Unity presentation of resident native chunks; never a terrain-authority source.</summary>
     internal UnderworldInstanceChunkMaterializer ChunkMaterializer{get;}
 
     internal static UnderworldRuntimeServices Create(string pluginConfigDirectory,ManualLogSource log)
@@ -68,7 +64,6 @@ internal sealed class UnderworldRuntimeServices
         return services;
     }
 
-    /// <summary>Resolves the active world/instance context without requiring a local player. Safe for dedicated-server world services.</summary>
     internal bool TryResolveWorldSession(out UnderworldWorldIdentity? identity,out UnderworldLayer layer,out string diagnostic)
     {
         identity=null;layer=UnderworldLayer.Surface;
@@ -79,7 +74,6 @@ internal sealed class UnderworldRuntimeServices
         diagnostic=string.Empty;return true;
     }
 
-    /// <summary>Resolves local identity and obtains layer only from the explicit instance-context authority.</summary>
     internal bool TryResolveLocalSession(out UnderworldWorldIdentity? identity,out UnderworldLayer layer,out string playerId,out string diagnostic)
     {
         layer=UnderworldLayer.Surface;
@@ -97,6 +91,21 @@ internal sealed class UnderworldRuntimeServices
     internal bool TryResolveLocalSession(out UnderworldWorldIdentity? identity,out string playerId,out string diagnostic)=>
         UnderworldRuntimeIdentityResolver.TryResolveLocalSession(out identity,out playerId,out diagnostic)&&identity is not null;
 
-    internal void ResetForWorldUnload(){ChunkMaterializer.Clear();ChunkStreaming.Clear();InstanceLifecycle.Reset();_worldContext.ResetForWorldUnload();}
-    internal void Shutdown(){ChunkMaterializer.Clear();ChunkStreaming.Clear();InstanceLifecycle.Reset();_worldContext.ResetForWorldUnload();}
+    internal void ResetForWorldUnload()
+    {
+        PlacementHost.ResetForWorldBoundary();
+        ChunkMaterializer.Clear();
+        ChunkStreaming.Clear();
+        InstanceLifecycle.Reset();
+        _worldContext.ResetForWorldUnload();
+    }
+
+    internal void Shutdown()
+    {
+        PlacementHost.ResetForWorldBoundary();
+        ChunkMaterializer.Clear();
+        ChunkStreaming.Clear();
+        InstanceLifecycle.Reset();
+        _worldContext.ResetForWorldUnload();
+    }
 }
