@@ -91,14 +91,24 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         try
         {
             candidate = UnderworldWorldCenterRegistrar.Create(identity, _log);
+
+            // Admission is the first point at which the dedicated instance has both a stable
+            // identity and a physical presentation root. Seed residency from native instance
+            // origin here so the chunk provider/materializer/structure pipeline is actually
+            // driven. Do not derive this focus from a Surface player transform: that would
+            // silently reintroduce host-world coordinates into instance terrain authority.
+            if (!_services.ChunkStreaming.Reconcile(new[] { new UnderworldChunkFocus(0d, 0d) }))
+                throw new InvalidOperationException("Native Underworld chunk residency rejected an active instance admission.");
+
             _worldCenter = candidate;
             candidate = null;
             _worldCenterInstanceKey = instanceKey;
-            _log.LogInfo($"Composed Underworld world center for instance '{identity.DerivedWorldId}'.");
+            _log.LogInfo($"Composed Underworld world center and admitted native terrain chunks for instance '{identity.DerivedWorldId}'.");
         }
         catch (Exception exception)
         {
             if (candidate) Destroy(candidate);
+            _services.ChunkStreaming.Clear();
             _worldCenter = null;
             _worldCenterInstanceKey = null;
             _log.LogError($"Underworld native-instance center admission failed: {exception}");
