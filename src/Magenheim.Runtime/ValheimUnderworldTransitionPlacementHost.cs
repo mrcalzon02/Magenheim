@@ -51,8 +51,6 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
         var heading = NormalizeHeading((float)anchor.HeadingDegrees);
         var rotation = Quaternion.Euler(0f, heading, 0f);
 
-        // Invalidate any receipt from an earlier attempt before asking Valheim to move the player.
-        // A rejected teleport must never leave an older request eligible for acknowledgement.
         _pendingPlacements.Remove(playerId);
         if (!player.TeleportTo(position, rotation, false))
             throw new InvalidOperationException("Valheim rejected the requested instance-context player teleport.");
@@ -61,27 +59,27 @@ internal sealed class ValheimUnderworldTransitionPlacementHost : IUnderworldTran
         _log.LogDebug($"{layer} placement requested for player {playerId} at native context position {position} heading {anchor.HeadingDegrees:0.##}.");
     }
 
-    public bool ObservePlayerPlacement(string playerId, UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor)
+    public UnderworldPlacementObservation ObservePlayerPlacement(string playerId, UnderworldWorldIdentity identity, UnderworldLayer layer, UnderworldAnchor anchor)
     {
-        if (identity is null || anchor is null || !_worldContext.IsActive(identity, layer)) return false;
-        if (!_pendingPlacements.TryGetValue(playerId, out var receipt) || receipt.Layer != layer) return false;
+        if (identity is null || anchor is null || !_worldContext.IsActive(identity, layer)) return UnderworldPlacementObservation.Unavailable;
+        if (!_pendingPlacements.TryGetValue(playerId, out var receipt) || receipt.Layer != layer) return UnderworldPlacementObservation.Unavailable;
 
         var player = ResolvePlayer(playerId);
         if (player is null || player.GetInstanceID() != receipt.PlayerInstanceId)
         {
             _pendingPlacements.Remove(playerId);
-            return false;
+            return UnderworldPlacementObservation.Unavailable;
         }
 
         var target = new Vector3((float)anchor.X, (float)anchor.Y, (float)anchor.Z);
         var heading = NormalizeHeading((float)anchor.HeadingDegrees);
-        if (Vector3.Distance(receipt.Target, target) > 0.01f || Mathf.Abs(Mathf.DeltaAngle(receipt.Heading, heading)) > 0.01f) return false;
-        if (Vector3.Distance(player.transform.position, target) > PositionTolerance) return false;
+        if (Vector3.Distance(receipt.Target, target) > 0.01f || Mathf.Abs(Mathf.DeltaAngle(receipt.Heading, heading)) > 0.01f) return UnderworldPlacementObservation.Unavailable;
+        if (Vector3.Distance(player.transform.position, target) > PositionTolerance) return UnderworldPlacementObservation.Pending;
         var headingDelta = Mathf.Abs(Mathf.DeltaAngle(player.transform.eulerAngles.y, heading));
-        if (headingDelta > HeadingToleranceDegrees) return false;
+        if (headingDelta > HeadingToleranceDegrees) return UnderworldPlacementObservation.Pending;
 
         _pendingPlacements.Remove(playerId);
-        return true;
+        return UnderworldPlacementObservation.Confirmed;
     }
 
     private static Player? ResolvePlayer(string playerId)
