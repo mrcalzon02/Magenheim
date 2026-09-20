@@ -16,60 +16,24 @@ public readonly struct MagenheimMapPoint
 }
 
 /// <summary>
-/// Pure authority for presenting multiple logical maps while all simulation remains in one Valheim
-/// world/save. The Underworld's 40km host offset is storage/streaming space, never map-space truth.
+/// Native Underworld map helpers. Underworld coordinates are instance-local map coordinates;
+/// there is no Surface host-band projection in this API.
 /// </summary>
 public static class UnderworldMapProjection
 {
-    public static MagenheimMapLayer LayerAtWorldColumn(
-        UnderworldSpatialDomainDefinition domain, double worldX, double worldZ) =>
-        UnderworldSpatialDomain.ContainsHostColumn(domain, worldX, worldZ)
-            ? MagenheimMapLayer.Underworld
-            : MagenheimMapLayer.Surface;
-
-    public static MagenheimMapPoint WorldToLayer(
-        UnderworldSpatialDomainDefinition domain, MagenheimMapLayer layer, double worldX, double worldZ)
-    {
-        RequireFinite(worldX, nameof(worldX));
-        RequireFinite(worldZ, nameof(worldZ));
-        if (layer == MagenheimMapLayer.Surface) return new MagenheimMapPoint(worldX, worldZ);
-        if (!UnderworldSpatialDomain.ContainsHostColumn(domain, worldX, worldZ))
-            throw new InvalidOperationException("World column is outside the reserved Underworld region.");
-        var local = UnderworldSpatialDomain.ToLogicalColumn(domain, worldX, worldZ);
-        return new MagenheimMapPoint(local.X, local.Z);
-    }
-
-    public static MagenheimMapPoint LayerToWorld(
-        UnderworldSpatialDomainDefinition domain, MagenheimMapLayer layer, double mapX, double mapZ)
-    {
-        RequireFinite(mapX, nameof(mapX));
-        RequireFinite(mapZ, nameof(mapZ));
-        if (layer == MagenheimMapLayer.Surface) return new MagenheimMapPoint(mapX, mapZ);
-        if (mapX * mapX + mapZ * mapZ > domain.RadiusMeters * domain.RadiusMeters)
-            throw new InvalidOperationException("Underworld map point lies outside the playable radius.");
-        return new MagenheimMapPoint(domain.HostCenterX + mapX, domain.HostCenterZ + mapZ);
-    }
-
-    /// <summary>
-    /// Logical biome lookup for map/HUD/environment/ecology consumers. This deliberately does not
-    /// consult WorldGenerator.GetBiomeSector: the host region can be outside vanilla's finite biome
-    /// map and Ocean is therefore only an engine compatibility answer, not Underworld authority.
-    /// </summary>
     public static UnderworldTerrainBiome UnderworldBiomeAt(
-        UnderworldSpatialDomainDefinition domain, int surfaceSeed, double logicalX, double logicalZ)
+        UnderworldInstanceTerrainDomain domain, int instanceSeed, double logicalX, double logicalZ)
     {
+        if (domain is null) throw new ArgumentNullException(nameof(domain));
+        if (!Finite(logicalX) || !Finite(logicalZ)) throw new ArgumentOutOfRangeException(nameof(logicalX));
         if (logicalX * logicalX + logicalZ * logicalZ > domain.RadiusMeters * domain.RadiusMeters)
             throw new InvalidOperationException("Underworld map point lies outside the playable radius.");
-        // UnderworldTerrainLifecycle.Evaluate(UnderworldSpatialDomainDefinition, ...) is obsolete;
-        // this is the same bridge its own (obsolete) implementation used internally, inlined so this
-        // caller compiles against the native instance-domain overload instead of the deprecated one.
-        var instanceDomain = UnderworldInstanceTerrainDomain.ValidateAndFreeze(
-            domain.RadiusMeters, domain.LogicalMinY, domain.LogicalMaxY);
+
         var result = UnderworldTerrainLifecycle.Evaluate(
-            instanceDomain,
+            domain,
             new UnderworldTerrainSample(logicalX, 0d, logicalZ, UnderworldTerrainLifecycle.BaseElevationMeters, 0d,
-                UnderworldTerrainNoise.Fractal01(surfaceSeed, logicalX, logicalZ)),
-            surfaceSeed);
+                UnderworldTerrainNoise.Fractal01(instanceSeed, logicalX, logicalZ)),
+            instanceSeed);
         if (!result.Admitted) throw new InvalidOperationException("Underworld biome authority rejected an admitted map point.");
         return result.Biome;
     }
@@ -81,8 +45,5 @@ public static class UnderworldMapProjection
         return checked(y * width + x);
     }
 
-    private static void RequireFinite(double value, string name)
-    {
-        if (double.IsNaN(value) || double.IsInfinity(value)) throw new ArgumentOutOfRangeException(name);
-    }
+    private static bool Finite(double value) => !double.IsNaN(value) && !double.IsInfinity(value);
 }
