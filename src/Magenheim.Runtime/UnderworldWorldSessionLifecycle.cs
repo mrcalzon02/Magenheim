@@ -43,8 +43,10 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     private void TryAdmitWorldCenter()
     {
         if(_services is null||_log is null)return;
-        if(!_services.TryResolveWorldSession(out var identity,out var layer,out _)||identity is null)return;
-        if(layer!=UnderworldLayer.Underworld){if(_worldCenter)Destroy(_worldCenter);_worldCenter=null;_worldCenterInstanceKey=null;_services.ChunkStreaming.Clear();return;}
+        if(_services.InstanceLifecycle.Phase!=UnderworldInstancePhase.Active||_services.InstanceLifecycle.Identity is not { } identity)
+        {
+            if(_worldCenter)Destroy(_worldCenter);_worldCenter=null;_worldCenterInstanceKey=null;_services.ChunkStreaming.Clear();return;
+        }
         var instanceKey=InstanceKey(identity);
         if(_worldCenter&&string.Equals(_worldCenterInstanceKey,instanceKey,StringComparison.Ordinal))return;
         if(_worldCenter)Destroy(_worldCenter);
@@ -79,18 +81,39 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     private void TryReconcileChunks()
     {
         if(_services is null||Time.unscaledTime<_nextChunkReconcileAt)return;_nextChunkReconcileAt=Time.unscaledTime+0.5f;
-        if(!_services.TryResolveWorldSession(out var identity,out var layer,out _)||identity is null||layer!=UnderworldLayer.Underworld){_services.ChunkStreaming.Clear();return;}
+        if(_services.InstanceLifecycle.Phase!=UnderworldInstancePhase.Active||_services.InstanceLifecycle.Identity is not { } identity){_services.ChunkStreaming.Clear();return;}
         var focuses=new List<UnderworldChunkFocus>();
         var znet=ZNet.instance;
         if(znet is not null&&znet.IsServer())
         {
-            foreach(var player in Player.GetAllPlayers())if(player){var position=player.transform.position;focuses.Add(new UnderworldChunkFocus(position.x,position.z));}
+            foreach(var player in Player.GetAllPlayers())
+            {
+                if(!player)continue;
+                var playerId=player.GetPlayerID().ToString(CultureInfo.InvariantCulture);
+                if(!PlayerRequiresUnderworldResidency(playerId,identity))continue;
+                var position=player.transform.position;focuses.Add(new UnderworldChunkFocus(position.x,position.z));
+            }
         }
         else
         {
-            var player=Player.m_localPlayer;if(player){var position=player.transform.position;focuses.Add(new UnderworldChunkFocus(position.x,position.z));}
+            var player=Player.m_localPlayer;
+            if(player)
+            {
+                var playerId=player.GetPlayerID().ToString(CultureInfo.InvariantCulture);
+                if(PlayerRequiresUnderworldResidency(playerId,identity)){var position=player.transform.position;focuses.Add(new UnderworldChunkFocus(position.x,position.z));}
+            }
         }
         _services.ChunkStreaming.Reconcile(focuses);
+    }
+    private bool PlayerRequiresUnderworldResidency(string playerId,UnderworldWorldIdentity identity)
+    {
+        if(_services is null||string.IsNullOrWhiteSpace(playerId))return false;
+        if(!_services.StateStore.TryLoad(playerId,identity,out var state,out _)||state is null)return false;
+        if(state.ActiveTransition is null)return state.CurrentLayer==UnderworldLayer.Underworld;
+        var active=state.ActiveTransition;
+        if(active.Phase==UnderworldTransitionPhase.RecoveryRequired)return active.SourceLayer==UnderworldLayer.Underworld;
+        if(active.Phase==UnderworldTransitionPhase.TargetReady)return active.TargetLayer==UnderworldLayer.Underworld;
+        return active.SourceLayer==UnderworldLayer.Underworld||active.TargetLayer==UnderworldLayer.Underworld;
     }
     private void TryReconcileDeepBoons()
     {
