@@ -46,21 +46,15 @@ keep(organic('Capcrawler_Body',(0,0,.22),(.29,.38,.13),flesh,3),'Body')
 keep(organic('Capcrawler_Carapace',(0,-.015,.31),(.36,.43,.105),car,3),'Body')
 for side in (-1,1):
  s='L' if side<0 else 'R'
- # Rim scutes and crown are the creature's primary silhouette read.  Keep these
- # armor surfaces at production density so their layered fungal edge survives
- # gameplay-scale lighting instead of collapsing into smooth pebble shapes.
  for i,(y,z,sy) in enumerate(((-.24,.305,.105),(-.06,.326,.125),(.13,.320,.115)),1): keep(organic(f'Capcrawler_RimScute_{s}{i}',(side*.315,y,z),(.085,sy,.035),car,3),'Body')
 keep(organic('Capcrawler_CrownPlate',(0,-.285,.345),(.205,.105,.042),car,3),'Body')
 for i,y in enumerate((-.24,-.08,.10,.26),1):
  for side in (-1,1):
   s='L' if side<0 else 'R'; hip=(side*.20,y,.22); knee=(side*.34,y+(i-2.5)*.018,.13); foot=(side*.43,y+(i-2.5)*.035,.035); toe=(side*.475,foot[1]+.008,.024)
-  keep(organic(f'Capcrawler_{s}_Coxa{i}',hip,(.045,.05,.035),plate,2),f'{s}_Coxa{i}'); keep(segment(f'Capcrawler_{s}_Leg{i}A',hip,knee,.027,plate),f'{s}_Coxa{i}'); keep(segment(f'Capcrawler_{s}_Leg{i}B',knee,foot,.020,plate),f'{s}_Leg{i}')
-  keep(organic(f'Capcrawler_{s}_FootPad{i}',foot,(.042,.052,.018),plate,2),f'{s}_Leg{i}'); keep(segment(f'Capcrawler_{s}_Claw{i}',foot,toe,.012,mand),f'{s}_Leg{i}')
+  keep(organic(f'Capcrawler_{s}_Coxa{i}',hip,(.045,.05,.035),plate,2),f'{s}_Coxa{i}'); keep(segment(f'Capcrawler_{s}_Leg{i}A',hip,knee,.027,plate),f'{s}_Coxa{i}'); keep(segment(f'Capcrawler_{s}_Leg{i}B',knee,foot,.020,plate),f'{s}_Tibia{i}')
+  keep(organic(f'Capcrawler_{s}_FootPad{i}',foot,(.042,.052,.018),plate,2),f'{s}_Tarsus{i}'); keep(segment(f'Capcrawler_{s}_Claw{i}',foot,toe,.012,mand),f'{s}_Tarsus{i}')
 for side in (-1,1):
  s='L' if side<0 else 'R'; a=(side*.08,.32,.22); b=(side*.13,.47,.17); keep(segment(f'Capcrawler_Mandible_{s}',a,b,.036,mand),f'Mandible_{s}')
-# Emissive gills are the second signature surface after the fungal rim.  Match
-# their geometry density to the armor so emission and normals retain a clean
-# organic profile in close review plates rather than exposing coarse facets.
 for i in range(5):
  x=(i-2)*.065; keep(organic(f'Capcrawler_Gill_{i+1}',(x,.285,.255),(.024,.055,.018),gill,3),'Body')
 
@@ -69,7 +63,7 @@ def bone(name,h,t,p=None): b=eb.new(name); b.head=h; b.tail=t; b.parent=p; retur
 body=bone('Body',(0,-.12,.16),(0,.18,.24),root)
 for i,y in enumerate((-.24,-.08,.10,.26),1):
  for side in (-1,1):
-  s='L' if side<0 else 'R'; hip=(side*.20,y,.22); knee=(side*.34,y+(i-2.5)*.018,.13); foot=(side*.43,y+(i-2.5)*.035,.035); c=bone(f'{s}_Coxa{i}',hip,knee,body); bone(f'{s}_Leg{i}',knee,foot,c)
+  s='L' if side<0 else 'R'; hip=(side*.20,y,.22); knee=(side*.34,y+(i-2.5)*.018,.13); foot=(side*.43,y+(i-2.5)*.035,.035); toe=(side*.475,foot[1]+.008,.024); c=bone(f'{s}_Coxa{i}',hip,knee,body); t=bone(f'{s}_Tibia{i}',knee,foot,c); bone(f'{s}_Tarsus{i}',foot,toe,t)
 for side in (-1,1):
  s='L' if side<0 else 'R'; bone(f'Mandible_{s}',(side*.08,.32,.22),(side*.13,.47,.17),body)
 bone('AttackOrigin',(0,.34,.18),(0,.53,.18),body); bone('HitCenter',(0,0,.16),(0,0,.28),root); bone('GillFX',(0,.27,.24),(0,.39,.24),body); bpy.ops.object.mode_set(mode='OBJECT'); arm.show_in_front=True
@@ -99,7 +93,7 @@ def action(name,end,poses):
 def gait(amount):
  p={}
  for s,i,phase in (('L',1,1),('R',1,-1),('L',2,-1),('R',2,1),('L',3,1),('R',3,-1),('L',4,-1),('R',4,1)):
-  p[f'{s}_Coxa{i}']=(0,0,phase*amount); p[f'{s}_Leg{i}']=(phase*amount*.32,0,0)
+  p[f'{s}_Coxa{i}']=(0,0,phase*amount); p[f'{s}_Tibia{i}']=(phase*amount*.32,0,0); p[f'{s}_Tarsus{i}']=(-phase*amount*.18,0,0)
  return p
 neutral={b:(0,0,0) for b in ('Body','Mandible_L','Mandible_R')}
 action('Capcrawler_Idle',72,{1:neutral,18:{'Body':(.018,0,0),'Mandible_L':(0,0,.04),'Mandible_R':(0,0,-.04)},36:neutral,54:{'Body':(-.012,0,0)},72:neutral})
@@ -120,5 +114,5 @@ if len(meshes)<53: raise RuntimeError(f'Capcrawler detail regression: {len(meshe
 for o in meshes:
  uv=o.data.uv_layers.get('CapcrawlerUV')
  if not uv or not uv.data: raise RuntimeError(f'Missing explicit UVs: {o.name}')
-sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-capcrawler'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='common'; sc['magenheim_host_rig']='HOST-LOW-CRAWLER'; sc['magenheim_length_m']=.90; sc['magenheim_width_m']=.98; sc['magenheim_fidelity']='production-creature-r5'; sc['magenheim_skinning']='rigid-segment-weighted'; sc['magenheim_uv_contract']='CapcrawlerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,GillFX'; sc['magenheim_authored_actions']='Capcrawler_Idle,Capcrawler_Scuttle,Capcrawler_Turn,Capcrawler_AttackLeft,Capcrawler_AttackRight,Capcrawler_AttackFront,Capcrawler_Guard,Capcrawler_Hit,Capcrawler_Stagger,Capcrawler_Death'; sc['magenheim_animation_manifest']='idle,scuttle,turn,attack-left,attack-right,attack-front,guard,hit,stagger,death'; sc['magenheim_carapace_language']='layered-fungal-rim-scutes+crown'; sc['magenheim_ground_contact']='8-tarsal-pads+8-terminal-claws'
-bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(OUT),compress=True); print(f'AUTHORED Capcrawler r5: {len(meshes)} meshes / {len(arm.data.bones)} bones / articulated feet -> {OUT.name}',flush=True)
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-capcrawler'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='common'; sc['magenheim_host_rig']='HOST-LOW-CRAWLER'; sc['magenheim_length_m']=.90; sc['magenheim_width_m']=.98; sc['magenheim_fidelity']='production-creature-r6'; sc['magenheim_skinning']='rigid-segment-weighted'; sc['magenheim_uv_contract']='CapcrawlerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,GillFX'; sc['magenheim_authored_actions']='Capcrawler_Idle,Capcrawler_Scuttle,Capcrawler_Turn,Capcrawler_AttackLeft,Capcrawler_AttackRight,Capcrawler_AttackFront,Capcrawler_Guard,Capcrawler_Hit,Capcrawler_Stagger,Capcrawler_Death'; sc['magenheim_animation_manifest']='idle,scuttle,turn,attack-left,attack-right,attack-front,guard,hit,stagger,death'; sc['magenheim_carapace_language']='layered-fungal-rim-scutes+crown'; sc['magenheim_ground_contact']='8-tarsal-pads+8-terminal-claws'; sc['magenheim_leg_rig']='coxa+tibia+tarsus-per-leg'
+bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(OUT),compress=True); print(f'AUTHORED Capcrawler r6: {len(meshes)} meshes / {len(arm.data.bones)} bones / three-joint legs -> {OUT.name}',flush=True)
