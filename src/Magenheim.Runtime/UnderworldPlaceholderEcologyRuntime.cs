@@ -97,20 +97,18 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             for (var member = 0; member < PlacementsPerCluster; member++)
             {
                 var angle = (float)(random.NextDouble() * Math.PI * 2d);
-                // sqrt gives area-uniform distribution inside the cluster while preserving a
-                // strong visual center instead of the former world-scale uniform scatter.
                 var distance = Mathf.Sqrt((float)random.NextDouble()) * radius;
                 var x = anchorX + Mathf.Cos(angle) * distance;
                 var z = anchorZ + Mathf.Sin(angle) * distance;
                 var sample = UnderworldTerrainRuntime.SampleInstanceTerrain(x, center.y, z);
                 if (!sample.Admitted || sample.Biome != anchor.Biome) continue;
                 var variant = seed + cluster * 101 + member * 17;
-                SpawnDonor(new Vector3(x, (float)sample.Height, z), sample.Biome, variant);
+                SpawnDonor(new Vector3(x, (float)sample.Height, z), sample.Biome, ComposeVariant(sample.Biome, variant, member));
             }
         }
 
         _log?.LogDebug(
-            $"Refreshed {_spawned.Count} clustered vanilla-donor Underworld ecology objects in instance space near ({center.x:0},{center.z:0}).");
+            $"Refreshed {_spawned.Count} role-composed vanilla-donor Underworld ecology objects in instance space near ({center.x:0},{center.z:0}).");
     }
 
     private static float ClusterRadius(UnderworldTerrainBiome biome) => biome switch
@@ -123,6 +121,54 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         UnderworldTerrainBiome.BlackwaterDeep => 12f,
         _ => 16f,
     };
+
+    // Member zero is the visual anchor, members 1-4 are structural support, and 5-6 are fill.
+    // Preferred donor indices deliberately describe each biome instead of allowing a small prop to
+    // become the landmark merely because its scale hash rolled high. Variant entropy still chooses
+    // among each role's candidates, and SpawnDonor's adjacent-index retry remains a compatibility
+    // fallback when a particular vanilla prefab is unavailable in the running Valheim build.
+    private static int ComposeVariant(UnderworldTerrainBiome biome, int variant, int member)
+    {
+        var role = member == 0 ? 0 : member <= 4 ? 1 : 2;
+        var candidates = (biome, role) switch
+        {
+            (UnderworldTerrainBiome.FungalForest, 0) => new[] { 0, 1, 2, 3, 4 },
+            (UnderworldTerrainBiome.FungalForest, 1) => new[] { 5, 7, 9, 0, 2 },
+            (UnderworldTerrainBiome.FungalForest, _) => new[] { 6, 8, 10, 5, 7, 9 },
+            (UnderworldTerrainBiome.BlackwaterDeep, 0) => new[] { 0, 2, 4, 5 },
+            (UnderworldTerrainBiome.BlackwaterDeep, 1) => new[] { 1, 2, 4, 5, 6 },
+            (UnderworldTerrainBiome.BlackwaterDeep, _) => new[] { 1, 3, 6 },
+            (UnderworldTerrainBiome.SulfurousWastes, 0) => new[] { 4, 5, 0, 2 },
+            (UnderworldTerrainBiome.SulfurousWastes, 1) => new[] { 0, 1, 2, 3, 6 },
+            (UnderworldTerrainBiome.SulfurousWastes, _) => new[] { 7, 1, 3 },
+            (UnderworldTerrainBiome.FrozenCaverns, 0) => new[] { 4, 5, 0 },
+            (UnderworldTerrainBiome.FrozenCaverns, 1) => new[] { 0, 2, 4, 6 },
+            (UnderworldTerrainBiome.FrozenCaverns, _) => new[] { 1, 3, 5 },
+            (UnderworldTerrainBiome.FractureZones, 0) => new[] { 7, 4, 2, 0 },
+            (UnderworldTerrainBiome.FractureZones, 1) => new[] { 0, 2, 4, 6 },
+            (UnderworldTerrainBiome.FractureZones, _) => new[] { 1, 3, 5 },
+            (UnderworldTerrainBiome.GreatDecay, 0) => new[] { 0, 2, 4, 5, 7 },
+            (UnderworldTerrainBiome.GreatDecay, 1) => new[] { 0, 2, 4, 5, 7, 9 },
+            (UnderworldTerrainBiome.GreatDecay, _) => new[] { 1, 3, 6, 8, 10, 11 },
+            _ => new[] { 0 },
+        };
+        var roll = variant == int.MinValue ? 0 : Math.Abs(variant);
+        var preferred = candidates[roll % candidates.Length];
+        var paletteSize = biome switch
+        {
+            UnderworldTerrainBiome.FungalForest => 11,
+            UnderworldTerrainBiome.BlackwaterDeep => 7,
+            UnderworldTerrainBiome.SulfurousWastes => 8,
+            UnderworldTerrainBiome.FrozenCaverns => 7,
+            UnderworldTerrainBiome.FractureZones => 8,
+            UnderworldTerrainBiome.GreatDecay => 12,
+            _ => 1,
+        };
+        // Select() uses positive modulo. Preserve high-order entropy for Scale()/rotation while
+        // forcing only the low modulo result to the role-appropriate donor index.
+        var positive = roll - roll % paletteSize + preferred;
+        return positive;
+    }
 
     private void SpawnDonor(Vector3 position, UnderworldTerrainBiome biome, int variant)
     {
@@ -156,9 +202,7 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         var scale = UnderworldVanillaDonorCatalog.Scale(donor, selectedVariant);
         node.transform.localScale = scale;
         var lightScale = Mathf.Clamp(Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z)), 1f, 12f);
-        foreach (var light in node.GetComponentsInChildren<Light>(true))
-            light.range *= lightScale;
-
+        foreach (var light in node.GetComponentsInChildren<Light>(true)) light.range *= lightScale;
         _spawned.Add(node);
     }
 
@@ -169,11 +213,9 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         if (source is null)
         {
             if (_warnedDonors.Add(prefabName))
-                _log?.LogWarning(
-                    $"Underworld donor '{prefabName}' is not available yet or is absent in this Valheim build; skipping this placement and retrying later.");
+                _log?.LogWarning($"Underworld donor '{prefabName}' is not available yet or is absent in this Valheim build; skipping this placement and retrying later.");
             return null;
         }
-
         _donorSources[prefabName] = source;
         return source;
     }
@@ -184,16 +226,13 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         var transformMap = new Dictionary<Transform, Transform>();
         var rendererMap = new Dictionary<Renderer, Renderer>();
         var copiedRenderers = 0;
-
         CopyNode(source.transform, root.transform, false, transformMap, rendererMap, ref copiedRenderers);
         if (copiedRenderers == 0)
         {
             Destroy(root);
-            if (_warnedDonors.Add(source.name))
-                _log?.LogWarning($"Underworld donor '{source.name}' contained no supported mesh renderers.");
+            if (_warnedDonors.Add(source.name)) _log?.LogWarning($"Underworld donor '{source.name}' contained no supported mesh renderers.");
             return null;
         }
-
         RebuildLodGroups(source, transformMap, rendererMap);
         if (donor.Collidable) AddConservativeCollider(root);
         return root;
@@ -209,7 +248,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             target.localScale = source.localScale;
             target.gameObject.SetActive(source.gameObject.activeSelf);
         }
-
         var sourceFilter = source.GetComponent<MeshFilter>();
         var sourceRenderer = source.GetComponent<MeshRenderer>();
         if (sourceFilter is not null && sourceFilter.sharedMesh is not null && sourceRenderer is not null)
@@ -226,7 +264,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             rendererMap[sourceRenderer] = targetRenderer;
             copiedRenderers++;
         }
-
         var sourceLight = source.GetComponent<Light>();
         if (sourceLight is not null && sourceLight.enabled)
         {
@@ -239,7 +276,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             targetLight.shadows = sourceLight.shadows;
             targetLight.cullingMask = sourceLight.cullingMask;
         }
-
         for (var i = 0; i < source.childCount; i++)
         {
             var sourceChild = source.GetChild(i);
