@@ -14,9 +14,9 @@ internal static class UnderworldLandmarkArbitrationPolicy
 {
     /// <summary>
     /// Returns true when the candidate landmark remains the deterministic winner
-    /// at its anchor. Only biome-valid competing anchors whose reservation reaches
-    /// the candidate participate. The lower unsigned family salt wins; Kind is a
-    /// stable final tie-breaker so registration order can never affect placement.
+    /// at its anchor. A competitor participates when the two reservation territories
+    /// overlap, even when neither anchor falls inside the other's smaller radius.
+    /// The lower unsigned family salt wins; Kind is the stable final tie-breaker.
     /// </summary>
     internal static bool IsWinner(
         UnderworldWorldIdentity identity,
@@ -30,7 +30,8 @@ internal static class UnderworldLandmarkArbitrationPolicy
         if (families is null) throw new ArgumentNullException(nameof(families));
         if (anchorMatchesBiome is null) throw new ArgumentNullException(nameof(anchorMatchesBiome));
 
-        if (!candidate.Eligible(identity, candidateAnchor) ||
+        if (!UnderworldLandmarkReservationPolicy.IsAnchor(identity, candidateAnchor, candidate.ReservationProfile) ||
+            !candidate.Eligible(identity, candidateAnchor) ||
             !anchorMatchesBiome(candidateAnchor, candidate.Biome))
             return false;
 
@@ -40,15 +41,19 @@ internal static class UnderworldLandmarkArbitrationPolicy
                 ReferenceEquals(competitor, candidate))
                 continue;
 
-            // A competitor matters only when one of its real, biome-valid anchors
-            // reserves the candidate anchor. IsReserved enumerates the competitor's
-            // deterministic cells, so differently sized landmark grids still
-            // arbitrate through the same authority.
+            var combinedRadiusLong = (long)candidate.ReservationProfile.ExclusionRadiusChunks +
+                                     competitor.ReservationProfile.ExclusionRadiusChunks;
+            if (combinedRadiusLong > int.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(families), "Combined landmark exclusion radius exceeds supported native chunk range.");
+            var combinedRadius = (int)combinedRadiusLong;
+
             var overlaps = UnderworldLandmarkReservationPolicy.IsReserved(
                 identity,
                 candidateAnchor,
                 competitor.ReservationProfile,
-                anchor => competitor.Eligible(identity, anchor) &&
+                combinedRadius,
+                anchor => UnderworldLandmarkReservationPolicy.IsAnchor(identity, anchor, competitor.ReservationProfile) &&
+                          competitor.Eligible(identity, anchor) &&
                           anchorMatchesBiome(anchor, competitor.Biome));
             if (!overlaps) continue;
 
