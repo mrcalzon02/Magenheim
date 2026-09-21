@@ -51,7 +51,11 @@ internal sealed class UnderworldBiomeStructureResidencyRuntime
             foreach (var family in _families)
             {
                 if (terrain.Biome != family.Biome || !family.Eligible(identity, pair.Key)) continue;
-                if (family is not IUnderworldLandmarkStructureFamily && IsReservedByBiomeValidLandmark(identity, pair.Key, family.Biome)) continue;
+                if (family is IUnderworldLandmarkStructureFamily landmark)
+                {
+                    if (!UnderworldLandmarkArbitrationPolicy.IsWinner(identity, pair.Key, landmark, _families, AnchorMatchesBiome)) continue;
+                }
+                else if (IsReservedByWinningLandmark(identity, pair.Key, family.Biome)) continue;
                 var residencyKey = ResidencyKey(family.Kind, pair.Key, family.PlacementSlot);
                 wanted.Add(residencyKey);
                 if (_resident.ContainsKey(residencyKey)) continue;
@@ -65,12 +69,17 @@ internal sealed class UnderworldBiomeStructureResidencyRuntime
         foreach (var key in stale) Release(key);
     }
 
-    private bool IsReservedByBiomeValidLandmark(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key, UnderworldTerrainBiome biome)
+    private bool IsReservedByWinningLandmark(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key, UnderworldTerrainBiome biome)
     {
         foreach (var family in _families)
         {
             if (family is not IUnderworldLandmarkStructureFamily landmark || landmark.Biome != biome) continue;
-            if (UnderworldLandmarkReservationPolicy.IsReserved(identity, key, landmark.ReservationProfile, anchor => AnchorMatchesBiome(anchor, landmark.Biome))) return true;
+            if (UnderworldLandmarkReservationPolicy.IsReserved(
+                    identity,
+                    key,
+                    landmark.ReservationProfile,
+                    anchor => UnderworldLandmarkArbitrationPolicy.IsWinner(identity, anchor, landmark, _families, AnchorMatchesBiome)))
+                return true;
         }
         return false;
     }
