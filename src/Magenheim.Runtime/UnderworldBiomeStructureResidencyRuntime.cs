@@ -78,15 +78,49 @@ internal interface IUnderworldBiomeStructureFamily
     GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key);
 }
 
+internal static class FungalStructureArbitration
+{
+    internal const int SporeSalt = 0x13579BDF;
+    internal const int RootSalt = 0x2F6E2B1D;
+    private static readonly int[] FamilySalts = { SporeSalt, RootSalt };
+
+    internal static bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key, int familySalt) =>
+        UnderworldStructureSpacingPolicy.IsLocalWinnerAcrossFamilies(identity, key, familySalt, 1, FamilySalts, (candidate, salt) => BaseEligible(identity, candidate, salt));
+
+    private static bool BaseEligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key, int familySalt)
+    {
+        unchecked
+        {
+            if (familySalt == SporeSalt)
+            {
+                var hash = identity.DerivedSeed32;
+                hash = (hash * 397) ^ key.X;
+                hash = (hash * 397) ^ key.Z;
+                hash ^= hash >> 16;
+                return (hash & 3) == 0;
+            }
+
+            if (familySalt == RootSalt)
+            {
+                var hash = identity.DerivedSeed32 ^ RootSalt;
+                hash = (hash * 397) ^ key.X;
+                hash = (hash * 397) ^ key.Z;
+                hash ^= hash >> 15;
+                return (hash & 7) <= 2;
+            }
+
+            return false;
+        }
+    }
+}
+
 internal sealed class FungalSporeCairnFamily : IUnderworldBiomeStructureFamily
 {
     public string Kind => "fungal-spore-cairn";
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.FungalForest;
     public int PlacementSlot => 0;
-    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
-    {
-        unchecked { var hash = identity.DerivedSeed32; hash = (hash * 397) ^ key.X; hash = (hash * 397) ^ key.Z; hash ^= hash >> 16; return (hash & 3) == 0; }
-    }
+    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key) =>
+        FungalStructureArbitration.Eligible(identity, key, FungalStructureArbitration.SporeSalt);
     public GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
         var root = new GameObject($"Magenheim_FungalSporeCairn_{key.X}_{key.Z}"); root.transform.position = position;
@@ -113,10 +147,8 @@ internal sealed class FungalRootMassFamily : IUnderworldBiomeStructureFamily
     public string Kind => "fungal-root-mass";
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.FungalForest;
     public int PlacementSlot => 2;
-    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
-    {
-        unchecked { var hash = identity.DerivedSeed32 ^ 0x2F6E2B1D; hash = (hash * 397) ^ key.X; hash = (hash * 397) ^ key.Z; hash ^= hash >> 15; return (hash & 7) <= 2; }
-    }
+    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key) =>
+        FungalStructureArbitration.Eligible(identity, key, FungalStructureArbitration.RootSalt);
     public GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
         var root = new GameObject($"Magenheim_FungalRootMass_{key.X}_{key.Z}"); root.transform.position = position;
