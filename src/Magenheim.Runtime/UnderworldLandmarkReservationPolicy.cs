@@ -5,9 +5,9 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Deterministic reservation authority for sparse native-instance landmarks.
-/// This does not place landmarks by itself: a landmark family must opt into the
-/// same profile before ordinary structures are made to yield to it, preventing
-/// empty reservation holes while landmark content is still being authored.
+/// Reservation geometry is derived only from the Underworld identity and native
+/// chunk coordinates. Callers may additionally validate anchors (for example by
+/// biome) before allowing them to exclude ordinary structure families.
 /// </summary>
 internal static class UnderworldLandmarkReservationPolicy
 {
@@ -41,9 +41,23 @@ internal static class UnderworldLandmarkReservationPolicy
         return anchor.X == key.X && anchor.Z == key.Z;
     }
 
-    internal static bool IsReserved(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key, Profile profile)
+    internal static bool IsReserved(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key, Profile profile) =>
+        IsReserved(identity, key, profile, _ => true);
+
+    /// <summary>
+    /// Returns true only when a nearby deterministic anchor is both inside the
+    /// exclusion radius and accepted by the caller. This is the gate that lets
+    /// biome-specific landmarks reserve space without creating empty holes around
+    /// anchors that landed in some other Underworld biome.
+    /// </summary>
+    internal static bool IsReserved(
+        UnderworldWorldIdentity identity,
+        UnderworldInstanceChunkKey key,
+        Profile profile,
+        Func<UnderworldInstanceChunkKey, bool> anchorAccepted)
     {
         if (identity is null) throw new ArgumentNullException(nameof(identity));
+        if (anchorAccepted is null) throw new ArgumentNullException(nameof(anchorAccepted));
         var cellX = FloorDiv(key.X, profile.CellSizeChunks);
         var cellZ = FloorDiv(key.Z, profile.CellSizeChunks);
 
@@ -53,7 +67,7 @@ internal static class UnderworldLandmarkReservationPolicy
         for (var dx = -1; dx <= 1; dx++)
         {
             var anchor = AnchorForCell(identity, cellX + dx, cellZ + dz, profile);
-            if (ChebyshevDistance(anchor, key) <= profile.ExclusionRadiusChunks) return true;
+            if (ChebyshevDistance(anchor, key) <= profile.ExclusionRadiusChunks && anchorAccepted(anchor)) return true;
         }
         return false;
     }
