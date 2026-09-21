@@ -16,7 +16,7 @@ def mat(name,color,rough=.7,emit=None):
     if emit:
         bs.inputs['Emission Color'].default_value=(*emit,1); bs.inputs['Emission Strength'].default_value=.28
     return m
-SKIN=mat('CaveRay_DorsalSkin',(.055,.075,.08),.74); BELLY=mat('CaveRay_VentralSkin',(.12,.16,.16),.61,emit=(.12,.24,.22)); FIN=mat('CaveRay_FinMembrane',(.075,.105,.11),.67); EYE=mat('CaveRay_SensoryTissue',(.16,.24,.22),.58,emit=(.10,.34,.29))
+SKIN=mat('CaveRay_DorsalSkin',(.055,.075,.08),.74); BELLY=mat('CaveRay_VentralSkin',(.12,.16,.16),.61); FIN=mat('CaveRay_FinMembrane',(.075,.105,.11),.67); EYE=mat('CaveRay_SensoryTissue',(.16,.24,.22),.58,emit=(.10,.34,.29))
 parts={}
 def uv(o):
     layer=o.data.uv_layers.new(name='CaveRayUV')
@@ -43,12 +43,10 @@ for side,s in [('L',-1),('R',1)]:
         x0,x1=xs[i],xs[i+1]; y0,y1=ys[i],ys[i+1]; bone=f'Wing_{side}_{i+1}'
         verts=[(x0,y0,.04),(x1,y1,.025),(x1,y1-.62,-.015),(x0,y0-.58,-.025),(x0,y0,.04),(x1,y1,.025)]
         faces=[(0,1,2,3),(4,5,1,0)]; mesh(f'WingMembrane_{side}_{i+1}',verts,faces,FIN,bone)
-    # cephalic fin gives ray silhouette forward of wing root
     mesh(f'CephalicFin_{side}',[(.22*s,.82,.02),(.64*s,1.03,.01),(.52*s,.55,-.01),(.18*s,.48,-.02)],[(0,1,2,3)],FIN,'Head')
-# Long tapering tail in five independently deformable pieces.
 points=[(0,-.82,0),(0,-1.30,-.01),(0,-1.78,-.02),(0,-2.23,-.015),(0,-2.65,0),(0,-3.02,.015)]
 for i in range(5): seg(f'TailSegment_{i+1}',points[i],points[i+1],.085-i*.011,SKIN,f'Tail_{i+1}',10)
-# Restrained underside photophores: modeled sensory organs, not a glowing whole body.
+# Restrained underside photophores: modeled sensory organs are the only emissive anatomy.
 for i,(x,y) in enumerate([(-.31,.45),(.31,.45),(-.42,.05),(.42,.05),(-.28,-.38),(.28,-.38)]): ico(f'Photophore_{i+1}',(x,y,-.185),(.055,.08,.025),EYE,'Body',2)
 
 armdata=bpy.data.armatures.new('HOST-AQUATIC-RAY'); arm=bpy.data.objects.new('CaveRayRig',armdata); bpy.context.collection.objects.link(arm); bpy.context.view_layer.objects.active=arm; arm.select_set(True); bpy.ops.object.mode_set(mode='EDIT')
