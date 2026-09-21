@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using BepInEx.Logging;
-using Jotunn.Managers;
 using Magenheim.Core.Underworld;
 using UnityEngine;
 
@@ -9,9 +8,8 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Disposable local Underworld ecology preview assembled from Valheim-owned donor prefabs.
-/// Donors are resolved from the running game and rebuilt as stripped render-only copies: no
-/// vanilla prefab identity is replaced, no vanilla meshes/textures are packaged by Magenheim,
-/// and no donor gameplay/network components are carried into the preview objects.
+/// Donor visuals are created exclusively through <see cref="UnderworldDonorVisualFactory"/>, so
+/// ecology and persistent native structures share one non-destructive donor-copy authority.
 /// Ecology consumes native Underworld instance coordinates only; Surface WorldGenerator state
 /// and hidden host-band coordinates are not ecology authority.
 /// </summary>
@@ -20,8 +18,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
     private UnderworldRuntimeServices? _services;
     private ManualLogSource? _log;
     private readonly List<GameObject> _spawned = new();
-    private readonly Dictionary<string, GameObject> _donorSources = new(StringComparer.Ordinal);
-    private readonly HashSet<string> _warnedDonors = new(StringComparer.Ordinal);
     private string _admitted = string.Empty;
     private Vector3 _lastBuildPosition;
     private float _nextAt;
@@ -85,9 +81,6 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             if (!anchor.Admitted) continue;
 
             var radius = ClusterRadius(anchor.Biome);
-            // Each community now has a readable composition: a near-center landmark, asymmetric
-            // structural forms around it, and small fill gathered into one side-pocket. The pocket
-            // heading is deterministic per cluster so repeated groves/outcrops do not share an axis.
             var pocketAngle = (float)(random.NextDouble() * Math.PI * 2d);
             for (var member = 0; member < PlacementsPerCluster; member++)
             {
@@ -107,22 +100,17 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
     {
         if (member == 0)
         {
-            // Keep the landmark close to the sampled terrain anchor without making every center exact.
             var angle = (float)(random.NextDouble() * Math.PI * 2d);
             var distance = (float)random.NextDouble() * radius * 0.12f;
             return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
         }
         if (member <= 4)
         {
-            // Structural donors form an incomplete, irregular ring. A cluster-wide angular bias
-            // creates arcs rather than the old statistically even disk scatter.
             var slot = member - 1;
             var angle = pocketAngle + 0.65f + slot * 1.22f + ((float)random.NextDouble() - 0.5f) * 0.48f;
             var distance = radius * (0.38f + (float)random.NextDouble() * 0.47f);
             return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
         }
-        // Fill donors collect near one edge of the community, producing fungal beds, rubble pockets,
-        // root litter, or small ice shards instead of two more equally important ring members.
         var fillAngle = pocketAngle + ((float)random.NextDouble() - 0.5f) * 0.55f;
         var fillDistance = radius * (0.48f + (float)random.NextDouble() * 0.34f);
         var jitter = new Vector2((float)random.NextDouble() - 0.5f, (float)random.NextDouble() - 0.5f) * radius * 0.14f;
@@ -182,146 +170,22 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
 
     private void SpawnDonor(Vector3 position, UnderworldTerrainBiome biome, int variant)
     {
-        UnderworldVanillaDonorCatalog.Donor donor = default;
-        GameObject? source = null;
-        var selectedVariant = variant;
-        for (var attempt = 0; attempt < 8 && source is null; attempt++)
+        try
         {
-            selectedVariant = variant + attempt;
-            try { donor = UnderworldVanillaDonorCatalog.Select(biome, selectedVariant); }
-            catch (InvalidOperationException exception)
-            {
-                _log?.LogWarning(exception.Message);
-                return;
-            }
-            source = ResolveDonor(donor.PrefabName);
+            var node = UnderworldDonorVisualFactory.Create(
+                biome,
+                variant,
+                $"Magenheim_UnderworldEcology_{biome}_{variant}");
+            // Factory-local position contains the donor's catalogued ground offset. Add the native
+            // instance-space terrain position instead of overwriting that offset.
+            node.transform.position += position;
+            _spawned.Add(node);
         }
-        if (source is null) return;
-        var node = BuildVisualClone(source, donor, selectedVariant);
-        if (node is null) return;
-        node.name = $"Magenheim_UnderworldDonor_{biome}_{donor.PrefabName}";
-        node.transform.position = position + Vector3.up * donor.GroundOffset;
-        node.transform.rotation = Quaternion.Euler(
-            Mathf.Abs(selectedVariant % 7) - 3f,
-            Mathf.Abs(selectedVariant * 37 % 360),
-            Mathf.Abs(selectedVariant % 9) - 4f);
-        var scale = UnderworldVanillaDonorCatalog.Scale(donor, selectedVariant);
-        node.transform.localScale = scale;
-        var lightScale = Mathf.Clamp(Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z)), 1f, 12f);
-        foreach (var light in node.GetComponentsInChildren<Light>(true)) light.range *= lightScale;
-        _spawned.Add(node);
-    }
-
-    private GameObject? ResolveDonor(string prefabName)
-    {
-        if (_donorSources.TryGetValue(prefabName, out var cached) && cached) return cached;
-        var source = PrefabManager.Instance.GetPrefab(prefabName);
-        if (source is null)
+        catch (InvalidOperationException exception)
         {
-            if (_warnedDonors.Add(prefabName)) _log?.LogWarning($"Underworld donor '{prefabName}' is not available yet or is absent in this Valheim build; skipping this placement and retrying later.");
-            return null;
-        }
-        _donorSources[prefabName] = source;
-        return source;
-    }
-
-    private GameObject? BuildVisualClone(GameObject source, UnderworldVanillaDonorCatalog.Donor donor, int variant)
-    {
-        var root = new GameObject($"Magenheim_UnderworldDonorVisual_{source.name}_{variant}");
-        var transformMap = new Dictionary<Transform, Transform>();
-        var rendererMap = new Dictionary<Renderer, Renderer>();
-        var copiedRenderers = 0;
-        CopyNode(source.transform, root.transform, false, transformMap, rendererMap, ref copiedRenderers);
-        if (copiedRenderers == 0)
-        {
-            Destroy(root);
-            if (_warnedDonors.Add(source.name)) _log?.LogWarning($"Underworld donor '{source.name}' contained no supported mesh renderers.");
-            return null;
-        }
-        RebuildLodGroups(source, transformMap, rendererMap);
-        if (donor.Collidable) AddConservativeCollider(root);
-        return root;
-    }
-
-    private static void CopyNode(Transform source, Transform target, bool copyTransform, IDictionary<Transform, Transform> transformMap, IDictionary<Renderer, Renderer> rendererMap, ref int copiedRenderers)
-    {
-        transformMap[source] = target;
-        if (copyTransform)
-        {
-            target.localPosition = source.localPosition;
-            target.localRotation = source.localRotation;
-            target.localScale = source.localScale;
-            target.gameObject.SetActive(source.gameObject.activeSelf);
-        }
-        var sourceFilter = source.GetComponent<MeshFilter>();
-        var sourceRenderer = source.GetComponent<MeshRenderer>();
-        if (sourceFilter is not null && sourceFilter.sharedMesh is not null && sourceRenderer is not null)
-        {
-            var targetFilter = target.gameObject.AddComponent<MeshFilter>();
-            targetFilter.sharedMesh = sourceFilter.sharedMesh;
-            var targetRenderer = target.gameObject.AddComponent<MeshRenderer>();
-            targetRenderer.sharedMaterials = sourceRenderer.sharedMaterials;
-            targetRenderer.enabled = sourceRenderer.enabled;
-            targetRenderer.shadowCastingMode = sourceRenderer.shadowCastingMode;
-            targetRenderer.receiveShadows = sourceRenderer.receiveShadows;
-            targetRenderer.lightProbeUsage = sourceRenderer.lightProbeUsage;
-            targetRenderer.reflectionProbeUsage = sourceRenderer.reflectionProbeUsage;
-            rendererMap[sourceRenderer] = targetRenderer;
-            copiedRenderers++;
-        }
-        var sourceLight = source.GetComponent<Light>();
-        if (sourceLight is not null && sourceLight.enabled)
-        {
-            var targetLight = target.gameObject.AddComponent<Light>();
-            targetLight.type = sourceLight.type;
-            targetLight.color = sourceLight.color;
-            targetLight.intensity = sourceLight.intensity;
-            targetLight.range = sourceLight.range;
-            targetLight.spotAngle = sourceLight.spotAngle;
-            targetLight.shadows = sourceLight.shadows;
-            targetLight.cullingMask = sourceLight.cullingMask;
-        }
-        for (var i = 0; i < source.childCount; i++)
-        {
-            var sourceChild = source.GetChild(i);
-            var targetChild = new GameObject(sourceChild.name).transform;
-            targetChild.SetParent(target, false);
-            CopyNode(sourceChild, targetChild, true, transformMap, rendererMap, ref copiedRenderers);
-        }
-    }
-
-    private static void RebuildLodGroups(GameObject source, IReadOnlyDictionary<Transform, Transform> transformMap, IReadOnlyDictionary<Renderer, Renderer> rendererMap)
-    {
-        foreach (var sourceGroup in source.GetComponentsInChildren<LODGroup>(true))
-        {
-            if (!transformMap.TryGetValue(sourceGroup.transform, out var targetTransform)) continue;
-            var sourceLods = sourceGroup.GetLODs();
-            var targetLods = new LOD[sourceLods.Length];
-            for (var i = 0; i < sourceLods.Length; i++)
-            {
-                var mapped = new List<Renderer>();
-                foreach (var renderer in sourceLods[i].renderers)
-                    if (renderer is not null && rendererMap.TryGetValue(renderer, out var targetRenderer)) mapped.Add(targetRenderer);
-                targetLods[i] = new LOD(sourceLods[i].screenRelativeTransitionHeight, mapped.ToArray()) { fadeTransitionWidth = sourceLods[i].fadeTransitionWidth };
-            }
-            var targetGroup = targetTransform.gameObject.AddComponent<LODGroup>();
-            targetGroup.localReferencePoint = sourceGroup.localReferencePoint;
-            targetGroup.size = sourceGroup.size;
-            targetGroup.fadeMode = sourceGroup.fadeMode;
-            targetGroup.animateCrossFading = sourceGroup.animateCrossFading;
-            targetGroup.SetLODs(targetLods);
-            targetGroup.RecalculateBounds();
-        }
-    }
-
-    private static void AddConservativeCollider(GameObject root)
-    {
-        foreach (var filter in root.GetComponentsInChildren<MeshFilter>(true))
-        {
-            if (filter.sharedMesh is null) continue;
-            var collider = filter.gameObject.AddComponent<MeshCollider>();
-            collider.sharedMesh = filter.sharedMesh;
-            return;
+            // Runtime donor availability can legitimately lag prefab registration. Ecology is
+            // disposable, so skip this placement and let the next rebuild retry through the factory.
+            _log?.LogWarning(exception.Message);
         }
     }
 
@@ -331,10 +195,5 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         _spawned.Clear();
     }
 
-    private void OnDestroy()
-    {
-        ClearMarkers();
-        _donorSources.Clear();
-        _warnedDonors.Clear();
-    }
+    private void OnDestroy() => ClearMarkers();
 }
