@@ -61,10 +61,12 @@ internal static class UnderworldLandmarkReservationPolicy
         var cellX = FloorDiv(key.X, profile.CellSizeChunks);
         var cellZ = FloorDiv(key.Z, profile.CellSizeChunks);
 
-        // A reservation radius may cross a cell boundary, so inspect the local
-        // 3x3 cells rather than assuming the current cell owns the nearest anchor.
-        for (var dz = -1; dz <= 1; dz++)
-        for (var dx = -1; dx <= 1; dx++)
+        // A reservation can extend beyond an immediately adjacent landmark cell.
+        // Search enough cells to cover the configured chunk radius rather than
+        // silently assuming every future profile will fit inside a 3x3 cell window.
+        var cellRadius = 1 + profile.ExclusionRadiusChunks / profile.CellSizeChunks;
+        for (var dz = -cellRadius; dz <= cellRadius; dz++)
+        for (var dx = -cellRadius; dx <= cellRadius; dx++)
         {
             var anchor = AnchorForCell(identity, cellX + dx, cellZ + dz, profile);
             if (ChebyshevDistance(anchor, key) <= profile.ExclusionRadiusChunks && anchorAccepted(anchor)) return true;
