@@ -42,40 +42,44 @@ internal static class UnderworldLandmarkReservationPolicy
     }
 
     internal static bool IsReserved(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key, Profile profile) =>
-        IsReserved(identity, key, profile, _ => true);
+        IsReserved(identity, key, profile, profile.ExclusionRadiusChunks, _ => true);
+
+    internal static bool IsReserved(
+        UnderworldWorldIdentity identity,
+        UnderworldInstanceChunkKey key,
+        Profile profile,
+        Func<UnderworldInstanceChunkKey, bool> anchorAccepted) =>
+        IsReserved(identity, key, profile, profile.ExclusionRadiusChunks, anchorAccepted);
 
     /// <summary>
-    /// Returns true only when a nearby deterministic anchor is both inside the
-    /// exclusion radius and accepted by the caller. This is the gate that lets
-    /// biome-specific landmarks reserve space without creating empty holes around
-    /// anchors that landed in some other Underworld biome.
+    /// Searches deterministic anchors out to an explicit chunk radius. Normal
+    /// reservations pass the profile exclusion radius; landmark conflict
+    /// arbitration may pass a larger radius (for example the sum of two landmark
+    /// radii) without changing either landmark's actual exclusion territory.
     /// </summary>
     internal static bool IsReserved(
         UnderworldWorldIdentity identity,
         UnderworldInstanceChunkKey key,
         Profile profile,
+        int searchRadiusChunks,
         Func<UnderworldInstanceChunkKey, bool> anchorAccepted)
     {
         if (identity is null) throw new ArgumentNullException(nameof(identity));
         if (anchorAccepted is null) throw new ArgumentNullException(nameof(anchorAccepted));
+        if (searchRadiusChunks < 0) throw new ArgumentOutOfRangeException(nameof(searchRadiusChunks));
         var cellX = FloorDiv(key.X, profile.CellSizeChunks);
         var cellZ = FloorDiv(key.Z, profile.CellSizeChunks);
 
-        // A reservation can extend beyond an immediately adjacent landmark cell.
-        // Search enough cells to cover the configured chunk radius rather than
-        // silently assuming every future profile will fit inside a 3x3 cell window.
-        // Compute in long space so a valid extreme profile cannot overflow while
-        // deriving its search window.
-        var cellRadiusLong = 1L + (long)profile.ExclusionRadiusChunks / profile.CellSizeChunks;
+        var cellRadiusLong = 1L + (long)searchRadiusChunks / profile.CellSizeChunks;
         if (cellRadiusLong > int.MaxValue)
-            throw new ArgumentOutOfRangeException(nameof(profile), "Landmark reservation search radius exceeds supported native chunk range.");
+            throw new ArgumentOutOfRangeException(nameof(searchRadiusChunks), "Landmark reservation search radius exceeds supported native chunk range.");
         var cellRadius = (int)cellRadiusLong;
 
         for (var dz = -cellRadius; dz <= cellRadius; dz++)
         for (var dx = -cellRadius; dx <= cellRadius; dx++)
         {
             var anchor = AnchorForCell(identity, CheckedCellOffset(cellX, dx), CheckedCellOffset(cellZ, dz), profile);
-            if (ChebyshevDistance(anchor, key) <= profile.ExclusionRadiusChunks && anchorAccepted(anchor)) return true;
+            if (ChebyshevDistance(anchor, key) <= searchRadiusChunks && anchorAccepted(anchor)) return true;
         }
         return false;
     }
