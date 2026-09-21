@@ -25,6 +25,41 @@ internal static class UnderworldStructureSpacingPolicy
         return true;
     }
 
+    internal static bool IsLocalWinnerAcrossFamilies(
+        UnderworldWorldIdentity identity,
+        UnderworldInstanceChunkKey candidate,
+        int candidateFamilySalt,
+        int radiusChunks,
+        int[] competingFamilySalts,
+        Func<UnderworldInstanceChunkKey, int, bool> baseEligible)
+    {
+        if (identity is null) throw new ArgumentNullException(nameof(identity));
+        if (competingFamilySalts is null) throw new ArgumentNullException(nameof(competingFamilySalts));
+        if (baseEligible is null) throw new ArgumentNullException(nameof(baseEligible));
+        if (radiusChunks < 0) throw new ArgumentOutOfRangeException(nameof(radiusChunks));
+        if (!baseEligible(candidate, candidateFamilySalt)) return false;
+
+        var candidatePriority = Priority(identity.DerivedSeed32, candidate, candidateFamilySalt);
+        foreach (var familySalt in competingFamilySalts)
+        {
+            for (var dz = -radiusChunks; dz <= radiusChunks; dz++)
+            for (var dx = -radiusChunks; dx <= radiusChunks; dx++)
+            {
+                if (familySalt == candidateFamilySalt && dx == 0 && dz == 0) continue;
+                var neighbor = new UnderworldInstanceChunkKey(candidate.X + dx, candidate.Z + dz);
+                if (!baseEligible(neighbor, familySalt)) continue;
+                var neighborPriority = Priority(identity.DerivedSeed32, neighbor, familySalt);
+                if (neighborPriority < candidatePriority) return false;
+                if (neighborPriority == candidatePriority)
+                {
+                    if (familySalt < candidateFamilySalt) return false;
+                    if (familySalt == candidateFamilySalt && ComesBefore(neighbor, candidate)) return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private static uint Priority(int seed, UnderworldInstanceChunkKey key, int salt)
     {
         unchecked
