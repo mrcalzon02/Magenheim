@@ -17,7 +17,7 @@ internal static class UnderworldWorldCenterRegistrar
     internal const string DescentMonolithName = "Magenheim_DescentMonolith";
     internal const string GeneratedObjectKind = "deepstone-conclave";
     internal static readonly Vector3 ReturnGateOffset = new(18f, 0f, 0f);
-    internal static readonly UnderworldAnchor LogicalCenter = new("magenheim.underworld.pending", 0d, 0d, 0d, 0f);
+    internal static readonly Vector3 LogicalCenter = Vector3.zero;
 
     private static readonly DeepstoneBinding[] Deepstones =
     {
@@ -34,12 +34,12 @@ internal static class UnderworldWorldCenterRegistrar
         if (identity is null) throw new ArgumentNullException(nameof(identity));
         if (log is null) throw new ArgumentNullException(nameof(log));
 
-        var logical = LogicalCenter with { WorldId = identity.DerivedWorldId };
+        var logical = LogicalCenter;
         var root = new GameObject(LocationName);
         var ownership = root.AddComponent<UnderworldGeneratedObjectIdentity>();
         ownership.Bind(identity, GeneratedObjectKind);
         root.transform.position = ResolveGroundedCenterPosition(logical);
-        root.transform.rotation = Quaternion.Euler(0f, logical.HeadingDegrees, 0f);
+        root.transform.rotation = Quaternion.identity;
         BuildStandingStones(root.transform);
 
         var gatePrefab = Jotunn.Managers.PrefabManager.Instance.GetPrefab(UnderworldDeepGateRegistrar.PrefabName)
@@ -56,12 +56,12 @@ internal static class UnderworldWorldCenterRegistrar
         return root;
     }
 
-    private static Vector3 ResolveGroundedCenterPosition(UnderworldAnchor logical)
+    private static Vector3 ResolveGroundedCenterPosition(Vector3 logical)
     {
-        var terrain = UnderworldTerrainRuntime.SampleInstanceTerrain(logical.X, logical.Y, logical.Z);
+        var terrain = UnderworldTerrainRuntime.SampleInstanceTerrain(logical.x, logical.y, logical.z);
         if (!terrain.Admitted)
             throw new InvalidOperationException("Native Underworld terrain authority did not admit the logical world center.");
-        return new Vector3((float)logical.X, (float)terrain.Height + 1.25f, (float)logical.Z);
+        return new Vector3((float)logical.x, (float)terrain.Height + 1.25f, (float)logical.z);
     }
 
     private static void BuildStandingStones(Transform parent)

@@ -1,5 +1,7 @@
 # Local handoff — Underworld creature production
 
+> 2026-09-21 scope correction: the current user requests broad rough prototypes using existing donor skeletons, not new animation systems. [The donor prototype roster](UNDERWORLD_CONTENT_PROTOTYPES.md) governs this pass. Bespoke rig/animation requirements and the earlier single-creature sequencing below remain final-art reference only; they do not block donor-based content expansion.
+
 **Scope:** final local repair, Blender generation, Unity/Valheim installation and runtime testing.  
 **Priority:** Fungal Forest Sporeling first. Do not expand to another creature until this benchmark passes.
 

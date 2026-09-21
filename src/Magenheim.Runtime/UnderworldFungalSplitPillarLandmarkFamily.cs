@@ -51,7 +51,7 @@ internal sealed class FungalSplitPillarLandmarkFamily : IUnderworldLandmarkStruc
                 shaft.transform.SetParent(root.transform, false);
                 shaft.transform.localPosition += new Vector3(side * 2.1f, 1.4f, 0f);
                 shaft.transform.localRotation *= Quaternion.Euler(side * -7f, side * 8f, side * -11f);
-                shaft.transform.localScale *= new Vector3(1.65f, 4.8f, 1.65f);
+                shaft.transform.localScale = Vector3.Scale(shaft.transform.localScale, new Vector3(1.65f, 4.8f, 1.65f));
             }
 
             for (var i = 0; i < 4; i++)

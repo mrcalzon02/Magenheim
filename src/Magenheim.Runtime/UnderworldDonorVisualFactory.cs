@@ -44,6 +44,36 @@ internal static class UnderworldDonorVisualFactory
         throw new InvalidOperationException($"No usable Valheim donor prefab is available for Underworld biome {biome}.", last);
     }
 
+    internal static GameObject? CreateCover(UnderworldTerrainBiome biome, int variant, string name,
+        double heightAboveWater, double slopeDegrees)
+    {
+        Exception? last = null;
+        var eligible = false;
+        for (var attempt = 0; attempt < UnderworldVanillaDonorCatalog.CoverCount(biome); attempt++)
+        {
+            var selected = unchecked(variant + attempt);
+            var cover = UnderworldVanillaDonorCatalog.SelectCover(biome, selected);
+            if (!UnderworldFloraPlacement.CanPlaceCover(heightAboveWater, slopeDegrees,
+                cover.MinHeightAboveWater, cover.MaxHeightAboveWater, cover.MaxSlope)) continue;
+            eligible = true;
+            var source = Resolve(cover.Donor.PrefabName);
+            if (!source) continue;
+            try
+            {
+                var root = BuildVisualClone(source, cover.Donor);
+                root.name = name + "_" + cover.Name;
+                root.transform.localPosition = Vector3.up * cover.Donor.GroundOffset;
+                root.transform.localRotation = Quaternion.Euler(0f, (selected & int.MaxValue) % 360, 0f);
+                root.transform.localScale = UnderworldVanillaDonorCatalog.Scale(cover.Donor, selected);
+                UnderworldCreaturePrototypeRegistrar.Tint(root, cover.Color);
+                return root;
+            }
+            catch (InvalidOperationException exception) { last = exception; }
+        }
+        if (!eligible) return null; // Bare ground/deep water is a valid habitat result.
+        throw new InvalidOperationException($"No usable habitat-compatible cover donor for {biome}.", last);
+    }
+
     private static GameObject? Resolve(string prefabName)
     {
         if (Sources.TryGetValue(prefabName, out var cached) && cached) return cached;

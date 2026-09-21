@@ -3362,37 +3362,37 @@
   {
     "id": "underworld-dais",
     "parts": 1,
-    "triangles": 1116,
+    "triangles": 900,
     "materials": 1,
     "source": "source/underworld-dais.blend",
     "glb": "glb/underworld-dais.glb",
     "runtime": "runtime/underworld-dais.model.json",
-    "source_sha256": "834992dd40c84bd25e40b97c802d6a2324fca44036374a24dadb55e744ac365f",
-    "runtime_sha256": "00e45ec9f68443a32faa4f6b0333e19aa6257772836f05380d9f19f7ca27790f",
-    "glb_sha256": "6848d8bcf0230de5144d8eb05bb1b1885d3d51aa86b05fa1b8dc8c9fe2d83757"
+    "source_sha256": "daf9a948ed49b0fe87cf5150f0af1c69a00f405c71964bd56398725918f179c8",
+    "runtime_sha256": "ec4c4f5615fe24ba387cdf43a14aede21f555863b37277581a802c2f165c5e4c",
+    "glb_sha256": "98f2b7eb99ff324877106c1862ec34e215564201184636c12aa5cf7e8d571a9d"
   },
   {
     "id": "underworld-descent-monolith",
     "parts": 1,
-    "triangles": 184,
+    "triangles": 192,
     "materials": 1,
     "source": "source/underworld-descent-monolith.blend",
     "glb": "glb/underworld-descent-monolith.glb",
     "runtime": "runtime/underworld-descent-monolith.model.json",
-    "source_sha256": "f1d930d7baaaaf4139864e9e607e9facf37d0817c2658761ceca18cc01d78da0",
-    "runtime_sha256": "41230682b6f761b2b1f0aaddd1c531485fac859fdecb1eb222827c0dfbaace0a",
-    "glb_sha256": "a9ead70c836256329f80722935fb3efe28dab69e5d0f63b7e9014ffd2df77372"
+    "source_sha256": "01b20bbc00e70e8bc004e3eb996e1459c9d02f3da65530232d5a7cb7e663ba01",
+    "runtime_sha256": "b512ccd575a18ff5bdd639a22f2e69faf92ed88a17294b73c9c520bf1744b17d",
+    "glb_sha256": "80895523f39334f81ae702c3beb7b19af18c6b646d066f3f1018989b69633489"
   },
   {
     "id": "underworld-standing-stone",
     "parts": 1,
-    "triangles": 226,
+    "triangles": 250,
     "materials": 1,
     "source": "source/underworld-standing-stone.blend",
     "glb": "glb/underworld-standing-stone.glb",
     "runtime": "runtime/underworld-standing-stone.model.json",
-    "source_sha256": "a6ba6b681ca140f246648f58675c6edb09808bc8f7e9c07ebf9547a47bf672b3",
-    "runtime_sha256": "455fd1d3b29a067499a3d84d132c8b9115bdcd6f4d16ee8753d18bf108716565",
-    "glb_sha256": "52a87745044b76af7271cc574a60204814644d1a1cab7a2afd5ead6ecb4aef0c"
+    "source_sha256": "15e78ded8ef76edeaa452b544db3db2a06741fc4381f220df9a798fa776b66db",
+    "runtime_sha256": "30b473167ddebb127292349c9334eb8aa29ccca0e922d686810497499e907115",
+    "glb_sha256": "7c26ec7129ebcafbc6f1a0c066a70d7abdf78626cca23f279c0db4e9e66f30b0"
   }
 ]

@@ -1,5 +1,7 @@
 # Underworld Creature Art, Rigging, and Host-Chassis Standard
 
+> 2026-09-21 scope correction: the current user requests broad rough prototypes using existing donor skeletons, not new animation systems. [The donor prototype roster](UNDERWORLD_CONTENT_PROTOTYPES.md) governs this pass. Bespoke rig/animation requirements and the earlier single-creature sequencing below remain final-art reference only; they do not block donor-based content expansion.
+
 **Project:** Magenheim for Valheim  
 **Authority:** subordinate to `UNDERWORLD_DESIGN.md` and `UNDERWORLD_IMPLEMENTATION_PLAN.md`  
 **Purpose:** production specification for every non-boss Underworld creature model, texture set, animation rig, and reusable host chassis.

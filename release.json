@@ -1,4 +1,4 @@
 {
-  "version": "0.0.88",
-  "description": "0.0.88: All 62 crystal placeables now carry Hammer icons rendered from the same Blender sources their meshes export from, replacing the procedural pixel art eight C# classes drew. Also repairs two defects that reached main unbuilt."
+  "version": "0.0.90",
+  "description": "0.0.90: Refines Underworld natural scenery with 48 foliage, root and stone variants, habitat-aware bank and lakebed cover, distinct biome clusters and resilient donor fallback. No new player buildables."
 }

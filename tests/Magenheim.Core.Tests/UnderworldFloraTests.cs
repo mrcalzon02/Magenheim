@@ -19,6 +19,27 @@ internal static class UnderworldFloraTests
             catch (InvalidDataException) { rejected = true; }
             Check(rejected);
         }
+        // Land plants must not leak onto the lakebed; submerged rock shelves must not
+        // replace them on dry ground. Bounds are inclusive, invalid samples fail closed.
+        Check(UnderworldFloraPlacement.CanPlaceCover(0, 28, 0, 4, 28));
+        Check(UnderworldFloraPlacement.CanPlaceCover(4, 0, 0, 4, 28));
+        Check(!UnderworldFloraPlacement.CanPlaceCover(-.01, 0, 0, 4, 28));
+        Check(!UnderworldFloraPlacement.CanPlaceCover(4.01, 0, 0, 4, 28));
+        Check(!UnderworldFloraPlacement.CanPlaceCover(1, 28.01, 0, 4, 28));
+        Check(UnderworldFloraPlacement.CanPlaceCover(-30, 45, -30, -.2, 45));
+        Check(!UnderworldFloraPlacement.CanPlaceCover(0, 0, -30, -.2, 45));
+        Check(!UnderworldFloraPlacement.CanPlaceCover(-30.01, 0, -30, -.2, 45));
+        Check(!UnderworldFloraPlacement.CanPlaceCover(1, -1, 0, 4, 28));
+        Check(!UnderworldFloraPlacement.CanPlaceCover(1, 0, 4, 0, 28));
+        Check(!UnderworldFloraPlacement.CanPlaceCover(1, 0, 0, 4, 91));
+        foreach (var invalid in new[] { double.NaN, double.PositiveInfinity, double.NegativeInfinity })
+        {
+            Check(!UnderworldFloraPlacement.CanPlaceCover(invalid, 0, 0, 4, 28));
+            Check(!UnderworldFloraPlacement.CanPlaceCover(1, invalid, 0, 4, 28));
+            Check(!UnderworldFloraPlacement.CanPlaceCover(1, 0, invalid, 4, 28));
+            Check(!UnderworldFloraPlacement.CanPlaceCover(1, 0, 0, invalid, 28));
+            Check(!UnderworldFloraPlacement.CanPlaceCover(1, 0, 0, 4, invalid));
+        }
         var json = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "foundation.json"));
         var baseline = MagenheimDefinitionLoader.LoadFromJson(json);
         var flora = baseline.UnderworldFlora!;

@@ -84,37 +84,49 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             var pocketAngle = (float)(random.NextDouble() * Math.PI * 2d);
             for (var member = 0; member < PlacementsPerCluster; member++)
             {
-                var placement = ComposePlacement(random, radius, member, pocketAngle);
+                var placement = UnderworldBiomeEcologyComposition.Compose(anchor.Biome, random, radius, member, pocketAngle);
                 var x = anchorX + placement.x;
                 var z = anchorZ + placement.y;
                 var sample = UnderworldTerrainRuntime.SampleInstanceTerrain(x, center.y, z);
                 if (!sample.Admitted || sample.Biome != anchor.Biome) continue;
                 var variant = seed + cluster * 101 + member * 17;
                 SpawnDonor(new Vector3(x, (float)sample.Height, z), sample.Biome, ComposeVariant(sample.Biome, variant, member));
+                // Fill stays near admitted supports; sparse/hazard biomes keep open sightlines.
+                var coverCount = sample.Biome == UnderworldTerrainBiome.FungalForest ||
+                    sample.Biome == UnderworldTerrainBiome.GreatDecay ? 4 : 2;
+                var coverRandom = new System.Random(unchecked(variant ^ 0x57A31));
+                for (var fill = 0; fill < coverCount; fill++)
+                {
+                    var heading = (float)coverRandom.NextDouble() * Mathf.PI * 2f;
+                    var distance = 2f + (float)coverRandom.NextDouble() * 4f;
+                    var fx = x + Mathf.Cos(heading) * distance;
+                    var fz = z + Mathf.Sin(heading) * distance;
+                    var floor = UnderworldTerrainRuntime.SampleInstanceTerrain(fx, center.y, fz);
+                    if (!floor.Admitted || floor.Biome != sample.Biome) continue;
+                    var east = UnderworldTerrainRuntime.SampleInstanceTerrain(fx + 1f, center.y, fz);
+                    var west = UnderworldTerrainRuntime.SampleInstanceTerrain(fx - 1f, center.y, fz);
+                    var north = UnderworldTerrainRuntime.SampleInstanceTerrain(fx, center.y, fz + 1f);
+                    var south = UnderworldTerrainRuntime.SampleInstanceTerrain(fx, center.y, fz - 1f);
+                    if (!east.Admitted || !west.Admitted || !north.Admitted || !south.Admitted ||
+                        east.Biome != floor.Biome || west.Biome != floor.Biome ||
+                        north.Biome != floor.Biome || south.Biome != floor.Biome) continue;
+                    var dx = Math.Max(Math.Abs(east.Height - floor.Height), Math.Abs(west.Height - floor.Height));
+                    var dz = Math.Max(Math.Abs(north.Height - floor.Height), Math.Abs(south.Height - floor.Height));
+                    var slope = Math.Atan(Math.Sqrt(dx * dx + dz * dz)) * 180d / Math.PI;
+                    var waterLevel = ZoneSystem.instance is null ? 30d : ZoneSystem.instance.m_waterLevel;
+                    try
+                    {
+                        var cover = UnderworldDonorVisualFactory.CreateCover(sample.Biome,
+                            unchecked(variant * 31 + fill), "Magenheim_UnderworldCover", floor.Height - waterLevel, slope);
+                        if (cover is null) continue;
+                        cover.transform.position += new Vector3(fx, (float)floor.Height, fz);
+                        _spawned.Add(cover);
+                    }
+                    catch (InvalidOperationException exception) { _log?.LogWarning(exception.Message); }
+                }
             }
         }
         _log?.LogDebug($"Refreshed {_spawned.Count} spatially composed vanilla-donor Underworld ecology objects in instance space near ({center.x:0},{center.z:0}).");
-    }
-
-    private static Vector2 ComposePlacement(System.Random random, float radius, int member, float pocketAngle)
-    {
-        if (member == 0)
-        {
-            var angle = (float)(random.NextDouble() * Math.PI * 2d);
-            var distance = (float)random.NextDouble() * radius * 0.12f;
-            return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
-        }
-        if (member <= 4)
-        {
-            var slot = member - 1;
-            var angle = pocketAngle + 0.65f + slot * 1.22f + ((float)random.NextDouble() - 0.5f) * 0.48f;
-            var distance = radius * (0.38f + (float)random.NextDouble() * 0.47f);
-            return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
-        }
-        var fillAngle = pocketAngle + ((float)random.NextDouble() - 0.5f) * 0.55f;
-        var fillDistance = radius * (0.48f + (float)random.NextDouble() * 0.34f);
-        var jitter = new Vector2((float)random.NextDouble() - 0.5f, (float)random.NextDouble() - 0.5f) * radius * 0.14f;
-        return new Vector2(Mathf.Cos(fillAngle), Mathf.Sin(fillAngle)) * fillDistance + jitter;
     }
 
     private static float ClusterRadius(UnderworldTerrainBiome biome) => biome switch

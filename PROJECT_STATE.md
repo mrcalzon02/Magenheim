@@ -1,3 +1,58 @@
+# Current source candidate - 0.0.90 / schema 5 (2026-09-21)
+
+User scope correction: terrain, vegetation, ecology and natural features; no player-buildable
+expansion. The interrupted Hammer work was removed before packaging. Legacy 0.0.89 console
+identities remain unchanged for compatibility.
+
+Natural ground cover now has 48 donor-based variants, eight per biome, with per-variant water-height
+and slope limits. The existing six biome compositions now drive preview layouts. Four-neighbor
+sampling rejects edge/cliff placements; cover uses an independent random stream. Missing or
+unsupported visuals fall through only to habitat-compatible alternatives. No new save, map or
+animation systems. See docs/validation/2026-09-21-underworld-scenery-refinement.md.
+
+Full closeout passed: 38,291 Core assertions plus separate modules, 283 model payloads and 117
+icons. Runtime build: zero warnings/errors. Model importer retains existing nullable warnings.
+Installed and hash-verified 0.0.90 in Central Fuckery; enabled launcher catalog read back.
+DLL SHA-256: D542E92B28DA2E5ABE59BA6F547F4B2FE5EC6862ED7D6C1FE45A8E1961B5C170.
+Backups: backups/Local-Magenheim-20260921-123301.zip and backups/mods-20260921-123310-574.yml.
+No live game startup, visual review or multiplayer acceptance performed.
+
+Launcher description: "0.0.90: Refines Underworld natural scenery with 48 foliage, root and stone
+variants, habitat-aware bank and lakebed cover, distinct biome clusters and resilient donor
+fallback. No new player buildables."
+
+---
+
+# Current source candidate - 0.0.89 / schema 5 (2026-09-21)
+
+Underworld content-first prototype pass: 42 non-boss creature donor clones (seven per biome),
+18 native infrastructure review pieces and 36 named biome ground-cover variants. Creature
+skeletons/controllers/attacks and building physics stay with Valheim; no animation, save or map
+system was introduced. Console review prototypes retain donor behavior and loot; no natural
+encounter placement or finished replacement anatomy is claimed. Small foliage/stone/root cover
+feeds the existing disposable ecology preview, with denser fungal/decay growth and water/slope guards.
+
+See `docs/UNDERWORLD_CONTENT_PROTOTYPES.md` for all donor mappings, limitations and spawn names,
+and `docs/validation/2026-09-21-underworld-content-prototypes.md` for verification and remaining work.
+Three pre-existing compile errors were repaired without restoring retired transition machinery.
+
+`closeout.ps1 -Offline` passed and installed 0.0.89 into Central Fuckery. All packaged file hashes
+and the enabled launcher catalog entry were verified. Installed Magenheim.dll SHA-256:
+`DBFAE3B561C293B4E8F87EBB0CB6F9C40FCADE263A97E372F2B0850FF0ADF177`.
+The original pre-install payload is backed up at `backups/Local-Magenheim-20260921-100206.zip`;
+the final installation also backed up its prior payload at `backups/Local-Magenheim-20260921-100457.zip`
+and catalog at `backups/mods-20260921-100508-198.yml`.
+
+Runtime compilation: zero warnings/errors. 283 model payloads and 38,265 Core assertions plus
+separately reported modules passed. These are automated/source checks, not live acceptance:
+no game startup, donor animation review, ecology visual review or multiplayer test was performed.
+
+Launcher description: "0.0.89: Adds 42 Underworld creature donor prototypes, 18 infrastructure
+review pieces and 36 biome ground-cover variants. Reuses native rigs, combat and building
+behavior. Live review and final art remain pending."
+
+---
+
 # Current source candidate - 0.0.88 / schema 5 (2026-09-20)
 
 All 62 crystal placeables carry icons rendered from the same `.blend` their runtime mesh exports

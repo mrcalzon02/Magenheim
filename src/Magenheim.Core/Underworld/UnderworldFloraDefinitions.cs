@@ -66,6 +66,18 @@ public sealed record UnderworldFloraTerrainSample(
 
 public static class UnderworldFloraPlacement
 {
+    /// <summary>Signed height above water admits terrestrial, shoreline or submerged cover.</summary>
+    public static bool CanPlaceCover(double heightAboveWater, double slopeDegrees,
+        double minimumHeight, double maximumHeight, double maximumSlope)
+    {
+        bool Finite(double x) => !double.IsNaN(x) && !double.IsInfinity(x);
+        return Finite(heightAboveWater) && Finite(slopeDegrees) && Finite(minimumHeight) &&
+            Finite(maximumHeight) && Finite(maximumSlope) && minimumHeight <= maximumHeight &&
+            maximumSlope >= 0 && maximumSlope <= 90 && slopeDegrees >= 0 &&
+            slopeDegrees <= maximumSlope && heightAboveWater >= minimumHeight &&
+            heightAboveWater <= maximumHeight;
+    }
+
     // The adapter supplies a terrain sample in realm-local coordinates. No raycast to a roof,
     // per-biome skybox, or surface-biome fallback is part of this authority.
     public static bool CanPlace(UnderworldFloraDefinitionSet definitions, string speciesId,

@@ -7,7 +7,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>Magenheim</AssemblyName>
     <RootNamespace>Magenheim.Runtime</RootNamespace>
-<Version>0.0.88</Version>
+<Version>0.0.90</Version>
     <ValheimManagedPath Condition="'$(ValheimManagedPath)' == ''">$(MSBuildThisFileDirectory)../../../valheim_Data/Managed</ValheimManagedPath>
   </PropertyGroup>
 
