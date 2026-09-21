@@ -64,11 +64,17 @@ internal static class UnderworldLandmarkReservationPolicy
         // A reservation can extend beyond an immediately adjacent landmark cell.
         // Search enough cells to cover the configured chunk radius rather than
         // silently assuming every future profile will fit inside a 3x3 cell window.
-        var cellRadius = 1 + profile.ExclusionRadiusChunks / profile.CellSizeChunks;
+        // Compute in long space so a valid extreme profile cannot overflow while
+        // deriving its search window.
+        var cellRadiusLong = 1L + (long)profile.ExclusionRadiusChunks / profile.CellSizeChunks;
+        if (cellRadiusLong > int.MaxValue)
+            throw new ArgumentOutOfRangeException(nameof(profile), "Landmark reservation search radius exceeds supported native chunk range.");
+        var cellRadius = (int)cellRadiusLong;
+
         for (var dz = -cellRadius; dz <= cellRadius; dz++)
         for (var dx = -cellRadius; dx <= cellRadius; dx++)
         {
-            var anchor = AnchorForCell(identity, cellX + dx, cellZ + dz, profile);
+            var anchor = AnchorForCell(identity, CheckedCellOffset(cellX, dx), CheckedCellOffset(cellZ, dz), profile);
             if (ChebyshevDistance(anchor, key) <= profile.ExclusionRadiusChunks && anchorAccepted(anchor)) return true;
         }
         return false;
@@ -84,7 +90,7 @@ internal static class UnderworldLandmarkReservationPolicy
             var xOffset = (int)(hash % (uint)profile.CellSizeChunks);
             hash = Mix(hash, 0x9E3779B9u);
             var zOffset = (int)(hash % (uint)profile.CellSizeChunks);
-            return new UnderworldInstanceChunkKey(cellX * profile.CellSizeChunks + xOffset, cellZ * profile.CellSizeChunks + zOffset);
+            return new UnderworldInstanceChunkKey(CheckedAnchorCoordinate(cellX, profile.CellSizeChunks, xOffset), CheckedAnchorCoordinate(cellZ, profile.CellSizeChunks, zOffset));
         }
     }
 
@@ -107,6 +113,26 @@ internal static class UnderworldLandmarkReservationPolicy
         return remainder < 0 ? quotient - 1 : quotient;
     }
 
-    private static int ChebyshevDistance(UnderworldInstanceChunkKey left, UnderworldInstanceChunkKey right) =>
-        Math.Max(Math.Abs(left.X - right.X), Math.Abs(left.Z - right.Z));
+    private static int CheckedCellOffset(int cell, int offset)
+    {
+        var value = (long)cell + offset;
+        if (value < int.MinValue || value > int.MaxValue)
+            throw new ArgumentOutOfRangeException(nameof(offset), "Landmark reservation search exceeded native cell coordinate range.");
+        return (int)value;
+    }
+
+    private static int CheckedAnchorCoordinate(int cell, int cellSize, int offset)
+    {
+        var value = (long)cell * cellSize + offset;
+        if (value < int.MinValue || value > int.MaxValue)
+            throw new ArgumentOutOfRangeException(nameof(cell), "Landmark anchor exceeded native chunk coordinate range.");
+        return (int)value;
+    }
+
+    private static long ChebyshevDistance(UnderworldInstanceChunkKey left, UnderworldInstanceChunkKey right)
+    {
+        var dx = Math.Abs((long)left.X - right.X);
+        var dz = Math.Abs((long)left.Z - right.Z);
+        return Math.Max(dx, dz);
+    }
 }
