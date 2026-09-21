@@ -9,15 +9,15 @@ namespace Magenheim.Runtime;
 /// The split pillar gives Fungal Forest geography a large, repeatable navigation
 /// silhouette without introducing a second world/zone placement system.
 /// </summary>
-internal sealed class FungalSplitPillarLandmarkFamily : IUnderworldBiomeStructureFamily
+internal sealed class FungalSplitPillarLandmarkFamily : IUnderworldLandmarkStructureFamily
 {
     private const int FamilySalt = 0x6A31C47D;
 
-    // Keep the first reservation profile deliberately sparse.  Exclusion remains
-    // zero until ordinary-family yielding is wired against biome-valid anchors;
-    // this prevents reservations in another biome from manufacturing empty holes.
-    internal static readonly UnderworldLandmarkReservationPolicy.Profile ReservationProfile =
-        new(FamilySalt, cellSizeChunks: 8, exclusionRadiusChunks: 0);
+    // One native chunk of breathing room is now safe because residency validates
+    // each deterministic anchor against the landmark biome before ordinary
+    // structures yield to it.
+    public UnderworldLandmarkReservationPolicy.Profile ReservationProfile { get; } =
+        new(FamilySalt, cellSizeChunks: 8, exclusionRadiusChunks: 1);
 
     public string Kind => "fungal-split-pillar-landmark";
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.FungalForest;
@@ -35,9 +35,6 @@ internal sealed class FungalSplitPillarLandmarkFamily : IUnderworldBiomeStructur
 
         try
         {
-            // Two tall, outward-leaning masses form the readable split silhouette.
-            // Donors stay visual-only through the shared donor factory; no Surface
-            // prefab identity, ZDO ownership, drops, AI, or wear state is imported.
             for (var side = -1; side <= 1; side += 2)
             {
                 var shaft = UnderworldDonorVisualFactory.Create(Biome, seed ^ side * 32452843, side < 0 ? "SplitPillarLeft" : "SplitPillarRight");
@@ -47,8 +44,6 @@ internal sealed class FungalSplitPillarLandmarkFamily : IUnderworldBiomeStructur
                 shaft.transform.localScale *= new Vector3(1.65f, 4.8f, 1.65f);
             }
 
-            // A buried footing keeps the landmark grounded and breaks the otherwise
-            // artificial symmetry while preserving the central split as a landmark.
             for (var i = 0; i < 4; i++)
             {
                 var angle = (float)(random.NextDouble() * Math.PI * 2d);
