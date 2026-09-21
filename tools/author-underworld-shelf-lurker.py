@@ -31,7 +31,8 @@ body=mat('ShelfLurkerRootFlesh',(.17,.14,.10),.88); shelf=mat('ShelfLurkerShelfA
 parts={}
 def keep(o,b): parts[o.name]=b; return o
 # Flattened ceiling-hugging torso. Primary silhouette is lateral and radial, never quadruped-like.
-keep(organic('ShelfLurker_Torso',(0,0,1.55),(.78,.62,.22),body,3),'Body'); keep(organic('ShelfLurker_Abdomen',(0,-.62,1.58),(.58,.52,.20),body,3),'Abdomen')
+# The two primary body masses use subdivision 4 so the production source genuinely clears its 10k triangle floor.
+keep(organic('ShelfLurker_Torso',(0,0,1.55),(.78,.62,.22),body,4),'Body'); keep(organic('ShelfLurker_Abdomen',(0,-.62,1.58),(.58,.52,.20),body,4),'Abdomen')
 # Layered shelf plates make the animal disappear against fungal overhangs when viewed from below/side.
 for i,(loc,scale) in enumerate((((-.48,.10,1.72),(.55,.34,.07)),((.48,.02,1.71),(.52,.32,.07)),((-.36,-.52,1.72),(.44,.30,.06)),((.36,-.60,1.71),(.42,.28,.06))),1): keep(organic(f'ShelfLurker_DorsalShelf_{i}',loc,scale,shelf,2),'Body' if i<3 else 'Abdomen')
 # Downward mouth is modeled geometry, ringed by four fleshy gill-lobes.
