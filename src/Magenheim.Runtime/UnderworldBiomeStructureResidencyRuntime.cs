@@ -121,8 +121,6 @@ internal sealed class FungalRootMassFamily : IUnderworldBiomeStructureFamily
         var seed = identity.DerivedSeed32 ^ key.X * 92837111 ^ key.Z * 689287499 ^ 0x2F6E2B1D; var random = new System.Random(seed);
         try
         {
-            // Root masses now use the same stripped Valheim donor authority as the spore cairn.
-            // Stable kind/slot/eligibility remain unchanged, so existing generated-object records survive this visual migration.
             var heart = UnderworldDonorVisualFactory.Create(Biome, seed ^ 0x13A5C7D, "RootHeartDonor");
             heart.transform.SetParent(root.transform, false);
             heart.transform.localPosition += new Vector3(0f, 0.35f, 0f);
@@ -159,12 +157,23 @@ internal sealed class SulfurVentCairnFamily : IUnderworldBiomeStructureFamily
         var seed = identity.DerivedSeed32 ^ key.X * 83492791 ^ key.Z * 297121507 ^ 0x51F15EED; var random = new System.Random(seed);
         try
         {
-            var basin = GameObject.CreatePrimitive(PrimitiveType.Cylinder); basin.name = "VentBasin"; basin.transform.SetParent(root.transform, false); basin.transform.localPosition = new Vector3(0f, 0.35f, 0f); basin.transform.localScale = new Vector3(3.4f, 0.35f, 3.4f);
+            // Preserve the established kind/slot/eligibility identity while replacing proof primitives
+            // with stripped Sulfurous Wastes donor visuals from the shared non-networked donor authority.
+            var basin = UnderworldDonorVisualFactory.Create(Biome, seed ^ 0x61B45A3, "VentBasinDonor");
+            basin.transform.SetParent(root.transform, false);
+            basin.transform.localPosition += new Vector3(0f, 0.15f, 0f);
+            basin.transform.localScale *= 1.35f;
+
             for (var i = 0; i < 4; i++)
             {
-                var angle = (float)(random.NextDouble() * Math.PI * 2d); var radius = 0.7f + (float)random.NextDouble() * 1.7f; var height = 1.8f + (float)random.NextDouble() * 3.4f;
-                var vent = GameObject.CreatePrimitive(PrimitiveType.Cylinder); vent.name = $"SulfurVent_{i}"; vent.transform.SetParent(root.transform, false); vent.transform.localPosition = new Vector3(Mathf.Cos(angle) * radius, height * 0.5f + 0.5f, Mathf.Sin(angle) * radius); var width = 0.35f + (float)random.NextDouble() * 0.35f; vent.transform.localScale = new Vector3(width, height * 0.5f, width);
-                var throat = GameObject.CreatePrimitive(PrimitiveType.Sphere); throat.name = $"VentThroat_{i}"; throat.transform.SetParent(root.transform, false); throat.transform.localPosition = vent.transform.localPosition + Vector3.up * (height * 0.52f); throat.transform.localScale = new Vector3(width * 1.5f, 0.22f, width * 1.5f);
+                var angle = (float)(random.NextDouble() * Math.PI * 2d);
+                var radius = 0.9f + (float)random.NextDouble() * 2.4f;
+                var vent = UnderworldDonorVisualFactory.Create(Biome, seed ^ ((i + 1) * 193939), $"SulfurVentDonor_{i}");
+                vent.transform.SetParent(root.transform, false);
+                vent.transform.localPosition += new Vector3(Mathf.Cos(angle) * radius, 0.1f, Mathf.Sin(angle) * radius);
+                vent.transform.localRotation *= Quaternion.Euler(-8f + (float)random.NextDouble() * 16f, angle * Mathf.Rad2Deg, 6f - (float)random.NextDouble() * 12f);
+                var scale = 0.68f + (float)random.NextDouble() * 0.72f;
+                vent.transform.localScale *= scale;
             }
             return root;
         }
