@@ -5,11 +5,6 @@ using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>
-/// Shared residency authority for repeatable structures inside the derived Underworld instance.
-/// Families describe deterministic eligibility and composition; this runtime alone owns admission,
-/// native-chunk residency, and presentation cleanup. Surface ZoneSystem placement is not involved.
-/// </summary>
 internal sealed class UnderworldBiomeStructureResidencyRuntime
 {
     private readonly UnderworldRuntimeServices _services;
@@ -42,58 +37,34 @@ internal sealed class UnderworldBiomeStructureResidencyRuntime
     internal void Reconcile()
     {
         var identity = _services.InstanceLifecycle.Identity;
-        if (identity is null || _services.InstanceLifecycle.Phase != UnderworldInstancePhase.Active)
-        {
-            Clear();
-            return;
-        }
-
-        var chunks = _services.ChunkStreaming.LoadedChunks;
+        if (identity is null || _services.InstanceLifecycle.Phase != UnderworldInstancePhase.Active) { Clear(); return; }
         var wanted = new HashSet<string>(StringComparer.Ordinal);
-        foreach (var pair in chunks)
+        foreach (var pair in _services.ChunkStreaming.LoadedChunks)
         {
             var bounds = _services.ChunkStreaming.Grid.Bounds(pair.Key);
             var x = (bounds.MinimumX + bounds.MaximumX) * 0.5d;
             var z = (bounds.MinimumZ + bounds.MaximumZ) * 0.5d;
             var terrain = UnderworldTerrainRuntime.SampleInstanceTerrain(x, 0d, z);
             if (!terrain.Admitted) continue;
-
             foreach (var family in _families)
             {
                 if (terrain.Biome != family.Biome || !family.Eligible(identity, pair.Key)) continue;
                 var residencyKey = ResidencyKey(family.Kind, pair.Key, family.PlacementSlot);
                 wanted.Add(residencyKey);
                 if (_resident.ContainsKey(residencyKey)) continue;
-
                 var position = new Vector3((float)x, (float)terrain.Height, (float)z);
-                var root = _services.StructureAdmission.Admit(
-                    identity, family.Kind, pair.Key, family.PlacementSlot,
-                    () => family.Compose(position, identity, pair.Key));
+                var root = _services.StructureAdmission.Admit(identity, family.Kind, pair.Key, family.PlacementSlot, () => family.Compose(position, identity, pair.Key));
                 _resident.Add(residencyKey, root);
             }
         }
-
         var stale = new List<string>();
-        foreach (var pair in _resident)
-            if (!wanted.Contains(pair.Key)) stale.Add(pair.Key);
+        foreach (var pair in _resident) if (!wanted.Contains(pair.Key)) stale.Add(pair.Key);
         foreach (var key in stale) Release(key);
     }
 
-    internal void Clear()
-    {
-        foreach (var root in _resident.Values) if (root) UnityEngine.Object.Destroy(root);
-        _resident.Clear();
-    }
-
-    private void Release(string key)
-    {
-        if (!_resident.TryGetValue(key, out var root)) return;
-        if (root) UnityEngine.Object.Destroy(root);
-        _resident.Remove(key);
-    }
-
-    private static string ResidencyKey(string kind, UnderworldInstanceChunkKey key, int slot) =>
-        kind + "\n" + key.X + "," + key.Z + "\n" + slot;
+    internal void Clear() { foreach (var root in _resident.Values) if (root) UnityEngine.Object.Destroy(root); _resident.Clear(); }
+    private void Release(string key) { if (!_resident.TryGetValue(key, out var root)) return; if (root) UnityEngine.Object.Destroy(root); _resident.Remove(key); }
+    private static string ResidencyKey(string kind, UnderworldInstanceChunkKey key, int slot) => kind + "\n" + key.X + "," + key.Z + "\n" + slot;
 }
 
 internal interface IUnderworldBiomeStructureFamily
@@ -105,184 +76,98 @@ internal interface IUnderworldBiomeStructureFamily
     GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key);
 }
 
-/// <summary>First registered family; its stable kind/slot preserve all records made by the earlier dedicated runtime.</summary>
 internal sealed class FungalSporeCairnFamily : IUnderworldBiomeStructureFamily
 {
     public string Kind => "fungal-spore-cairn";
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.FungalForest;
     public int PlacementSlot => 0;
-
     public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
-        unchecked
-        {
-            var hash = identity.DerivedSeed32;
-            hash = (hash * 397) ^ key.X;
-            hash = (hash * 397) ^ key.Z;
-            hash ^= hash >> 16;
-            return (hash & 3) == 0;
-        }
+        unchecked { var hash = identity.DerivedSeed32; hash = (hash * 397) ^ key.X; hash = (hash * 397) ^ key.Z; hash ^= hash >> 16; return (hash & 3) == 0; }
     }
-
     public GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
-        var root = new GameObject($"Magenheim_FungalSporeCairn_{key.X}_{key.Z}");
-        root.transform.position = position;
-        var seed = identity.DerivedSeed32 ^ key.X * 73856093 ^ key.Z * 19349663;
-        var random = new System.Random(seed);
+        var root = new GameObject($"Magenheim_FungalSporeCairn_{key.X}_{key.Z}"); root.transform.position = position;
+        var seed = identity.DerivedSeed32 ^ key.X * 73856093 ^ key.Z * 19349663; var random = new System.Random(seed);
         try
         {
-            // Keep the stable family identity/slot, but build its presentation from stripped
-            // Valheim donor visuals. No donor ZDO, AI, drops, wear, or prefab identity crosses
-            // into the derived Underworld instance.
             for (var i = 0; i < 4; i++)
             {
-                var variant = seed ^ i * 486187739;
-                var donor = UnderworldDonorVisualFactory.Create(Biome, variant, $"SporeDonor_{i}");
-                donor.transform.SetParent(root.transform, false);
-
-                if (i == 0)
-                {
-                    donor.transform.localPosition += new Vector3(0f, 0f, 0f);
-                    continue;
-                }
-
-                var angle = (float)(random.NextDouble() * Math.PI * 2d);
-                var radius = 1.1f + (float)random.NextDouble() * 2.2f;
+                var donor = UnderworldDonorVisualFactory.Create(Biome, seed ^ i * 486187739, $"SporeDonor_{i}"); donor.transform.SetParent(root.transform, false);
+                if (i == 0) continue;
+                var angle = (float)(random.NextDouble() * Math.PI * 2d); var radius = 1.1f + (float)random.NextDouble() * 2.2f;
                 donor.transform.localPosition += new Vector3(Mathf.Cos(angle) * radius, 0f, Mathf.Sin(angle) * radius);
                 donor.transform.localRotation *= Quaternion.Euler(0f, angle * Mathf.Rad2Deg, 0f);
-                var clusterScale = 0.72f + (float)random.NextDouble() * 0.48f;
-                donor.transform.localScale *= clusterScale;
+                donor.transform.localScale *= 0.72f + (float)random.NextDouble() * 0.48f;
             }
             return root;
         }
-        catch
-        {
-            UnityEngine.Object.Destroy(root);
-            throw;
-        }
+        catch { UnityEngine.Object.Destroy(root); throw; }
     }
 }
 
-/// <summary>
-/// Second Fungal Forest family. It deliberately occupies a distinct native placement slot so a
-/// single admitted Fungal chunk can independently host both a cairn and a root mass without
-/// identity collisions or a second residency system.
-/// </summary>
 internal sealed class FungalRootMassFamily : IUnderworldBiomeStructureFamily
 {
     public string Kind => "fungal-root-mass";
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.FungalForest;
     public int PlacementSlot => 2;
-
     public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
-        unchecked
-        {
-            var hash = identity.DerivedSeed32 ^ 0x2F6E2B1D;
-            hash = (hash * 397) ^ key.X;
-            hash = (hash * 397) ^ key.Z;
-            hash ^= hash >> 15;
-            return (hash & 7) <= 2;
-        }
+        unchecked { var hash = identity.DerivedSeed32 ^ 0x2F6E2B1D; hash = (hash * 397) ^ key.X; hash = (hash * 397) ^ key.Z; hash ^= hash >> 15; return (hash & 7) <= 2; }
     }
-
     public GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
-        var root = new GameObject($"Magenheim_FungalRootMass_{key.X}_{key.Z}");
-        root.transform.position = position;
-        var seed = identity.DerivedSeed32 ^ key.X * 92837111 ^ key.Z * 689287499 ^ 0x2F6E2B1D;
-        var random = new System.Random(seed);
+        var root = new GameObject($"Magenheim_FungalRootMass_{key.X}_{key.Z}"); root.transform.position = position;
+        var seed = identity.DerivedSeed32 ^ key.X * 92837111 ^ key.Z * 689287499 ^ 0x2F6E2B1D; var random = new System.Random(seed);
         try
         {
-            var heart = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            heart.name = "RootHeart";
+            // Root masses now use the same stripped Valheim donor authority as the spore cairn.
+            // Stable kind/slot/eligibility remain unchanged, so existing generated-object records survive this visual migration.
+            var heart = UnderworldDonorVisualFactory.Create(Biome, seed ^ 0x13A5C7D, "RootHeartDonor");
             heart.transform.SetParent(root.transform, false);
-            heart.transform.localPosition = new Vector3(0f, 0.65f, 0f);
-            heart.transform.localScale = new Vector3(2.4f, 1.25f, 2.1f);
+            heart.transform.localPosition += new Vector3(0f, 0.35f, 0f);
+            heart.transform.localScale *= 1.45f;
 
             for (var i = 0; i < 6; i++)
             {
                 var angle = (float)(random.NextDouble() * Math.PI * 2d);
-                var length = 2.8f + (float)random.NextDouble() * 3.8f;
-                var thickness = 0.45f + (float)random.NextDouble() * 0.35f;
-                var rootBranch = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                rootBranch.name = $"Root_{i}";
-                rootBranch.transform.SetParent(root.transform, false);
-                rootBranch.transform.localPosition = new Vector3(Mathf.Cos(angle) * length * 0.42f, 0.35f, Mathf.Sin(angle) * length * 0.42f);
-                rootBranch.transform.localScale = new Vector3(thickness, length * 0.5f, thickness);
-                rootBranch.transform.localRotation = Quaternion.Euler(90f, 0f, angle * Mathf.Rad2Deg);
+                var radius = 1.8f + (float)random.NextDouble() * 3.4f;
+                var branch = UnderworldDonorVisualFactory.Create(Biome, seed ^ ((i + 1) * 92821), $"RootDonor_{i}");
+                branch.transform.SetParent(root.transform, false);
+                branch.transform.localPosition += new Vector3(Mathf.Cos(angle) * radius, 0.05f, Mathf.Sin(angle) * radius);
+                branch.transform.localRotation *= Quaternion.Euler(68f + (float)random.NextDouble() * 28f, angle * Mathf.Rad2Deg, 0f);
+                branch.transform.localScale *= 0.62f + (float)random.NextDouble() * 0.58f;
             }
             return root;
         }
-        catch
-        {
-            UnityEngine.Object.Destroy(root);
-            throw;
-        }
+        catch { UnityEngine.Object.Destroy(root); throw; }
     }
 }
 
-/// <summary>
-/// Second repeatable biome family proving that the shared registry can host an independent biome,
-/// deterministic slot and durable generated-object identity without another residency runtime.
-/// </summary>
 internal sealed class SulfurVentCairnFamily : IUnderworldBiomeStructureFamily
 {
     public string Kind => "sulfur-vent-cairn";
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.SulfurousWastes;
     public int PlacementSlot => 1;
-
     public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
-        unchecked
-        {
-            var hash = identity.DerivedSeed32 ^ 0x51F15EED;
-            hash = (hash * 397) ^ key.X;
-            hash = (hash * 397) ^ key.Z;
-            hash ^= hash >> 16;
-            return (hash & 3) == 1;
-        }
+        unchecked { var hash = identity.DerivedSeed32 ^ 0x51F15EED; hash = (hash * 397) ^ key.X; hash = (hash * 397) ^ key.Z; hash ^= hash >> 16; return (hash & 3) == 1; }
     }
-
     public GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
-        var root = new GameObject($"Magenheim_SulfurVentCairn_{key.X}_{key.Z}");
-        root.transform.position = position;
-        var seed = identity.DerivedSeed32 ^ key.X * 83492791 ^ key.Z * 297121507 ^ 0x51F15EED;
-        var random = new System.Random(seed);
+        var root = new GameObject($"Magenheim_SulfurVentCairn_{key.X}_{key.Z}"); root.transform.position = position;
+        var seed = identity.DerivedSeed32 ^ key.X * 83492791 ^ key.Z * 297121507 ^ 0x51F15EED; var random = new System.Random(seed);
         try
         {
-            var basin = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            basin.name = "VentBasin";
-            basin.transform.SetParent(root.transform, false);
-            basin.transform.localPosition = new Vector3(0f, 0.35f, 0f);
-            basin.transform.localScale = new Vector3(3.4f, 0.35f, 3.4f);
-
+            var basin = GameObject.CreatePrimitive(PrimitiveType.Cylinder); basin.name = "VentBasin"; basin.transform.SetParent(root.transform, false); basin.transform.localPosition = new Vector3(0f, 0.35f, 0f); basin.transform.localScale = new Vector3(3.4f, 0.35f, 3.4f);
             for (var i = 0; i < 4; i++)
             {
-                var angle = (float)(random.NextDouble() * Math.PI * 2d);
-                var radius = 0.7f + (float)random.NextDouble() * 1.7f;
-                var height = 1.8f + (float)random.NextDouble() * 3.4f;
-                var vent = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-                vent.name = $"SulfurVent_{i}";
-                vent.transform.SetParent(root.transform, false);
-                vent.transform.localPosition = new Vector3(Mathf.Cos(angle) * radius, height * 0.5f + 0.5f, Mathf.Sin(angle) * radius);
-                var width = 0.35f + (float)random.NextDouble() * 0.35f;
-                vent.transform.localScale = new Vector3(width, height * 0.5f, width);
-
-                var throat = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                throat.name = $"VentThroat_{i}";
-                throat.transform.SetParent(root.transform, false);
-                throat.transform.localPosition = vent.transform.localPosition + Vector3.up * (height * 0.52f);
-                throat.transform.localScale = new Vector3(width * 1.5f, 0.22f, width * 1.5f);
+                var angle = (float)(random.NextDouble() * Math.PI * 2d); var radius = 0.7f + (float)random.NextDouble() * 1.7f; var height = 1.8f + (float)random.NextDouble() * 3.4f;
+                var vent = GameObject.CreatePrimitive(PrimitiveType.Cylinder); vent.name = $"SulfurVent_{i}"; vent.transform.SetParent(root.transform, false); vent.transform.localPosition = new Vector3(Mathf.Cos(angle) * radius, height * 0.5f + 0.5f, Mathf.Sin(angle) * radius); var width = 0.35f + (float)random.NextDouble() * 0.35f; vent.transform.localScale = new Vector3(width, height * 0.5f, width);
+                var throat = GameObject.CreatePrimitive(PrimitiveType.Sphere); throat.name = $"VentThroat_{i}"; throat.transform.SetParent(root.transform, false); throat.transform.localPosition = vent.transform.localPosition + Vector3.up * (height * 0.52f); throat.transform.localScale = new Vector3(width * 1.5f, 0.22f, width * 1.5f);
             }
             return root;
         }
-        catch
-        {
-            UnityEngine.Object.Destroy(root);
-            throw;
-        }
+        catch { UnityEngine.Object.Destroy(root); throw; }
     }
 }
