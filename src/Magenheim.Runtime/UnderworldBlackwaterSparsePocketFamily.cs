@@ -11,15 +11,19 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal sealed class BlackwaterSparsePocketFamily : IUnderworldBiomeStructureFamily
 {
+    private const int FamilySalt = 0x2B1AC7E5;
     public string Kind => "blackwater-sparse-pocket";
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.BlackwaterDeep;
     public int PlacementSlot => 0;
 
-    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
+    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key) =>
+        UnderworldStructureSpacingPolicy.IsLocalWinner(identity, key, FamilySalt, 1, candidate => BaseEligible(identity, candidate));
+
+    private static bool BaseEligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
         unchecked
         {
-            var hash = identity.DerivedSeed32 ^ 0x2B1AC7E5;
+            var hash = identity.DerivedSeed32 ^ FamilySalt;
             hash = (hash * 397) ^ key.X;
             hash = (hash * 397) ^ key.Z;
             hash ^= hash >> 16;
@@ -31,7 +35,7 @@ internal sealed class BlackwaterSparsePocketFamily : IUnderworldBiomeStructureFa
     {
         var root = new GameObject($"Magenheim_BlackwaterSparsePocket_{key.X}_{key.Z}");
         root.transform.position = position;
-        var seed = identity.DerivedSeed32 ^ key.X * 73856093 ^ key.Z * 19349663 ^ 0x2B1AC7E5;
+        var seed = identity.DerivedSeed32 ^ key.X * 73856093 ^ key.Z * 19349663 ^ FamilySalt;
         var random = new System.Random(seed);
 
         try
