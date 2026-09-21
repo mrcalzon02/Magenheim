@@ -5,6 +5,16 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
+/// Marks a durable native structure family as a landmark that owns a deterministic
+/// reservation profile. Residency can use this contract to arbitrate ordinary
+/// structures without knowing concrete landmark types.
+/// </summary>
+internal interface IUnderworldLandmarkStructureFamily : IUnderworldBiomeStructureFamily
+{
+    UnderworldLandmarkReservationPolicy.Profile ReservationProfile { get; }
+}
+
+/// <summary>
 /// First sparse landmark consumer of the native Underworld reservation authority.
 /// The split pillar gives Fungal Forest geography a large, repeatable navigation
 /// silhouette without introducing a second world/zone placement system.
@@ -13,9 +23,9 @@ internal sealed class FungalSplitPillarLandmarkFamily : IUnderworldLandmarkStruc
 {
     private const int FamilySalt = 0x6A31C47D;
 
-    // One native chunk of breathing room is now safe because residency validates
-    // each deterministic anchor against the landmark biome before ordinary
-    // structures yield to it.
+    // One native chunk of breathing room. The reservation policy now supports an
+    // anchor-validation predicate so residency can enable this only for anchors
+    // whose sampled native terrain actually belongs to Fungal Forest.
     public UnderworldLandmarkReservationPolicy.Profile ReservationProfile { get; } =
         new(FamilySalt, cellSizeChunks: 8, exclusionRadiusChunks: 1);
 
