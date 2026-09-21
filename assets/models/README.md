@@ -1,6 +1,6 @@
 # Editable Magenheim model library
 
-281 saved Blender models and matching GLB exports. These are real mesh assets with UVs, named editable parts, and material slots. Runtime geometry comes from exported mesh data; the game no longer executes the former shape builders.
+The editable model library now includes the established model set plus the eleven Rootforged A0 Underworld construction sources with matching GLB and runtime payloads. These are real mesh assets with UVs, named editable parts, and material slots. Runtime geometry comes from checked-in mesh data; the game does not construct stand-in art from Unity primitives.
 
 The migration preserves the existing designs as editable starting models. It is not a claim that their artwork is finished: most creatures are still rigid forms, many shapes remain simple, and there is no new animation rig or LOD system. The Nowhere King still uses the game's humanoid body and animations with an owned crown attachment. Inherited vanilla projectiles, effects, and character chassis remain game assets.
 
@@ -24,7 +24,7 @@ The migration scripts and old geometry sources under `tools/ModelExporter/Legacy
 
 Includes all geometry formerly owned by active visual builders: 32 staffs; ten crystal weapons; furniture and geology decor; crystal construction; 24 elemental banners; eight crystal beds; the enchanting dais, ice box and complete aiming Sentinel; eight ammunition indicators; world and capstone artifacts; 104 creature/alignment variants; 20 dungeon districts and their passage/traversal pieces; the entrance and Dark Throne; geode and workshop assets; the crown and elemental focus.
 
-Definition-only future Underworld content (six bosses/biomes and eleven Rootforged construction definitions) had no runtime model generators to convert. Those remain future content in the project plans, not silently invented or counted as completed assets here.
+The eleven Rootforged A0 construction definitions now have saved Blender sources, matching GLB/runtime mesh payloads, and owned Understone/Worldroot/forged-iron material textures. This is the asset layer only: Hammer registration, explicit snap transforms and live Valheim placement acceptance remain separate runtime work and are not implied by model presence.
 
 Validation: all model triplets have valid geometry, finite vertices, UVs, normals, referenced PNGs and hashes. A test harness exercises the production importer against all 281 files twice and verifies cached mesh reuse and failure guards. Actual Unity rendering, gameplay collision, multiplayer and world placement still require a live game test.
 
