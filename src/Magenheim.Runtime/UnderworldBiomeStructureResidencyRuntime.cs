@@ -51,6 +51,7 @@ internal sealed class UnderworldBiomeStructureResidencyRuntime
             foreach (var family in _families)
             {
                 if (terrain.Biome != family.Biome || !family.Eligible(identity, pair.Key)) continue;
+                if (family is not IUnderworldLandmarkStructureFamily && IsReservedByBiomeValidLandmark(identity, pair.Key, family.Biome)) continue;
                 var residencyKey = ResidencyKey(family.Kind, pair.Key, family.PlacementSlot);
                 wanted.Add(residencyKey);
                 if (_resident.ContainsKey(residencyKey)) continue;
@@ -62,6 +63,25 @@ internal sealed class UnderworldBiomeStructureResidencyRuntime
         var stale = new List<string>();
         foreach (var pair in _resident) if (!wanted.Contains(pair.Key)) stale.Add(pair.Key);
         foreach (var key in stale) Release(key);
+    }
+
+    private bool IsReservedByBiomeValidLandmark(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key, UnderworldTerrainBiome biome)
+    {
+        foreach (var family in _families)
+        {
+            if (family is not IUnderworldLandmarkStructureFamily landmark || landmark.Biome != biome) continue;
+            if (UnderworldLandmarkReservationPolicy.IsReserved(identity, key, landmark.ReservationProfile, anchor => AnchorMatchesBiome(anchor, landmark.Biome))) return true;
+        }
+        return false;
+    }
+
+    private bool AnchorMatchesBiome(UnderworldInstanceChunkKey anchor, UnderworldTerrainBiome biome)
+    {
+        var bounds = _services.ChunkStreaming.Grid.Bounds(anchor);
+        var x = (bounds.MinimumX + bounds.MaximumX) * 0.5d;
+        var z = (bounds.MinimumZ + bounds.MaximumZ) * 0.5d;
+        var terrain = UnderworldTerrainRuntime.SampleInstanceTerrain(x, 0d, z);
+        return terrain.Admitted && terrain.Biome == biome;
     }
 
     internal void Clear() { foreach (var root in _resident.Values) if (root) UnityEngine.Object.Destroy(root); _resident.Clear(); }
