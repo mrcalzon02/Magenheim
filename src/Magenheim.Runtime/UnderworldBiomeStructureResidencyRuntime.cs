@@ -18,6 +18,7 @@ internal sealed class UnderworldBiomeStructureResidencyRuntime
         Register(new FungalRootMassFamily());
         Register(new SulfurVentCairnFamily());
         Register(new FrozenShardFanFamily());
+        Register(new DecayRootCorridorFamily());
     }
 
     internal int ResidentCount => _resident.Count;
@@ -182,12 +183,46 @@ internal sealed class FrozenShardFanFamily : IUnderworldBiomeStructureFamily
     public string Kind => "frozen-shard-fan";
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.FrozenCaverns;
     public int PlacementSlot => 0;
+    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
+    {
+        unchecked { var hash = identity.DerivedSeed32 ^ 0x17C3A5D; hash = (hash * 397) ^ key.X; hash = (hash * 397) ^ key.Z; hash ^= hash >> 16; return (hash & 7) <= 2; }
+    }
+    public GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
+    {
+        var root = new GameObject($"Magenheim_FrozenShardFan_{key.X}_{key.Z}"); root.transform.position = position;
+        var seed = identity.DerivedSeed32 ^ key.X * 1640531513 ^ key.Z * 805459861 ^ 0x17C3A5D; var random = new System.Random(seed);
+        try
+        {
+            var anchor = UnderworldDonorVisualFactory.Create(Biome, seed ^ 0x5A17E, "FrozenFanAnchor");
+            anchor.transform.SetParent(root.transform, false); anchor.transform.localPosition += new Vector3(0f, -0.12f, 0f); anchor.transform.localScale *= 1.2f;
+            var heading = (float)(random.NextDouble() * 360d);
+            for (var i = 0; i < 5; i++)
+            {
+                var spread = -48f + i * 24f + ((float)random.NextDouble() - 0.5f) * 12f; var angle = (heading + spread) * Mathf.Deg2Rad;
+                var radius = 1.15f + i * 0.52f + (float)random.NextDouble() * 0.45f;
+                var shard = UnderworldDonorVisualFactory.Create(Biome, seed ^ ((i + 1) * 32452843), $"FrozenShardDonor_{i}");
+                shard.transform.SetParent(root.transform, false);
+                shard.transform.localPosition += new Vector3(Mathf.Cos(angle) * radius, 0.02f + i * 0.06f, Mathf.Sin(angle) * radius);
+                shard.transform.localRotation *= Quaternion.Euler(58f + (float)random.NextDouble() * 24f, heading + spread, -10f + (float)random.NextDouble() * 20f);
+                shard.transform.localScale *= 0.7f + i * 0.09f + (float)random.NextDouble() * 0.35f;
+            }
+            return root;
+        }
+        catch { UnityEngine.Object.Destroy(root); throw; }
+    }
+}
+
+internal sealed class DecayRootCorridorFamily : IUnderworldBiomeStructureFamily
+{
+    public string Kind => "decay-root-corridor";
+    public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.GreatDecay;
+    public int PlacementSlot => 0;
 
     public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
         unchecked
         {
-            var hash = identity.DerivedSeed32 ^ 0x17C3A5D;
+            var hash = identity.DerivedSeed32 ^ 0x36D3CA7;
             hash = (hash * 397) ^ key.X;
             hash = (hash * 397) ^ key.Z;
             hash ^= hash >> 16;
@@ -197,29 +232,29 @@ internal sealed class FrozenShardFanFamily : IUnderworldBiomeStructureFamily
 
     public GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
-        var root = new GameObject($"Magenheim_FrozenShardFan_{key.X}_{key.Z}");
+        var root = new GameObject($"Magenheim_DecayRootCorridor_{key.X}_{key.Z}");
         root.transform.position = position;
-        var seed = identity.DerivedSeed32 ^ key.X * 1640531513 ^ key.Z * 805459861 ^ 0x17C3A5D;
+        var seed = identity.DerivedSeed32 ^ key.X * 73856093 ^ key.Z * 83492791 ^ 0x36D3CA7;
         var random = new System.Random(seed);
         try
         {
-            var anchor = UnderworldDonorVisualFactory.Create(Biome, seed ^ 0x5A17E, "FrozenFanAnchor");
-            anchor.transform.SetParent(root.transform, false);
-            anchor.transform.localPosition += new Vector3(0f, -0.12f, 0f);
-            anchor.transform.localScale *= 1.2f;
+            var heading = (float)(random.NextDouble() * Mathf.PI * 2f);
+            var forward = new Vector3(Mathf.Cos(heading), 0f, Mathf.Sin(heading));
+            var side = new Vector3(-forward.z, 0f, forward.x);
 
-            var heading = (float)(random.NextDouble() * 360d);
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 6; i++)
             {
-                var spread = -48f + i * 24f + ((float)random.NextDouble() - 0.5f) * 12f;
-                var angle = (heading + spread) * Mathf.Deg2Rad;
-                var radius = 1.15f + i * 0.52f + (float)random.NextDouble() * 0.45f;
-                var shard = UnderworldDonorVisualFactory.Create(Biome, seed ^ ((i + 1) * 32452843), $"FrozenShardDonor_{i}");
-                shard.transform.SetParent(root.transform, false);
-                shard.transform.localPosition += new Vector3(Mathf.Cos(angle) * radius, 0.02f + i * 0.06f, Mathf.Sin(angle) * radius);
-                shard.transform.localRotation *= Quaternion.Euler(58f + (float)random.NextDouble() * 24f, heading + spread, -10f + (float)random.NextDouble() * 20f);
-                shard.transform.localScale *= 0.7f + i * 0.09f + (float)random.NextDouble() * 0.35f;
+                var pair = i / 2;
+                var flank = (i & 1) == 0 ? 1f : -1f;
+                var along = -2.8f + pair * 2.8f + ((float)random.NextDouble() - 0.5f) * 0.7f;
+                var lateral = flank * (2.25f + (float)random.NextDouble() * 0.85f);
+                var donor = UnderworldDonorVisualFactory.Create(Biome, seed ^ ((i + 1) * 49979687), $"DecayRootDonor_{i}");
+                donor.transform.SetParent(root.transform, false);
+                donor.transform.localPosition += forward * along + side * lateral + new Vector3(0f, -0.08f + (float)random.NextDouble() * 0.22f, 0f);
+                donor.transform.localRotation *= Quaternion.Euler(62f + (float)random.NextDouble() * 24f, heading * Mathf.Rad2Deg + (flank > 0f ? 90f : -90f), -14f + (float)random.NextDouble() * 28f);
+                donor.transform.localScale *= 0.82f + (float)random.NextDouble() * 0.62f;
             }
+
             return root;
         }
         catch { UnityEngine.Object.Destroy(root); throw; }
