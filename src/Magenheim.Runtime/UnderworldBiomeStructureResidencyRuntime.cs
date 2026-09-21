@@ -145,17 +145,22 @@ internal sealed class FungalRootMassFamily : IUnderworldBiomeStructureFamily
 
 internal sealed class SulfurVentCairnFamily : IUnderworldBiomeStructureFamily
 {
+    private const int FamilySalt = 0x51F15EED;
+
     public string Kind => "sulfur-vent-cairn";
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.SulfurousWastes;
     public int PlacementSlot => 1;
-    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
+    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key) =>
+        UnderworldStructureSpacingPolicy.IsLocalWinner(identity, key, FamilySalt, 1, candidate => BaseEligible(identity, candidate));
+
+    private static bool BaseEligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
-        unchecked { var hash = identity.DerivedSeed32 ^ 0x51F15EED; hash = (hash * 397) ^ key.X; hash = (hash * 397) ^ key.Z; hash ^= hash >> 16; return (hash & 3) == 1; }
+        unchecked { var hash = identity.DerivedSeed32 ^ FamilySalt; hash = (hash * 397) ^ key.X; hash = (hash * 397) ^ key.Z; hash ^= hash >> 16; return (hash & 3) == 1; }
     }
     public GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
         var root = new GameObject($"Magenheim_SulfurVentCairn_{key.X}_{key.Z}"); root.transform.position = position;
-        var seed = identity.DerivedSeed32 ^ key.X * 83492791 ^ key.Z * 297121507 ^ 0x51F15EED; var random = new System.Random(seed);
+        var seed = identity.DerivedSeed32 ^ key.X * 83492791 ^ key.Z * 297121507 ^ FamilySalt; var random = new System.Random(seed);
         try
         {
             var basin = UnderworldDonorVisualFactory.Create(Biome, seed ^ 0x61B45A3, "VentBasinDonor");
@@ -180,17 +185,22 @@ internal sealed class SulfurVentCairnFamily : IUnderworldBiomeStructureFamily
 
 internal sealed class FrozenShardFanFamily : IUnderworldBiomeStructureFamily
 {
+    private const int FamilySalt = 0x17C3A5D;
+
     public string Kind => "frozen-shard-fan";
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.FrozenCaverns;
     public int PlacementSlot => 0;
-    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
+    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key) =>
+        UnderworldStructureSpacingPolicy.IsLocalWinner(identity, key, FamilySalt, 1, candidate => BaseEligible(identity, candidate));
+
+    private static bool BaseEligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
-        unchecked { var hash = identity.DerivedSeed32 ^ 0x17C3A5D; hash = (hash * 397) ^ key.X; hash = (hash * 397) ^ key.Z; hash ^= hash >> 16; return (hash & 7) <= 2; }
+        unchecked { var hash = identity.DerivedSeed32 ^ FamilySalt; hash = (hash * 397) ^ key.X; hash = (hash * 397) ^ key.Z; hash ^= hash >> 16; return (hash & 7) <= 2; }
     }
     public GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
         var root = new GameObject($"Magenheim_FrozenShardFan_{key.X}_{key.Z}"); root.transform.position = position;
-        var seed = identity.DerivedSeed32 ^ key.X * 1640531513 ^ key.Z * 805459861 ^ 0x17C3A5D; var random = new System.Random(seed);
+        var seed = identity.DerivedSeed32 ^ key.X * 1640531513 ^ key.Z * 805459861 ^ FamilySalt; var random = new System.Random(seed);
         try
         {
             var anchor = UnderworldDonorVisualFactory.Create(Biome, seed ^ 0x5A17E, "FrozenFanAnchor");
@@ -214,15 +224,20 @@ internal sealed class FrozenShardFanFamily : IUnderworldBiomeStructureFamily
 
 internal sealed class DecayRootCorridorFamily : IUnderworldBiomeStructureFamily
 {
+    private const int FamilySalt = 0x36D3CA7;
+
     public string Kind => "decay-root-corridor";
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.GreatDecay;
     public int PlacementSlot => 0;
 
-    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
+    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key) =>
+        UnderworldStructureSpacingPolicy.IsLocalWinner(identity, key, FamilySalt, 1, candidate => BaseEligible(identity, candidate));
+
+    private static bool BaseEligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
         unchecked
         {
-            var hash = identity.DerivedSeed32 ^ 0x36D3CA7;
+            var hash = identity.DerivedSeed32 ^ FamilySalt;
             hash = (hash * 397) ^ key.X;
             hash = (hash * 397) ^ key.Z;
             hash ^= hash >> 16;
@@ -234,7 +249,7 @@ internal sealed class DecayRootCorridorFamily : IUnderworldBiomeStructureFamily
     {
         var root = new GameObject($"Magenheim_DecayRootCorridor_{key.X}_{key.Z}");
         root.transform.position = position;
-        var seed = identity.DerivedSeed32 ^ key.X * 73856093 ^ key.Z * 83492791 ^ 0x36D3CA7;
+        var seed = identity.DerivedSeed32 ^ key.X * 73856093 ^ key.Z * 83492791 ^ FamilySalt;
         var random = new System.Random(seed);
         try
         {
