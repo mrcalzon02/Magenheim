@@ -23,6 +23,7 @@ internal sealed class UnderworldRuntimeServices
         ChunkMaterializer=new UnderworldInstanceChunkMaterializer(this,log);
         BiomeStructureResidency=new UnderworldBiomeStructureResidencyRuntime(this);
         BiomeStructureResidency.Register(new FractureFaultLineFamily());
+        BiomeStructureResidency.Register(new BlackwaterSparsePocketFamily());
     }
 
     internal UnderworldInstanceTerrainDomain TerrainDomain{get;}
