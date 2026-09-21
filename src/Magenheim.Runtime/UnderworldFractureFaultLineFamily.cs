@@ -11,15 +11,19 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal sealed class FractureFaultLineFamily : IUnderworldBiomeStructureFamily
 {
+    private const int FamilySalt = 0x46AC7E21;
     public string Kind => "fracture-fault-line";
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.FractureZones;
     public int PlacementSlot => 0;
 
-    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
+    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key) =>
+        UnderworldStructureSpacingPolicy.IsLocalWinner(identity, key, FamilySalt, 1, candidate => BaseEligible(identity, candidate));
+
+    private static bool BaseEligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
         unchecked
         {
-            var hash = identity.DerivedSeed32 ^ 0x46AC7E21;
+            var hash = identity.DerivedSeed32 ^ FamilySalt;
             hash = (hash * 397) ^ key.X;
             hash = (hash * 397) ^ key.Z;
             hash ^= hash >> 16;
@@ -31,7 +35,7 @@ internal sealed class FractureFaultLineFamily : IUnderworldBiomeStructureFamily
     {
         var root = new GameObject($"Magenheim_FractureFaultLine_{key.X}_{key.Z}");
         root.transform.position = position;
-        var seed = identity.DerivedSeed32 ^ key.X * 19349663 ^ key.Z * 83492791 ^ 0x46AC7E21;
+        var seed = identity.DerivedSeed32 ^ key.X * 19349663 ^ key.Z * 83492791 ^ FamilySalt;
         var random = new System.Random(seed);
 
         try
