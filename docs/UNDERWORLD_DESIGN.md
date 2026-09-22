@@ -283,7 +283,9 @@ The Underworld has no normal Surface weather cycle. It owns a deterministic subt
 
 **Stone Rain:** unstable fracture regions periodically shed debris from high unseen geology.
 
-**Deep Fog:** heavy moisture and temperature inversions reduce visibility around Blackwater.
+**Deep Fog:** heavy moisture and temperature inversions reduce visibility around Blackwater; a colder, less persistent form can also settle into Frozen Cavern basins.
+
+**Whiteout:** Frozen Caverns fill with driven ice-crystal haze, sharply reducing visibility, strengthening cold pressure and swallowing distant sound.
 
 **Crystal Resonance:** distant crystal formations begin glowing or resonating together.
 

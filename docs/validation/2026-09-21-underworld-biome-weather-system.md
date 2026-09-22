@@ -13,9 +13,11 @@ events rather than a normal Surface weather cycle.
 
 ## Implementation
 
-- `UnderworldWeatherCycle` is pure Core authority. It derives a four-minute period from Valheim
-  world time, hashes that period with the paired Underworld seed and biome, and selects only events
-  legal to that biome.
+- `UnderworldWeatherCycle` is pure Core authority. It derives a four-minute period from Valheim's
+  server-authoritative world time, hashes that period with the paired Underworld seed and biome, and
+  selects only events legal to that biome. Every peer therefore reaches the same presentation state
+  without inventing a second replicated weather-state machine; future gameplay effects must still be
+  re-evaluated/admitted server-side rather than trusting client-reported state.
 - `UnderworldWeatherRuntime` lazily registers namespaced `EnvSetup` clones using installed
   Valheim environments as donors. It does not rewrite `EnvMan.m_biomes` or any Surface weights.
 - While the local player is in the active Underworld instance, the matching Magenheim environment
