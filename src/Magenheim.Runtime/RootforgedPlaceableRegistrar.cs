@@ -42,7 +42,7 @@ internal sealed class RootforgedPlaceableRegistrar : IDisposable
     }
     private static void RegisterPiece(UnderworldBuildPieceDefinition definition)
     {
-        var stone = definition.Kind == UnderworldBuildPieceKind.Foundation || definition.Kind == UnderworldBuildPieceKind.Plinth;
+        var stone = definition.Kind == UnderworldBuildPieceKind.Foundation || definition.Kind == UnderworldBuildPieceKind.Plinth || definition.Kind == UnderworldBuildPieceKind.Stairs;
         var reinforced = definition.Tier == UnderworldBuildTier.RootforgedIron;
         var donor = stone ? "stone_floor_2x2" : reinforced ? "woodiron_beam" : "wood_pole_log";
         var source = PrefabManager.Instance.GetPrefab(donor);
@@ -110,6 +110,14 @@ internal sealed class RootforgedPlaceableRegistrar : IDisposable
         }
         switch (definition.Kind)
         {
+            case UnderworldBuildPieceKind.Stairs:
+                foreach (var x in new[] {-width*.5f,0f,width*.5f})
+                {
+                    Snap(x,0,-depth*.5f); Snap(x,height,depth*.5f);
+                    Snap(x,height*.5f,0);
+                }
+                break;
+            case UnderworldBuildPieceKind.Floor:
             case UnderworldBuildPieceKind.Foundation:
             case UnderworldBuildPieceKind.Plinth:
                 foreach (var y in new[] {0f, (float)height})

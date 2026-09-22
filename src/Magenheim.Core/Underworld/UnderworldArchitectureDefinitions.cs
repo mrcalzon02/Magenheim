@@ -17,6 +17,8 @@ public enum UnderworldBuildPieceKind
     YBrace,
     TBrace,
     ForkedColumn,
+    Floor,
+    Stairs,
 }
 
 public enum UnderworldBuildTier
@@ -331,6 +333,18 @@ public static class UnderworldArchitectureCatalog
                     UnderworldBuildPieceKind.ForkedColumn, UnderworldBuildTier.Rootstone,
                     4, 8, 1, "piece_workbench",
                     Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 12)),
+                Piece("worldroot_floor_4m", "WorldrootFloor_4m", "Worldroot Floor 4m",
+                    UnderworldBuildPieceKind.Floor, UnderworldBuildTier.Rootstone,
+                    4, 1, 4, "piece_workbench",
+                    Cost("magenheim.underworld.resource.worldroot_timber", 8)),
+                Piece("understone_stairs", "UnderstoneStairs", "Understone Stairs",
+                    UnderworldBuildPieceKind.Stairs, UnderworldBuildTier.Rootstone,
+                    2, 2, 4, "piece_stonecutter",
+                    Cost("magenheim.underworld.resource.understone", 12)),
+                Piece("iron_banded_worldroot_beam_8m", "IronBandedWorldrootBeam_8m", "Iron-Banded Worldroot Beam 8m",
+                    UnderworldBuildPieceKind.ReinforcedBeam, UnderworldBuildTier.RootforgedIron,
+                    8, 1, 1, "piece_stonecutter",
+                    Cost("magenheim.underworld.resource.worldroot_timber", 8), Cost("Iron", 4)),
             });
 
     private static UnderworldBuildPieceDefinition Piece(

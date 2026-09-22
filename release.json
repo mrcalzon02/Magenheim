@@ -1,4 +1,4 @@
 {
-  "version": "0.0.94",
-  "description": "0.0.94: Combines fourteen authored Rootforged pieces with Underworld biome weather, native Overworld/Underworld minimap tabs and instance-layer fixes."
+  "version": "0.0.95",
+  "description": "0.0.95: Adds Worldroot floors, Understone stairs and 8m iron-banded beams to the Rootforged set, with authored models, icons, collision and native building snaps."
 }

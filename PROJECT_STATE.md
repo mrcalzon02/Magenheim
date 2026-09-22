@@ -1,3 +1,13 @@
+# Current release - 0.0.95 (2026-09-22)
+
+Rootforged now has seventeen pieces. Adds a 4m split-root floor, an eight-step Understone stair flight and an 8m iron-banded beam. Each includes editable source art, GLB/runtime meshes, collision and matching icons. The floor/stairs use native grid snaps and support. Existing fourteen catalog entries and other foundation definitions were preserved.
+
+Full closeout passed: 300 model sets, 134 icons, 43,426 Core assertions plus separate suites. Runtime compilation: zero warnings/errors. Installed 0.0.95 in Central Fuckery with payload hashes and enabled launcher metadata verified. DLL SHA-256: 7767F8D832B3DF984A0A83B8F047EDDE1E04734C7B6058E1EB6DDA6687E106AF.
+Backups: backups/Local-Magenheim-20260922-145139.zip and backups/mods-20260922-145152-136.yml.
+See docs/validation/2026-09-22-rootforged-surfaces.md. In-game traversal, snapping/support and multiplayer acceptance remain untested.
+
+Launcher description: "0.0.95: Adds Worldroot floors, Understone stairs and 8m iron-banded beams to the Rootforged set, with authored models, icons, collision and native building snaps."
+
 # Merged source candidate - 0.0.94 (2026-09-22)
 
 Combined local Rootforged assets and origin/main weather, native minimap tabs and instance-layer fixes. Full closeout passed: 297 model sets, 131 icons, 43,423 Core assertions plus separate suites; runtime compilation had zero warnings/errors. Installed 0.0.94 into Central Fuckery with all payload hashes and enabled launcher metadata verified. Incoming private-member and obsolete sector API references were adapted to the installed game; native sector/portal/ownership behavior remains in control.

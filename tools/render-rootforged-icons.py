@@ -10,7 +10,7 @@ frame_and_render=renderer.frame_and_render
 R=Path(__file__).resolve().parents[1]
 entries=json.loads((R/'assets/models/catalog.json').read_text())
 models=[e for e in entries if e['id'].startswith('rootforged-')]
-assert len(models)==14
+assert len(models)==17
 for e in models:
- frame_and_render(e,R/'assets/earth'/(e['id']+'.icon.png'))
+ frame_and_render(e,R/'assets/earth'/(e['id']+'.icon.png'), source_rotation_z=180 if e['id']=='rootforged-understone-stairs' else 0)
  print('RENDERED',e['id'],flush=True)

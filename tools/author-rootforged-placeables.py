@@ -63,6 +63,24 @@ for e in entries:
   for side in [-1,1]:
    pts=[Vector((side*w*.31+.035*math.sin(t*4),0,h*t)) for t in [i/16 for i in range(17)]]
    tube('root-inlay-'+str(side),pts,[.07]*17,wood,8)
+ elif kind==9:
+  # Broad level split-root boards sit on three transverse grown joists.
+  for i in range(8):
+   x=-w*.5+(i+.5)*w/8
+   box('split-root-board-'+str(i),(x,0,.78),(w/8-.012,d,.44),pale if i%3==0 else wood)
+  for i in range(3):
+   y=(i-1)*d*.35
+   pts=[Vector((-w*.5+w*j/24,y,.25)) for j in range(25)]
+   tube('floor-joist-'+str(i),pts,[.24]*25,wood)
+ elif kind==10:
+  # Eight walkable stone treads rise toward Unity +Z (Blender -Y).
+  for i in range(8):
+   rise=h*(i+1)/8;y=d*.5-(i+.5)*d/8
+   box('stone-tread-'+str(i),(0,y,rise*.5),(w,d/8,rise),stone)
+  for side in (-1,1):
+   for i in range(8):
+    y=d*.5-(i+.5)*d/8;z=h*(i+1)/8-.1
+    box('stair-root-inlay-'+str(side)+'-'+str(i),(side*(w*.5-.07),y,z),(.07,d/8*.7,.08),wood)
  elif kind in (6,7,8):
   # Three continuous braided limbs share a grown junction. Upper branches leave open space below.
   junction=h*.5 if kind==6 else h*.7 if kind==8 else h-.38

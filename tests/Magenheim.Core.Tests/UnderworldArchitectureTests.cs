@@ -17,7 +17,7 @@ internal static class UnderworldArchitectureTests
         }
 
         var catalog = UnderworldArchitectureCatalog.CreateInitialStructuralSlice();
-        Assert(catalog.Pieces.Count == 14, "Rootforged structural slice must contain fourteen pieces.");
+        Assert(catalog.Pieces.Count == 17, "Rootforged structural slice must contain seventeen pieces.");
         Assert(catalog.Fingerprint.Length == 64, "Architecture fingerprint must be SHA-256 hex.");
 
         var beams = catalog.Pieces.Where(value => value.Kind == UnderworldBuildPieceKind.Beam).ToArray();
@@ -44,6 +44,16 @@ internal static class UnderworldArchitectureTests
             && value.Tier == UnderworldBuildTier.Rootstone && value.Costs.Count == 1
             && value.Costs[0].ResourceId == UnderworldArchitectureValidator.WorldrootTimberResourceId),
             "Unreinforced junctions must remain available through the existing timber/workbench recipe.");
+
+        var floor = catalog.Pieces.Single(value => value.Kind == UnderworldBuildPieceKind.Floor);
+        Assert(floor.Dimensions == new UnderworldBuildDimensions(4, 1, 4), "Floor must meet the four-meter hall grid.");
+        var stairs = catalog.Pieces.Single(value => value.Kind == UnderworldBuildPieceKind.Stairs);
+        Assert(stairs.Dimensions == new UnderworldBuildDimensions(2, 2, 4)
+            && stairs.Costs.Single().ResourceId == UnderworldArchitectureValidator.UnderstoneResourceId,
+            "Stairs must provide a two-meter stone rise over four meters.");
+        Assert(catalog.Pieces.Any(value => value.Kind == UnderworldBuildPieceKind.ReinforcedBeam
+            && value.Dimensions.WidthMeters == 8 && value.Tier == UnderworldBuildTier.RootforgedIron),
+            "Great-hall spans require an eight-meter reinforced beam.");
 
         var reversed = UnderworldArchitectureValidator.ValidateAndFreeze(
             UnderworldArchitectureValidator.CurrentSchemaVersion,

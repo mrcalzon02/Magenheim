@@ -43,7 +43,7 @@ def asset_name(model_id: str) -> str:
     return model_id
 
 
-def frame_and_render(entry, out_path: Path) -> None:
+def frame_and_render(entry, out_path: Path, source_rotation_z: float = 0) -> None:
     bpy.ops.wm.read_factory_settings(use_empty=True)
     scene = bpy.context.scene
     scene.render.engine = 'CYCLES'
@@ -78,7 +78,8 @@ def frame_and_render(entry, out_path: Path) -> None:
     # then tip it toward the camera so the head reads as volume rather than silhouette.
     rot = (Matrix.Rotation(math.radians(-32), 4, 'Z')
            @ Matrix.Rotation(math.radians(-68), 4, 'X')
-           @ Matrix.Rotation(math.radians(18), 4, 'Y'))
+           @ Matrix.Rotation(math.radians(18), 4, 'Y')
+           @ Matrix.Rotation(math.radians(source_rotation_z), 4, 'Z'))
     transforms = {obj: obj.matrix_world.copy() for obj in objects}
     for obj in objects:
         obj.matrix_world = rot @ transforms[obj]
