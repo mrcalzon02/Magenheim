@@ -15,7 +15,11 @@ public static class UnderworldInstanceContract
     public const bool DedicatedInstanceTerrainAuthority = true;
     public const bool DedicatedInstanceBiomeEnvironmentAuthority = true;
     public const bool DedicatedInstancePersistenceNamespace = true;
+    public const bool UsesVanillaMinimapMechanics = true;
 
+    public const bool ParallelMapEngine = false;
+    public const bool ParallelFogOfWarEngine = false;
+    public const bool ParallelPinEngine = false;
     public const bool SurfaceFarLandmassIsUnderworld = false;
     public const bool SurfaceCoordinateProjectionDefinesUnderworld = false;
     public const bool SurfaceMapIsUnderworldMap = false;
