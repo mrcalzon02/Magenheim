@@ -1,4 +1,4 @@
 {
-  "version": "0.0.91",
-  "description": "0.0.91: Adds biome-owned Underworld weather cycles and namespaced Valheim environment clones so Surface ThunderStorm weather no longer drives the six custom biomes; integrates Sporefall, Deep Fog, Ashfall, Thermal Surge, Whiteout, Stone Rain, Crystal Resonance and Black Bloom with the shared atmosphere field."
+  "version": "0.0.92",
+  "description": "0.0.92: Adds Overworld/Underworld tabs to the single vanilla Minimap, with separate native fog/pin payloads, physical-layer exploration/shared-map routing, transient-pin cache repair, and async map-generator-safe Underworld terrain sampling."
 }
