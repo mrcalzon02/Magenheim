@@ -18,6 +18,15 @@ internal static class RuntimeGameApi
         ?? throw new MissingMethodException(typeof(Inventory).FullName, "Changed(bool, bool)");
     private static readonly FieldInfo MinimapPins = AccessTools.Field(typeof(Minimap), "m_pins")
         ?? throw new MissingFieldException(typeof(Minimap).FullName, "m_pins");
+    private static readonly MethodInfo MinimapGetMapData = AccessTools.Method(
+        typeof(Minimap), "GetMapData", Type.EmptyTypes)
+        ?? throw new MissingMethodException(typeof(Minimap).FullName, "GetMapData()");
+    private static readonly MethodInfo MinimapSetMapData = AccessTools.Method(
+        typeof(Minimap), "SetMapData", new[] { typeof(byte[]) })
+        ?? throw new MissingMethodException(typeof(Minimap).FullName, "SetMapData(byte[])");
+    private static readonly MethodInfo MinimapClearPins = AccessTools.Method(
+        typeof(Minimap), "ClearPins", Type.EmptyTypes)
+        ?? throw new MissingMethodException(typeof(Minimap).FullName, "ClearPins()");
 
     internal static Recipe? GetCraftRecipe(InventoryGui gui) => CraftRecipe.GetValue(gui) as Recipe;
 
@@ -25,6 +34,19 @@ internal static class RuntimeGameApi
     // public, so only the collection itself needs to cross this boundary.
     internal static List<Minimap.PinData> GetMapPins(Minimap map) =>
         MinimapPins.GetValue(map) as List<Minimap.PinData> ?? new List<Minimap.PinData>();
+
+    internal static byte[] GetMinimapMapData(Minimap map) =>
+        MinimapGetMapData.Invoke(map, Array.Empty<object>()) as byte[]
+        ?? throw new InvalidOperationException("Valheim Minimap.GetMapData returned no payload.");
+
+    internal static void SetMinimapMapData(Minimap map, byte[] data)
+    {
+        if (data is null) throw new ArgumentNullException(nameof(data));
+        MinimapSetMapData.Invoke(map, new object[] { data });
+    }
+
+    internal static void ClearMinimapPins(Minimap map) =>
+        MinimapClearPins.Invoke(map, Array.Empty<object>());
 
     // Inventory.Changed(success, cheatedStateChanged) exists only to drive the cheated-item
     // achievement popup; both stay false because Magenheim mutations are ordinary transactions.
