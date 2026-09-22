@@ -2943,6 +2943,7 @@
     "id": "rootforged-great-column-plinth",
     "parts": 5,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "triangles": 580,
     "materials": 5,
     "source": "source/rootforged-great-column-plinth.blend",
@@ -2988,6 +2989,8 @@
     "runtime_sha256": "6f1575e788d1dd116d4dc260b5d58b21c1a48f456e99939c2a84a437dbf70838",
     "glb_sha256": "9281e7278167be33be5d5ec55a8373d9b1ac35e798074e13930ee728bba228f3"
 =======
+=======
+>>>>>>> Stashed changes
     "triangles": 860,
     "materials": 2,
     "source": "source/rootforged-great-column-plinth.blend",
@@ -3032,11 +3035,15 @@
     "source_sha256": "16e5f63ba750806a37da2cbc0576921a454994ecb40ed5b6f12a15fdedbedbd5",
     "runtime_sha256": "b26c7cbded5e3b5d0d86d6603ffd00c6fdefdbbf16197b80154fd07b0fa02506",
     "glb_sha256": "7a4baaa0f959eda27530a3b61ab979a502fccec24f7b91367a76a6491c8dd0ee"
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   },
   {
     "id": "rootforged-understone-foundation-2x2",
     "parts": 5,
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
     "triangles": 580,
     "materials": 5,
@@ -3119,6 +3126,8 @@
     "runtime_sha256": "b264aee868453b3954dbf16cecc6b9dff838da1b9ad6bd430ae18974ac32d231",
     "glb_sha256": "fc4c11283ae5bb7cafd8b9c23430bd564e2bccb23bc6126f5b8990984e5e572e"
 =======
+=======
+>>>>>>> Stashed changes
     "triangles": 860,
     "materials": 2,
     "source": "source/rootforged-understone-foundation-2x2.blend",
@@ -3199,6 +3208,9 @@
     "source_sha256": "ba0ad5850413c5804e4378779e1c3211111e9c54104cdbf70edafc58d102a011",
     "runtime_sha256": "09035f3e456bc5a43b7a9b23f4fe22ce8a6535d3115027343466d559bad2e8df",
     "glb_sha256": "69fe0df8f495eb40d2627e5273f42ed2da8f17a34c270f57dd43004eac85b5ec"
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   },
   {
