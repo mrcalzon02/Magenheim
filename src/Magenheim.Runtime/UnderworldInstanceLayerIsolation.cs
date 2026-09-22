@@ -95,6 +95,104 @@ internal static class UnderworldLayerCreateSyncListPatch
     }
 }
 
+
+[HarmonyPatch(typeof(ZDOMan), nameof(ZDOMan.ReleaseNearbyZDOS))]
+internal static class UnderworldLayerReleaseNearbyZdosPatch
+{
+    private static bool Prefix(ZDOMan __instance, Vector3 refPosition, long uid)
+    {
+        if (uid == __instance.m_sessionID)
+            UnderworldLayerPlayerCache.PruneOwnership(__instance);
+
+        UnderworldLayerIsolation.Check(refPosition);
+        UnderworldLayerIsolation.IsSending = false;
+
+        var playerZone = ZoneSystem.GetZone(refPosition);
+        var area = ZoneSystem.instance.m_activeArea - 1;
+        for (var x = playerZone.x - area; x <= playerZone.x + area; x++)
+        for (var y = playerZone.y - area; y <= playerZone.y + area; y++)
+        {
+            var sector = new Vector2i(x, y);
+            var index = __instance.SectorToIndex(sector);
+            if (index >= 0)
+            {
+                var local = __instance.m_objectsBySector[index];
+                if (local is not null) AssignUnowned(local, uid);
+            }
+            else if (__instance.m_objectsByOutsideSector.TryGetValue(sector, out var outside))
+            {
+                AssignUnowned(outside, uid);
+            }
+        }
+
+        return false;
+    }
+
+    private static void AssignUnowned(List<ZDO> objects, long uid)
+    {
+        foreach (var zdo in objects)
+        {
+            if (!zdo.Persistent || zdo.HasOwner()) continue;
+            if (!UnderworldLayerIsolation.IsSameLayer(zdo.m_position)) continue;
+            zdo.SetOwner(uid);
+        }
+    }
+}
+
+internal sealed class UnderworldLayerPlayerCache
+{
+    private static readonly Dictionary<long, UnderworldLayerPlayerCache> Cache = new();
+    private static readonly HashSet<long> ActivePlayers = new();
+
+    private bool InUnderworld { get; set; }
+    private Vector2i Zone { get; set; }
+
+    internal static void PruneOwnership(ZDOMan manager)
+    {
+        Refresh(manager);
+        var stale = ZDOExtraData.s_owner.Where(pair =>
+        {
+            var zdo = manager.GetZDO(pair.Key);
+            if (zdo is null) return true;
+            if (!zdo.Persistent) return false;
+
+            var owner = zdo.GetOwner();
+            if (!Cache.TryGetValue(owner, out var ownerState)) return true;
+            if (UnderworldInstanceLayer.IsUnderworldEnginePosition(zdo.m_position) != ownerState.InUnderworld)
+                return true;
+
+            return !ZNetScene.InActiveArea(zdo.GetSector(), ownerState.Zone);
+        }).ToList();
+
+        foreach (var pair in stale)
+            manager.GetZDO(pair.Key)?.SetOwner(0L);
+    }
+
+    private static void Refresh(ZDOMan manager)
+    {
+        ActivePlayers.Clear();
+        Handle(manager.m_sessionID, ZNet.instance.GetReferencePosition());
+        foreach (var peer in manager.m_peers)
+            Handle(peer.m_peer.m_uid, UnderworldLayerIsolation.PeerPosition(peer));
+
+        var stale = Cache.Keys.Where(uid => !ActivePlayers.Contains(uid)).ToList();
+        foreach (var uid in stale) Cache.Remove(uid);
+    }
+
+    private static void Handle(long uid, Vector3 position)
+    {
+        ActivePlayers.Add(uid);
+        if (!Cache.TryGetValue(uid, out var state))
+        {
+            state = new UnderworldLayerPlayerCache();
+            Cache.Add(uid, state);
+        }
+
+        state.InUnderworld = UnderworldInstanceLayer.IsUnderworldEnginePosition(position);
+        state.Zone = ZoneSystem.GetZone(position);
+    }
+}
+
 [HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.CreateDestroyObjects))]
 internal static class UnderworldLayerCreateDestroyObjectsPatch
 {
