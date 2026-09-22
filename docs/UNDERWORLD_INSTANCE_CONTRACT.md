@@ -7,8 +7,9 @@ with this catalog is architectural drift and must be corrected before adding fea
 ## Required
 
 - Dedicated Magenheim-owned instance world-space.
-- Dedicated Underworld map; the Surface minimap is not reused as the Underworld map.
-- Independent Underworld exploration/cloud state.
+- Dedicated Underworld **map data/tab** bound to the same Valheim `Minimap` runtime used by the Overworld.
+- Independent Underworld exploration/cloud payload, mutated only through Valheim's normal `Minimap` exploration/fog code.
+- One large-map UI with explicit Overworld and Underworld tabs; the small minimap follows the player's physical layer.
 - Independent Underworld terrain/chunk authority.
 - Independent Underworld biome/environment authority.
 - Independent Underworld persistence namespace beneath the parent Magenheim world.
@@ -21,7 +22,8 @@ with this catalog is architectural drift and must be corrected before adding fea
 - Treating x=40000, another far-landmass band, or any Surface coordinate region as the Underworld.
 - Defining player-facing Underworld geography by projecting or disguising Surface coordinates.
 - Extending Surface `WorldGenerator` terrain columns as the final Underworld terrain mechanism.
-- Reusing the Surface map as the Underworld map.
+- Aliasing the Surface map payload as the Underworld payload.
+- Implementing a second minimap renderer, exploration loop, reveal-radius algorithm, fog-of-war engine, pin engine, map serializer or duplicate map input system. Magenheim supplies layer data/context to Valheim's existing `Minimap` calls.
 - Creating, releasing, activating, or deactivating the Underworld according to player population.
 - Requiring the player to select or load a second ordinary Valheim save.
 - Persisting Magenheim-owned per-player Surface/Underworld layer truth or reconstructing instance state/residency from player transition records.
