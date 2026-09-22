@@ -313,7 +313,15 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         var net = ZNet.instance;
         var publicPosition = net?.IsReferencePositionPublic() ?? false;
         RuntimeGameApi.SetMinimapMapData(map, data);
+        UnderworldMinimapGameApi.ResetDynamicPinCaches(map);
         if (net is not null) net.SetPublicReferencePosition(publicPosition);
+    }
+
+    internal static bool AllowDynamicPinUpdate(Minimap map)
+    {
+        var runtime = _instance;
+        if (runtime is null || runtime._map != map) return true;
+        return runtime._boundLayer == runtime.ResolvePhysicalLayer();
     }
 
     private UnderworldLayer ResolvePhysicalLayer()
@@ -577,6 +585,15 @@ internal static class UnderworldMinimapPlayerSavePatch
     private static void Prefix(Player __0) => UnderworldMapTabRuntime.PrepareLocalPlayerSave(__0);
 }
 
+[HarmonyPatch(typeof(Minimap), "UpdateExplore", new[] { typeof(float), typeof(Player) })]
+internal static class UnderworldMinimapUpdateExplorePatch
+{
+    private static void Prefix(Minimap __instance, out UnderworldMapTabRuntime.MapBindingScope? __state) =>
+        __state = UnderworldMapTabRuntime.BeginPhysicalMapOperation(__instance);
+
+    private static void Postfix(UnderworldMapTabRuntime.MapBindingScope? __state) => __state?.Dispose();
+}
+
 [HarmonyPatch(typeof(Minimap), "Explore", new[] { typeof(Vector3), typeof(float) })]
 internal static class UnderworldMinimapExplorePatch
 {
@@ -584,6 +601,13 @@ internal static class UnderworldMinimapExplorePatch
         __state = UnderworldMapTabRuntime.BeginPhysicalMapOperation(__instance);
 
     private static void Postfix(UnderworldMapTabRuntime.MapBindingScope? __state) => __state?.Dispose();
+}
+
+[HarmonyPatch(typeof(Minimap), "UpdateDynamicPins", new[] { typeof(float) })]
+internal static class UnderworldMinimapDynamicPinsPatch
+{
+    private static bool Prefix(Minimap __instance) =>
+        UnderworldMapTabRuntime.AllowDynamicPinUpdate(__instance);
 }
 
 [HarmonyPatch(typeof(Minimap), nameof(Minimap.GenerateWorldMap))]
