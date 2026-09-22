@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using BepInEx.Logging;
 using HarmonyLib;
 using Magenheim.Core.Underworld;
@@ -600,16 +599,12 @@ internal static class UnderworldMinimapGenerateWorldMapPatch
     }
 }
 
-[HarmonyPatch]
+[HarmonyPatch(
+    typeof(WorldGenerator),
+    nameof(WorldGenerator.GetBiome),
+    new[] { typeof(float), typeof(float), typeof(float), typeof(bool) })]
 internal static class UnderworldMinimapWorldGeneratorBiomePatch
 {
-    private static MethodBase TargetMethod() =>
-        AccessTools.Method(
-            typeof(WorldGenerator),
-            nameof(WorldGenerator.GetBiome),
-            new[] { typeof(float), typeof(float), typeof(float), typeof(bool) })
-        ?? throw new MissingMethodException(typeof(WorldGenerator).FullName, "GetBiome(float,float,float,bool)");
-
     private static bool Prefix(float __0, float __1, ref Heightmap.Biome __result)
     {
         if (!UnderworldMapTabRuntime.TryRouteMapSample(__0, __1, out var terrain)) return true;
@@ -618,26 +613,29 @@ internal static class UnderworldMinimapWorldGeneratorBiomePatch
     }
 }
 
-[HarmonyPatch]
+[HarmonyPatch(
+    typeof(WorldGenerator),
+    nameof(WorldGenerator.GetBiomeHeight),
+    new[]
+    {
+        typeof(Heightmap.Biome),
+        typeof(float),
+        typeof(float),
+        typeof(Color),
+        typeof(bool),
+        typeof(bool),
+    },
+    new[]
+    {
+        ArgumentType.Normal,
+        ArgumentType.Normal,
+        ArgumentType.Normal,
+        ArgumentType.Out,
+        ArgumentType.Normal,
+        ArgumentType.Normal,
+    })]
 internal static class UnderworldMinimapWorldGeneratorHeightPatch
 {
-    private static MethodBase TargetMethod() =>
-        AccessTools.Method(
-            typeof(WorldGenerator),
-            nameof(WorldGenerator.GetBiomeHeight),
-            new[]
-            {
-                typeof(Heightmap.Biome),
-                typeof(float),
-                typeof(float),
-                typeof(Color).MakeByRefType(),
-                typeof(bool),
-                typeof(bool),
-            })
-        ?? throw new MissingMethodException(
-            typeof(WorldGenerator).FullName,
-            "GetBiomeHeight(Biome,float,float,out Color,bool,bool)");
-
     private static bool Prefix(float __1, float __2, ref Color __3, ref float __result)
     {
         if (!UnderworldMapTabRuntime.TryRouteMapSample(__1, __2, out var terrain)) return true;
