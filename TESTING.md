@@ -1,11 +1,11 @@
-# Magenheim 0.0.52 - test acceptance
+# Magenheim 0.0.92 - test acceptance
 
 ## Required delivery check before launching
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.52 by Local** and start its description with
-**0.0.52: Rebuilds the geode, crystal tiers and Deep Fracture passages**.
+show **Magenheim v0.0.92 by Local** and start its description with
+**0.0.92: Adds Overworld/Underworld tabs to the single vanilla Minimap**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
@@ -42,7 +42,7 @@ XP should appear. Previously earned Crystal Shaping level/XP must stay unchanged
 
 ## Candidate acceptance matrix
 
-Confirm the startup log reports **0.0.52** and has no Magenheim bootstrap or registration
+Confirm the startup log reports **0.0.92** and has no Magenheim bootstrap or registration
 errors. Keep logs and screenshots with each result. Mark checks PASS / FAIL / NOT RUN;
 record game version, mod list, host/client role, seed, steps, expected/actual result.
 
@@ -60,10 +60,38 @@ record game version, mod list, host/client role, seed, steps, expected/actual re
 | Construction | Furniture/decor, hearth, beams/foundations, 24 banners, eight beds, Dais, Ice Box: placement, collisions, wear, removal/refunds, comfort, interaction and persisted state. |
 | Sentinel/alchemy | Sentinel targeting and all eight munition types; grinding returns; Dust recipes; Eitrwine fermentation and effects. |
 | Compatibility | Representative third-party equipment and exclusions; unknown-item rejection; identical host/client authority; unchanged foreign prefab behavior. |
+| Underworld maps | Large map exposes Overworld/Underworld tabs on one vanilla Minimap; small map follows the physical layer; movement reveals only the physical layer; saved pins/fog persist independently; shared-map/discovery writes stay on the physical layer; async/map-size mods do not corrupt Surface textures. |
 | Disabled scope | No surface Deep Fracture locations or model-only artifact recipes should appear. |
 
 Do not promote this candidate to production until the multiplayer and persistence
 checks pass. Detailed unfinished scope is in [CLOSEOUT.md](CLOSEOUT.md).
+
+## Underworld dual-map acceptance — 0.0.92
+
+Use one disposable character and world. Reveal a recognizable patch of Overworld terrain and add a
+saved pin. Open the large map: **Overworld** must be selected. Select **Underworld** without using
+the Deep Gate. A different terrain map and independent fog state must appear; Surface transient
+pins must not leak onto it. Add an Underworld saved pin, switch back and forth, and verify each pin
+belongs only to its own tab.
+
+Enter the Underworld through the Deep Gate. The small minimap must switch to the Underworld
+automatically. Walk far enough to cross the normal Valheim reveal interval/radius and verify fog
+opens along the route using ordinary movement. While physically below, browse the Overworld tab and
+back; browsing must not move the player or change the active world layer. Repeat the inverse after
+returning to Surface.
+
+Save, quit, and reload. Both fog states and both saved-pin sets must survive independently. Exercise
+cartography/shared-map data and a discovered location on each physical layer; those writes must go
+to the physical layer even if the other tab was being browsed immediately beforehand.
+
+If a map-size or asynchronous map-generation mod is installed, repeat the first Underworld-tab
+generation. The mod must still run through its ordinary Valheim Minimap hooks, Underworld
+generation must not write into the Overworld texture set, and an autosave during generation must
+not replace the Surface profile map with the Underworld payload.
+
+Record the result separately from the still-open Underworld world-instance isolation acceptance:
+map correctness does not prove ZDO/terrain layer isolation, and layer isolation does not prove map
+persistence.
 
 ## Build the workshop
 
