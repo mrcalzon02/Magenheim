@@ -23,9 +23,9 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
 
     // AsyncLocal deliberately replaces ThreadStatic here. Map-generation mods commonly move the
     // ordinary GenerateWorldMap sampling work into Task.Run; ExecutionContext propagation carries
-    // this narrow Underworld sampling context into those workers without globally rerouting the
-    // unrelated terrain-generation threads.
-    private static readonly AsyncLocal<int> UnderworldGenerationDepth = new();
+    // this immutable Underworld sample context into those workers without globally rerouting the
+    // unrelated terrain-generation threads or touching Unity singletons off the main thread.
+    private static readonly AsyncLocal<MapGenerationContext?> UnderworldGenerationContext = new();
     private static UnderworldMapTabRuntime? _instance;
 
     private UnderworldRuntimeServices? _services;
@@ -45,7 +45,7 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
     private Button? _surfaceButton;
     private Button? _underworldButton;
 
-    internal static bool IsRoutingUnderworldGeneration => UnderworldGenerationDepth.Value > 0;
+    internal static bool IsRoutingUnderworldGeneration => UnderworldGenerationContext.Value is not null;
 
     internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -86,36 +86,42 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         runtime.PersistUnderworldMapToPlayer(player);
     }
 
-    internal static bool BeginMapGeneration(Minimap map)
+    internal static MapGenerationScope? BeginMapGeneration(Minimap map)
     {
         var runtime = _instance;
-        if (runtime is null || runtime._map != map || runtime._boundLayer != UnderworldLayer.Underworld)
-            return false;
-        UnderworldGenerationDepth.Value = UnderworldGenerationDepth.Value + 1;
-        return true;
+        var services = runtime?._services;
+        var identity = services?.InstanceLifecycle.Identity;
+        if (runtime is null || runtime._map != map ||
+            runtime._boundLayer != UnderworldLayer.Underworld ||
+            services is null || identity is null)
+            return null;
+
+        var previous = UnderworldGenerationContext.Value;
+        var waterLevel = ZoneSystem.instance is null ? 30d : ZoneSystem.instance.m_waterLevel;
+        UnderworldGenerationContext.Value = new MapGenerationContext(
+            services.TerrainDomain,
+            identity.DerivedSeed32,
+            waterLevel);
+        return new MapGenerationScope(previous);
     }
 
-    internal static void EndMapGeneration(bool entered)
+    internal static void EndMapGeneration(MapGenerationScope? scope)
     {
-        if (!entered) return;
-        if (UnderworldGenerationDepth.Value > 0)
-            UnderworldGenerationDepth.Value = UnderworldGenerationDepth.Value - 1;
+        if (scope is null) return;
+        UnderworldGenerationContext.Value = scope.Previous;
     }
 
     internal static bool TryRouteMapSample(double x, double z, out UnderworldTerrainResult terrain)
     {
         terrain = default;
-        var runtime = _instance;
-        var services = runtime?._services;
-        var identity = services?.InstanceLifecycle.Identity;
-        if (!IsRoutingUnderworldGeneration || services is null || identity is null) return false;
+        var context = UnderworldGenerationContext.Value;
+        if (context is null) return false;
 
-        var waterLevel = ZoneSystem.instance is null ? 30d : ZoneSystem.instance.m_waterLevel;
-        var noise = UnderworldTerrainNoise.Fractal01(identity.DerivedSeed32, x, z);
+        var noise = UnderworldTerrainNoise.Fractal01(context.Seed, x, z);
         terrain = UnderworldTerrainLifecycle.Evaluate(
-            services.TerrainDomain,
-            new UnderworldTerrainSample(x, 0d, z, waterLevel, 0d, noise),
-            identity.DerivedSeed32);
+            context.Domain,
+            new UnderworldTerrainSample(x, 0d, z, context.WaterLevel, 0d, noise),
+            context.Seed);
         return true;
     }
 
@@ -280,7 +286,7 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         // below supplies Underworld terrain/biome samples only for the duration of this call.
         map.GenerateWorldMap();
 
-        if (!HasGeneratedMapPixels(state.MapTexture))
+        if (!HasGeneratedMapPixels(state))
         {
             _underworldGenerationPending = true;
             _underworldGenerationDeadline = Time.unscaledTime + MapGenerationTimeoutSeconds;
@@ -302,7 +308,7 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         var state = _underworld;
         if (!_underworldGenerationPending || !map || state is null) return true;
 
-        if (HasGeneratedMapPixels(state.MapTexture))
+        if (HasGeneratedMapPixels(state))
         {
             FinishUnderworldGeneration(state);
             _underworldGenerationPending = false;
@@ -336,7 +342,10 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
             "fog, pins and exploration remain Valheim-owned.");
     }
 
-    private static bool HasGeneratedMapPixels(Texture2D texture)
+    private static bool HasGeneratedMapPixels(MapLayerState state) =>
+        TextureHasContent(state.MapTexture) && TextureHasContent(state.HeightTexture);
+
+    private static bool TextureHasContent(Texture2D texture)
     {
         if (!texture || texture.width <= 0 || texture.height <= 0) return false;
         try
@@ -358,8 +367,8 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         }
         catch (UnityException)
         {
-            // A mod is allowed to replace the map texture with a non-readable GPU texture. If it
-            // has done so, the generation path has clearly taken ownership; do not deadlock tabs.
+            // A mod is allowed to replace a map texture with a non-readable GPU texture. If it has
+            // done so, generation has taken ownership; do not deadlock the layer selector.
             return true;
         }
     }
@@ -579,6 +588,26 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         if (ReferenceEquals(_instance, this)) _instance = null;
     }
 
+    private sealed class MapGenerationContext
+    {
+        internal MapGenerationContext(UnderworldInstanceTerrainDomain domain, int seed, double waterLevel)
+        {
+            Domain = domain ?? throw new ArgumentNullException(nameof(domain));
+            Seed = seed;
+            WaterLevel = waterLevel;
+        }
+
+        internal UnderworldInstanceTerrainDomain Domain { get; }
+        internal int Seed { get; }
+        internal double WaterLevel { get; }
+    }
+
+    internal sealed class MapGenerationScope
+    {
+        internal MapGenerationScope(MapGenerationContext? previous) => Previous = previous;
+        internal MapGenerationContext? Previous { get; }
+    }
+
     internal sealed class MapBindingScope : IDisposable
     {
         private UnderworldMapTabRuntime? _runtime;
@@ -712,10 +741,12 @@ internal static class UnderworldMinimapDynamicPinsPatch
 internal static class UnderworldMinimapGenerateWorldMapPatch
 {
     [HarmonyPriority(Priority.First)]
-    private static void Prefix(Minimap __instance, out bool __state) =>
+    private static void Prefix(Minimap __instance, out UnderworldMapTabRuntime.MapGenerationScope? __state) =>
         __state = UnderworldMapTabRuntime.BeginMapGeneration(__instance);
 
-    private static Exception? Finalizer(Exception? __exception, bool __state)
+    private static Exception? Finalizer(
+        Exception? __exception,
+        UnderworldMapTabRuntime.MapGenerationScope? __state)
     {
         UnderworldMapTabRuntime.EndMapGeneration(__state);
         return __exception;
