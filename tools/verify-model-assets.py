@@ -109,5 +109,5 @@ for file in (root/'src/Magenheim.Runtime').glob('*.cs'):
  text=file.read_text(encoding="utf-8-sig");assert 'CreatePrimitive(' not in text and 'new Mesh' not in text,('Runtime shape builder remains',file.name)
 (assets/'catalog.json').write_text(json.dumps(rows,indent=2))
 with (assets/'catalog.tsv').open('w',newline='') as f:
- writer=csv.DictWriter(f,fieldnames=rows[0].keys(),delimiter='\t');writer.writeheader();writer.writerows(rows)
+ writer=csv.DictWriter(f,fieldnames=rows[0].keys(),delimiter='\t',lineterminator='\n');writer.writeheader();writer.writerows(rows)
 print(f'PASS: {len(rows)} Blender/GLB/runtime sets; {sum(r["triangles"] for r in rows):,} triangles; UVs, normals, >=256px PNGs with real tonal range, topology/winding, hashes, and no active shape generators.')
