@@ -17,7 +17,7 @@ internal static class UnderworldArchitectureTests
         }
 
         var catalog = UnderworldArchitectureCatalog.CreateInitialStructuralSlice();
-        Assert(catalog.Pieces.Count == 11, "Initial Rootforged structural slice must contain eleven pieces.");
+        Assert(catalog.Pieces.Count == 14, "Rootforged structural slice must contain fourteen pieces.");
         Assert(catalog.Fingerprint.Length == 64, "Architecture fingerprint must be SHA-256 hex.");
 
         var beams = catalog.Pieces.Where(value => value.Kind == UnderworldBuildPieceKind.Beam).ToArray();
@@ -36,6 +36,14 @@ internal static class UnderworldArchitectureTests
         Assert(ribs.Length == 2, "Initial slice must contain 4m and 8m Rootforged arch ribs.");
         Assert(ribs.All(value => value.Tier == UnderworldBuildTier.RootforgedIron), "Initial arch ribs must belong to the Rootforged Iron tier.");
         Assert(!catalog.Pieces.Any(value => value.Tier == UnderworldBuildTier.Silverbound), "Silverbound construction must remain deferred from the first slice.");
+
+        var junctions = catalog.Pieces.Where(value => value.Kind == UnderworldBuildPieceKind.YBrace
+            || value.Kind == UnderworldBuildPieceKind.TBrace || value.Kind == UnderworldBuildPieceKind.ForkedColumn).ToArray();
+        Assert(junctions.Length == 3, "Y/T braces and forked columns must all be available.");
+        Assert(junctions.All(value => value.CraftingStationPrefabName == "piece_workbench"
+            && value.Tier == UnderworldBuildTier.Rootstone && value.Costs.Count == 1
+            && value.Costs[0].ResourceId == UnderworldArchitectureValidator.WorldrootTimberResourceId),
+            "Unreinforced junctions must remain available through the existing timber/workbench recipe.");
 
         var reversed = UnderworldArchitectureValidator.ValidateAndFreeze(
             UnderworldArchitectureValidator.CurrentSchemaVersion,

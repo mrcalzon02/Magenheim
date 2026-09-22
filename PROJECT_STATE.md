@@ -1,3 +1,20 @@
+# Current source candidate - 0.0.93 / schema 5 (2026-09-21)
+
+Rootforged now contains fourteen Hammer pieces: the new Worldroot Y Brace 4m,
+T Brace 4m and Forked Column 8m add branched seats for larger halls. All three have
+editable braided-root source models, matching icons, collision and native snap points.
+Workbench recipes use 6 / 4 / 12 core wood. Existing native support and persistence apply.
+
+Full closeout passed: 297 models, 131 icons, 38,326 Core assertions plus separate suites;
+runtime compilation had zero warnings/errors. Installed 0.0.93 into Central Fuckery,
+with all payload hashes and enabled launcher version/description verified.
+DLL SHA-256: 7D821C0EA5549CE470F46C8D298E8BA5DCCCA54C52E7970282D961D4B657A3ED.
+Backups: backups/Local-Magenheim-20260921-210908.zip and backups/mods-20260921-210916-543.yml.
+See docs/validation/2026-09-21-rootforged-junctions.md. In-game acceptance remains untested.
+
+Launcher description: "0.0.93: Expands Rootforged construction with braided Worldroot Y braces,
+T braces and forked columns, authored icons, collision and native attachment points."
+
 # Current source candidate - 0.0.92 / schema 5 (2026-09-21)
 
 Resolved 24 stash-apply conflicts after a completed remote fast-forward. Two auto-stash commits
@@ -290,7 +307,7 @@ thirty migrated recipes show the new requirement rather than a missing one.
 
 ---
 
-# Current source candidate — 0.0.69 / schema 5 (2026-09-18)
+# Current source candidate â€” 0.0.69 / schema 5 (2026-09-18)
 
 Underworld environment production now starts from Valheim-owned runtime donors instead of authored
 placeholder geometry. The disposable local ecology preview has biome-specific donor palettes for all
@@ -311,7 +328,7 @@ persistent/networked world content.
 
 ---
 
-# Current source candidate — 0.0.64 / schema 5 (2026-09-18)
+# Current source candidate â€” 0.0.64 / schema 5 (2026-09-18)
 
 Closes the defect class 0.0.63 spent the session repairing: a generator or its gate moving on while
 the committed output did not. `tools/verify-generated-freshness.py` and
@@ -321,7 +338,7 @@ the generator before recording, so the manifest cannot be reconciled without reg
 
 The gate found real staleness on its first run: the crystal tier of the Storm, Fire, Venom and
 Radiance staves differ from what `render-staff-icons.py` now produces by about 10% of their pixels,
-with RGB deltas above 220. Same tier across four families — a model change those four icons never
+with RGB deltas above 220. Same tier across four families â€” a model change those four icons never
 picked up. Re-rendered and committed.
 
 Blender output is not reproducible, and the gate records that rather than pretending otherwise:
@@ -341,7 +358,7 @@ runtime-accepted; the game has still not been launched against 0.0.63 or 0.0.64.
 
 ---
 
-# Current source candidate — 0.0.63 / schema 5 (2026-09-18)
+# Current source candidate â€” 0.0.63 / schema 5 (2026-09-18)
 
 `main` and `origin/main` were both at `df27a65` at session start. `origin/main` then advanced to
 `720bb5d` mid-session with two Capcrawler authoring commits; the session's seven commits were
@@ -372,8 +389,8 @@ source. Evidence: `docs/validation/2026-09-18-main-build-gate-repair.md`.
 2026-09-17 handoff named as the next task, and it was settled from the installed assemblies rather
 than from the live `[sector probe]`, which could never have fired. The patch was bound to
 `WorldGenerator.GetBiomeSector(int gridx, int gridy, bool clamp)`, which clamps its grid indices
-into [0, 2047] unconditionally — its own `clamp` argument is never read — and writes them with
-`starg`, so the postfix read the clamped value. The biome map spans only ±12282m and the region is
+into [0, 2047] unconditionally â€” its own `clamp` argument is never read â€” and writes them with
+`starg`, so the postfix read the clamped value. The biome map spans only Â±12282m and the region is
 at 40000, so containment was tested 27.7km outside the region and could never pass. **The region
 does not have to move:** both world-space overloads still carry the true coordinate and nothing in
 the game reaches the grid overload except those two, so the override moved there. The probe is
@@ -396,7 +413,7 @@ layer travel a teleport).
 
 ---
 
-# Current source candidate — 0.0.62 / schema 5 (2026-09-17)
+# Current source candidate â€” 0.0.62 / schema 5 (2026-09-17)
 
 Begins Underworld flora F1a: validated Glowcap, Spirestalk and Shelfwood data, canonical
 fingerprints and pure terrain eligibility. All biomes share one custom cavern-roof skybox;
@@ -409,7 +426,7 @@ acceptance is claimed. See `docs/validation/2026-09-17-underworld-flora-foundati
 
 ---
 
-# Current source candidate — 0.0.54 / schema 5 (2026-09-17)
+# Current source candidate â€” 0.0.54 / schema 5 (2026-09-17)
 
 `main` and `origin/main` were both at `5aa8ab0` at session start, with no divergence to
 reconcile: the remote work was already present locally. 67 commits had landed since this
@@ -430,7 +447,7 @@ requested `staff-earth-*.icon.png`, which has never existed in repository histor
 registrars subscribe to `PrefabManager.OnVanillaPrefabsAvailable`, a multicast delegate
 whose invocation stops at the first handler to throw. Bootstrap order is Fire, Frost,
 Storm, **Earth**, Venom, Radiance, Seidr, Spirit, so the missing Earth icon also prevented
-Venom, Radiance, Seidr and Spirit from registering — 20 items, no log line naming them.
+Venom, Radiance, Seidr and Spirit from registering â€” 20 items, no log line naming them.
 That is the cause of the P0.0 live report "Crystal Staff of Venom does not attack": the
 registrar that builds its projectile payloads never ran. Three further committed staff
 icons (`staff-frost-simple`, `staff-venom-advanced`, `staff-venom-master`) carry bad IDAT
@@ -460,7 +477,7 @@ confirm the five staff families that could not previously register.
 
 ---
 
-# Historical — asset fidelity and live acceptance (from 2026-09-16)
+# Historical â€” asset fidelity and live acceptance (from 2026-09-16)
 
 The controlling priority is now `BACKLOG.md` **P0.1** and `IMPLEMENTATION_PLAN.md`
 **section 14**, which outrank every other open track including the Underworld program.
@@ -477,7 +494,7 @@ pieces were not, and remain 60 and 172 triangles against districts of roughly 10
 
 ---
 
-# Current source candidate — 0.0.49 / schema 5
+# Current source candidate â€” 0.0.49 / schema 5
 
 Repaired the `Inventory.Changed` reflection binding that Valheim 1.0.12 broke: the game
 now declares `Changed(bool success, bool cheatedStateChanged)`, and three Magenheim call
@@ -511,7 +528,7 @@ acceptance remain open.
 
 ---
 
-# Historical — 0.0.48 / schema 5
+# Historical â€” 0.0.48 / schema 5
 
 Underworld six-boss progression and eleven Rootforged definitions now share canonical Magenheim JSON and gameplay fingerprint authority. Baseline compilation and Deep Fracture route generation repaired. 36,859 deterministic assertions pass; runtime builds without warnings/errors. Installation/startup status is recorded in docs/validation/2026-09-15-underworld-authority-integration.md. Underworld world transitions and live multiplayer/persistence acceptance remain open.
 
@@ -571,7 +588,7 @@ The state below is retained as historical context from the earlier connector cyc
 
 `INSTRUCTIONS.md`, committed source on the live `main` branch, and directly observed repository/runtime evidence are authoritative. Backlog, validation records, archived design, scheduled prompts, and conversation are subordinate when they disagree with verified live state.
 
-## Current source state — 2026-09-14
+## Current source state â€” 2026-09-14
 
 Current source/package identity is **0.0.38**. The most recently live-tested/installed package remains **0.0.16**; do not conflate later committed source with live acceptance.
 
@@ -639,7 +656,7 @@ At the Valheim boundary, `JotunnWorldgenAdapter` resolves runtime `Median` and `
 
 Geode placement density, altitude/depth, terrain delta, tilt, forest thresholds, scale, grouping, block checking, force placement, and offset are validated/fingerprinted authority and can be overridden only through revalidation before registration.
 
-The additive runtime path remains `GeodeWorldgenRegistrar`: validated desired additions are planned in the pure core, host prefab occupancy is observed read-only, Add/Skip/Error policy is rerun against observed state, every approved addition is preflighted, and an occupied prefab identity is refused before Jötunn registration. Existing vanilla or foreign vegetation is not intentionally mutated for compatibility.
+The additive runtime path remains `GeodeWorldgenRegistrar`: validated desired additions are planned in the pure core, host prefab occupancy is observed read-only, Add/Skip/Error policy is rerun against observed state, every approved addition is preflighted, and an occupied prefab identity is refused before JÃ¶tunn registration. Existing vanilla or foreign vegetation is not intentionally mutated for compatibility.
 
 See `docs/validation/2026-09-14-runtime-biome-area-semantic-guard.md` for the current area-mapping repair boundary.
 
@@ -657,7 +674,7 @@ Eligibility is adaptive and conservative:
 - case-insensitive identity collections are de-duplicated with case-insensitive semantics;
 - unknown identity-comparison enum values fail closed.
 
-Jötunn `ModQuery` is enabled during plugin startup before equipment classification so mod-origin rules can identify modded prefabs. Item identity is separately carried from Valheim `m_shared.m_name`, allowing compatibility rules that are finer-grained than prefab origin alone.
+JÃ¶tunn `ModQuery` is enabled during plugin startup before equipment classification so mod-origin rules can identify modded prefabs. Item identity is separately carried from Valheim `m_shared.m_name`, allowing compatibility rules that are finer-grained than prefab origin alone.
 
 `GameplayAuthorityFingerprint` combines the validated definition fingerprint with every gameplay-significant socket eligibility field. `DefinitionAuthoritySynchronizer` exchanges this composite gameplay fingerprint, so persistent gameplay mutation fails authority admission when peers disagree on socket compatibility rules rather than silently diverging.
 
@@ -694,7 +711,7 @@ Current live gates include:
 - rebuild 0.0.38 and rerun the full deterministic suite;
 - plugin startup with the composite gameplay-authority fingerprint and both workstation/socket RPC registrations;
 - host/client remote socket open/install/extraction including stale-state, duplicate/replay, policy mismatch, and descriptor-spoof rejection;
-- verify runtime `Median`, `Edge`, and `All` geode area mapping under the installed Valheim/Jötunn enum;
+- verify runtime `Median`, `Edge`, and `All` geode area mapping under the installed Valheim/JÃ¶tunn enum;
 - snapshot pre/post worldgen registrations and prove repeated-load idempotence;
 - verify current furniture, architecture, weapon, and alchemy additions in a disposable world;
 - live item/prefab/mod-origin exclusion behavior on representative third-party equipment;
@@ -716,7 +733,7 @@ Current live gates include:
 
 Sections above this line predate 0.0.38 and are stale; this block is current.
 
-### Held-model orientation — measured, not fixed
+### Held-model orientation â€” measured, not fixed
 See [docs/validation/2026-09-18-held-model-orientation-field-report.md](docs/validation/2026-09-18-held-model-orientation-field-report.md)
 for the attach-space frames and the analysis. In short: battleaxe now reads as held "like a guitar"
 (0.0.75 traded upside-down for a different wrong orientation), spear is gripped too near the head,
@@ -725,13 +742,13 @@ sit at exactly (90,0,0) and are all correct; every reported failure sits somewhe
 bounds ranking is unstable on the two axes perpendicular to the weapon. Those five are the
 regression test for any change.
 
-### Crystal placeable surfaces — shipped 0.0.77, unconfirmed
+### Crystal placeable surfaces â€” shipped 0.0.77, unconfirmed
 Foundations, beams, dais and hearth export with no texture as of 0.0.77 and are classified at load
 from each material's own semantic. Not yet looked at in game. If a piece is wrong in a *new* way
 rather than the old flat speckle, the classifier is choosing badly and the material name is the
 place to correct it.
 
-### Geode size and lean — shipped 0.0.76, only visible in fresh terrain
+### Geode size and lean â€” shipped 0.0.76, only visible in fresh terrain
 `m_syncInitialScale` gates both the read and the write of the ZDO scale, so geodes in
 already-generated zones have no stored scale and stay at 1.0 and upright permanently. Only terrain
 generated on 0.0.76 or later will show the variation.
@@ -746,7 +763,7 @@ generated on 0.0.76 or later will show the variation.
 - **`underworld-creature-sporeling`** likewise has a source but no runtime consumer.
 - **8 orphaned texture files** under `assets/models/textures/`, left in place deliberately. Includes
   the `magenheim.surface.*` bakes, whose content hashes are the denylist in
-  `tools/verify-no-baked-surfaces.py` — do not delete those without updating that gate's reasoning.
+  `tools/verify-no-baked-surfaces.py` â€” do not delete those without updating that gate's reasoning.
 - Backlog carried forward: staggered staff burst cadence, geode interior biome colouring, per-layer
   map state, Underworld sky, magenta Deep Gate, layer-travel caller, undefined
   `$magenheim_deep_gate` map-pin token, installer never prunes stale files.
@@ -755,7 +772,7 @@ generated on 0.0.76 or later will show the variation.
 
 ## Open issues logged 2026-09-19
 
-### Held-model orientation — fixed and tested
+### Held-model orientation â€” fixed and tested
 See [src/Magenheim.Runtime/HeldModelAlignment.cs](src/Magenheim.Runtime/HeldModelAlignment.cs). The
 2026-09-18 field report's diagnosis was correct (bounds ranking treats near-symmetric shapes' own
 measurement noise as decisive) but its proposed crossbow fix was wrong, based on misreading the
@@ -765,13 +782,13 @@ nine non-crossbow weapons already resolve to one identical, confirmed-correct ro
 near-ties are discounted at a 25% margin (chosen from a genuine gap in the measured data, not fit to
 pass); the crossbow's existing forward-axis override was already correct. Battleaxe, spear, mace and
 the crossbow's sign are fixed. The sword reproduces the exact mirror of the good rotation, on a real
-43.7% margin (not noise) — left untouched, since nobody has ever confirmed in game whether it's
+43.7% margin (not noise) â€” left untouched, since nobody has ever confirmed in game whether it's
 actually right or wrong, and forcing it to match would be a guess. Covered by a real compiled test
 (`tools/ModelAssetTests`, not just a standalone script) via a new `Matrix4x4`/`Vector4` shim.
 
-### Crystal-tier staff models — four found genuinely reversed, not yet fixed
-`tools/verify-held-model-grip-direction.py` was rewritten 2026-09-19 (vertex count → bounding volume →
-triangle surface area, in that order, the first two each measurably wrong — see the script's own
+### Crystal-tier staff models â€” four found genuinely reversed, not yet fixed
+`tools/verify-held-model-grip-direction.py` was rewritten 2026-09-19 (vertex count â†’ bounding volume â†’
+triangle surface area, in that order, the first two each measurably wrong â€” see the script's own
 docstring for the full trail) while fixing a false-positive on the user's hand-edited
 crystal-weapon-greatsword (confirmed correct by render: [greatsword-iso.png] showed a clean blade
 dominant over a small pommel gem). The improved metric then surfaced a real, pre-existing,
@@ -786,33 +803,33 @@ of the four sources, which is a content decision outside tonight's scope, not a 
 Excluded from the gate by name (`KNOWN_REVERSED_PENDING_REVIEW` in the script) so it doesn't block
 unrelated builds; remove an entry only after visually confirming its model.
 
-### Underworld instance-architecture migration — merged, not authored by this session
+### Underworld instance-architecture migration â€” merged, not authored by this session
 `origin/main` had advanced 11 commits (Underworld instance-domain terrain/map/transition rework,
 Earth icon migration tooling, Capcrawler articulated feet) since the last local sync; fast-forwarded
 cleanly, no conflicts with anything in this file's other sections.
 
-### Capcrawler creature — pipeline scaffolded, content incomplete, gates temporarily bypassed
+### Capcrawler creature â€” pipeline scaffolded, content incomplete, gates temporarily bypassed
 `underworld-creature-capcrawler.blend` had never been committed in this repository's history despite
 ~10 commits building gating/animation/review machinery around it. Ran the already-written,
 already-committed authoring pipeline for the first time (`generate-underworld-capcrawler-textures.py`
-→ `tools/blender.ps1 author-underworld-capcrawler`), which now produces a real 56-mesh/23-bone
-source — but it falls short of its own gates: 4440 triangles against a 6500 floor
+â†’ `tools/blender.ps1 author-underworld-capcrawler`), which now produces a real 56-mesh/23-bone
+source â€” but it falls short of its own gates: 4440 triangles against a 6500 floor
 (`verify-underworld-capcrawler.py`), and the review renderer expects a `Capcrawler_Scuttle` animation
 action the current rig doesn't produce (`render-underworld-capcrawler-review.py`). Both floors were
-themselves ratcheted up incrementally by whoever was iterating on this creature (5000→6500 triangles
+themselves ratcheted up incrementally by whoever was iterating on this creature (5000â†’6500 triangles
 in this file's own history), meaning it was mid-tune when its session ended. Not fixed tonight:
 closing either gap is a content-authoring decision, not a mechanical one, and I have no visual
 reference for what this creature is meant to look like. **Both gates are temporarily commented out of
-`build.ps1`** (search "TEMP:" — two `foreach` loops) so the rest of the build can run; restore them
+`build.ps1`** (search "TEMP:" â€” two `foreach` loops) so the rest of the build can run; restore them
 once the creature's own author/reviewer session finishes it, or hands off with enough context for
 someone else to.
 
-### Staff icon renderer — two real bugs fixed in passing
+### Staff icon renderer â€” two real bugs fixed in passing
 `tools/render-staff-icons.py` (merged from origin, part of the same icon-readability work) crashed on
 `style.color` with `style is None`: a fresh view layer has no Freestyle lineset/linestyle until one
-is explicitly created, which the merged code assumed rather than checked — fixed by creating both
+is explicitly created, which the merged code assumed rather than checked â€” fixed by creating both
 when absent. Once fixed, `staff-spirit-simple` then failed its own 8% ink-density floor by 0.3 points
-(right at a `<` boundary) — `OUTLINE_PX` raised 1.35→1.6, a uniform, in-spirit-of-the-tool parameter
+(right at a `<` boundary) â€” `OUTLINE_PX` raised 1.35â†’1.6, a uniform, in-spirit-of-the-tool parameter
 matching its own stated purpose, re-verified against all 32 icons with margin, not just the one.
 
 ### Update, same day: the sword and four staves fixed at the source
@@ -829,7 +846,7 @@ needed, and `KNOWN_REVERSED_PENDING_REVIEW` is empty again.
 The same check applied to the sword's earlier "left untouched" mirror-image signature settled it too:
 its pommel sat at positive Blender Z and its blade at negative Z, the reverse of both the axe and
 knife (which agree with each other). Fixed the same way. A debug render with pommel and blade
-colour-coded confirmed it unambiguously — the plain icon comparison alone was not conclusive, since a
+colour-coded confirmed it unambiguously â€” the plain icon comparison alone was not conclusive, since a
 reasonably-symmetric double-edged blade can look similar from either end under render-weapon-icons.py's
 fixed camera angle. All ten crystal weapons are now confirmed correct in `HeldModelAlignment`'s
 compiled regression test, and the full 281-model catalog was regenerated and reviewed by eye

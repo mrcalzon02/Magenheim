@@ -4,7 +4,7 @@ from pathlib import Path
 from PIL import Image
 R=Path(__file__).resolve().parents[1]
 pieces=json.loads((R/'default-data/foundation.json').read_text())['underworldArchitecture']['pieces']
-assert len(pieces)==11
+assert len(pieces)==14
 for e in pieces:
  mid='rootforged-'+e['Id'].split('.')[-1].replace('_','-')
  data=json.loads((R/'assets/models/runtime'/f'{mid}.model.json').read_text())
@@ -19,8 +19,13 @@ for e in pieces:
   assert all(abs(c-1)<.001 for c in p['material']['color']),(mid,'texture would be tinted twice')
   assert p['material']['texture'],(mid,'missing authored texture')
  if e['Tier']==1:assert sum('iron-collar' in p['name'] for p in data['parts'])==3,(mid,'missing physical iron bands')
+ if e['Kind'] in (6,7,8):
+  for side in (-1,1):
+   assert any(side*v[0]>expected[0]*.35 and v[1]>expected[1]*.8 for v in points),(mid,'missing branch')
+  assert not any(abs(v[0])>expected[0]*.25 and v[1]<expected[1]*.35 for v in points),(mid,'blocked lower clearance')
+  assert sum('trunk-root-' in p['name'] for p in data['parts'])==3,(mid,'missing braided trunk')
  if e['Kind']==5:
   # Open passage beneath the crown, not a solid slab across the walk-through area.
   assert not any(abs(v[0])<.35 and v[1]<expected[1]*.45 for v in points),(mid,'blocked arch opening')
  with Image.open(R/'assets/earth'/f'{mid}.icon.png') as im:assert im.size==(256,256) and im.mode=='RGBA'
-print('PASS: 11 Rootforged catalog bindings, dimensions, ground contact, collision, open arches, physical iron collars, neutral texture tint and model icons.')
+print('PASS: 14 Rootforged catalog bindings, dimensions, ground contact, collision, open arches, physical iron collars, neutral texture tint and model icons.')

@@ -2947,9 +2947,9 @@
     "source": "source/rootforged-great-column-plinth.blend",
     "glb": "glb/rootforged-great-column-plinth.glb",
     "runtime": "runtime/rootforged-great-column-plinth.model.json",
-    "source_sha256": "1df5240d437514eff5a9118bd64744f9062a4f8d962b5a525b9a64751e97811d",
-    "runtime_sha256": "916294eff580247fa4717fba3eee39956c06496914a65f8a185ef5bdc8ac5ebd",
-    "glb_sha256": "f6b07900fe5cbfd7d9d62fcb6a2efa1a8933288109b26d509efbbfa8a06b3216"
+    "source_sha256": "1e3b1f9de70cc58dc7618c64746a524622c2764e04073e225f1101a458ded5d2",
+    "runtime_sha256": "1517878e7b38c39dac1d56aec8d3c9b0d6efe7c4ea80278f03bdeadd9af0d8d5",
+    "glb_sha256": "24402489232adaab451f9adc19a8b9ca368ad66e26fc2cd3246c0b6ed8836d36"
   },
   {
     "id": "rootforged-iron-banded-worldroot-beam-4m",
@@ -2959,9 +2959,9 @@
     "source": "source/rootforged-iron-banded-worldroot-beam-4m.blend",
     "glb": "glb/rootforged-iron-banded-worldroot-beam-4m.glb",
     "runtime": "runtime/rootforged-iron-banded-worldroot-beam-4m.model.json",
-    "source_sha256": "02dbda36de56a9f18f03e534fe21a2830ecddcc63a5afab56e38d0e26089d4f0",
-    "runtime_sha256": "874c51609b2256ba3ec5875134696e1fd96818e83f5463aba7ba5a063f1bc69a",
-    "glb_sha256": "6fe3a7f697213f27afc076d86b71177f4a95b91603ee7c0b918ab13fc5ad8beb"
+    "source_sha256": "bcb9e31ce174f523309c04725484dc547a6ba167093b5b1f75647b0ce27533b0",
+    "runtime_sha256": "de97837fc0218f9dd50b69cb5aab352c4a4eed3aff941ea732663e002dbc179f",
+    "glb_sha256": "18d7d9553cbef09f3ec8d6f5c269b9dcc33a5300b45a9c445200795b11a990bf"
   },
   {
     "id": "rootforged-rootforged-arch-rib-4m",
@@ -2971,9 +2971,9 @@
     "source": "source/rootforged-rootforged-arch-rib-4m.blend",
     "glb": "glb/rootforged-rootforged-arch-rib-4m.glb",
     "runtime": "runtime/rootforged-rootforged-arch-rib-4m.model.json",
-    "source_sha256": "7bafa274c9b350fc245b1959225323dfe709e0a5bb3b6d924913495348c32f99",
-    "runtime_sha256": "f728c92f7655e633165c935112c96917dd8565856a37541cb70aecbcf56dc566",
-    "glb_sha256": "060e53fc31f17e4d95955d0029b00ad7288e65b0476d071053d3d9a551db8f60"
+    "source_sha256": "0430a8252e6a7fde9de395eeeabcc0d6871ebe0a161f56ee6dc5e87dde99b3d9",
+    "runtime_sha256": "cdf1403cb57a2ec8cb714ba6b165571ebe24728542b4afbeac73cd472f0d3bf5",
+    "glb_sha256": "11dc8acde4a757e8d59935246fd6ab85b53b1737840992aaa164c70114abebd0"
   },
   {
     "id": "rootforged-rootforged-arch-rib-8m",
@@ -2983,9 +2983,9 @@
     "source": "source/rootforged-rootforged-arch-rib-8m.blend",
     "glb": "glb/rootforged-rootforged-arch-rib-8m.glb",
     "runtime": "runtime/rootforged-rootforged-arch-rib-8m.model.json",
-    "source_sha256": "ea1ce2c142dd0eb27eaa2055b89446ca3e40d364d18ed679dea530124f48b5e0",
-    "runtime_sha256": "5b0eb28feb38db28d53266bb7e679d27caecc9249f9fcbf5712c13809786256c",
-    "glb_sha256": "8620c5bf807d76b7f96896815136ee6cbc80688791964c4e3c9a12098a34de60"
+    "source_sha256": "3c7f772e4c04b9af3e0ae2479ebee80c28e5febac10a390f7ec7b2c097619063",
+    "runtime_sha256": "b26c7cbded5e3b5d0d86d6603ffd00c6fdefdbbf16197b80154fd07b0fa02506",
+    "glb_sha256": "7a4baaa0f959eda27530a3b61ab979a502fccec24f7b91367a76a6491c8dd0ee"
   },
   {
     "id": "rootforged-understone-foundation-2x2",
@@ -2995,9 +2995,9 @@
     "source": "source/rootforged-understone-foundation-2x2.blend",
     "glb": "glb/rootforged-understone-foundation-2x2.glb",
     "runtime": "runtime/rootforged-understone-foundation-2x2.model.json",
-    "source_sha256": "a658db17ad07ed7d0a5d4bda768b36de03ab739c1922626707976955504c4ded",
-    "runtime_sha256": "84f2eefc16fb84909448cd76f123b677c76dd74a7d1e17eacc6b0f3844852b83",
-    "glb_sha256": "4134daba9d65b8c733b5101be52a74564b1fbc6bb29e9160ff5f72d802df5ef3"
+    "source_sha256": "7707e472ddc516e57cdee108afeb9d98be77464e922c14010db3d955a7266753",
+    "runtime_sha256": "018c612f2841739e9a72b3ebde79ea27f445d9b8f0fef14225e40e472f4d4015",
+    "glb_sha256": "3c5dc6149b7b270dcddc097371b3ff73025120afe64008e09e68ba9e0576551a"
   },
   {
     "id": "rootforged-worldroot-beam-2m",
@@ -3007,9 +3007,9 @@
     "source": "source/rootforged-worldroot-beam-2m.blend",
     "glb": "glb/rootforged-worldroot-beam-2m.glb",
     "runtime": "runtime/rootforged-worldroot-beam-2m.model.json",
-    "source_sha256": "085f6724a6db243e81696d72bb5eed0700761e0153b28f29d6765c1de8ccb024",
-    "runtime_sha256": "2dcaa2bcffa5d14765be87b579723b91224185c6616569c702c65d8425e3d693",
-    "glb_sha256": "1d7e9883994a70eed6ed764712007317244370d2fe3049243c1af6ae5b1d552c"
+    "source_sha256": "aa561bbf4e304d029b12b15bd974c001d834c5484166310c279d3a2e105e2e98",
+    "runtime_sha256": "7c154760a5236c5579f1dfd8ac07462565f0b8b3a935a27c8ad02cdec005014f",
+    "glb_sha256": "ed55b7e9f4f37f45812024f9a0e03de527c213a4234bf0a2cad3b63ccfe970e0"
   },
   {
     "id": "rootforged-worldroot-beam-4m",
@@ -3019,9 +3019,9 @@
     "source": "source/rootforged-worldroot-beam-4m.blend",
     "glb": "glb/rootforged-worldroot-beam-4m.glb",
     "runtime": "runtime/rootforged-worldroot-beam-4m.model.json",
-    "source_sha256": "52be22bf716d75099120b8fe7ecbd2d190fa8100c670a4332af7a5a31b155e66",
-    "runtime_sha256": "744bae123a7a97999d91e5215ac3348129028969b5a05be7e8cdecce1b58fc7a",
-    "glb_sha256": "85d33796a10d47b11b5c740182a1dc77248e33bbe2ecd4e9be9af0198017131f"
+    "source_sha256": "84e7f49c3280a9c99b750a4cfd21ecb180374af6622368243f3a78eae3dfde91",
+    "runtime_sha256": "5e1168dc1557fb6aab83f9b4fd6ec6f42e0ad7fb7a675ea0d8db6c00a206769e",
+    "glb_sha256": "f6d47bcdd5aaa205a76670f7430ebc1c1e72999269bc70ca2e4c3c5be41bcdae"
   },
   {
     "id": "rootforged-worldroot-beam-8m",
@@ -3031,9 +3031,21 @@
     "source": "source/rootforged-worldroot-beam-8m.blend",
     "glb": "glb/rootforged-worldroot-beam-8m.glb",
     "runtime": "runtime/rootforged-worldroot-beam-8m.model.json",
-    "source_sha256": "a5bd3dd79feb21ec81e81c8beb25f1608a0e94bace472c7ec89e191479ff8b31",
-    "runtime_sha256": "b39be7f3eb4552b5007e977c2f7b01e246356d255b5687d4ca3693cc2f1952ea",
-    "glb_sha256": "162ab7f9384788a455847351eb022cdc6435e8a9c42e5b4ce49c25b080437706"
+    "source_sha256": "d5e827802ae50fe21bf8be7629da743c81e46dcdc61a1a9ed862846a71148a92",
+    "runtime_sha256": "abc33dbcb42bf657d502ed78b7739e774004743e166b63251499977be774359b",
+    "glb_sha256": "8fc33b63bf977d0911340283bfc7720cc1c5cbdb3efd1735734ea77739e4ed52"
+  },
+  {
+    "id": "rootforged-worldroot-forked-column-8m",
+    "parts": 15,
+    "triangles": 9468,
+    "materials": 2,
+    "source": "source/rootforged-worldroot-forked-column-8m.blend",
+    "glb": "glb/rootforged-worldroot-forked-column-8m.glb",
+    "runtime": "runtime/rootforged-worldroot-forked-column-8m.model.json",
+    "source_sha256": "281741179932916685ef6f8ce16385c08af00b2ad1e2ffdcd609dc68d7d452de",
+    "runtime_sha256": "e4c175bc30dc8acb71debd4c3f62ca3708b7bafa60b2f49f9a5153de229299d0",
+    "glb_sha256": "289eb8ab375540ad39c261c1c6e9a0f6f67913649327896908b9eb2224aa4b61"
   },
   {
     "id": "rootforged-worldroot-pillar-2m",
@@ -3043,9 +3055,9 @@
     "source": "source/rootforged-worldroot-pillar-2m.blend",
     "glb": "glb/rootforged-worldroot-pillar-2m.glb",
     "runtime": "runtime/rootforged-worldroot-pillar-2m.model.json",
-    "source_sha256": "a21913344ccc54abb0fde0332560edbb92161ded250498b1ec2bcf8def571103",
-    "runtime_sha256": "6abe4c8c1c36182374664730df5dcfe836ada0c57d9e11657242775f13fdd8dc",
-    "glb_sha256": "26fddaf2480592542c31da154af6e46f5bb766fcb891d49489aa023e9b61b485"
+    "source_sha256": "ab56650fe88c8b8dea77f08bf49917da33dad55788737c01fdafb9c2f720b1f7",
+    "runtime_sha256": "765fc56222bd66fe39394ebed6557d40610f7d4aea874f48eaaf4ecdcb891da4",
+    "glb_sha256": "e53b0e52665a442a82742b015a382fb174ab7fcfd9ad965e613896a11b3fc36e"
   },
   {
     "id": "rootforged-worldroot-pillar-4m",
@@ -3055,9 +3067,9 @@
     "source": "source/rootforged-worldroot-pillar-4m.blend",
     "glb": "glb/rootforged-worldroot-pillar-4m.glb",
     "runtime": "runtime/rootforged-worldroot-pillar-4m.model.json",
-    "source_sha256": "472b0a0779fbb0667187e68ae0a2e096333d9d3f2dba5c4df871770974e82e5a",
-    "runtime_sha256": "60398d7406250c42472285e852c61fda5db1e9bb41614cc8e0eafa8da9275a43",
-    "glb_sha256": "868ba74fd7169406253a7ebc1bd07fa86b25239ac5cbf8fe0eb937cc975d6ffb"
+    "source_sha256": "67fa8fa9decad9dad7b522674d6497ad862f4d2fbaadaa938561920aecde52fb",
+    "runtime_sha256": "6a906c31cf942ad6a7a600b49e764a3ebeddea2fd5cbcd1404da78dcad1fa9cb",
+    "glb_sha256": "b9c334648d83edcb5a97222cb0aabd35b2740a0cac266517e072f604a4c05ba7"
   },
   {
     "id": "rootforged-worldroot-pillar-8m",
@@ -3067,9 +3079,33 @@
     "source": "source/rootforged-worldroot-pillar-8m.blend",
     "glb": "glb/rootforged-worldroot-pillar-8m.glb",
     "runtime": "runtime/rootforged-worldroot-pillar-8m.model.json",
-    "source_sha256": "3ad80c2207c0ba75bc2e4bfbfa067d0452ddc287aff54c2334da4717d1df5657",
-    "runtime_sha256": "c4f4f26b71c4e08de64d4bc56bb6413908bff81d6461971ecdec56fcba4afd5d",
-    "glb_sha256": "cccc4d68cdbb6dbeb97e48760cb3505bcc9930bbb76b422e7efa838fa4749d8e"
+    "source_sha256": "84d16373c15c860fd062e9626d9157163072a7a3607871ef6613c1d6b7e05bf3",
+    "runtime_sha256": "09035f3e456bc5a43b7a9b23f4fe22ce8a6535d3115027343466d559bad2e8df",
+    "glb_sha256": "69fe0df8f495eb40d2627e5273f42ed2da8f17a34c270f57dd43004eac85b5ec"
+  },
+  {
+    "id": "rootforged-worldroot-t-brace-4m",
+    "parts": 15,
+    "triangles": 9468,
+    "materials": 2,
+    "source": "source/rootforged-worldroot-t-brace-4m.blend",
+    "glb": "glb/rootforged-worldroot-t-brace-4m.glb",
+    "runtime": "runtime/rootforged-worldroot-t-brace-4m.model.json",
+    "source_sha256": "3027892f55711abe348896592c130c1d257be5380222dc16b57bb51e783cc175",
+    "runtime_sha256": "4598f687d13bcf5a90fa6fb0c74ba9cfea055eececa8959a93f1962654363e4b",
+    "glb_sha256": "5ded3075121e63bec8418c42002d33507522668fdca773a666515094a6d8f578"
+  },
+  {
+    "id": "rootforged-worldroot-y-brace-4m",
+    "parts": 15,
+    "triangles": 9468,
+    "materials": 2,
+    "source": "source/rootforged-worldroot-y-brace-4m.blend",
+    "glb": "glb/rootforged-worldroot-y-brace-4m.glb",
+    "runtime": "runtime/rootforged-worldroot-y-brace-4m.model.json",
+    "source_sha256": "c0a3c69f02332ee10fe7fa29c60c1b42186f81fd5763a893d2b1c92f7bcb3a73",
+    "runtime_sha256": "34cf3f0924f8d6234e929902af343a2e0a4f6f585bcb3b6ab6540572e75cf233",
+    "glb_sha256": "ed4353d312cef7688e5c45960a83f7518daa1e8bbc290ee14020458dde63ddb0"
   },
   {
     "id": "rune-engraver",

@@ -1,4 +1,4 @@
 {
-  "version": "0.0.92",
-  "description": "0.0.92: Reconciles Rootforged source art and exports with the newer Underworld atmosphere and lavafall landmarks; repairs nested stash conflicts and adds a conflict-marker build gate."
+  "version": "0.0.93",
+  "description": "0.0.93: Expands Rootforged construction with braided Worldroot Y braces, T braces and forked columns, authored icons, collision and native attachment points."
 }

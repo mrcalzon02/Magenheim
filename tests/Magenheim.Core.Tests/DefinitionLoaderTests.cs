@@ -20,7 +20,7 @@ internal static class DefinitionLoaderTests
         var baseline = MagenheimDefinitionLoader.LoadFromJson(json);
         Assert(baseline.SchemaVersion == 5, "Shipped definition schema is current.");
         Assert(baseline.Underworld?.Bosses.Count == 6 && baseline.Underworld.Deepstones.Count == 6, "Shipped six-boss loop loads through canonical loader.");
-        Assert(baseline.UnderworldArchitecture?.Pieces.Count == 11, "Shipped A0 architecture loads through canonical loader.");
+        Assert(baseline.UnderworldArchitecture?.Fingerprint == UnderworldArchitectureCatalog.CreateInitialStructuralSlice().Fingerprint, "Shipped architecture matches the canonical catalog through the loader.");
         var overridden = MagenheimDefinitionOverrideApplier.Apply(baseline, Array.Empty<RefinementBalanceOverride>(), Array.Empty<GeodeBalanceOverride>());
         Assert(overridden.Fingerprint == baseline.Fingerprint, "Balance overrides preserve Underworld authority.");
         var architecture = baseline.UnderworldArchitecture!;

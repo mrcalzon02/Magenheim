@@ -14,6 +14,9 @@ public enum UnderworldBuildPieceKind
     Pillar,
     ReinforcedBeam,
     ArchRib,
+    YBrace,
+    TBrace,
+    ForkedColumn,
 }
 
 public enum UnderworldBuildTier
@@ -313,6 +316,21 @@ public static class UnderworldArchitectureCatalog
                     "piece_stonecutter",
                     Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 12),
                     Cost(UnderworldArchitectureValidator.IronResourceId, 8)),
+                Piece(
+                    "worldroot_y_brace_4m", "WorldrootYBrace_4m", "Worldroot Y Brace 4m",
+                    UnderworldBuildPieceKind.YBrace, UnderworldBuildTier.Rootstone,
+                    4, 4, 1, "piece_workbench",
+                    Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 6)),
+                Piece(
+                    "worldroot_t_brace_4m", "WorldrootTBrace_4m", "Worldroot T Brace 4m",
+                    UnderworldBuildPieceKind.TBrace, UnderworldBuildTier.Rootstone,
+                    4, 2, 1, "piece_workbench",
+                    Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 4)),
+                Piece(
+                    "worldroot_forked_column_8m", "WorldrootForkedColumn_8m", "Worldroot Forked Column 8m",
+                    UnderworldBuildPieceKind.ForkedColumn, UnderworldBuildTier.Rootstone,
+                    4, 8, 1, "piece_workbench",
+                    Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 12)),
             });
 
     private static UnderworldBuildPieceDefinition Piece(

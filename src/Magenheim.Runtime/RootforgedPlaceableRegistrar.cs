@@ -120,6 +120,20 @@ internal sealed class RootforgedPlaceableRegistrar : IDisposable
                 for (var y = 0; y <= height; y += 2)
                 { Snap(0,y,0); Snap(-.5f,y,0); Snap(.5f,y,0); Snap(0,y,-.5f); Snap(0,y,.5f); }
                 break;
+            case UnderworldBuildPieceKind.YBrace:
+            case UnderworldBuildPieceKind.TBrace:
+            case UnderworldBuildPieceKind.ForkedColumn:
+                var junction = definition.Kind == UnderworldBuildPieceKind.YBrace ? height*.5f
+                    : definition.Kind == UnderworldBuildPieceKind.ForkedColumn ? height*.7f : height-.38f;
+                Snap(0,0,0); Snap(0,junction,0);
+                for (var y = 2; y < junction; y += 2) Snap(0,y,0);
+                foreach (var side in new[] {-1f,1f})
+                {
+                    Snap(side*(width*.5f-.3f),height,0);
+                    Snap(side*width*.5f,height-.3f,0);
+                }
+                if (definition.Kind == UnderworldBuildPieceKind.TBrace) Snap(0,height,0);
+                break;
             case UnderworldBuildPieceKind.ArchRib:
                 Snap(-width*.5f+.4f,0,0); Snap(width*.5f-.4f,0,0);
                 Snap(0,height,0); Snap(0,height-.5f,0);

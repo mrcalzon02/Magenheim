@@ -63,6 +63,28 @@ for e in entries:
   for side in [-1,1]:
    pts=[Vector((side*w*.31+.035*math.sin(t*4),0,h*t)) for t in [i/16 for i in range(17)]]
    tube('root-inlay-'+str(side),pts,[.07]*17,wood,8)
+ elif kind in (6,7,8):
+  # Three continuous braided limbs share a grown junction. Upper branches leave open space below.
+  junction=h*.5 if kind==6 else h*.7 if kind==8 else h-.38
+  paths=[('trunk',Vector((0,0,.3)),Vector((0,0,junction)))]
+  for sign in (-1,1):
+   paths.append(('arm-'+str(sign),Vector((0,0,junction)),Vector((sign*(w*.5-.3),0,h-.3))))
+  for label,start,end in paths:
+   tangent=(end-start).normalized();normal=tangent.cross(Vector((0,1,0))).normalized()
+   for strand in range(3):
+    phase=strand*math.tau/3;pts=[];rs=[]
+    for i in range(33):
+     t=i/32;angle=phase+t*math.pi
+     p=start.lerp(end,t)
+     p+=(normal*math.sin(angle)+Vector((0,math.cos(angle),0)))*.12*math.sin(math.pi*t)
+     pts.append(p);rs.append(.23*(1+.07*math.sin(t*14+phase)))
+    tube(label+'-root-'+str(strand),pts,rs,wood if strand!=1 else pale)
+   for vein in range(2):
+    pts=[]
+    for i in range(25):
+     t=.06+.88*i/24;angle=t*math.pi+vein*math.pi
+     pts.append(start.lerp(end,t)+normal*(.25*math.sin(angle))+Vector((0,.25*math.cos(angle),0)))
+    tube(label+'-vein-'+str(vein),pts,[.035]*25,pale,8)
  else:
   def axis(t):
    if kind==5:return Vector(((w-.8)*(t-.5),0,.36+(h-.72)*math.sin(math.pi*t)))

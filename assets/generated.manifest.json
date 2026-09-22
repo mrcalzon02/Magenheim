@@ -312,7 +312,7 @@
         "assets/models/runtime/rootforged-*.model.json"
       ],
       "hash": "generator-only",
-      "generator_sha256": "141041ef46718605b821e3a56b1fe917d74cd9f398eabc228c9278f743f4f2f3",
+      "generator_sha256": "9846477a2eac37cb7e910601741679a85578b74c5ecc8d25282cfc3c71497662",
       "output_sha256": {
         "assets/models/glb/rootforged-great-column-plinth.glb": null,
         "assets/models/glb/rootforged-iron-banded-worldroot-beam-4m.glb": null,
@@ -322,9 +322,12 @@
         "assets/models/glb/rootforged-worldroot-beam-2m.glb": null,
         "assets/models/glb/rootforged-worldroot-beam-4m.glb": null,
         "assets/models/glb/rootforged-worldroot-beam-8m.glb": null,
+        "assets/models/glb/rootforged-worldroot-forked-column-8m.glb": null,
         "assets/models/glb/rootforged-worldroot-pillar-2m.glb": null,
         "assets/models/glb/rootforged-worldroot-pillar-4m.glb": null,
         "assets/models/glb/rootforged-worldroot-pillar-8m.glb": null,
+        "assets/models/glb/rootforged-worldroot-t-brace-4m.glb": null,
+        "assets/models/glb/rootforged-worldroot-y-brace-4m.glb": null,
         "assets/models/runtime/rootforged-great-column-plinth.model.json": null,
         "assets/models/runtime/rootforged-iron-banded-worldroot-beam-4m.model.json": null,
         "assets/models/runtime/rootforged-rootforged-arch-rib-4m.model.json": null,
@@ -333,9 +336,12 @@
         "assets/models/runtime/rootforged-worldroot-beam-2m.model.json": null,
         "assets/models/runtime/rootforged-worldroot-beam-4m.model.json": null,
         "assets/models/runtime/rootforged-worldroot-beam-8m.model.json": null,
+        "assets/models/runtime/rootforged-worldroot-forked-column-8m.model.json": null,
         "assets/models/runtime/rootforged-worldroot-pillar-2m.model.json": null,
         "assets/models/runtime/rootforged-worldroot-pillar-4m.model.json": null,
         "assets/models/runtime/rootforged-worldroot-pillar-8m.model.json": null,
+        "assets/models/runtime/rootforged-worldroot-t-brace-4m.model.json": null,
+        "assets/models/runtime/rootforged-worldroot-y-brace-4m.model.json": null,
         "assets/models/source/rootforged-great-column-plinth.blend": null,
         "assets/models/source/rootforged-iron-banded-worldroot-beam-4m.blend": null,
         "assets/models/source/rootforged-rootforged-arch-rib-4m.blend": null,
@@ -344,9 +350,12 @@
         "assets/models/source/rootforged-worldroot-beam-2m.blend": null,
         "assets/models/source/rootforged-worldroot-beam-4m.blend": null,
         "assets/models/source/rootforged-worldroot-beam-8m.blend": null,
+        "assets/models/source/rootforged-worldroot-forked-column-8m.blend": null,
         "assets/models/source/rootforged-worldroot-pillar-2m.blend": null,
         "assets/models/source/rootforged-worldroot-pillar-4m.blend": null,
-        "assets/models/source/rootforged-worldroot-pillar-8m.blend": null
+        "assets/models/source/rootforged-worldroot-pillar-8m.blend": null,
+        "assets/models/source/rootforged-worldroot-t-brace-4m.blend": null,
+        "assets/models/source/rootforged-worldroot-y-brace-4m.blend": null
       }
     },
     {
@@ -363,7 +372,7 @@
         "assets/earth/rootforged-*.icon.png"
       ],
       "hash": "generator-only",
-      "generator_sha256": "3ee13ef2468f00bd7f0c7141d9c8c6b65093414e2822aeef3bda3041b306b698",
+      "generator_sha256": "5b78d020a406ff5497de7c06400c743e63b81b6a1a7db7a07ac0e88f295a29fb",
       "output_sha256": {
         "assets/earth/rootforged-great-column-plinth.icon.png": null,
         "assets/earth/rootforged-iron-banded-worldroot-beam-4m.icon.png": null,
@@ -373,9 +382,12 @@
         "assets/earth/rootforged-worldroot-beam-2m.icon.png": null,
         "assets/earth/rootforged-worldroot-beam-4m.icon.png": null,
         "assets/earth/rootforged-worldroot-beam-8m.icon.png": null,
+        "assets/earth/rootforged-worldroot-forked-column-8m.icon.png": null,
         "assets/earth/rootforged-worldroot-pillar-2m.icon.png": null,
         "assets/earth/rootforged-worldroot-pillar-4m.icon.png": null,
-        "assets/earth/rootforged-worldroot-pillar-8m.icon.png": null
+        "assets/earth/rootforged-worldroot-pillar-8m.icon.png": null,
+        "assets/earth/rootforged-worldroot-t-brace-4m.icon.png": null,
+        "assets/earth/rootforged-worldroot-y-brace-4m.icon.png": null
       }
     }
   ]
