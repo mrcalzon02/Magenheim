@@ -74,7 +74,7 @@ try {
     foreach ($modelGate in @(
         'verify-model-geometry','verify-model-surface-continuity','verify-held-model-orientation',
         'verify-held-model-grip-direction',
-        'verify-deep-fracture-caverns','verify-earth-assets')) {
+        'verify-deep-fracture-caverns','verify-earth-assets','verify-rootforged-assets')) {
         & python "$PSScriptRoot/tools/$modelGate.py"
         if ($LASTEXITCODE -ne 0) { throw "Model validation failed: $modelGate" }
     }

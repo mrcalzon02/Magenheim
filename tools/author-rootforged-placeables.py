@@ -7,7 +7,7 @@ entries=json.loads((R/'default-data/foundation.json').read_text())['underworldAr
 
 def material(name,color,metal=0):
  m=bpy.data.materials.new(name);m.use_nodes=True;m.use_backface_culling=True
- bs=m.node_tree.nodes.get('Principled BSDF');bs.inputs['Base Color'].default_value=(*color,1);bs.inputs['Metallic'].default_value=metal;bs.inputs['Roughness'].default_value=.8 if not metal else .45
+ bs=m.node_tree.nodes.get('Principled BSDF');bs.inputs['Base Color'].default_value=(1,1,1,1);bs.inputs['Metallic'].default_value=metal;bs.inputs['Roughness'].default_value=.8 if not metal else .45
  im=bpy.data.images.new(name+'-grain',256,256);pixels=[];rng=random.Random(47)
  for y in range(256):
   for x in range(256):
@@ -82,10 +82,28 @@ for e in entries:
     p=axis(t)
     # Collars follow the local tangent, with four forged straps framing the root.
     tangent=(axis(min(.999,t+.001))-axis(max(.001,t-.001))).normalized()
-    side=Vector((0,1,0));up=tangent.cross(side).normalized()
-    for face in range(4):
-     angle=face*math.pi/2;offset=.34*(math.cos(angle)*side+math.sin(angle)*up)
-     tube('iron-collar-%s-%s'%(number,face),[p+offset-tangent*.08,p+offset+tangent*.08],[.12,.12],iron,8)
+    bpy.ops.mesh.primitive_torus_add(major_radius=.35,minor_radius=.065,major_segments=24,minor_segments=8,location=p)
+    ring=bpy.context.object;ring.name='iron-collar-'+str(number);ring.rotation_mode='QUATERNION';ring.rotation_quaternion=Vector((0,0,1)).rotation_difference(tangent);ring.data.materials.append(iron)
+    ring['game_node_path']=ring.name;ring['game_collision']=False;ring['game_crystal']='null'
+  # Slender raised root veins give a second detail scale without changing the structural core.
+  for branch in range(2):
+   pts=[]
+   for i in range(25):
+    t=.08+.84*i/24;p=axis(t);angle=t*math.tau*1.4+branch*math.pi
+    offset=Vector((math.sin(angle)*.3,math.cos(angle)*.3,0)) if kind==3 else Vector((0,math.cos(angle)*.3,math.sin(angle)*.3))
+    pts.append(p+offset)
+   tube('surface-root-vein-'+str(branch),pts,[.035+.025*math.sin(math.pi*i/24) for i in range(25)],pale,8)
+ # Fit the authored envelope to catalog meters; roots retain local detail inside snap planes.
+ objects=[o for o in bpy.context.scene.objects if o.type=='MESH']
+ points=[o.matrix_world @ v.co for o in objects for v in o.data.vertices]
+ lo=Vector([min(p[i] for p in points) for i in range(3)]);hi=Vector([max(p[i] for p in points) for i in range(3)])
+ target=Vector((w,d,h))
+ for ob in objects:
+  world=ob.matrix_world.copy()
+  for vertex in ob.data.vertices:
+   pos=world@vertex.co
+   vertex.co=Vector([(pos[i]-lo[i])/(hi[i]-lo[i])*target[i] for i in range(3)])-Vector((w*.5,d*.5,0))
+  ob.matrix_world.identity()
  bpy.context.scene['model_id']=mid;bpy.context.scene['runtime_lights']='[]'
  bpy.context.preferences.filepaths.save_version=0
  bpy.ops.wm.save_as_mainfile(filepath=str(R/'assets/models/source'/f'{mid}.blend'),compress=True)

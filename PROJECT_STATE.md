@@ -1,3 +1,33 @@
+# Current source candidate - 0.0.91 / schema 5 (2026-09-21)
+
+Rootforged player placeables are now explicitly authorized as a separate pass after natural scenery.
+Eleven catalog-backed pieces have authored Blender/GLB/runtime models and rendered icons: 2/4/8m
+beams and pillars, 4m iron-banded beam, 4/8m arch ribs, foundation and column plinth. Braided trunks,
+raised surface roots, forged collars and stepped stone seats supply the visual detail. See
+`docs/ROOTFORGED_PLACEABLES.md` for the recipe table and runtime details.
+
+Registration uses Hammer > Rootforged with native stations, building support, wear and refunds.
+Interim resource bindings: Worldroot Timber -> RoundLog, Understone -> Stone, Iron -> Iron;
+catalog quantities remain unchanged. No new harvesting or support system. Source snap points use
+the installed game's direct-child `snappoint` contract. Collision stays active across wear states.
+
+Full `closeout.ps1 -Offline` passed and installed 0.0.91 into Central Fuckery. 294 model payloads,
+128 icons, 38,291 Core assertions plus separately reported suites, Rootforged dimensions/material/
+opening/collision gates and native binding checks passed. Runtime build: zero warnings/errors;
+model importer retains prior nullable warnings. All installed file hashes and enabled launcher
+catalog metadata were verified. DLL SHA-256:
+`A43BC67EBF589A4548C70454AC065677330E958089ECC919EB1852AAD52B819F`.
+Catalog backup: `backups/mods-20260921-151752-051.yml`.
+
+Source-art contact sheet reviewed at `artifacts/review/rootforged/rootforged-contact-sheet.png`.
+No live game startup, placement/support/weathering/refund or multiplayer acceptance performed.
+
+Launcher description: "0.0.91: Adds eleven authored Rootforged placeables with braided roots,
+iron collars, stone bases, matching icons and native building support. Uses core wood, stone
+and iron pending Underworld harvesting."
+
+---
+
 # Current source candidate - 0.0.90 / schema 5 (2026-09-21)
 
 User scope correction: terrain, vegetation, ecology and natural features; no player-buildable

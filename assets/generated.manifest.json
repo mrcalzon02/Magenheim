@@ -296,6 +296,87 @@
         "assets/earth/furniture-mineral-shelf.icon.png": null
       },
       "hash": "generator-only"
+    },
+    {
+      "id": "rootforged-models",
+      "generator": "tools/author-rootforged-placeables.py",
+      "command": [
+        "pwsh",
+        "-NoProfile",
+        "-File",
+        "tools/rebuild-rootforged-assets.ps1"
+      ],
+      "outputs": [
+        "assets/models/source/rootforged-*.blend",
+        "assets/models/glb/rootforged-*.glb",
+        "assets/models/runtime/rootforged-*.model.json"
+      ],
+      "hash": "generator-only",
+      "generator_sha256": "141041ef46718605b821e3a56b1fe917d74cd9f398eabc228c9278f743f4f2f3",
+      "output_sha256": {
+        "assets/models/glb/rootforged-great-column-plinth.glb": null,
+        "assets/models/glb/rootforged-iron-banded-worldroot-beam-4m.glb": null,
+        "assets/models/glb/rootforged-rootforged-arch-rib-4m.glb": null,
+        "assets/models/glb/rootforged-rootforged-arch-rib-8m.glb": null,
+        "assets/models/glb/rootforged-understone-foundation-2x2.glb": null,
+        "assets/models/glb/rootforged-worldroot-beam-2m.glb": null,
+        "assets/models/glb/rootforged-worldroot-beam-4m.glb": null,
+        "assets/models/glb/rootforged-worldroot-beam-8m.glb": null,
+        "assets/models/glb/rootforged-worldroot-pillar-2m.glb": null,
+        "assets/models/glb/rootforged-worldroot-pillar-4m.glb": null,
+        "assets/models/glb/rootforged-worldroot-pillar-8m.glb": null,
+        "assets/models/runtime/rootforged-great-column-plinth.model.json": null,
+        "assets/models/runtime/rootforged-iron-banded-worldroot-beam-4m.model.json": null,
+        "assets/models/runtime/rootforged-rootforged-arch-rib-4m.model.json": null,
+        "assets/models/runtime/rootforged-rootforged-arch-rib-8m.model.json": null,
+        "assets/models/runtime/rootforged-understone-foundation-2x2.model.json": null,
+        "assets/models/runtime/rootforged-worldroot-beam-2m.model.json": null,
+        "assets/models/runtime/rootforged-worldroot-beam-4m.model.json": null,
+        "assets/models/runtime/rootforged-worldroot-beam-8m.model.json": null,
+        "assets/models/runtime/rootforged-worldroot-pillar-2m.model.json": null,
+        "assets/models/runtime/rootforged-worldroot-pillar-4m.model.json": null,
+        "assets/models/runtime/rootforged-worldroot-pillar-8m.model.json": null,
+        "assets/models/source/rootforged-great-column-plinth.blend": null,
+        "assets/models/source/rootforged-iron-banded-worldroot-beam-4m.blend": null,
+        "assets/models/source/rootforged-rootforged-arch-rib-4m.blend": null,
+        "assets/models/source/rootforged-rootforged-arch-rib-8m.blend": null,
+        "assets/models/source/rootforged-understone-foundation-2x2.blend": null,
+        "assets/models/source/rootforged-worldroot-beam-2m.blend": null,
+        "assets/models/source/rootforged-worldroot-beam-4m.blend": null,
+        "assets/models/source/rootforged-worldroot-beam-8m.blend": null,
+        "assets/models/source/rootforged-worldroot-pillar-2m.blend": null,
+        "assets/models/source/rootforged-worldroot-pillar-4m.blend": null,
+        "assets/models/source/rootforged-worldroot-pillar-8m.blend": null
+      }
+    },
+    {
+      "id": "rootforged-icons",
+      "generator": "tools/render-rootforged-icons.py",
+      "command": [
+        "pwsh",
+        "-NoProfile",
+        "-File",
+        "tools/blender.ps1",
+        "render-rootforged-icons"
+      ],
+      "outputs": [
+        "assets/earth/rootforged-*.icon.png"
+      ],
+      "hash": "generator-only",
+      "generator_sha256": "3ee13ef2468f00bd7f0c7141d9c8c6b65093414e2822aeef3bda3041b306b698",
+      "output_sha256": {
+        "assets/earth/rootforged-great-column-plinth.icon.png": null,
+        "assets/earth/rootforged-iron-banded-worldroot-beam-4m.icon.png": null,
+        "assets/earth/rootforged-rootforged-arch-rib-4m.icon.png": null,
+        "assets/earth/rootforged-rootforged-arch-rib-8m.icon.png": null,
+        "assets/earth/rootforged-understone-foundation-2x2.icon.png": null,
+        "assets/earth/rootforged-worldroot-beam-2m.icon.png": null,
+        "assets/earth/rootforged-worldroot-beam-4m.icon.png": null,
+        "assets/earth/rootforged-worldroot-beam-8m.icon.png": null,
+        "assets/earth/rootforged-worldroot-pillar-2m.icon.png": null,
+        "assets/earth/rootforged-worldroot-pillar-4m.icon.png": null,
+        "assets/earth/rootforged-worldroot-pillar-8m.icon.png": null
+      }
     }
   ]
 }

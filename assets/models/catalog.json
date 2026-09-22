@@ -2942,6 +2942,7 @@
   {
     "id": "rootforged-great-column-plinth",
     "parts": 5,
+<<<<<<< Updated upstream
     "triangles": 580,
     "materials": 5,
     "source": "source/rootforged-great-column-plinth.blend",
@@ -2986,10 +2987,57 @@
     "source_sha256": "e1a0bb40a2d4956c1617b793a21446aabadc464e126f1e77b6dd4ee25c8e5f5e",
     "runtime_sha256": "6f1575e788d1dd116d4dc260b5d58b21c1a48f456e99939c2a84a437dbf70838",
     "glb_sha256": "9281e7278167be33be5d5ec55a8373d9b1ac35e798074e13930ee728bba228f3"
+=======
+    "triangles": 860,
+    "materials": 2,
+    "source": "source/rootforged-great-column-plinth.blend",
+    "glb": "glb/rootforged-great-column-plinth.glb",
+    "runtime": "runtime/rootforged-great-column-plinth.model.json",
+    "source_sha256": "24ede31d2d9c0c82d32073866ba49d7e99c675ec43201254290ad9109784edf8",
+    "runtime_sha256": "1517878e7b38c39dac1d56aec8d3c9b0d6efe7c4ea80278f03bdeadd9af0d8d5",
+    "glb_sha256": "24402489232adaab451f9adc19a8b9ca368ad66e26fc2cd3246c0b6ed8836d36"
+  },
+  {
+    "id": "rootforged-iron-banded-worldroot-beam-4m",
+    "parts": 8,
+    "triangles": 4884,
+    "materials": 3,
+    "source": "source/rootforged-iron-banded-worldroot-beam-4m.blend",
+    "glb": "glb/rootforged-iron-banded-worldroot-beam-4m.glb",
+    "runtime": "runtime/rootforged-iron-banded-worldroot-beam-4m.model.json",
+    "source_sha256": "45e9c1785f8bdaaec433b4f7dab96599c72604684db3ac8ba9b50715a74666b0",
+    "runtime_sha256": "de97837fc0218f9dd50b69cb5aab352c4a4eed3aff941ea732663e002dbc179f",
+    "glb_sha256": "18d7d9553cbef09f3ec8d6f5c269b9dcc33a5300b45a9c445200795b11a990bf"
+  },
+  {
+    "id": "rootforged-rootforged-arch-rib-4m",
+    "parts": 8,
+    "triangles": 4884,
+    "materials": 3,
+    "source": "source/rootforged-rootforged-arch-rib-4m.blend",
+    "glb": "glb/rootforged-rootforged-arch-rib-4m.glb",
+    "runtime": "runtime/rootforged-rootforged-arch-rib-4m.model.json",
+    "source_sha256": "923b6569d8b6ceb7594883ae05efb186c92780e98c42574aeec3ee4c9542d19c",
+    "runtime_sha256": "cdf1403cb57a2ec8cb714ba6b165571ebe24728542b4afbeac73cd472f0d3bf5",
+    "glb_sha256": "11dc8acde4a757e8d59935246fd6ab85b53b1737840992aaa164c70114abebd0"
+  },
+  {
+    "id": "rootforged-rootforged-arch-rib-8m",
+    "parts": 8,
+    "triangles": 7764,
+    "materials": 3,
+    "source": "source/rootforged-rootforged-arch-rib-8m.blend",
+    "glb": "glb/rootforged-rootforged-arch-rib-8m.glb",
+    "runtime": "runtime/rootforged-rootforged-arch-rib-8m.model.json",
+    "source_sha256": "16e5f63ba750806a37da2cbc0576921a454994ecb40ed5b6f12a15fdedbedbd5",
+    "runtime_sha256": "b26c7cbded5e3b5d0d86d6603ffd00c6fdefdbbf16197b80154fd07b0fa02506",
+    "glb_sha256": "7a4baaa0f959eda27530a3b61ab979a502fccec24f7b91367a76a6491c8dd0ee"
+>>>>>>> Stashed changes
   },
   {
     "id": "rootforged-understone-foundation-2x2",
     "parts": 5,
+<<<<<<< Updated upstream
     "triangles": 580,
     "materials": 5,
     "source": "source/rootforged-understone-foundation-2x2.blend",
@@ -3070,6 +3118,88 @@
     "source_sha256": "d8f70a4916733e147e0fecabe1e323de1f191cf45d626657f49a8ab6083502e4",
     "runtime_sha256": "b264aee868453b3954dbf16cecc6b9dff838da1b9ad6bd430ae18974ac32d231",
     "glb_sha256": "fc4c11283ae5bb7cafd8b9c23430bd564e2bccb23bc6126f5b8990984e5e572e"
+=======
+    "triangles": 860,
+    "materials": 2,
+    "source": "source/rootforged-understone-foundation-2x2.blend",
+    "glb": "glb/rootforged-understone-foundation-2x2.glb",
+    "runtime": "runtime/rootforged-understone-foundation-2x2.model.json",
+    "source_sha256": "42a2e4314ec862cad82a75b054ccbad3775ff137280fbba445ca74298e2e59c8",
+    "runtime_sha256": "f8de2807ed7c155902cb1685b2412a47f9ec112d84448e5a96a7271db506f96c",
+    "glb_sha256": "3c5dc6149b7b270dcddc097371b3ff73025120afe64008e09e68ba9e0576551a"
+  },
+  {
+    "id": "rootforged-worldroot-beam-2m",
+    "parts": 5,
+    "triangles": 2580,
+    "materials": 2,
+    "source": "source/rootforged-worldroot-beam-2m.blend",
+    "glb": "glb/rootforged-worldroot-beam-2m.glb",
+    "runtime": "runtime/rootforged-worldroot-beam-2m.model.json",
+    "source_sha256": "6a7ce616ea9245697c4e63b6c608cf0fd1af5fa70b30b50ccb6a168579fb20ed",
+    "runtime_sha256": "7c154760a5236c5579f1dfd8ac07462565f0b8b3a935a27c8ad02cdec005014f",
+    "glb_sha256": "ed55b7e9f4f37f45812024f9a0e03de527c213a4234bf0a2cad3b63ccfe970e0"
+  },
+  {
+    "id": "rootforged-worldroot-beam-4m",
+    "parts": 5,
+    "triangles": 3732,
+    "materials": 2,
+    "source": "source/rootforged-worldroot-beam-4m.blend",
+    "glb": "glb/rootforged-worldroot-beam-4m.glb",
+    "runtime": "runtime/rootforged-worldroot-beam-4m.model.json",
+    "source_sha256": "07a18ca27a2b8231391344df8026cf843747d6f4190eda808e5871d9159dd55f",
+    "runtime_sha256": "5e1168dc1557fb6aab83f9b4fd6ec6f42e0ad7fb7a675ea0d8db6c00a206769e",
+    "glb_sha256": "f6d47bcdd5aaa205a76670f7430ebc1c1e72999269bc70ca2e4c3c5be41bcdae"
+  },
+  {
+    "id": "rootforged-worldroot-beam-8m",
+    "parts": 5,
+    "triangles": 6612,
+    "materials": 2,
+    "source": "source/rootforged-worldroot-beam-8m.blend",
+    "glb": "glb/rootforged-worldroot-beam-8m.glb",
+    "runtime": "runtime/rootforged-worldroot-beam-8m.model.json",
+    "source_sha256": "ce8a2ff59bf5697debd33870addcbefd41866c7756a5f0f728ccfdc9550910d3",
+    "runtime_sha256": "abc33dbcb42bf657d502ed78b7739e774004743e166b63251499977be774359b",
+    "glb_sha256": "8fc33b63bf977d0911340283bfc7720cc1c5cbdb3efd1735734ea77739e4ed52"
+  },
+  {
+    "id": "rootforged-worldroot-pillar-2m",
+    "parts": 5,
+    "triangles": 2580,
+    "materials": 2,
+    "source": "source/rootforged-worldroot-pillar-2m.blend",
+    "glb": "glb/rootforged-worldroot-pillar-2m.glb",
+    "runtime": "runtime/rootforged-worldroot-pillar-2m.model.json",
+    "source_sha256": "c740d79b0a7f0eaa7eeaa22a774cb3fb1f4155ed5ace99792bb49f25f24fb835",
+    "runtime_sha256": "765fc56222bd66fe39394ebed6557d40610f7d4aea874f48eaaf4ecdcb891da4",
+    "glb_sha256": "e53b0e52665a442a82742b015a382fb174ab7fcfd9ad965e613896a11b3fc36e"
+  },
+  {
+    "id": "rootforged-worldroot-pillar-4m",
+    "parts": 5,
+    "triangles": 3732,
+    "materials": 2,
+    "source": "source/rootforged-worldroot-pillar-4m.blend",
+    "glb": "glb/rootforged-worldroot-pillar-4m.glb",
+    "runtime": "runtime/rootforged-worldroot-pillar-4m.model.json",
+    "source_sha256": "d9287e3bbb8ce22bddef958122736c64df67ffd8b5b7cd3d2657c9bc7ea0b9ec",
+    "runtime_sha256": "6a906c31cf942ad6a7a600b49e764a3ebeddea2fd5cbcd1404da78dcad1fa9cb",
+    "glb_sha256": "b9c334648d83edcb5a97222cb0aabd35b2740a0cac266517e072f604a4c05ba7"
+  },
+  {
+    "id": "rootforged-worldroot-pillar-8m",
+    "parts": 5,
+    "triangles": 6612,
+    "materials": 2,
+    "source": "source/rootforged-worldroot-pillar-8m.blend",
+    "glb": "glb/rootforged-worldroot-pillar-8m.glb",
+    "runtime": "runtime/rootforged-worldroot-pillar-8m.model.json",
+    "source_sha256": "ba0ad5850413c5804e4378779e1c3211111e9c54104cdbf70edafc58d102a011",
+    "runtime_sha256": "09035f3e456bc5a43b7a9b23f4fe22ce8a6535d3115027343466d559bad2e8df",
+    "glb_sha256": "69fe0df8f495eb40d2627e5273f42ed2da8f17a34c270f57dd43004eac85b5ec"
+>>>>>>> Stashed changes
   },
   {
     "id": "rune-engraver",

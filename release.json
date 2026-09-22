@@ -1,4 +1,4 @@
 {
-  "version": "0.0.90",
-  "description": "0.0.90: Refines Underworld natural scenery with 48 foliage, root and stone variants, habitat-aware bank and lakebed cover, distinct biome clusters and resilient donor fallback. No new player buildables."
+  "version": "0.0.91",
+  "description": "0.0.91: Adds eleven authored Rootforged placeables with braided roots, iron collars, stone bases, matching icons and native building support. Uses core wood, stone and iron pending Underworld harvesting."
 }
