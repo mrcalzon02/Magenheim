@@ -1,3 +1,11 @@
+## Unreleased - Shared Underworld atmosphere framework
+
+- Added one deterministic atmosphere authority for all six Underworld biomes instead of separate fog implementations: luminous spores, Blackwater mist, sulfur miasma, frozen fog, fracture dust and Great Decay biological aerosol.
+- Great Decay owns the persistent heavy-obscuration profile; Sulfur fog scales with geothermal hazard, Blackwater fog pools over water, Frozen Caverns gains the strong Whiteout event, and the other biomes retain lighter atmospheric identities.
+- Hazard resistance and atmospheric suppression are separate. Resistance can protect the player without erasing the biome visually; suppression is reserved for local-clearing mechanics such as the planned Censer.
+- Added a thin runtime renderer over Unity RenderSettings that samples native Underworld instance terrain and restores Surface fog on exit. It does not choose events, persist player state or create another environment manager.
+- Added deterministic source tests for biome/event/mitigation behavior. Runtime compile, closeout and live visual acceptance remain unclaimed.
+
 ## 0.0.88 - Placeable icons come from the models
 
 - **All 62 crystal placeables now carry an icon rendered from the same `.blend` their runtime mesh
