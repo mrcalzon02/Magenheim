@@ -6,8 +6,8 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Reconciliation-scoped memoization for deterministic landmark arbitration.
-/// A fresh instance is created for each residency pass; no winner state survives
-/// world/instance lifecycle changes and no player/load-order state participates.
+/// A fresh instance is created for each residency pass; no winner or terrain-validation
+/// state survives world/instance lifecycle changes and no player/load-order state participates.
 /// </summary>
 internal sealed class UnderworldLandmarkWinnerCache
 {
@@ -15,6 +15,7 @@ internal sealed class UnderworldLandmarkWinnerCache
     private readonly IReadOnlyList<IUnderworldBiomeStructureFamily> _families;
     private readonly Func<UnderworldInstanceChunkKey, UnderworldTerrainBiome, bool> _anchorMatchesBiome;
     private readonly Dictionary<WinnerKey, bool> _winners = new();
+    private readonly Dictionary<BiomeKey, bool> _biomeMatches = new();
 
     internal UnderworldLandmarkWinnerCache(
         UnderworldWorldIdentity identity,
@@ -38,9 +39,18 @@ internal sealed class UnderworldLandmarkWinnerCache
             anchor,
             landmark,
             _families,
-            _anchorMatchesBiome);
+            AnchorMatchesBiomeCached);
         _winners.Add(key, winner);
         return winner;
+    }
+
+    private bool AnchorMatchesBiomeCached(UnderworldInstanceChunkKey anchor, UnderworldTerrainBiome biome)
+    {
+        var key = new BiomeKey(anchor.X, anchor.Z, biome);
+        if (_biomeMatches.TryGetValue(key, out var matches)) return matches;
+        matches = _anchorMatchesBiome(anchor, biome);
+        _biomeMatches.Add(key, matches);
+        return matches;
     }
 
     private readonly struct WinnerKey : IEquatable<WinnerKey>
@@ -68,6 +78,34 @@ internal sealed class UnderworldLandmarkWinnerCache
                 var hash = StringComparer.Ordinal.GetHashCode(_kind);
                 hash = (hash * 397) ^ _x;
                 hash = (hash * 397) ^ _z;
+                return hash;
+            }
+        }
+    }
+
+    private readonly struct BiomeKey : IEquatable<BiomeKey>
+    {
+        private readonly int _x;
+        private readonly int _z;
+        private readonly UnderworldTerrainBiome _biome;
+
+        internal BiomeKey(int x, int z, UnderworldTerrainBiome biome)
+        {
+            _x = x;
+            _z = z;
+            _biome = biome;
+        }
+
+        public bool Equals(BiomeKey other) => _x == other._x && _z == other._z && _biome == other._biome;
+        public override bool Equals(object obj) => obj is BiomeKey other && Equals(other);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hash = _x;
+                hash = (hash * 397) ^ _z;
+                hash = (hash * 397) ^ (int)_biome;
                 return hash;
             }
         }
