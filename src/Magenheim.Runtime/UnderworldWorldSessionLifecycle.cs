@@ -171,7 +171,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             foreach (var player in Player.GetAllPlayers())
             {
                 if (!player) continue;
-                var position = player.transform.position;
+                var position = UnderworldInstanceLayer.ToLogical(player.transform.position);
                 focuses.Add(new UnderworldChunkFocus(position.x, position.z));
             }
         }

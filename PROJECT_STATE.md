@@ -1,3 +1,11 @@
+# Merged source candidate - 0.0.94 (2026-09-22)
+
+Combined local Rootforged assets and origin/main weather, native minimap tabs and instance-layer fixes. Full closeout passed: 297 model sets, 131 icons, 43,423 Core assertions plus separate suites; runtime compilation had zero warnings/errors. Installed 0.0.94 into Central Fuckery with all payload hashes and enabled launcher metadata verified. Incoming private-member and obsolete sector API references were adapted to the installed game; native sector/portal/ownership behavior remains in control.
+
+Installed DLL SHA-256: CF8422CC3B7FF8614172C0C0F159ECEE77CE020C972C54FCBCEAC7ADF9161F5D. Backups: backups/Local-Magenheim-20260922-060803.zip and backups/mods-20260922-060814-064.yml. No live startup, map, weather or multiplayer acceptance performed. See docs/validation/2026-09-22-merged-live-closeout.md.
+
+Launcher description: "0.0.94: Combines fourteen authored Rootforged pieces with Underworld biome weather, native Overworld/Underworld minimap tabs and instance-layer fixes."
+
 # Current source candidate - 0.0.93 / schema 5 (2026-09-21)
 
 Rootforged now contains fourteen Hammer pieces: the new Worldroot Y Brace 4m,
@@ -64,6 +72,32 @@ No live game startup, placement/support/weathering/refund or multiplayer accepta
 Launcher description: "0.0.91: Adds eleven authored Rootforged placeables with braided roots,
 iron collars, stone bases, matching icons and native building support. Uses core wood, stone
 and iron pending Underworld harvesting."
+
+---
+
+# Current source candidate - 0.0.91 / schema 5 (2026-09-21)
+
+Underworld weather ownership is now source-integrated. The active Underworld no longer relies on the
+Surface biome's weather selection: a deterministic four-minute cycle keyed by paired-instance seed
+and Valheim world time selects only biome-legal subterranean events. Runtime registers namespaced
+Valheim EnvSetup donor clones for all six biomes, forces the appropriate clone while the local player
+is below, and clears the force on return. Surface biome weather tables are not mutated.
+
+Fungal Forest: Still / Sporefall / Crystal Resonance.
+Blackwater Deep: Still / Deep Fog / Crystal Resonance.
+Sulfurous Wastes: Still / Ashfall / Thermal Surge / Crystal Resonance.
+Frozen Caverns: Still / Deep Fog / Whiteout / Crystal Resonance.
+Fracture Zones: Still / Stone Rain / Crystal Resonance.
+Great Decay: Still / Black Bloom / Crystal Resonance, over its persistent heavy aerosol baseline.
+
+Underworld donor environments reject inherited thunder/rain/storm particles, suppress rain-cloud
+alpha and do not inherit Surface storm ambient loops. Frozen Whiteout may retain donor particle
+objects whose identity is explicitly snow even if their name also contains "storm". The shared
+atmosphere system still owns final fog density and exposure presentation.
+
+This is a source candidate only. The current connected environment has not run the net462 runtime
+build, `closeout.ps1`, active-profile installation, Valheim startup, visual weather review or
+multiplayer acceptance for 0.0.91. Installed 0.0.90 remains the last hash-verified local package.
 
 ---
 

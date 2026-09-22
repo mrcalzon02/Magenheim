@@ -55,7 +55,7 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         }
         var player = Player.m_localPlayer;
         if (player is null) return;
-        var instancePosition = player.transform.position;
+        var instancePosition = UnderworldInstanceLayer.ToLogical(player.transform.position);
         var first = !string.Equals(_admitted, identity.DerivedWorldId, StringComparison.Ordinal);
         if (!first && Vector3.Distance(instancePosition, _lastBuildPosition) < RebuildDistance) return;
         _admitted = identity.DerivedWorldId;
@@ -90,7 +90,10 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
                 var sample = UnderworldTerrainRuntime.SampleInstanceTerrain(x, center.y, z);
                 if (!sample.Admitted || sample.Biome != anchor.Biome) continue;
                 var variant = seed + cluster * 101 + member * 17;
-                SpawnDonor(new Vector3(x, (float)sample.Height, z), sample.Biome, ComposeVariant(sample.Biome, variant, member));
+                SpawnDonor(
+                    UnderworldInstanceLayer.ToEngine(new Vector3(x, (float)sample.Height, z)),
+                    sample.Biome,
+                    ComposeVariant(sample.Biome, variant, member));
                 // Fill stays near admitted supports; sparse/hazard biomes keep open sightlines.
                 var coverCount = sample.Biome == UnderworldTerrainBiome.FungalForest ||
                     sample.Biome == UnderworldTerrainBiome.GreatDecay ? 4 : 2;
@@ -119,7 +122,8 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
                         var cover = UnderworldDonorVisualFactory.CreateCover(sample.Biome,
                             unchecked(variant * 31 + fill), "Magenheim_UnderworldCover", floor.Height - waterLevel, slope);
                         if (cover is null) continue;
-                        cover.transform.position += new Vector3(fx, (float)floor.Height, fz);
+                        cover.transform.position += UnderworldInstanceLayer.ToEngine(
+                            new Vector3(fx, (float)floor.Height, fz));
                         _spawned.Add(cover);
                     }
                     catch (InvalidOperationException exception) { _log?.LogWarning(exception.Message); }

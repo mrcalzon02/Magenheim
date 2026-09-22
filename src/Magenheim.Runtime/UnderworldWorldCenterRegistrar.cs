@@ -56,12 +56,15 @@ internal static class UnderworldWorldCenterRegistrar
         return root;
     }
 
+    internal static Vector3 ResolveEngineCenterPosition() => ResolveGroundedCenterPosition(LogicalCenter);
+
     private static Vector3 ResolveGroundedCenterPosition(Vector3 logical)
     {
         var terrain = UnderworldTerrainRuntime.SampleInstanceTerrain(logical.x, logical.y, logical.z);
         if (!terrain.Admitted)
             throw new InvalidOperationException("Native Underworld terrain authority did not admit the logical world center.");
-        return new Vector3((float)logical.x, (float)terrain.Height + 1.25f, (float)logical.z);
+        return UnderworldInstanceLayer.ToEngine(
+            new Vector3((float)logical.x, (float)terrain.Height + 1.25f, (float)logical.z));
     }
 
     private static void BuildStandingStones(Transform parent)

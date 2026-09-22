@@ -72,6 +72,7 @@ internal sealed class UnderworldInstanceChunkMaterializer
     {
         if (_root) return;
         _root = new GameObject("Magenheim_Underworld_InstanceTerrain");
+        _root.transform.position = new Vector3(0f, UnderworldInstanceLayer.EngineBaseY, 0f);
     }
 
     private void Materialize(UnderworldInstanceChunkSample sample)

@@ -19,7 +19,7 @@ The Underworld uses one obscuration mechanic with six biome interpretations rath
 
 Resistance and suppression are intentionally different verbs. Armour/Deep Boons can lower exposure without making the biome visually disappear. A local clearing tool such as the planned Censer feeds suppression, which lowers both pressure and visual density while preserving a minimum biome identity.
 
-`UnderworldAtmosphereRuntime` is a thin local renderer adapter. It samples the native instance terrain already owned by `UnderworldTerrainRuntime`, applies the Core state through Unity's existing `RenderSettings` fog, publishes shader globals for later particle/material consumers, and restores the pre-entry fog state on exit. It does not create a second save/environment manager, choose events, persist player occupancy, or mutate Valheim environment registrations.
+`UnderworldAtmosphereRuntime` is the thin local fog/exposure renderer. `UnderworldWeatherCycle` now selects biome-legal subterranean conditions deterministically from the paired instance seed and Valheim's authoritative world clock. `UnderworldWeatherRuntime` registers namespaced clones of existing Valheim `EnvSetup` donors, forces the matching Underworld environment while the local player is below, and clears that override on exit. Surface biome weather tables are never rewritten. Default thunder/rain particles, rain clouds and storm ambient loops are explicitly filtered out of the Underworld clones.
 
 The runtime exposes two narrow future inputs:
 
@@ -32,10 +32,27 @@ The runtime exposes two narrow future inputs:
 
 Whiteout is the added Frozen Caverns expression of the same shared mechanic. Deep Fog remains valid for Blackwater and a weaker frozen moisture event.
 
+## Weather ownership
+
+The Underworld no longer accepts whatever Surface weather the host biome happens to select. Every four-minute world-clock window resolves one biome-owned state from the shared deterministic schedule:
+
+| Biome | Calm share | Native events |
+|---|---:|---|
+| Fungal Forest | 60% | Sporefall 30%, Crystal Resonance 10% |
+| Blackwater Deep | 55% | Deep Fog 35%, Crystal Resonance 10% |
+| Sulfurous Wastes | 50% | Ashfall 25%, Thermal Surge 20%, Crystal Resonance 5% |
+| Frozen Caverns | 50% | Deep Fog 20%, Whiteout 25%, Crystal Resonance 5% |
+| Fracture Zones | 55% | Stone Rain 30%, Crystal Resonance 15% |
+| Great Decay | 45% | Black Bloom 45%, Crystal Resonance 10% |
+
+Great Decay remains heavily obscured even in a calm window because that is its baseline atmosphere; Black Bloom intensifies it rather than creating it from nothing.
+
+The runtime clones existing Valheim environments only as donors for sky/light/wind/particle machinery. Names are Magenheim-owned. Surface rain clouds are disabled, thunder/rain/storm particle systems are rejected, and donor storm ambient loops are not inherited. Whiteout is the deliberate exception for snow particle systems: a particle object whose name contains both `snow` and `storm` is admissible only to the Frozen Caverns Whiteout clone.
+
 ## Next dependency-valid slices
 
 1. Connect the existing Underworld hazard/Deep Boon results to `ApplyMitigation`; do not duplicate their rules.
-2. Implement one server-selected/synchronized subterranean-event state and feed it to `ApplySynchronizedEvent`.
-3. Reuse donor particle/VFX prefabs for the six atmospheric presentations before authoring custom particle art.
-4. Live-test transitions between Surface and every Underworld biome, including restoration of Surface fog.
-5. Tune visibility from screenshots/video only after donor scenery is present; do not optimize the numbers in an empty biome.
+2. Add/kitbash missing donor particle effects where the installed game's named particle systems do not provide spores, sulfur ash, fracture dust or decay aerosol.
+3. Live-test all six forced environment families and Surface restoration, especially transitions during a vanilla storm outside.
+4. Tune light/wind/visibility from screenshots/video only after donor scenery is present.
+5. Add custom ambient loops later; the current clones intentionally suppress inherited Surface storm audio.

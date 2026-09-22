@@ -51,21 +51,6 @@ internal static class UnderworldTerrainRuntime
             seed);
     }
 
-    /// <summary>Builds player-facing biome data from native instance terrain authority.</summary>
-    internal static bool TryBuildBiomeRaster(int width, int height, out UnderworldTerrainBiome[] raster)
-    {
-        var services = _services;
-        var identity = services?.InstanceLifecycle.Identity;
-        if (services is null || identity is null || !InstanceAvailable(services))
-        {
-            raster = Array.Empty<UnderworldTerrainBiome>();
-            return false;
-        }
-
-        raster = UnderworldMapRaster.BuildBiomeRaster(services.TerrainDomain, identity.DerivedSeed32, width, height);
-        return true;
-    }
-
     private static bool InstanceAvailable(UnderworldRuntimeServices services)
     {
         var phase = services.InstanceLifecycle.Phase;

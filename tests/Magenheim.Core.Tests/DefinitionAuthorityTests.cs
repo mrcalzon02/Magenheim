@@ -70,8 +70,6 @@ internal static class DefinitionAuthorityTests
         assertions += UnderworldThermalStateTests.Run();
         assertions += UnderworldGeothermalHazardTests.Run();
         assertions += UnderworldTerrainLifecycleTests.Run();
-        assertions += UnderworldMapProjectionTests.Run();
-        assertions += UnderworldMapRasterTests.Run();
         return assertions;
     }
 }

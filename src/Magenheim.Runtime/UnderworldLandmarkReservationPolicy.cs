@@ -56,6 +56,8 @@ internal static class UnderworldLandmarkReservationPolicy
     /// reservations pass the profile exclusion radius; landmark conflict
     /// arbitration may pass a larger radius (for example the sum of two landmark
     /// radii) without changing either landmark's actual exclusion territory.
+    /// Search cells beyond the representable native-instance coordinate domain are
+    /// ignored rather than allowed to wrap or invalidate an otherwise valid edge key.
     /// </summary>
     internal static bool IsReserved(
         UnderworldWorldIdentity identity,
@@ -75,16 +77,29 @@ internal static class UnderworldLandmarkReservationPolicy
             throw new ArgumentOutOfRangeException(nameof(searchRadiusChunks), "Landmark reservation search radius exceeds supported native chunk range.");
         var cellRadius = (int)cellRadiusLong;
 
-        for (var dz = -cellRadius; dz <= cellRadius; dz++)
-        for (var dx = -cellRadius; dx <= cellRadius; dx++)
+        for (long dz = -cellRadius; dz <= cellRadius; dz++)
+        for (long dx = -cellRadius; dx <= cellRadius; dx++)
         {
-            var anchor = AnchorForCell(identity, CheckedCellOffset(cellX, dx), CheckedCellOffset(cellZ, dz), profile);
+            if (!TryCellOffset(cellX, dx, out var searchCellX) ||
+                !TryCellOffset(cellZ, dz, out var searchCellZ))
+                continue;
+
+            if (!TryAnchorForCell(identity, searchCellX, searchCellZ, profile, out var anchor))
+                continue;
+
             if (ChebyshevDistance(anchor, key) <= searchRadiusChunks && anchorAccepted(anchor)) return true;
         }
         return false;
     }
 
     private static UnderworldInstanceChunkKey AnchorForCell(UnderworldWorldIdentity identity, int cellX, int cellZ, Profile profile)
+    {
+        if (!TryAnchorForCell(identity, cellX, cellZ, profile, out var anchor))
+            throw new ArgumentOutOfRangeException(nameof(cellX), "Landmark anchor exceeded native chunk coordinate range.");
+        return anchor;
+    }
+
+    private static bool TryAnchorForCell(UnderworldWorldIdentity identity, int cellX, int cellZ, Profile profile, out UnderworldInstanceChunkKey anchor)
     {
         unchecked
         {
@@ -94,7 +109,14 @@ internal static class UnderworldLandmarkReservationPolicy
             var xOffset = (int)(hash % (uint)profile.CellSizeChunks);
             hash = Mix(hash, 0x9E3779B9u);
             var zOffset = (int)(hash % (uint)profile.CellSizeChunks);
-            return new UnderworldInstanceChunkKey(CheckedAnchorCoordinate(cellX, profile.CellSizeChunks, xOffset), CheckedAnchorCoordinate(cellZ, profile.CellSizeChunks, zOffset));
+            if (!TryAnchorCoordinate(cellX, profile.CellSizeChunks, xOffset, out var x) ||
+                !TryAnchorCoordinate(cellZ, profile.CellSizeChunks, zOffset, out var z))
+            {
+                anchor = default;
+                return false;
+            }
+            anchor = new UnderworldInstanceChunkKey(x, z);
+            return true;
         }
     }
 
@@ -117,20 +139,28 @@ internal static class UnderworldLandmarkReservationPolicy
         return remainder < 0 ? quotient - 1 : quotient;
     }
 
-    private static int CheckedCellOffset(int cell, int offset)
+    private static bool TryCellOffset(int cell, long offset, out int result)
     {
         var value = (long)cell + offset;
         if (value < int.MinValue || value > int.MaxValue)
-            throw new ArgumentOutOfRangeException(nameof(offset), "Landmark reservation search exceeded native cell coordinate range.");
-        return (int)value;
+        {
+            result = default;
+            return false;
+        }
+        result = (int)value;
+        return true;
     }
 
-    private static int CheckedAnchorCoordinate(int cell, int cellSize, int offset)
+    private static bool TryAnchorCoordinate(int cell, int cellSize, int offset, out int result)
     {
         var value = (long)cell * cellSize + offset;
         if (value < int.MinValue || value > int.MaxValue)
-            throw new ArgumentOutOfRangeException(nameof(cell), "Landmark anchor exceeded native chunk coordinate range.");
-        return (int)value;
+        {
+            result = default;
+            return false;
+        }
+        result = (int)value;
+        return true;
     }
 
     private static long ChebyshevDistance(UnderworldInstanceChunkKey left, UnderworldInstanceChunkKey right)

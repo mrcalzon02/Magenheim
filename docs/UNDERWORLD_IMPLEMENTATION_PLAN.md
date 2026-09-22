@@ -215,7 +215,7 @@ Magenheim.Runtime/Underworld/
   UnderworldWorldTransitionManager.cs
   UnderworldUnlockRuntime.cs
   UnderworldPersistenceRuntime.cs
-  UnderworldMapRuntime.cs
+  UnderworldMapTabRuntime.cs  # thin layer/data switch around Valheim Minimap; never a second map engine
 ```
 
 ## 5.3 Transition contract
@@ -228,7 +228,7 @@ Entering the Underworld must:
 4. verify the target Underworld identity exists or can be initialized;
 5. finish critical target initialization before player placement;
 6. transfer the player without duplicating or losing character state;
-7. select the Underworld map/environment/worldgen context;
+7. select the Underworld environment/worldgen context and bind the Underworld payload to the existing Valheim Minimap;
 8. reconstruct persistent target-zone state;
 9. acknowledge successful transition before clearing recovery information.
 
@@ -1100,13 +1100,20 @@ Shared event authorities should support:
 - Ashfall;
 - Stone Rain;
 - Deep Fog;
+- Whiteout;
 - Crystal Resonance;
 - Thermal Surge;
 - Black Bloom.
 
-Events select from biome eligibility and are synchronized by the server. Clients render presentation but do not independently choose event state.
+The current authority uses the paired Underworld seed plus Valheim's server-authoritative world clock
+to derive the same deterministic four-minute event window on every peer. That deliberately avoids a
+second Magenheim weather-state replication subsystem. Clients may evaluate the pure schedule for
+presentation, but gameplay effects must be re-evaluated/admitted by the server from the same seed,
+time window, biome and hazard inputs rather than trusting client-reported event state.
 
-Each event needs start/stop transitions, save/reload policy, multiplayer sync, audio profile, visual budget and gameplay modifiers.
+Each event needs start/stop transitions, save/reload policy where state cannot be regenerated,
+multiplayer agreement, audio profile, visual budget and gameplay modifiers. The deterministic
+seed/time schedule itself does not require persistence.
 
 ---
 
@@ -1165,6 +1172,7 @@ underworld layer
 underworld seed
 underworld field <name>
 underworld biome
+underworld weather
 underworld structure-eligibility
 underworld spawn-table
 underworld boss-state <boss-id>

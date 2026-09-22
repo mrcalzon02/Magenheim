@@ -275,7 +275,7 @@ Some strike land. Some disappear into fractures. Some enter Blackwater and creat
 
 ## 13. Subterranean environmental events
 
-The Underworld has no normal weather cycle. It has environmental events occupying the same gameplay role.
+The Underworld has no normal Surface weather cycle. It owns a deterministic subterranean weather cycle whose states are environmental events occupying the same gameplay role. While a player is below, Magenheim forces a namespaced Underworld environment so vanilla `ThunderStorm`/surface storm selection cannot leak into the custom biomes; Surface environment tables themselves remain untouched.
 
 **Sporefall:** glowing fungal spores descend slowly through large chambers.
 
@@ -283,7 +283,9 @@ The Underworld has no normal weather cycle. It has environmental events occupyin
 
 **Stone Rain:** unstable fracture regions periodically shed debris from high unseen geology.
 
-**Deep Fog:** heavy moisture and temperature inversions reduce visibility around Blackwater.
+**Deep Fog:** heavy moisture and temperature inversions reduce visibility around Blackwater; a colder, less persistent form can also settle into Frozen Cavern basins.
+
+**Whiteout:** Frozen Caverns fill with driven ice-crystal haze, sharply reducing visibility, strengthening cold pressure and swallowing distant sound.
 
 **Crystal Resonance:** distant crystal formations begin glowing or resonating together.
 
@@ -542,9 +544,13 @@ Surface-local or Underworld-local portals may otherwise continue operating withi
 
 ## 25. Map and navigation state
 
-The Underworld must have separate exploration state from the surface.
+The Underworld has separate map data from the Overworld, but **not a separate map engine**.
 
-Opening the map while below should display the Underworld map, not the surface world with an overlay. Pins and shared map data must retain layer identity so multiplayer destinations cannot become ambiguous.
+The ordinary Valheim `Minimap` remains the sole map runtime. Its normal exploration timer, reveal radius, `Explore` calls, fog texture mutation, pin list, shared-map behavior, zoom/input, map rendering and serialization are reused unchanged. Magenheim contributes only the layer adapter: an Overworld payload and an Underworld payload, plus the Underworld terrain/biome data source used while the Underworld tab is bound. This keeps ordinary minimap mods on the same hooks instead of forcing compatibility against a Magenheim replacement.
+
+Opening the large map exposes two explicit tabs, **Overworld** and **Underworld**, and either can be inspected without changing the player's physical layer. The small minimap always follows the layer the player is actually occupying. Exploration is applied to that physical layer even if the player is browsing the other large-map tab.
+
+The two tabs have independent fog/exploration and saved-pin payloads. The Overworld continues to use Valheim's normal profile map slot. The Underworld stores the same vanilla map payload format under a Magenheim namespaced per-character/per-world key, so Magenheim does not own a second fog or pin codec.
 
 Celestial orientation is absent by design, increasing the importance of roads, coastlines, pillars, lavafalls, settlements and memorable geography.
 

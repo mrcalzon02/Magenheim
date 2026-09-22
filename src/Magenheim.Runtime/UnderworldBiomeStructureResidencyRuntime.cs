@@ -59,7 +59,8 @@ internal sealed class UnderworldBiomeStructureResidencyRuntime
                 var residencyKey = ResidencyKey(family.Kind, pair.Key, family.PlacementSlot);
                 wanted.Add(residencyKey);
                 if (_resident.ContainsKey(residencyKey)) continue;
-                var position = new Vector3((float)x, (float)terrain.Height, (float)z);
+                var position = UnderworldInstanceLayer.ToEngine(
+                    new Vector3((float)x, (float)terrain.Height, (float)z));
                 var root = _services.StructureAdmission.Admit(identity, family.Kind, pair.Key, family.PlacementSlot, () => family.Compose(position, identity, pair.Key));
                 _resident.Add(residencyKey, root);
             }
