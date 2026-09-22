@@ -67,15 +67,33 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         return new MapBindingScope(runtime, restore);
     }
 
-    internal static MapBindingScope? BeginSurfaceProfileSave(Minimap map)
+    internal static bool BeginSurfaceProfileSave(
+        Minimap map,
+        out MapBindingScope? scope)
     {
+        scope = null;
         var runtime = _instance;
-        if (runtime is null || runtime._map != map || runtime._surface is null) return null;
+        if (runtime is null || runtime._map != map || runtime._surface is null) return true;
+
         runtime.CaptureBoundMapData();
-        if (runtime._boundLayer == UnderworldLayer.Surface) return null;
+        if (runtime._boundLayer == UnderworldLayer.Surface) return true;
+
+        // An asynchronous GenerateWorldMap may still own the Underworld texture binding. Switching
+        // those fields out from under it risks a late upload into the Surface textures, while
+        // allowing vanilla SaveMapData to run here would write the Underworld payload into
+        // PlayerProfile's Surface map slot. Skip this one Surface-map write instead; the existing
+        // Surface profile payload remains intact and the next ordinary save will update it.
+        if (runtime._underworldGenerationPending)
+        {
+            runtime._log?.LogDebug(
+                "Deferred Surface Minimap profile write while asynchronous Underworld map generation is active.");
+            return false;
+        }
+
         var restore = runtime._boundLayer;
-        if (!runtime.EnsureBound(UnderworldLayer.Surface)) return null;
-        return new MapBindingScope(runtime, restore);
+        if (!runtime.EnsureBound(UnderworldLayer.Surface)) return false;
+        scope = new MapBindingScope(runtime, restore);
+        return true;
     }
 
     internal static void PrepareLocalPlayerSave(Player player)
@@ -711,8 +729,8 @@ internal static class UnderworldMinimapLoadMapDataPatch
 internal static class UnderworldMinimapSaveMapDataPatch
 {
     [HarmonyPriority(Priority.First)]
-    private static void Prefix(Minimap __instance, out UnderworldMapTabRuntime.MapBindingScope? __state) =>
-        __state = UnderworldMapTabRuntime.BeginSurfaceProfileSave(__instance);
+    private static bool Prefix(Minimap __instance, out UnderworldMapTabRuntime.MapBindingScope? __state) =>
+        UnderworldMapTabRuntime.BeginSurfaceProfileSave(__instance, out __state);
 
     [HarmonyPriority(Priority.Last)]
     private static void Postfix(UnderworldMapTabRuntime.MapBindingScope? __state) => __state?.Dispose();
