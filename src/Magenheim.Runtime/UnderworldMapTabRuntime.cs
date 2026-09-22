@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using BepInEx.Logging;
 using HarmonyLib;
 using Magenheim.Core.Underworld;
@@ -18,7 +19,13 @@ namespace Magenheim.Runtime;
 internal sealed class UnderworldMapTabRuntime : MonoBehaviour
 {
     private const string CustomDataPrefix = "magenheim.map.underworld.v1.";
-    [ThreadStatic] private static int _underworldGenerationDepth;
+    private const float MapGenerationTimeoutSeconds = 120f;
+
+    // AsyncLocal deliberately replaces ThreadStatic here. Map-generation mods commonly move the
+    // ordinary GenerateWorldMap sampling work into Task.Run; ExecutionContext propagation carries
+    // this narrow Underworld sampling context into those workers without globally rerouting the
+    // unrelated terrain-generation threads.
+    private static readonly AsyncLocal<int> UnderworldGenerationDepth = new();
     private static UnderworldMapTabRuntime? _instance;
 
     private UnderworldRuntimeServices? _services;
@@ -30,13 +37,15 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
     private UnderworldLayer _selectedLayer = UnderworldLayer.Surface;
     private bool _wasLargeOpen;
     private bool _loadedPlayerUnderworldData;
+    private bool _underworldGenerationPending;
+    private float _underworldGenerationDeadline;
     private long? _worldUid;
 
     private GameObject? _tabRoot;
     private Button? _surfaceButton;
     private Button? _underworldButton;
 
-    internal static bool IsRoutingUnderworldGeneration => _underworldGenerationDepth > 0;
+    internal static bool IsRoutingUnderworldGeneration => UnderworldGenerationDepth.Value > 0;
 
     internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -82,14 +91,15 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         var runtime = _instance;
         if (runtime is null || runtime._map != map || runtime._boundLayer != UnderworldLayer.Underworld)
             return false;
-        _underworldGenerationDepth++;
+        UnderworldGenerationDepth.Value = UnderworldGenerationDepth.Value + 1;
         return true;
     }
 
     internal static void EndMapGeneration(bool entered)
     {
         if (!entered) return;
-        if (_underworldGenerationDepth > 0) _underworldGenerationDepth--;
+        if (UnderworldGenerationDepth.Value > 0)
+            UnderworldGenerationDepth.Value = UnderworldGenerationDepth.Value - 1;
     }
 
     internal static bool TryRouteMapSample(double x, double z, out UnderworldTerrainResult terrain)
@@ -140,6 +150,8 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         _boundLayer = UnderworldLayer.Surface;
         _selectedLayer = ResolvePhysicalLayer();
         _loadedPlayerUnderworldData = false;
+        _underworldGenerationPending = false;
+        _underworldGenerationDeadline = 0f;
         _wasLargeOpen = Minimap.IsOpen();
 
         BuildTabs(map);
@@ -165,6 +177,15 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         }
 
         TryLoadUnderworldMapFromPlayer();
+
+        if (_underworldGenerationPending && !PollPendingUnderworldGeneration())
+        {
+            var openWhileGenerating = Minimap.IsOpen();
+            _wasLargeOpen = openWhileGenerating;
+            SetTabsVisible(openWhileGenerating);
+            RefreshTabState();
+            return;
+        }
 
         var largeOpen = Minimap.IsOpen();
         var physical = ResolvePhysicalLayer();
@@ -200,6 +221,7 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
 
     private void SelectLayer(UnderworldLayer layer)
     {
+        if (_underworldGenerationPending && layer != UnderworldLayer.Underworld) return;
         _selectedLayer = layer;
         if (!EnsureBound(layer))
             _selectedLayer = _boundLayer;
@@ -210,6 +232,7 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
     {
         var map = _map;
         if (!map || _surface is null) return false;
+        if (_underworldGenerationPending && layer != UnderworldLayer.Underworld) return false;
         if (layer == _boundLayer) return true;
 
         if (layer == UnderworldLayer.Underworld && !EnsureUnderworldState(map))
@@ -257,17 +280,88 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         // below supplies Underworld terrain/biome samples only for the duration of this call.
         map.GenerateWorldMap();
 
+        if (!HasGeneratedMapPixels(state.MapTexture))
+        {
+            _underworldGenerationPending = true;
+            _underworldGenerationDeadline = Time.unscaledTime + MapGenerationTimeoutSeconds;
+            _log?.LogInfo(
+                "Underworld Minimap generation continues asynchronously; retaining the Underworld " +
+                "map binding until the vanilla/modded GenerateWorldMap path finishes.");
+            return true;
+        }
+
+        FinishUnderworldGeneration(state);
+        if (previousLayer == UnderworldLayer.Surface && _surface is not null)
+            ApplyState(map, UnderworldLayer.Surface, _surface);
+        return true;
+    }
+
+    private bool PollPendingUnderworldGeneration()
+    {
+        var map = _map;
+        var state = _underworld;
+        if (!_underworldGenerationPending || !map || state is null) return true;
+
+        if (HasGeneratedMapPixels(state.MapTexture))
+        {
+            FinishUnderworldGeneration(state);
+            _underworldGenerationPending = false;
+            _underworldGenerationDeadline = 0f;
+            return true;
+        }
+
+        if (Time.unscaledTime <= _underworldGenerationDeadline) return false;
+
+        _log?.LogWarning(
+            $"Underworld Minimap generation did not publish texture data within {MapGenerationTimeoutSeconds:0}s; " +
+            "discarding the incomplete layer map so the next bind can retry.");
+        if (_surface is not null) ApplyState(map, UnderworldLayer.Surface, _surface);
+        ReleaseUnderworldTextures();
+        _underworldGenerationPending = false;
+        _underworldGenerationDeadline = 0f;
+        _selectedLayer = ResolvePhysicalLayer();
+        return true;
+    }
+
+    private void FinishUnderworldGeneration(MapLayerState state)
+    {
+        var map = _map;
+        if (!map) return;
+
         state.MapData = RuntimeGameApi.GetMinimapMapData(map);
         LoadUnderworldPayloadFromPlayerIfAvailable(state);
         SetMapDataPreservingPublicPosition(map, state.MapData);
-
-        if (previousLayer == UnderworldLayer.Surface && _surface is not null)
-            ApplyState(map, UnderworldLayer.Surface, _surface);
-
         _log?.LogInfo(
             $"Generated Underworld map through vanilla Minimap at {map.m_textureSize}x{map.m_textureSize}; " +
             "fog, pins and exploration remain Valheim-owned.");
-        return true;
+    }
+
+    private static bool HasGeneratedMapPixels(Texture2D texture)
+    {
+        if (!texture || texture.width <= 0 || texture.height <= 0) return false;
+        try
+        {
+            var x0 = texture.width / 2;
+            var y0 = texture.height / 2;
+            var probes = new[]
+            {
+                texture.GetPixel(x0, y0),
+                texture.GetPixel(texture.width / 4, texture.height / 4),
+                texture.GetPixel(texture.width * 3 / 4, texture.height / 4),
+                texture.GetPixel(texture.width / 4, texture.height * 3 / 4),
+                texture.GetPixel(texture.width * 3 / 4, texture.height * 3 / 4),
+            };
+            foreach (var color in probes)
+                if (color.a > 0.001f || color.r > 0.001f || color.g > 0.001f || color.b > 0.001f)
+                    return true;
+            return false;
+        }
+        catch (UnityException)
+        {
+            // A mod is allowed to replace the map texture with a non-readable GPU texture. If it
+            // has done so, the generation path has clearly taken ownership; do not deadlock tabs.
+            return true;
+        }
     }
 
     private void CaptureBoundMapData()
@@ -454,8 +548,11 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
 
     private void RefreshTabState()
     {
-        if (_surfaceButton) _surfaceButton.interactable = _selectedLayer != UnderworldLayer.Surface;
-        if (_underworldButton) _underworldButton.interactable = _selectedLayer != UnderworldLayer.Underworld;
+        if (_surfaceButton)
+            _surfaceButton.interactable = !_underworldGenerationPending &&
+                _selectedLayer != UnderworldLayer.Surface;
+        if (_underworldButton)
+            _underworldButton.interactable = _selectedLayer != UnderworldLayer.Underworld;
     }
 
     private void ReleaseUnderworldTextures()
@@ -474,6 +571,7 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
 
     private void OnDestroy()
     {
+        _underworldGenerationPending = false;
         CaptureBoundMapData();
         if (Player.m_localPlayer is { } player) PersistUnderworldMapToPlayer(player);
         ReleaseUnderworldTextures();
