@@ -21,8 +21,8 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
     private string _admitted = string.Empty;
     private Vector3 _lastBuildPosition;
     private float _nextAt;
-    private const float RebuildDistance = 180f;
-    private const int EcologyClusterCount = 8;
+    private const float RebuildDistance = 90f;
+    private const int EcologyClusterCount = 12;
     private const int PlacementsPerCluster = 7;
 
     internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
@@ -73,8 +73,12 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
 
         for (var cluster = 0; cluster < EcologyClusterCount; cluster++)
         {
-            var anchorAngle = (float)(random.NextDouble() * Math.PI * 2d);
-            var anchorDistance = 24f + (float)random.NextDouble() * 145f;
+            // Four near-field pockets fill the walking view; outer pockets retain distant silhouettes.
+            var ringSlot = cluster < 4 ? cluster : cluster - 4;
+            var ringCount = cluster < 4 ? 4 : 8;
+            var anchorAngle = (float)((ringSlot + .2d + random.NextDouble() * .6d) / ringCount * Math.PI * 2d);
+            var anchorDistance = cluster < 4 ? 28f + (float)random.NextDouble() * 25f
+                : 65f + (float)random.NextDouble() * 80f;
             var anchorX = center.x + Mathf.Cos(anchorAngle) * anchorDistance;
             var anchorZ = center.z + Mathf.Sin(anchorAngle) * anchorDistance;
             var anchor = UnderworldTerrainRuntime.SampleInstanceTerrain(anchorX, center.y, anchorZ);

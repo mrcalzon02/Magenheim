@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk"><PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable></PropertyGroup><ItemGroup>
 <ProjectReference Include="../../src/Magenheim.Core/Magenheim.Core.csproj" />
 <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-<Compile Include="../ModelExporter/UnityShim.cs;../ModelExporter/RenderingShim.cs;../ModelExporter/ValheimShim.cs;../ModelExporter/ExtraShim.cs;../ModelExporter/Matrix4x4Shim.cs;../../src/Magenheim.Runtime/ModelAssets.cs;../../src/Magenheim.Runtime/HeldModelAlignment.cs" />
+<Compile Include="../ModelExporter/UnityShim.cs;../ModelExporter/RenderingShim.cs;../ModelExporter/ValheimShim.cs;../ModelExporter/ExtraShim.cs;../ModelExporter/Matrix4x4Shim.cs;../../src/Magenheim.Runtime/ModelAssets.cs;../../src/Magenheim.Runtime/HeldModelAlignment.cs;../../src/Magenheim.Runtime/UnderworldVanillaDonorCatalog.cs" />
 <None Include="../../assets/models/runtime/*.model.json" Link="assets/models/runtime/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
 <None Include="../../assets/models/textures/*.png" Link="assets/models/textures/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
 </ItemGroup></Project>

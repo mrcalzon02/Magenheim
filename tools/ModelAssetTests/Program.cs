@@ -99,3 +99,23 @@ Console.WriteLine($"PASS: {count} model assets imported twice; complete parts/UV
     }
     Console.WriteLine($"PASS: {alignmentChecks} held-model alignments checked against the confirmed rotation.");
 }
+
+// Cover must remain diverse, nonblocking, and habitat-specific across all supported biomes.
+foreach (var biome in Enum.GetValues<Magenheim.Core.Underworld.UnderworldTerrainBiome>())
+{
+
+ var names = new HashSet<string>();
+ for (var i = 0; i < UnderworldVanillaDonorCatalog.CoverCount(biome); i++)
+ {
+  var cover = UnderworldVanillaDonorCatalog.SelectCover(biome, i);
+  if (!names.Add(cover.Name) || cover.Donor.Collidable) throw new Exception("Invalid cover identity/collision: " + biome);
+  if (cover.Donor.MinScale <= 0 || cover.Donor.MaxScale < cover.Donor.MinScale || cover.MinHeightAboveWater > cover.MaxHeightAboveWater)
+   throw new Exception("Invalid cover habitat/scale: " + cover.Name);
+  if (biome == Magenheim.Core.Underworld.UnderworldTerrainBiome.BlackwaterDeep
+      && cover.Donor.PrefabName == "Fiddleheadfern"
+      && Magenheim.Core.Underworld.UnderworldFloraPlacement.CanPlaceCover(-5, 0, cover.MinHeightAboveWater, cover.MaxHeightAboveWater, cover.MaxSlope))
+   throw new Exception("Terrestrial fern admitted underwater");
+ }
+ if (names.Count < 12) throw new Exception("Incomplete biome cover: " + biome);
+}
+Console.WriteLine("PASS: biome cover diversity, nonblocking donors and shoreline habitat contracts.");

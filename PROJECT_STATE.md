@@ -1,3 +1,13 @@
+# Current release - 0.0.96 (2026-09-22)
+
+Biome environment enrichment: 24 additional donor-derived fern, shrub, root and mineral forms, expanding cover from 48 to 72 variants (twelve per biome). Four near-field scenery pockets supplement eight outer clusters; local ecology refreshes after 90m travel instead of 180m. Existing biome composition and slope/water admission remain. All new forms use existing catalog donors and noncolliding cover; no new lights or save/map/animation systems.
+
+Full closeout passed: 300 model sets, 134 icons, 43,426 Core assertions plus separate suites and runtime palette habitat checks. Runtime build: zero warnings/errors. Installed 0.0.96 into Central Fuckery with all payload hashes and enabled launcher metadata verified. DLL SHA-256: D7E5EC1C4C0417758A0EA4DE7A7C603B2D2225841BD85606626AD32CE4EE42F9.
+Backups: backups/Local-Magenheim-20260922-150946.zip and backups/mods-20260922-150958-618.yml.
+See docs/validation/2026-09-22-biome-environment-density.md. Scenery remains a disposable local preview; live appearance, frame-time and refresh visibility are untested.
+
+Launcher description: "0.0.96: Enriches all six Underworld biomes with 24 additional fern, shrub, root and mineral variants, plus closer scenery pockets while preserving shoreline and slope habitat rules."
+
 # Current release - 0.0.95 (2026-09-22)
 
 Rootforged now has seventeen pieces. Adds a 4m split-root floor, an eight-step Understone stair flight and an 8m iron-banded beam. Each includes editable source art, GLB/runtime meshes, collision and matching icons. The floor/stairs use native grid snaps and support. Existing fourteen catalog entries and other foundation definitions were preserved.

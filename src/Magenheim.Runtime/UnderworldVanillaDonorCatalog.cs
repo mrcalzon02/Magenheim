@@ -77,6 +77,10 @@ internal static class UnderworldVanillaDonorCatalog
             new("Young worldroot", new("YggaShoot1", 0.340f, 0.460f, Vector3.one, -.03f), new Color(0.580f, 0.737f, 0.635f)),
             new("Broad jade fern", new("Fiddleheadfern", 0.9f, 1.3f, new Vector3(1.6f, 0.65f, 1.3f), -.04f), new Color(0.42f, 0.76f, 0.58f), 0f, 1000f, 28f),
             new("Fungal stepping slab", new("Rock_4", 0.35f, 0.55f, new Vector3(1.7f, 0.4f, 1.2f), -.04f), new Color(0.6f, 0.63f, 0.5f), -1f, 1000f, 40f),
+            new("Rose spore fan", new("Fiddleheadfern", 1.2f, 1.8f, new Vector3(1.8f, 0.85f, 1.1f), -.04f), new Color(0.83f, 0.54f, 0.7f), 0f, 1000f, 28f),
+            new("Turquoise nursery caps", new("Pickable_Mushroom_blue", 2f, 3.1f, new Vector3(1.5f, 0.75f, 1.4f), -.04f), new Color(0.48f, 0.88f, 0.8f), 0f, 1000f, 32f),
+            new("Amber root skirt", new("root08", 0.18f, 0.3f, new Vector3(1.6f, 0.45f, 1.3f), -.04f), new Color(0.78f, 0.64f, 0.4f), 0f, 1000f, 35f),
+            new("Violet canopy sapling", new("YggaShoot3", 0.35f, 0.55f, new Vector3(1.25f, 0.8f, 1.25f), -.04f), new Color(0.76f, 0.62f, 0.87f), 0f, 1000f, 30f),
         },
         [UnderworldTerrainBiome.BlackwaterDeep] = new GroundCover[]
         {
@@ -88,6 +92,10 @@ internal static class UnderworldVanillaDonorCatalog
             new("Drowned rootlet", new("YggdrasilRoot", 0.153f, 0.207f, Vector3.one, -.03f), new Color(0.388f, 0.549f, 0.553f), -6f, 3f, 32f),
             new("Blackwater root fan", new("root08", 0.18f, 0.28f, new Vector3(1.7f, 0.65f, 1.2f), -.04f), new Color(0.42f, 0.63f, 0.64f), -5f, 2f, 30f),
             new("Lakebed stone shelf", new("Rock_4", 0.45f, 0.7f, new Vector3(1.5f, 0.35f, 1.2f), -.04f), new Color(0.42f, 0.53f, 0.62f), -30f, -0.2f, 45f),
+            new("Silver bank fern", new("Fiddleheadfern", 0.75f, 1.1f, new Vector3(1.7f, 0.6f, 1.3f), -.04f), new Color(0.66f, 0.82f, 0.81f), 0f, 5f, 25f),
+            new("Drowned root fingers", new("root11", 0.2f, 0.32f, new Vector3(0.75f, 1.55f, 0.8f), -.04f), new Color(0.36f, 0.61f, 0.59f), -8f, 2f, 36f),
+            new("Pearl silt cobbles", new("Rock_4", 0.18f, 0.3f, new Vector3(1.7f, 0.35f, 1.4f), -.04f), new Color(0.68f, 0.77f, 0.8f), -30f, 6f, 46f),
+            new("Teal bank thicket", new("shrub_2", 1.05f, 1.45f, new Vector3(0.8f, 1.5f, 0.9f), -.04f), new Color(0.36f, 0.7f, 0.68f), 0f, 5f, 27f),
         },
         [UnderworldTerrainBiome.SulfurousWastes] = new GroundCover[]
         {
@@ -99,6 +107,10 @@ internal static class UnderworldVanillaDonorCatalog
             new("Charred sapling", new("AshlandsTree6_big", 0.255f, 0.345f, Vector3.one, -.03f), new Color(0.573f, 0.490f, 0.459f)),
             new("Cinder thorn fan", new("AshlandsBush2", 0.6f, 0.85f, new Vector3(1.5f, 0.7f, 1.1f), -.04f), new Color(0.72f, 0.41f, 0.31f), 0f, 1000f, 25f),
             new("Basalt stepping slab", new("Ashlands_rock2", 0.2f, 0.35f, new Vector3(1.8f, 0.45f, 1.2f), -.04f), new Color(0.43f, 0.39f, 0.47f), -1f, 1000f, 45f),
+            new("Rust fan scrub", new("AshlandsBush1", 0.8f, 1.2f, new Vector3(1.8f, 0.55f, 1.25f), -.04f), new Color(0.87f, 0.46f, 0.28f), 0f, 1000f, 30f),
+            new("Sulfur mineral shelf", new("Ashlands_rock2", 0.22f, 0.4f, new Vector3(1.7f, 0.35f, 1.2f), -.04f), new Color(0.87f, 0.76f, 0.35f), -1f, 1000f, 48f),
+            new("Black glass splinter", new("Ashlands_rock1", 0.18f, 0.3f, new Vector3(0.6f, 1.9f, 0.7f), -.04f), new Color(0.38f, 0.34f, 0.42f), 0f, 1000f, 45f),
+            new("Ochre ash thicket", new("AshlandsBush2", 0.85f, 1.25f, new Vector3(0.75f, 1.6f, 0.85f), -.04f), new Color(0.79f, 0.62f, 0.32f), 0f, 1000f, 30f),
         },
         [UnderworldTerrainBiome.FrozenCaverns] = new GroundCover[]
         {
@@ -110,6 +122,10 @@ internal static class UnderworldVanillaDonorCatalog
             new("Sheltered rootlet", new("YggaShoot2", 0.212f, 0.287f, Vector3.one, -.03f), new Color(0.608f, 0.675f, 0.749f)),
             new("Low rime fern", new("Fiddleheadfern", 0.6f, 0.9f, new Vector3(1.45f, 0.55f, 1.2f), -.04f), new Color(0.7f, 0.85f, 0.89f), 0f, 1000f, 25f),
             new("Ice scree shelf", new("BlackIceShard_01", 0.4f, 0.7f, new Vector3(1.65f, 0.38f, 1.1f), -.04f), new Color(0.54f, 0.7f, 0.83f), -2f, 1000f, 48f),
+            new("Blue rime fan", new("BlackIceShard_01", 0.4f, 0.65f, new Vector3(1.65f, 0.65f, 1.15f), -.04f), new Color(0.5f, 0.78f, 0.95f), -2f, 1000f, 45f),
+            new("Lavender frost brush", new("shrub_2_heath", 0.65f, 0.95f, new Vector3(1.4f, 0.6f, 1.2f), -.04f), new Color(0.73f, 0.67f, 0.88f), 0f, 1000f, 25f),
+            new("Pale glacier plate", new("rock3_mountain_1", 0.22f, 0.38f, new Vector3(1.8f, 0.35f, 1.2f), -.04f), new Color(0.8f, 0.87f, 0.94f), -2f, 1000f, 48f),
+            new("Silver sheltered fern", new("Fiddleheadfern", 0.7f, 1.1f, new Vector3(0.75f, 1.4f, 0.8f), -.04f), new Color(0.77f, 0.89f, 0.85f), 0f, 1000f, 25f),
         },
         [UnderworldTerrainBiome.FractureZones] = new GroundCover[]
         {
@@ -121,6 +137,10 @@ internal static class UnderworldVanillaDonorCatalog
             new("Split ridge sapling", new("YggaShoot3", 0.238f, 0.322f, Vector3.one, -.03f), new Color(0.580f, 0.502f, 0.647f)),
             new("Fault fan scrub", new("shrub_2_heath", 0.75f, 1.05f, new Vector3(1.7f, 0.6f, 1.05f), -.04f), new Color(0.65f, 0.49f, 0.73f), 0f, 1000f, 28f),
             new("Fractured shale plate", new("RockFingerBroken", 0.25f, 0.4f, new Vector3(1.65f, 0.4f, 1.1f), -.04f), new Color(0.57f, 0.5f, 0.67f), -2f, 1000f, 50f),
+            new("Copper fault rubble", new("RockFingerBroken", 0.17f, 0.3f, new Vector3(1.2f, 0.65f, 1.8f), -.04f), new Color(0.78f, 0.56f, 0.4f), -2f, 1000f, 50f),
+            new("Violet crevice fan", new("Fiddleheadfern", 0.75f, 1.1f, new Vector3(1.8f, 0.5f, 1.1f), -.04f), new Color(0.76f, 0.53f, 0.85f), 0f, 1000f, 27f),
+            new("Quartz needle cluster", new("RockFinger", 0.15f, 0.26f, new Vector3(0.55f, 1.9f, 0.7f), -.04f), new Color(0.8f, 0.73f, 0.89f), 0f, 1000f, 45f),
+            new("Plum ridge thicket", new("shrub_2_heath", 0.85f, 1.3f, new Vector3(0.85f, 1.5f, 0.8f), -.04f), new Color(0.62f, 0.44f, 0.73f), 0f, 1000f, 30f),
         },
         [UnderworldTerrainBiome.GreatDecay] = new GroundCover[]
         {
@@ -132,6 +152,10 @@ internal static class UnderworldVanillaDonorCatalog
             new("Mossgrave stone", new("Rock_4", 0.297f, 0.402f, Vector3.one, -.03f), new Color(0.604f, 0.616f, 0.463f)),
             new("Rotroot fern fan", new("Fiddleheadfern", 1.1f, 1.6f, new Vector3(1.5f, 0.75f, 1.3f), -.04f), new Color(0.69f, 0.73f, 0.34f), 0f, 1000f, 30f),
             new("Carrion root mat", new("root11", 0.25f, 0.4f, new Vector3(1.65f, 0.45f, 1.3f), -.04f), new Color(0.62f, 0.52f, 0.36f), -1f, 1000f, 35f),
+            new("Burgundy rot fern", new("Fiddleheadfern", 1.15f, 1.7f, new Vector3(1.7f, 0.7f, 1.2f), -.04f), new Color(0.76f, 0.43f, 0.51f), 0f, 1000f, 30f),
+            new("Ivory shelf caps", new("Pickable_Mushroom_JotunPuffs", 2.2f, 3.2f, new Vector3(1.8f, 0.55f, 1.4f), -.04f), new Color(0.89f, 0.82f, 0.6f), 0f, 1000f, 32f),
+            new("Sour root spires", new("root12", 0.25f, 0.4f, new Vector3(0.65f, 1.7f, 0.7f), -.04f), new Color(0.65f, 0.7f, 0.34f), -1f, 1000f, 35f),
+            new("Ochre rot thicket", new("AshlandsBush2", 1.1f, 1.6f, new Vector3(1.6f, 0.7f, 1.3f), -.04f), new Color(0.79f, 0.59f, 0.31f), 0f, 1000f, 30f),
         },
     };
 
