@@ -711,6 +711,7 @@ internal static class UnderworldMinimapDynamicPinsPatch
 [HarmonyPatch(typeof(Minimap), nameof(Minimap.GenerateWorldMap))]
 internal static class UnderworldMinimapGenerateWorldMapPatch
 {
+    [HarmonyPriority(Priority.First)]
     private static void Prefix(Minimap __instance, out bool __state) =>
         __state = UnderworldMapTabRuntime.BeginMapGeneration(__instance);
 
