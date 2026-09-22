@@ -63,6 +63,36 @@ internal static class UnderworldLandmarkArbitrationPolicy
         return true;
     }
 
+    /// <summary>
+    /// Returns true when a native chunk lies inside the exclusion territory of any
+    /// landmark that actually wins arbitration. Reservation is intentionally not
+    /// filtered by the queried chunk's biome: a valid landmark anchor owns its full
+    /// exclusion footprint even when that footprint crosses a terrain-biome edge.
+    /// </summary>
+    internal static bool IsReservedByWinner(
+        UnderworldWorldIdentity identity,
+        UnderworldInstanceChunkKey key,
+        IReadOnlyList<IUnderworldBiomeStructureFamily> families,
+        Func<UnderworldInstanceChunkKey, UnderworldTerrainBiome, bool> anchorMatchesBiome)
+    {
+        if (identity is null) throw new ArgumentNullException(nameof(identity));
+        if (families is null) throw new ArgumentNullException(nameof(families));
+        if (anchorMatchesBiome is null) throw new ArgumentNullException(nameof(anchorMatchesBiome));
+
+        foreach (var family in families)
+        {
+            if (family is not IUnderworldLandmarkStructureFamily landmark) continue;
+            if (UnderworldLandmarkReservationPolicy.IsReserved(
+                    identity,
+                    key,
+                    landmark.ReservationProfile,
+                    anchor => IsWinner(identity, anchor, landmark, families, anchorMatchesBiome)))
+                return true;
+        }
+
+        return false;
+    }
+
     private static bool HasPriority(
         IUnderworldLandmarkStructureFamily left,
         IUnderworldLandmarkStructureFamily right)
