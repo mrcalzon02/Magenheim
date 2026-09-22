@@ -41,6 +41,7 @@ internal sealed class UnderworldBiomeStructureResidencyRuntime
         var identity = _services.InstanceLifecycle.Identity;
         if (identity is null || _services.InstanceLifecycle.Phase != UnderworldInstancePhase.Active) { Clear(); return; }
         var wanted = new HashSet<string>(StringComparer.Ordinal);
+        var landmarkWinners = new UnderworldLandmarkWinnerCache(identity, _families, AnchorMatchesBiome);
         foreach (var pair in _services.ChunkStreaming.LoadedChunks)
         {
             var bounds = _services.ChunkStreaming.Grid.Bounds(pair.Key);
@@ -53,9 +54,9 @@ internal sealed class UnderworldBiomeStructureResidencyRuntime
                 if (terrain.Biome != family.Biome || !family.Eligible(identity, pair.Key)) continue;
                 if (family is IUnderworldLandmarkStructureFamily landmark)
                 {
-                    if (!UnderworldLandmarkArbitrationPolicy.IsWinner(identity, pair.Key, landmark, _families, AnchorMatchesBiome)) continue;
+                    if (!landmarkWinners.IsWinner(landmark, pair.Key)) continue;
                 }
-                else if (UnderworldLandmarkArbitrationPolicy.IsReservedByWinner(identity, pair.Key, _families, AnchorMatchesBiome)) continue;
+                else if (UnderworldLandmarkArbitrationPolicy.IsReservedByWinner(identity, pair.Key, _families, landmarkWinners.IsWinner)) continue;
                 var residencyKey = ResidencyKey(family.Kind, pair.Key, family.PlacementSlot);
                 wanted.Add(residencyKey);
                 if (_resident.ContainsKey(residencyKey)) continue;
