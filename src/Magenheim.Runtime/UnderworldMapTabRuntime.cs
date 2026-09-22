@@ -702,6 +702,7 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
 [HarmonyPatch(typeof(Minimap), "LoadMapData")]
 internal static class UnderworldMinimapLoadMapDataPatch
 {
+    [HarmonyPriority(Priority.Last)]
     private static void Postfix(Minimap __instance) =>
         UnderworldMapTabRuntime.NotifyVanillaMapLoaded(__instance);
 }
@@ -709,15 +710,18 @@ internal static class UnderworldMinimapLoadMapDataPatch
 [HarmonyPatch(typeof(Minimap), nameof(Minimap.SaveMapData))]
 internal static class UnderworldMinimapSaveMapDataPatch
 {
+    [HarmonyPriority(Priority.First)]
     private static void Prefix(Minimap __instance, out UnderworldMapTabRuntime.MapBindingScope? __state) =>
         __state = UnderworldMapTabRuntime.BeginSurfaceProfileSave(__instance);
 
+    [HarmonyPriority(Priority.Last)]
     private static void Postfix(UnderworldMapTabRuntime.MapBindingScope? __state) => __state?.Dispose();
 }
 
 [HarmonyPatch(typeof(PlayerProfile), nameof(PlayerProfile.SavePlayerData), new[] { typeof(Player) })]
 internal static class UnderworldMinimapPlayerSavePatch
 {
+    [HarmonyPriority(Priority.First)]
     private static void Prefix(Player __0) => UnderworldMapTabRuntime.PrepareLocalPlayerSave(__0);
 }
 
