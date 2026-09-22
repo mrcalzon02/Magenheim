@@ -1,3 +1,11 @@
+## Unreleased - Underworld weather ownership
+
+- Replaced inherited Surface storm weather inside the active Underworld with six biome-owned weather families built as namespaced clones of Valheim `EnvSetup` donors. Surface biome weather tables are not edited.
+- Added deterministic four-minute subterranean weather windows keyed by the paired Underworld seed and Valheim world clock. Every biome has its own calm/event distribution; Great Decay keeps persistent miasma even when the event state is calm.
+- Integrated Sporefall, Deep Fog, Ashfall, Thermal Surge, Whiteout, Stone Rain, Crystal Resonance and Black Bloom with the shared atmosphere runtime.
+- Underworld environment clones explicitly suppress rain clouds, thunder/rain/storm particle systems and inherited storm ambient loops. Frozen Whiteout may reuse snow-storm particles only when the particle identity is actually snow.
+- Added source tests for determinism, event eligibility, seed variation and long-run coverage. Source version advances to 0.0.91; compile/closeout/live visual acceptance are still pending.
+
 ## Unreleased - Shared Underworld atmosphere framework
 
 - Added one deterministic atmosphere authority for all six Underworld biomes instead of separate fog implementations: luminous spores, Blackwater mist, sulfur miasma, frozen fog, fracture dust and Great Decay biological aerosol.

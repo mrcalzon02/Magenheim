@@ -275,7 +275,7 @@ Some strike land. Some disappear into fractures. Some enter Blackwater and creat
 
 ## 13. Subterranean environmental events
 
-The Underworld has no normal weather cycle. It has environmental events occupying the same gameplay role.
+The Underworld has no normal Surface weather cycle. It owns a deterministic subterranean weather cycle whose states are environmental events occupying the same gameplay role. While a player is below, Magenheim forces a namespaced Underworld environment so vanilla `ThunderStorm`/surface storm selection cannot leak into the custom biomes; Surface environment tables themselves remain untouched.
 
 **Sporefall:** glowing fungal spores descend slowly through large chambers.
 

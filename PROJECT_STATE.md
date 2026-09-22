@@ -1,3 +1,29 @@
+# Current source candidate - 0.0.91 / schema 5 (2026-09-21)
+
+Underworld weather ownership is now source-integrated. The active Underworld no longer relies on the
+Surface biome's weather selection: a deterministic four-minute cycle keyed by paired-instance seed
+and Valheim world time selects only biome-legal subterranean events. Runtime registers namespaced
+Valheim EnvSetup donor clones for all six biomes, forces the appropriate clone while the local player
+is below, and clears the force on return. Surface biome weather tables are not mutated.
+
+Fungal Forest: Still / Sporefall / Crystal Resonance.
+Blackwater Deep: Still / Deep Fog / Crystal Resonance.
+Sulfurous Wastes: Still / Ashfall / Thermal Surge / Crystal Resonance.
+Frozen Caverns: Still / Deep Fog / Whiteout / Crystal Resonance.
+Fracture Zones: Still / Stone Rain / Crystal Resonance.
+Great Decay: Still / Black Bloom / Crystal Resonance, over its persistent heavy aerosol baseline.
+
+Underworld donor environments reject inherited thunder/rain/storm particles, suppress rain-cloud
+alpha and do not inherit Surface storm ambient loops. Frozen Whiteout may retain donor particle
+objects whose identity is explicitly snow even if their name also contains "storm". The shared
+atmosphere system still owns final fog density and exposure presentation.
+
+This is a source candidate only. The current connected environment has not run the net462 runtime
+build, `closeout.ps1`, active-profile installation, Valheim startup, visual weather review or
+multiplayer acceptance for 0.0.91. Installed 0.0.90 remains the last hash-verified local package.
+
+---
+
 # Current source candidate - 0.0.90 / schema 5 (2026-09-21)
 
 User scope correction: terrain, vegetation, ecology and natural features; no player-buildable
