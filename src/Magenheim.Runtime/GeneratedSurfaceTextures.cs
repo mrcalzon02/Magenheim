@@ -188,6 +188,8 @@ internal static class GeneratedSurfaceTextures
         "magenheim.architecture.architecture-crystal-foundation-",
         "magenheim.architecture.architecture-crystal-beam-",
         "magenheim.crystal-enchanting-dais.",
+        "magenheim.crystal-bed.stone",
+        "magenheim.crystal-bed.iron",
     };
 
     private static void RepairOwnedVisuals()
