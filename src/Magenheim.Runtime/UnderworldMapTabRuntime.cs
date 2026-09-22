@@ -125,6 +125,15 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         return true;
     }
 
+    internal static float CurrentMapOutsideHeight
+    {
+        get
+        {
+            var context = UnderworldGenerationContext.Value;
+            return (float)((context?.WaterLevel ?? 30d) - 200d);
+        }
+    }
+
     internal static Heightmap.Biome MapDonorBiome(UnderworldTerrainResult terrain)
     {
         if (!terrain.Admitted) return Heightmap.Biome.Ocean;
@@ -827,8 +836,7 @@ internal static class UnderworldMinimapWorldGeneratorHeightPatch
         __3 = Color.clear;
         if (!terrain.Admitted)
         {
-            var waterLevel = ZoneSystem.instance is null ? 30f : ZoneSystem.instance.m_waterLevel;
-            __result = waterLevel - 200f;
+            __result = UnderworldMapTabRuntime.CurrentMapOutsideHeight;
             return false;
         }
 
