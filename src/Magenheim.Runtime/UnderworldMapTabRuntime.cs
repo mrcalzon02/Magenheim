@@ -588,7 +588,7 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         if (ReferenceEquals(_instance, this)) _instance = null;
     }
 
-    private sealed class MapGenerationContext
+    internal sealed class MapGenerationContext
     {
         internal MapGenerationContext(UnderworldInstanceTerrainDomain domain, int seed, double waterLevel)
         {
