@@ -37,8 +37,11 @@ internal static class UnderworldLandmarkReservationPolicy
 
     internal static bool IsAnchor(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key, Profile profile)
     {
-        var anchor = Anchor(identity, key, profile);
-        return anchor.X == key.X && anchor.Z == key.Z;
+        if (identity is null) throw new ArgumentNullException(nameof(identity));
+        var cellX = FloorDiv(key.X, profile.CellSizeChunks);
+        var cellZ = FloorDiv(key.Z, profile.CellSizeChunks);
+        return TryAnchorForCell(identity, cellX, cellZ, profile, out var anchor) &&
+               anchor.X == key.X && anchor.Z == key.Z;
     }
 
     internal static bool IsReserved(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key, Profile profile) =>
