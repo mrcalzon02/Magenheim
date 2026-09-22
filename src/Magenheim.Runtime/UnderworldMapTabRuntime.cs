@@ -37,6 +37,7 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
     private UnderworldLayer _selectedLayer = UnderworldLayer.Surface;
     private bool _wasLargeOpen;
     private bool _loadedPlayerUnderworldData;
+    private bool _hasPersistedUnderworldPayload;
     private bool _underworldGenerationPending;
     private float _underworldGenerationDeadline;
     private long? _worldUid;
@@ -183,6 +184,7 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         _boundLayer = UnderworldLayer.Surface;
         _selectedLayer = ResolvePhysicalLayer();
         _loadedPlayerUnderworldData = false;
+        _hasPersistedUnderworldPayload = false;
         _underworldGenerationPending = false;
         _underworldGenerationDeadline = 0f;
         _wasLargeOpen = Minimap.IsOpen();
@@ -304,6 +306,8 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         _boundLayer = UnderworldLayer.Underworld;
         BindTextures(map, state);
 
+        LoadUnderworldPayloadFromPlayerIfAvailable(state, applyToBoundMap: false);
+
         // Build a valid empty payload using Valheim's own map reset + serialization path. No
         // Magenheim fog/exploration codec exists.
         map.Reset();
@@ -361,8 +365,8 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         var map = _map;
         if (!map) return;
 
-        state.MapData = RuntimeGameApi.GetMinimapMapData(map);
-        LoadUnderworldPayloadFromPlayerIfAvailable(state);
+        if (!_hasPersistedUnderworldPayload)
+            state.MapData = RuntimeGameApi.GetMinimapMapData(map);
         SetMapDataPreservingPublicPosition(map, state.MapData);
         _log?.LogInfo(
             $"Generated Underworld map through vanilla Minimap at {map.m_textureSize}x{map.m_textureSize}; " +
@@ -406,6 +410,7 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         if (!map) return;
         var state = _boundLayer == UnderworldLayer.Surface ? _surface : _underworld;
         if (state is null) return;
+        if (_boundLayer == UnderworldLayer.Underworld && _underworldGenerationPending) return;
 
         state.MapData = RuntimeGameApi.GetMinimapMapData(map);
         state.CaptureTextureReferences(map);
@@ -467,15 +472,18 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
     private void TryLoadUnderworldMapFromPlayer()
     {
         if (_loadedPlayerUnderworldData || _underworld is null) return;
-        LoadUnderworldPayloadFromPlayerIfAvailable(_underworld);
+        LoadUnderworldPayloadFromPlayerIfAvailable(_underworld, applyToBoundMap: !_underworldGenerationPending);
     }
 
-    private void LoadUnderworldPayloadFromPlayerIfAvailable(MapLayerState state)
+    private void LoadUnderworldPayloadFromPlayerIfAvailable(
+        MapLayerState state,
+        bool applyToBoundMap)
     {
         if (_loadedPlayerUnderworldData) return;
         var player = Player.m_localPlayer;
         if (player is null || ZNet.instance is null) return;
         _loadedPlayerUnderworldData = true;
+        _hasPersistedUnderworldPayload = false;
 
         var key = MapDataKey(ZNet.instance.GetWorldUID());
         if (!player.m_customData.TryGetValue(key, out var encoded) || string.IsNullOrWhiteSpace(encoded))
@@ -484,7 +492,8 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         try
         {
             state.MapData = Convert.FromBase64String(encoded);
-            if (_boundLayer == UnderworldLayer.Underworld && _map)
+            _hasPersistedUnderworldPayload = true;
+            if (applyToBoundMap && _boundLayer == UnderworldLayer.Underworld && _map)
                 SetMapDataPreservingPublicPosition(_map!, state.MapData);
             _log?.LogInfo("Loaded Underworld exploration/pins through Valheim's native minimap payload codec.");
         }
@@ -496,6 +505,7 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
 
     private void PersistUnderworldMapToPlayer(Player player)
     {
+        if (_underworldGenerationPending) return;
         if (_underworld is null || ZNet.instance is null || _underworld.MapData.Length == 0) return;
         player.m_customData[MapDataKey(ZNet.instance.GetWorldUID())] =
             Convert.ToBase64String(_underworld.MapData);
