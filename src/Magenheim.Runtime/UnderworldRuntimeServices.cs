@@ -26,6 +26,7 @@ internal sealed class UnderworldRuntimeServices
         BiomeStructureResidency.Register(new BlackwaterSparsePocketFamily());
         BiomeStructureResidency.Register(new FungalSplitPillarLandmarkFamily());
         BiomeStructureResidency.Register(new SulfurThreeLavafallsLandmarkFamily());
+        BiomeStructureResidency.Register(new FrozenWallLandmarkFamily());
     }
 
     internal UnderworldInstanceTerrainDomain TerrainDomain{get;}
