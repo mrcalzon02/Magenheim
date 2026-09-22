@@ -86,9 +86,29 @@ internal static class UnderworldLandmarkArbitrationPolicy
         IReadOnlyList<IUnderworldBiomeStructureFamily> families,
         Func<UnderworldInstanceChunkKey, UnderworldTerrainBiome, bool> anchorMatchesBiome)
     {
+        if (anchorMatchesBiome is null) throw new ArgumentNullException(nameof(anchorMatchesBiome));
+        return IsReservedByWinner(
+            identity,
+            key,
+            families,
+            (landmark, anchor) => IsWinner(identity, anchor, landmark, families, anchorMatchesBiome));
+    }
+
+    /// <summary>
+    /// Reservation query using a caller-owned winner resolver. Residency uses this
+    /// overload to memoize arbitration for the duration of one reconciliation pass,
+    /// so the same deterministic anchor is not repeatedly re-arbitrated for every
+    /// ordinary structure chunk whose exclusion query reaches it.
+    /// </summary>
+    internal static bool IsReservedByWinner(
+        UnderworldWorldIdentity identity,
+        UnderworldInstanceChunkKey key,
+        IReadOnlyList<IUnderworldBiomeStructureFamily> families,
+        Func<IUnderworldLandmarkStructureFamily, UnderworldInstanceChunkKey, bool> isWinner)
+    {
         if (identity is null) throw new ArgumentNullException(nameof(identity));
         if (families is null) throw new ArgumentNullException(nameof(families));
-        if (anchorMatchesBiome is null) throw new ArgumentNullException(nameof(anchorMatchesBiome));
+        if (isWinner is null) throw new ArgumentNullException(nameof(isWinner));
 
         foreach (var family in families)
         {
@@ -97,7 +117,7 @@ internal static class UnderworldLandmarkArbitrationPolicy
                     identity,
                     key,
                     landmark.ReservationProfile,
-                    anchor => IsWinner(identity, anchor, landmark, families, anchorMatchesBiome)))
+                    anchor => isWinner(landmark, anchor)))
                 return true;
         }
 
