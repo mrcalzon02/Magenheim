@@ -1,3 +1,13 @@
+# Current release - 0.0.97 (2026-09-22)
+
+Added the 22 planned raw-resource definitions across all six biomes, vanilla-backed custom material items, and native Pickable review prefabs. Mapping and exact console IDs: docs/UNDERWORLD_RESOURCE_MAPPING.md. Resource pickups are console-only, one item per pickup with no extra loot or respawn. Natural vegetation remains visual-only. Creature prototypes retain donor loot; existing recipes retain vanilla ingredients until natural resource acquisition is admitted. Merged the incoming Frozen Wall landmark work.
+
+Full closeout passed: 300 model sets, 134 icons, 43,504 Core assertions plus separate suites; runtime compilation zero warnings/errors. Installed 0.0.97 into Central Fuckery, verified all payload hashes and enabled launcher metadata. DLL SHA-256: 1D4B2150764870BD608B17207EEC6E53EE06F59B6C680F35BCBD88FA65BD7EB3.
+Backups: backups/Local-Magenheim-20260922-154932.zip and backups/mods-20260922-154944-699.yml.
+Actual resource registration, picking, donor appearance and inventory/save/network behavior require live acceptance. Natural harvest placement, tree/mining nodes, creature drops and refining are not complete.
+
+Launcher description: "0.0.97: Maps 22 raw Underworld resources across six biomes to vanilla item donors and native console pickup prototypes; documents harvesting, recipe and creature-loot gaps. Includes Frozen Wall landmarks."
+
 # Current release - 0.0.96 (2026-09-22)
 
 Biome environment enrichment: 24 additional donor-derived fern, shrub, root and mineral forms, expanding cover from 48 to 72 variants (twelve per biome). Four near-field scenery pockets supplement eight outer clusters; local ecology refreshes after 90m travel instead of 180m. Existing biome composition and slope/water admission remain. All new forms use existing catalog donors and noncolliding cover; no new lights or save/map/animation systems.

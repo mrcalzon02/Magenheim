@@ -1,4 +1,4 @@
 {
-  "version": "0.0.96",
-  "description": "0.0.96: Enriches all six Underworld biomes with 24 additional fern, shrub, root and mineral variants, plus closer scenery pockets while preserving shoreline and slope habitat rules."
+  "version": "0.0.97",
+  "description": "0.0.97: Maps 22 raw Underworld resources across six biomes to vanilla item donors and native console pickup prototypes; documents harvesting, recipe and creature-loot gaps. Includes Frozen Wall landmarks."
 }
