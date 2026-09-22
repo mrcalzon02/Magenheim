@@ -16,7 +16,10 @@ internal static class UnderworldLandmarkArbitrationPolicy
     /// Returns true when the candidate landmark remains the deterministic winner
     /// at its anchor. A competitor participates when the two reservation territories
     /// overlap, even when neither anchor falls inside the other's smaller radius.
-    /// The lower unsigned family salt wins; Kind is the stable final tie-breaker.
+    /// The lower unsigned family salt wins; Kind is the stable family tie-breaker.
+    /// Anchors from the same family also arbitrate against one another, using native
+    /// X then Z as a final deterministic tie-breaker. This prevents adjacent sparse
+    /// reservation cells from materializing overlapping copies of one landmark.
     /// </summary>
     internal static bool IsWinner(
         UnderworldWorldIdentity identity,
@@ -37,8 +40,7 @@ internal static class UnderworldLandmarkArbitrationPolicy
 
         foreach (var family in families)
         {
-            if (family is not IUnderworldLandmarkStructureFamily competitor ||
-                ReferenceEquals(competitor, candidate))
+            if (family is not IUnderworldLandmarkStructureFamily competitor)
                 continue;
 
             var combinedRadiusLong = (long)candidate.ReservationProfile.ExclusionRadiusChunks +
@@ -47,17 +49,26 @@ internal static class UnderworldLandmarkArbitrationPolicy
                 throw new ArgumentOutOfRangeException(nameof(families), "Combined landmark exclusion radius exceeds supported native chunk range.");
             var combinedRadius = (int)combinedRadiusLong;
 
-            var overlaps = UnderworldLandmarkReservationPolicy.IsReserved(
+            var blocked = UnderworldLandmarkReservationPolicy.IsReserved(
                 identity,
                 candidateAnchor,
                 competitor.ReservationProfile,
                 combinedRadius,
-                anchor => UnderworldLandmarkReservationPolicy.IsAnchor(identity, anchor, competitor.ReservationProfile) &&
-                          competitor.Eligible(identity, anchor) &&
-                          anchorMatchesBiome(anchor, competitor.Biome));
-            if (!overlaps) continue;
+                anchor =>
+                {
+                    if (!UnderworldLandmarkReservationPolicy.IsAnchor(identity, anchor, competitor.ReservationProfile) ||
+                        !competitor.Eligible(identity, anchor) ||
+                        !anchorMatchesBiome(anchor, competitor.Biome))
+                        return false;
 
-            if (HasPriority(competitor, candidate)) return false;
+                    // A family's search necessarily rediscovers the candidate itself.
+                    // It is not a conflict, but another anchor from that same family is.
+                    if (ReferenceEquals(competitor, candidate) && SameAnchor(anchor, candidateAnchor))
+                        return false;
+
+                    return HasPriority(competitor, anchor, candidate, candidateAnchor);
+                });
+            if (blocked) return false;
         }
 
         return true;
@@ -95,11 +106,21 @@ internal static class UnderworldLandmarkArbitrationPolicy
 
     private static bool HasPriority(
         IUnderworldLandmarkStructureFamily left,
-        IUnderworldLandmarkStructureFamily right)
+        UnderworldInstanceChunkKey leftAnchor,
+        IUnderworldLandmarkStructureFamily right,
+        UnderworldInstanceChunkKey rightAnchor)
     {
         var leftSalt = unchecked((uint)left.ReservationProfile.Salt);
         var rightSalt = unchecked((uint)right.ReservationProfile.Salt);
         if (leftSalt != rightSalt) return leftSalt < rightSalt;
-        return string.CompareOrdinal(left.Kind, right.Kind) < 0;
+
+        var kindOrder = string.CompareOrdinal(left.Kind, right.Kind);
+        if (kindOrder != 0) return kindOrder < 0;
+
+        if (leftAnchor.X != rightAnchor.X) return leftAnchor.X < rightAnchor.X;
+        return leftAnchor.Z < rightAnchor.Z;
     }
+
+    private static bool SameAnchor(UnderworldInstanceChunkKey left, UnderworldInstanceChunkKey right) =>
+        left.X == right.X && left.Z == right.Z;
 }
