@@ -77,6 +77,9 @@ internal sealed class UnderworldRuntimeServices
     internal bool TryResolveLocalSession(out UnderworldWorldIdentity? identity,out string playerId,out string diagnostic)=>
         UnderworldRuntimeIdentityResolver.TryResolveLocalSession(out identity,out playerId,out diagnostic)&&identity is not null;
 
+    internal void ActivateLayer(UnderworldWorldIdentity identity, UnderworldLayer layer) =>
+        _worldContext.EnsureActive(identity, layer);
+
     internal void ResetForWorldUnload()
     {
         BiomeStructureResidency.Clear();
