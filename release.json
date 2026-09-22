@@ -1,4 +1,4 @@
 {
-  "version": "0.0.91",
-  "description": "0.0.91: Adds eleven authored Rootforged placeables with braided roots, iron collars, stone bases, matching icons and native building support. Uses core wood, stone and iron pending Underworld harvesting."
+  "version": "0.0.92",
+  "description": "0.0.92: Reconciles Rootforged source art and exports with the newer Underworld atmosphere and lavafall landmarks; repairs nested stash conflicts and adds a conflict-marker build gate."
 }

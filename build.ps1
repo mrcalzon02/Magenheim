@@ -41,6 +41,8 @@ try {
     & "$PSScriptRoot/tests/LauncherMetadata.Tests.ps1"
     # Freshness runs first because it is pure hashing -- no Blender, no regeneration -- and the
     # defect it catches is precisely the one that costs a full build to discover any later.
+    & python "$PSScriptRoot/tools/verify-conflict-markers.py"
+    if ($LASTEXITCODE -ne 0) { throw 'Resolve conflict markers before building.' }
     & python "$PSScriptRoot/tools/verify-generated-freshness.py"
     if ($LASTEXITCODE -ne 0) { throw 'Generated assets are out of date with the generators that own them.' }
     & python "$PSScriptRoot/tools/verify-model-assets.py"

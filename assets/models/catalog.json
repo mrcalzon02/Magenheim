@@ -2942,63 +2942,14 @@
   {
     "id": "rootforged-great-column-plinth",
     "parts": 5,
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    "triangles": 580,
-    "materials": 5,
-    "source": "source/rootforged-great-column-plinth.blend",
-    "glb": "glb/rootforged-great-column-plinth.glb",
-    "runtime": "runtime/rootforged-great-column-plinth.model.json",
-    "source_sha256": "93e3506c4a6766029972ab4d96196bc76e3fff927ab8b5cd7977fa037b4e4ce7",
-    "runtime_sha256": "0c5e09fc6524b4d624a3a8b84b8e152d2d42956f7919394c2114c4c4c6afab7a",
-    "glb_sha256": "cf4f0342268932e11bf9836849a5cf734e64032ae623597c76273c080bd6e24c"
-  },
-  {
-    "id": "rootforged-iron-banded-worldroot-beam-4m",
-    "parts": 15,
-    "triangles": 3336,
-    "materials": 15,
-    "source": "source/rootforged-iron-banded-worldroot-beam-4m.blend",
-    "glb": "glb/rootforged-iron-banded-worldroot-beam-4m.glb",
-    "runtime": "runtime/rootforged-iron-banded-worldroot-beam-4m.model.json",
-    "source_sha256": "4b846c51aec27b45dc034270e46c8ad9781a2f217cff0f9a64bfaee12a8829bd",
-    "runtime_sha256": "f21aa970178c768a60a13352b2977be848d89298a42da8d8265174a6775c147e",
-    "glb_sha256": "b1523e31969a2204ff39fb9572cd795f35b1a98bc57ac425c57b95d9f044c108"
-  },
-  {
-    "id": "rootforged-rootforged-arch-rib-4m",
-    "parts": 15,
-    "triangles": 3336,
-    "materials": 15,
-    "source": "source/rootforged-rootforged-arch-rib-4m.blend",
-    "glb": "glb/rootforged-rootforged-arch-rib-4m.glb",
-    "runtime": "runtime/rootforged-rootforged-arch-rib-4m.model.json",
-    "source_sha256": "4b1043cdcb29629425f7353ce11c029aceca9becf197fae993a33fa5f90d4dd6",
-    "runtime_sha256": "7d1b9df299e7a2040a87602533056de61fdafeef93f3dd52206faf053ca3a6cc",
-    "glb_sha256": "b382f43967fe47581e6ade6611465bfc6401660d8bbf137d9424e27478c46937"
-  },
-  {
-    "id": "rootforged-rootforged-arch-rib-8m",
-    "parts": 15,
-    "triangles": 6216,
-    "materials": 15,
-    "source": "source/rootforged-rootforged-arch-rib-8m.blend",
-    "glb": "glb/rootforged-rootforged-arch-rib-8m.glb",
-    "runtime": "runtime/rootforged-rootforged-arch-rib-8m.model.json",
-    "source_sha256": "e1a0bb40a2d4956c1617b793a21446aabadc464e126f1e77b6dd4ee25c8e5f5e",
-    "runtime_sha256": "6f1575e788d1dd116d4dc260b5d58b21c1a48f456e99939c2a84a437dbf70838",
-    "glb_sha256": "9281e7278167be33be5d5ec55a8373d9b1ac35e798074e13930ee728bba228f3"
-=======
-=======
->>>>>>> Stashed changes
     "triangles": 860,
     "materials": 2,
     "source": "source/rootforged-great-column-plinth.blend",
     "glb": "glb/rootforged-great-column-plinth.glb",
     "runtime": "runtime/rootforged-great-column-plinth.model.json",
-    "source_sha256": "24ede31d2d9c0c82d32073866ba49d7e99c675ec43201254290ad9109784edf8",
-    "runtime_sha256": "1517878e7b38c39dac1d56aec8d3c9b0d6efe7c4ea80278f03bdeadd9af0d8d5",
-    "glb_sha256": "24402489232adaab451f9adc19a8b9ca368ad66e26fc2cd3246c0b6ed8836d36"
+    "source_sha256": "1df5240d437514eff5a9118bd64744f9062a4f8d962b5a525b9a64751e97811d",
+    "runtime_sha256": "916294eff580247fa4717fba3eee39956c06496914a65f8a185ef5bdc8ac5ebd",
+    "glb_sha256": "f6b07900fe5cbfd7d9d62fcb6a2efa1a8933288109b26d509efbbfa8a06b3216"
   },
   {
     "id": "rootforged-iron-banded-worldroot-beam-4m",
@@ -3008,9 +2959,9 @@
     "source": "source/rootforged-iron-banded-worldroot-beam-4m.blend",
     "glb": "glb/rootforged-iron-banded-worldroot-beam-4m.glb",
     "runtime": "runtime/rootforged-iron-banded-worldroot-beam-4m.model.json",
-    "source_sha256": "45e9c1785f8bdaaec433b4f7dab96599c72604684db3ac8ba9b50715a74666b0",
-    "runtime_sha256": "de97837fc0218f9dd50b69cb5aab352c4a4eed3aff941ea732663e002dbc179f",
-    "glb_sha256": "18d7d9553cbef09f3ec8d6f5c269b9dcc33a5300b45a9c445200795b11a990bf"
+    "source_sha256": "02dbda36de56a9f18f03e534fe21a2830ecddcc63a5afab56e38d0e26089d4f0",
+    "runtime_sha256": "874c51609b2256ba3ec5875134696e1fd96818e83f5463aba7ba5a063f1bc69a",
+    "glb_sha256": "6fe3a7f697213f27afc076d86b71177f4a95b91603ee7c0b918ab13fc5ad8beb"
   },
   {
     "id": "rootforged-rootforged-arch-rib-4m",
@@ -3020,9 +2971,9 @@
     "source": "source/rootforged-rootforged-arch-rib-4m.blend",
     "glb": "glb/rootforged-rootforged-arch-rib-4m.glb",
     "runtime": "runtime/rootforged-rootforged-arch-rib-4m.model.json",
-    "source_sha256": "923b6569d8b6ceb7594883ae05efb186c92780e98c42574aeec3ee4c9542d19c",
-    "runtime_sha256": "cdf1403cb57a2ec8cb714ba6b165571ebe24728542b4afbeac73cd472f0d3bf5",
-    "glb_sha256": "11dc8acde4a757e8d59935246fd6ab85b53b1737840992aaa164c70114abebd0"
+    "source_sha256": "7bafa274c9b350fc245b1959225323dfe709e0a5bb3b6d924913495348c32f99",
+    "runtime_sha256": "f728c92f7655e633165c935112c96917dd8565856a37541cb70aecbcf56dc566",
+    "glb_sha256": "060e53fc31f17e4d95955d0029b00ad7288e65b0476d071053d3d9a551db8f60"
   },
   {
     "id": "rootforged-rootforged-arch-rib-8m",
@@ -3032,110 +2983,21 @@
     "source": "source/rootforged-rootforged-arch-rib-8m.blend",
     "glb": "glb/rootforged-rootforged-arch-rib-8m.glb",
     "runtime": "runtime/rootforged-rootforged-arch-rib-8m.model.json",
-    "source_sha256": "16e5f63ba750806a37da2cbc0576921a454994ecb40ed5b6f12a15fdedbedbd5",
-    "runtime_sha256": "b26c7cbded5e3b5d0d86d6603ffd00c6fdefdbbf16197b80154fd07b0fa02506",
-    "glb_sha256": "7a4baaa0f959eda27530a3b61ab979a502fccec24f7b91367a76a6491c8dd0ee"
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+    "source_sha256": "ea1ce2c142dd0eb27eaa2055b89446ca3e40d364d18ed679dea530124f48b5e0",
+    "runtime_sha256": "5b0eb28feb38db28d53266bb7e679d27caecc9249f9fcbf5712c13809786256c",
+    "glb_sha256": "8620c5bf807d76b7f96896815136ee6cbc80688791964c4e3c9a12098a34de60"
   },
   {
     "id": "rootforged-understone-foundation-2x2",
     "parts": 5,
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    "triangles": 580,
-    "materials": 5,
-    "source": "source/rootforged-understone-foundation-2x2.blend",
-    "glb": "glb/rootforged-understone-foundation-2x2.glb",
-    "runtime": "runtime/rootforged-understone-foundation-2x2.model.json",
-    "source_sha256": "cb636f1c82a2d692b9360883fb1c521d6a5670a2cfacbba0dc7f386d59e5bb70",
-    "runtime_sha256": "774c2e209a4b54981e1321d797447f2a4a3517b88f849c8e806e91113e3a77d9",
-    "glb_sha256": "c9e32ce1874677f9d5cb47f445e4f1373bf7893b095ee8209644e4f3ecfaea5b"
-  },
-  {
-    "id": "rootforged-worldroot-beam-2m",
-    "parts": 3,
-    "triangles": 1800,
-    "materials": 3,
-    "source": "source/rootforged-worldroot-beam-2m.blend",
-    "glb": "glb/rootforged-worldroot-beam-2m.glb",
-    "runtime": "runtime/rootforged-worldroot-beam-2m.model.json",
-    "source_sha256": "61882e71bdec5821f56581e64c0bb6b83b594aa0ed0c9bb650362aad5997bfa3",
-    "runtime_sha256": "11e1ce7997b57cff4ec301a2e6bd7480c06adde6f9949ad15848e3d9a6fec2b5",
-    "glb_sha256": "6f315084738849f1f3b025186c6b7d61cba7c61f49a9c40ef3cda68a5229148d"
-  },
-  {
-    "id": "rootforged-worldroot-beam-4m",
-    "parts": 3,
-    "triangles": 2952,
-    "materials": 3,
-    "source": "source/rootforged-worldroot-beam-4m.blend",
-    "glb": "glb/rootforged-worldroot-beam-4m.glb",
-    "runtime": "runtime/rootforged-worldroot-beam-4m.model.json",
-    "source_sha256": "3c255ef73c67e54b0c7a5e7d3c49664df3f6a393c80853112b88118ff1a41a6e",
-    "runtime_sha256": "ffaed1ab1252b23e78dcefb26fcb8a64cab2124c2c36d315fdc2223a320fcf4f",
-    "glb_sha256": "9e9c280c5223d5dd592d21e9fae9802993af8907c193335453c650cc30d9b800"
-  },
-  {
-    "id": "rootforged-worldroot-beam-8m",
-    "parts": 3,
-    "triangles": 5832,
-    "materials": 3,
-    "source": "source/rootforged-worldroot-beam-8m.blend",
-    "glb": "glb/rootforged-worldroot-beam-8m.glb",
-    "runtime": "runtime/rootforged-worldroot-beam-8m.model.json",
-    "source_sha256": "a69c22b27b866b2a859e33f81087854f660f1f9db4198afb4cfdb8f49e5a8f45",
-    "runtime_sha256": "c41f32976ec9c1d39e7b3a897181bee75c7589f315f812091369f5a882a01399",
-    "glb_sha256": "f0d5efc3464b7f6e376ce24c42ffb39cfa11618925148c04c623b5ec74209322"
-  },
-  {
-    "id": "rootforged-worldroot-pillar-2m",
-    "parts": 3,
-    "triangles": 1800,
-    "materials": 3,
-    "source": "source/rootforged-worldroot-pillar-2m.blend",
-    "glb": "glb/rootforged-worldroot-pillar-2m.glb",
-    "runtime": "runtime/rootforged-worldroot-pillar-2m.model.json",
-    "source_sha256": "3f7527a2fa0d9ceb176169a0ae1aa986e5c7b154b9372548c4cae5a688fccc2f",
-    "runtime_sha256": "38d47a5df34f4b0237fef4273e8f2a478a7fae776d8d3dbf15f937a64e53c9c0",
-    "glb_sha256": "53014226e9094b87087b0b5a519bb98a750ba776cbb289bcc6de35d66d7a2494"
-  },
-  {
-    "id": "rootforged-worldroot-pillar-4m",
-    "parts": 3,
-    "triangles": 2952,
-    "materials": 3,
-    "source": "source/rootforged-worldroot-pillar-4m.blend",
-    "glb": "glb/rootforged-worldroot-pillar-4m.glb",
-    "runtime": "runtime/rootforged-worldroot-pillar-4m.model.json",
-    "source_sha256": "c77224d71c86bab18f2a26bf74042550681dc2ce411f1b8bd263dc71f21de90e",
-    "runtime_sha256": "bde1e59caad54d0905ae33b7d18c2d7ba439aea631ed79266ff70332d37f9e11",
-    "glb_sha256": "c3d25cb5df9332ad1433cafe826b1995810340e4bf81b70927a60d7c150a5705"
-  },
-  {
-    "id": "rootforged-worldroot-pillar-8m",
-    "parts": 3,
-    "triangles": 5832,
-    "materials": 3,
-    "source": "source/rootforged-worldroot-pillar-8m.blend",
-    "glb": "glb/rootforged-worldroot-pillar-8m.glb",
-    "runtime": "runtime/rootforged-worldroot-pillar-8m.model.json",
-    "source_sha256": "d8f70a4916733e147e0fecabe1e323de1f191cf45d626657f49a8ab6083502e4",
-    "runtime_sha256": "b264aee868453b3954dbf16cecc6b9dff838da1b9ad6bd430ae18974ac32d231",
-    "glb_sha256": "fc4c11283ae5bb7cafd8b9c23430bd564e2bccb23bc6126f5b8990984e5e572e"
-=======
-=======
->>>>>>> Stashed changes
     "triangles": 860,
     "materials": 2,
     "source": "source/rootforged-understone-foundation-2x2.blend",
     "glb": "glb/rootforged-understone-foundation-2x2.glb",
     "runtime": "runtime/rootforged-understone-foundation-2x2.model.json",
-    "source_sha256": "42a2e4314ec862cad82a75b054ccbad3775ff137280fbba445ca74298e2e59c8",
-    "runtime_sha256": "f8de2807ed7c155902cb1685b2412a47f9ec112d84448e5a96a7271db506f96c",
-    "glb_sha256": "3c5dc6149b7b270dcddc097371b3ff73025120afe64008e09e68ba9e0576551a"
+    "source_sha256": "a658db17ad07ed7d0a5d4bda768b36de03ab739c1922626707976955504c4ded",
+    "runtime_sha256": "84f2eefc16fb84909448cd76f123b677c76dd74a7d1e17eacc6b0f3844852b83",
+    "glb_sha256": "4134daba9d65b8c733b5101be52a74564b1fbc6bb29e9160ff5f72d802df5ef3"
   },
   {
     "id": "rootforged-worldroot-beam-2m",
@@ -3145,9 +3007,9 @@
     "source": "source/rootforged-worldroot-beam-2m.blend",
     "glb": "glb/rootforged-worldroot-beam-2m.glb",
     "runtime": "runtime/rootforged-worldroot-beam-2m.model.json",
-    "source_sha256": "6a7ce616ea9245697c4e63b6c608cf0fd1af5fa70b30b50ccb6a168579fb20ed",
-    "runtime_sha256": "7c154760a5236c5579f1dfd8ac07462565f0b8b3a935a27c8ad02cdec005014f",
-    "glb_sha256": "ed55b7e9f4f37f45812024f9a0e03de527c213a4234bf0a2cad3b63ccfe970e0"
+    "source_sha256": "085f6724a6db243e81696d72bb5eed0700761e0153b28f29d6765c1de8ccb024",
+    "runtime_sha256": "2dcaa2bcffa5d14765be87b579723b91224185c6616569c702c65d8425e3d693",
+    "glb_sha256": "1d7e9883994a70eed6ed764712007317244370d2fe3049243c1af6ae5b1d552c"
   },
   {
     "id": "rootforged-worldroot-beam-4m",
@@ -3157,9 +3019,9 @@
     "source": "source/rootforged-worldroot-beam-4m.blend",
     "glb": "glb/rootforged-worldroot-beam-4m.glb",
     "runtime": "runtime/rootforged-worldroot-beam-4m.model.json",
-    "source_sha256": "07a18ca27a2b8231391344df8026cf843747d6f4190eda808e5871d9159dd55f",
-    "runtime_sha256": "5e1168dc1557fb6aab83f9b4fd6ec6f42e0ad7fb7a675ea0d8db6c00a206769e",
-    "glb_sha256": "f6d47bcdd5aaa205a76670f7430ebc1c1e72999269bc70ca2e4c3c5be41bcdae"
+    "source_sha256": "52be22bf716d75099120b8fe7ecbd2d190fa8100c670a4332af7a5a31b155e66",
+    "runtime_sha256": "744bae123a7a97999d91e5215ac3348129028969b5a05be7e8cdecce1b58fc7a",
+    "glb_sha256": "85d33796a10d47b11b5c740182a1dc77248e33bbe2ecd4e9be9af0198017131f"
   },
   {
     "id": "rootforged-worldroot-beam-8m",
@@ -3169,9 +3031,9 @@
     "source": "source/rootforged-worldroot-beam-8m.blend",
     "glb": "glb/rootforged-worldroot-beam-8m.glb",
     "runtime": "runtime/rootforged-worldroot-beam-8m.model.json",
-    "source_sha256": "ce8a2ff59bf5697debd33870addcbefd41866c7756a5f0f728ccfdc9550910d3",
-    "runtime_sha256": "abc33dbcb42bf657d502ed78b7739e774004743e166b63251499977be774359b",
-    "glb_sha256": "8fc33b63bf977d0911340283bfc7720cc1c5cbdb3efd1735734ea77739e4ed52"
+    "source_sha256": "a5bd3dd79feb21ec81e81c8beb25f1608a0e94bace472c7ec89e191479ff8b31",
+    "runtime_sha256": "b39be7f3eb4552b5007e977c2f7b01e246356d255b5687d4ca3693cc2f1952ea",
+    "glb_sha256": "162ab7f9384788a455847351eb022cdc6435e8a9c42e5b4ce49c25b080437706"
   },
   {
     "id": "rootforged-worldroot-pillar-2m",
@@ -3181,9 +3043,9 @@
     "source": "source/rootforged-worldroot-pillar-2m.blend",
     "glb": "glb/rootforged-worldroot-pillar-2m.glb",
     "runtime": "runtime/rootforged-worldroot-pillar-2m.model.json",
-    "source_sha256": "c740d79b0a7f0eaa7eeaa22a774cb3fb1f4155ed5ace99792bb49f25f24fb835",
-    "runtime_sha256": "765fc56222bd66fe39394ebed6557d40610f7d4aea874f48eaaf4ecdcb891da4",
-    "glb_sha256": "e53b0e52665a442a82742b015a382fb174ab7fcfd9ad965e613896a11b3fc36e"
+    "source_sha256": "a21913344ccc54abb0fde0332560edbb92161ded250498b1ec2bcf8def571103",
+    "runtime_sha256": "6abe4c8c1c36182374664730df5dcfe836ada0c57d9e11657242775f13fdd8dc",
+    "glb_sha256": "26fddaf2480592542c31da154af6e46f5bb766fcb891d49489aa023e9b61b485"
   },
   {
     "id": "rootforged-worldroot-pillar-4m",
@@ -3193,9 +3055,9 @@
     "source": "source/rootforged-worldroot-pillar-4m.blend",
     "glb": "glb/rootforged-worldroot-pillar-4m.glb",
     "runtime": "runtime/rootforged-worldroot-pillar-4m.model.json",
-    "source_sha256": "d9287e3bbb8ce22bddef958122736c64df67ffd8b5b7cd3d2657c9bc7ea0b9ec",
-    "runtime_sha256": "6a906c31cf942ad6a7a600b49e764a3ebeddea2fd5cbcd1404da78dcad1fa9cb",
-    "glb_sha256": "b9c334648d83edcb5a97222cb0aabd35b2740a0cac266517e072f604a4c05ba7"
+    "source_sha256": "472b0a0779fbb0667187e68ae0a2e096333d9d3f2dba5c4df871770974e82e5a",
+    "runtime_sha256": "60398d7406250c42472285e852c61fda5db1e9bb41614cc8e0eafa8da9275a43",
+    "glb_sha256": "868ba74fd7169406253a7ebc1bd07fa86b25239ac5cbf8fe0eb937cc975d6ffb"
   },
   {
     "id": "rootforged-worldroot-pillar-8m",
@@ -3205,13 +3067,9 @@
     "source": "source/rootforged-worldroot-pillar-8m.blend",
     "glb": "glb/rootforged-worldroot-pillar-8m.glb",
     "runtime": "runtime/rootforged-worldroot-pillar-8m.model.json",
-    "source_sha256": "ba0ad5850413c5804e4378779e1c3211111e9c54104cdbf70edafc58d102a011",
-    "runtime_sha256": "09035f3e456bc5a43b7a9b23f4fe22ce8a6535d3115027343466d559bad2e8df",
-    "glb_sha256": "69fe0df8f495eb40d2627e5273f42ed2da8f17a34c270f57dd43004eac85b5ec"
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
+    "source_sha256": "3ad80c2207c0ba75bc2e4bfbfa067d0452ddc287aff54c2334da4717d1df5657",
+    "runtime_sha256": "c4f4f26b71c4e08de64d4bc56bb6413908bff81d6461971ecdec56fcba4afd5d",
+    "glb_sha256": "cccc4d68cdbb6dbeb97e48760cb3505bcc9930bbb76b422e7efa838fa4749d8e"
   },
   {
     "id": "rune-engraver",

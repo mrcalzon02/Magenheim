@@ -1,3 +1,25 @@
+# Current source candidate - 0.0.92 / schema 5 (2026-09-21)
+
+Resolved 24 stash-apply conflicts after a completed remote fast-forward. Two auto-stash commits
+had recorded unresolved markers; repeated application nested them further. Detailed Rootforged
+sources, exported GLBs/runtime payloads and catalogs are now coherent. Plugin registration retains
+both Rootforged pieces and the newer Underworld atmosphere/lavafall work. A conflict-marker gate
+now runs before asset checks. Existing history and stashes were preserved; obsolete auto-stashes
+must not be reapplied over the repaired tree. See docs/validation/2026-09-21-rootforged-stash-conflict-resolution.md.
+
+Full closeout passed: 294 models, 128 icons, 38,324 Core assertions plus separately reported suites,
+Rootforged asset gates and native runtime binding checks. Runtime compilation: zero warnings/errors.
+Installed 0.0.92 into Central Fuckery with all payload hashes and enabled launcher metadata verified.
+Installed DLL SHA-256: 3434C112028E94EADEB4D15D0B6F58633B7DC63F240CF98DDCE63FFB7434B45C.
+Backups: backups/Local-Magenheim-20260921-164828.zip and backups/mods-20260921-164836-159.yml.
+No game startup or multiplayer acceptance performed.
+
+Launcher description: "0.0.92: Reconciles Rootforged source art and exports with the newer
+Underworld atmosphere and lavafall landmarks; repairs nested stash conflicts and adds a
+conflict-marker build gate."
+
+---
+
 # Current source candidate - 0.0.91 / schema 5 (2026-09-21)
 
 Rootforged player placeables are now explicitly authorized as a separate pass after natural scenery.
