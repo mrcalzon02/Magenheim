@@ -11,17 +11,28 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal static class UnderworldMinimapGameApi
 {
-    private static readonly FieldInfo NamePin = Required("m_namePin");
-    private static readonly FieldInfo DeathPin = Required("m_deathPin");
-    private static readonly FieldInfo SpawnPointPin = Required("m_spawnPointPin");
-    private static readonly FieldInfo LocationPins = Required("m_locationPins");
-    private static readonly FieldInfo PingPins = Required("m_pingPins");
-    private static readonly FieldInfo ShoutPins = Required("m_shoutPins");
-    private static readonly FieldInfo PlayerPins = Required("m_playerPins");
-    private static readonly FieldInfo RandomEventPin = Required("m_randEventPin");
-    private static readonly FieldInfo RandomEventAreaPin = Required("m_randEventAreaPin");
-    private static readonly FieldInfo UpdateLocationsTimer = Required("m_updateLocationsTimer");
-    private static readonly FieldInfo UpdateEventTime = Required("m_updateEventTime");
+    private static readonly FieldInfo NamePin = AccessTools.Field(typeof(Minimap), "m_namePin")
+        ?? throw new MissingFieldException(typeof(Minimap).FullName, "m_namePin");
+    private static readonly FieldInfo DeathPin = AccessTools.Field(typeof(Minimap), "m_deathPin")
+        ?? throw new MissingFieldException(typeof(Minimap).FullName, "m_deathPin");
+    private static readonly FieldInfo SpawnPointPin = AccessTools.Field(typeof(Minimap), "m_spawnPointPin")
+        ?? throw new MissingFieldException(typeof(Minimap).FullName, "m_spawnPointPin");
+    private static readonly FieldInfo LocationPins = AccessTools.Field(typeof(Minimap), "m_locationPins")
+        ?? throw new MissingFieldException(typeof(Minimap).FullName, "m_locationPins");
+    private static readonly FieldInfo PingPins = AccessTools.Field(typeof(Minimap), "m_pingPins")
+        ?? throw new MissingFieldException(typeof(Minimap).FullName, "m_pingPins");
+    private static readonly FieldInfo ShoutPins = AccessTools.Field(typeof(Minimap), "m_shoutPins")
+        ?? throw new MissingFieldException(typeof(Minimap).FullName, "m_shoutPins");
+    private static readonly FieldInfo PlayerPins = AccessTools.Field(typeof(Minimap), "m_playerPins")
+        ?? throw new MissingFieldException(typeof(Minimap).FullName, "m_playerPins");
+    private static readonly FieldInfo RandomEventPin = AccessTools.Field(typeof(Minimap), "m_randEventPin")
+        ?? throw new MissingFieldException(typeof(Minimap).FullName, "m_randEventPin");
+    private static readonly FieldInfo RandomEventAreaPin = AccessTools.Field(typeof(Minimap), "m_randEventAreaPin")
+        ?? throw new MissingFieldException(typeof(Minimap).FullName, "m_randEventAreaPin");
+    private static readonly FieldInfo UpdateLocationsTimer = AccessTools.Field(typeof(Minimap), "m_updateLocationsTimer")
+        ?? throw new MissingFieldException(typeof(Minimap).FullName, "m_updateLocationsTimer");
+    private static readonly FieldInfo UpdateEventTime = AccessTools.Field(typeof(Minimap), "m_updateEventTime")
+        ?? throw new MissingFieldException(typeof(Minimap).FullName, "m_updateEventTime");
 
     internal static void ResetDynamicPinCaches(Minimap map)
     {
@@ -56,7 +67,4 @@ internal static class UnderworldMinimapGameApi
         }
     }
 
-    private static FieldInfo Required(string name) =>
-        AccessTools.Field(typeof(Minimap), name)
-        ?? throw new MissingFieldException(typeof(Minimap).FullName, name);
 }
