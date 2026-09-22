@@ -724,36 +724,44 @@ internal static class UnderworldMinimapPlayerSavePatch
 [HarmonyPatch(typeof(Minimap), "UpdateExplore", new[] { typeof(float), typeof(Player) })]
 internal static class UnderworldMinimapUpdateExplorePatch
 {
+    [HarmonyPriority(Priority.First)]
     private static void Prefix(Minimap __instance, out UnderworldMapTabRuntime.MapBindingScope? __state) =>
         __state = UnderworldMapTabRuntime.BeginPhysicalMapOperation(__instance);
 
+    [HarmonyPriority(Priority.Last)]
     private static void Postfix(UnderworldMapTabRuntime.MapBindingScope? __state) => __state?.Dispose();
 }
 
 [HarmonyPatch(typeof(Minimap), "Explore", new[] { typeof(Vector3), typeof(float) })]
 internal static class UnderworldMinimapExplorePatch
 {
+    [HarmonyPriority(Priority.First)]
     private static void Prefix(Minimap __instance, out UnderworldMapTabRuntime.MapBindingScope? __state) =>
         __state = UnderworldMapTabRuntime.BeginPhysicalMapOperation(__instance);
 
+    [HarmonyPriority(Priority.Last)]
     private static void Postfix(UnderworldMapTabRuntime.MapBindingScope? __state) => __state?.Dispose();
 }
 
 [HarmonyPatch(typeof(Minimap), nameof(Minimap.GetSharedMapData), new[] { typeof(byte[]) })]
 internal static class UnderworldMinimapGetSharedMapDataPatch
 {
+    [HarmonyPriority(Priority.First)]
     private static void Prefix(Minimap __instance, out UnderworldMapTabRuntime.MapBindingScope? __state) =>
         __state = UnderworldMapTabRuntime.BeginPhysicalMapOperation(__instance);
 
+    [HarmonyPriority(Priority.Last)]
     private static void Postfix(UnderworldMapTabRuntime.MapBindingScope? __state) => __state?.Dispose();
 }
 
 [HarmonyPatch(typeof(Minimap), nameof(Minimap.AddSharedMapData), new[] { typeof(byte[]) })]
 internal static class UnderworldMinimapAddSharedMapDataPatch
 {
+    [HarmonyPriority(Priority.First)]
     private static void Prefix(Minimap __instance, out UnderworldMapTabRuntime.MapBindingScope? __state) =>
         __state = UnderworldMapTabRuntime.BeginPhysicalMapOperation(__instance);
 
+    [HarmonyPriority(Priority.Last)]
     private static void Postfix(UnderworldMapTabRuntime.MapBindingScope? __state) => __state?.Dispose();
 }
 
@@ -763,9 +771,11 @@ internal static class UnderworldMinimapAddSharedMapDataPatch
     new[] { typeof(Vector3), typeof(Minimap.PinType), typeof(string), typeof(bool) })]
 internal static class UnderworldMinimapDiscoverLocationPatch
 {
+    [HarmonyPriority(Priority.First)]
     private static void Prefix(Minimap __instance, out UnderworldMapTabRuntime.MapBindingScope? __state) =>
         __state = UnderworldMapTabRuntime.BeginPhysicalMapOperation(__instance);
 
+    [HarmonyPriority(Priority.Last)]
     private static void Postfix(UnderworldMapTabRuntime.MapBindingScope? __state) => __state?.Dispose();
 }
 
