@@ -181,11 +181,6 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
             EnsureBound(physical);
         }
 
-        if (largeOpen && !Minimap.InTextInput() && Input.GetKeyDown(KeyCode.Tab))
-            SelectLayer(_selectedLayer == UnderworldLayer.Surface
-                ? UnderworldLayer.Underworld
-                : UnderworldLayer.Surface);
-
         _wasLargeOpen = largeOpen;
         SetTabsVisible(largeOpen);
         RefreshTabState();
@@ -580,7 +575,7 @@ internal static class UnderworldMinimapSaveMapDataPatch
 [HarmonyPatch(typeof(PlayerProfile), nameof(PlayerProfile.SavePlayerData), new[] { typeof(Player) })]
 internal static class UnderworldMinimapPlayerSavePatch
 {
-    private static void Prefix(Player player) => UnderworldMapTabRuntime.PrepareLocalPlayerSave(player);
+    private static void Prefix(Player __0) => UnderworldMapTabRuntime.PrepareLocalPlayerSave(__0);
 }
 
 [HarmonyPatch(typeof(Minimap), "Explore", new[] { typeof(Vector3), typeof(float) })]
@@ -597,8 +592,6 @@ internal static class UnderworldMinimapGenerateWorldMapPatch
 {
     private static void Prefix(Minimap __instance, out bool __state) =>
         __state = UnderworldMapTabRuntime.BeginMapGeneration(__instance);
-
-    private static void Postfix(bool __state) => UnderworldMapTabRuntime.EndMapGeneration(__state);
 
     private static Exception? Finalizer(Exception? __exception, bool __state)
     {
