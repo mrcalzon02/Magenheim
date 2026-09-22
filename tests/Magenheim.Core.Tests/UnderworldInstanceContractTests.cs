@@ -19,6 +19,10 @@ internal static class UnderworldInstanceContractTests
         Assert(UnderworldInstanceContract.DedicatedInstanceTerrainAuthority, "Underworld must own terrain authority.");
         Assert(UnderworldInstanceContract.DedicatedInstanceBiomeEnvironmentAuthority, "Underworld must own biome/environment authority.");
         Assert(UnderworldInstanceContract.DedicatedInstancePersistenceNamespace, "Underworld must own its persistence namespace.");
+        Assert(UnderworldInstanceContract.UsesVanillaMinimapMechanics, "Underworld map tabs must use Valheim's Minimap mechanics.");
+        Assert(!UnderworldInstanceContract.ParallelMapEngine, "Underworld must not implement a parallel map engine.");
+        Assert(!UnderworldInstanceContract.ParallelFogOfWarEngine, "Underworld must not implement parallel fog-of-war.");
+        Assert(!UnderworldInstanceContract.ParallelPinEngine, "Underworld must not implement a parallel pin engine.");
         Assert(!UnderworldInstanceContract.SurfaceFarLandmassIsUnderworld, "A distant Surface landmass must never become Underworld authority.");
         Assert(!UnderworldInstanceContract.SurfaceCoordinateProjectionDefinesUnderworld, "Surface coordinate projection must never define Underworld geography.");
         Assert(!UnderworldInstanceContract.SurfaceMapIsUnderworldMap, "The Surface minimap must never be the Underworld map.");
