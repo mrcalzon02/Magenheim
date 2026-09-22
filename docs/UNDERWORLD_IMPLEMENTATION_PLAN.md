@@ -215,7 +215,7 @@ Magenheim.Runtime/Underworld/
   UnderworldWorldTransitionManager.cs
   UnderworldUnlockRuntime.cs
   UnderworldPersistenceRuntime.cs
-  UnderworldMapRuntime.cs
+  UnderworldMapTabRuntime.cs  # thin layer/data switch around Valheim Minimap; never a second map engine
 ```
 
 ## 5.3 Transition contract
@@ -228,7 +228,7 @@ Entering the Underworld must:
 4. verify the target Underworld identity exists or can be initialized;
 5. finish critical target initialization before player placement;
 6. transfer the player without duplicating or losing character state;
-7. select the Underworld map/environment/worldgen context;
+7. select the Underworld environment/worldgen context and bind the Underworld payload to the existing Valheim Minimap;
 8. reconstruct persistent target-zone state;
 9. acknowledge successful transition before clearing recovery information.
 
