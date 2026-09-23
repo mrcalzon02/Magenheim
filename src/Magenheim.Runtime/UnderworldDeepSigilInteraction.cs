@@ -130,14 +130,28 @@ internal sealed class UnderworldDeepSigilInteraction : MonoBehaviour, Hoverable,
         var map = Minimap.instance;
         if (map == null || string.IsNullOrWhiteSpace(pinName)) return;
 
-        foreach (var pin in map.m_pins)
+        // Pin mutation must target the player's physical world payload, not whichever tab happens
+        // to be selected in the large-map UI. A Deep Sigil can only be interacted with or restored
+        // while its native Underworld instance is resident, so the existing physical-map binding
+        // scope gives us the Underworld payload and restores the user's selected tab afterwards.
+        // This keeps all pin storage/serialization in vanilla Minimap while preventing a Sigil
+        // reveal from contaminating the Surface payload when the player is browsing that tab.
+        var binding = UnderworldMapTabRuntime.BeginPhysicalMapOperation(map);
+        try
         {
-            if (!string.Equals(pin.m_name, pinName, StringComparison.Ordinal)) continue;
-            var delta = pin.m_pos - position;
-            if (delta.sqrMagnitude <= 64f) return;
-        }
+            foreach (var pin in map.m_pins)
+            {
+                if (!string.Equals(pin.m_name, pinName, StringComparison.Ordinal)) continue;
+                var delta = pin.m_pos - position;
+                if (delta.sqrMagnitude <= 64f) return;
+            }
 
-        map.AddPin(position, Minimap.PinType.Icon3, pinName, true, false,
-            ownerID: 0L, author: default);
+            map.AddPin(position, Minimap.PinType.Icon3, pinName, true, false,
+                ownerID: 0L, author: default);
+        }
+        finally
+        {
+            binding?.Dispose();
+        }
     }
 }
