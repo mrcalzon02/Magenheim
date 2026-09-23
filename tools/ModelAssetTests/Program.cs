@@ -112,7 +112,7 @@ foreach (var biome in Enum.GetValues<Magenheim.Core.Underworld.UnderworldTerrain
   if (cover.Donor.MinScale <= 0 || cover.Donor.MaxScale < cover.Donor.MinScale || cover.MinHeightAboveWater > cover.MaxHeightAboveWater)
    throw new Exception("Invalid cover habitat/scale: " + cover.Name);
   if (biome == Magenheim.Core.Underworld.UnderworldTerrainBiome.BlackwaterDeep
-      && cover.Donor.PrefabName == "Fiddleheadfern"
+      && cover.Name.Contains("fern", StringComparison.OrdinalIgnoreCase)
       && Magenheim.Core.Underworld.UnderworldFloraPlacement.CanPlaceCover(-5, 0, cover.MinHeightAboveWater, cover.MaxHeightAboveWater, cover.MaxSlope))
    throw new Exception("Terrestrial fern admitted underwater");
  }

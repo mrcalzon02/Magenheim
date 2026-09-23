@@ -10,7 +10,7 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal static class UnderworldResourceVisuals
 {
-    // Resource prefab -> authored model (tools/author-underworld-fungal-forest.py). Resources without
+    // Resource prefab -> authored model (biome author tools). Resources without
     // an entry keep their vanilla appearance until their biome's custom pass.
     private static readonly Dictionary<string, string> Models = new(StringComparer.Ordinal)
     {
@@ -18,6 +18,10 @@ internal static class UnderworldResourceVisuals
         ["Magenheim_Underworld_Resource_GlowcapFlesh"] = "underworld-resource-glowcap-flesh",
         ["Magenheim_Underworld_Resource_SpireFibre"] = "underworld-resource-spire-fibre",
         ["Magenheim_Underworld_Resource_Understone"] = "underworld-resource-understone",
+        ["Magenheim_Underworld_Resource_BlackwaterFlowstone"] = "underworld-resource-blackwater-flowstone",
+        ["Magenheim_Underworld_Resource_PaleFibre"] = "underworld-resource-pale-fibre",
+        ["Magenheim_Underworld_Resource_BlackwaterPearl"] = "underworld-resource-blackwater-pearl",
+        ["Magenheim_Underworld_Resource_DeepSalt"] = "underworld-resource-deep-salt",
     };
 
     internal static string? ModelFor(string prefab) => Models.TryGetValue(prefab, out var model) ? model : null;

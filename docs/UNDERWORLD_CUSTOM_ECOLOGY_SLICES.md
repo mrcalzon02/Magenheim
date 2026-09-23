@@ -46,7 +46,7 @@ Deep Salt.
   UV-derived coverage before texture reduction. Source verification:
   `tools/blender.ps1 verify-blackwater-sources`. See
   `validation/2026-09-22-blackwater-quality-rework.md` for changes, evidence and remaining gates.
-  **Still awaiting the user's visual verdict; B1b is not signed off and B2 has not begun.**
+  **User authorized continuing to B2 and closeout on 2026-09-22. Review candidate: `fbf4bca`.**
   The bullets below preserve the incoming failure report, not the current geometry:
   - flowstone-spire: reworked (fused fluted columns, deposit rings, pool, stalagmites, 4.1k tris) --
     reads better; needs user verdict.

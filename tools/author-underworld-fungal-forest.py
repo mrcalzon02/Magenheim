@@ -25,8 +25,8 @@ from mathutils import Matrix, Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from magenheim_blender_kit import (  # noqa: E402
-    bake_atlas, blob, curve, lathe, merge, spec_painter, spike, transformed, unwrap, uv_overlap)
-from magenheim_flora_kit import Model, buttresses, cap, gills, small_mushrooms, tube  # noqa: E402
+    blob, curve, lathe, merge, spec_painter, spike, transformed, unwrap, uv_overlap)
+from magenheim_flora_kit import Model, buttresses, cap, gills, small_mushrooms, tube, bake_flora_atlas  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'assets/models/source'
@@ -307,7 +307,7 @@ def author(model_id):
     overlap, coverage = uv_overlap(m.parts)
     if overlap > 0.01:
         raise ValueError(f'{model_id}: {overlap:.1%} of the atlas is claimed by two triangles')
-    bake_atlas(m.parts, m.atlas, paint, size=m.atlas_size)
+    bake_flora_atlas(m.parts, m.atlas, paint, size=m.atlas_size)
     triangles = sum(len(o.data.loop_triangles) for o in m.parts)
     heights = [(o.matrix_world @ v.co).z for o in m.parts for v in o.data.vertices]
     bpy.context.preferences.filepaths.save_version = 0

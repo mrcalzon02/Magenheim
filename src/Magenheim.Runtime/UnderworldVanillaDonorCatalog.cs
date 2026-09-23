@@ -35,9 +35,10 @@ internal static class UnderworldVanillaDonorCatalog
         },
         [UnderworldTerrainBiome.BlackwaterDeep] = new Donor[]
         {
-            new("cliff_mistlands1", 1.1f, 1.8f, new(1f, 1.45f, 1f), -.5f, true), new("cliff_mistlands1", .9f, 1.45f, new(1.75f, .72f, 1.35f), -.55f, true),
-            new("RockFinger", 1.25f, 2.25f, new(.9f, 1.6f, .9f), -.35f, true), new("RockFinger", 1f, 1.7f, new(.58f, 2.25f, .58f), -.4f, true), new("RockThumb", 1.4f, 2.4f, new(1.1f, 1.35f, 1.1f), -.35f, true),
-            new("YggdrasilRoot", 1.2f, 2f, new(1.4f, .9f, 1.4f), -.25f, true), new("YggdrasilRoot", 1f, 1.65f, new(2f, .55f, 1.45f), -.3f, true),
+            // Preserve all seven landmark indices; authored forms use metre-scale dimensions.
+            new("model:underworld-flora-blackwater-broken-column", .9f, 1.25f, Vector3.one, -.1f, true), new("model:underworld-flora-blackwater-rimstone-mound", .9f, 1.3f, new(1.1f, .95f, 1.1f), -.1f, true),
+            new("model:underworld-flora-blackwater-flowstone-spire", .85f, 1.25f, Vector3.one, -.1f, true), new("model:underworld-flora-blackwater-flowstone-spire", .8f, 1.15f, new(.9f, 1.1f, .9f), -.1f, true), new("model:underworld-flora-blackwater-rimstone-mound", .85f, 1.2f, Vector3.one, -.1f, true),
+            new("model:underworld-flora-blackwater-drowned-root-arch", .9f, 1.2f, Vector3.one, -.1f, true), new("model:underworld-flora-blackwater-drowned-root-arch", .85f, 1.15f, new(1.15f, .9f, 1.05f), -.1f, true),
         },
         [UnderworldTerrainBiome.SulfurousWastes] = new Donor[]
         {
@@ -93,18 +94,18 @@ internal static class UnderworldVanillaDonorCatalog
         },
         [UnderworldTerrainBiome.BlackwaterDeep] = new GroundCover[]
         {
-            new("Brine fern", new("Fiddleheadfern", 0.680f, 0.920f, Vector3.one, -.03f), new Color(0.341f, 0.624f, 0.612f), 0f, 4f, 28f),
-            new("Drowned bank brush", new("shrub_2", 0.680f, 0.920f, Vector3.one, -.03f), new Color(0.337f, 0.549f, 0.580f), 0f, 4f, 28f),
-            new("Pearl bank caps", new("Pickable_Mushroom_blue", 1.275f, 1.725f, Vector3.one, -.03f), new Color(0.671f, 0.855f, 0.847f), 0f, 4f, 28f),
-            new("Wet bank stone", new("Rock_4", 0.340f, 0.460f, Vector3.one, -.03f), new Color(0.424f, 0.529f, 0.573f), -25f, 6f, 48f),
-            new("Fingerstone rubble", new("RockFingerBroken", 0.128f, 0.172f, Vector3.one, -.03f), new Color(0.549f, 0.600f, 0.655f), -25f, 6f, 48f),
-            new("Drowned rootlet", new("YggdrasilRoot", 0.153f, 0.207f, Vector3.one, -.03f), new Color(0.388f, 0.549f, 0.553f), -6f, 3f, 32f),
-            new("Blackwater root fan", new("root08", 0.18f, 0.28f, new Vector3(1.7f, 0.65f, 1.2f), -.04f), new Color(0.42f, 0.63f, 0.64f), -5f, 2f, 30f),
-            new("Lakebed stone shelf", new("Rock_4", 0.45f, 0.7f, new Vector3(1.5f, 0.35f, 1.2f), -.04f), new Color(0.42f, 0.53f, 0.62f), -30f, -0.2f, 45f),
-            new("Silver bank fern", new("Fiddleheadfern", 0.75f, 1.1f, new Vector3(1.7f, 0.6f, 1.3f), -.04f), new Color(0.66f, 0.82f, 0.81f), 0f, 5f, 25f),
-            new("Drowned root fingers", new("root11", 0.2f, 0.32f, new Vector3(0.75f, 1.55f, 0.8f), -.04f), new Color(0.36f, 0.61f, 0.59f), -8f, 2f, 36f),
-            new("Pearl silt cobbles", new("Rock_4", 0.18f, 0.3f, new Vector3(1.7f, 0.35f, 1.4f), -.04f), new Color(0.68f, 0.77f, 0.8f), -30f, 6f, 46f),
-            new("Teal bank thicket", new("shrub_2", 1.05f, 1.45f, new Vector3(0.8f, 1.5f, 0.9f), -.04f), new Color(0.36f, 0.7f, 0.68f), 0f, 5f, 27f),
+            new("Brine fern", new("model:underworld-flora-blackwater-brine-fern", .85f, 1.15f, Vector3.one, -.03f), new Color(0.341f, 0.624f, 0.612f), 0f, 4f, 28f),
+            new("Drowned bank brush", new("model:underworld-flora-blackwater-palefinger", .85f, 1.15f, Vector3.one, -.03f), new Color(0.337f, 0.549f, 0.580f), 0f, 4f, 28f),
+            new("Pearl bank caps", new("model:underworld-flora-blackwater-pearl-caps", .85f, 1.15f, Vector3.one, -.03f), new Color(0.671f, 0.855f, 0.847f), 0f, 4f, 28f),
+            new("Wet bank stone", new("model:underworld-flora-blackwater-wet-stone", .85f, 1.15f, Vector3.one, -.03f), new Color(0.424f, 0.529f, 0.573f), -25f, 6f, 48f),
+            new("Fingerstone rubble", new("model:underworld-flora-blackwater-fingerstone-rubble", .85f, 1.15f, Vector3.one, -.03f), new Color(0.549f, 0.600f, 0.655f), -25f, 6f, 48f),
+            new("Drowned rootlet", new("model:underworld-flora-blackwater-root-fan", .85f, 1.15f, Vector3.one, -.03f), new Color(0.388f, 0.549f, 0.553f), -6f, 3f, 32f),
+            new("Blackwater root fan", new("model:underworld-flora-blackwater-root-fan", .85f, 1.15f, new Vector3(1.15f, .9f, 1.05f), -.04f), new Color(0.42f, 0.63f, 0.64f), -5f, 2f, 30f),
+            new("Lakebed stone shelf", new("model:underworld-flora-blackwater-lakebed-shelf", .85f, 1.15f, new Vector3(1.15f, .9f, 1.1f), -.04f), new Color(0.42f, 0.53f, 0.62f), -30f, -0.2f, 45f),
+            new("Silver bank fern", new("model:underworld-flora-blackwater-brine-fern", .85f, 1.15f, new Vector3(1.2f, .85f, 1.1f), -.04f), new Color(0.66f, 0.82f, 0.81f), 0f, 5f, 25f),
+            new("Drowned root fingers", new("model:underworld-flora-blackwater-root-fingers", .85f, 1.15f, new Vector3(.9f, 1.15f, .9f), -.04f), new Color(0.36f, 0.61f, 0.59f), -8f, 2f, 36f),
+            new("Pearl silt cobbles", new("model:underworld-flora-blackwater-wet-stone", .85f, 1.15f, new Vector3(1.15f, .65f, 1.1f), -.04f), new Color(0.68f, 0.77f, 0.8f), -30f, 6f, 46f),
+            new("Teal bank thicket", new("model:underworld-flora-blackwater-palefinger", .85f, 1.15f, new Vector3(.9f, 1.2f, .95f), -.04f), new Color(0.36f, 0.7f, 0.68f), 0f, 5f, 27f),
         },
         [UnderworldTerrainBiome.SulfurousWastes] = new GroundCover[]
         {

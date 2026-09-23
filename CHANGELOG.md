@@ -1,3 +1,13 @@
+## 0.0.102 - Blackwater Deep custom ecology
+
+- Replaces Blackwater's seven canopy and twelve cover slots with sixteen authored scenery and
+  resource models, preserving landmark indices and water/slope admission. Ground cover remains
+  nonblocking; canopy uses authored collision.
+- Blackwater Flowstone, Pale Fibre, Blackwater Pearl and Deep Salt items/pickups gain authored
+  bodies, fitted colliders and rendered inventory icons. Harvesting and recipes remain pending.
+- Shared flora baking derives UV coverage before padding/downsampling, removing black atlas
+  seams. Both Blackwater and Fungal Forest are regenerated through the shared flora kit.
+
 ## 0.0.101 - Fungal Forest custom pass, Underworld dev commands
 
 - **The Fungal Forest no longer borrows vanilla scenery.** Four authored fungal tree species

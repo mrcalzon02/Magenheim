@@ -4,12 +4,12 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.92 by Local** and start its description with
-**0.0.92: Adds Overworld/Underworld tabs to the single vanilla Minimap**.
+show **Magenheim v0.0.102 by Local** and start its description with
+**0.0.102: Blackwater Deep custom pass**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.52]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.102]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
