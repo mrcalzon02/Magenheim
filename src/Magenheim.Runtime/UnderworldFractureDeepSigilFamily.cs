@@ -1,13 +1,14 @@
+using System;
+using Jotunn.Managers;
 using Magenheim.Core.Underworld;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Sparse Fracture-zone Deep Sigil source placed through the normal biome structure
-/// residency pipeline. The physical structure is intentionally separate from the
-/// future interaction/discovery authority: that authority can bind to the named
-/// SigilCore without making structure placement responsible for boss coordinates.
+/// Sparse Fracture-zone Deep Sigil source placed through the normal biome structure residency
+/// pipeline. Its central core is the registered persistent Valheim network prefab; admission binds
+/// that core to the structure's deterministic native-instance identity.
 /// </summary>
 internal sealed class FractureDeepSigilFamily : IUnderworldBiomeStructureFamily
 {
@@ -27,7 +28,6 @@ internal sealed class FractureDeepSigilFamily : IUnderworldBiomeStructureFamily
             hash = (hash * 397) ^ key.X;
             hash = (hash * 397) ^ key.Z;
             hash ^= hash >> 16;
-            // Sigils are exploration clues, not routine roadside decoration.
             return (hash & 127) == 0;
         }
     }
@@ -42,17 +42,14 @@ internal sealed class FractureDeepSigilFamily : IUnderworldBiomeStructureFamily
         try
         {
             var yaw = (float)(random.NextDouble() * 360.0);
-
-            // Tall central tablet. Its stable child name is the seam for the later
-            // server-authoritative boss-location discovery interaction.
-            var core = UnderworldDonorVisualFactory.Create(Biome, seed ^ 0x31415926, "SigilCore");
-            core.transform.SetParent(root.transform, false);
-            core.transform.localPosition += Vector3.up * 1.7f;
-            core.transform.localRotation *= Quaternion.Euler(-4f, yaw, 3f);
+            var corePrefab = PrefabManager.Instance.GetPrefab(UnderworldDeepSigilCoreRegistrar.PrefabName)
+                ?? throw new InvalidOperationException($"Persistent Deep Sigil core '{UnderworldDeepSigilCoreRegistrar.PrefabName}' is not registered.");
+            var core = UnityEngine.Object.Instantiate(corePrefab, root.transform);
+            core.name = "SigilCore";
+            core.transform.localPosition = Vector3.up * 1.7f;
+            core.transform.localRotation = Quaternion.Euler(-4f, yaw, 3f);
             core.transform.localScale = Vector3.Scale(core.transform.localScale, new Vector3(0.78f, 2.7f, 0.42f));
 
-            // Six broken marker stones make the clue readable from multiple approach
-            // angles while keeping the central tablet visually dominant.
             for (var i = 0; i < 6; i++)
             {
                 var angle = (yaw + i * 60f + (float)(random.NextDouble() * 14.0 - 7.0)) * Mathf.Deg2Rad;
@@ -64,7 +61,6 @@ internal sealed class FractureDeepSigilFamily : IUnderworldBiomeStructureFamily
                 marker.transform.localScale = Vector3.Scale(marker.transform.localScale, new Vector3(0.48f, 1.15f + i * 0.06f, 0.48f));
             }
 
-            // Fallen fragments break the ritual-circle regularity and communicate age.
             for (var i = 0; i < 3; i++)
             {
                 var angle = (yaw + 35f + i * 113f) * Mathf.Deg2Rad;
