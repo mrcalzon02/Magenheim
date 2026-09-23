@@ -21,6 +21,11 @@ internal static class UnderworldUniqueLocationDiscoveryCatalog
     private static readonly IReadOnlyDictionary<string, Entry> ByBiome =
         new Dictionary<string, Entry>(StringComparer.Ordinal)
         {
+            ["magenheim.underworld.biome.blackwater_deep"] = new(
+                "magenheim.underworld.biome.blackwater_deep",
+                "magenheim.underworld.location.blackwater_maw",
+                UnderworldTerrainBiome.BlackwaterDeep,
+                "$magenheim_underworld_drowned_ring"),
             ["magenheim.underworld.biome.fungal_forest"] = new(
                 "magenheim.underworld.biome.fungal_forest",
                 "magenheim.underworld.location.first_bloom",
