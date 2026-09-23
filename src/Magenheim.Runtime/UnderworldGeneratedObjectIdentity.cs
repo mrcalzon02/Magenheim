@@ -6,10 +6,12 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Native-instance ownership marker for generated Underworld objects.
-/// This deliberately does not use ZDO/ZoneSystem identity: those belong to the parent Valheim world.
-/// StableObjectId is deterministic inside one derived Underworld and is suitable as the key for the
-/// native generated-object persistence store. Repeatable structure kinds must additionally provide a
-/// deterministic instance-local placement key so two ruins of the same kind never alias one record.
+/// StableObjectId is deterministic inside one derived Underworld and gives the runtime a stable
+/// instance-local identity for reconciliation and for binding persistent state to Valheim's normal
+/// world-object authority. This component is not a persistence store and must not grow a parallel
+/// filesystem/save engine: durable mutable object state belongs in ordinary ZDO/ZNetView state via
+/// an instance-aware adapter. Repeatable structure kinds must provide a deterministic instance-local
+/// placement key so two structures of the same kind never alias one stable identity.
 /// </summary>
 internal sealed class UnderworldGeneratedObjectIdentity : MonoBehaviour
 {
