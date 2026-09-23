@@ -35,6 +35,15 @@ The 42 creature review prototypes still retain vanilla donor loot. No per-creatu
 
 Pending: biome-valid persistent node placement, native mining/tree donor conversion, creature-specific loot balance, food/refining recipes, multiplayer/save/reload and item pickup acceptance in-game. Do not add resource drops to disposable local scenery: its rebuild would replenish the same ground repeatedly.
 
+## Custom appearances — 2026-09-22
+
+The four Fungal Forest resources (Worldroot Timber, Glowcap Flesh, Spire Fibre, Understone) now
+carry authored models, icons rendered from those models, and a collider fitted to the model, on both
+the item and its pickup. The donors in the table above still supply item behaviour (stacking,
+physics, pickup interaction); only their appearance is replaced. The other eighteen resources keep
+their vanilla appearance until their biome's custom pass. See
+`docs/validation/2026-09-22-fungal-forest-custom-pass.md`.
+
 ## Closeout
 
 0.0.97 installed and hash-verified in Central Fuckery. Runtime compiled without warnings/errors; 43,504 Core assertions plus separate suites passed. Catalog tests check unique item/pickup identities, coverage of all six biomes and compatibility with the existing Worldroot Timber/Understone IDs. Live registration and pickup/save/multiplayer acceptance remain untested. Local closeout log: dist/resource-closeout.log.

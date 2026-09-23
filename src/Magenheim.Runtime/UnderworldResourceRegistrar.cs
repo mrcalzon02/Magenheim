@@ -40,6 +40,13 @@ internal sealed class UnderworldResourceRegistrar : IDisposable
                 shared.m_food = 0f; shared.m_foodStamina = 0f; shared.m_foodEitr = 0f;
                 shared.m_foodBurnTime = 0f; shared.m_foodRegen = 0f;
                 shared.m_consumeStatusEffect = null;
+                var model = UnderworldResourceVisuals.ModelFor(entry.Prefab);
+                if (model is not null)
+                {
+                    shared.m_description = entry.Biome + " raw material. Natural harvesting and recipes pending.";
+                    shared.m_icons = new[] { EarthAssets.Icon(model) };
+                    UnderworldResourceVisuals.Apply(item.ItemPrefab, model);
+                }
                 if (!ItemManager.Instance.AddItem(item)) throw new InvalidOperationException("Item registration refused: " + entry.Prefab);
                 items++;
                 var clone = PrefabManager.Instance.CreateClonedPrefab(entry.PickupPrefab, source);
@@ -57,6 +64,7 @@ internal sealed class UnderworldResourceRegistrar : IDisposable
                 pickable.m_defaultEnabled = true;
                 pickable.m_maxLevelBonusChance = 0f;
                 pickable.m_bonusYieldAmount = 0;
+                if (model is not null) pickable.m_hideWhenPicked = UnderworldResourceVisuals.Apply(clone, model);
                 PrefabManager.Instance.AddPrefab(new CustomPrefab(clone, true));
                 pickups++;
             }

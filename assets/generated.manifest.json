@@ -151,7 +151,7 @@
       "inputs": [
         "tools/magenheim_blender_kit.py"
       ],
-      "inputs_sha256": "c629a6fc217e492769abf69568c731a147128f251c142a2524c993d945532203"
+      "inputs_sha256": "2695f6532b90c599e28c35406d9853bf2f2eb27452ac998c8f57fd192471efb7"
     },
     {
       "id": "weapon-icons",
@@ -474,7 +474,7 @@
         "assets/models/runtime/underworld-surtling-*.model.json"
       ],
       "hash": "generator-only",
-      "generator_sha256": "ac77192aacfc156bc38bf32f193d3f98f3f258e6d46ae88060158577181611a4",
+      "generator_sha256": "ae60d0f11baf1b0c60328afa3f0585dc65d05868fa2346f208771ea235db48e8",
       "output_sha256": {
         "assets/models/glb/underworld-surtling-earth-feminine.glb": null,
         "assets/models/glb/underworld-surtling-earth-masculine.glb": null,
@@ -513,7 +513,102 @@
         "assets/models/source/underworld-surtling-wind-feminine.blend": null,
         "assets/models/source/underworld-surtling-wind-masculine.blend": null
       },
-      "inputs_sha256": "c629a6fc217e492769abf69568c731a147128f251c142a2524c993d945532203"
+      "inputs_sha256": "2695f6532b90c599e28c35406d9853bf2f2eb27452ac998c8f57fd192471efb7"
+    },
+    {
+      "id": "underworld-fungal-forest-models",
+      "generator": "tools/author-underworld-fungal-forest.py",
+      "inputs": [
+        "tools/magenheim_blender_kit.py"
+      ],
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-Command",
+        "& './tools/rebuild-underworld-fungal-forest.ps1'"
+      ],
+      "outputs": [
+        "assets/models/source/underworld-flora-fungal-*.blend",
+        "assets/models/glb/underworld-flora-fungal-*.glb",
+        "assets/models/runtime/underworld-flora-fungal-*.model.json",
+        "assets/models/source/underworld-resource-*.blend",
+        "assets/models/glb/underworld-resource-*.glb",
+        "assets/models/runtime/underworld-resource-*.model.json"
+      ],
+      "hash": "generator-only",
+      "generator_sha256": "46b1a250957575b98ce11201c6dc46347379eba3e61f4409c75af35994ebfbfb",
+      "output_sha256": {
+        "assets/models/glb/underworld-flora-fungal-amber-bed.glb": null,
+        "assets/models/glb/underworld-flora-fungal-fern.glb": null,
+        "assets/models/glb/underworld-flora-fungal-glowcap.glb": null,
+        "assets/models/glb/underworld-flora-fungal-lantern-caps.glb": null,
+        "assets/models/glb/underworld-flora-fungal-moss-stone.glb": null,
+        "assets/models/glb/underworld-flora-fungal-nursery-caps.glb": null,
+        "assets/models/glb/underworld-flora-fungal-puffcap.glb": null,
+        "assets/models/glb/underworld-flora-fungal-root-skirt.glb": null,
+        "assets/models/glb/underworld-flora-fungal-sapling.glb": null,
+        "assets/models/glb/underworld-flora-fungal-spirestalk.glb": null,
+        "assets/models/glb/underworld-flora-fungal-sporebrush.glb": null,
+        "assets/models/glb/underworld-flora-fungal-tanglecap.glb": null,
+        "assets/models/glb/underworld-resource-glowcap-flesh.glb": null,
+        "assets/models/glb/underworld-resource-spire-fibre.glb": null,
+        "assets/models/glb/underworld-resource-understone.glb": null,
+        "assets/models/glb/underworld-resource-worldroot-timber.glb": null,
+        "assets/models/runtime/underworld-flora-fungal-amber-bed.model.json": null,
+        "assets/models/runtime/underworld-flora-fungal-fern.model.json": null,
+        "assets/models/runtime/underworld-flora-fungal-glowcap.model.json": null,
+        "assets/models/runtime/underworld-flora-fungal-lantern-caps.model.json": null,
+        "assets/models/runtime/underworld-flora-fungal-moss-stone.model.json": null,
+        "assets/models/runtime/underworld-flora-fungal-nursery-caps.model.json": null,
+        "assets/models/runtime/underworld-flora-fungal-puffcap.model.json": null,
+        "assets/models/runtime/underworld-flora-fungal-root-skirt.model.json": null,
+        "assets/models/runtime/underworld-flora-fungal-sapling.model.json": null,
+        "assets/models/runtime/underworld-flora-fungal-spirestalk.model.json": null,
+        "assets/models/runtime/underworld-flora-fungal-sporebrush.model.json": null,
+        "assets/models/runtime/underworld-flora-fungal-tanglecap.model.json": null,
+        "assets/models/runtime/underworld-resource-glowcap-flesh.model.json": null,
+        "assets/models/runtime/underworld-resource-spire-fibre.model.json": null,
+        "assets/models/runtime/underworld-resource-understone.model.json": null,
+        "assets/models/runtime/underworld-resource-worldroot-timber.model.json": null,
+        "assets/models/source/underworld-flora-fungal-amber-bed.blend": null,
+        "assets/models/source/underworld-flora-fungal-fern.blend": null,
+        "assets/models/source/underworld-flora-fungal-glowcap.blend": null,
+        "assets/models/source/underworld-flora-fungal-lantern-caps.blend": null,
+        "assets/models/source/underworld-flora-fungal-moss-stone.blend": null,
+        "assets/models/source/underworld-flora-fungal-nursery-caps.blend": null,
+        "assets/models/source/underworld-flora-fungal-puffcap.blend": null,
+        "assets/models/source/underworld-flora-fungal-root-skirt.blend": null,
+        "assets/models/source/underworld-flora-fungal-sapling.blend": null,
+        "assets/models/source/underworld-flora-fungal-spirestalk.blend": null,
+        "assets/models/source/underworld-flora-fungal-sporebrush.blend": null,
+        "assets/models/source/underworld-flora-fungal-tanglecap.blend": null,
+        "assets/models/source/underworld-resource-glowcap-flesh.blend": null,
+        "assets/models/source/underworld-resource-spire-fibre.blend": null,
+        "assets/models/source/underworld-resource-understone.blend": null,
+        "assets/models/source/underworld-resource-worldroot-timber.blend": null
+      },
+      "inputs_sha256": "2695f6532b90c599e28c35406d9853bf2f2eb27452ac998c8f57fd192471efb7"
+    },
+    {
+      "id": "underworld-resource-icons",
+      "generator": "tools/render-underworld-resource-icons.py",
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-Command",
+        "& './tools/blender.ps1' render-underworld-resource-icons"
+      ],
+      "outputs": [
+        "assets/earth/underworld-resource-*.icon.png"
+      ],
+      "hash": "generator-only",
+      "generator_sha256": "5dc2d13c92eb3807fbd8fa0f52fbbb27b853cd7758017936ab877c25ae5bcaea",
+      "output_sha256": {
+        "assets/earth/underworld-resource-glowcap-flesh.icon.png": null,
+        "assets/earth/underworld-resource-spire-fibre.icon.png": null,
+        "assets/earth/underworld-resource-understone.icon.png": null,
+        "assets/earth/underworld-resource-worldroot-timber.icon.png": null
+      }
     }
   ]
 }

@@ -1,4 +1,4 @@
-# Magenheim 0.0.92 - test acceptance
+# Magenheim test acceptance
 
 ## Required delivery check before launching
 
@@ -39,6 +39,25 @@ Open Skills immediately after loading an existing or new character, before using
 the workstation. Crystal Shaping must appear at level 0 if untrained, with its
 custom icon. Reopen the panel and reload the character: no duplicate entry or free
 XP should appear. Previously earned Crystal Shaping level/XP must stay unchanged.
+
+## Developer console — Underworld access and spawn IDs
+
+Launch with `-console`, press F5, and run `devcommands` first; every command below is gated by it.
+
+| Command | Effect |
+|---|---|
+| `magenheim_underworld status` | Reports whether the paired Underworld instance is active, whether the Deep Gate is unlocked, and whether you hold a return anchor. |
+| `magenheim_underworld enter` | Enters the Underworld through the same transit the Deep Gate uses, skipping the Nowhere King unlock. Records a return anchor where you stood. |
+| `magenheim_underworld return` | Returns to that anchor. With no anchor (for example after relogging below ground) it returns you to your bed, or your home point if you have none. |
+
+`enter` refuses with the reason if the Underworld instance is not active yet; load fully into the
+world and try again. The gate path itself still requires the unlock.
+
+Spawn IDs (`spawn <id> 1`):
+
+- Elemental Surtlings: `Magenheim_Underworld_Surtling_<Fire|Water|Earth|Wind|Radiance|Umbral>_<Feminine|Masculine>`
+- Underworld creature prototypes: `Magenheim_Underworld_Prototype_<NameWithoutSpaces>` (see docs/UNDERWORLD_CONTENT_PROTOTYPES.md)
+- Underworld resource items and pickups: see docs/UNDERWORLD_RESOURCE_MAPPING.md
 
 ## Candidate acceptance matrix
 

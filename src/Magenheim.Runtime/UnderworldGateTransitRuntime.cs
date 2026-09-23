@@ -30,7 +30,8 @@ internal static class UnderworldGateTransitRuntime
         _log = null;
     }
 
-    internal static bool TryTransit(UnderworldGateRole role, Humanoid humanoid, out string diagnostic)
+    /// <param name="ignoreProgression">Developer console only (UnderworldDevCommands); the gate never sets it.</param>
+    internal static bool TryTransit(UnderworldGateRole role, Humanoid humanoid, out string diagnostic, bool ignoreProgression = false)
     {
         diagnostic = string.Empty;
         if (humanoid is not Player player)
@@ -51,7 +52,7 @@ internal static class UnderworldGateTransitRuntime
         var playerId = player.GetPlayerID();
         if (role == UnderworldGateRole.EnterUnderworld)
         {
-            if (!UnderworldProgressionAuthority.IsUnlocked)
+            if (!ignoreProgression && !UnderworldProgressionAuthority.IsUnlocked)
             {
                 diagnostic = "The Deep Gate has not been unlocked.";
                 return false;
@@ -93,6 +94,42 @@ internal static class UnderworldGateTransitRuntime
         services.ActivateLayer(identity, UnderworldLayer.Underworld);
         diagnostic = "Valheim rejected the Surface return teleport.";
         return false;
+    }
+
+    internal static bool HasReturnAnchor(Player player) => SurfaceReturn.ContainsKey(player.GetPlayerID());
+
+    /// <summary>
+    /// Surface return without an anchor, for the developer console after a relog below ground. Same
+    /// layer switch and rollback as a gate return; only the destination differs.
+    /// </summary>
+    internal static bool TryReturnTo(Player player, Vector3 position, out string diagnostic)
+    {
+        diagnostic = string.Empty;
+        var services = _services;
+        var identity = services?.InstanceLifecycle.Identity;
+        if (services is null || identity is null || services.InstanceLifecycle.Phase != UnderworldInstancePhase.Active)
+        {
+            diagnostic = "The paired Underworld instance is not active.";
+            return false;
+        }
+        services.ActivateLayer(identity, UnderworldLayer.Surface);
+        if (player.TeleportTo(position + Vector3.up * 0.5f, player.transform.rotation, true))
+        {
+            SurfaceReturn.Remove(player.GetPlayerID());
+            _log?.LogInfo($"Developer console returned player {player.GetPlayerID()} to the Surface without an anchor.");
+            return true;
+        }
+        services.ActivateLayer(identity, UnderworldLayer.Underworld);
+        diagnostic = "Valheim rejected the Surface teleport.";
+        return false;
+    }
+
+    internal static string Describe(Player player)
+    {
+        var services = _services;
+        var phase = services?.InstanceLifecycle.Phase.ToString() ?? "not configured";
+        return $"Underworld instance: {phase}; Deep Gate unlocked: {UnderworldProgressionAuthority.IsUnlocked}; " +
+               $"return anchor: {(HasReturnAnchor(player) ? "yes" : "no")}.";
     }
 
     private readonly record struct SurfaceAnchor(Vector3 Position, Quaternion Rotation);

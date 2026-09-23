@@ -1,3 +1,19 @@
+## 0.0.101 - Fungal Forest custom pass, Underworld dev commands
+
+- **The Fungal Forest no longer borrows vanilla scenery.** Four authored fungal tree species
+  (Glowcap, Spirestalk, Puffcap, Tanglecap), eight ground covers and a sapling replace the ten
+  vanilla prefabs it used, one-for-one in the ecology catalog, so landmarks keep their selection.
+  Only tree stalks collide; light comes from emissive gills, caps and spore bulbs.
+- **Its four resources look like themselves.** Worldroot Timber, Glowcap Flesh, Spire Fibre and
+  Understone items and pickups carry authored models, fitted colliders and icons rendered from the
+  models. Item behaviour is unchanged.
+- **Developer console:** `magenheim_underworld enter | return | status` (requires `devcommands`),
+  routed through the Deep Gate's own transit. Documented in TESTING.md. No console command existed
+  before this.
+- The shared Blender kit gained the Surtling tool's geometry and painter helpers; weapons and
+  Surtlings regenerate identically through it. The freshness gate is now line-ending sensitive in
+  practice: a CRLF rewrite of the kit by an outside process marked it stale mid-run and was reverted.
+
 ## 0.0.100 - The Deep Gate wears the Aesir gate
 
 - **The Deep Gate's body is now the vanilla Aesir gate**: the `LastBossGate` assembly at the Deep

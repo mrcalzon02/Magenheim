@@ -1,3 +1,9 @@
+# Current release - 0.0.101 (2026-09-22)
+
+Fungal Forest custom pass: four authored fungal tree species, eight ground covers and four resources (with rendered icons) replace its ten vanilla donor prefabs and four item appearances. New `magenheim_underworld enter|return|status` devcommands console command, documented in TESTING.md. Closeout passed and installed 0.0.101 (DLL SHA-256 B5877CA9FED7B26B125D6729E85D84AB6E632BECE11FB5D52CD1593536DEDCBA). Not yet observed in a world; see docs/validation/2026-09-22-fungal-forest-custom-pass.md. Next biome for the custom pass: Blackwater Deep.
+
+Launcher description: "0.0.101: Fungal Forest custom pass - four authored fungal tree species, eight ground covers and four resources with rendered icons replace its vanilla donors. New devcommands console command magenheim_underworld enter|return|status (see TESTING.md)."
+
 # Current release - 0.0.100 (2026-09-22)
 
 Deep Gate re-bodied from the vanilla Aesir gate (Deep North boss `LastBossGate` assembly) at location load; prefab identity unchanged. Closeout passed and installed 0.0.100 (DLL SHA-256 8D7558012D1FA03944FB8C660B62479F9CEE9A05C5600467FBBF63F04CD6F7EB). Not yet observed: the swap only runs when a world loads, so its log line ("Deep Gate re-bodied from the Aesir gate ..." or the Morkhalla fallback warning), the gate's orientation and scale, and gate interaction all need a world load to confirm.

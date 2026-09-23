@@ -15,15 +15,23 @@ internal static class UnderworldVanillaDonorCatalog
 {
     internal readonly record struct Donor(string PrefabName, float MinScale, float MaxScale, Vector3 Shape, float GroundOffset = 0f, bool Collidable = false);
 
+    /// <summary>Entries named <c>model:&lt;id&gt;</c> are authored Magenheim models, not Valheim prefabs.</summary>
+    internal const string ModelPrefix = "model:";
+    internal static bool IsModel(Donor donor) => donor.PrefabName.StartsWith(ModelPrefix, StringComparison.Ordinal);
+    internal static string ModelId(Donor donor) => donor.PrefabName.Substring(ModelPrefix.Length);
+
     private static readonly IReadOnlyDictionary<UnderworldTerrainBiome, Donor[]> Donors = new Dictionary<UnderworldTerrainBiome, Donor[]>
     {
         [UnderworldTerrainBiome.FungalForest] = new Donor[]
         {
-            new("YggaShoot1", .85f, 1.35f, new(1.15f, 1.35f, 1.15f), -.15f, true), new("YggaShoot2", .9f, 1.45f, new(1f, 1.55f, 1f), -.15f, true), new("YggaShoot3", .8f, 1.25f, new(1.25f, 1.25f, 1.25f), -.15f, true),
-            new("YggaShoot1", 1f, 1.55f, new(1.55f, .82f, 1.35f), -.2f, true), new("YggaShoot2", .75f, 1.15f, new(.72f, 1.95f, .72f), -.15f, true),
-            new("Pickable_Mushroom_Magecap", 6.5f, 10f, new(1.5f, 1.1f, 1.5f), -.05f), new("Pickable_Mushroom_Magecap", 5.5f, 8f, new(.82f, 1.75f, .82f), -.05f),
-            new("Pickable_Mushroom_JotunPuffs", 5f, 8.5f, new(1.4f, 1.15f, 1.4f), -.05f), new("Pickable_Mushroom_JotunPuffs", 4.5f, 7f, new(1.8f, .72f, 1.55f), -.05f),
-            new("Pickable_Mushroom_blue", 7f, 12f, new(1.25f, 1.45f, 1.25f), -.05f), new("Pickable_Mushroom_blue", 5.5f, 9f, new(.7f, 2.1f, .7f), -.05f),
+            // Authored Fungal Forest species (tools/author-underworld-fungal-forest.py), one-for-one in the
+            // slots the Yggdrasil shoots and blown-up vanilla mushrooms held, so landmark selection by index
+            // is unchanged. Authored at real size, so scales sit near 1 and shapes stay gentle.
+            new("model:underworld-flora-fungal-tanglecap", .9f, 1.3f, new(1.05f, 1.1f, 1.05f), -.1f, true), new("model:underworld-flora-fungal-spirestalk", .8f, 1.1f, Vector3.one, -.1f, true), new("model:underworld-flora-fungal-tanglecap", .85f, 1.2f, new(1.1f, 1f, 1.1f), -.1f, true),
+            new("model:underworld-flora-fungal-tanglecap", .9f, 1.25f, new(1.25f, .85f, 1.2f), -.1f, true), new("model:underworld-flora-fungal-spirestalk", .75f, 1f, new(.9f, 1.15f, .9f), -.1f, true),
+            new("model:underworld-flora-fungal-glowcap", .85f, 1.2f, new(1.1f, .95f, 1.1f), -.1f, true), new("model:underworld-flora-fungal-glowcap", .8f, 1.1f, new(.9f, 1.12f, .9f), -.1f, true),
+            new("model:underworld-flora-fungal-puffcap", .9f, 1.25f, Vector3.one, -.1f, true), new("model:underworld-flora-fungal-puffcap", .8f, 1.1f, new(1.2f, .85f, 1.15f), -.1f, true),
+            new("model:underworld-flora-fungal-glowcap", .9f, 1.25f, Vector3.one, -.1f, true), new("model:underworld-flora-fungal-spirestalk", .8f, 1.05f, new(.85f, 1.1f, .85f), -.1f, true),
         },
         [UnderworldTerrainBiome.BlackwaterDeep] = new Donor[]
         {
@@ -69,18 +77,19 @@ internal static class UnderworldVanillaDonorCatalog
     {
         [UnderworldTerrainBiome.FungalForest] = new GroundCover[]
         {
-            new("Jade fiddlefern", new("Fiddleheadfern", 1.105f, 1.495f, Vector3.one, -.03f), new Color(0.388f, 0.737f, 0.627f)),
-            new("Violet sporebrush", new("shrub_2", 1.020f, 1.380f, Vector3.one, -.03f), new Color(0.710f, 0.537f, 0.792f)),
-            new("Amber cap bed", new("Pickable_Mushroom_JotunPuffs", 1.870f, 2.530f, Vector3.one, -.03f), new Color(0.886f, 0.714f, 0.404f)),
-            new("Blue lantern caps", new("Pickable_Mushroom_Magecap", 1.700f, 2.300f, Vector3.one, -.03f), new Color(0.463f, 0.729f, 0.800f)),
-            new("Moss pillow stone", new("Rock_4", 0.272f, 0.368f, Vector3.one, -.03f), new Color(0.482f, 0.651f, 0.545f)),
-            new("Young worldroot", new("YggaShoot1", 0.340f, 0.460f, Vector3.one, -.03f), new Color(0.580f, 0.737f, 0.635f)),
-            new("Broad jade fern", new("Fiddleheadfern", 0.9f, 1.3f, new Vector3(1.6f, 0.65f, 1.3f), -.04f), new Color(0.42f, 0.76f, 0.58f), 0f, 1000f, 28f),
-            new("Fungal stepping slab", new("Rock_4", 0.35f, 0.55f, new Vector3(1.7f, 0.4f, 1.2f), -.04f), new Color(0.6f, 0.63f, 0.5f), -1f, 1000f, 40f),
-            new("Rose spore fan", new("Fiddleheadfern", 1.2f, 1.8f, new Vector3(1.8f, 0.85f, 1.1f), -.04f), new Color(0.83f, 0.54f, 0.7f), 0f, 1000f, 28f),
-            new("Turquoise nursery caps", new("Pickable_Mushroom_blue", 2f, 3.1f, new Vector3(1.5f, 0.75f, 1.4f), -.04f), new Color(0.48f, 0.88f, 0.8f), 0f, 1000f, 32f),
-            new("Amber root skirt", new("root08", 0.18f, 0.3f, new Vector3(1.6f, 0.45f, 1.3f), -.04f), new Color(0.78f, 0.64f, 0.4f), 0f, 1000f, 35f),
-            new("Violet canopy sapling", new("YggaShoot3", 0.35f, 0.55f, new Vector3(1.25f, 0.8f, 1.25f), -.04f), new Color(0.76f, 0.62f, 0.87f), 0f, 1000f, 30f),
+            // Authored ground layer; colours are kept for the record but not applied to authored models.
+            new("Jade fiddlefern", new("model:underworld-flora-fungal-fern", .85f, 1.15f, Vector3.one, -.03f), new Color(0.388f, 0.737f, 0.627f)),
+            new("Violet sporebrush", new("model:underworld-flora-fungal-sporebrush", .85f, 1.2f, Vector3.one, -.03f), new Color(0.710f, 0.537f, 0.792f)),
+            new("Amber cap bed", new("model:underworld-flora-fungal-amber-bed", .9f, 1.3f, Vector3.one, -.03f), new Color(0.886f, 0.714f, 0.404f)),
+            new("Blue lantern caps", new("model:underworld-flora-fungal-lantern-caps", .9f, 1.3f, Vector3.one, -.03f), new Color(0.463f, 0.729f, 0.800f)),
+            new("Moss pillow stone", new("model:underworld-flora-fungal-moss-stone", .7f, 1.1f, Vector3.one, -.05f), new Color(0.482f, 0.651f, 0.545f)),
+            new("Young worldroot", new("model:underworld-flora-fungal-sapling", .8f, 1.2f, Vector3.one, -.03f), new Color(0.580f, 0.737f, 0.635f)),
+            new("Broad jade fern", new("model:underworld-flora-fungal-fern", .9f, 1.2f, new Vector3(1.3f, 0.8f, 1.2f), -.04f), new Color(0.42f, 0.76f, 0.58f), 0f, 1000f, 28f),
+            new("Fungal stepping slab", new("model:underworld-flora-fungal-moss-stone", .8f, 1.1f, new Vector3(1.5f, 0.45f, 1.2f), -.06f), new Color(0.6f, 0.63f, 0.5f), -1f, 1000f, 40f),
+            new("Rose spore fan", new("model:underworld-flora-fungal-fern", 1f, 1.3f, new Vector3(1.5f, 0.8f, 1.0f), -.04f), new Color(0.83f, 0.54f, 0.7f), 0f, 1000f, 28f),
+            new("Turquoise nursery caps", new("model:underworld-flora-fungal-nursery-caps", .9f, 1.3f, Vector3.one, -.04f), new Color(0.48f, 0.88f, 0.8f), 0f, 1000f, 32f),
+            new("Amber root skirt", new("model:underworld-flora-fungal-root-skirt", .9f, 1.25f, Vector3.one, -.04f), new Color(0.78f, 0.64f, 0.4f), 0f, 1000f, 35f),
+            new("Violet canopy sapling", new("model:underworld-flora-fungal-sapling", .9f, 1.3f, new Vector3(1.1f, 0.9f, 1.1f), -.04f), new Color(0.76f, 0.62f, 0.87f), 0f, 1000f, 30f),
         },
         [UnderworldTerrainBiome.BlackwaterDeep] = new GroundCover[]
         {

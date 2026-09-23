@@ -1,4 +1,4 @@
 {
-  "version": "0.0.100",
-  "description": "0.0.100: The Deep Gate now takes its body from the vanilla Aesir gate (the Deep North boss LastBossGate) instead of the Morkhalla interior archway, applied when world locations load. Includes the twelve elemental Surtlings from 0.0.99."
+  "version": "0.0.101",
+  "description": "0.0.101: Fungal Forest custom pass - four authored fungal tree species, eight ground covers and four resources with rendered icons replace its vanilla donors. New devcommands console command magenheim_underworld enter|return|status (see TESTING.md)."
 }

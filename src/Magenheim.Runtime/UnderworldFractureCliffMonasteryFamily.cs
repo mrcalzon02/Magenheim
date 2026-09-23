@@ -55,7 +55,7 @@ internal sealed class FractureCliffMonasteryFamily : IUnderworldBiomeStructureFa
                     + lateral * (((float)random.NextDouble() - 0.5f) * 1.15f)
                     + Vector3.up * (tier * 1.55f);
                 donor.transform.localRotation *= Quaternion.Euler(0f, heading * Mathf.Rad2Deg + ((float)random.NextDouble() - 0.5f) * 12f, 0f);
-                donor.transform.localScale *= new Vector3(1.25f - tier * 0.08f, 0.72f + tier * 0.18f, 0.9f);
+                donor.transform.localScale = Vector3.Scale(donor.transform.localScale, new Vector3(1.25f - tier * 0.08f, 0.72f + tier * 0.18f, 0.9f));
             }
 
             // Two projecting shrine/terrace masses establish the dangerous exposed
@@ -68,7 +68,7 @@ internal sealed class FractureCliffMonasteryFamily : IUnderworldBiomeStructureFa
                     + lateral * (i == 0 ? -1.4f : 1.15f)
                     + Vector3.up * (0.65f + i * 0.5f);
                 donor.transform.localRotation *= Quaternion.Euler(4f + i * 5f, heading * Mathf.Rad2Deg, i == 0 ? -4f : 5f);
-                donor.transform.localScale *= new Vector3(1.15f, 0.48f, 0.72f);
+                donor.transform.localScale = Vector3.Scale(donor.transform.localScale, new Vector3(1.15f, 0.48f, 0.72f));
             }
 
             // A tall rear sanctum/spire makes the site legible from a distance.
@@ -76,7 +76,7 @@ internal sealed class FractureCliffMonasteryFamily : IUnderworldBiomeStructureFa
             sanctum.transform.SetParent(root.transform, false);
             sanctum.transform.localPosition += -outward * 1.15f + lateral * 0.25f + Vector3.up * 5.1f;
             sanctum.transform.localRotation *= Quaternion.Euler(0f, heading * Mathf.Rad2Deg + 7f, -3f);
-            sanctum.transform.localScale *= new Vector3(0.72f, 1.85f, 0.72f);
+            sanctum.transform.localScale = Vector3.Scale(sanctum.transform.localScale, new Vector3(0.72f, 1.85f, 0.72f));
 
             return root;
         }

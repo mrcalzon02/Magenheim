@@ -22,11 +22,12 @@ internal static class UnderworldDonorVisualFactory
         {
             var selected = variant + attempt;
             var donor = UnderworldVanillaDonorCatalog.Select(biome, selected);
-            var source = Resolve(donor.PrefabName);
-            if (source is null) continue;
+            var model = UnderworldVanillaDonorCatalog.IsModel(donor);
+            var source = model ? null : Resolve(donor.PrefabName);
+            if (!model && source is null) continue;
             try
             {
-                var root = BuildVisualClone(source, donor);
+                var root = model ? BuildModelVisual(donor) : BuildVisualClone(source!, donor);
                 root.name = name;
                 root.transform.localPosition = Vector3.up * donor.GroundOffset;
                 root.transform.localRotation = Quaternion.Euler(
@@ -56,16 +57,18 @@ internal static class UnderworldDonorVisualFactory
             if (!UnderworldFloraPlacement.CanPlaceCover(heightAboveWater, slopeDegrees,
                 cover.MinHeightAboveWater, cover.MaxHeightAboveWater, cover.MaxSlope)) continue;
             eligible = true;
-            var source = Resolve(cover.Donor.PrefabName);
-            if (!source) continue;
+            var model = UnderworldVanillaDonorCatalog.IsModel(cover.Donor);
+            var source = model ? null : Resolve(cover.Donor.PrefabName);
+            if (!model && !source) continue;
             try
             {
-                var root = BuildVisualClone(source, cover.Donor);
+                var root = model ? BuildModelVisual(cover.Donor) : BuildVisualClone(source!, cover.Donor);
                 root.name = name + "_" + cover.Name;
                 root.transform.localPosition = Vector3.up * cover.Donor.GroundOffset;
                 root.transform.localRotation = Quaternion.Euler(0f, (selected & int.MaxValue) % 360, 0f);
                 root.transform.localScale = UnderworldVanillaDonorCatalog.Scale(cover.Donor, selected);
-                UnderworldCreaturePrototypeRegistrar.Tint(root, cover.Color);
+                // An authored model carries its own colour; tinting it would muddy the albedo.
+                if (!model) UnderworldCreaturePrototypeRegistrar.Tint(root, cover.Color);
                 return root;
             }
             catch (InvalidOperationException exception) { last = exception; }
@@ -80,6 +83,28 @@ internal static class UnderworldDonorVisualFactory
         var source = PrefabManager.Instance?.GetPrefab(prefabName);
         if (source is not null) Sources[prefabName] = source;
         return source;
+    }
+
+    /// <summary>
+    /// Builds an authored Magenheim model (<c>model:&lt;id&gt;</c> catalog entries) as the same kind of
+    /// stripped visual a donor copy is: geometry, materials and the model's own authored colliders,
+    /// no gameplay components. Meshes and materials are shared through ModelAssets' cache.
+    /// </summary>
+    private static GameObject BuildModelVisual(UnderworldVanillaDonorCatalog.Donor donor)
+    {
+        var id = UnderworldVanillaDonorCatalog.ModelId(donor);
+        var root = new GameObject("Magenheim_UnderworldModelVisual_" + id);
+        try
+        {
+            ModelAssets.Load(root, id, hideOriginal: false);
+            if (donor.Collidable && !root.GetComponentInChildren<Collider>(true)) AddConservativeCollider(root);
+            return root;
+        }
+        catch
+        {
+            UnityEngine.Object.Destroy(root);
+            throw;
+        }
     }
 
     private static GameObject BuildVisualClone(GameObject source, UnderworldVanillaDonorCatalog.Donor donor)

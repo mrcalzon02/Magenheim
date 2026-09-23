@@ -30,8 +30,7 @@ from mathutils import Matrix, Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from magenheim_blender_kit import (  # noqa: E402
-    BAKE_SIZE, X, Y, Z, _feed, _math, _mix, _noise, _ramp, bake_atlas, curve, diamond, finish, gem, loft,
-    merge, ring, slab, srgb, sweep, unwrap, uv_overlap)
+    BAKE_SIZE, arc, bake_atlas, blob, gem, loft, plate, ring, spec_painter, spike, unwrap, uv_overlap)
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'assets/models/source'
@@ -174,64 +173,6 @@ def limb(role, stations, sides=12, squash=1.0, facets=False):
         rings.append(ring(centre, u, f, [(r * math.cos(phase + math.tau * k / sides),
                                          squash * r * math.sin(phase + math.tau * k / sides)) for k in range(sides)]))
     return loft(rings)
-
-
-def blob(centre, radii, sides=10, rings=6):
-    """A closed ellipsoid mass."""
-    cx, cy, cz = centre
-    rx, ry, rz = radii
-    sections = [[Vector((cx, cy, cz - rz))]]
-    for i in range(1, rings):
-        a = math.pi * i / rings - math.pi / 2
-        sections.append([Vector((cx + rx * math.cos(a) * math.cos(math.tau * k / sides),
-                                 cy + ry * math.cos(a) * math.sin(math.tau * k / sides), cz + rz * math.sin(a)))
-                         for k in range(sides)])
-    sections.append([Vector((cx, cy, cz + rz))])
-    return loft(sections)
-
-
-def transformed(mesh, matrix):
-    verts, faces = mesh
-    return [matrix @ Vector(v) for v in verts], faces
-
-
-def spike(points, width, thickness, samples=10, flat=False):
-    """A tapering flame lock, ribbon or crest along a curve, ending in a point."""
-    path = curve(points, samples)
-    # The sweep's reference axis must never lie along the lock, or its frame collapses and the
-    # surface folds inside-out (the Earth ridge runs front to back, straight down Y). Prefer X for a
-    # flat ribbon so it lies broad, then take whichever axis crosses the lock's direction most.
-    direction = (path[-1] - path[0]).normalized()
-    preferred = [X, Z, Y] if flat else [Y, X, Z]
-    up = next((a for a in preferred if abs(direction.dot(a)) < 0.7), min(preferred, key=lambda a: abs(direction.dot(a))))
-
-    def profile(k, t):
-        if t >= 0.999:
-            return [(0.0, 0.0)]
-        taper = (1.0 - t) ** 0.8
-        return diamond(width * taper, thickness * taper) if not flat else \
-            [(width * taper, 0.0), (0.0, thickness * taper), (-width * taper, 0.0), (0.0, -thickness * taper)]
-    return sweep(path, profile, up)
-
-
-def plate(outline, thickness, matrix):
-    """A thick plate grown from an XZ outline (y thickness), placed by matrix."""
-    cx = sum(p[0] for p in outline) / len(outline)
-    cz = sum(p[1] for p in outline) / len(outline)
-    return transformed(slab(outline, (cx, cz), lambda x, z, s: thickness * (0.55 if s >= 0.999 else 1.0),
-                            rings=(1.0, 0.85, 0.4)), matrix)
-
-
-def arc(centre, radius, start, end, width, thickness, samples=12):
-    """A flat broken ring segment in the XZ plane (halo pieces, collars)."""
-    cx, cy, cz = centre
-    path = [Vector((cx + radius * math.cos(a), cy, cz + radius * math.sin(a)))
-            for a in [start + (end - start) * i / (samples - 1) for i in range(samples)]]
-
-    def profile(k, t):
-        taper = 0.35 + 0.65 * math.sin(math.pi * t)
-        return [(width * taper, 0.0), (0.0, thickness), (-width * taper, 0.0), (0.0, -thickness)]
-    return sweep(path, profile, Y)
 
 
 def at(role, t, lateral=0.0, forward=0.0):
@@ -479,31 +420,7 @@ SURFACES = {
 }
 
 
-def paint(mat):
-    spec = SURFACES[mat['surface']]
-    tree = mat.node_tree
-    coords = tree.nodes.new('ShaderNodeTexCoord').outputs['Object']
-    mottle = _noise(tree, coords, spec['scale'], detail=5.0, distortion=0.4)
-    base = _ramp(tree, mottle, [(0.2, srgb(*spec['low'])), (0.8, srgb(*spec['high']))])
-    if 'veins' in spec:
-        colour, width, scale = spec['veins']
-        cells = tree.nodes.new('ShaderNodeTexVoronoi')
-        cells.feature = 'DISTANCE_TO_EDGE'
-        # Push the cell lattice around with noise so seams wander instead of tiling into polygons.
-        warp = tree.nodes.new('ShaderNodeTexNoise')
-        _feed(tree, warp.inputs['Vector'], coords)
-        warp.inputs['Scale'].default_value = 4.0
-        offset = tree.nodes.new('ShaderNodeVectorMath')
-        offset.operation = 'MULTIPLY_ADD'
-        tree.links.new(warp.outputs['Color'], offset.inputs[0])
-        offset.inputs[1].default_value = (0.12, 0.12, 0.12)
-        tree.links.new(coords, offset.inputs[2])
-        _feed(tree, cells.inputs['Vector'], offset.outputs['Vector'])
-        cells.inputs['Scale'].default_value = scale
-        crack = _math(tree, 'SUBTRACT', 1.0, _math(tree, 'DIVIDE', cells.outputs['Distance'], width, clamp=True), clamp=True)
-        base = _mix(tree, crack, base, srgb(*colour))
-    edge_colour, edge_gain = spec['edge']
-    finish(tree, base, srgb(*edge_colour), edge_gain, spec['occlusion'], ao_distance=0.06, edge_radius=0.006)
+paint = spec_painter(SURFACES, ao_distance=0.06, edge_radius=0.006)
 
 
 # ------------------------------------------------------------------------------------------------
