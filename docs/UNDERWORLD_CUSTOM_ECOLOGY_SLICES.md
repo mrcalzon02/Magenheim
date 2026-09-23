@@ -64,7 +64,7 @@ Deep Salt.
     them on the sheet before B2.
 - [x] **B2 — wire and ship.** Catalog, resource visuals, manifest, count pin, regenerate (Blackwater
   first, then fungal for the kit move), closeout, commit, push.
-  **Complete: 0.0.102 installed and hash/catalog verified 2026-09-23.** Evidence:
+  **Complete: 0.0.102 installed and hash/catalog verified 2026-09-23 (`c3dc7e0`).** Evidence:
   `validation/2026-09-23-blackwater-closeout.md`. Static closeout passed; not observed in world.
 
 ## Later biomes (not started)
