@@ -1,3 +1,14 @@
+## 0.0.100 - The Deep Gate wears the Aesir gate
+
+- **The Deep Gate's body is now the vanilla Aesir gate**: the `LastBossGate` assembly at the Deep
+  North boss site, which Valheim labels "Aesir Passage" on the map (`hud_pin_dnboss`). It previously
+  cloned `Morkhalla_jotun_gate`, the interior archway -- a different object.
+- The Aesir gate exists only inside its world location, so the swap happens when Valheim loads
+  locations (world load), before the gate is copied into the surface gate sites. The prefab identity
+  `Magenheim_DeepGate` is unchanged, so gates already in worlds keep resolving. If the assembly
+  cannot be found the Morkhalla body stays and the log names every location checked.
+- Found by a live survey of loaded gate assets and a search of the game data for the pin's name.
+
 ## 0.0.99 - Elemental Surtlings
 
 - **Twelve elemental Surtlings** — Fire, Water, Earth, Wind, Radiance and Umbral, each in a feminine

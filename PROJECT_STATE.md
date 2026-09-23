@@ -1,3 +1,9 @@
+# Current release - 0.0.100 (2026-09-22)
+
+Deep Gate re-bodied from the vanilla Aesir gate (Deep North boss `LastBossGate` assembly) at location load; prefab identity unchanged. Closeout passed and installed 0.0.100 (DLL SHA-256 8D7558012D1FA03944FB8C660B62479F9CEE9A05C5600467FBBF63F04CD6F7EB). Not yet observed: the swap only runs when a world loads, so its log line ("Deep Gate re-bodied from the Aesir gate ..." or the Morkhalla fallback warning), the gate's orientation and scale, and gate interaction all need a world load to confirm.
+
+Launcher description: "0.0.100: The Deep Gate now takes its body from the vanilla Aesir gate (the Deep North boss LastBossGate) instead of the Morkhalla interior archway, applied when world locations load. Includes the twelve elemental Surtlings from 0.0.99."
+
 # Current release - 0.0.99 (2026-09-22)
 
 Twelve elemental Surtlings registered as console-spawnable donor-skeleton creatures; see docs/validation/2026-09-22-elemental-surtlings.md. Closeout passed and installed 0.0.99 (DLL SHA-256 6FA8485DE24B9819758E967DBBC81650801AEB7035EFFF43CD8D0DC903F27F0F). Live startup read back: Registered 12/12 elemental Surtlings, no Magenheim warnings. Not yet spawned in a world; animation following, combat and death playback need an in-game look.

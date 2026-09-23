@@ -1,4 +1,4 @@
 {
-  "version": "0.0.99",
-  "description": "0.0.99: Twelve elemental Surtlings (Fire, Water, Earth, Wind, Radiance, Umbral; two body forms each) as console-spawnable creatures whose authored bodies ride humanoid donor skeletons, including death ragdolls."
+  "version": "0.0.100",
+  "description": "0.0.100: The Deep Gate now takes its body from the vanilla Aesir gate (the Deep North boss LastBossGate) instead of the Morkhalla interior archway, applied when world locations load. Includes the twelve elemental Surtlings from 0.0.99."
 }
