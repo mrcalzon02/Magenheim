@@ -20,6 +20,7 @@ internal sealed class UnderworldRuntimeServices
         _worldContext=worldContext;
         StructureAdmission=new UnderworldStructureAdmissionController(log);
         ChunkStreaming=new UnderworldInstanceChunkStreamingRuntime(this,log);
+        UniqueLocationAnchors=new UnderworldUniqueLocationAnchorResolver(this);
         ChunkMaterializer=new UnderworldInstanceChunkMaterializer(this,log);
         BiomeStructureResidency=new UnderworldBiomeStructureResidencyRuntime(this);
         BiomeStructureResidency.Register(new FractureFaultLineFamily());
@@ -41,6 +42,7 @@ internal sealed class UnderworldRuntimeServices
     internal UnderworldInstanceLifecycle InstanceLifecycle{get;}
     internal UnderworldStructureAdmissionController StructureAdmission{get;}
     internal UnderworldInstanceChunkStreamingRuntime ChunkStreaming{get;}
+    internal UnderworldUniqueLocationAnchorResolver UniqueLocationAnchors{get;}
     internal UnderworldInstanceChunkMaterializer ChunkMaterializer{get;}
     internal UnderworldBiomeStructureResidencyRuntime BiomeStructureResidency{get;}
 
@@ -91,6 +93,7 @@ internal sealed class UnderworldRuntimeServices
     internal void ResetForWorldUnload()
     {
         BiomeStructureResidency.Clear();
+        UniqueLocationAnchors.Clear();
         ChunkMaterializer.Clear();
         ChunkStreaming.Clear();
         InstanceLifecycle.Reset();
@@ -100,6 +103,7 @@ internal sealed class UnderworldRuntimeServices
     internal void Shutdown()
     {
         BiomeStructureResidency.Clear();
+        UniqueLocationAnchors.Clear();
         ChunkMaterializer.Clear();
         ChunkStreaming.Clear();
         InstanceLifecycle.Reset();
