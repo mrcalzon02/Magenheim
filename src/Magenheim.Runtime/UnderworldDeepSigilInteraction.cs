@@ -52,14 +52,11 @@ internal sealed class UnderworldDeepSigilInteraction : MonoBehaviour, Hoverable,
             return;
 
         var locationId = _state.GetString(LocationIdKey);
-        if (string.IsNullOrWhiteSpace(locationId)) return;
+        if (string.IsNullOrWhiteSpace(locationId) || Minimap.instance == null) return;
 
         // The ZDO owns only the canonical identity. Re-derive the active world's anchor after load
-        // so stale coordinates can never survive a world/seed change. Delay completion until the
-        // native instance and vanilla Minimap are both ready.
-        if (Minimap.instance == null || UnderworldRuntimeServices.Current?.InstanceLifecycle.Identity == null)
-            return;
-
+        // so stale coordinates can never survive a world/seed change. Native terrain admission can
+        // trail ZDO replication during instance startup, so an unavailable authority simply retries.
         try
         {
             var anchor = UnderworldTerrainRuntime.ResolveUniqueLocation(
@@ -70,8 +67,7 @@ internal sealed class UnderworldDeepSigilInteraction : MonoBehaviour, Hoverable,
         }
         catch (InvalidOperationException)
         {
-            // Native terrain admission can trail ZDO replication during instance startup. Retry on
-            // a later frame rather than treating a transient load-order gap as lost discovery.
+            // Retry on a later frame rather than treating a transient load-order gap as lost discovery.
         }
     }
 
