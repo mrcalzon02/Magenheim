@@ -9,7 +9,8 @@ namespace Magenheim.Runtime;
 /// ZNetView owner RPC; only the authoritative server owner resolves definitions and mutates ZDO
 /// discovery state. The Sigil persists a stable unique-location identity, never a coordinate.
 /// A transient reply gives the activating client the resolved native-instance anchor so the existing
-/// Valheim Minimap can own the actual discovery pin.
+/// Valheim Minimap can own the actual discovery pin. Persisted discovery is reconstructed from that
+/// stable identity when a discovered Sigil is loaded again; coordinates remain derived state.
 /// </summary>
 internal sealed class UnderworldDeepSigilInteraction : MonoBehaviour, Hoverable, Interactable
 {
@@ -24,6 +25,7 @@ internal sealed class UnderworldDeepSigilInteraction : MonoBehaviour, Hoverable,
     private ZNetView _view = null!;
     private UnderworldZdoStateAdapter _state = null!;
     private string _biomeId = string.Empty;
+    private bool _restoredPersistedDiscovery;
 
     internal void Configure(string biomeId)
     {
@@ -40,6 +42,37 @@ internal sealed class UnderworldDeepSigilInteraction : MonoBehaviour, Hoverable,
             throw new InvalidOperationException("Deep Sigil interaction requires ZNetView and UnderworldZdoStateAdapter on the same persistent core.");
         _view.Register(ActivateRpc, new Action<long>(RpcActivate));
         _view.Register<Vector3, string>(RevealRpc, RpcReveal);
+    }
+
+    private void Update()
+    {
+        if (_restoredPersistedDiscovery || _state == null || !_state.IsReady ||
+            !string.Equals(_biomeId, FractureBiomeId, StringComparison.Ordinal) ||
+            !_state.GetBool(DiscoveredKey))
+            return;
+
+        var locationId = _state.GetString(LocationIdKey);
+        if (string.IsNullOrWhiteSpace(locationId)) return;
+
+        // The ZDO owns only the canonical identity. Re-derive the active world's anchor after load
+        // so stale coordinates can never survive a world/seed change. Delay completion until the
+        // native instance and vanilla Minimap are both ready.
+        if (Minimap.instance == null || UnderworldRuntimeServices.Current?.InstanceLifecycle.Identity == null)
+            return;
+
+        try
+        {
+            var anchor = UnderworldTerrainRuntime.ResolveUniqueLocation(
+                locationId,
+                UnderworldTerrainBiome.FractureZones);
+            EnsureDiscoveryPin(anchor.EnginePosition, FracturePinName);
+            _restoredPersistedDiscovery = true;
+        }
+        catch (InvalidOperationException)
+        {
+            // Native terrain admission can trail ZDO replication during instance startup. Retry on
+            // a later frame rather than treating a transient load-order gap as lost discovery.
+        }
     }
 
     public string GetHoverName() => "$magenheim_deep_sigil";
@@ -92,6 +125,12 @@ internal sealed class UnderworldDeepSigilInteraction : MonoBehaviour, Hoverable,
     {
         // This RPC is targeted only to the activating peer. The coordinate is intentionally
         // transient: durable Sigil state remains the canonical location identity in the ZDO.
+        EnsureDiscoveryPin(position, pinName);
+        _restoredPersistedDiscovery = true;
+    }
+
+    private static void EnsureDiscoveryPin(Vector3 position, string pinName)
+    {
         var map = Minimap.instance;
         if (map == null || string.IsNullOrWhiteSpace(pinName)) return;
 
