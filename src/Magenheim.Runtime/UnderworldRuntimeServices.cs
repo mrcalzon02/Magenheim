@@ -27,6 +27,7 @@ internal sealed class UnderworldRuntimeServices
         BiomeStructureResidency.Register(new FungalSplitPillarLandmarkFamily());
         BiomeStructureResidency.Register(new SulfurThreeLavafallsLandmarkFamily());
         BiomeStructureResidency.Register(new FrozenWallLandmarkFamily());
+        BiomeStructureResidency.Register(new GreatDecayVanishingRoadLandmarkFamily());
     }
 
     internal UnderworldInstanceTerrainDomain TerrainDomain{get;}
