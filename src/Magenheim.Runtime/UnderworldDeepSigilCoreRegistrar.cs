@@ -52,12 +52,16 @@ internal sealed class UnderworldDeepSigilCoreRegistrar : IDisposable
             if (pickable is not null) UnityEngine.Object.DestroyImmediate(pickable);
             if (core.GetComponent<UnderworldZdoStateAdapter>() is null)
                 core.AddComponent<UnderworldZdoStateAdapter>();
+            if (core.GetComponent<UnderworldPersistentObjectBinding>() is null)
+                core.AddComponent<UnderworldPersistentObjectBinding>();
 
             PrefabManager.Instance.AddPrefab(new CustomPrefab(core, true));
             var registered = PrefabManager.Instance.GetPrefab(PrefabName)
                 ?? throw new InvalidOperationException($"Jotunn refused Deep Sigil core '{PrefabName}'.");
-            if (registered.GetComponent<ZNetView>() is null || registered.GetComponent<UnderworldZdoStateAdapter>() is null)
-                throw new InvalidOperationException("Deep Sigil core registration lost its required ZNetView/state-adapter components.");
+            if (registered.GetComponent<ZNetView>() is null
+                || registered.GetComponent<UnderworldZdoStateAdapter>() is null
+                || registered.GetComponent<UnderworldPersistentObjectBinding>() is null)
+                throw new InvalidOperationException("Deep Sigil core registration lost required ZNetView/persistence binding components.");
 
             _registered = true;
             _log.LogInfo($"Registered persistent Underworld Deep Sigil core '{PrefabName}' through ordinary Valheim ZNetView/ZDO authority.");
