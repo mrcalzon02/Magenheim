@@ -30,13 +30,13 @@ cover `Fiddleheadfern`, `shrub_2`, `Pickable_Mushroom_blue`, `Rock_4`, `RockFing
 `YggdrasilRoot`, `root08`, `root11` (12 slots); resources Flowstone, Pale Fibre, Blackwater Pearl,
 Deep Salt.
 
-- [x] **B1 — shared flora kit + author tool.** DONE (commit below). 16 sources authored in `assets/models/source/underworld-{flora-blackwater,resource}-*.blend`, not yet exported or wired. **Known-stale until B2:** `verify-generated-freshness.py` flags `underworld-fungal-forest-models` because its tool now imports `magenheim_flora_kit.py`; B2's regeneration clears it.
+- [x] **B1 — shared flora kit + author tool.** DONE (commit below). 16 sources authored in `assets/models/source/underworld-{flora-blackwater,resource}-*.blend`, exported and wired in B2. **Historical stale state before B2:** `verify-generated-freshness.py` flags `underworld-fungal-forest-models` because its tool now imports `magenheim_flora_kit.py`; B2's regeneration clears it.
   Original scope: Move the fungal tool's `Model`, `tube`, `cap`, `gills`,
   `buttresses`, `small_mushrooms` into `tools/magenheim_flora_kit.py`; author Blackwater models:
   canopy flowstone spire, broken column, rimstone mound, drowned root arch; cover brine fern,
   palefinger cluster, pearl caps, wet stone, fingerstone rubble, root fan, lakebed shelf, root
   fingers; resources flowstone chunk, pale fibre, pearl, deep salt. Review render; commit unwired.
-- [ ] **B1b — quality rework (user review 2026-09-22: FAILED except palefinger and brine fern).**
+- [x] **B1b — quality rework (user review 2026-09-22: FAILED except palefinger and brine fern).**
   The bar is the Fungal Forest canopy sheet, not "a lathe". Render every model with the scratch
   review sheet (front / side / 3/4 / silhouette) and get user sign-off before B2.
   **Codex continuation from Claude's `d6dbbe5`:** geometry reworked and a repeatable four-view
@@ -62,8 +62,10 @@ Deep Salt.
     shelf strata, chips, and flowstone crust; aim 600-1500 tris each.
   - pearl-caps, root-fan, root-fingers and the four resources: not reviewed individually; review
     them on the sheet before B2.
-- [ ] **B2 — wire and ship.** Catalog, resource visuals, manifest, count pin, regenerate (Blackwater
+- [x] **B2 — wire and ship.** Catalog, resource visuals, manifest, count pin, regenerate (Blackwater
   first, then fungal for the kit move), closeout, commit, push.
+  **Complete: 0.0.102 installed and hash/catalog verified 2026-09-23.** Evidence:
+  `validation/2026-09-23-blackwater-closeout.md`. Static closeout passed; not observed in world.
 
 ## Later biomes (not started)
 

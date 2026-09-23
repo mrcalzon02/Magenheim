@@ -1,3 +1,18 @@
+# Current release - 0.0.102 (2026-09-23)
+
+Blackwater Deep B2 is wired, regenerated, packaged and installed in Central Fuckery. Seven canopy
+and twelve ground-cover slots use authored forms; four resources use custom models and icons.
+Fungal Forest was regenerated with the shared flora kit and UV-coverage padding. Two incoming
+Deep Sigil API compatibility errors were repaired using existing runtime conventions.
+
+`closeout.ps1 -Offline` passed: 344 model sets, 142 icons, 367 generated files across 13 generators,
+43,508 Core assertions plus separate suites; runtime compilation zero warnings/errors. Installed
+DLL SHA-256: 7273EE6121E0609F085DEF7973C8E1880B8F7660AC736248FD9A012A100B8D51. Launcher enabled entry and all payload hashes verified.
+Not observed in world; natural resource harvesting/recipes remain pending. Next ecology slice:
+Sulfurous Wastes. Evidence: docs/validation/2026-09-23-blackwater-closeout.md.
+
+Launcher description: "0.0.102: Blackwater Deep custom pass - authored mineral columns, rimstone pools, drowned roots, eight ground covers and four resource models with icons replace vanilla visuals. Fixes Blackwater atlas seams."
+
 # Current release - 0.0.101 (2026-09-22)
 
 Fungal Forest custom pass: four authored fungal tree species, eight ground covers and four resources (with rendered icons) replace its ten vanilla donor prefabs and four item appearances. New `magenheim_underworld enter|return|status` devcommands console command, documented in TESTING.md. Closeout passed and installed 0.0.101 (DLL SHA-256 B5877CA9FED7B26B125D6729E85D84AB6E632BECE11FB5D52CD1593536DEDCBA). Not yet observed in a world; see docs/validation/2026-09-22-fungal-forest-custom-pass.md. Next biome for the custom pass: Blackwater Deep.

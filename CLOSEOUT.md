@@ -1,3 +1,18 @@
+# Development closeout - 0.0.102 Blackwater Deep
+
+Blackwater's seven canopy and twelve cover slots now use authored models. Its four resource
+items and pickups use matching bodies and icons. Both biome families use the shared flora kit,
+including UV-coverage padding before texture downsampling. Existing habitats and resource
+behaviour are preserved. Deep Sigil compatibility is repaired against the installed Valheim API.
+
+Run `./closeout.ps1 -Offline` to verify, package, back up and install into Central Fuckery.
+The expected enabled launcher entry is **Magenheim 0.0.102**, beginning **0.0.102: Blackwater
+Deep custom pass**. Closeout verifies payload hashes and launcher metadata. Actual world
+appearance, collision, resource interactions and multiplayer still require live acceptance.
+Latest execution evidence is in `docs/validation/2026-09-23-blackwater-closeout.md`.
+
+## Historical closeouts
+
 # Development closeout — 0.0.49 testing candidate
 
 Repairs the `Inventory.Changed` binding broken by Valheim 1.0.12 and adds a static

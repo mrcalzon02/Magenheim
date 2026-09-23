@@ -548,7 +548,7 @@
         "assets/models/runtime/underworld-resource-understone.model.json"
       ],
       "hash": "generator-only",
-      "generator_sha256": "46b1a250957575b98ce11201c6dc46347379eba3e61f4409c75af35994ebfbfb",
+      "generator_sha256": "7c96bda2ab6d02670e3716f04f7d26447c7236b054b8ef71e795ed57d87d5f8f",
       "output_sha256": {
         "assets/models/glb/underworld-flora-fungal-amber-bed.glb": null,
         "assets/models/glb/underworld-flora-fungal-fern.glb": null,
@@ -599,7 +599,7 @@
         "assets/models/source/underworld-resource-understone.blend": null,
         "assets/models/source/underworld-resource-worldroot-timber.blend": null
       },
-      "inputs_sha256": "2695f6532b90c599e28c35406d9853bf2f2eb27452ac998c8f57fd192471efb7"
+      "inputs_sha256": "4c2297f64573f2e949de897eb4f7f5cb5b5c3baea30ba3067c19bb1280356e1a"
     },
     {
       "id": "underworld-resource-icons",
@@ -618,7 +618,11 @@
       "hash": "generator-only",
       "generator_sha256": "5dc2d13c92eb3807fbd8fa0f52fbbb27b853cd7758017936ab877c25ae5bcaea",
       "output_sha256": {
+        "assets/earth/underworld-resource-blackwater-flowstone.icon.png": null,
+        "assets/earth/underworld-resource-blackwater-pearl.icon.png": null,
+        "assets/earth/underworld-resource-deep-salt.icon.png": null,
         "assets/earth/underworld-resource-glowcap-flesh.icon.png": null,
+        "assets/earth/underworld-resource-pale-fibre.icon.png": null,
         "assets/earth/underworld-resource-spire-fibre.icon.png": null,
         "assets/earth/underworld-resource-understone.icon.png": null,
         "assets/earth/underworld-resource-worldroot-timber.icon.png": null

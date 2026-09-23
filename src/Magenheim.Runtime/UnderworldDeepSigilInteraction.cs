@@ -72,6 +72,7 @@ internal sealed class UnderworldDeepSigilInteraction : MonoBehaviour, Hoverable,
     }
 
     public string GetHoverName() => "$magenheim_deep_sigil";
+    public float GetHoverOffset() => 0f;
 
     public string GetHoverText()
     {
@@ -140,7 +141,7 @@ internal sealed class UnderworldDeepSigilInteraction : MonoBehaviour, Hoverable,
         var binding = UnderworldMapTabRuntime.BeginPhysicalMapOperation(map);
         try
         {
-            foreach (var pin in map.m_pins)
+            foreach (var pin in RuntimeGameApi.GetMapPins(map))
             {
                 if (!string.Equals(pin.m_name, pinName, StringComparison.Ordinal)) continue;
                 var delta = pin.m_pos - position;
