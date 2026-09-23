@@ -1,4 +1,5 @@
 using System;
+using Magenheim.Core.Underworld;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
@@ -7,13 +8,18 @@ namespace Magenheim.Runtime;
 /// Player-facing Deep Sigil interaction. Interaction requests travel through the core's normal
 /// ZNetView owner RPC; only the authoritative server owner resolves definitions and mutates ZDO
 /// discovery state. The Sigil persists a stable unique-location identity, never a coordinate.
+/// A transient reply gives the activating client the resolved native-instance anchor so the existing
+/// Valheim Minimap can own the actual discovery pin.
 /// </summary>
 internal sealed class UnderworldDeepSigilInteraction : MonoBehaviour, Hoverable, Interactable
 {
     private const string ActivateRpc = "Magenheim_DeepSigil_Activate";
+    private const string RevealRpc = "Magenheim_DeepSigil_Reveal";
     private const string DiscoveredKey = "deep-sigil.discovered";
     private const string LocationIdKey = "deep-sigil.location-id";
     private const string BossIdKey = "deep-sigil.boss-id";
+    private const string FractureBiomeId = "magenheim.underworld.biome.fracture";
+    private const string FracturePinName = "$magenheim_underworld_suspended_court";
 
     private ZNetView _view = null!;
     private UnderworldZdoStateAdapter _state = null!;
@@ -33,6 +39,7 @@ internal sealed class UnderworldDeepSigilInteraction : MonoBehaviour, Hoverable,
         if (_view == null || _state == null)
             throw new InvalidOperationException("Deep Sigil interaction requires ZNetView and UnderworldZdoStateAdapter on the same persistent core.");
         _view.Register(ActivateRpc, new Action<long>(RpcActivate));
+        _view.Register<Vector3, string>(RevealRpc, RpcReveal);
     }
 
     public string GetHoverName() => "$magenheim_deep_sigil";
@@ -70,5 +77,32 @@ internal sealed class UnderworldDeepSigilInteraction : MonoBehaviour, Hoverable,
         _state.SetString(LocationIdKey, discovery.UniqueLocationId);
         _state.SetString(BossIdKey, discovery.BossId);
         _state.SetBool(DiscoveredKey, true);
+
+        // Fracture is the first completed physical unique-location consumer. Keep unsupported biome
+        // identities fail-closed until their boss locations are resident rather than manufacturing
+        // speculative coordinates or pins for unfinished content.
+        if (!string.Equals(_biomeId, FractureBiomeId, StringComparison.Ordinal)) return;
+        var anchor = UnderworldTerrainRuntime.ResolveUniqueLocation(
+            discovery.UniqueLocationId,
+            UnderworldTerrainBiome.FractureZones);
+        _view.InvokeRPC(sender, RevealRpc, anchor.EnginePosition, FracturePinName);
+    }
+
+    private void RpcReveal(long sender, Vector3 position, string pinName)
+    {
+        // This RPC is targeted only to the activating peer. The coordinate is intentionally
+        // transient: durable Sigil state remains the canonical location identity in the ZDO.
+        var map = Minimap.instance;
+        if (map == null || string.IsNullOrWhiteSpace(pinName)) return;
+
+        foreach (var pin in map.m_pins)
+        {
+            if (!string.Equals(pin.m_name, pinName, StringComparison.Ordinal)) continue;
+            var delta = pin.m_pos - position;
+            if (delta.sqrMagnitude <= 64f) return;
+        }
+
+        map.AddPin(position, Minimap.PinType.Icon3, pinName, true, false,
+            ownerID: 0L, author: default);
     }
 }
