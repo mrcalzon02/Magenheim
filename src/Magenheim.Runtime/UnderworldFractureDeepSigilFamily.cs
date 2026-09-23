@@ -13,6 +13,7 @@ namespace Magenheim.Runtime;
 internal sealed class FractureDeepSigilFamily : IUnderworldBiomeStructureFamily
 {
     private const int FamilySalt = 0x6A31C5E9;
+    private const string CanonicalBiomeId = "magenheim.underworld.biome.fracture";
     public string Kind => "fracture-deep-sigil";
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.FractureZones;
     public int PlacementSlot => 5;
@@ -49,6 +50,9 @@ internal sealed class FractureDeepSigilFamily : IUnderworldBiomeStructureFamily
             core.transform.localPosition = Vector3.up * 1.7f;
             core.transform.localRotation = Quaternion.Euler(-4f, yaw, 3f);
             core.transform.localScale = Vector3.Scale(core.transform.localScale, new Vector3(0.78f, 2.7f, 0.42f));
+            var interaction = core.GetComponent<UnderworldDeepSigilInteraction>()
+                ?? throw new InvalidOperationException("Registered Deep Sigil core is missing its interaction authority.");
+            interaction.Configure(CanonicalBiomeId);
 
             for (var i = 0; i < 6; i++)
             {
