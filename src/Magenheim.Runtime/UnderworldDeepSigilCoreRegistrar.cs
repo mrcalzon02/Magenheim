@@ -46,25 +46,26 @@ internal sealed class UnderworldDeepSigilCoreRegistrar : IDisposable
             var core = PrefabManager.Instance.CreateClonedPrefab(PrefabName, donor)
                 ?? throw new InvalidOperationException($"Unable to clone Deep Sigil core donor '{DonorPrefab}'.");
 
-            // The donor is selected only for its proven persistent ZNetView/ZDO lifecycle.
-            // Sigils are not harvestable stones; remove donor gameplay while retaining its network authority.
             var pickable = core.GetComponent<Pickable>();
             if (pickable is not null) UnityEngine.Object.DestroyImmediate(pickable);
             if (core.GetComponent<UnderworldZdoStateAdapter>() is null)
                 core.AddComponent<UnderworldZdoStateAdapter>();
             if (core.GetComponent<UnderworldPersistentObjectBinding>() is null)
                 core.AddComponent<UnderworldPersistentObjectBinding>();
+            if (core.GetComponent<UnderworldDeepSigilInteraction>() is null)
+                core.AddComponent<UnderworldDeepSigilInteraction>();
 
             PrefabManager.Instance.AddPrefab(new CustomPrefab(core, true));
             var registered = PrefabManager.Instance.GetPrefab(PrefabName)
                 ?? throw new InvalidOperationException($"Jotunn refused Deep Sigil core '{PrefabName}'.");
             if (registered.GetComponent<ZNetView>() is null
                 || registered.GetComponent<UnderworldZdoStateAdapter>() is null
-                || registered.GetComponent<UnderworldPersistentObjectBinding>() is null)
-                throw new InvalidOperationException("Deep Sigil core registration lost required ZNetView/persistence binding components.");
+                || registered.GetComponent<UnderworldPersistentObjectBinding>() is null
+                || registered.GetComponent<UnderworldDeepSigilInteraction>() is null)
+                throw new InvalidOperationException("Deep Sigil core registration lost required ZNetView/persistence/interaction components.");
 
             _registered = true;
-            _log.LogInfo($"Registered persistent Underworld Deep Sigil core '{PrefabName}' through ordinary Valheim ZNetView/ZDO authority.");
+            _log.LogInfo($"Registered persistent interactive Underworld Deep Sigil core '{PrefabName}' through ordinary Valheim ZNetView/ZDO authority.");
         }
         catch (Exception exception)
         {
