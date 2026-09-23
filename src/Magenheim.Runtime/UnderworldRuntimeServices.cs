@@ -23,6 +23,7 @@ internal sealed class UnderworldRuntimeServices
         ChunkMaterializer=new UnderworldInstanceChunkMaterializer(this,log);
         BiomeStructureResidency=new UnderworldBiomeStructureResidencyRuntime(this);
         BiomeStructureResidency.Register(new FractureFaultLineFamily());
+        BiomeStructureResidency.Register(new FractureCliffMonasteryFamily());
         BiomeStructureResidency.Register(new BlackwaterSparsePocketFamily());
         BiomeStructureResidency.Register(new FungalSplitPillarLandmarkFamily());
         BiomeStructureResidency.Register(new SulfurThreeLavafallsLandmarkFamily());
