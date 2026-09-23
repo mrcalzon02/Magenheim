@@ -27,6 +27,7 @@ internal sealed class UnderworldRuntimeServices
         BiomeStructureResidency.Register(new FractureSuspendedRoadStationFamily());
         BiomeStructureResidency.Register(new FractureAnchorTowerFamily());
         BiomeStructureResidency.Register(new FractureGreatBridgeFamily());
+        BiomeStructureResidency.Register(new FractureDeepSigilFamily());
         BiomeStructureResidency.Register(new BlackwaterSparsePocketFamily());
         BiomeStructureResidency.Register(new FungalSplitPillarLandmarkFamily());
         BiomeStructureResidency.Register(new SulfurThreeLavafallsLandmarkFamily());
