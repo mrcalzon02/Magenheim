@@ -101,6 +101,55 @@
       "hash": "generator-only"
     },
     {
+      "id": "crystal-weapon-models",
+      "generator": "tools/author-crystal-weapons.py",
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-Command",
+        "& './tools/rebuild-crystal-weapons.ps1'"
+      ],
+      "outputs": [
+        "assets/models/source/crystal-weapon-*.blend",
+        "assets/models/glb/crystal-weapon-*.glb",
+        "assets/models/runtime/crystal-weapon-*.model.json"
+      ],
+      "hash": "generator-only",
+      "generator_sha256": "83eea0b14a7fd7b0fa91063fe6d9b4995054ce6233e2e160ecebf52ab1818457",
+      "output_sha256": {
+        "assets/models/glb/crystal-weapon-atgeir.glb": null,
+        "assets/models/glb/crystal-weapon-axe.glb": null,
+        "assets/models/glb/crystal-weapon-battleaxe.glb": null,
+        "assets/models/glb/crystal-weapon-bow.glb": null,
+        "assets/models/glb/crystal-weapon-crossbow.glb": null,
+        "assets/models/glb/crystal-weapon-greatsword.glb": null,
+        "assets/models/glb/crystal-weapon-knife.glb": null,
+        "assets/models/glb/crystal-weapon-mace.glb": null,
+        "assets/models/glb/crystal-weapon-spear.glb": null,
+        "assets/models/glb/crystal-weapon-sword.glb": null,
+        "assets/models/runtime/crystal-weapon-atgeir.model.json": null,
+        "assets/models/runtime/crystal-weapon-axe.model.json": null,
+        "assets/models/runtime/crystal-weapon-battleaxe.model.json": null,
+        "assets/models/runtime/crystal-weapon-bow.model.json": null,
+        "assets/models/runtime/crystal-weapon-crossbow.model.json": null,
+        "assets/models/runtime/crystal-weapon-greatsword.model.json": null,
+        "assets/models/runtime/crystal-weapon-knife.model.json": null,
+        "assets/models/runtime/crystal-weapon-mace.model.json": null,
+        "assets/models/runtime/crystal-weapon-spear.model.json": null,
+        "assets/models/runtime/crystal-weapon-sword.model.json": null,
+        "assets/models/source/crystal-weapon-atgeir.blend": null,
+        "assets/models/source/crystal-weapon-axe.blend": null,
+        "assets/models/source/crystal-weapon-battleaxe.blend": null,
+        "assets/models/source/crystal-weapon-bow.blend": null,
+        "assets/models/source/crystal-weapon-crossbow.blend": null,
+        "assets/models/source/crystal-weapon-greatsword.blend": null,
+        "assets/models/source/crystal-weapon-knife.blend": null,
+        "assets/models/source/crystal-weapon-mace.blend": null,
+        "assets/models/source/crystal-weapon-spear.blend": null,
+        "assets/models/source/crystal-weapon-sword.blend": null
+      }
+    },
+    {
       "id": "weapon-icons",
       "generator": "tools/render-weapon-icons.py",
       "command": [

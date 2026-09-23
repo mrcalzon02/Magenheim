@@ -1,3 +1,13 @@
+# Current release - 0.0.98 (2026-09-22)
+
+Readability and silhouette pass on all ten crystal weapons. `tools/author-crystal-weapons.py` now owns their sources (manifest id `crystal-weapon-models`): edged blades with fullers or midribs, swept guards, banded leather grips, wedged axe heads with bright crystal edges, a six-flanged mace, a bow whose string no longer passes through its limbs, a shaped crossbow tiller, and vanilla-style grip wraps, ferrules and langets. Each weapon carries its own baked 512px atlas (occlusion, worn edges, material pattern) in place of seven shared noise maps; crystal bodies no longer glow uniformly. Grip origin, length envelope and part identities are unchanged. Icons re-rendered. `verify-held-model-grip-direction.py` now uses area moment about the hand (evidence in the validation doc). See docs/validation/2026-09-22-crystal-weapon-readability-pass.md.
+
+Full closeout passed: 227 generated files across 9 generators fresh, 10 held-model alignments match the confirmed rotation, 43,504 Core assertions plus separate suites; runtime compilation zero warnings/errors. Installed 0.0.98 into Central Fuckery, verified payload hashes and enabled launcher metadata. DLL SHA-256: 6DF170936A8F4A0EDB959D676D2943BB6659FBCCA0CEA47E101FEA3E58B52ED2.
+Backups: backups/Local-Magenheim-20260922-165254.zip and backups/mods-20260922-165307-916.yml.
+Static only: nobody has seen these weapons in a hand or in game lighting yet. Check first that the in-hand placement still matches 0.0.97 and whether the mace head reads too pale.
+
+Launcher description: "0.0.98: Readability and silhouette pass on all ten crystal weapons: edged blades, shaped guards, wrapped grips, wedged axe heads, flanged mace, corrected bow string, vanilla-style fittings, and per-weapon baked painted textures. Icons re-rendered."
+
 # Current release - 0.0.97 (2026-09-22)
 
 Added the 22 planned raw-resource definitions across all six biomes, vanilla-backed custom material items, and native Pickable review prefabs. Mapping and exact console IDs: docs/UNDERWORLD_RESOURCE_MAPPING.md. Resource pickups are console-only, one item per pickup with no extra loot or respawn. Natural vegetation remains visual-only. Creature prototypes retain donor loot; existing recipes retain vanilla ingredients until natural resource acquisition is admitted. Merged the incoming Frozen Wall landmark work.

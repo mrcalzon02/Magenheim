@@ -1,3 +1,26 @@
+## 0.0.98 - Crystal weapon readability and silhouette pass
+
+- **All ten crystal weapons are re-authored from designed forms** by the new
+  `tools/author-crystal-weapons.py`. Blades were square prisms -- the sword 0.156m wide and 0.136m
+  thick, so it read as a crystal stick edge-on. Blades now have a thin edge bevel with a fuller
+  (swords) or midrib (spear, atgeir), the knife is a single-edged seax, guards are swept with
+  knobbed tips, grips are banded leather wraps, axe heads wedge to a bright crystal edge, the mace
+  has six double-pointed flanges, and the bow's string no longer passes through its own limbs.
+- **Vanilla fittings the family lacked:** leather grip wraps at the hand on axe, battleaxe, mace,
+  spear and atgeir; butt ferrules and socket langets on spear and atgeir; a trigger and rail on the
+  crossbow; a seat collar under the greatsword's pommel crystal. The greatsword's hand-authored
+  design is rebuilt as itself.
+- **Each weapon has its own painted atlas**, baked in Blender at 1024 and shipped at 512: occlusion
+  from the whole weapon, worn-edge highlights, and wood grain, hide, hammered blackmetal, tarnished
+  silver, clouded crystal and prismatic patterns. Replaces seven shared noise maps. Crystal bodies no
+  longer glow uniformly, which had flattened their shading; glow is kept to bright crystal and gems.
+- Grip, length envelope and part identities are unchanged, so the in-hand placement confirmed in
+  0.0.85-0.0.97 still applies; `ModelAssetTests` replays the alignment on the new payloads.
+- `verify-held-model-grip-direction.py` now weighs area by distance from the hand. End-slice area
+  failed the correct new sword, and had never failed the reversed sword it was written beside; the
+  new metric fails all five historically reversed payloads.
+- Icons re-rendered from the new sources. Median weapon triangles 1,206 -> 1,810.
+
 ## Unreleased - Underworld weather ownership
 
 - Replaced inherited Surface storm weather inside the active Underworld with six biome-owned weather families built as namespaced clones of Valheim `EnvSetup` donors. Surface biome weather tables are not edited.

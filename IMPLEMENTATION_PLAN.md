@@ -228,7 +228,9 @@ defect it fixed cannot come back.
   modifier pass. It is the largest stage, not the quickest, and should start with a clear
   session rather than the tail of one.
 - **Stage 3 — held equipment.** `crystal-weapon` geometry to the library bar, continuing
-  the 0.0.55/0.0.56 weapon work.
+  the 0.0.55/0.0.56 weapon work. **Done statically 2026-09-22 (0.0.98):**
+  `tools/author-crystal-weapons.py` owns all ten sources and bakes their atlases; see
+  `docs/validation/2026-09-22-crystal-weapon-readability-pass.md`. In-hand look is unverified.
 - **Stage 4 — texture resolution.** 256px is the library floor everywhere except the
   weapons. Raising it is the largest single job and changes package size materially; it
   deserves its own decision and probably its own session.

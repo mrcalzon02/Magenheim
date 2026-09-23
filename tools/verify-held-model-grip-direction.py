@@ -6,11 +6,11 @@ long axis is Y. This gate establishes direction along that axis. Magenheim's can
 sources place the grip/pommel at negative Y and the blade/head/working end toward positive Y.
 A sideways-axis repair can satisfy the first contract while still leaving an asset reversed.
 
-The check is deliberately source-independent and runs over exported runtime JSON. It estimates
-material in equal end slices by summed authored TRIANGLE AREA (each triangle counted by its
-centroid's Y), not by vertex count and not by bounding volume: a normal weapon/staff has the
-compact grip at -Y and more material at +Y. Assets whose negative end is materially heavier are
-rejected. Ambiguous near-symmetric assets are reported separately and require visual acceptance
+The check is deliberately source-independent and runs over exported runtime JSON. It weighs each
+side of the hand by authored TRIANGLE AREA times distance from the attach origin (see the
+2026-09-22 note below for why this replaced plain area in end slices), not by vertex count and not
+by bounding volume: a normal weapon/staff has the compact grip at -Y and more material, further
+out, at +Y. Assets whose negative side is materially heavier are rejected. Ambiguous near-symmetric assets are reported separately and require visual acceptance
 rather than an automatic flip.
 
 Two prior metrics were tried and measurably failed before this one. Vertex count called the
@@ -33,6 +33,22 @@ head pointing toward the grip) and by each source's own Blender Z coordinates (p
 head parts at negative Z, the exact mirror of every correctly-built staff). Fixed 2026-09-19 by
 rotating each of the four sources 180 degrees about their shared world origin and re-exporting; no
 longer excluded below.
+
+2026-09-22: end-slice area was replaced by the FIRST MOMENT of surface area about the attach
+origin -- each triangle's area times its distance from the hand, summed on each side. The slice
+metric failed the re-authored sword and greatsword, both confirmed blade-at-+Y by render and by
+their own coordinates: a properly tapered blade puts little area in its last 22%, while a wrapped
+grip and pommel put a lot in the first. It had also never been decisive on the defect it exists
+for -- the reversed sword it was introduced beside measured 0.110 vs 0.088 m2, under the 1.30 fail
+ratio. Measured over every held asset (tools/ModelAssetTests replays alignment separately):
+
+    metric                   40 correct assets (min pos/neg)   5 known-reversed (max pos/neg)
+    end-slice area           0.70 (fails the new sword)        0.80 (reversed sword not failed)
+    area moment about hand   1.47 (staff-spirit-simple)        0.28 (all five fail)
+
+The five known-reversed payloads are the four Crystal staves at ee4e765^ and the sword at bc29d5f^.
+Reach alone (which end extends further) was also measured and rejected: the balanced battleaxe and
+the spirit staves reach slightly further toward the grip while being correct.
 """
 from pathlib import Path
 import json
@@ -40,7 +56,6 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / "assets" / "models" / "runtime"
-SLICE = 0.22
 REVERSE_RATIO = 1.30
 NAMES = (
     "crystal-weapon-sword", "crystal-weapon-greatsword", "crystal-weapon-axe",
@@ -96,23 +111,23 @@ def inspect(path):
     if not tris:
         return "FAIL", "no triangles"
     ys = [p[1] for tri in tris for p in tri]
-    lo, hi = min(ys), max(ys)
-    span = hi - lo
-    if span <= 1e-6:
+    if max(ys) - min(ys) <= 1e-6:
         return "FAIL", "zero Y span"
-    cut = span * SLICE
+    # First moment of surface area about the hand: each triangle weighted by how far it sits from
+    # the attach origin, summed separately on each side of it.
     negative = positive = 0.0
     for a, b, c in tris:
         centroid_y = (a[1] + b[1] + c[1]) / 3.0
-        if centroid_y <= lo + cut:
-            negative += triangle_area(a, b, c)
-        elif centroid_y >= hi - cut:
-            positive += triangle_area(a, b, c)
+        moment = triangle_area(a, b, c) * abs(centroid_y)
+        if centroid_y < 0.0:
+            negative += moment
+        else:
+            positive += moment
     if negative > positive * REVERSE_RATIO:
-        return "FAIL", "negative-Y end heavier (%.4f vs %.4f m2)" % (negative, positive)
+        return "FAIL", "negative-Y end heavier (%.4f vs %.4f m3)" % (negative, positive)
     if positive <= negative * REVERSE_RATIO:
-        return "AMBIGUOUS", "end mass near-symmetric (%.4f vs %.4f m2)" % (negative, positive)
-    return "PASS", "grip/working-end mass %.4f/%.4f m2" % (negative, positive)
+        return "AMBIGUOUS", "end mass near-symmetric (%.4f vs %.4f m3)" % (negative, positive)
+    return "PASS", "grip/working-end moment %.4f/%.4f m3" % (negative, positive)
 
 
 def main():

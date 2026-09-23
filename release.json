@@ -1,4 +1,4 @@
 {
-  "version": "0.0.97",
-  "description": "0.0.97: Maps 22 raw Underworld resources across six biomes to vanilla item donors and native console pickup prototypes; documents harvesting, recipe and creature-loot gaps. Includes Frozen Wall landmarks."
+  "version": "0.0.98",
+  "description": "0.0.98: Readability and silhouette pass on all ten crystal weapons: edged blades, shaped guards, wrapped grips, wedged axe heads, flanged mace, corrected bow string, vanilla-style fittings, and per-weapon baked painted textures. Icons re-rendered."
 }
