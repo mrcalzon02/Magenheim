@@ -30,7 +30,8 @@ cover `Fiddleheadfern`, `shrub_2`, `Pickable_Mushroom_blue`, `Rock_4`, `RockFing
 `YggdrasilRoot`, `root08`, `root11` (12 slots); resources Flowstone, Pale Fibre, Blackwater Pearl,
 Deep Salt.
 
-- [ ] **B1 — shared flora kit + author tool.** Move the fungal tool's `Model`, `tube`, `cap`, `gills`,
+- [x] **B1 — shared flora kit + author tool.** DONE (commit below). 16 sources authored in `assets/models/source/underworld-{flora-blackwater,resource}-*.blend`, not yet exported or wired. **Known-stale until B2:** `verify-generated-freshness.py` flags `underworld-fungal-forest-models` because its tool now imports `magenheim_flora_kit.py`; B2's regeneration clears it.
+  Original scope: Move the fungal tool's `Model`, `tube`, `cap`, `gills`,
   `buttresses`, `small_mushrooms` into `tools/magenheim_flora_kit.py`; author Blackwater models:
   canopy flowstone spire, broken column, rimstone mound, drowned root arch; cover brine fern,
   palefinger cluster, pearl caps, wet stone, fingerstone rubble, root fan, lakebed shelf, root
