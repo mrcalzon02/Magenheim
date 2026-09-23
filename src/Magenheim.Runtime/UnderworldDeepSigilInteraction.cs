@@ -19,8 +19,6 @@ internal sealed class UnderworldDeepSigilInteraction : MonoBehaviour, Hoverable,
     private const string DiscoveredKey = "deep-sigil.discovered";
     private const string LocationIdKey = "deep-sigil.location-id";
     private const string BossIdKey = "deep-sigil.boss-id";
-    private const string FractureBiomeId = "magenheim.underworld.biome.fracture";
-    private const string FracturePinName = "$magenheim_underworld_suspended_court";
 
     private ZNetView _view = null!;
     private UnderworldZdoStateAdapter _state = null!;
@@ -47,22 +45,24 @@ internal sealed class UnderworldDeepSigilInteraction : MonoBehaviour, Hoverable,
     private void Update()
     {
         if (_restoredPersistedDiscovery || _state == null || !_state.IsReady ||
-            !string.Equals(_biomeId, FractureBiomeId, StringComparison.Ordinal) ||
             !_state.GetBool(DiscoveredKey))
             return;
 
         var locationId = _state.GetString(LocationIdKey);
         if (string.IsNullOrWhiteSpace(locationId) || Minimap.instance == null) return;
 
+        // Only physically resident unique locations have presentation entries. Unsupported biomes
+        // remain fail-closed until their real location residency is implemented.
+        if (!UnderworldUniqueLocationDiscoveryCatalog.TryResolve(_biomeId, locationId, out var resident))
+            return;
+
         // The ZDO owns only the canonical identity. Re-derive the active world's anchor after load
         // so stale coordinates can never survive a world/seed change. Native terrain admission can
         // trail ZDO replication during instance startup, so an unavailable authority simply retries.
         try
         {
-            var anchor = UnderworldTerrainRuntime.ResolveUniqueLocation(
-                locationId,
-                UnderworldTerrainBiome.FractureZones);
-            EnsureDiscoveryPin(anchor.EnginePosition, FracturePinName);
+            var anchor = UnderworldTerrainRuntime.ResolveUniqueLocation(locationId, resident.TerrainBiome);
+            EnsureDiscoveryPin(anchor.EnginePosition, resident.PinName);
             _restoredPersistedDiscovery = true;
         }
         catch (InvalidOperationException)
@@ -107,14 +107,15 @@ internal sealed class UnderworldDeepSigilInteraction : MonoBehaviour, Hoverable,
         _state.SetString(BossIdKey, discovery.BossId);
         _state.SetBool(DiscoveredKey, true);
 
-        // Fracture is the first completed physical unique-location consumer. Keep unsupported biome
-        // identities fail-closed until their boss locations are resident rather than manufacturing
-        // speculative coordinates or pins for unfinished content.
-        if (!string.Equals(_biomeId, FractureBiomeId, StringComparison.Ordinal)) return;
+        // Definition authority determines the identity; this catalog only admits locations whose
+        // physical residency is complete. No speculative coordinate is manufactured for backlog content.
+        if (!UnderworldUniqueLocationDiscoveryCatalog.TryResolve(
+                _biomeId, discovery.UniqueLocationId, out var resident))
+            return;
+
         var anchor = UnderworldTerrainRuntime.ResolveUniqueLocation(
-            discovery.UniqueLocationId,
-            UnderworldTerrainBiome.FractureZones);
-        _view.InvokeRPC(sender, RevealRpc, anchor.EnginePosition, FracturePinName);
+            discovery.UniqueLocationId, resident.TerrainBiome);
+        _view.InvokeRPC(sender, RevealRpc, anchor.EnginePosition, resident.PinName);
     }
 
     private void RpcReveal(long sender, Vector3 position, string pinName)
