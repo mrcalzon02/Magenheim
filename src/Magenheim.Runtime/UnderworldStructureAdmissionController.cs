@@ -7,8 +7,8 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Thin composition boundary for deterministic native Underworld structures.
-/// It assigns Magenheim instance identity to presentation objects but deliberately owns no
-/// persistence, player lifecycle, network lifecycle, or replacement world-object database.
+/// It assigns Magenheim instance identity to presentation objects and binds any explicitly marked
+/// persistent children to that identity, while Valheim remains their persistence/network authority.
 /// </summary>
 internal sealed class UnderworldStructureAdmissionController
 {
@@ -40,6 +40,9 @@ internal sealed class UnderworldStructureAdmissionController
             var ownership = candidate.GetComponent<UnderworldGeneratedObjectIdentity>();
             if (ownership is null) ownership = candidate.AddComponent<UnderworldGeneratedObjectIdentity>();
             ownership.Bind(identity, structureKind, placementKey);
+
+            foreach (var persistent in candidate.GetComponentsInChildren<UnderworldPersistentObjectBinding>(true))
+                persistent.Bind(identity, ownership);
 
             _log.LogDebug($"Composed native Underworld structure '{structureKind}' at {placementKey} ({ownership.StableObjectId}).");
             var admitted = candidate;
