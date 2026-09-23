@@ -7,8 +7,9 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Single runtime bridge between the validated Underworld definition authority and the six
-/// physical Conclave stones. This layer reads durable world facts and asks Core to reconstruct
-/// and validate progression; it does not duplicate trophy, prerequisite, or boon rules.
+/// physical Conclave stones plus biome Deep Sigils. This layer reads durable world facts and asks
+/// Core to resolve progression/discovery; it does not duplicate trophy, prerequisite, boon, boss,
+/// or unique-location rules.
 /// </summary>
 internal static class UnderworldDeepstoneRuntimeAuthority
 {
@@ -33,6 +34,9 @@ internal static class UnderworldDeepstoneRuntimeAuthority
         });
         return UnderworldDeepstoneProgression.ReconstructPersistentState(definitions, facts);
     }
+
+    internal static UnderworldDeepSigilDiscovery ResolveDeepSigil(string biomeId) =>
+        UnderworldDeepSigilDiscoveryResolver.Resolve(RequireDefinitions(), biomeId);
 
     internal static UnderworldDeepBoonSelectionState ReconstructDeepBoonSelection(string? persistedDeepBoonId) =>
         UnderworldDeepBoonSelection.Reconstruct(RequireDefinitions(), ReconstructWorldState(), persistedDeepBoonId);
@@ -66,5 +70,5 @@ internal static class UnderworldDeepstoneRuntimeAuthority
     }
 
     private static UnderworldDefinitionSet RequireDefinitions() =>
-        _definitions ?? throw new InvalidOperationException("Underworld Deepstone runtime authority has not been configured from the validated Magenheim definition set.");
+        _definitions ?? throw new InvalidOperationException("Underworld runtime authority has not been configured from the validated Magenheim definition set.");
 }
