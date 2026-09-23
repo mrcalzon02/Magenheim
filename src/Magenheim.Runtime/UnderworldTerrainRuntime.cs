@@ -51,6 +51,18 @@ internal static class UnderworldTerrainRuntime
             seed);
     }
 
+    /// <summary>
+    /// Resolves a stable unique-location identity through the active native Underworld instance.
+    /// This is a thin runtime bridge to the existing anchor authority; it does not persist coordinates.
+    /// </summary>
+    internal static UnderworldUniqueLocationAnchor ResolveUniqueLocation(string locationId, UnderworldTerrainBiome biome)
+    {
+        var services = _services;
+        if (services is null || services.InstanceLifecycle.Identity is null || !InstanceAvailable(services))
+            throw new InvalidOperationException("Cannot resolve an Underworld unique location without an active native instance.");
+        return services.UniqueLocationAnchors.Resolve(locationId, biome);
+    }
+
     private static bool InstanceAvailable(UnderworldRuntimeServices services)
     {
         var phase = services.InstanceLifecycle.Phase;
