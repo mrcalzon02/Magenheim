@@ -23,6 +23,7 @@ internal sealed class UnderworldRuntimeServices
         UniqueLocationAnchors=new UnderworldUniqueLocationAnchorResolver(this);
         ChunkMaterializer=new UnderworldInstanceChunkMaterializer(this,log);
         BiomeStructureResidency=new UnderworldBiomeStructureResidencyRuntime(this);
+        BiomeStructureResidency.Register(new FungalMotherbedFamily(this));
         BiomeStructureResidency.Register(new FractureFaultLineFamily());
         BiomeStructureResidency.Register(new FractureCliffMonasteryFamily());
         BiomeStructureResidency.Register(new FractureSuspendedRoadStationFamily());
