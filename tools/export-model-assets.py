@@ -94,6 +94,9 @@ for file in files:
   if obj.type=='LIGHT' and obj.data.type=='POINT':
    v=obj.matrix_world.translation;lights.append(dict(path=obj.name,position=[v.x,v.z,-v.y],color=list(obj.data.color),range=obj.data.cutoff_distance,intensity=obj.data.energy/100))
  payload=dict(parts=parts,lights=lights)
+ # A bone-bound model carries the canonical skeleton its parts were authored against; only models
+ # that declare one change, so every other payload stays byte-identical.
+ if 'runtime_rig' in scene:payload['rig']=json.loads(scene['runtime_rig'])
  if file.stem.startswith('earth-'):
   vs=[];uvs=[];indices=[]
   for part in parts:

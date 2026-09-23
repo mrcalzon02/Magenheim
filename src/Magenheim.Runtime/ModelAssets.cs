@@ -137,7 +137,21 @@ internal static class ModelAssets
         return LoadMesh(id + "/0", parts[0]);
     }
 
-    internal static GameObject Load(GameObject prefab, string id, bool item = false, float scale = 1f, bool hideOriginal = true, bool preserveParticles = false, Transform? parent = null, Material? materialSource = null)
+    /// <summary>A model payload, parsed once and cached. Mesh arrays are dropped after first load.</summary>
+    private static JObject Document(string id)
+    {
+        if (string.IsNullOrEmpty(id) || Path.GetFileName(id) != id) throw new ArgumentException("Invalid model identity.", nameof(id));
+        if (Documents.TryGetValue(id, out var document)) return document;
+        document = JObject.Parse(File.ReadAllText(Path.Combine(DirectoryPath, "runtime", id + ".model.json")));
+        if (!(document["parts"] is JArray parts) || parts.Count == 0) throw new InvalidDataException("Empty model: " + id);
+        Documents.Add(id, document);
+        return document;
+    }
+
+    /// <summary>The canonical skeleton a bone-bound model was authored against, if it declares one.</summary>
+    internal static JToken? Rig(string id) => Document(id)["rig"];
+
+    internal static GameObject Load(GameObject prefab, string id, bool item = false, float scale = 1f, bool hideOriginal = true, bool preserveParticles = false, Transform? parent = null, Material? materialSource = null, Action<string, Transform>? arrange = null)
     {
         if (!prefab) throw new ArgumentNullException(nameof(prefab));
         if (scale <= 0 || float.IsNaN(scale) || float.IsInfinity(scale)) throw new ArgumentOutOfRangeException(nameof(scale));
@@ -152,12 +166,7 @@ internal static class ModelAssets
         if (!source) source = original.Where(r => !(r is ParticleSystemRenderer)).Select(r => r.sharedMaterial).FirstOrDefault(m => m);
         if (!source) source = new Material(ResolveSurfaceShader());
         source = Uncouple(source, id);
-        if (!Documents.TryGetValue(id, out var document))
-        {
-            document = JObject.Parse(File.ReadAllText(Path.Combine(DirectoryPath, "runtime", id + ".model.json")));
-            if (!(document["parts"] is JArray parts) || parts.Count == 0) throw new InvalidDataException("Empty model: " + id);
-            Documents.Add(id, document);
-        }
+        var document = Document(id);
         // Load and validate every mesh before changing the host's visible state.
         var loaded = ((JArray)document["parts"]!).Select((p, i) => new { Data = p, Mesh = LoadMesh(id + "/" + i, p), Material = LoadMaterial(id + "/" + i, p["material"]!, source!) }).ToArray();
         foreach(var entry in loaded) { var data=(JObject)entry.Data; data.Remove("vertices");data.Remove("normals");data.Remove("uv");data.Remove("triangles"); }
@@ -173,6 +182,7 @@ internal static class ModelAssets
                 part.AddComponent<MeshFilter>().sharedMesh = entry.Mesh;
                 part.AddComponent<MeshRenderer>().sharedMaterial = entry.Material;
                 if ((bool?)entry.Data["collider"] == true) part.AddComponent<MeshCollider>().sharedMesh = entry.Mesh;
+                arrange?.Invoke((string?)entry.Data["path"] ?? string.Empty, part.transform);
                 if (entry.Data["crystal"] is JObject crystal)
                 {
                     // The exported mesh is in model coordinates. Bind the hit box to those bounds.

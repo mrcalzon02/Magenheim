@@ -115,7 +115,7 @@
         "assets/models/runtime/crystal-weapon-*.model.json"
       ],
       "hash": "generator-only",
-      "generator_sha256": "83eea0b14a7fd7b0fa91063fe6d9b4995054ce6233e2e160ecebf52ab1818457",
+      "generator_sha256": "c4b57be5c451c6605f3bb19ff39835c19d51de84ca4142e81b606f12017e95d9",
       "output_sha256": {
         "assets/models/glb/crystal-weapon-atgeir.glb": null,
         "assets/models/glb/crystal-weapon-axe.glb": null,
@@ -147,7 +147,11 @@
         "assets/models/source/crystal-weapon-mace.blend": null,
         "assets/models/source/crystal-weapon-spear.blend": null,
         "assets/models/source/crystal-weapon-sword.blend": null
-      }
+      },
+      "inputs": [
+        "tools/magenheim_blender_kit.py"
+      ],
+      "inputs_sha256": "c629a6fc217e492769abf69568c731a147128f251c142a2524c993d945532203"
     },
     {
       "id": "weapon-icons",
@@ -451,6 +455,65 @@
         "assets/earth/rootforged-worldroot-t-brace-4m.icon.png": null,
         "assets/earth/rootforged-worldroot-y-brace-4m.icon.png": null
       }
+    },
+    {
+      "id": "underworld-surtling-models",
+      "generator": "tools/author-underworld-surtlings.py",
+      "inputs": [
+        "tools/magenheim_blender_kit.py"
+      ],
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-Command",
+        "& './tools/rebuild-underworld-surtlings.ps1'"
+      ],
+      "outputs": [
+        "assets/models/source/underworld-surtling-*.blend",
+        "assets/models/glb/underworld-surtling-*.glb",
+        "assets/models/runtime/underworld-surtling-*.model.json"
+      ],
+      "hash": "generator-only",
+      "generator_sha256": "ac77192aacfc156bc38bf32f193d3f98f3f258e6d46ae88060158577181611a4",
+      "output_sha256": {
+        "assets/models/glb/underworld-surtling-earth-feminine.glb": null,
+        "assets/models/glb/underworld-surtling-earth-masculine.glb": null,
+        "assets/models/glb/underworld-surtling-fire-feminine.glb": null,
+        "assets/models/glb/underworld-surtling-fire-masculine.glb": null,
+        "assets/models/glb/underworld-surtling-radiance-feminine.glb": null,
+        "assets/models/glb/underworld-surtling-radiance-masculine.glb": null,
+        "assets/models/glb/underworld-surtling-umbral-feminine.glb": null,
+        "assets/models/glb/underworld-surtling-umbral-masculine.glb": null,
+        "assets/models/glb/underworld-surtling-water-feminine.glb": null,
+        "assets/models/glb/underworld-surtling-water-masculine.glb": null,
+        "assets/models/glb/underworld-surtling-wind-feminine.glb": null,
+        "assets/models/glb/underworld-surtling-wind-masculine.glb": null,
+        "assets/models/runtime/underworld-surtling-earth-feminine.model.json": null,
+        "assets/models/runtime/underworld-surtling-earth-masculine.model.json": null,
+        "assets/models/runtime/underworld-surtling-fire-feminine.model.json": null,
+        "assets/models/runtime/underworld-surtling-fire-masculine.model.json": null,
+        "assets/models/runtime/underworld-surtling-radiance-feminine.model.json": null,
+        "assets/models/runtime/underworld-surtling-radiance-masculine.model.json": null,
+        "assets/models/runtime/underworld-surtling-umbral-feminine.model.json": null,
+        "assets/models/runtime/underworld-surtling-umbral-masculine.model.json": null,
+        "assets/models/runtime/underworld-surtling-water-feminine.model.json": null,
+        "assets/models/runtime/underworld-surtling-water-masculine.model.json": null,
+        "assets/models/runtime/underworld-surtling-wind-feminine.model.json": null,
+        "assets/models/runtime/underworld-surtling-wind-masculine.model.json": null,
+        "assets/models/source/underworld-surtling-earth-feminine.blend": null,
+        "assets/models/source/underworld-surtling-earth-masculine.blend": null,
+        "assets/models/source/underworld-surtling-fire-feminine.blend": null,
+        "assets/models/source/underworld-surtling-fire-masculine.blend": null,
+        "assets/models/source/underworld-surtling-radiance-feminine.blend": null,
+        "assets/models/source/underworld-surtling-radiance-masculine.blend": null,
+        "assets/models/source/underworld-surtling-umbral-feminine.blend": null,
+        "assets/models/source/underworld-surtling-umbral-masculine.blend": null,
+        "assets/models/source/underworld-surtling-water-feminine.blend": null,
+        "assets/models/source/underworld-surtling-water-masculine.blend": null,
+        "assets/models/source/underworld-surtling-wind-feminine.blend": null,
+        "assets/models/source/underworld-surtling-wind-masculine.blend": null
+      },
+      "inputs_sha256": "c629a6fc217e492769abf69568c731a147128f251c142a2524c993d945532203"
     }
   ]
 }

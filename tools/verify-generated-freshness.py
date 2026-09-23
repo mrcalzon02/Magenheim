@@ -42,6 +42,10 @@ every render, which is worse than not checking: a gate that cries wolf gets refr
 a blindly refreshed manifest records staleness instead of rejecting it. `.blend` output is not
 reproducible either and has no pixel equivalent.
 
+An entry may also list `inputs`: files the generator imports, such as a shared Blender authoring
+module. Their combined hash is recorded as `inputs_sha256`, so editing a shared module marks every
+generator built on it stale, exactly as editing the generator itself would.
+
 What `generator-only` still gives is the guard that matters: the generator hash is exact, so an
 author or renderer that moves on without its outputs is caught -- which is the defect that actually
 occurred three times on 2026-09-18. What it gives up is detecting a hand-edited output, and that is
@@ -125,6 +129,20 @@ def regenerate(entry: dict) -> None:
         )
 
 
+def inputs_hash(entry: dict) -> 'str | None':
+    """One hash over every declared input, in declared order; None when the entry has none."""
+    names = entry.get('inputs') or []
+    if not names:
+        return None
+    digest = hashlib.sha256()
+    for name in names:
+        path = repo_path(name)
+        if not path.is_file():
+            raise SystemExit(f"{entry['id']}: declared input {name} is missing")
+        digest.update(name.encode('utf-8') + b'|' + sha256(path).encode('ascii') + b'|')
+    return digest.hexdigest()
+
+
 def main() -> int:
     manifest = json.loads(MANIFEST.read_text(encoding='utf-8'))
     entries = manifest['generators']
@@ -151,6 +169,8 @@ def main() -> int:
             print(f"{entry['id']}:", flush=True)
             regenerate(entry)
             entry['generator_sha256'] = sha256(generator)
+            if entry.get('inputs'):
+                entry['inputs_sha256'] = inputs_hash(entry)
             entry['output_sha256'] = {name: output_hash(entry, repo_path(name)) for name in declared_outputs(entry)}
             if not entry['output_sha256']:
                 raise SystemExit(f"{entry['id']}: produced no files matching {entry['outputs']}")
@@ -162,6 +182,13 @@ def main() -> int:
             failures.append(
                 f"{entry['id']}: {entry['generator']} has changed since its outputs were generated. "
                 f"Run: python tools/verify-generated-freshness.py --update {entry['id']}"
+            )
+            continue
+
+        if inputs_hash(entry) != entry.get('inputs_sha256'):
+            failures.append(
+                f"{entry['id']}: an input of {entry['generator']} ({', '.join(entry['inputs'])}) has changed since its "
+                f"outputs were generated. Run: python tools/verify-generated-freshness.py --update {entry['id']}"
             )
             continue
 

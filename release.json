@@ -1,4 +1,4 @@
 {
-  "version": "0.0.98",
-  "description": "0.0.98: Readability and silhouette pass on all ten crystal weapons: edged blades, shaped guards, wrapped grips, wedged axe heads, flanged mace, corrected bow string, vanilla-style fittings, and per-weapon baked painted textures. Icons re-rendered."
+  "version": "0.0.99",
+  "description": "0.0.99: Twelve elemental Surtlings (Fire, Water, Earth, Wind, Radiance, Umbral; two body forms each) as console-spawnable creatures whose authored bodies ride humanoid donor skeletons, including death ragdolls."
 }

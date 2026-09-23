@@ -1,3 +1,16 @@
+## 0.0.99 - Elemental Surtlings
+
+- **Twelve elemental Surtlings** — Fire, Water, Earth, Wind, Radiance and Umbral, each in a feminine
+  and a masculine form — authored from `docs/UNDERWORLD_ELEMENTAL_SURTLINGS_DESIGN.md` and
+  console-spawnable as `Magenheim_Underworld_Surtling_<Element>_<Feminine|Masculine>`.
+- Their bodies ride humanoid donor skeletons (Charred, Draugr, Skeleton) through one generic
+  `HumanoidSegmentBinder`: bones resolve by humanoid role from the donor's avatar, so the donor's own
+  animation, attacks, AI and networking drive the authored body. Draugr death ragdolls are re-bodied;
+  donor armour visuals are stripped. One registrar, one roster, no per-element system.
+- `tools/magenheim_blender_kit.py` now holds the shared authoring code; the freshness gate tracks it
+  as an input of every generator that imports it.
+- Live registration verified 12/12. Not yet seen spawned in a world.
+
 ## 0.0.98 - Crystal weapon readability and silhouette pass
 
 - **All ten crystal weapons are re-authored from designed forms** by the new

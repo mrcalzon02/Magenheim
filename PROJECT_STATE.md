@@ -1,3 +1,9 @@
+# Current release - 0.0.99 (2026-09-22)
+
+Twelve elemental Surtlings registered as console-spawnable donor-skeleton creatures; see docs/validation/2026-09-22-elemental-surtlings.md. Closeout passed and installed 0.0.99 (DLL SHA-256 6FA8485DE24B9819758E967DBBC81650801AEB7035EFFF43CD8D0DC903F27F0F). Live startup read back: Registered 12/12 elemental Surtlings, no Magenheim warnings. Not yet spawned in a world; animation following, combat and death playback need an in-game look.
+
+Launcher description: "0.0.99: Twelve elemental Surtlings (Fire, Water, Earth, Wind, Radiance, Umbral; two body forms each) as console-spawnable creatures whose authored bodies ride humanoid donor skeletons, including death ragdolls."
+
 # Current release - 0.0.98 (2026-09-22)
 
 Readability and silhouette pass on all ten crystal weapons. `tools/author-crystal-weapons.py` now owns their sources (manifest id `crystal-weapon-models`): edged blades with fullers or midribs, swept guards, banded leather grips, wedged axe heads with bright crystal edges, a six-flanged mace, a bow whose string no longer passes through its limbs, a shaped crossbow tiller, and vanilla-style grip wraps, ferrules and langets. Each weapon carries its own baked 512px atlas (occlusion, worn edges, material pattern) in place of seven shared noise maps; crystal bodies no longer glow uniformly. Grip origin, length envelope and part identities are unchanged. Icons re-rendered. `verify-held-model-grip-direction.py` now uses area moment about the hand (evidence in the validation doc). See docs/validation/2026-09-22-crystal-weapon-readability-pass.md.
