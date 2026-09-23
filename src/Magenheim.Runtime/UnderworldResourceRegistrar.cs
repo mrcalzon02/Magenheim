@@ -11,8 +11,20 @@ namespace Magenheim.Runtime;
 internal sealed class UnderworldResourceRegistrar : IDisposable
 {
     private readonly ManualLogSource _log;
-    internal UnderworldResourceRegistrar(ManualLogSource log) => _log = log;
-    internal void Register() => PrefabManager.OnVanillaPrefabsAvailable += RegisterContent;
+    private readonly UnderworldDeepSigilCoreRegistrar _deepSigilCoreRegistrar;
+
+    internal UnderworldResourceRegistrar(ManualLogSource log)
+    {
+        _log = log;
+        _deepSigilCoreRegistrar = new UnderworldDeepSigilCoreRegistrar(log);
+    }
+
+    internal void Register()
+    {
+        PrefabManager.OnVanillaPrefabsAvailable += RegisterContent;
+        _deepSigilCoreRegistrar.Register();
+    }
+
     private void RegisterContent()
     {
         var items = 0;
@@ -71,7 +83,12 @@ internal sealed class UnderworldResourceRegistrar : IDisposable
             catch (Exception error) { _log.LogError("Underworld resource " + entry.Name + ": " + error); }
         }
         _log.LogInfo($"Underworld resource prototypes: {items}/{UnderworldResourceCatalog.All.Count} items and {pickups} native pickups. Console-only; scenery and creature donor loot unchanged.");
-        Dispose();
+        PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent;
     }
-    public void Dispose() => PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent;
+
+    public void Dispose()
+    {
+        PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent;
+        _deepSigilCoreRegistrar.Dispose();
+    }
 }
