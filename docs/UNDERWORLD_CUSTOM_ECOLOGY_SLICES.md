@@ -36,6 +36,23 @@ Deep Salt.
   canopy flowstone spire, broken column, rimstone mound, drowned root arch; cover brine fern,
   palefinger cluster, pearl caps, wet stone, fingerstone rubble, root fan, lakebed shelf, root
   fingers; resources flowstone chunk, pale fibre, pearl, deep salt. Review render; commit unwired.
+- [ ] **B1b — quality rework (user review 2026-09-22: FAILED except palefinger and brine fern).**
+  The bar is the Fungal Forest canopy sheet, not "a lathe". Render every model with the scratch
+  review sheet (front / side / 3/4 / silhouette) and get user sign-off before B2.
+  - flowstone-spire: reworked (fused fluted columns, deposit rings, pool, stalagmites, 4.1k tris) --
+    reads better; needs user verdict.
+  - broken-column: reworked but still failing: flutes too shallow to read (raise `fluted` depth
+    0.07 -> ~0.18, fewer sides-per-flute aliasing), capital stands on edge like a wheel (lay it on its
+    side, tilted into the silt), silt disc floats (sink it: z ~0.02, flatter), add cracks/chips on shaft.
+  - rimstone-mound: stepped wedding cake. Needs irregular non-circular terraces (noise the ring
+    radius per angle), scalloped pool lips, water-filled pools (flat 'silt' or new wet surface), and
+    a flowstone curtain down one side.
+  - drowned-root-arch: three plain tubes. Needs root taper with knuckles, secondary rootlets, bark
+    ridges (fluted with low depth), hanging pale growths, silt at feet.
+  - wet-stone, fingerstone-rubble, lakebed-shelf: single low-poly blobs -- rebuild with layered
+    shelf strata, chips, and flowstone crust; aim 600-1500 tris each.
+  - pearl-caps, root-fan, root-fingers and the four resources: not reviewed individually; review
+    them on the sheet before B2.
 - [ ] **B2 — wire and ship.** Catalog, resource visuals, manifest, count pin, regenerate (Blackwater
   first, then fungal for the kit move), closeout, commit, push.
 

@@ -18,7 +18,7 @@ from mathutils import Matrix, Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from magenheim_blender_kit import (  # noqa: E402
-    bake_atlas, blob, gem, lathe, merge, spec_painter, spike, transformed, unwrap, uv_overlap)
+    bake_atlas, blob, gem, lathe, loft, merge, spec_painter, spike, transformed, unwrap, uv_overlap)
 from magenheim_flora_kit import Model, small_mushrooms, tube  # noqa: E402
 
 SOURCE = Path(__file__).resolve().parents[1] / 'assets/models/source'
@@ -61,21 +61,81 @@ def rippled(z0, z1, r0, r1, rings, wobble, seed, apex=True):
     return profile
 
 
+def fluted(profile, sides=24, flutes=8, depth=0.10, seed=0, twist=0.0, centre=(0.0, 0.0)):
+    """A surface of revolution whose radius is carved into vertical flutes -- dripstone curtains
+    on a spire, channels on a column. profile: (z, r); r == 0 is an apex."""
+    rng = random.Random(seed)
+    phases = [rng.uniform(0, math.tau) for _ in range(3)]
+    cx, cy = centre
+    rings = []
+    for i, (z, r) in enumerate(profile):
+        if r <= 0:
+            rings.append([Vector((cx, cy, z))])
+            continue
+        ring = []
+        for j in range(sides):
+            a = math.tau * j / sides + twist * i
+            groove = 1.0 - depth * (0.5 + 0.5 * math.cos(flutes * a))
+            lumps = 1.0 + 0.04 * math.sin(3 * a + phases[0] + z * 1.7) + 0.03 * math.sin(5 * a + phases[1] + z * 2.9)
+            ring.append(Vector((cx + r * groove * lumps * math.cos(a), cy + r * groove * lumps * math.sin(a), z)))
+        rings.append(ring)
+    return loft(rings)
+
+
 def flowstone_spire(m):
-    m.part('spire', lathe(rippled(-0.2, 6.2, 1.1, 0.18, 14, 0.12, 3), 14), 'flowstone', collider=True)
-    m.part('skirt', lathe([(-0.2, 1.7), (0.15, 1.55), (0.4, 1.2), (0.7, 0.9)], 16), 'flowstone')
+    """Fused dripstone columns, fluted by the water that built them, standing in their own pool."""
+    rng = random.Random(3)
+    lobes = [((0.0, 0.0), 6.4, 1.05, 3), ((0.75, 0.35), 4.3, 0.62, 5), ((-0.55, 0.60), 3.4, 0.55, 7),
+             ((0.15, -0.80), 5.1, 0.70, 9), ((-0.85, -0.35), 2.6, 0.48, 11)]
+    columns = []
+    for (x, y), h, r, seed in lobes:
+        profile = []
+        for i in range(16):
+            t = i / 15
+            radius = r * (1.0 - 0.82 * t ** 0.9) * (1.0 + 0.10 * math.sin(t * 19 + seed))
+            profile.append((-0.2 + h * t, radius))
+        profile.append((h + r * 0.25, 0.0))
+        columns.append(fluted(profile, 20, rng.choice((6, 7, 9)), 0.16, seed, 0.02, (x, y)))
+    m.part('columns', merge(*columns), 'flowstone', collider=True)
+    rings = [fluted([(z - 0.05, r * 1.18), (z, r * 1.24), (z + 0.05, r * 1.16)], 20, 8, 0.1, 13 + k)
+             for k, (z, r) in enumerate(((1.4, 0.88), (2.8, 0.66), (4.1, 0.45)))]
+    m.part('deposit-rings', merge(*rings), 'wetstone')
+    m.part('pool', fluted([(-0.2, 2.1), (0.12, 2.05), (0.22, 1.85), (0.18, 1.4), (0.35, 1.2)], 28, 11, 0.08, 17), 'flowstone')
+    satellites = [lathe([(-0.1, rr), (hh * 0.6, rr * 0.55), (hh, 0.0)], 8, centre=(1.7 * math.cos(a), 1.7 * math.sin(a)))
+                  for a, hh, rr in [(rng.uniform(0, math.tau), rng.uniform(0.4, 1.1), rng.uniform(0.10, 0.18)) for _ in range(5)]]
+    m.part('stalagmites', merge(*satellites), 'wetstone')
+    m.part('silt', blob((0.0, 0.0, 0.14), (1.45, 1.3, 0.06), 16, 4), 'silt')
 
 
 def broken_column(m):
+    """A drowned colonnade's pillar: fluted shaft on a stepped plinth, snapped, its upper drum and
+    capital fallen into the silt beside it."""
     rng = random.Random(5)
-    shaft = lathe([(-0.2, 0.62), (0.1, 0.62), (0.3, 0.52), (3.6, 0.48)], 12)
+    plinth = merge(*[transformed(lathe([(z0, w), (z1, w)], 4, phase=math.pi / 4), Matrix.Identity(4))
+                     for z0, z1, w in ((-0.2, 0.25, 1.05), (0.25, 0.5, 0.88))])
+    m.part('plinth', plinth, 'wetstone', smooth=False, collider=True)
+    shaft = fluted([(0.45, 0.66), (0.62, 0.66), (0.66, 0.58), (1.8, 0.56), (2.6, 0.54), (3.3, 0.52)], 32, 16, 0.07, 19)
     m.part('shaft', shaft, 'wetstone', collider=True)
-    shards = [gem((0.25 * math.cos(a), 0.25 * math.sin(a), 3.7), rng.uniform(0.12, 0.22), rng.uniform(0.25, 0.45), 5, axis='Z')
-              for a in (0.4, 2.1, 3.9, 5.2)]
-    m.part('break', merge(*shards), 'wetstone', smooth=False)
-    m.part('fallen', transformed(lathe([(-0.7, 0.46), (0.7, 0.46)], 12),
-                                 Matrix.Translation(Vector((1.2, 0.3, 0.35))) @ Matrix.Rotation(math.radians(84), 4, 'Y')),
-           'wetstone', collider=True)
+    m.part('band', lathe([(1.70, 0.60), (1.74, 0.64), (1.86, 0.64), (1.90, 0.60)], 32), 'flowstone')
+    shards = []
+    for k in range(9):
+        a = math.tau * k / 9 + rng.uniform(-0.2, 0.2)
+        r = rng.uniform(0.18, 0.44)
+        shards.append(gem((r * math.cos(a), r * math.sin(a), 3.3 + rng.uniform(0.0, 0.1)),
+                          rng.uniform(0.08, 0.16), rng.uniform(0.18, 0.62) * (1.2 - r), 5, axis='Z', twist=rng.uniform(0, 1)))
+    m.part('fracture', merge(*shards), 'wetstone', smooth=False)
+    drum = transformed(fluted([(-0.6, 0.52), (0.6, 0.50)], 32, 16, 0.07, 23),
+                       Matrix.Translation(Vector((1.55, 0.55, 0.38))) @ Matrix.Rotation(math.radians(96), 4, 'Y')
+                       @ Matrix.Rotation(math.radians(20), 4, 'X'))
+    m.part('fallen-drum', drum, 'wetstone', collider=True)
+    capital = transformed(merge(lathe([(0.0, 0.62), (0.12, 0.70), (0.28, 0.82), (0.36, 0.82), (0.36, 0.0)], 16),
+                                lathe([(0.36, 0.80), (0.52, 0.80)], 4, phase=math.pi / 4)),
+                          Matrix.Translation(Vector((-1.3, 1.0, 0.25))) @ Matrix.Rotation(math.radians(-70), 4, 'X'))
+    m.part('capital', capital, 'wetstone', smooth=False)
+    rubble = [blob((rng.uniform(-1.6, 1.6), rng.uniform(-1.6, 1.6), 0.06), (rng.uniform(0.08, 0.22), rng.uniform(0.07, 0.18), rng.uniform(0.06, 0.14)), 6, 4)
+              for _ in range(9)]
+    m.part('rubble', merge(*rubble), 'wetstone', smooth=False)
+    m.part('silt', blob((0.2, 0.3, 0.08), (1.9, 1.6, 0.07), 16, 4), 'silt')
 
 
 def rimstone_mound(m):
