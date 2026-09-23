@@ -9,12 +9,50 @@ import bmesh
 import bpy
 import math
 import random
+import numpy
 
 from mathutils import Matrix, Vector
 
-from magenheim_blender_kit import BAKE_SIZE, blob, curve, lathe, merge, plate, sweep  # noqa: F401
+from magenheim_blender_kit import BAKE_SIZE, bake_atlas, pad, blob, curve, lathe, merge, plate, sweep  # noqa: F401
 
 Z = Vector((0.0, 0.0, 1.0))
+
+
+def bake_flora_atlas(parts, atlas, paint, size):
+    """Recover UV coverage when Blender's EMIT clear makes unused pixels opaque.
+
+    Repair at bake resolution before filtering. Coverage comes from UV triangles, not RGB:
+    real black paint inside an island must survive. The shared bake's alpha-only padding can
+    be a no-op on Blender 5, so explicitly pad again with geometric coverage here.
+    """
+    bake_atlas(parts, atlas, paint, size=BAKE_SIZE)
+    n = atlas.size[0]
+    covered = numpy.zeros((n, n), dtype=bool)
+    for obj in parts:
+        mesh = obj.data
+        mesh.calc_loop_triangles()
+        uv = mesh.uv_layers.active.data
+        for tri in mesh.loop_triangles:
+            a, b, c = (uv[i].uv * n for i in tri.loops)
+            area = (b.x-a.x)*(c.y-a.y)-(c.x-a.x)*(b.y-a.y)
+            if abs(area) < 1e-9:
+                continue
+            x0, x1 = max(0, int(min(a.x,b.x,c.x))), min(n, int(max(a.x,b.x,c.x))+1)
+            y0, y1 = max(0, int(min(a.y,b.y,c.y))), min(n, int(max(a.y,b.y,c.y))+1)
+            y, x = numpy.mgrid[y0:y1, x0:x1]
+            x, y = x+.5, y+.5
+            w0 = ((b.x-x)*(c.y-y)-(c.x-x)*(b.y-y))/area
+            w1 = ((c.x-x)*(a.y-y)-(a.x-x)*(c.y-y))/area
+            covered[y0:y1, x0:x1] |= (w0 >= 0) & (w1 >= 0) & (w0+w1 <= 1)
+    pixels = numpy.empty(n*n*4, dtype=numpy.float32)
+    atlas.pixels.foreach_get(pixels)
+    pixels = pixels.reshape(n, n, 4)
+    pixels[:, :, 3] = covered
+    atlas.pixels.foreach_set(pixels.ravel())
+    pad(atlas)
+    if size != n:
+        atlas.scale(size, size)
+    atlas.pack()
 
 
 class Model:

@@ -39,6 +39,15 @@ Deep Salt.
 - [ ] **B1b — quality rework (user review 2026-09-22: FAILED except palefinger and brine fern).**
   The bar is the Fungal Forest canopy sheet, not "a lathe". Render every model with the scratch
   review sheet (front / side / 3/4 / silhouette) and get user sign-off before B2.
+  **Codex continuation from Claude's `d6dbbe5`:** geometry reworked and a repeatable four-view
+  renderer added (`tools/render-blackwater-review.py`). All 16 models are included across
+  `artifacts/review/blackwater/blackwater-review-01.png` through `04.png`. A Blender 5 opaque
+  bake-gutter defect was also reproduced on the pearl and fixed in the reusable flora kit with
+  UV-derived coverage before texture reduction. Source verification:
+  `tools/blender.ps1 verify-blackwater-sources`. See
+  `validation/2026-09-22-blackwater-quality-rework.md` for changes, evidence and remaining gates.
+  **Still awaiting the user's visual verdict; B1b is not signed off and B2 has not begun.**
+  The bullets below preserve the incoming failure report, not the current geometry:
   - flowstone-spire: reworked (fused fluted columns, deposit rings, pool, stalagmites, 4.1k tris) --
     reads better; needs user verdict.
   - broken-column: reworked but still failing: flutes too shallow to read (raise `fluted` depth

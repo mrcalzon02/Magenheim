@@ -18,11 +18,11 @@ from mathutils import Matrix, Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from magenheim_blender_kit import (  # noqa: E402
-    bake_atlas, blob, gem, lathe, loft, merge, spec_painter, spike, transformed, unwrap, uv_overlap)
-from magenheim_flora_kit import Model, small_mushrooms, tube  # noqa: E402
+    blob, gem, lathe, loft, merge, spec_painter, spike, transformed, unwrap, uv_overlap, curve, sweep)
+from magenheim_flora_kit import Model, small_mushrooms, tube, bake_flora_atlas  # noqa: E402
 
 SOURCE = Path(__file__).resolve().parents[1] / 'assets/models/source'
-REVISION = 'blackwater-deep-custom-1'
+REVISION = 'blackwater-deep-quality-2'
 Z = Vector((0.0, 0.0, 1.0))
 
 SURFACES = {
@@ -42,6 +42,8 @@ SURFACES = {
                   occlusion=0.7, metallic=0.0, rough=0.6),
     'pearl': dict(low=(0.62, 0.72, 0.74), high=(0.92, 0.96, 0.98), scale=6, edge=((1.0, 1.0, 1.0), 0.5),
                   occlusion=0.5, metallic=0.2, rough=0.25, emission=(0.04, 0.08, 0.09)),
+    'pool': dict(low=(0.025, 0.055, 0.06), high=(0.07, 0.14, 0.15), scale=3,
+                 edge=((0.07, 0.14, 0.15), 0), occlusion=0.0, metallic=0.15, rough=0.12),
     'salt': dict(low=(0.70, 0.74, 0.76), high=(0.96, 0.97, 0.98), scale=10, edge=((1.0, 1.0, 1.0), 0.8),
                  occlusion=0.6, metallic=0.0, rough=0.4),
 }
@@ -114,7 +116,9 @@ def broken_column(m):
     plinth = merge(*[transformed(lathe([(z0, w), (z1, w)], 4, phase=math.pi / 4), Matrix.Identity(4))
                      for z0, z1, w in ((-0.2, 0.25, 1.05), (0.25, 0.5, 0.88))])
     m.part('plinth', plinth, 'wetstone', smooth=False, collider=True)
-    shaft = fluted([(0.45, 0.66), (0.62, 0.66), (0.66, 0.58), (1.8, 0.56), (2.6, 0.54), (3.3, 0.52)], 32, 16, 0.07, 19)
+    shaft = fluted([(0.45, 0.66), (0.62, 0.66), (0.66, 0.58), (1.8, 0.56), (2.6, 0.54), (3.3, 0.52)], 40, 10, 0.22, 19)
+    verts, faces = shaft
+    shaft = ([Vector((v.x, v.y, v.z + (.20*math.sin(math.atan2(v.y,v.x)*3)+.11*math.cos(math.atan2(v.y,v.x)*7) if v.z>3.2 else 0))) for v in verts], faces)
     m.part('shaft', shaft, 'wetstone', collider=True)
     m.part('band', lathe([(1.70, 0.60), (1.74, 0.64), (1.86, 0.64), (1.90, 0.60)], 32), 'flowstone')
     shards = []
@@ -124,36 +128,103 @@ def broken_column(m):
         shards.append(gem((r * math.cos(a), r * math.sin(a), 3.3 + rng.uniform(0.0, 0.1)),
                           rng.uniform(0.08, 0.16), rng.uniform(0.18, 0.62) * (1.2 - r), 5, axis='Z', twist=rng.uniform(0, 1)))
     m.part('fracture', merge(*shards), 'wetstone', smooth=False)
-    drum = transformed(fluted([(-0.6, 0.52), (0.6, 0.50)], 32, 16, 0.07, 23),
+    drum = transformed(fluted([(-0.6, 0.52), (0.6, 0.50)], 40, 10, 0.22, 23),
                        Matrix.Translation(Vector((1.55, 0.55, 0.38))) @ Matrix.Rotation(math.radians(96), 4, 'Y')
                        @ Matrix.Rotation(math.radians(20), 4, 'X'))
     m.part('fallen-drum', drum, 'wetstone', collider=True)
     capital = transformed(merge(lathe([(0.0, 0.62), (0.12, 0.70), (0.28, 0.82), (0.36, 0.82), (0.36, 0.0)], 16),
                                 lathe([(0.36, 0.80), (0.52, 0.80)], 4, phase=math.pi / 4)),
-                          Matrix.Translation(Vector((-1.3, 1.0, 0.25))) @ Matrix.Rotation(math.radians(-70), 4, 'X'))
+                          Matrix.Translation(Vector((-1.3, 1.0, 0.04))) @ Matrix.Rotation(math.radians(-12), 4, 'X'))
     m.part('capital', capital, 'wetstone', smooth=False)
     rubble = [blob((rng.uniform(-1.6, 1.6), rng.uniform(-1.6, 1.6), 0.06), (rng.uniform(0.08, 0.22), rng.uniform(0.07, 0.18), rng.uniform(0.06, 0.14)), 6, 4)
               for _ in range(9)]
     m.part('rubble', merge(*rubble), 'wetstone', smooth=False)
-    m.part('silt', blob((0.2, 0.3, 0.08), (1.9, 1.6, 0.07), 16, 4), 'silt')
+    m.part('silt', blob((0.2, 0.3, -0.015), (1.9, 1.6, 0.04), 16, 4), 'silt')
+
+
+def terrace(profile, radius, centre, seed, sides=32, squash=0.72):
+    """Shared irregular outline through strata; top pool levels remain horizontal."""
+    rings = []
+    for z, scale in profile:
+        rings.append([Vector((centre[0] + radius * scale * (1 + .14 * math.sin(3*a+seed)
+                            + .09 * math.sin(5*a-seed) + .045 * math.sin(11*a)) * math.cos(a),
+                              centre[1] + radius * scale * squash * (1 + .14 * math.sin(3*a+seed)
+                            + .09 * math.sin(5*a-seed) + .045 * math.sin(11*a)) * math.sin(a), z))
+                      for a in [math.tau*j/sides for j in range(sides)]])
+    return loft(rings)
+
+
+def bark_root(points, radius, seed, samples=18):
+    path = curve(points, samples)
+    def profile(k, t):
+        r = radius * (1 - .9*t) * (1 + .18*math.sin(t*25+seed))
+        return [(r*(1+.12*math.cos(5*a+seed))*math.cos(a),
+                 r*(1+.12*math.cos(5*a+seed))*math.sin(a))
+                for a in [math.tau*j/15 for j in range(15)]]
+    direction = (Vector(points[-1])-Vector(points[0])).normalized()
+    return sweep(path, profile, Vector((1,0,0)) if abs(direction.z)>.7 else Z)
 
 
 def rimstone_mound(m):
-    m.part('mound', lathe([(-0.2, 2.6), (0.35, 2.55), (0.45, 2.2), (0.95, 2.1), (1.05, 1.6), (1.55, 1.5),
-                           (1.65, 1.0), (2.2, 0.9), (2.35, 0.0)], 20), 'flowstone', collider=True)
-    m.part('pools', merge(*[lathe([(z, r), (z + 0.03, r * 0.96)], 20) for z, r in ((0.40, 2.25), (1.0, 1.65), (1.60, 1.05))]),
-           'silt')
+    # Offset, overlapping basins climb one bank; no concentric stair-stack.
+    basins = [(-.45,-.38,2.1,.36,11), (.52,.25,1.64,.91,17),
+              (-.20,.65,1.24,1.47,23), (.43,.92,.80,1.98,31)]
+    banks, pools, curtains = [], [], []
+    for x,y,r,z,seed in basins:
+        banks.append(terrace([(-.15,.88),(z-.25,1),(z-.07,1.03),(z,1),
+                              (z+.055,.96),(z-.09,.87)],r,(x,y),seed))
+        pools.append(terrace([(z-.095,.88),(z-.085,.88)],r,(x,y),seed))
+        for j in range(7):
+            a = -2.0 + j*.16
+            px,py = x+r*.93*math.cos(a),y+r*.69*math.sin(a)
+            curtains.append(tube([Vector((px,py,z-.03)),Vector((px+.06,py-.04,z*.55)),
+                                  Vector((px+.18,py-.1,-.04))],
+                                 [(0,.075),(0.7,.10),(1,.14)],7,6))
+    m.part('scalloped-banks',merge(*banks),'flowstone',collider=True)
+    m.part('still-pools',merge(*pools),'pool')
+    m.part('spill-curtain',merge(*curtains),'wetstone')
 
 
 def drowned_root_arch(m):
-    rng = random.Random(9)
-    arches = []
-    for i in range(3):
-        a = i * 2.1 + rng.uniform(-0.2, 0.2)
-        d = Vector((math.cos(a), math.sin(a), 0))
-        arches.append(tube([-d * 1.8 - Z * 0.2, -d * 0.9 + Z * 2.6, d * 0.9 + Z * 2.9 + Vector((0, 0, 0.3 * i)), d * 1.9 - Z * 0.2],
-                           [(0.0, 0.34), (0.5, 0.22), (1.0, 0.30)], 10, 16))
-    m.part('roots', merge(*arches), 'drowned-root', collider=True)
+    roots, rootlets, growths, ridges = [], [], [], []
+    paths = [[(-2,-.35,-.18),(-1.4,-.25,2.5),(.5,.05,3.6),(1.7,.2,.8),(2,.3,-.1)],
+             [(-1.6,.8,-.18),(-1.1,.9,1.8),(.1,.6,2.9),(1.1,-.6,2),(1.7,-1,-.15)]]
+    for i,path in enumerate(paths):
+        roots.append(bark_root([Vector(p) for p in path],.48-i*.1,9+i,26))
+        samples=curve([Vector(p) for p in path],18)
+        for j in range(5):
+            ridge=[]
+            for k,p in enumerate(samples):
+                t=k/(len(samples)-1)
+                tangent=(samples[min(k+1,len(samples)-1)]-samples[max(0,k-1)]).normalized()
+                side=tangent.cross(Vector((0,1,0))).normalized()
+                a=j*math.tau/5+.5*t
+                radius=(.48-i*.1)*(1-.9*t)*(1+.18*math.sin(t*25+9+i))
+                ridge.append(p+radius*(side*math.cos(a)+Vector((0,1,0))*math.sin(a)))
+            ridges.append(tube(ridge,[(0,.032),(.8,.018),(1,.003)],5,18))
+    for base,end in [((-1.45,-.25,1.4),(-2.25,-.1,1.9)),
+                     ((.95,-.4,1.7),(1.65,-.9,2.25)),
+                     ((-1.3,.85,.8),(-2.0,1.1,.3))]:
+        a,b=Vector(base),Vector(end)
+        rootlets.append(bark_root([a,(a+b)*.5+Z*.14,b],.16,13,10))
+    rng=random.Random(9)
+    for i in range(12):
+        side = -1 if i<6 else 1
+        base=Vector((side*1.7, (.3 if side>0 else -.35),.4))
+        d=Vector((side*rng.uniform(.35,.85),rng.uniform(-.9,.9),0))
+        rootlets.append(bark_root([base,base+d*.45-Z*.2,base+d-Z*.55],.12, i,8))
+    # Hanging pale threads follow gravity and leave the arch opening legible.
+    for i in range(7):
+        x=-.9+i*.3; z=2.75+.22*math.sin(i*.5)
+        growths.append(tube([Vector((x,.07,z)),Vector((x+.06,.09,z-.3)),
+                             Vector((x+.04,.09,z-.5-rng.random()*.3))],
+                            [(0,.025),(.75,.018),(1,0)],6,7))
+    m.part('knuckled-roots',merge(*roots),'drowned-root',collider=True)
+    m.part('bark-ridges',merge(*ridges),'drowned-root')
+    m.part('anchoring-rootlets',merge(*rootlets),'drowned-root')
+    m.part('hanging-growths',merge(*growths),'pale')
+    m.part('foot-silt',merge(*[blob((x,y,-.015),(.75,.55,.08),12,4)
+                             for x,y in [(-1.8,-.2),(1.8,.1),(-1.6,.8),(1.7,-1)]]),'silt')
 
 
 def brine_fern(m):
@@ -185,17 +256,36 @@ def pearl_caps(m):
     small_mushrooms(m, 6, 'pearl', 'pale', (0.05, 0.12), 0.1, 29, 0.28)
 
 
+def stone_layers(m, radius, height, seed, name='stone'):
+    # Interpenetrating offset strata, not separated concentric display plinths.
+    layers=[]
+    for i,(factor,dx,dy) in enumerate([(1,0,0),(.98,-.04,.02),(.91,.05,-.015),(.80,-.025,.03)]):
+        z=-.08+i*height*.19
+        layer=terrace([(z,.96),(z+height*.10,1),(z+height*.30,.92)],
+                      radius*factor,(dx,dy),seed+i*.7,20)
+        layers.append(transformed(layer,Matrix.Rotation((i-1.5)*.025,4,'Y')))
+    m.part(name,merge(*layers),'wetstone',smooth=False)
+    crust=terrace([(height*.62,.66),(height*.72,.64),(height*.76,.42)],radius,(-.025,.03),seed+2.1,20)
+    m.part('mineral-crust',crust,'flowstone',smooth=False)
+    chips=[blob((radius*.88*math.cos(a),radius*.65*math.sin(a),.015),
+                (radius*.16,radius*.11,height*.14),6,3) for a in (.2,1.7,2.4,4.6)]
+    m.part('detached-chips',merge(*chips),'wetstone',smooth=False)
+
+
 def wet_stone(m):
-    m.part('stone', blob((0, 0, 0.28), (0.66, 0.52, 0.46), 7, 5), 'wetstone', smooth=False)
+    stone_layers(m,.68,.55,7)
 
 
 def fingerstone_rubble(m):
-    rng = random.Random(31)
-    stones = [transformed(blob((0, 0, 0), (rng.uniform(0.1, 0.22), rng.uniform(0.08, 0.16), rng.uniform(0.25, 0.5)), 6, 4),
-                          Matrix.Translation(Vector((rng.uniform(-0.5, 0.5), rng.uniform(-0.5, 0.5), 0.1)))
-                          @ Matrix.Rotation(rng.uniform(0.6, 1.4), 4, 'X') @ Matrix.Rotation(rng.uniform(0, 3), 4, 'Z'))
-              for _ in range(6)]
-    m.part('rubble', merge(*stones), 'wetstone', smooth=False)
+    rng=random.Random(31)
+    pieces=[]
+    for i in range(5):
+        r=rng.uniform(.10,.18); h=rng.uniform(.35,.7)
+        mesh=fluted([(-h*.5,r*.9),(0,r),(h*.35,r*.8),(h*.5,r*.55)],16,4,.20,31+i)
+        pieces.append(transformed(mesh,Matrix.Translation(Vector((rng.uniform(-.45,.45),rng.uniform(-.4,.4),.14)))
+                       @ Matrix.Rotation(rng.uniform(.85,1.45),4,'Y') @ Matrix.Rotation(i*1.7,4,'Z')))
+    m.part('broken-fingers',merge(*pieces),'wetstone',smooth=False)
+    m.part('crust',terrace([(-.07,.9),(.02,1),(.055,.7)],.6,(0,0),31,16),'flowstone')
 
 
 def root_fan(m):
@@ -204,25 +294,25 @@ def root_fan(m):
     for i in range(6):
         a = -0.9 + i * 0.36 + rng.uniform(-0.1, 0.1)
         d = Vector((math.cos(a), math.sin(a), 0.0))
-        roots.append(tube([Vector((0, 0, 0.25)), d * 0.5 + Z * 0.35, d * 1.1 - Z * 0.05], [(0.0, 0.09), (1.0, 0.03)], 8, 10))
+        roots.append(bark_root([Vector((0, 0, 0.25)), d * 0.5 + Z * 0.35, d * 1.1 - Z * 0.05], .11,37+i,10))
     m.part('roots', merge(*roots), 'drowned-root')
     m.part('knot', blob((0, 0, 0.2), (0.18, 0.18, 0.16), 8, 5), 'drowned-root')
 
 
 def lakebed_shelf(m):
-    m.part('shelf', blob((0, 0, 0.12), (1.1, 0.8, 0.22), 9, 4), 'silt', smooth=False)
+    stone_layers(m,1.15,.34,43,'shelf-strata')
 
 
 def root_fingers(m):
     rng = random.Random(41)
-    roots = [tube([Vector((rng.uniform(-0.3, 0.3), rng.uniform(-0.3, 0.3), -0.1)), Vector((rng.uniform(-0.2, 0.2), rng.uniform(-0.2, 0.2), 0.6)),
+    roots = [bark_root([Vector((rng.uniform(-0.3, 0.3), rng.uniform(-0.3, 0.3), -0.1)), Vector((rng.uniform(-0.2, 0.2), rng.uniform(-0.2, 0.2), 0.6)),
                    Vector((rng.uniform(-0.3, 0.3), rng.uniform(-0.3, 0.3), rng.uniform(0.9, 1.4)))],
-                  [(0.0, 0.08), (1.0, 0.0)], 8, 10) for _ in range(5)]
+                  .10, 41+i, 10) for i in range(5)]
     m.part('roots', merge(*roots), 'drowned-root')
 
 
 def flowstone_chunk(m):
-    m.part('chunk', blob((0, 0, 0.12), (0.22, 0.16, 0.13), 7, 4), 'flowstone', smooth=False)
+    m.part('chunk', terrace([(-.02,.8),(.035,1),(.075,.92),(.09,1.02),(.14,.79),(.155,.85),(.22,.55)], .22,(0,0),47,12), 'flowstone', smooth=False)
 
 
 def pale_fibre(m):
@@ -271,7 +361,7 @@ def author(model_id):
     overlap, coverage = uv_overlap(m.parts)
     if overlap > 0.01:
         raise ValueError(f'{model_id}: {overlap:.1%} of the atlas is claimed by two triangles')
-    bake_atlas(m.parts, m.atlas, paint, size=m.atlas_size)
+    bake_flora_atlas(m.parts, m.atlas, paint, size=m.atlas_size)
     triangles = sum(len(o.data.loop_triangles) for o in m.parts)
     heights = [(o.matrix_world @ v.co).z for o in m.parts for v in o.data.vertices]
     bpy.context.preferences.filepaths.save_version = 0
@@ -288,4 +378,5 @@ def main():
         author(model_id)
 
 
-main()
+if __name__ == '__main__':
+    main()
