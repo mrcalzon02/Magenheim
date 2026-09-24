@@ -44,6 +44,7 @@ internal sealed class UnderworldRuntimeServices
         BiomeStructureResidency.Register(new FrozenDeepSigilFamily());
         BiomeStructureResidency.Register(new GreatDecayCarrionCrownFamily(this));
         BiomeStructureResidency.Register(new GreatDecayVanishingRoadLandmarkFamily());
+        BiomeStructureResidency.Register(new GreatDecayDeepSigilFamily());
         BiomeStructureResidency.Register(new BrokenAncientBridgeLandmarkFamily());
     }
 
