@@ -50,6 +50,21 @@ internal static class UnderworldGateTransitRuntime
             return false;
         }
 
+        // Gate role is physical authority. Entry endpoints belong to the Surface and return
+        // endpoints belong to the dedicated Underworld engine layer. Never allow a misplaced,
+        // duplicated, or stale endpoint to become a cross-layer transit oracle.
+        var isUnderworld = UnderworldInstanceLayer.IsUnderworldEnginePosition(player.transform.position);
+        if (role == UnderworldGateRole.EnterUnderworld && isUnderworld)
+        {
+            diagnostic = "This Deep Gate entry can only be used from the Surface.";
+            return false;
+        }
+        if (role == UnderworldGateRole.ReturnToSurface && !isUnderworld)
+        {
+            diagnostic = "The return Deep Gate can only be used from the Underworld.";
+            return false;
+        }
+
         var playerId = player.GetPlayerID();
         if (role == UnderworldGateRole.EnterUnderworld)
         {
