@@ -1,3 +1,11 @@
+# Development closeout - 0.0.103 monumental terrain
+
+Full offline closeout installed and hash/catalog verified in Central Fuckery. Terrain includes
+sparse kilometre-scale spires and sheer plateaus, a coarse realm horizon with stitched resident
+edges, vertical cliff UVs and clearer long-distance air. 44,588 Core assertions; runtime clean.
+Evidence: `docs/validation/2026-09-23-monumental-terrain.md`. Not observed in a Valheim world.
+Next continuation: cloud-line height clarification, lava/fungal skybox and dim sunless day/night.
+
 # Development closeout - 0.0.102 Blackwater Deep
 
 Blackwater's seven canopy and twelve cover slots now use authored models. Its four resource

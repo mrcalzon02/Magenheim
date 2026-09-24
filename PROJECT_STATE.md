@@ -1,3 +1,15 @@
+# Current release - 0.0.103 (2026-09-23)
+
+Monumental terrain checkpoint `41a02be` installed in Central Fuckery: sparse spires and sheer
+plateaus, distant terrain with native boundary stitching, cliff texture projection and clear-air
+skyline visibility. Integrated remote main through `998098d`, including unique locations/Sigils.
+44,588 Core assertions; complete offline closeout passed; installed payload/catalog verified.
+No live world acceptance. Evidence: docs/validation/2026-09-23-monumental-terrain.md.
+
+Next active work: user's cloud-line height clarification and the shared lava/fungal-star cavern
+skybox, with no visible sun and a dim natural day/night lighting cycle. Sulfurous ecology remains
+the next authoring slice after this terrain/sky direction is addressed.
+
 # Current release - 0.0.102 (2026-09-23)
 
 Blackwater Deep B2 is wired, regenerated, packaged and installed in Central Fuckery. Seven canopy
