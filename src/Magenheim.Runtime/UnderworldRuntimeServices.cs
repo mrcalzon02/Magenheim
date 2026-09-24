@@ -7,17 +7,13 @@ namespace Magenheim.Runtime;
 
 internal sealed class UnderworldRuntimeServices
 {
-    private readonly ValheimUnderworldWorldContextController _worldContext;
-
     private UnderworldRuntimeServices(
         UnderworldInstanceTerrainDomain terrainDomain,
         UnderworldDeepBoonSelectionStore deepBoonSelectionStore,
         UnderworldInstanceLifecycle instanceLifecycle,
-        ValheimUnderworldWorldContextController worldContext,
         ManualLogSource log)
     {
         TerrainDomain=terrainDomain;DeepBoonSelectionStore=deepBoonSelectionStore;InstanceLifecycle=instanceLifecycle;
-        _worldContext=worldContext;
         StructureAdmission=new UnderworldStructureAdmissionController(log);
         ChunkStreaming=new UnderworldInstanceChunkStreamingRuntime(this,log);
         UniqueLocationAnchors=new UnderworldUniqueLocationAnchorResolver(this);
@@ -65,41 +61,48 @@ internal sealed class UnderworldRuntimeServices
         var terrainDomain=UnderworldInstanceTerrainDomain.CreateDefault();
         var deepBoonSelectionStore=new UnderworldDeepBoonSelectionStore(Path.Combine(root,"underworld-deep-boon-selections"),log);
         var instanceLifecycle=new UnderworldInstanceLifecycle();
-        var worldContext=new ValheimUnderworldWorldContextController(log);
-        var services=new UnderworldRuntimeServices(terrainDomain,deepBoonSelectionStore,instanceLifecycle,worldContext,log);
+        var services=new UnderworldRuntimeServices(terrainDomain,deepBoonSelectionStore,instanceLifecycle,log);
         UnderworldTerrainRuntime.Configure(services,log);
         return services;
     }
 
-    internal bool TryResolveWorldSession(out UnderworldWorldIdentity? identity,out UnderworldLayer layer,out string diagnostic)
+    internal bool TryResolveWorldSession(out UnderworldWorldIdentity? identity,out string diagnostic)
     {
-        identity=null;layer=UnderworldLayer.Surface;
-        var znet=ZNet.instance;var world=ZNet.World;
-        if(znet is null||world is null){diagnostic="Valheim network/world metadata is unavailable.";return false;}
-        if(!UnderworldRuntimeIdentityResolver.TryResolveWorldIdentity(znet,world,out var liveIdentity,out diagnostic)||liveIdentity is null)return false;
-        if(!_worldContext.TryGetActiveContext(liveIdentity,out identity,out layer)||identity is null){diagnostic="Magenheim instance layer has not been established by the explicit world-context controller.";return false;}
-        diagnostic=string.Empty;return true;
+        identity=InstanceLifecycle.Identity;
+        if(identity is null || InstanceLifecycle.Phase != UnderworldInstancePhase.Active)
+        {
+            identity=null;
+            diagnostic="The paired Underworld instance is not active.";
+            return false;
+        }
+        diagnostic=string.Empty;
+        return true;
     }
 
     internal bool TryResolveLocalSession(out UnderworldWorldIdentity? identity,out UnderworldLayer layer,out string playerId,out string diagnostic)
     {
         layer=UnderworldLayer.Surface;
-        if(!UnderworldRuntimeIdentityResolver.TryResolveLocalSession(out identity,out playerId,out diagnostic)||identity is null)return false;
-        if(_worldContext.IsActive(identity,UnderworldLayer.Underworld))layer=UnderworldLayer.Underworld;
-        else if(_worldContext.IsActive(identity,UnderworldLayer.Surface))layer=UnderworldLayer.Surface;
-        else
+        if(!UnderworldRuntimeIdentityResolver.TryResolveLocalSession(out var liveIdentity,out playerId,out diagnostic)||liveIdentity is null)return false;
+        identity=InstanceLifecycle.Identity;
+        if(identity is null || InstanceLifecycle.Phase != UnderworldInstancePhase.Active || !SameInstance(identity,liveIdentity))
         {
-            diagnostic="Local Magenheim layer has not been established by the explicit world-context controller.";
-            identity=null;playerId=string.Empty;return false;
+            identity=null;playerId=string.Empty;
+            diagnostic="The local Valheim session does not match the active Underworld instance authority.";
+            return false;
         }
+        var player=Player.m_localPlayer;
+        if(player is null)
+        {
+            identity=null;playerId=string.Empty;
+            diagnostic="Local player is unavailable.";
+            return false;
+        }
+        layer=UnderworldInstanceLayer.IsUnderworldEnginePosition(player.transform.position)?UnderworldLayer.Underworld:UnderworldLayer.Surface;
         diagnostic=string.Empty;return true;
     }
 
     internal bool TryResolveLocalSession(out UnderworldWorldIdentity? identity,out string playerId,out string diagnostic)=>
         UnderworldRuntimeIdentityResolver.TryResolveLocalSession(out identity,out playerId,out diagnostic)&&identity is not null;
-
-    internal void ActivateLayer(UnderworldWorldIdentity identity, UnderworldLayer layer) =>
-        _worldContext.EnsureActive(identity, layer);
 
     internal void ResetForWorldUnload()
     {
@@ -108,7 +111,6 @@ internal sealed class UnderworldRuntimeServices
         ChunkMaterializer.Clear();
         ChunkStreaming.Clear();
         InstanceLifecycle.Reset();
-        _worldContext.ResetForWorldUnload();
     }
 
     internal void Shutdown()
@@ -118,6 +120,10 @@ internal sealed class UnderworldRuntimeServices
         ChunkMaterializer.Clear();
         ChunkStreaming.Clear();
         InstanceLifecycle.Reset();
-        _worldContext.ResetForWorldUnload();
     }
+
+    private static bool SameInstance(UnderworldWorldIdentity left,UnderworldWorldIdentity right)=>
+        string.Equals(left.ParentWorldId,right.ParentWorldId,StringComparison.Ordinal)&&
+        string.Equals(left.DerivedWorldId,right.DerivedWorldId,StringComparison.Ordinal)&&
+        string.Equals(left.DerivedSeedFingerprint,right.DerivedSeedFingerprint,StringComparison.Ordinal);
 }
