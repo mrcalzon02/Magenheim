@@ -65,6 +65,7 @@ public static class UnderworldTerrainLifecycle
             delta = Lerp(delta, BiomeDelta(UnderworldTerrainBiome.FungalForest, relief), fungalBlend);
 
         var height = BaseElevationMeters + Clamp(delta, -MaximumTerrainDelta, MaximumTerrainDelta);
+        height += UnderworldMonumentalLandforms.HeightAt(domain, derivedSeed32, sample.X, sample.Z);
         var water = Math.Max(0d, sample.WaterLevel - height);
         var cover = Cover(biome, noise, slope, water);
         var hazard = Hazard(biome, noise, water);

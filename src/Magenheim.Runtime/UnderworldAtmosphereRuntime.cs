@@ -14,7 +14,7 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
 {
     private const float SampleIntervalSeconds = 0.20f;
     private const float TransitionRate = 3.5f;
-    private const float MinimumFogDensity = 0.0015f;
+    private const float MinimumFogDensity = 0.00005f;
     private const float MaximumFogDensity = 0.065f;
 
     private static readonly int DensityShaderId = Shader.PropertyToID("_MagenheimUnderworldAtmosphereDensity");
@@ -28,6 +28,8 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
     private float _nextSampleAt;
     private bool _active;
     private FogSnapshot _surfaceFog;
+    private Camera? _instanceCamera;
+    private float _surfaceFarClip;
     private UnderworldAtmosphereState _target;
     private float _visualDensity;
     private float _visibility;
@@ -126,6 +128,14 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
     private void LateUpdate()
     {
         if (!_active) return;
+        var camera = Camera.main;
+        if (camera != _instanceCamera)
+        {
+            RestoreCamera();
+            _instanceCamera = camera;
+            if (_instanceCamera) _surfaceFarClip = _instanceCamera.farClipPlane;
+        }
+        if (_instanceCamera) _instanceCamera.farClipPlane = Mathf.Max(_surfaceFarClip, 22000f);
         var amount = 1f - Mathf.Exp(-Mathf.Max(0f, Time.unscaledDeltaTime) * TransitionRate);
         _visualDensity = Mathf.Lerp(_visualDensity, (float)_target.VisualDensity01, amount);
         _visibility = Mathf.Lerp(_visibility, (float)_target.VisibilityMeters, amount);
@@ -171,11 +181,18 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
     {
         if (!_active) return;
         _surfaceFog.Restore();
+        RestoreCamera();
         _active = false;
         _lastBiome = null;
         _event = UnderworldAtmosphereEvent.None;
         _eventIntensity = 0d;
         ClearShaderGlobals();
+    }
+
+    private void RestoreCamera()
+    {
+        if (_instanceCamera) _instanceCamera.farClipPlane = _surfaceFarClip;
+        _instanceCamera = null;
     }
 
     private void OnDisable() => Deactivate();

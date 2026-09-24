@@ -22,6 +22,12 @@ internal sealed class UnderworldInstanceChunkMaterializer
     private readonly Dictionary<UnderworldTerrainBiome, Texture2D> _biomeTextures = new();
     private readonly Dictionary<UnderworldTerrainBiome, Texture2D> _biomeNormalTextures = new();
     private GameObject? _root;
+    // Coarse presentation covers the realm; collision/ecology still use the native 2m chunks.
+    private readonly Dictionary<UnderworldInstanceChunkKey, GameObject> _horizon = new();
+    private readonly Dictionary<UnderworldInstanceChunkKey, UnderworldInstanceChunkSample> _horizonSamples = new();
+    private readonly HashSet<UnderworldInstanceChunkKey> _previousResidents = new();
+    private Queue<UnderworldInstanceChunkKey>? _horizonPending;
+    private UnderworldInstanceChunkGrid HorizonGrid => new(_services.TerrainDomain, 1024, 16);
 
     internal UnderworldInstanceChunkMaterializer(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -41,6 +47,7 @@ internal sealed class UnderworldInstanceChunkMaterializer
 
         if (resident.Count == 0)
         {
+            ClearHorizon();
             if (_root) UnityEngine.Object.Destroy(_root);
             _root = null;
             return;
@@ -49,10 +56,12 @@ internal sealed class UnderworldInstanceChunkMaterializer
         EnsureRoot();
         foreach (var pair in resident)
             if (!_materialized.ContainsKey(pair.Key)) Materialize(pair.Value);
+        ReconcileHorizon();
     }
 
     internal void Clear()
     {
+        ClearHorizon();
         var keys = new List<UnderworldInstanceChunkKey>(_materialized.Keys);
         foreach (var key in keys) DestroyChunk(key);
         if (_root) UnityEngine.Object.Destroy(_root);
@@ -75,14 +84,14 @@ internal sealed class UnderworldInstanceChunkMaterializer
         _root.transform.position = new Vector3(0f, UnderworldInstanceLayer.EngineBaseY, 0f);
     }
 
-    private void Materialize(UnderworldInstanceChunkSample sample)
+    private void Materialize(UnderworldInstanceChunkSample sample, bool distant = false)
     {
         var edge = sample.VerticesPerEdge;
         var expected = checked(edge * edge);
         if (sample.Heights.Length != expected || sample.Biomes.Length != expected || sample.Admitted.Length != expected)
             throw new InvalidOperationException($"Underworld chunk {sample.Key} has inconsistent terrain payload dimensions.");
 
-        var grid = _services.ChunkStreaming.Grid;
+        var grid = distant ? HorizonGrid : _services.ChunkStreaming.Grid;
         var bounds = grid.Bounds(sample.Key);
         var vertices = new Vector3[expected];
         var uv = new Vector2[expected];
@@ -98,10 +107,14 @@ internal sealed class UnderworldInstanceChunkMaterializer
                 (float)((bounds.MinimumZ + localZ) / TerrainUvMetersPerTile));
         }
 
+        var distantVertices = distant ? new List<Vector3>(vertices) : null;
+        var distantUv = distant ? new List<Vector2>(uv) : null;
         var trianglesByBiome = new Dictionary<UnderworldTerrainBiome, List<int>>();
         for (var z = 0; z < edge - 1; z++)
         for (var x = 0; x < edge - 1; x++)
         {
+            if (distant && IsResident(bounds.MinimumX + (x + .5d) * grid.VertexSpacingMeters,
+                bounds.MinimumZ + (z + .5d) * grid.VertexSpacingMeters)) continue;
             var a = z * edge + x;
             var b = a + 1;
             var c = a + edge;
@@ -110,6 +123,8 @@ internal sealed class UnderworldInstanceChunkMaterializer
             var biome = SelectCellBiome(sample.Biomes[a], sample.Biomes[b], sample.Biomes[c], sample.Biomes[d]);
             if (!trianglesByBiome.TryGetValue(biome, out var triangles))
                 trianglesByBiome.Add(biome, triangles = new List<int>());
+            if (distant && StitchResidentBoundary(bounds.MinimumX, bounds.MinimumZ, x, z,
+                vertices, edge, distantVertices!, distantUv!, triangles)) continue;
             triangles.Add(a); triangles.Add(c); triangles.Add(b);
             triangles.Add(b); triangles.Add(c); triangles.Add(d);
         }
@@ -118,9 +133,10 @@ internal sealed class UnderworldInstanceChunkMaterializer
         GameObject? node = null;
         try
         {
-            mesh.vertices = vertices;
-            mesh.uv = uv;
-            mesh.normals = BuildAuthoritativeNormals(sample, bounds.MinimumX, bounds.MinimumZ, grid.VertexSpacingMeters);
+            mesh.vertices = distant ? distantVertices!.ToArray() : vertices;
+            mesh.uv = distant ? distantUv!.ToArray() : uv;
+            if (!distant)
+                mesh.normals = BuildAuthoritativeNormals(sample, bounds.MinimumX, bounds.MinimumZ, grid.VertexSpacingMeters);
             mesh.subMeshCount = trianglesByBiome.Count;
             var materials = new Material[trianglesByBiome.Count];
             var submesh = 0;
@@ -132,6 +148,9 @@ internal sealed class UnderworldInstanceChunkMaterializer
                 triangleCount += pair.Value.Count / 3;
                 submesh++;
             }
+            if (distant) mesh.RecalculateNormals();
+            ApplyCliffUvs(mesh, bounds.MinimumX, bounds.MinimumZ);
+            mesh.RecalculateTangents();
             mesh.RecalculateBounds();
 
             node = new GameObject(mesh.name);
@@ -139,8 +158,9 @@ internal sealed class UnderworldInstanceChunkMaterializer
             node.transform.localPosition = new Vector3((float)bounds.MinimumX, 0f, (float)bounds.MinimumZ);
             node.AddComponent<MeshFilter>().sharedMesh = mesh;
             node.AddComponent<MeshRenderer>().sharedMaterials = materials;
-            node.AddComponent<MeshCollider>().sharedMesh = mesh;
-            _materialized.Add(sample.Key, node);
+            if (!distant) node.AddComponent<MeshCollider>().sharedMesh = mesh;
+            else node.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            (distant ? _horizon : _materialized).Add(sample.Key, node);
             _log.LogDebug($"Materialized native Underworld chunk {sample.Key.X},{sample.Key.Z} with {triangleCount} terrain triangles across {trianglesByBiome.Count} biome surfaces.");
         }
         catch
@@ -149,6 +169,158 @@ internal sealed class UnderworldInstanceChunkMaterializer
             UnityEngine.Object.Destroy(mesh);
             throw;
         }
+    }
+
+    // Horizontal UV projection stretches a few metres of texture up a kilometre-high
+    // wall. Split only steep triangles and project those onto their dominant vertical plane.
+    private static void ApplyCliffUvs(Mesh mesh, double minX, double minZ)
+    {
+        var vertices = new List<Vector3>(mesh.vertices);
+        var normals = new List<Vector3>(mesh.normals);
+        var uv = new List<Vector2>(mesh.uv);
+        var submeshes = new List<int[]>();
+        for (var submesh = 0; submesh < mesh.subMeshCount; submesh++)
+        {
+            var triangles = mesh.GetTriangles(submesh);
+            for (var i = 0; i < triangles.Length; i += 3)
+            {
+                var normal = Vector3.Cross(vertices[triangles[i + 1]] - vertices[triangles[i]],
+                    vertices[triangles[i + 2]] - vertices[triangles[i]]).normalized;
+                if (Mathf.Abs(normal.y) >= .45f) continue;
+                var projectZ = Mathf.Abs(normal.x) > Mathf.Abs(normal.z);
+                for (var corner = 0; corner < 3; corner++)
+                {
+                    var original = triangles[i + corner];
+                    var position = vertices[original];
+                    triangles[i + corner] = vertices.Count;
+                    vertices.Add(position);
+                    normals.Add(normals[original]);
+                    uv.Add(new Vector2((float)(projectZ ? minZ + position.z : minX + position.x) / TerrainUvMetersPerTile,
+                        position.y / TerrainUvMetersPerTile));
+                }
+            }
+            submeshes.Add(triangles);
+        }
+        if (vertices.Count > ushort.MaxValue) mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        mesh.SetVertices(vertices);
+        mesh.SetNormals(normals);
+        mesh.SetUVs(0, uv);
+        mesh.subMeshCount = submeshes.Count;
+        for (var i = 0; i < submeshes.Count; i++) mesh.SetTriangles(submeshes[i], i, false);
+    }
+
+    // A boundary cell is a fan with 2m vertices on its resident-facing edges. Its other
+    // edges keep the coarse endpoints, so neither side has a T-junction or needs a skirt.
+    private bool StitchResidentBoundary(double minX, double minZ, int x, int z,
+        Vector3[] coarse, int edge, List<Vector3> vertices, List<Vector2> uv, List<int> triangles)
+    {
+        const int spacing = 16;
+        var worldX = minX + x * spacing;
+        var worldZ = minZ + z * spacing;
+        var refined = new[] {
+            IsResident(worldX - 1d, worldZ + 8d),
+            IsResident(worldX + 8d, worldZ + 17d),
+            IsResident(worldX + 17d, worldZ + 8d),
+            IsResident(worldX + 8d, worldZ - 1d) };
+        if (!refined[0] && !refined[1] && !refined[2] && !refined[3]) return false;
+        var a = z * edge + x;
+        var corners = new[] { coarse[a], coarse[a + edge], coarse[a + edge + 1], coarse[a + 1] };
+        int Add(Vector3 position)
+        {
+            var index = vertices.Count;
+            vertices.Add(position);
+            uv.Add(new Vector2((float)(minX + position.x) / TerrainUvMetersPerTile,
+                (float)(minZ + position.z) / TerrainUvMetersPerTile));
+            return index;
+        }
+        var center = Add(new Vector3(x * spacing + 8f,
+            (float)SampleHeightOrFallback(worldX + 8d, worldZ + 8d, corners[0].y), z * spacing + 8f));
+        var ring = new List<int>();
+        for (var side = 0; side < 4; side++)
+        {
+            var steps = refined[side] ? 8 : 1;
+            for (var step = 0; step < steps; step++)
+            {
+                var position = Vector3.Lerp(corners[side], corners[(side + 1) % 4], step / (float)steps);
+                if (step > 0)
+                    position.y = (float)SampleHeightOrFallback(minX + position.x, minZ + position.z, position.y);
+                ring.Add(Add(position));
+            }
+        }
+        for (var i = 0; i < ring.Count; i++)
+        { triangles.Add(center); triangles.Add(ring[i]); triangles.Add(ring[(i + 1) % ring.Count]); }
+        return true;
+    }
+
+    private bool IsResident(double x, double z) =>
+        _services.ChunkStreaming.LoadedChunks.ContainsKey(_services.ChunkStreaming.Grid.KeyAt(x, z));
+
+    private void ReconcileHorizon()
+    {
+        var identity = _services.InstanceLifecycle.Identity;
+        if (identity is null) return;
+        var grid = HorizonGrid;
+        var resident = _services.ChunkStreaming.LoadedChunks;
+        var dirty = new HashSet<UnderworldInstanceChunkKey>();
+        var nativeSize = _services.ChunkStreaming.Grid.ChunkSizeMeters;
+        void DirtyBoundary(UnderworldInstanceChunkKey key)
+        {
+            // A resident edge can also change a fan in the neighbouring horizon tile.
+            var minX = key.X * (double)nativeSize - 1d;
+            var minZ = key.Z * (double)nativeSize - 1d;
+            var maxX = minX + nativeSize + 2d;
+            var maxZ = minZ + nativeSize + 2d;
+            dirty.Add(grid.KeyAt(minX, minZ)); dirty.Add(grid.KeyAt(maxX, minZ));
+            dirty.Add(grid.KeyAt(minX, maxZ)); dirty.Add(grid.KeyAt(maxX, maxZ));
+        }
+        foreach (var key in _previousResidents)
+            if (!resident.ContainsKey(key)) DirtyBoundary(key);
+        foreach (var key in resident.Keys)
+            if (!_previousResidents.Contains(key)) DirtyBoundary(key);
+        _previousResidents.Clear();
+        foreach (var key in resident.Keys) _previousResidents.Add(key);
+        foreach (var key in dirty)
+        {
+            if (!_horizonSamples.TryGetValue(key, out var sample)) continue;
+            DestroyNode(_horizon, key);
+            Materialize(sample, true);
+        }
+        foreach (var pair in _horizonSamples)
+            if (!_horizon.ContainsKey(pair.Key)) Materialize(pair.Value, true);
+        if (_horizonPending is null)
+        {
+            var keys = new List<UnderworldInstanceChunkKey>(grid.EnumerateSquare(new(0, 0),
+                (int)Math.Ceiling(grid.Domain.RadiusMeters / grid.ChunkSizeMeters)));
+            // Near terrain appears first; progressively fill the skyline without a realm-sized stall.
+            var focusX = 0d;
+            var focusZ = 0d;
+            foreach (var key in resident.Keys) { focusX += key.X * (double)nativeSize; focusZ += key.Z * (double)nativeSize; }
+            focusX /= resident.Count; focusZ /= resident.Count;
+            double Distance(UnderworldInstanceChunkKey key) =>
+                Math.Pow((key.X + .5d) * 1024d - focusX, 2d) + Math.Pow((key.Z + .5d) * 1024d - focusZ, 2d);
+            keys.Sort((a, b) => Distance(a).CompareTo(Distance(b)));
+            _horizonPending = new Queue<UnderworldInstanceChunkKey>(keys);
+        }
+        for (var budget = 0; budget < 4 && _horizonPending.Count > 0; budget++)
+        {
+            var key = _horizonPending.Peek();
+            var water = ZoneSystem.instance is null ? 30d : ZoneSystem.instance.m_waterLevel;
+            if (!_horizonSamples.TryGetValue(key, out var sample))
+            {
+                sample = UnderworldInstanceChunkSampler.Sample(grid, key, identity.DerivedSeed32, water);
+                _horizonSamples.Add(key, sample);
+            }
+            if (!_horizon.ContainsKey(key)) Materialize(sample, true);
+            _horizonPending.Dequeue();
+        }
+    }
+
+    private void ClearHorizon()
+    {
+        foreach (var key in new List<UnderworldInstanceChunkKey>(_horizon.Keys)) DestroyNode(_horizon, key);
+        _horizonSamples.Clear();
+        _previousResidents.Clear();
+        _horizonPending = null;
     }
 
     private static UnderworldTerrainBiome SelectCellBiome(UnderworldTerrainBiome a, UnderworldTerrainBiome b, UnderworldTerrainBiome c, UnderworldTerrainBiome d)
@@ -343,9 +515,12 @@ internal sealed class UnderworldInstanceChunkMaterializer
     };
 
     private void DestroyChunk(UnderworldInstanceChunkKey key)
+        => DestroyNode(_materialized, key);
+
+    private static void DestroyNode(Dictionary<UnderworldInstanceChunkKey, GameObject> nodes, UnderworldInstanceChunkKey key)
     {
-        if (!_materialized.TryGetValue(key, out var node)) return;
-        _materialized.Remove(key);
+        if (!nodes.TryGetValue(key, out var node)) return;
+        nodes.Remove(key);
         if (!node) return;
         var filter = node.GetComponent<MeshFilter>();
         if (filter && filter.sharedMesh) UnityEngine.Object.Destroy(filter.sharedMesh);

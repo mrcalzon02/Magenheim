@@ -15,7 +15,7 @@ internal static class UnderworldInstanceLayer
     internal const int InstanceIndex = 1;
     internal const float EngineBaseY = 12000f;
     internal const float EngineMinimumY = 11000f;
-    internal const float EngineMaximumY = 14500f;
+    internal const float EngineMaximumY = 21000f;
 
     internal static Vector3 ToEngine(Vector3 logical) =>
         new(logical.x, logical.y + EngineBaseY, logical.z);

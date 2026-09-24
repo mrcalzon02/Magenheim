@@ -32,7 +32,7 @@ internal static class UnderworldTerrainLifecycleTests
         var first = UnderworldTerrainLifecycle.Evaluate(instanceDomain, sample, 777);
         var repeat = UnderworldTerrainLifecycle.Evaluate(instanceDomain, sample, 777);
         Assert(first == repeat, "Terrain evaluation must be deterministic for the same seed and sample.");
-        Assert(Math.Abs(first.Height - UnderworldTerrainLifecycle.BaseElevationMeters) <= UnderworldTerrainLifecycle.MaximumTerrainDelta + 0.0001d,
+        Assert(Math.Abs(first.Height - UnderworldTerrainLifecycle.BaseElevationMeters) <= UnderworldTerrainLifecycle.MaximumTerrainDelta + UnderworldMonumentalLandforms.MaximumHeightMeters + 0.0001d,
             "Terrain shaping must remain inside the bounded height delta around the region's base elevation.");
         Assert(first.Cover01 >= 0d && first.Cover01 <= 1d && first.Hazard01 >= 0d && first.Hazard01 <= 1d,
             "Terrain ecology outputs must remain normalized.");

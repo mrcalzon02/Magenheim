@@ -4,17 +4,33 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.102 by Local** and start its description with
-**0.0.102: Blackwater Deep custom pass**.
+show **Magenheim v0.0.103 by Local** and start its description with
+**0.0.103: Monumental Underworld terrain**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.102]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.103]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
 is under `BepInEx/plugins/Local-Magenheim/Magenheim`. Launching vanilla Steam
 does not use this profile. Exit the game before rebuilding or installing.
+
+## Monumental terrain acceptance — 0.0.103
+
+Use a disposable world. Enter the paired Underworld and allow roughly 30 seconds for the
+budgeted distant terrain presentation to fill. Inspect from the basin, at a cliff base and from
+a plateau crown: occasional needle spires and broad plateaus must rise kilometres above the
+floor with sharp edges. Ordinary hills should remain between them; the arrival basin stays
+walkable. Move across several 64m chunk boundaries and look for cracks or overlapping surfaces,
+including along 1024m distant-tile boundaries. Inspect cliff textures for vertical smearing.
+
+Observe clear-air silhouettes, dense biome mist and weather separately. Return to the Surface
+and confirm camera distance and fog restore. Check frame time during first horizon construction
+and while crossing chunk boundaries. At plateau height, verify standing collision, map/layer
+identity and return travel. Recheck Motherbed, Drowned Ring, Furnace Heart and Sigil placement
+against the changed terrain, then multiplayer agreement and save/reload. None of these live
+checks are established by the offline geometry renders or Core tests.
 
 ## What is present
 
@@ -61,7 +77,7 @@ Spawn IDs (`spawn <id> 1`):
 
 ## Candidate acceptance matrix
 
-Confirm the startup log reports **0.0.102** and has no Magenheim bootstrap or registration
+Confirm the startup log reports **0.0.103** and has no Magenheim bootstrap or registration
 errors. Keep logs and screenshots with each result. Mark checks PASS / FAIL / NOT RUN;
 record game version, mod list, host/client role, seed, steps, expected/actual result.
 

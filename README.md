@@ -2,11 +2,12 @@
 
 **Magic begins as geology.**
 
-## 0.0.102 testing candidate
+## 0.0.103 testing candidate
 
-Blackwater Deep now uses authored mineral columns, rimstone pools, drowned roots, ground cover
-and four resource models with icons. Fungal Forest and Blackwater share the flora authoring kit.
-Biome appearance and interactions still need in-world acceptance.
+The Underworld now includes occasional 3.2–5.6 km spires and sheer-sided plateaus, with distant
+terrain, longer clear-air visibility and cliff texture projection. The walkable arrival basin is
+preserved. Includes unique biome locations and Deep Sigil discovery from the latest main.
+Terrain appearance, performance and interactions still need in-world acceptance.
 
 Eight biome geodes, eight five-tier crystal families and shards, Crystal Shaping,
 workstation opening/refinement, sockets, eight four-tier staff families, crystal
@@ -18,10 +19,10 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.102.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.103.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
-Launch **Modded**. Confirm `Loading [Magenheim 0.0.102]` in the BepInEx log.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.103]` in the BepInEx log.
 Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
 See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.

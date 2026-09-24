@@ -7,6 +7,22 @@ when a slice closes. Static validation only unless a slice says "observed in wor
 
 Decisions in force: no regrowth; Motherbloom deferred to F9 (plan section 10, decisions 1 and 6).
 
+## Terrain direction — user correction 2026-09-23
+
+Occasional cavern landforms must be **sheer cliffs, needle spires and monstrously tall plateaus
+rising for miles**, visibly distinct from rounded mountainous terrain. Keep ordinary relief in
+other areas and preserve the walkable arrival basin. This direction takes priority over the next
+ecological authoring slice.
+
+- [x] Implement deterministic 3.2–5.6 km monuments, enlarged vertical domain, distant terrain and
+  near/far boundary stitching, longer clear-air visibility and vertical cliff texture projection.
+- [x] Inspect Core-derived spire/plateau geometry at detail and horizon sampling; broaden plateau
+  crowns, break regular support planes and cut irregular buttresses/recesses into cliff boundaries.
+- [ ] Complete 0.0.103 closeout, installation and pushed commit.
+- [ ] Live world acceptance: cliff silhouettes, transition seams, skyline/fog, camera restoration,
+  performance, plateau collision and biome location placement. Offline geometry renders are not
+  evidence of live gameplay acceptance.
+
 ## Pattern every biome follows
 
 1. `tools/author-underworld-<biome>.py` authors canopy, ground cover and resource models at real

@@ -16,7 +16,7 @@ public sealed record UnderworldInstanceTerrainDomain(
     double MaximumY)
 {
     public static UnderworldInstanceTerrainDomain CreateDefault() =>
-        ValidateAndFreeze(8000d, -256d, 1792d);
+        ValidateAndFreeze(8000d, -256d, 8192d);
 
     public static UnderworldInstanceTerrainDomain ValidateAndFreeze(
         double radiusMeters,

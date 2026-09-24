@@ -78,6 +78,9 @@ internal static class UnderworldAtmosphereTests
                suppressed.VisibilityMeters > blooming.VisibilityMeters,
             "Local suppression must create a clearer, safer pocket without changing biome identity.");
 
+        Assert(fungal.VisibilityMeters > 8000d, "Clear arrival air must reveal distant monumental terrain.");
+        Assert(whiteout.VisibilityMeters < 1000d, "Whiteout must still obscure the skyline.");
+
         var wrongEvent = State(UnderworldTerrainBiome.FrozenCaverns,
             atmosphereEvent: UnderworldAtmosphereEvent.BlackBloom, eventIntensity: 1d);
         var noEvent = State(UnderworldTerrainBiome.FrozenCaverns);

@@ -113,7 +113,10 @@ public static class UnderworldAtmosphere
         var audio = Clamp01(profile.BaseAudio + visual * 0.28d + modifier.Audio * eventIntensity);
         audio = Clamp01(audio * (1d - suppression * 0.35d));
 
-        var visibility = Lerp(profile.ClearVisibility, profile.DenseVisibility, visual);
+        // Clear cavern air must reveal kilometre-scale cliffs. Lowland miasma and weather
+        // still close the view; exposure/particles remain independent of this sight distance.
+        var horizon = 14000d * Math.Pow(1d - visual, 3d);
+        var visibility = Math.Max(Lerp(profile.ClearVisibility, profile.DenseVisibility, visual), horizon);
         return new UnderworldAtmosphereState(
             profile.Kind,
             visual,
