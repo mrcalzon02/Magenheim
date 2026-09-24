@@ -93,16 +93,12 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
 
         try
         {
-            // Instance lifetime follows the loaded parent-world session, never player population or
-            // Surface coordinates. The lifecycle itself is the sole identity/phase authority.
             _services.InstanceLifecycle.EnsureAdmitted(identity);
             _services.InstanceLifecycle.EnsureActive(identity);
             _log.LogInfo($"Admitted persistent Underworld instance authority '{identity.DerivedWorldId}' for parent world '{identity.ParentWorldId}'.");
         }
         catch (Exception exception)
         {
-            // A mismatched identity is an authority violation, not something to paper over by
-            // resetting/rebinding a live instance. World unload is the only legal reset boundary.
             _log.LogError($"Underworld instance authority admission failed: {exception}");
         }
     }
@@ -129,12 +125,6 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         try
         {
             candidate = UnderworldWorldCenterRegistrar.Create(identity, _log);
-
-            // Admission is the first point at which the dedicated instance has both a stable
-            // identity and a physical presentation root. Seed residency from native instance
-            // origin here so the chunk provider/materializer/structure pipeline is actually
-            // driven. Moving residency is reconciled separately and is permitted to consume
-            // transforms only after the explicit context says those transforms are instance-space.
             if (!_services.ChunkStreaming.Reconcile(new[] { new UnderworldChunkFocus(0d, 0d) }))
                 throw new InvalidOperationException("Native Underworld chunk residency rejected an active instance admission.");
 
@@ -161,20 +151,15 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         if (_services.InstanceLifecycle.Phase != UnderworldInstancePhase.Active || _services.InstanceLifecycle.Identity is null)
             return;
 
-        // The origin remains resident for the conclave/return gate. Player transforms are legal
-        // chunk focuses only while the explicit world-context adapter identifies the loaded
-        // presentation as the paired Underworld. This guard is the important boundary: Surface
-        // transforms must never be interpreted as native instance coordinates.
+        // The origin remains resident for the conclave/return gate. Each player's transform is
+        // admitted independently only when it occupies the disjoint engine-space Underworld layer.
+        // A Surface player can therefore never make another player's layer classification global.
         var focuses = new List<UnderworldChunkFocus> { new(0d, 0d) };
-        if (_services.TryResolveWorldSession(out var contextIdentity, out var layer, out _) &&
-            contextIdentity is not null && layer == UnderworldLayer.Underworld)
+        foreach (var player in Player.GetAllPlayers())
         {
-            foreach (var player in Player.GetAllPlayers())
-            {
-                if (!player) continue;
-                var position = UnderworldInstanceLayer.ToLogical(player.transform.position);
-                focuses.Add(new UnderworldChunkFocus(position.x, position.z));
-            }
+            if (!player || !UnderworldInstanceLayer.IsUnderworldEnginePosition(player.transform.position)) continue;
+            var position = UnderworldInstanceLayer.ToLogical(player.transform.position);
+            focuses.Add(new UnderworldChunkFocus(position.x, position.z));
         }
 
         try
@@ -184,8 +169,6 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         }
         catch (Exception exception)
         {
-            // Keep the already admitted instance alive. Reconcile is repeatable and the next pass
-            // can recover after a transient presentation/materialization failure.
             _log?.LogError($"Underworld native chunk residency reconciliation failed: {exception}");
         }
     }
