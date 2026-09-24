@@ -7,8 +7,9 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Thin Deep Gate transport adapter. Valheim owns player movement; Magenheim only switches the
-/// active instance context and supplies the engine-backed destination for instance index 1.
+/// Thin Deep Gate transport adapter. Valheim owns player movement; Magenheim supplies the
+/// engine-backed destination for instance index 1. A player's layer is derived from the disjoint
+/// engine-space instance it physically occupies; it is never stored as global multiplayer state.
 /// Return anchors are ephemeral transition safety only and are never persistence/world authority.
 /// </summary>
 internal static class UnderworldGateTransitRuntime
@@ -63,7 +64,6 @@ internal static class UnderworldGateTransitRuntime
                 player.transform.rotation);
 
             var target = UnderworldWorldCenterRegistrar.ResolveEngineCenterPosition();
-            services.ActivateLayer(identity, UnderworldLayer.Underworld);
             if (player.TeleportTo(target + Vector3.up * 1.2f, Quaternion.identity, false))
             {
                 _log?.LogInfo(
@@ -71,7 +71,6 @@ internal static class UnderworldGateTransitRuntime
                 return true;
             }
 
-            services.ActivateLayer(identity, UnderworldLayer.Surface);
             SurfaceReturn.Remove(playerId);
             diagnostic = "Valheim rejected the Underworld teleport.";
             return false;
@@ -83,7 +82,6 @@ internal static class UnderworldGateTransitRuntime
             return false;
         }
 
-        services.ActivateLayer(identity, UnderworldLayer.Surface);
         if (player.TeleportTo(source.Position + Vector3.up * 0.25f, source.Rotation, false))
         {
             SurfaceReturn.Remove(playerId);
@@ -91,7 +89,6 @@ internal static class UnderworldGateTransitRuntime
             return true;
         }
 
-        services.ActivateLayer(identity, UnderworldLayer.Underworld);
         diagnostic = "Valheim rejected the Surface return teleport.";
         return false;
     }
@@ -99,8 +96,8 @@ internal static class UnderworldGateTransitRuntime
     internal static bool HasReturnAnchor(Player player) => SurfaceReturn.ContainsKey(player.GetPlayerID());
 
     /// <summary>
-    /// Surface return without an anchor, for the developer console after a relog below ground. Same
-    /// layer switch and rollback as a gate return; only the destination differs.
+    /// Surface return without an anchor, for the developer console after a relog below ground.
+    /// The destination itself restores Surface classification; no global layer state is mutated.
     /// </summary>
     internal static bool TryReturnTo(Player player, Vector3 position, out string diagnostic)
     {
@@ -112,14 +109,12 @@ internal static class UnderworldGateTransitRuntime
             diagnostic = "The paired Underworld instance is not active.";
             return false;
         }
-        services.ActivateLayer(identity, UnderworldLayer.Surface);
         if (player.TeleportTo(position + Vector3.up * 0.5f, player.transform.rotation, true))
         {
             SurfaceReturn.Remove(player.GetPlayerID());
             _log?.LogInfo($"Developer console returned player {player.GetPlayerID()} to the Surface without an anchor.");
             return true;
         }
-        services.ActivateLayer(identity, UnderworldLayer.Underworld);
         diagnostic = "Valheim rejected the Surface teleport.";
         return false;
     }
@@ -128,7 +123,8 @@ internal static class UnderworldGateTransitRuntime
     {
         var services = _services;
         var phase = services?.InstanceLifecycle.Phase.ToString() ?? "not configured";
-        return $"Underworld instance: {phase}; Deep Gate unlocked: {UnderworldProgressionAuthority.IsUnlocked}; " +
+        var layer = UnderworldInstanceLayer.IsUnderworldEnginePosition(player.transform.position) ? "Underworld" : "Surface";
+        return $"Underworld instance: {phase}; local layer: {layer}; Deep Gate unlocked: {UnderworldProgressionAuthority.IsUnlocked}; " +
                $"return anchor: {(HasReturnAnchor(player) ? "yes" : "no")}.";
     }
 
