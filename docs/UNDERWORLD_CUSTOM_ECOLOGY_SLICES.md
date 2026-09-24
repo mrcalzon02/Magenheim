@@ -23,7 +23,8 @@ ecological authoring slice.
 - [x] Implement 0.0.104: native haze at 4800m, absolute terrain cap 5100m; shared authored
   sunless panorama; dim existing-clock light/sky/fog cycle; dungeon-height classification
   corrected only for the admitted native instance.
-- [ ] Finish 0.0.104 closeout, installation and push.
+- [x] 0.0.104 closeout installed, hash/catalog verified and pushed (`c7251d3`).
+  Masked lava/fungal emission included; evidence: `validation/2026-09-23-sunless-sky-closeout.md`.
 - [ ] Live world acceptance: cliff silhouettes, transition seams, skyline/fog, camera restoration,
   performance, plateau collision and biome location placement. Offline geometry renders are not
   evidence of live gameplay acceptance.

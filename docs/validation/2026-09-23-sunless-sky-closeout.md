@@ -37,6 +37,8 @@ Core DLL SHA-256: C02EEC2ECE98F39D3EE5CB72473799704FC1E1DCEC827ED3A9664AB7356623
 Initial backups: backups/Local-Magenheim-20260923-174015.zip and
 backups/mods-20260923-174031-452.yml. A documentation-only package refresh follows in
 artifacts/sky-closeout-doc-refresh-20260923.log; the tested binaries are unchanged.
+The refresh passed with backups Local-Magenheim-20260923-174104.zip and
+mods-20260923-174114-428.yml. Implementation committed and pushed as `c7251d3`.
 
 Launcher description: "0.0.104: Sunless lava-and-fungal cavern sky with masked glow and dim day/night lighting. Overhead haze at 4.8 km; sharp terrain capped at 5.1 km. Fixes the native dungeon-height restriction for Underworld building."
 
