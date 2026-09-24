@@ -1,3 +1,17 @@
+# Current release - 0.0.104 (2026-09-23)
+
+Sunless lava/fungal roof with localized emission, dim native-clock lighting, overhead haze at
+4800m and sharp terrain capped at 5100m. Fixed native dungeon-height classification inside the
+admitted Underworld instance. Full offline closeout passed and installed in Central Fuckery;
+45,220 Core assertions, clean runtime build, installed hashes and enabled catalog verified.
+Evidence: docs/validation/2026-09-23-sunless-sky-closeout.md.
+
+Developer transfer commands are registered; in-world round trip and sky/terrain acceptance remain
+unverified. Use devcommands then magenheim_underworld enter|return|status. Next ecology: Sulfurous
+Wastes after live review. Artwork prompts/provenance: assets/textures/underworld/sky/README.md.
+
+Launcher description: "0.0.104: Sunless lava-and-fungal cavern sky with masked glow and dim day/night lighting. Overhead haze at 4.8 km; sharp terrain capped at 5.1 km. Fixes the native dungeon-height restriction for Underworld building."
+
 # Current release - 0.0.103 (2026-09-23)
 
 Monumental terrain checkpoint `41a02be` installed in Central Fuckery: sparse spires and sheer

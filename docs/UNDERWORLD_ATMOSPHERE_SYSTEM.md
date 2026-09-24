@@ -1,6 +1,18 @@
 # Underworld shared atmosphere system
 
-**Status:** source implementation added 2026-09-21; deterministic Core logic is test-covered in source. Runtime compilation and live visual acceptance remain separate closeout work.
+**Status:** updated for 0.0.104 on 2026-09-23. Deterministic Core logic and runtime compilation are verified; live visual acceptance remains separate.
+
+The shared roof is a dark basalt panorama with lava fissures and fungal stars. A separate,
+pixel-aligned emission mask is composed into an HDR texture once at load. Unity's existing
+panoramic sky shader renders it without a sun disc. The mask makes the roof appear luminous;
+Valheim's dimmed directional and ambient environment lights illuminate the world, using its
+existing day fraction. This is an artistic lighting approximation, not light transport from
+individual roof pixels. No specular trick, extra clock or per-star lights are used.
+
+Borrowed native cloud geometry forms overhead haze at native height 4800m. Occasional sheer
+spires and plateau crowns end at or below 5100m, just above that haze. These are visual height
+targets, not a physical sky collider or flight/build ceiling. Surface sky/cloud state is restored
+on exit. In-game brightness, haze opacity, shadows and restoration still require acceptance.
 
 The Underworld uses one obscuration mechanic with six biome interpretations rather than six independent fog implementations.
 

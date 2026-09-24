@@ -1,3 +1,19 @@
+# Development closeout - 0.0.104 sunless cavern sky
+
+Testing candidate: masked lava/fungal roof glow, dim native day/night lighting, native cloud
+geometry forming haze at 4800m, and sharp terrain capped at 5100m. The native dungeon-height
+shortcut is bypassed only inside the admitted Underworld instance so landscape building works.
+
+Run `closeout.ps1 -Offline` to validate, package, back up and install into Central Fuckery.
+Expected enabled launcher version: **Magenheim 0.0.104**.
+Launcher description: "0.0.104: Sunless lava-and-fungal cavern sky with masked glow and dim day/night lighting. Overhead haze at 4.8 km; sharp terrain capped at 5.1 km. Fixes the native dungeon-height restriction for Underworld building."
+
+The sky mask supplies visible glow; native directional/ambient light illuminates terrain.
+Offline roof and terrain projection reviews do not establish live world acceptance. Test entry
+and return, sky/haze readability at day and night, cliff collision, and Surface restoration.
+Developer console: `devcommands`, then `magenheim_underworld enter|return|status`.
+Execution evidence: `docs/validation/2026-09-23-sunless-sky-closeout.md` in the source repository.
+
 # Development closeout - 0.0.103 monumental terrain
 
 Full offline closeout installed and hash/catalog verified in Central Fuckery. Terrain includes

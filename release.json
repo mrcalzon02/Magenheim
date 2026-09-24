@@ -1,4 +1,4 @@
 {
-  "version": "0.0.103",
-  "description": "0.0.103: Monumental Underworld terrain - kilometre-high spires and sheer plateaus, distant terrain, clearer skyline visibility and cliff texture projection. Includes new unique biome locations and Deep Sigil discovery."
+  "version": "0.0.104",
+  "description": "0.0.104: Sunless lava-and-fungal cavern sky with masked glow and dim day/night lighting. Overhead haze at 4.8 km; sharp terrain capped at 5.1 km. Fixes the native dungeon-height restriction for Underworld building."
 }

@@ -28,6 +28,8 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
     private float _nextSampleAt;
     private bool _active;
     private FogSnapshot _surfaceFog;
+    private readonly UnderworldSkyboxPresentation _skybox = new();
+    private bool _skyFailureReported;
     private Camera? _instanceCamera;
     private float _surfaceFarClip;
     private UnderworldAtmosphereState _target;
@@ -136,6 +138,15 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
             if (_instanceCamera) _surfaceFarClip = _instanceCamera.farClipPlane;
         }
         if (_instanceCamera) _instanceCamera.farClipPlane = Mathf.Max(_surfaceFarClip, 22000f);
+        if (!_skyFailureReported)
+        {
+            try { _skybox.Apply(_instanceCamera); }
+            catch (Exception exception)
+            {
+                _skyFailureReported = true;
+                _log?.LogError($"Underworld skybox could not be applied: {exception}");
+            }
+        }
         var amount = 1f - Mathf.Exp(-Mathf.Max(0f, Time.unscaledDeltaTime) * TransitionRate);
         _visualDensity = Mathf.Lerp(_visualDensity, (float)_target.VisualDensity01, amount);
         _visibility = Mathf.Lerp(_visibility, (float)_target.VisibilityMeters, amount);
@@ -146,7 +157,8 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
 
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
-        RenderSettings.fogColor = _fogColor;
+        var phase = EnvMan.instance ? EnvMan.instance.GetDayFraction() : .5f;
+        RenderSettings.fogColor = _fogColor * (float)UnderworldSkyLighting.FogBrightness(phase);
         RenderSettings.fogDensity = Mathf.Clamp(1.55f / Mathf.Max(8f, _visibility),
             MinimumFogDensity, MaximumFogDensity);
         RenderSettings.fogStartDistance = 0f;
@@ -180,6 +192,8 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
     private void Deactivate()
     {
         if (!_active) return;
+        _skybox.Restore();
+        _skyFailureReported = false;
         _surfaceFog.Restore();
         RestoreCamera();
         _active = false;
@@ -197,7 +211,7 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
 
     private void OnDisable() => Deactivate();
 
-    private void OnDestroy() => Deactivate();
+    private void OnDestroy() { Deactivate(); _skybox.Dispose(); }
 
     private static Color ToColor(UnderworldAtmosphereState state) =>
         new((float)state.FogRed01, (float)state.FogGreen01, (float)state.FogBlue01, 1f);

@@ -27,11 +27,12 @@ internal static class UnderworldMonumentalLandformTests
                 count++; perSeed++; kinds.Add(form.Kind);
                 Assert(UnderworldMonumentalLandforms.TryGet(domain, seed, x, z, out var repeat) && repeat == form,
                     "seeded shape must be stable");
-                Assert(form.Height >= 3200d && form.Height <= 5600d, "landmarks must rise for miles");
+                Assert(form.Height >= 3200d && form.Height <= UnderworldSkyLighting.MaximumTerrainHeightMeters, "landmarks must rise for miles");
                 Assert(Math.Sqrt(form.X * form.X + form.Z * form.Z) - form.ExtentMeters
                     >= domain.RadiusMeters * .27d, "complete footprint must avoid arrival basin");
                 var summit = Sample(form.X, form.Z, seed);
                 Assert(domain.Contains(form.X, summit.Height + 2d, form.Z), "summit and standing player must fit domain");
+                Assert(summit.Height <= UnderworldSkyLighting.MaximumTerrainHeightMeters, "summits must end just above cavern haze");
                 Assert(summit.Height > 3000d, "full lifecycle must not clamp monuments back to hills");
                 var dx = Math.Cos(form.Rotation); var dz = Math.Sin(form.Rotation);
                 var rise = 0d;

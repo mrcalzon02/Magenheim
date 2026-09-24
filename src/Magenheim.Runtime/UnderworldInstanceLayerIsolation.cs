@@ -184,3 +184,17 @@ internal static class UnderworldLayerPrefabCachePatch
 {
     private static void Postfix() => UnderworldLayerIsolation.RefreshAlwaysLoadedPrefabs();
 }
+
+// Vanilla uses engine Y > 3000 as a dungeon-interior shortcut. The dedicated instance's
+// backing offset must not turn its entire landscape into a no-building dungeon.
+[HarmonyPatch(typeof(Character), "InInterior", new[] { typeof(Vector3) })]
+internal static class UnderworldNativeLandscapeInteriorPatch
+{
+    private static void Postfix(Vector3 __0, ref bool __result)
+    {
+        if (!__result || !UnderworldInstanceLayer.IsUnderworldEnginePosition(__0)) return;
+        var native = UnderworldInstanceLayer.ToLogical(__0);
+        if (UnderworldTerrainRuntime.ContainsInstancePosition(native.x, native.y, native.z))
+            __result = false;
+    }
+}

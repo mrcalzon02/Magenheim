@@ -47,6 +47,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Generated assets are out of date with the generators that own them.' }
     & python "$PSScriptRoot/tools/verify-model-assets.py"
     if ($LASTEXITCODE -ne 0) { throw 'Model asset validation failed.' }
+    & python "$PSScriptRoot/tools/verify-underworld-sky.py"
+    if ($LASTEXITCODE -ne 0) { throw 'Underworld sky artwork validation failed.' }
     & python "$PSScriptRoot/tools/verify-icon-assets.py"
     if ($LASTEXITCODE -ne 0) { throw 'Icon asset validation failed.' }
     # Texture quality is a package gate, not an optional artist report. These run without Blender

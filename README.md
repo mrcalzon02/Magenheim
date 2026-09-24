@@ -2,12 +2,13 @@
 
 **Magic begins as geology.**
 
-## 0.0.103 testing candidate
+## 0.0.104 testing candidate
 
-The Underworld now includes occasional 3.2–5.6 km spires and sheer-sided plateaus, with distant
-terrain, longer clear-air visibility and cliff texture projection. The walkable arrival basin is
-preserved. Includes unique biome locations and Deep Sigil discovery from the latest main.
-Terrain appearance, performance and interactions still need in-world acceptance.
+The Underworld now has a shared lava-and-fungal-star cavern sky with no visible sun and a dim
+natural day/night lighting cycle. Overhead haze sits at 4.8 km; occasional sheer plateaus and
+needle spires top out just above it at 5.1 km. The native dungeon-height classification no longer
+blocks building across the dedicated instance. Live world appearance and building acceptance
+remain pending.
 
 Eight biome geodes, eight five-tier crystal families and shards, Crystal Shaping,
 workstation opening/refinement, sockets, eight four-tier staff families, crystal
@@ -19,10 +20,10 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.103.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.104.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
-Launch **Modded**. Confirm `Loading [Magenheim 0.0.103]` in the BepInEx log.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.104]` in the BepInEx log.
 Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
 See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.

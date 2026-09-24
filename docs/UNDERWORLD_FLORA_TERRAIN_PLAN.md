@@ -13,9 +13,12 @@ in validation records; unlisted content remains planned.
 
 ## Shared cavern skybox constraint (authoritative)
 
-The Underworld is a copy of the surface world with altered terrain generation. Its custom
-fantastical underground skybox depicts **one shared cavern roof across every biome**.
-Keep that custom skybox: neither its roof nor its appearance changes by terrain area.
+The Underworld is a separate native instance world-space with its own terrain authority. Its
+custom underground skybox depicts **one shared cavern roof across every biome**.
+The roof is dark basalt with lava fissures and glowing fungal stars, with no visible sun or moon.
+Its dim light follows Valheim's natural day/night clock; the same artwork spans every biome.
+The native overhead haze line is 4800m and the highest terrain ends just above it at 5100m.
+These are presentation/terrain design values, not new flight or building restrictions.
 There is no physical world ceiling to generate, collide with, attach flora to, mine or drop.
 Biome identity comes from heightfield terrain, ground-supported flora and rock formations,
 water, props and local effects. Ignore conflicting roofing/ceiling assumptions in companion

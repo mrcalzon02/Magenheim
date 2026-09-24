@@ -213,8 +213,8 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
         environment.m_isFreezing = style.Freezing;
         environment.m_isFreezingAtNight = false;
 
-        environment.m_ambColorDay = style.Ambient;
-        environment.m_ambColorNight = Scale(style.Ambient, 0.58f);
+        environment.m_ambColorDay = Scale(style.Ambient, 0.55f);
+        environment.m_ambColorNight = Scale(style.Ambient, 0.25f);
 
         environment.m_fogColorDay = style.Fog;
         environment.m_fogColorMorning = style.Fog;
@@ -231,8 +231,8 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
         environment.m_sunColorEvening = style.Sun;
         environment.m_sunColorNight = Scale(style.Sun, 0.45f);
 
-        environment.m_lightIntensityDay = style.LightDay;
-        environment.m_lightIntensityNight = style.LightNight;
+        environment.m_lightIntensityDay = Math.Min(style.LightDay, (float)UnderworldSkyLighting.MaximumDirectionalDay);
+        environment.m_lightIntensityNight = Math.Min(style.LightNight, (float)UnderworldSkyLighting.MaximumDirectionalNight);
         environment.m_windMin = style.WindMin;
         environment.m_windMax = style.WindMax;
 

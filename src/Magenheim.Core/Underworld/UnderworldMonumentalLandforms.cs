@@ -37,9 +37,9 @@ public readonly record struct UnderworldMonumentalLandform(
 
 public static class UnderworldMonumentalLandforms
 {
-    public const string AlgorithmId = "faceted-monuments-v1";
+    public const string AlgorithmId = "faceted-monuments-v2-haze-line";
     public const double CellSizeMeters = 3072d;
-    public const double MaximumHeightMeters = 5600d;
+    public const double MaximumHeightMeters = UnderworldSkyLighting.MaximumTerrainHeightMeters;
 
     public static bool TryGet(UnderworldInstanceTerrainDomain domain, int seed, int cellX, int cellZ,
         out UnderworldMonumentalLandform landform)
@@ -58,10 +58,9 @@ public static class UnderworldMonumentalLandforms
         if (distance - extent < domain.RadiusMeters * .27d || distance + extent > domain.RadiusMeters - 64d)
             return false;
         // Custom short domains must never generate an unreachable summit above their ceiling.
-        var available = domain.MaximumY - UnderworldTerrainLifecycle.BaseElevationMeters -
-                        UnderworldTerrainLifecycle.MaximumTerrainDelta - 128d;
+        var available = domain.MaximumY - 128d;
         if (available < 3200d) return false;
-        var height = Math.Min(available, 3200d + Unit(hash, 53u) * 2400d);
+        var height = Math.Min(available, 3200d + Unit(hash, 53u) * (MaximumHeightMeters - 3200d));
         landform = new UnderworldMonumentalLandform(x, z, radius, height,
             Unit(hash, 71u) * Math.PI / 3d,
             plateau ? UnderworldLandformKind.Plateau : UnderworldLandformKind.Spire);

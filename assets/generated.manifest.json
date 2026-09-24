@@ -746,6 +746,26 @@
         "assets/models/source/underworld-resource-pale-fibre.blend": null
       },
       "inputs_sha256": "4c2297f64573f2e949de897eb4f7f5cb5b5c3baea30ba3067c19bb1280356e1a"
+    },
+    {
+      "id": "underworld-sky-emission",
+      "generator": "tools/build-underworld-sky-emission.py",
+      "inputs": [
+        "assets/textures/underworld/sky/lava-fungal-roof-v2.png"
+      ],
+      "command": [
+        "python",
+        "tools/build-underworld-sky-emission.py"
+      ],
+      "outputs": [
+        "assets/textures/underworld/sky/lava-fungal-roof-emission.png"
+      ],
+      "hash": "bytes",
+      "generator_sha256": "c7fd9141e13657a4e0bd34c815490be695e625b66e05674400b80d652e9b54ce",
+      "inputs_sha256": "8e6af00f6e8c838706d48756e6534f631f6a5e5258f217c19b9981d49e209528",
+      "output_sha256": {
+        "assets/textures/underworld/sky/lava-fungal-roof-emission.png": "8e3268cc5d95c278cca54edcc148741781a7fc0a4cff832dfad46e7ff6a8a6a2"
+      }
     }
   ]
 }

@@ -22,6 +22,10 @@ internal static class UnderworldTerrainRuntime
         log.LogInfo("Native Underworld terrain authority configured without Surface WorldGenerator hooks.");
     }
 
+    internal static bool ContainsInstancePosition(double x, double y, double z) =>
+        _services is not null && _services.InstanceLifecycle.Identity is not null &&
+        InstanceAvailable(_services) && _services.TerrainDomain.Contains(x, y, z);
+
     internal static bool TryGetCapturedSeed(out int seed)
     {
         var identity = _services?.InstanceLifecycle.Identity;

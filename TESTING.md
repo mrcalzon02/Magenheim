@@ -4,19 +4,19 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.103 by Local** and start its description with
-**0.0.103: Monumental Underworld terrain**.
+show **Magenheim v0.0.104 by Local** and start its description with
+**0.0.104: Sunless lava-and-fungal cavern sky**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.103]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.104]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
 is under `BepInEx/plugins/Local-Magenheim/Magenheim`. Launching vanilla Steam
 does not use this profile. Exit the game before rebuilding or installing.
 
-## Monumental terrain acceptance — 0.0.103
+## Monumental terrain acceptance â€” 0.0.104
 
 Use a disposable world. Enter the paired Underworld and allow roughly 30 seconds for the
 budgeted distant terrain presentation to fill. Inspect from the basin, at a cliff base and from
@@ -31,6 +31,23 @@ and while crossing chunk boundaries. At plateau height, verify standing collisio
 identity and return travel. Recheck Motherbed, Drowned Ring, Furnace Heart and Sigil placement
 against the changed terrain, then multiplayer agreement and save/reload. None of these live
 checks are established by the offline geometry renders or Core tests.
+
+## Sunless sky and haze acceptance - 0.0.104
+
+Look up from every biome: the same basalt roof, lava fissures and fungal star colonies must
+remain, without a Surface sun, moon or cloud backdrop. Compare native dawn, noon, dusk and
+midnight: light should cycle smoothly and stay dimmer than the Surface; glowing colonies must
+remain readable at night. Lava and fungal cores should glow while unmasked rock stays dark;
+turn the camera to verify their appearance is emissive rather than moving specular highlights.
+Check zenith stretching and the panorama wrap seam in motion.
+
+Fly to the overhead haze around native Y=4800m; the highest terrain should end at or below
+5100m, only just above that band. These are visual limits, not flight/build restrictions.
+Place a supported ordinary building piece at floor and plateau height: the dungeon-location
+rejection should not apply in the active Underworld. Verify ordinary Surface dungeons still
+retain their normal restriction. Return to the Surface and check sky, clouds, camera distance,
+weather and daylight restore; repeat entry/return and save/reload. Record actual frame time and
+shader/haze failures from the log. Offline projection renders do not establish these results.
 
 ## What is present
 
@@ -77,7 +94,7 @@ Spawn IDs (`spawn <id> 1`):
 
 ## Candidate acceptance matrix
 
-Confirm the startup log reports **0.0.103** and has no Magenheim bootstrap or registration
+Confirm the startup log reports **0.0.104** and has no Magenheim bootstrap or registration
 errors. Keep logs and screenshots with each result. Mark checks PASS / FAIL / NOT RUN;
 record game version, mod list, host/client role, seed, steps, expected/actual result.
 

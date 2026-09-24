@@ -7,7 +7,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>Magenheim</AssemblyName>
     <RootNamespace>Magenheim.Runtime</RootNamespace>
-<Version>0.0.103</Version>
+<Version>0.0.104</Version>
     <ValheimManagedPath Condition="'$(ValheimManagedPath)' == ''">$(MSBuildThisFileDirectory)../../../valheim_Data/Managed</ValheimManagedPath>
   </PropertyGroup>
 
@@ -44,6 +44,9 @@
          the runtime can prefer production artwork while retaining procedural textures as fallback. -->
     <None Include="../../assets/textures/underworld/terrain/*.png"
           Link="assets/textures/underworld/terrain/%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../assets/textures/underworld/sky/lava-fungal-roof-v2.png;../../assets/textures/underworld/sky/lava-fungal-roof-emission.png"
+          Link="assets/textures/underworld/sky/%(Filename)%(Extension)"
           CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../default-data/foundation.json"
           Link="default-data/foundation.json"

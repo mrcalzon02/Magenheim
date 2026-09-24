@@ -101,6 +101,22 @@ internal static class UnderworldAtmosphereTests
                    UnderworldAtmosphereEvent.DeepFog),
             "Deep Fog eligibility must remain confined to moisture/cold fog ecologies.");
 
+        Assert(UnderworldSkyLighting.Exposure(0d) == UnderworldSkyLighting.NightExposure,
+            "Roof glow must remain visible at midnight.");
+        Assert(UnderworldSkyLighting.Exposure(.5d) == UnderworldSkyLighting.DayExposure,
+            "Roof exposure must follow the native noon phase.");
+        for (var i = -100; i <= 200; i++)
+        {
+            var phase = i / 100d;
+            var exposure = UnderworldSkyLighting.Exposure(phase);
+            Assert(exposure >= .38d && exposure <= .80d, "Roof must remain subdued throughout the cycle.");
+            Assert(Math.Abs(exposure - UnderworldSkyLighting.Exposure(phase + 1d)) < 1e-12d,
+                "Lighting must repeat with the native day, including time skips.");
+        }
+        Assert(Math.Abs(UnderworldSkyLighting.Exposure(.999999d) - UnderworldSkyLighting.Exposure(.000001d)) < 1e-10d,
+            "Midnight must not flash on day rollover.");
+        Assert(UnderworldSkyLighting.FogBrightness(0d) < UnderworldSkyLighting.FogBrightness(.5d),
+            "Ambient fog must dim with night instead of washing out the sky.");
         return assertions;
     }
 }
