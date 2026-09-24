@@ -118,12 +118,12 @@ Preserve the reusable authorities: six-biome terrain rules, deterministic layout
 
 - [x] **Correct authority documents. DONE 2026-09-18.** INSTRUCTIONS.md and UNDERWORLD_DESIGN.md now make the dedicated instance-world boundary explicit and forbid the x=40000 far-landmass model as final architecture.
 - [x] **Stop extending host-band pin projection. DONE 2026-09-18.** The temporary projected-pin presentation mutation is removed; native instance coordinates will feed the Underworld map.
-- [ ] **Introduce the instance lifecycle authority.** Own instance identity, admission, activation/deactivation, logical origin, chunk address space and recovery without hot-swapping Valheim singleton World/ZNet state.
-- [ ] **Move terrain generation behind an instance chunk provider.** Reuse UnderworldTerrainLifecycle rules, but stop generating the Underworld through distant Surface WorldGenerator.GetBiomeHeight/GetBiome columns.
-- [ ] **Replace host-band placement.** Deep Gate entry/return, Conclave placement, structures and ecology must consume native instance anchors rather than UnderworldSpatialDomain.ToHostAnchor x=40000 placement.
-- [ ] **Reconcile instance persistence.** Key terrain/chunk, exploration and world-object state to the parent-world + Underworld-instance identity. Do not persist Magenheim-owned player-layer/transition truth.
-- [ ] **Multiplayer instance admission.** Server owns instance identity/configuration synchronization. Use Valheim player/network authority rather than reconstructing instance state from per-player transition records.
-- [ ] **Runtime acceptance.** Disposable-world Surface -> Underworld -> Surface, interrupted entry recovery, save/reload below, reconnect, host/client and dedicated-server proof.
+- [x] **Introduce the instance lifecycle authority. DONE 2026-09-24.** `UnderworldInstanceLifecycle` now owns the admitted parent/derived identity and native instance layer; player placement is resolved from physical instance residency rather than a mutable global layer or tracked Underworld population.
+- [x] **Move terrain generation behind an instance chunk provider. DONE 2026-09-24.** Native chunk grid/sampling, streaming and materialization authorities now consume the admitted Underworld instance instead of generating a distant Surface-world continent.
+- [x] **Replace host-band placement. DONE 2026-09-24.** Live Underworld placement no longer consumes `UnderworldSpatialDomain.ToHostAnchor`; Deep Gate transit, Conclave/structures and biome residency use the dedicated engine layer/native anchors.
+- [x] **Reconcile instance persistence. DONE 2026-09-24 (static authority audit).** Deepstone and Nowhere King progression, persistent generated objects, Deep Sigils, Deep Boons and the vanilla-Minimap Underworld payload are scoped to the admitted derived-instance identity. Historical unscoped keys survive only as one-way migration/recovery inputs. Runtime save/reload proof remains in the acceptance item below.
+- [x] **Multiplayer instance admission. DONE 2026-09-24 (static authority audit).** Server-owned instance identity and requesting-player physical residency now gate remote Deep Boon, Deepstone and Deep Gate mutations. No Magenheim-owned Underworld player-population truth is maintained.
+- [ ] **Runtime acceptance — ONLY REMAINING P0.-1 CLOSURE GATE.** Exercise a disposable installed Valheim world through Surface -> Underworld -> Surface, interrupted entry/relog recovery, save/reload while below, reconnect, host/client isolation and dedicated-server behavior. Do not mark P0.-1 globally closed from static inspection alone.
 
 
 ## P0.0 — Live play defects from the 0.0.52 session (TOP PRIORITY, raised 2026-09-16)
