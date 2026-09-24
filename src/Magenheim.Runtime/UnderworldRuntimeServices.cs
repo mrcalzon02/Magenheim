@@ -38,6 +38,7 @@ internal sealed class UnderworldRuntimeServices
         BiomeStructureResidency.Register(new FungalDeepSigilFamily());
         BiomeStructureResidency.Register(new SulfurFurnaceHeartCalderaFamily(this));
         BiomeStructureResidency.Register(new SulfurThreeLavafallsLandmarkFamily());
+        BiomeStructureResidency.Register(new SulfurDeepSigilFamily());
         BiomeStructureResidency.Register(new FrozenWallLandmarkFamily());
         BiomeStructureResidency.Register(new GreatDecayVanishingRoadLandmarkFamily());
         BiomeStructureResidency.Register(new BrokenAncientBridgeLandmarkFamily());
