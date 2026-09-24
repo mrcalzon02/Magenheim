@@ -45,7 +45,12 @@ internal static class UnderworldUniqueLocationDiscoveryCatalog
                 "magenheim.underworld.biome.frozen_caverns",
                 "magenheim.underworld.location.white_silence",
                 UnderworldTerrainBiome.FrozenCaverns,
-                "$magenheim_underworld_stillvault")
+                "$magenheim_underworld_stillvault"),
+            ["magenheim.underworld.biome.great_decay"] = new(
+                "magenheim.underworld.biome.great_decay",
+                "magenheim.underworld.location.carrion_crown",
+                UnderworldTerrainBiome.GreatDecay,
+                "$magenheim_underworld_carrion_crown")
         };
 
     internal static bool TryResolve(string biomeId, string locationId, out Entry entry)
