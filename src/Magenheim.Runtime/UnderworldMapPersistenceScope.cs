@@ -23,10 +23,10 @@ internal static class UnderworldMapPersistenceScope
         var player = Player.m_localPlayer;
         var net = ZNet.instance;
         if (player is null || net is null) return;
-        if (!TryResolveAdmittedIdentity(out var identity)) return;
+        if (!UnderworldTerrainRuntime.TryGetAdmittedIdentity(out var identity) || identity is null) return;
 
         var legacyKey = LegacyKey(net.GetWorldUID());
-        var scopedKey = ScopedKey(net.GetWorldUID(), identity!);
+        var scopedKey = ScopedKey(net.GetWorldUID(), identity);
 
         // Prefer already-scoped state. This also overwrites any stale session bridge left behind by
         // an interrupted save from another derived instance.
@@ -46,22 +46,14 @@ internal static class UnderworldMapPersistenceScope
     {
         var net = ZNet.instance;
         if (player is null || net is null || player != Player.m_localPlayer) return;
-        if (!TryResolveAdmittedIdentity(out var identity)) return;
+        if (!UnderworldTerrainRuntime.TryGetAdmittedIdentity(out var identity) || identity is null) return;
 
         var legacyKey = LegacyKey(net.GetWorldUID());
         if (!player.m_customData.TryGetValue(legacyKey, out var encoded) || string.IsNullOrWhiteSpace(encoded))
             return;
 
-        player.m_customData[ScopedKey(net.GetWorldUID(), identity!)] = encoded;
+        player.m_customData[ScopedKey(net.GetWorldUID(), identity)] = encoded;
         player.m_customData.Remove(legacyKey);
-    }
-
-    private static bool TryResolveAdmittedIdentity(out UnderworldWorldIdentity? identity)
-    {
-        identity = UnderworldRuntimeServices.Instance?.InstanceLifecycle.Identity;
-        if (identity is null) return false;
-        var phase = UnderworldRuntimeServices.Instance!.InstanceLifecycle.Phase;
-        return phase == UnderworldInstancePhase.Admitting || phase == UnderworldInstancePhase.Active;
     }
 
     private static string LegacyKey(long worldUid) => LegacyPrefix + worldUid.ToString("X16");
