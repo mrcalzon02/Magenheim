@@ -26,6 +26,18 @@ internal static class UnderworldTerrainRuntime
         _services is not null && _services.InstanceLifecycle.Identity is not null &&
         InstanceAvailable(_services) && _services.TerrainDomain.Contains(x, y, z);
 
+    internal static bool TryGetAdmittedIdentity(out UnderworldWorldIdentity? identity)
+    {
+        var services = _services;
+        identity = services?.InstanceLifecycle.Identity;
+        if (services is null || identity is null || !InstanceAvailable(services))
+        {
+            identity = null;
+            return false;
+        }
+        return true;
+    }
+
     internal static bool TryGetCapturedSeed(out int seed)
     {
         var identity = _services?.InstanceLifecycle.Identity;
