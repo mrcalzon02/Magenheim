@@ -17,6 +17,7 @@ internal static class UnderworldMapPersistenceScope
 {
     private const string LegacyPrefix = "magenheim.map.underworld.v1.";
     private const string ScopedPrefix = "magenheim.map.underworld.v2.";
+    private static string _preparedScope = string.Empty;
 
     internal static void PrepareForMapLoad()
     {
@@ -27,19 +28,18 @@ internal static class UnderworldMapPersistenceScope
 
         var legacyKey = LegacyKey(net.GetWorldUID());
         var scopedKey = ScopedKey(net.GetWorldUID(), identity);
+        if (string.Equals(_preparedScope, scopedKey, StringComparison.Ordinal)) return;
 
         // Prefer already-scoped state. This also overwrites any stale session bridge left behind by
         // an interrupted save from another derived instance.
         if (player.m_customData.TryGetValue(scopedKey, out var scoped) && !string.IsNullOrWhiteSpace(scoped))
-        {
             player.m_customData[legacyKey] = scoped;
-            return;
-        }
-
-        // One-way migration for pre-v2 saves. Migration is allowed only while an authoritative
-        // derived instance is admitted; after the next player save the legacy slot is retired.
-        if (player.m_customData.TryGetValue(legacyKey, out var legacy) && !string.IsNullOrWhiteSpace(legacy))
+        else if (player.m_customData.TryGetValue(legacyKey, out var legacy) && !string.IsNullOrWhiteSpace(legacy))
+            // One-way migration for pre-v2 saves. Migration is allowed only while an authoritative
+            // derived instance is admitted; after the next player save the legacy slot is retired.
             player.m_customData[scopedKey] = legacy;
+
+        _preparedScope = scopedKey;
     }
 
     internal static void CommitScopedPayload(Player player)
@@ -64,6 +64,16 @@ internal static class UnderworldMapPersistenceScope
 
 [HarmonyPatch(typeof(Minimap), "LoadMapData")]
 internal static class UnderworldMapPersistenceScopeLoadPatch
+{
+    [HarmonyPriority(Priority.First)]
+    private static void Prefix() => UnderworldMapPersistenceScope.PrepareForMapLoad();
+}
+
+// Instance admission can complete after vanilla Minimap.LoadMapData during world startup. Retry the
+// preparation boundary from the ordinary Minimap update until one admitted identity is prepared;
+// the scope guard makes this a one-shot operation rather than a per-frame persistence path.
+[HarmonyPatch(typeof(Minimap), "Update")]
+internal static class UnderworldMapPersistenceScopeAdmissionPatch
 {
     [HarmonyPriority(Priority.First)]
     private static void Prefix() => UnderworldMapPersistenceScope.PrepareForMapLoad();
