@@ -46,6 +46,40 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
     private Button? _surfaceButton;
     private Button? _underworldButton;
 
+    internal static bool UpdateBiomeLabels(Minimap map, Player player)
+    {
+        var runtime = _instance;
+        if (runtime is null || !player) return false;
+        var large = Minimap.IsOpen();
+        var underworld = large ? runtime._boundLayer == UnderworldLayer.Underworld
+            : UnderworldInstanceLayer.IsUnderworldEnginePosition(player.transform.position);
+        if (!underworld) return false;
+        var point = UnderworldInstanceLayer.ToLogical(player.transform.position);
+        if (large)
+        {
+            var cursor = ZInput.IsMouseActive() || ZInput.IsTouchPressedDown()
+                ? ZInput.pointerPosition : new Vector3(Screen.width / 2f, Screen.height / 2f);
+            point = (Vector3)AccessTools.Method(typeof(Minimap), "ScreenToWorldPoint", new[] { typeof(Vector3) }).Invoke(map, new object[] { cursor });
+            if (!(bool)AccessTools.Method(typeof(Minimap), "IsExplored", new[] { typeof(Vector3) }).Invoke(map, new object[] { point })) { map.m_biomeNameLarge.text = string.Empty; return true; }
+        }
+        var terrain = UnderworldTerrainRuntime.SampleInstanceTerrain(point.x, 0d, point.z);
+        var name = terrain.Admitted ? terrain.Biome switch
+        {
+            UnderworldTerrainBiome.FungalForest => "Fungal Forest",
+            UnderworldTerrainBiome.BlackwaterDeep => "Blackwater Deep",
+            UnderworldTerrainBiome.SulfurousWastes => "Sulfurous Wastes",
+            UnderworldTerrainBiome.FrozenCaverns => "Frozen Caverns",
+            UnderworldTerrainBiome.FractureZones => "Fracture Zones",
+            UnderworldTerrainBiome.GreatDecay => "Great Decay",
+            _ => "Underworld",
+        } : string.Empty;
+        if (large) map.m_biomeNameLarge.text = name;
+        else { map.m_biomeNameSmall.text = name; map.m_biomeNameLarge.text = name; }
+        // Force vanilla's cached biome comparison to refresh when returning to the Surface.
+        AccessTools.Field(typeof(Minimap), "m_biome").SetValue(map, null);
+        return true;
+    }
+
     internal static bool IsRoutingUnderworldGeneration => UnderworldGenerationContext.Value is not null;
 
     internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
@@ -885,4 +919,11 @@ internal static class UnderworldMinimapWorldGeneratorHeightPatch
         __result = (float)terrain.Height;
         return false;
     }
+}
+
+[HarmonyPatch(typeof(Minimap), "UpdateBiome", new[] { typeof(Player) })]
+internal static class UnderworldMinimapBiomeLabelPatch
+{
+    private static bool Prefix(Minimap __instance, Player __0) =>
+        !UnderworldMapTabRuntime.UpdateBiomeLabels(__instance, __0);
 }

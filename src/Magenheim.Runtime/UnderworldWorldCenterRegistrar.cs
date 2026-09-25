@@ -16,8 +16,10 @@ internal static class UnderworldWorldCenterRegistrar
     internal const string StandingStonesName = "Magenheim_UnderworldStandingStones";
     internal const string DescentMonolithName = "Magenheim_DescentMonolith";
     internal const string GeneratedObjectKind = "deepstone-conclave";
-    internal static readonly Vector3 ReturnGateOffset = new(18f, 0f, 0f);
+    internal static readonly Vector3 ReturnGateOffset = new(36f, 0f, 0f);
     internal static readonly Vector3 LogicalCenter = Vector3.zero;
+    private static Transform? _returnGate;
+    private static float _gateApproachDistance = 15f;
 
     private static readonly DeepstoneBinding[] Deepstones =
     {
@@ -46,8 +48,21 @@ internal static class UnderworldWorldCenterRegistrar
             ?? throw new InvalidOperationException("Deep Gate must be registered before the Underworld world center is composed.");
         var gate = UnityEngine.Object.Instantiate(gatePrefab, root.transform, false);
         gate.name = UnderworldDeepGateRegistrar.PrefabName;
-        gate.transform.localPosition = ReturnGateOffset;
+        gate.transform.position = ResolveGroundedCenterPosition(ReturnGateOffset);
         gate.transform.localRotation = Quaternion.Euler(0f, -90f, 0f);
+        _returnGate = gate.transform;
+        _gateApproachDistance = 3f;
+        foreach (var renderer in gate.GetComponentsInChildren<MeshRenderer>(true))
+        {
+            var b = renderer.bounds;
+            for (var x = -1; x <= 1; x += 2)
+            for (var z = -1; z <= 1; z += 2)
+            {
+                var corner = b.center + new Vector3(x*b.extents.x, 0f, z*b.extents.z);
+                _gateApproachDistance = Mathf.Max(_gateApproachDistance,
+                    gate.transform.InverseTransformPoint(corner).z + 3f);
+            }
+        }
         var endpoint = gate.GetComponent<UnderworldGateEndpoint>() ?? gate.AddComponent<UnderworldGateEndpoint>();
         endpoint.Role = UnderworldGateRole.ReturnToSurface;
         if (gate.GetComponent<UnderworldDeepGateProgressionRuntime>() == null) gate.AddComponent<UnderworldDeepGateProgressionRuntime>();
@@ -56,7 +71,18 @@ internal static class UnderworldWorldCenterRegistrar
         return root;
     }
 
-    internal static Vector3 ResolveEngineCenterPosition() => ResolveGroundedCenterPosition(LogicalCenter);
+    // Resolve against the actual admitted gate footprint, beyond its frontmost geometry.
+    // The console and real entry gate share this destination; never use the central monolith.
+    internal static Vector3 ResolveEngineCenterPosition()
+    {
+        if (!_returnGate) throw new InvalidOperationException("Underworld return gate is not ready.");
+        var point = _returnGate.TransformPoint(new Vector3(0f, 0f, _gateApproachDistance));
+        var logical = UnderworldInstanceLayer.ToLogical(point);
+        logical.y = 0f;
+        return ResolveGroundedCenterPosition(logical);
+    }
+    internal static Quaternion ArrivalRotation => _returnGate
+        ? Quaternion.LookRotation(_returnGate.forward) : Quaternion.identity;
 
     private static Vector3 ResolveGroundedCenterPosition(Vector3 logical)
     {

@@ -78,12 +78,14 @@ internal static class UnderworldGateTransitRuntime
                 return false;
             }
 
+            Vector3 target;
+            try { target = UnderworldWorldCenterRegistrar.ResolveEngineCenterPosition(); }
+            catch (InvalidOperationException exception) { diagnostic = exception.Message; return false; }
             var source = new SurfaceAnchor(player.transform.position, player.transform.rotation);
             SurfaceReturn[playerId] = source;
             PersistReturnAnchor(player, source);
 
-            var target = UnderworldWorldCenterRegistrar.ResolveEngineCenterPosition();
-            if (player.TeleportTo(target + Vector3.up * 1.2f, Quaternion.identity, false))
+            if (player.TeleportTo(target + Vector3.up * 1.2f, UnderworldWorldCenterRegistrar.ArrivalRotation, false))
             {
                 _log?.LogInfo(
                     $"Deep Gate moved player {playerId} into Underworld instance {identity.DerivedWorldId}.");

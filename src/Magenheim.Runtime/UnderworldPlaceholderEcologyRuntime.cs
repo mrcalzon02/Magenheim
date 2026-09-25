@@ -17,12 +17,13 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
 {
     private UnderworldRuntimeServices? _services;
     private ManualLogSource? _log;
-    private readonly List<GameObject> _spawned = new();
+    private List<GameObject> _spawned = new();
+    private readonly Dictionary<UnderworldInstanceChunkKey, List<GameObject>> _cells = new();
     private string _admitted = string.Empty;
-    private Vector3 _lastBuildPosition;
     private float _nextAt;
-    private const float RebuildDistance = 90f;
-    private const int EcologyClusterCount = 12;
+    private const float CellSize = UnderworldEcologyCells.SizeMeters;
+    private const int LoadRadius = UnderworldEcologyCells.LoadRadius;
+    private const int EcologyClusterCount = 2;
     private const int PlacementsPerCluster = 7;
 
     internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
@@ -34,8 +35,11 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
     private void Update()
     {
         if (Time.unscaledTime < _nextAt) return;
-        _nextAt = Time.unscaledTime + 3f;
-        if (_services is null || ZNet.instance is null || ZNet.World is null) return;
+        _nextAt = Time.unscaledTime + .25f;
+        if (_services is null || ZNet.instance is null || ZNet.World is null)
+        {
+            ClearMarkers(); _admitted = string.Empty; return;
+        }
         var lifecycle = _services.InstanceLifecycle;
         if (lifecycle.Phase != UnderworldInstancePhase.Active || lifecycle.Identity is null)
         {
@@ -56,41 +60,55 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         var player = Player.m_localPlayer;
         if (player is null) return;
         var instancePosition = UnderworldInstanceLayer.ToLogical(player.transform.position);
-        var first = !string.Equals(_admitted, identity.DerivedWorldId, StringComparison.Ordinal);
-        if (!first && Vector3.Distance(instancePosition, _lastBuildPosition) < RebuildDistance) return;
+        if (!string.Equals(_admitted, identity.DerivedWorldId, StringComparison.Ordinal)) ClearMarkers();
         _admitted = identity.DerivedWorldId;
-        _lastBuildPosition = instancePosition;
-        BuildLocalPatch(instancePosition, identity);
+        var focus = UnderworldEcologyCells.KeyAt(instancePosition.x, instancePosition.z);
+        var cx = focus.X; var cz = focus.Z;
+        // Retain complete cells (including collidable rocks) behind the loading frontier.
+        // No surviving object's transform depends on the camera/player position.
+        var stale = new List<UnderworldInstanceChunkKey>();
+        foreach (var pair in _cells)
+            if (!UnderworldEcologyCells.Retain(pair.Key, focus))
+                stale.Add(pair.Key);
+        foreach (var key in stale)
+        {
+            foreach (var item in _cells[key]) if (item) Destroy(item);
+            _cells.Remove(key);
+        }
+        var budget = 3;
+        for (var ring = 0; ring <= LoadRadius; ring++)
+        for (var z = cz - ring; z <= cz + ring; z++)
+        for (var x = cx - ring; x <= cx + ring; x++)
+        {
+            if (Math.Max(Math.Abs(x-cx), Math.Abs(z-cz)) != ring || _cells.ContainsKey(new(x,z))) continue;
+            BuildCell(x, z, identity);
+            if (--budget == 0) return;
+        }
     }
 
-    private void BuildLocalPatch(Vector3 center, UnderworldWorldIdentity identity)
+    private void BuildCell(int cellX, int cellZ, UnderworldWorldIdentity identity)
     {
-        ClearMarkers();
-        var seed = identity.DerivedSeed32 ^
-            (Mathf.RoundToInt(center.x / 90f) * 73856093) ^
-            (Mathf.RoundToInt(center.z / 90f) * 19349663);
+        _spawned = new List<GameObject>();
+        _cells.Add(new(cellX, cellZ), _spawned);
+        var seed = UnderworldEcologyCells.Seed(identity.DerivedSeed32, new(cellX, cellZ));
         var random = new System.Random(seed);
+        var center = new Vector3((cellX + .5f) * CellSize, 0f, (cellZ + .5f) * CellSize);
 
         for (var cluster = 0; cluster < EcologyClusterCount; cluster++)
         {
-            // Four near-field pockets fill the walking view; outer pockets retain distant silhouettes.
-            var ringSlot = cluster < 4 ? cluster : cluster - 4;
-            var ringCount = cluster < 4 ? 4 : 8;
-            var anchorAngle = (float)((ringSlot + .2d + random.NextDouble() * .6d) / ringCount * Math.PI * 2d);
-            var anchorDistance = cluster < 4 ? 28f + (float)random.NextDouble() * 25f
-                : 65f + (float)random.NextDouble() * 80f;
-            var anchorX = center.x + Mathf.Cos(anchorAngle) * anchorDistance;
-            var anchorZ = center.z + Mathf.Sin(anchorAngle) * anchorDistance;
+            var anchorX = cellX * CellSize + 20f + (float)random.NextDouble() * 24f;
+            var anchorZ = cellZ * CellSize + 20f + (float)random.NextDouble() * 24f;
             var anchor = UnderworldTerrainRuntime.SampleInstanceTerrain(anchorX, center.y, anchorZ);
             if (!anchor.Admitted) continue;
 
-            var radius = ClusterRadius(anchor.Biome);
+            var radius = Math.Min(18f, ClusterRadius(anchor.Biome));
             var pocketAngle = (float)(random.NextDouble() * Math.PI * 2d);
             for (var member = 0; member < PlacementsPerCluster; member++)
             {
                 var placement = UnderworldBiomeEcologyComposition.Compose(anchor.Biome, random, radius, member, pocketAngle);
                 var x = anchorX + placement.x;
                 var z = anchorZ + placement.y;
+                if (x*x + z*z < 36f*36f) continue; // Keep the dais and gate approach clear.
                 var sample = UnderworldTerrainRuntime.SampleInstanceTerrain(x, center.y, z);
                 if (!sample.Admitted || sample.Biome != anchor.Biome) continue;
                 var variant = seed + cluster * 101 + member * 17;
@@ -211,9 +229,12 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
 
     private void ClearMarkers()
     {
-        foreach (var item in _spawned) if (item) Destroy(item);
-        _spawned.Clear();
+        foreach (var cell in _cells.Values)
+            foreach (var item in cell) if (item) Destroy(item);
+        _cells.Clear();
+        _spawned = new List<GameObject>();
     }
 
+    private void OnDisable() { ClearMarkers(); _admitted = string.Empty; }
     private void OnDestroy() => ClearMarkers();
 }

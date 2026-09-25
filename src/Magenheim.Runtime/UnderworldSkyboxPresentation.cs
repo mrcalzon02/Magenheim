@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using SoftReferenceableAssets;
 
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// A local material override on Unity's existing sky renderer. No world roof mesh, collider,
+/// A camera-centred background shell using Valheim's shipped unlit shader. No roof collider,
 /// celestial body or second clock. The weather clones still supply Valheim's day/night light.
 /// </summary>
 internal sealed class UnderworldSkyboxPresentation : IDisposable
@@ -16,6 +17,12 @@ internal sealed class UnderworldSkyboxPresentation : IDisposable
     private Material? _surfaceSky;
     private Skybox? _cameraSky;
     private Material? _surfaceCameraSky;
+    private GameObject? _shell;
+    private Mesh? _shellMesh;
+    private Color[]? _shellColors;
+    private float _exposure = -1f;
+    private SoftReference<Shader> _shaderSource;
+    private bool _shaderLoaded;
     private readonly Dictionary<Renderer, bool> _surfaceClouds = new();
     private bool _active;
     private GameObject? _haze;
@@ -37,8 +44,13 @@ internal sealed class UnderworldSkyboxPresentation : IDisposable
             _cameraSky = cameraSky;
             if (_cameraSky) _surfaceCameraSky = _cameraSky.material;
         }
-        RenderSettings.skybox = _material;
-        if (_cameraSky) _cameraSky.material = _material;
+        // The shipped player strips Skybox/Panoramic. Draw our background through its real
+        // unlit particle shader, with fog/fading disabled and ordinary world depth testing.
+        RenderSettings.skybox = null;
+        if (_cameraSky) _cameraSky.material = null;
+        EnsureShell();
+        if (camera) _shell!.transform.position = camera.transform.position;
+        _shell!.SetActive(true);
 
         var manager = EnvMan.instance;
         if (!manager) return;
@@ -49,19 +61,29 @@ internal sealed class UnderworldSkyboxPresentation : IDisposable
         // Native daylight interpolation is also used by the dim EnvSetup clones. The roof
         // remains visible at night; its lava and fungus do not switch off with a sun disc.
         var phase = manager.GetDayFraction();
-        _material!.SetFloat("_Exposure", (float)Magenheim.Core.Underworld.UnderworldSkyLighting.Exposure(phase));
+        var exposure = (float)Magenheim.Core.Underworld.UnderworldSkyLighting.Exposure(phase);
+        if (Mathf.Abs(exposure - _exposure) > .005f)
+        {
+            _exposure = exposure;
+            for (var i = 0; i < _shellColors!.Length; i++) _shellColors[i] = new Color(exposure, exposure, exposure, 1f);
+            _shellMesh!.colors = _shellColors;
+        }
     }
 
     private void EnsureMaterial()
     {
         if (_material) return;
-        // These built-in sky shaders are listed in the installed player's globalgamemanagers.
-        // Panoramic renders only the authored texture: unlike Procedural, it has no sun disc.
-        var shader = Shader.Find("Skybox/Panoramic");
-        if (!shader)
-            foreach (var loaded in Resources.FindObjectsOfTypeAll<Shader>())
-                if (loaded && loaded.name == "Skybox/Panoramic") { shader = loaded; break; }
-        if (!shader) throw new InvalidOperationException("Underworld sky requires the player's Skybox/Panoramic shader.");
+        // Native asset ID verified against StreamingAssets/SoftRef/manifest_extended.
+        if (!_shaderLoaded)
+        {
+            if (!AssetID.TryParse("e1e858596580e684788c10ca60865118", out var id))
+                throw new InvalidOperationException("Invalid native unlit sky shader ID.");
+            _shaderSource = new SoftReference<Shader>(id);
+            _shaderSource.Load();
+            _shaderLoaded = true;
+        }
+        var shader = _shaderSource.Asset;
+        if (!shader || !shader.isSupported) throw new InvalidOperationException("Native ParticleUnlit shader could not load.");
 
         var path = Path.Combine(Path.GetDirectoryName(typeof(UnderworldSkyboxPresentation).Assembly.Location)!,
             "assets", "textures", "underworld", "sky", "lava-fungal-roof-v2.png");
@@ -77,7 +99,7 @@ internal sealed class UnderworldSkyboxPresentation : IDisposable
                 mask.width != source.width || mask.height != source.height)
                 throw new InvalidDataException("Roof emission mask must align exactly with the panorama.");
             // Bake the independent material mask once into an HDR panorama. Unity's existing
-            // sky shader can then render self-lit fissures without a custom shader or per-frame
+            // background shader can then render self-lit fissures without a custom shader or per-frame
             // million-pixel texture updates. The native directional/ambient lights light terrain.
             var colour = source.GetPixels32();
             var emission = mask.GetPixels32();
@@ -99,12 +121,16 @@ internal sealed class UnderworldSkyboxPresentation : IDisposable
             texture.filterMode = FilterMode.Trilinear;
             _material = new Material(shader) { name = "Magenheim_Underworld_SunlessSky" };
             _material.SetTexture("_MainTex", texture);
-            _material.SetFloat("_Mapping", 1f); // latitude/longitude, not six-frame layout
-            _material.SetFloat("_ImageType", 0f); // 360 degrees
-            _material.SetFloat("_Layout", 0f); // monoscopic
-            _material.SetFloat("_Rotation", 0f);
-            _material.SetColor("_Tint", Color.gray); // built-in sky shader's neutral tint
-            _material.SetFloat("_Exposure", .65f);
+            _material.renderQueue = 1000;
+            _material.SetFloat("_SrcBlend", 1f);
+            _material.SetFloat("_DstBlend", 0f);
+            _material.SetFloat("_Cull", 0f);
+            _material.SetFloat("_FejdFog", 0f);
+            _material.SetFloat("_SkyMask", 0f);
+            _material.SetFloat("_SoftParticles", 0f);
+            _material.SetFloat("_CameraFadeFactor", 1f);
+            _material.DisableKeyword("SOFTPARTICLES_ON");
+            _material.DisableKeyword("_FEJDFOG_ON");
             _texture = texture;
         }
         catch
@@ -119,6 +145,41 @@ internal sealed class UnderworldSkyboxPresentation : IDisposable
             UnityEngine.Object.Destroy(source);
             UnityEngine.Object.Destroy(mask);
         }
+    }
+
+    private void EnsureShell()
+    {
+        if (_shell) return;
+        const int longitude = 96, latitude = 48;
+        var vertices = new Vector3[(longitude + 1) * (latitude + 1)];
+        var uv = new Vector2[vertices.Length];
+        _shellColors = new Color[vertices.Length];
+        var triangles = new List<int>();
+        for (var y = 0; y <= latitude; y++)
+        for (var x = 0; x <= longitude; x++)
+        {
+            var u = x / (float)longitude; var v = y / (float)latitude;
+            var a = u * Mathf.PI * 2f; var p = v * Mathf.PI;
+            var i = y * (longitude + 1) + x;
+            vertices[i] = new Vector3(Mathf.Sin(p)*Mathf.Cos(a), -Mathf.Cos(p), Mathf.Sin(p)*Mathf.Sin(a)) * 18000f;
+            uv[i] = new Vector2(u, v);
+            _shellColors[i] = Color.white;
+            if (x == longitude || y == latitude) continue;
+            var b = i + longitude + 1;
+            triangles.Add(i); triangles.Add(i+1); triangles.Add(b);
+            triangles.Add(i+1); triangles.Add(b+1); triangles.Add(b);
+        }
+        _shellMesh = new Mesh { name = "Magenheim_CavernSky_Background" };
+        _shellMesh.vertices = vertices; _shellMesh.uv = uv; _shellMesh.colors = _shellColors;
+        _shellMesh.SetTriangles(triangles, 0); _shellMesh.RecalculateBounds();
+        _shell = new GameObject("Magenheim_CavernSky_Background");
+        _shell.AddComponent<MeshFilter>().sharedMesh = _shellMesh;
+        var renderer = _shell.AddComponent<MeshRenderer>();
+        renderer.sharedMaterial = _material;
+        renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        renderer.receiveShadows = false;
+        renderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.Off;
+        renderer.reflectionProbeUsage = UnityEngine.Rendering.ReflectionProbeUsage.Off;
     }
 
     private void ApplyHaze(MeshRenderer? donor, Camera? camera)
@@ -180,6 +241,7 @@ internal sealed class UnderworldSkyboxPresentation : IDisposable
     {
         if (!_active) return;
         if (_haze) _haze.SetActive(false);
+        if (_shell) _shell.SetActive(false);
         RenderSettings.skybox = _surfaceSky;
         RestoreCamera();
         foreach (var pair in _surfaceClouds)
@@ -200,6 +262,10 @@ internal sealed class UnderworldSkyboxPresentation : IDisposable
     {
         Restore();
         DestroyHaze();
+        if (_shell) UnityEngine.Object.Destroy(_shell);
+        if (_shellMesh) UnityEngine.Object.Destroy(_shellMesh);
+        if (_shaderLoaded) _shaderSource.Release();
+        _shaderLoaded = false;
         if (_material) UnityEngine.Object.Destroy(_material);
         if (_texture) UnityEngine.Object.Destroy(_texture);
         _material = null;

@@ -1,10 +1,10 @@
 # Underworld shared atmosphere system
 
-**Status:** updated for 0.0.104 on 2026-09-23. Deterministic Core logic and runtime compilation are verified; live visual acceptance remains separate.
+**Status:** updated for 0.0.105 on 2026-09-24. Deterministic Core logic and runtime compilation are verified; live visual acceptance remains separate.
 
 The shared roof is a dark basalt panorama with lava fissures and fungal stars. A separate,
-pixel-aligned emission mask is composed into an HDR texture once at load. Unity's existing
-panoramic sky shader renders it without a sun disc. The mask makes the roof appear luminous;
+pixel-aligned emission mask is composed into an HDR texture once at load. Valheim's shipped unlit particle shader renders it on a camera-centred background shell
+without a sun disc or collider; the previously requested panoramic shader is stripped from the game. The mask makes the roof appear luminous;
 Valheim's dimmed directional and ambient environment lights illuminate the world, using its
 existing day fraction. This is an artistic lighting approximation, not light transport from
 individual roof pixels. No specular trick, extra clock or per-star lights are used.
@@ -68,3 +68,7 @@ The runtime clones existing Valheim environments only as donors for sky/light/wi
 3. Live-test all six forced environment families and Surface restoration, especially transitions during a vanilla storm outside.
 4. Tune light/wind/visibility from screenshots/video only after donor scenery is present.
 5. Add custom ambient loops later; the current clones intentionally suppress inherited Surface storm audio.
+
+Fungal Forest visibility now targets roughly 0.8km in calm conditions rather than 11km, making
+background spore haze visible. Clear rocky biomes retain long views of monumental terrain.
+The background roof bypasses this ground fog. Live density and brightness remain review items.

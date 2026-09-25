@@ -95,10 +95,9 @@ push; that did not happen.
   invariant. Do not upscale the old 128px PNGs; that satisfies dimensions without adding readable
   information and defeats section 14's vanilla-fitness objective. Model payloads are already covered separately by
   `verify-model-assets.py`.
-- [ ] **`build.ps1` compiles last.** Roughly ten minutes of Blender and asset gates run before the
-  compiler is ever invoked, so a one-word CS0117 costs a full cycle to surface. A fast
-  `dotnet build src/Magenheim.Core` at the top would report it in seconds. Low priority next to the
-  freshness gate above, and it is a workflow improvement rather than a defect.
+- [x] **`build.ps1` compiles before expensive asset gates. DONE 0.0.105.** Runtime and its Core
+  dependency now compile immediately after conflict/freshness checks, followed by the Core suite.
+  Compiler and deterministic-rule failures stop the package before Blender work begins.
 - [x] **`build.ps1` treated native stderr as failure under Windows PowerShell 5.1. FIXED 0.0.63.**
   With both asset defects repaired the build still died at the same line, this time with the gate
   reporting success: Pillow 12.3.0 deprecated `Image.Image.getdata`, and PowerShell 5.1 wraps every

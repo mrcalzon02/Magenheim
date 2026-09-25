@@ -1,3 +1,20 @@
+# Development closeout - 0.0.105 live regression repair
+
+Repairs confirmed by user screenshots/logs: missing roof shader, incorrect purple gate, arrival
+inside the central stone, and player-relative scenery rebuilding that removes collidable rocks.
+Native asset IDs now load the actual Aesir gate and a shipped unlit background shader. Arrival
+resolves from the admitted gate footprint. Ecology uses fixed seeded cells with retention;
+nearby surviving objects are never rebuilt merely because the player moves. Fungal joins are
+fused geometry, ground relief and population are increased, forest haze is stronger, and the
+minimap biome labels read native Underworld data. Incoming instance/persistence repairs retained.
+
+Testing candidate: run closeout.ps1 -Offline; expected enabled launcher version 0.0.105.
+Launcher description: "0.0.105: Repairs missing cavern sky and Aesir gate; arrival uses the gate approach. Stable, denser ecology stops rocks moving underfoot. Organic fungal joins, stronger forest haze, rougher ground and correct Underworld biome labels."
+
+See TESTING.md for live regression checks. Offline tests and Blender model review do not prove
+live gate placement, shader rendering, collision stability or map label restoration.
+Execution record: docs/validation/2026-09-24-underworld-live-regressions.md.
+
 # Development closeout - 0.0.104 sunless cavern sky
 
 Testing candidate: masked lava/fungal roof glow, dim native day/night lighting, native cloud

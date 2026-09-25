@@ -155,7 +155,7 @@ public static class UnderworldTerrainNoise
     // then footstep-scale break-up. The first three are regional and fade out toward the arrival
     // basin; the last three are local and always present, so no part of the realm is ever a plane.
     private static readonly double[] ReliefFeatureMetres = { 2048d, 768d, 256d, 96d, 32d, 11d };
-    private static readonly double[] ReliefAmplitudeMetres = { 72d, 40d, 20d, 10d, 5d, 2d };
+    private static readonly double[] ReliefAmplitudeMetres = { 72d, 40d, 20d, 18d, 8d, 3d };
     private static readonly bool[] ReliefIsRegional = { true, true, true, false, false, false };
 
     private static double Smooth(double value) => value * value * (3d - 2d * value);

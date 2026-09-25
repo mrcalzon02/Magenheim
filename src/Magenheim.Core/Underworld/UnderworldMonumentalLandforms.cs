@@ -37,7 +37,7 @@ public readonly record struct UnderworldMonumentalLandform(
 
 public static class UnderworldMonumentalLandforms
 {
-    public const string AlgorithmId = "faceted-monuments-v2-haze-line";
+    public const string AlgorithmId = "faceted-monuments-v3-local-relief";
     public const double CellSizeMeters = 3072d;
     public const double MaximumHeightMeters = UnderworldSkyLighting.MaximumTerrainHeightMeters;
 

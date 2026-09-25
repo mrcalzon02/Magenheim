@@ -16,6 +16,7 @@ would be the most expensive thing in the cavern. Regrowth and the Motherbloom ar
 (plan section 10 decisions 1 and 6); nothing here assumes either.
 """
 import bpy
+import bmesh
 import math
 import random
 import sys
@@ -30,7 +31,7 @@ from magenheim_flora_kit import Model, buttresses, cap, gills, small_mushrooms, 
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'assets/models/source'
-REVISION = 'fungal-forest-custom-1'
+REVISION = 'fungal-forest-organic-junctions-2'
 Z = Vector((0.0, 0.0, 1.0))
 
 # ------------------------------------------------------------------------------------------------
@@ -117,18 +118,64 @@ def spirestalk(m):
 
 def puffcap(m):
     rng = random.Random(13)
+    # One fused stalk/branch/root skin: no flat cylinder collars at branch insertions.
     trunk_top = Vector((0.1, 0.0, 2.1))
-    m.part('trunk', tube([Vector((0, 0, -0.1)), Vector((0.05, 0, 1.1)), trunk_top], [(0.0, 0.55), (0.12, 0.42), (1.0, 0.40)], 12, 8),
-           'stalk', collider=True)
-    m.part('roots', buttresses((0, 0, 0), 4, 1.0, 0.6, 0.18, rng), 'stalk')
-    branches, puffs = [], []
+    flesh = [tube([Vector((0, 0, -0.1)), Vector((-0.12, 0.1, 0.8)), trunk_top],
+                  [(0.0, 0.62), (0.17, 0.43), (0.65, 0.36), (1.0, 0.26)], 14, 16),
+             buttresses((0, 0, 0), 5, 1.25, 0.85, 0.24, rng)]
+    puffs = []
     for i, (a, reach, rise, r) in enumerate([(0.3, 1.2, 2.3, 1.15), (2.4, 1.0, 1.6, 0.95), (4.4, 1.3, 1.9, 1.05)]):
         d = Vector((math.cos(a), math.sin(a), 0.0))
         end = trunk_top + d * reach + Z * rise
-        branches.append(tube([trunk_top - Z * 0.2, trunk_top + d * reach * 0.4 + Z * rise * 0.5, end],
-                             [(0.0, 0.30), (1.0, 0.22)], 10, 8))
-        puffs.append(blob(tuple(end + Z * r * 0.55), (r, r, r * 0.92), 16, 10))
-    m.part('branches', merge(*branches), 'stalk', collider=True)
+        flesh.append(tube([trunk_top-Z*(1.15-i*.18), trunk_top+d*reach*.18+Z*rise*.15,
+                           end-Z*.3, end+Z*r*.35],
+                          [(0.0, .32), (.35, .3), (.72, .19), (.9, .34), (1.0, r*.62)], 14, 18))
+        # Lobed fruiting body instead of identical spherical bulbs sitting on chopped tubes.
+        puffs.append(blob(tuple(end + Z*r*.65), (r, r*.88, r*1.08), 20, 14))
+    stalk = m.part('fused-stalk', merge(*flesh), 'stalk', collider=True)
+    bpy.context.view_layer.objects.active = stalk
+    stalk.select_set(True)
+    remesh = stalk.modifiers.new('Organic fused branch junctions', 'REMESH')
+    remesh.mode = 'VOXEL'
+    remesh.voxel_size = .055
+    bpy.ops.object.modifier_apply(modifier=remesh.name)
+    soften = stalk.modifiers.new('Growing tissue transitions', 'SMOOTH')
+    soften.factor = 1.2
+    soften.iterations = 4
+    bpy.ops.object.modifier_apply(modifier=soften.name)
+    decimate = stalk.modifiers.new('Game silhouette budget', 'DECIMATE')
+    decimate.ratio = .24
+    bpy.ops.object.modifier_apply(modifier=decimate.name)
+    # Decimation can leave folded n-gons whose polygon normal is zero even though their
+    # individual triangles have area. Triangulate and clean the authored mesh before UV bake.
+    bm = bmesh.new()
+    bm.from_mesh(stalk.data)
+    # Voxel/decimation can leave disconnected two-sided slivers with cancelling normals.
+    # This skin is intentionally one connected organism; retain only its main component.
+    unseen = set(bm.verts)
+    components = []
+    while unseen:
+        pending = [unseen.pop()]
+        component = set(pending)
+        while pending:
+            for edge in pending.pop().link_edges:
+                for vertex in edge.verts:
+                    if vertex in unseen:
+                        unseen.remove(vertex)
+                        component.add(vertex)
+                        pending.append(vertex)
+        components.append(component)
+    main = max(components, key=len)
+    bmesh.ops.delete(bm, geom=[v for c in components if c is not main for v in c], context='VERTS')
+    bmesh.ops.triangulate(bm, faces=list(bm.faces))
+    bmesh.ops.dissolve_degenerate(bm, edges=list(bm.edges), dist=1e-5)
+    bmesh.ops.recalc_face_normals(bm, faces=list(bm.faces))
+    bm.to_mesh(stalk.data)
+    bm.free()
+    stalk.data.update()
+    for poly in stalk.data.polygons: poly.use_smooth = True
+    stalk.data.set_sharp_from_angle(angle=math.radians(55.0))
+    stalk.select_set(False)
     m.part('puffs', merge(*puffs), 'amber')
 
 

@@ -47,3 +47,14 @@ dark. Unity's native panoramic sky shader then applies the smooth clock-driven e
 roof glow is appearance; existing dim directional/ambient environment light illuminates terrain.
 No fake specular highlights, per-star lights or per-frame panorama recomposition are introduced.
 Projection review uses the same composition and both day/night exposures.
+
+## 0.0.105 live-test correction
+
+0.0.104 failed in game: Skybox/Panoramic was listed by name but stripped from the player.
+The HDR panorama is now mapped to a camera-centred background sphere with no collider, using
+Valheim's actual Custom/Particle (Unlit) shader loaded through SoftReferenceableAssets. Its ID
+and asset path are verified against the installed manifest. Fog, soft-particle fading and
+sky masking are disabled for this background material; opaque blending and ordinary depth
+comparison let terrain cover it. Vertex colour carries the same day/night exposure. The Surface
+sky is restored on exit. The artwork and emission mask are unchanged. This adapter still needs
+live rendering acceptance; the prior offline projection images do not prove the runtime repair.

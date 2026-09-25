@@ -115,7 +115,7 @@ public static class UnderworldAtmosphere
 
         // Clear cavern air must reveal kilometre-scale cliffs. Lowland miasma and weather
         // still close the view; exposure/particles remain independent of this sight distance.
-        var horizon = 14000d * Math.Pow(1d - visual, 3d);
+        var horizon = (input.Biome == UnderworldTerrainBiome.FungalForest ? 1100d : 14000d) * Math.Pow(1d - visual, 3d);
         var visibility = Math.Max(Lerp(profile.ClearVisibility, profile.DenseVisibility, visual), horizon);
         return new UnderworldAtmosphereState(
             profile.Kind,

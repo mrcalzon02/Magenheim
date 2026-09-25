@@ -45,8 +45,15 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Resolve conflict markers before building.' }
     & python "$PSScriptRoot/tools/verify-generated-freshness.py"
     if ($LASTEXITCODE -ne 0) { throw 'Generated assets are out of date with the generators that own them.' }
+    # Compile both runtime and its Core dependency before the expensive Blender gates.
+    & $DotNet build src/Magenheim.Runtime -c Release @restoreOptions "-p:BepInExPath=$ProfileRoot/BepInEx" "-p:ValheimManagedPath=$GameRoot/valheim_Data/Managed"
+    if ($LASTEXITCODE -ne 0) { throw 'Runtime build failed.' }
+    & $DotNet run --project tests/Magenheim.Core.Tests -c Release @restoreOptions
+    if ($LASTEXITCODE -ne 0) { throw 'Core tests failed.' }
     & python "$PSScriptRoot/tools/verify-model-assets.py"
     if ($LASTEXITCODE -ne 0) { throw 'Model asset validation failed.' }
+    & python "$PSScriptRoot/tools/verify-underworld-native-assets.py"
+    if ($LASTEXITCODE -ne 0) { throw 'Native Underworld asset bindings failed.' }
     & python "$PSScriptRoot/tools/verify-underworld-sky.py"
     if ($LASTEXITCODE -ne 0) { throw 'Underworld sky artwork validation failed.' }
     & python "$PSScriptRoot/tools/verify-icon-assets.py"
@@ -60,7 +67,7 @@ try {
     }
     # Creature source fidelity gates require Blender rather than Python's standard runtime.
     # They inspect only Magenheim-owned source art and never mutate vanilla/foreign content.
-    foreach ($creatureGate in @('verify-stone-guardian','verify-underworld-sporeling')) { # TEMP: committed capcrawler .blend predates the repaired production-detail source; regenerate before restoring this gate
+    foreach ($creatureGate in @('verify-stone-guardian','verify-underworld-sporeling','verify-fungal-junctions')) { # TEMP: committed capcrawler .blend predates the repaired production-detail source; regenerate before restoring this gate
         & "$PSScriptRoot/tools/blender.ps1" $creatureGate
         if ($LASTEXITCODE -ne 0) { throw "Creature source validation failed: $creatureGate" }
     }
@@ -84,12 +91,9 @@ try {
     }
     & $DotNet run --project tools/ModelAssetTests -c Release @restoreOptions
     if ($LASTEXITCODE -ne 0) { throw 'Model importer tests failed.' }
-    & $DotNet run --project tests/Magenheim.Core.Tests -c Release @restoreOptions
-    if ($LASTEXITCODE -ne 0) { throw 'Core tests failed.' }
-    & $DotNet build src/Magenheim.Runtime -c Release @restoreOptions "-p:BepInExPath=$ProfileRoot/BepInEx" "-p:ValheimManagedPath=$GameRoot/valheim_Data/Managed"
-    if ($LASTEXITCODE -ne 0) { throw 'Runtime build failed.' }
     $ErrorActionPreference = 'Stop'
     & python "$PSScriptRoot/tools/verify-no-baked-surfaces.py"
+    if ($LASTEXITCODE -ne 0) { throw 'Baked surface validation failed.' }
     & "$PSScriptRoot/tools/verify-patch-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
     & "$PSScriptRoot/tools/verify-reflection-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
     & "$PSScriptRoot/tools/verify-runtime-type-availability.ps1" -Assembly "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -ManagedDirectory "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx" -CecilPath "$ProfileRoot/BepInEx/core/Mono.Cecil.dll"

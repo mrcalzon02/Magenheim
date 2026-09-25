@@ -96,6 +96,9 @@ assert len(rows)==344,('Unexpected asset coverage',len(rows))
 # reach the renderer. Each exemption therefore carries the reason it is not art substitution, so
 # adding one is a deliberate act rather than appending a name to a tuple.
 MESH_BUILDERS={
+ 'UnderworldSkyboxPresentation.cs':'maps authored equirectangular artwork onto a camera-centred '
+  'background projection surface because the player strips Skybox/Panoramic. It is not a '
+  'procedural scenery model or a collidable world roof.',
  'ModelAssets.cs':'builds the Mesh that an authored .model.json payload is imported into',
  'EarthAssets.cs':'builds the Mesh that an authored .mesh.json payload is imported into',
  'ModelExportRuntime.cs':'reads meshes back out of the running game for export',

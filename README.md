@@ -2,7 +2,7 @@
 
 **Magic begins as geology.**
 
-## 0.0.104 testing candidate
+## 0.0.105 testing candidate
 
 The Underworld now has a shared lava-and-fungal-star cavern sky with no visible sun and a dim
 natural day/night lighting cycle. Overhead haze sits at 4.8 km; occasional sheer plateaus and
@@ -20,10 +20,10 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.104.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.105.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
-Launch **Modded**. Confirm `Loading [Magenheim 0.0.104]` in the BepInEx log.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.105]` in the BepInEx log.
 Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
 See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.
@@ -55,3 +55,11 @@ on `main`.
 ## Editable 3D models
 
 See [the model library](assets/models/README.md) for 281 Blender sources, GLB exports, review sheets, and the edit/export workflow. Runtime visual builders load those assets instead of constructing shapes.
+
+### 0.0.105 live feedback repair
+
+Scenery stays at seeded world positions as you move, including collidable rock formations.
+The Aesir boss gate loads directly from the native asset and entry uses its clear approach.
+The cavern roof uses a shader actually shipped by Valheim. Underworld names now appear on the
+minimap; fungal groves are denser, their background haze is stronger, ground is rougher, and the
+puffcap's roots/trunk/branches form a fused organic skin. Live verification remains in TESTING.md.

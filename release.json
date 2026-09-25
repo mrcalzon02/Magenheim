@@ -1,4 +1,4 @@
 {
-  "version": "0.0.104",
-  "description": "0.0.104: Sunless lava-and-fungal cavern sky with masked glow and dim day/night lighting. Overhead haze at 4.8 km; sharp terrain capped at 5.1 km. Fixes the native dungeon-height restriction for Underworld building."
+  "version": "0.0.105",
+  "description": "0.0.105: Repairs missing cavern sky and Aesir gate; arrival uses the gate approach. Stable, denser ecology stops rocks moving underfoot. Organic fungal joins, stronger forest haze, rougher ground and correct Underworld biome labels."
 }

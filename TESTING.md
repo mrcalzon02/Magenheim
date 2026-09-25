@@ -4,19 +4,19 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.104 by Local** and start its description with
-**0.0.104: Sunless lava-and-fungal cavern sky**.
+show **Magenheim v0.0.105 by Local** and start its description with
+**0.0.105: Sunless lava-and-fungal cavern sky**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.104]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.105]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
 is under `BepInEx/plugins/Local-Magenheim/Magenheim`. Launching vanilla Steam
 does not use this profile. Exit the game before rebuilding or installing.
 
-## Monumental terrain acceptance — 0.0.104
+## Monumental terrain acceptance — 0.0.105
 
 Use a disposable world. Enter the paired Underworld and allow roughly 30 seconds for the
 budgeted distant terrain presentation to fill. Inspect from the basin, at a cliff base and from
@@ -32,7 +32,7 @@ identity and return travel. Recheck Motherbed, Drowned Ring, Furnace Heart and S
 against the changed terrain, then multiplayer agreement and save/reload. None of these live
 checks are established by the offline geometry renders or Core tests.
 
-## Sunless sky and haze acceptance - 0.0.104
+## Sunless sky and haze acceptance - 0.0.105
 
 Look up from every biome: the same basalt roof, lava fissures and fungal star colonies must
 remain, without a Surface sun, moon or cloud backdrop. Compare native dawn, noon, dusk and
@@ -94,7 +94,7 @@ Spawn IDs (`spawn <id> 1`):
 
 ## Candidate acceptance matrix
 
-Confirm the startup log reports **0.0.104** and has no Magenheim bootstrap or registration
+Confirm the startup log reports **0.0.105** and has no Magenheim bootstrap or registration
 errors. Keep logs and screenshots with each result. Mark checks PASS / FAIL / NOT RUN;
 record game version, mod list, host/client role, seed, steps, expected/actual result.
 
@@ -265,3 +265,19 @@ See `docs/validation/2026-09-14-earth-content-package.md`,
 `docs/validation/2026-09-14-live-world-test-1.md` for observed results and current
 acceptance boundaries. Natural worldgen, persistence, and multiplayer still require
 separate observations.
+
+## 0.0.105 live regression checks
+
+- Enter through the console or Deep Gate. Arrival must be outside the actual Aesir gate's front
+  footprint, facing toward the conclave, never inside the central monolith. Repeat enter while
+  already below must refuse without replacing the Surface return anchor. Test return after relog.
+- Roof must show lava/fungal artwork rather than the blue Surface sky. Logs must contain no
+  panoramic-shader lookup failure. Test noon/night, camera rotation, and Surface restoration.
+- Walk 95m in either direction across several ecology cell boundaries, including while standing
+  on large collidable rocks. Nearby trees/rocks must keep exactly the same position and collider.
+  Walk away and return: the seeded placement must match. Watch frame time in dense groves.
+- The puffcap's roots, trunk and branches must form one curved skin with no flat cylinder collar.
+- Small-map biome label must use Underworld names. Large-map hover uses the selected layer and
+  hides unexplored names. Surface names must return when leaving or browsing the Surface tab.
+- Check denser fungal groves, stronger background haze, rougher local relief, and remaining
+  massive cliffs in clearer biomes. Terrain relief changed: use a disposable test world first.

@@ -7,7 +7,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>Magenheim</AssemblyName>
     <RootNamespace>Magenheim.Runtime</RootNamespace>
-<Version>0.0.104</Version>
+<Version>0.0.105</Version>
     <ValheimManagedPath Condition="'$(ValheimManagedPath)' == ''">$(MSBuildThisFileDirectory)../../../valheim_Data/Managed</ValheimManagedPath>
   </PropertyGroup>
 
@@ -20,6 +20,7 @@
   <ItemGroup>
     <Reference Include="$(ValheimManagedPath)/assembly_*.dll" Private="false" />
     <Reference Include="$(ValheimManagedPath)/UnityEngine*.dll" Private="false" />
+    <Reference Include="$(ValheimManagedPath)/Unity.TextMeshPro.dll" Private="false" />
     <Reference Include="$(ValheimManagedPath)/SoftReferenceableAssets.dll" Private="false" />
     <!-- Minimap.AddPin takes a Splatform PlatformUserID as of Valheim 1.0.12. The game supplies
          this assembly at runtime, so reference it without packaging it. -->

@@ -78,7 +78,10 @@ internal static class UnderworldAtmosphereTests
                suppressed.VisibilityMeters > blooming.VisibilityMeters,
             "Local suppression must create a clearer, safer pocket without changing biome identity.");
 
-        Assert(fungal.VisibilityMeters > 8000d, "Clear arrival air must reveal distant monumental terrain.");
+        Assert(fungal.VisibilityMeters > 500d && fungal.VisibilityMeters < 1100d,
+            "Fungal forest must communicate background spore haze without obscuring nearby paths.");
+        Assert(State(UnderworldTerrainBiome.FractureZones).VisibilityMeters > 8000d,
+            "Clear rocky biomes must retain the monumental skyline.");
         Assert(whiteout.VisibilityMeters < 1000d, "Whiteout must still obscure the skyline.");
 
         var wrongEvent = State(UnderworldTerrainBiome.FrozenCaverns,
