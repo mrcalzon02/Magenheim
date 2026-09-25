@@ -5,6 +5,11 @@ $ids = @('underworld-flora-fungal-glowcap', 'underworld-flora-fungal-spirestalk'
          'underworld-flora-fungal-moss-stone', 'underworld-flora-fungal-root-skirt', 'underworld-flora-fungal-sapling',
          'underworld-resource-worldroot-timber', 'underworld-resource-glowcap-flesh', 'underworld-resource-spire-fibre',
          'underworld-resource-understone')
+$variants = @('glowcap-bent', 'glowcap-twin', 'glowcap-elder',
+    'spirestalk-young', 'spirestalk-crooked', 'spirestalk-towered',
+    'puffcap-forked', 'puffcap-spreading', 'puffcap-clustered',
+    'tanglecap-young', 'tanglecap-splayed', 'tanglecap-woven')
+$ids = @($variants | ForEach-Object { "underworld-flora-fungal-$_" }) + $ids
 & "$PSScriptRoot/blender.ps1" author-underworld-fungal-forest @ids
 if ($LASTEXITCODE -ne 0) { throw 'Fungal Forest authoring failed.' }
 & "$PSScriptRoot/blender.ps1" export-model-assets @ids

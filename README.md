@@ -2,7 +2,13 @@
 
 **Magic begins as geology.**
 
-## 0.0.105 testing candidate
+## 0.0.106 testing candidate
+
+The Fungal Forest now draws from sixteen authored canopy models: four species with four
+growth forms each. Twelve new meshes add bent/twin/elder glowcaps, young/crooked/towered
+spires, forked/spreading/clustered puffcaps and young/splayed/woven tangles. Stable ecology
+cells select tall landmarks, a mixed middle canopy and younger edge growth from this palette.
+Each model has stem collision and an editable Blender source; no per-tree lights are added.
 
 The Underworld now has a shared lava-and-fungal-star cavern sky with no visible sun and a dim
 natural day/night lighting cycle. Overhead haze sits at 4.8 km; occasional sheer plateaus and
@@ -20,10 +26,10 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.105.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.106.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
-Launch **Modded**. Confirm `Loading [Magenheim 0.0.105]` in the BepInEx log.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.106]` in the BepInEx log.
 Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
 See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.
@@ -54,7 +60,7 @@ on `main`.
 
 ## Editable 3D models
 
-See [the model library](assets/models/README.md) for 281 Blender sources, GLB exports, review sheets, and the edit/export workflow. Runtime visual builders load those assets instead of constructing shapes.
+See [the model library](assets/models/README.md) for 356 Blender sources, GLB exports, review sheets, and the edit/export workflow. Runtime visual builders load those assets instead of constructing shapes.
 
 ### 0.0.105 live feedback repair
 

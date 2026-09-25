@@ -32,6 +32,19 @@ internal static class UnderworldVanillaDonorCatalog
             new("model:underworld-flora-fungal-glowcap", .85f, 1.2f, new(1.1f, .95f, 1.1f), -.1f, true), new("model:underworld-flora-fungal-glowcap", .8f, 1.1f, new(.9f, 1.12f, .9f), -.1f, true),
             new("model:underworld-flora-fungal-puffcap", .9f, 1.25f, Vector3.one, -.1f, true), new("model:underworld-flora-fungal-puffcap", .8f, 1.1f, new(1.2f, .85f, 1.15f), -.1f, true),
             new("model:underworld-flora-fungal-glowcap", .9f, 1.25f, Vector3.one, -.1f, true), new("model:underworld-flora-fungal-spirestalk", .8f, 1.05f, new(.85f, 1.1f, .85f), -.1f, true),
+            // Distinct authored growth forms, appended to preserve the original landmark indices.
+            new("model:underworld-flora-fungal-glowcap-bent", .9f, 1.1f, Vector3.one, -.1f, true),
+            new("model:underworld-flora-fungal-glowcap-twin", .9f, 1.1f, Vector3.one, -.1f, true),
+            new("model:underworld-flora-fungal-glowcap-elder", .9f, 1.05f, Vector3.one, -.1f, true),
+            new("model:underworld-flora-fungal-spirestalk-young", .9f, 1.1f, Vector3.one, -.1f, true),
+            new("model:underworld-flora-fungal-spirestalk-crooked", .9f, 1.1f, Vector3.one, -.1f, true),
+            new("model:underworld-flora-fungal-spirestalk-towered", .9f, 1.02f, Vector3.one, -.1f, true),
+            new("model:underworld-flora-fungal-puffcap-forked", .9f, 1.1f, Vector3.one, -.1f, true),
+            new("model:underworld-flora-fungal-puffcap-spreading", .9f, 1.1f, Vector3.one, -.1f, true),
+            new("model:underworld-flora-fungal-puffcap-clustered", .9f, 1.1f, Vector3.one, -.1f, true),
+            new("model:underworld-flora-fungal-tanglecap-young", .9f, 1.1f, Vector3.one, -.1f, true),
+            new("model:underworld-flora-fungal-tanglecap-splayed", .9f, 1.1f, Vector3.one, -.1f, true),
+            new("model:underworld-flora-fungal-tanglecap-woven", .9f, 1.05f, Vector3.one, -.1f, true),
         },
         [UnderworldTerrainBiome.BlackwaterDeep] = new Donor[]
         {
@@ -173,6 +186,7 @@ internal static class UnderworldVanillaDonorCatalog
         Cover[biome][(variant & int.MaxValue) % Cover[biome].Length];
 
     internal static int CoverCount(UnderworldTerrainBiome biome) => Cover[biome].Length;
+    internal static int Count(UnderworldTerrainBiome biome) => Donors[biome].Length;
 
     internal static Donor Select(UnderworldTerrainBiome biome, int variant)
     {

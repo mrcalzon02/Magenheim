@@ -20,6 +20,7 @@ import bmesh
 import math
 import random
 import sys
+from functools import partial
 from pathlib import Path
 
 from mathutils import Matrix, Vector
@@ -31,7 +32,7 @@ from magenheim_flora_kit import Model, buttresses, cap, gills, small_mushrooms, 
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'assets/models/source'
-REVISION = 'fungal-forest-organic-junctions-2'
+REVISION = 'fungal-forest-canopy-variants-3'
 Z = Vector((0.0, 0.0, 1.0))
 
 # ------------------------------------------------------------------------------------------------
@@ -98,33 +99,34 @@ def glowcap(m, scale=1.0, collider=True):
     m.part('gills', gills((top.x, top.y, top.z + 0.02 * s), 0.5 * s, 2.95 * s, 0.26 * s, 30, 0.02 * s), 'gill', smooth=False)
 
 
-def spirestalk(m):
+def spirestalk(m, height=1.0, bend=1.0, tiers=((0.60, 1.5), (0.80, 1.1), (0.985, 0.78))):
     rng = random.Random(11)
     points = [Vector((0, 0, -0.1)), Vector((0.25, -0.1, 3.5)), Vector((-0.15, 0.1, 7.0)), Vector((0.35, -0.2, 9.6)),
               Vector((0.55, -0.3, 11.7))]
+    points = [Vector((p.x * bend, p.y * bend, p.z * height)) for p in points]
     m.part('stalk', tube(points, [(0.0, 0.46), (0.06, 0.32), (0.5, 0.24), (0.85, 0.17), (1.0, 0.13)], 12, 18),
            'stalk', collider=True)
     m.part('roots', buttresses((0, 0, 0), 4, 1.1, 0.7, 0.16, rng), 'stalk')
     path = curve(points, 60)
-    tiers = []
+    tier_meshes = []
     under = []
-    for t, r in ((0.60, 1.5), (0.80, 1.1), (0.985, 0.78)):
+    for t, r in tiers:
         p = path[int(t * (len(path) - 1))]
-        tiers.append(cap((p.x, p.y, p.z - 0.10), r, r * 0.55, bell=0.10, sides=20))
+        tier_meshes.append(cap((p.x, p.y, p.z - 0.10), r, r * 0.55, bell=0.10, sides=20))
         under.append(gills((p.x, p.y, p.z - 0.02), 0.2, r * 0.9, 0.14, 20, 0.014))
-    m.part('caps', merge(*tiers), 'cap-violet')
+    m.part('caps', merge(*tier_meshes), 'cap-violet')
     m.part('gills', merge(*under), 'gill-violet', smooth=False)
 
 
-def puffcap(m):
+def puffcap(m, crown=((0.3, 1.2, 2.3, 1.15), (2.4, 1.0, 1.6, 0.95), (4.4, 1.3, 1.9, 1.05)), trunk_height=2.1):
     rng = random.Random(13)
     # One fused stalk/branch/root skin: no flat cylinder collars at branch insertions.
-    trunk_top = Vector((0.1, 0.0, 2.1))
+    trunk_top = Vector((0.1, 0.0, trunk_height))
     flesh = [tube([Vector((0, 0, -0.1)), Vector((-0.12, 0.1, 0.8)), trunk_top],
                   [(0.0, 0.62), (0.17, 0.43), (0.65, 0.36), (1.0, 0.26)], 14, 16),
              buttresses((0, 0, 0), 5, 1.25, 0.85, 0.24, rng)]
     puffs = []
-    for i, (a, reach, rise, r) in enumerate([(0.3, 1.2, 2.3, 1.15), (2.4, 1.0, 1.6, 0.95), (4.4, 1.3, 1.9, 1.05)]):
+    for i, (a, reach, rise, r) in enumerate(crown):
         d = Vector((math.cos(a), math.sin(a), 0.0))
         end = trunk_top + d * reach + Z * rise
         flesh.append(tube([trunk_top-Z*(1.15-i*.18), trunk_top+d*reach*.18+Z*rise*.15,
@@ -133,6 +135,12 @@ def puffcap(m):
         # Lobed fruiting body instead of identical spherical bulbs sitting on chopped tubes.
         puffs.append(blob(tuple(end + Z*r*.65), (r, r*.88, r*1.08), 20, 14))
     stalk = m.part('fused-stalk', merge(*flesh), 'stalk', collider=True)
+    fuse_stalk(stalk)
+    m.part('puffs', merge(*puffs), 'amber')
+
+
+def fuse_stalk(stalk):
+    """Join authored branching tissue before baking; preserve one collidable organism."""
     bpy.context.view_layer.objects.active = stalk
     stalk.select_set(True)
     remesh = stalk.modifiers.new('Organic fused branch junctions', 'REMESH')
@@ -176,30 +184,54 @@ def puffcap(m):
     for poly in stalk.data.polygons: poly.use_smooth = True
     stalk.data.set_sharp_from_angle(angle=math.radians(55.0))
     stalk.select_set(False)
-    m.part('puffs', merge(*puffs), 'amber')
 
 
-def tanglecap(m):
+def tanglecap(m, count=4, height=1.0, spread=.221, twist=2.4, crowns=3):
     rng = random.Random(17)
     strands = []
     tips = []
-    for i in range(4):
-        phase = math.tau * i / 4
+    for i in range(count):
+        phase = math.tau * i / count
         points = []
         for k in range(7):
             t = k / 6
-            r = 0.34 * (1.0 - 0.35 * t)
-            a = phase + t * 2.4
-            points.append(Vector((r * math.cos(a), r * math.sin(a), -0.1 + t * (5.2 + 0.5 * i))))
+            r = .34 * (1.0 - .35 * t) + (spread - .221) * t * t
+            a = phase + t * twist
+            points.append(Vector((r * math.cos(a), r * math.sin(a), -0.1 + t * (5.2 + 0.5 * i) * height)))
         strands.append(tube(points, [(0.0, 0.24), (0.8, 0.14), (1.0, 0.10)], 10, 16))
         tips.append(points[-1])
     m.part('strands', merge(*strands), 'worldroot', collider=True)
     m.part('roots', buttresses((0, 0, 0), 5, 1.2, 0.6, 0.18, rng), 'worldroot')
     caps, under = [], []
-    for i, p in enumerate(tips[:3]):
-        r = (0.95, 0.75, 0.6)[i]
+    for i, p in enumerate(tips[:crowns]):
+        r = (0.95, 0.75, 0.6, 1.1, .7, .85)[i]
         caps.append(cap((p.x, p.y, p.z - 0.06), r, r * 0.5, sides=18))
         under.append(gills((p.x, p.y, p.z), 0.12, r * 0.88, 0.1, 16, 0.012))
+    m.part('caps', merge(*caps), 'cap-teal')
+    m.part('gills', merge(*under), 'gill', smooth=False)
+
+
+def branching_glowcap(m, form):
+    # Crown height, reach and count change the silhouette independently of instance scale.
+    crowns = {
+        'bent': [((2.6, .4, 5.1), 2.7, 1.2, -.22)],
+        'twin': [((-1.8, .2, 6.2), 2.2, 1.1, .12), ((2.2, -.5, 4.9), 2.5, 1.3, -.16)],
+        'elder': [((.6, -.3, 9.0), 4.5, 1.35, .08)],
+    }[form]
+    junction = Vector((-.15, .1, 2.6 if form == 'twin' else 1.5))
+    flesh = [tube([Vector((0, 0, -.12)), Vector((-.25, .1, .9)), junction],
+                  [(0, .8), (.3, .58), (1, .43)], 14, 12),
+             buttresses((0, 0, 0), 6, 1.9 if form == 'elder' else 1.4, 1.1, .28, random.Random(83))]
+    caps, under = [], []
+    for point, radius, depth, tilt in crowns:
+        top = Vector(point)
+        flesh.append(tube([junction-Z*.4, junction.lerp(top, .35)+Vector((-.35, .2, 0)), top+Z*.25],
+                          [(0, .48), (.65, .34), (1, .46)], 14, 20))
+        transform = Matrix.Translation(top) @ Matrix.Rotation(tilt, 4, 'Y')
+        caps.append(transformed(cap((0, 0, 0), radius, depth, sides=28), transform))
+        under.append(transformed(gills((0, 0, .03), .48, radius*.92, .25, 30, .018), transform))
+    stalk = m.part('fused-stalk', merge(*flesh), 'stalk', collider=True)
+    fuse_stalk(stalk)
     m.part('caps', merge(*caps), 'cap-teal')
     m.part('gills', merge(*under), 'gill', smooth=False)
 
@@ -338,6 +370,23 @@ MODELS = {
     'underworld-resource-spire-fibre': (spire_fibre, 512),
     'underworld-resource-understone': (understone, 512),
 }
+
+# Each family keeps its prototype and gains three authored growth forms. No runtime mesh generation.
+CANOPY_VARIANTS = {
+    'glowcap-bent': partial(branching_glowcap, form='bent'),
+    'glowcap-twin': partial(branching_glowcap, form='twin'),
+    'glowcap-elder': partial(branching_glowcap, form='elder'),
+    'spirestalk-young': partial(spirestalk, height=.55, bend=2.0, tiers=((.65, 1.2), (.98, .65))),
+    'spirestalk-crooked': partial(spirestalk, height=.85, bend=5.0, tiers=((.35, 1.1), (.64, 1.8), (.96, .8))),
+    'spirestalk-towered': partial(spirestalk, height=1.15, bend=1.8, tiers=((.32, 1.7), (.49, 1.5), (.66, 1.3), (.82, 1.0), (.985, .7))),
+    'puffcap-forked': partial(puffcap, trunk_height=2.6, crown=((.2, 1.6, 2.2, 1.3), (3.2, 1.2, 1.3, .85))),
+    'puffcap-spreading': partial(puffcap, trunk_height=1.5, crown=((.2, 2.2, 1.5, .9), (1.7, 2.0, 1.8, 1.0), (3.3, 2.4, 1.2, 1.2), (4.9, 1.7, 2.0, .8))),
+    'puffcap-clustered': partial(puffcap, trunk_height=2.8, crown=((.1, 1.3, 2.7, 1.1), (1.4, 1.8, 1.8, .9), (2.7, 1.4, 3.0, 1.2), (4.0, 1.6, 1.5, .8), (5.2, 1.2, 2.1, .9))),
+    'tanglecap-young': partial(tanglecap, count=2, height=.62, spread=.55, twist=1.2, crowns=2),
+    'tanglecap-splayed': partial(tanglecap, count=5, height=.9, spread=1.7, twist=1.5, crowns=5),
+    'tanglecap-woven': partial(tanglecap, count=6, height=1.2, spread=.65, twist=4.7, crowns=4),
+}
+MODELS.update({'underworld-flora-fungal-' + name: (builder, 1024) for name, builder in CANOPY_VARIANTS.items()})
 
 
 def author(model_id):

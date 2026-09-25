@@ -1,3 +1,16 @@
+# Development closeout - 0.0.106 fungal canopy variants
+
+Four fungal canopy archetypes now have four authored growth forms each, for sixteen distinct
+models. Twelve new variants change crown count, tier spacing, branching, curvature and growth
+habit. New forms participate in the existing seeded cell placement. Original landmark indices
+are preserved; the selection code reads the catalogue size instead of assuming eleven entries.
+Stem collision, shared model caching, authored emissive materials and ground cover are retained.
+
+Expected enabled launcher entry: Magenheim v0.0.106 by Local. Description begins
+"0.0.106: Fungal Forest expands to sixteen authored canopy forms". Use closeout.ps1 -Offline
+for package and installation verification. Live variety, collision, performance and multiplayer
+acceptance remain pending; see TESTING.md and docs/validation/2026-09-25-fungal-canopy-variants.md.
+
 # Development closeout - 0.0.105 live regression repair
 
 Repairs confirmed by user screenshots/logs: missing roof shader, incorrect purple gate, arrival

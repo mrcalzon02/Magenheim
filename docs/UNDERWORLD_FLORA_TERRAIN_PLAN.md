@@ -147,6 +147,9 @@ lit by what grows in it.
 - **Canopy.** Four fungal tree species, the tallest reaching 12-14m, with caps broad enough
   to form a local plant canopy the player walks beneath. Light comes from gill undersides, so the
   floor is lit from above by living things.
+  Each species is an archetype, not one repeated specimen. The 0.0.106 palette has four authored
+  forms per species (sixteen total), varying crown count, branching, lean, tier spacing and age.
+  See `validation/2026-09-25-fungal-canopy-variants.md` for the concrete growth-form inventory.
 - **Ground.** Mycelial mat that takes footprints of light; clustered small caps; a waist-high
   puffshelf the player pushes through; spore drift as ambient particles, not geometry.
 - **Atmosphere.** No damage hazard. Spore density affects visibility; Spore Communion clears it.

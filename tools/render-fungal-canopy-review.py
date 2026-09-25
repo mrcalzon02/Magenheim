@@ -2,6 +2,7 @@
 
 Run tools/blender.ps1 render-fungal-canopy-review. Reads the saved source models.
 Each model uses the same scale across its four views; rows normalize independently.
+Add --overview for a single sheet containing all sixteen forms, normalized per specimen.
 """
 import bpy
 import math
@@ -12,9 +13,13 @@ from mathutils import Matrix, Vector
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'artifacts/review/fungal'
 OUT.mkdir(parents=True, exist_ok=True)
-ids = ['underworld-flora-fungal-glowcap', 'underworld-flora-fungal-spirestalk',
-       'underworld-flora-fungal-puffcap', 'underworld-flora-fungal-tanglecap']
-pages = [0]
+ids = ['underworld-flora-fungal-' + name for name in (
+    'glowcap', 'glowcap-bent', 'glowcap-twin', 'glowcap-elder',
+    'spirestalk', 'spirestalk-young', 'spirestalk-crooked', 'spirestalk-towered',
+    'puffcap', 'puffcap-forked', 'puffcap-spreading', 'puffcap-clustered',
+    'tanglecap', 'tanglecap-young', 'tanglecap-splayed', 'tanglecap-woven')]
+overview = '--overview' in sys.argv
+pages = [0] if overview else range(4)
 
 
 def emission(name, color):
@@ -44,8 +49,8 @@ for page in pages:
     scene.render.engine = 'CYCLES'
     scene.cycles.samples = 24
     scene.cycles.use_denoising = True
-    scene.render.resolution_x = 2000
-    scene.render.resolution_y = 2000
+    scene.render.resolution_x = 1600 if overview else 2000
+    scene.render.resolution_y = 1600 if overview else 2000
     scene.render.resolution_percentage = 100
     scene.world = bpy.data.worlds.new('Neutral studio')
     scene.world.use_nodes = True
@@ -57,9 +62,13 @@ for page in pages:
                  Matrix.Rotation(math.radians(-90),4,'X') @ Matrix.Rotation(math.radians(90),4,'Z'),
                  Matrix.Rotation(math.radians(-65),4,'X') @ Matrix.Rotation(math.radians(-35),4,'Z')]
     rotations.append(rotations[2])
-    for col, title in enumerate(['FRONT', 'SIDE', 'THREE-QUARTER', 'SILHOUETTE']):
+    if overview:
+        rotations = [rotations[2]]
+    for col, title in enumerate(['ARCHETYPE', 'VARIANT 1', 'VARIANT 2', 'VARIANT 3'] if overview
+                                else ['FRONT', 'SIDE', 'THREE-QUARTER', 'SILHOUETTE']):
         label(title, (col-1.5)*3.1, 6.05, .14, ink)
-    for row, model_id in enumerate(ids[page*4:page*4+4]):
+    for slot, model_id in enumerate(ids if overview else ids[page*4:page*4+4]):
+        row = slot // 4 if overview else slot
         with bpy.data.libraries.load(str((ROOT / 'assets/models/source') / (model_id+'.blend')), link=False) as (src,dst):
             dst.objects = src.objects
         objects = [o for o in dst.objects if o and o.type == 'MESH']
@@ -81,11 +90,11 @@ for page in pages:
             bounds.append((lo,hi))
         scale=2.45/max(max((hi-lo).x,(hi-lo).y) for lo,hi in bounds)
         for col,(rot,(lo,hi)) in enumerate(zip(rotations,bounds)):
-            x,y=(col-1.5)*3.1,4.5-row*3.0
+            x,y=((slot % 4 if overview else col)-1.5)*3.1,4.5-row*3.0
             place=Matrix.Translation(Vector((x,y,0))) @ Matrix.Scale(scale,4) @ Matrix.Translation(-(lo+hi)/2)
             for original in objects:
                 obj=original.copy()
-                if col==3:
+                if col==3 and not overview:
                     obj.data=original.data.copy()
                     obj.data.materials.clear()
                     obj.data.materials.append(silhouette)
@@ -93,8 +102,11 @@ for page in pages:
                 obj.matrix_world=place @ rot @ originals[original]
         for obj in objects:
             bpy.data.objects.remove(obj,do_unlink=True)
-        short=model_id.replace('underworld-flora-blackwater-','').replace('underworld-resource-','')
-        label(f'{short}   |   {height:.2f} m tall   |   {tris:,} triangles',0,3.1-row*3,.15,ink)
+        short=model_id.replace('underworld-flora-fungal-','')
+        if overview:
+            label(short, (slot % 4-1.5)*3.1, 3.1-row*3, .13, ink)
+        else:
+            label(f'{short}   |   {height:.2f} m tall   |   {tris:,} triangles',0,3.1-row*3,.15,ink)
         print(f'VERIFIED {model_id} height={height:.3f} triangles={tris}',flush=True)
     camera_data=bpy.data.cameras.new('Camera')
     camera=bpy.data.objects.new('Camera',camera_data)
@@ -111,6 +123,6 @@ for page in pages:
         data.energy,data.size=power,size
     scene.view_settings.view_transform='AgX'
     scene.render.image_settings.file_format='PNG'
-    scene.render.filepath=str(OUT/f'fungal-canopy-review-{page+1:02}.png')
+    scene.render.filepath=str(OUT/('fungal-canopy-overview.png' if overview else f'fungal-canopy-review-{page+1:02}.png'))
     bpy.ops.render.render(write_still=True)
     print(f'RENDERED {scene.render.filepath}',flush=True)

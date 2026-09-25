@@ -3739,7 +3739,7 @@
     "source": "source/underworld-flora-fungal-amber-bed.blend",
     "glb": "glb/underworld-flora-fungal-amber-bed.glb",
     "runtime": "runtime/underworld-flora-fungal-amber-bed.model.json",
-    "source_sha256": "677c57e9bb3238c49b7515b01e69ebd15b46ce0f5d658439ed4d2a4df04eefb1",
+    "source_sha256": "1618c18fbbe5e7876907172eca0e8d42321de0cba990730d25f96ab8f4b588c7",
     "runtime_sha256": "5cfe631e9d9f077765cba2b905cd542592f9c3512ce1b81f2fb6975db5825a02",
     "glb_sha256": "1a708c0e1c4229ca17f3d22bd2e5addd5022ff7e4640143c548f9f35b9fab457"
   },
@@ -3751,9 +3751,45 @@
     "source": "source/underworld-flora-fungal-fern.blend",
     "glb": "glb/underworld-flora-fungal-fern.glb",
     "runtime": "runtime/underworld-flora-fungal-fern.model.json",
-    "source_sha256": "376bda21298578a676cc28fc93c5fc2a8c10c943e3c870d88c5c558f5c674a49",
+    "source_sha256": "ab6ea514dad85b6e9ed99065539a62cde07b772c1f462c2ddbb7546c65361e94",
     "runtime_sha256": "642751bd56fa3705ea3cb89ffeeb266bc80645a7d98f2cbfafba6e1057b4ec7e",
     "glb_sha256": "a9dcf67647e52b281b7d51738c919a9f49032406b9194f0c430359fb2c828837"
+  },
+  {
+    "id": "underworld-flora-fungal-glowcap-bent",
+    "parts": 3,
+    "triangles": 7442,
+    "materials": 3,
+    "source": "source/underworld-flora-fungal-glowcap-bent.blend",
+    "glb": "glb/underworld-flora-fungal-glowcap-bent.glb",
+    "runtime": "runtime/underworld-flora-fungal-glowcap-bent.model.json",
+    "source_sha256": "e7d68f1b9dc8ce8381a53f12515b6bbd3a29aedd85e7fb7eae411359e18d28c6",
+    "runtime_sha256": "4d871578cf5a2a89c6bbc5f75b3c79ffae7b8e547beaa5ead97f76bc52a267e7",
+    "glb_sha256": "8c5f899f5ede62784763c10f8df02c034f6892fe62b3e70afae244050ea3e9b8"
+  },
+  {
+    "id": "underworld-flora-fungal-glowcap-elder",
+    "parts": 3,
+    "triangles": 9422,
+    "materials": 3,
+    "source": "source/underworld-flora-fungal-glowcap-elder.blend",
+    "glb": "glb/underworld-flora-fungal-glowcap-elder.glb",
+    "runtime": "runtime/underworld-flora-fungal-glowcap-elder.model.json",
+    "source_sha256": "d6a787d5cae31b7710806f0bb5140da126479566c93b18c8d5983783721bcfb0",
+    "runtime_sha256": "3c1aeacd704cee3159e745e4a9c2ef232e9919d68214a991d0de6bb534cf9d5d",
+    "glb_sha256": "7a1d7496e0d8c884fd94786102d232ff4f21b5df5283ca3c1b60d4dd02b97586"
+  },
+  {
+    "id": "underworld-flora-fungal-glowcap-twin",
+    "parts": 3,
+    "triangles": 11618,
+    "materials": 3,
+    "source": "source/underworld-flora-fungal-glowcap-twin.blend",
+    "glb": "glb/underworld-flora-fungal-glowcap-twin.glb",
+    "runtime": "runtime/underworld-flora-fungal-glowcap-twin.model.json",
+    "source_sha256": "e0eeff7921beaff4eb96732732d46d4a744da876db5816b8e725a58bdc1d4e50",
+    "runtime_sha256": "160434cae7c7765576fcaf1edec95514b5e1da7e1b81eeff7ed0c19c0b7a7c04",
+    "glb_sha256": "06a6cde7a2132964e2fc3c5dc417f4ba7b9b8ccfa492ed688ee42fa140f7ba49"
   },
   {
     "id": "underworld-flora-fungal-glowcap",
@@ -3763,7 +3799,7 @@
     "source": "source/underworld-flora-fungal-glowcap.blend",
     "glb": "glb/underworld-flora-fungal-glowcap.glb",
     "runtime": "runtime/underworld-flora-fungal-glowcap.model.json",
-    "source_sha256": "60af7e44ff21e236cae416ab35f6bec0e1e2fb5513b938b7827a41f1f33715dd",
+    "source_sha256": "d40fe3c8b56c7c99e0282d2ab1c488035c2234f271a8046eb717a5a942d271ff",
     "runtime_sha256": "8e71a9542122119f8f4b06804fa7e9da2d6356874c191d08f26560be02b2ae54",
     "glb_sha256": "8cb304228e848987f0bef5cde2b4158a598a10c91654a90cc379e53b741c3700"
   },
@@ -3775,7 +3811,7 @@
     "source": "source/underworld-flora-fungal-lantern-caps.blend",
     "glb": "glb/underworld-flora-fungal-lantern-caps.glb",
     "runtime": "runtime/underworld-flora-fungal-lantern-caps.model.json",
-    "source_sha256": "50cd67ae55a2aa4a20d6683b6c20569703b0c1ee5c44ae23633c5aaf86c49fba",
+    "source_sha256": "5f4b0256bcf2497f5393d86caa9421e329b6e6d2784a917445f40cc38e0b79e6",
     "runtime_sha256": "48ac8246f7d23a91e8994795a88ac8c60134a897a8cfaa5511aa669f1b0c025d",
     "glb_sha256": "1322f1dab241d07ebeb1b61c0b88019116f25f132e77bd02e17ee2a9fd4258e5"
   },
@@ -3787,7 +3823,7 @@
     "source": "source/underworld-flora-fungal-moss-stone.blend",
     "glb": "glb/underworld-flora-fungal-moss-stone.glb",
     "runtime": "runtime/underworld-flora-fungal-moss-stone.model.json",
-    "source_sha256": "de0731e2e408c33a42766020969c250a5e9a01650d38c7e16e801c10902c7c43",
+    "source_sha256": "080638009a63d9a9e5173f732b0f6ec19f33dfb882be4a811dda169fd31373e6",
     "runtime_sha256": "a47569ac0463d96d2f43c660f1398d6ebed446dd6874beb6ec00ebdab076f898",
     "glb_sha256": "503261da209c6de97b35f7f8b5661cbc0564cae502161e9362979a5e55876c75"
   },
@@ -3799,9 +3835,45 @@
     "source": "source/underworld-flora-fungal-nursery-caps.blend",
     "glb": "glb/underworld-flora-fungal-nursery-caps.glb",
     "runtime": "runtime/underworld-flora-fungal-nursery-caps.model.json",
-    "source_sha256": "9e74246795ac0f0e7e95fcc427d53ad58a65f208689d993fa5f7d9dbfe3227f1",
+    "source_sha256": "d6073dd4603808b4092601a4d31b7fb3c5a538eac46ce4edc1b37dae72b115fc",
     "runtime_sha256": "f44ebfaaa499f1a0dfe469c1a99e6c235722ec4970a5972cfe8b6ebb79129dbb",
     "glb_sha256": "2acf72cea9aa515d0d200ad32f385fd14aaedfd1941d34450faeb39852650c63"
+  },
+  {
+    "id": "underworld-flora-fungal-puffcap-clustered",
+    "parts": 2,
+    "triangles": 11674,
+    "materials": 2,
+    "source": "source/underworld-flora-fungal-puffcap-clustered.blend",
+    "glb": "glb/underworld-flora-fungal-puffcap-clustered.glb",
+    "runtime": "runtime/underworld-flora-fungal-puffcap-clustered.model.json",
+    "source_sha256": "8703da056da98d281d22bb8fd613371a747d6fadf5a96400569dc902aaf733cf",
+    "runtime_sha256": "c6a53ffbc9f875930ea2c69279e17990ad4e33b143ca5ad6b4052ad264e450e4",
+    "glb_sha256": "50dcc6bbc13b0aaf9668f9a4d35ecc4bbca8a8cfc259341c3d219974004f7e0e"
+  },
+  {
+    "id": "underworld-flora-fungal-puffcap-forked",
+    "parts": 2,
+    "triangles": 6246,
+    "materials": 2,
+    "source": "source/underworld-flora-fungal-puffcap-forked.blend",
+    "glb": "glb/underworld-flora-fungal-puffcap-forked.glb",
+    "runtime": "runtime/underworld-flora-fungal-puffcap-forked.model.json",
+    "source_sha256": "2a2c3ea48f7edd0fe41a24a81f3dc9df6d89a049917f0ee00c9003811cab4ebf",
+    "runtime_sha256": "dc644a3ca03d24f68160177abd24184a28313418453dac78e7573f0ade651310",
+    "glb_sha256": "5fcd188d9c8b698b2e02399ec2b834ec131b6cf9775ac9f40201150eb8a06c00"
+  },
+  {
+    "id": "underworld-flora-fungal-puffcap-spreading",
+    "parts": 2,
+    "triangles": 9690,
+    "materials": 2,
+    "source": "source/underworld-flora-fungal-puffcap-spreading.blend",
+    "glb": "glb/underworld-flora-fungal-puffcap-spreading.glb",
+    "runtime": "runtime/underworld-flora-fungal-puffcap-spreading.model.json",
+    "source_sha256": "31e9cdb79567373e2baf3426459af12b4e4fcb523f6beafc604179e85224b9e1",
+    "runtime_sha256": "35f06b405e092b05b2d9218a865f8869fac214848918259909cff97e17d5ca88",
+    "glb_sha256": "9c42d21349f16178168c68b61f0e103515ad7f5abcdeb5755273768647c123d7"
   },
   {
     "id": "underworld-flora-fungal-puffcap",
@@ -3811,7 +3883,7 @@
     "source": "source/underworld-flora-fungal-puffcap.blend",
     "glb": "glb/underworld-flora-fungal-puffcap.glb",
     "runtime": "runtime/underworld-flora-fungal-puffcap.model.json",
-    "source_sha256": "06ffdb0893671fd521ff0163773241bcfa31155e62e3a9f21bc3717377e9bb60",
+    "source_sha256": "391a39cf1f3a9bee9e4da081b3d31a185af631d055d055286e926ca1188c2fc4",
     "runtime_sha256": "981f27f09bd26bee493fde7305d9d07b0f69474d0c1f42c92c68238ccb523f32",
     "glb_sha256": "4b7224fcd0c1ac58a4db76c38cfbfcc9a65094f90f9a6c4166fb8185a7317b94"
   },
@@ -3823,7 +3895,7 @@
     "source": "source/underworld-flora-fungal-root-skirt.blend",
     "glb": "glb/underworld-flora-fungal-root-skirt.glb",
     "runtime": "runtime/underworld-flora-fungal-root-skirt.model.json",
-    "source_sha256": "1256b65bd62f266942f57790e0ceb2311ae283550fca4b02c347b8acb818b3b3",
+    "source_sha256": "188fa0e24a03e9a88cd2699902d7680e49763af37107ea96085dec9380abc6ab",
     "runtime_sha256": "6450a200494569a30df559dd53a028e9bcb283002dcb40173023f4a9c3f55ad4",
     "glb_sha256": "47ab929afae3d54b9ed30aaaeabdf83b5c14676037f4a85c7ef3ce5e1c14a56c"
   },
@@ -3835,9 +3907,45 @@
     "source": "source/underworld-flora-fungal-sapling.blend",
     "glb": "glb/underworld-flora-fungal-sapling.glb",
     "runtime": "runtime/underworld-flora-fungal-sapling.model.json",
-    "source_sha256": "8f6e3efffbc7ca221aaa28ba208e2d96eee6087703cce8046fe1cfd7d607b5cf",
+    "source_sha256": "edca1f1740927e24415b18e26a837cda113e4067a19399031219ac442d946be4",
     "runtime_sha256": "0360b8381ef87b74fbed071d2d182adb86fd20170ff1cfcc03ae9ccad73f75fe",
     "glb_sha256": "409c6cbf67ec5d81c692c7ceb98887bfd43a72c585ea15712df53549e0ebeb1b"
+  },
+  {
+    "id": "underworld-flora-fungal-spirestalk-crooked",
+    "parts": 4,
+    "triangles": 4720,
+    "materials": 3,
+    "source": "source/underworld-flora-fungal-spirestalk-crooked.blend",
+    "glb": "glb/underworld-flora-fungal-spirestalk-crooked.glb",
+    "runtime": "runtime/underworld-flora-fungal-spirestalk-crooked.model.json",
+    "source_sha256": "4e73db45b85e021e9ab51c2e355dc956e72af0b468d261e29fbb2eed0bae17ad",
+    "runtime_sha256": "9480a6d69ccac5399e0ccff58165e6a68ecc22e949901ac1c22b595cc7716519",
+    "glb_sha256": "a9dc4835aa4411aff9b2d2e87213581e5f7bfdb50684cfe316305ef7a9c281d2"
+  },
+  {
+    "id": "underworld-flora-fungal-spirestalk-towered",
+    "parts": 4,
+    "triangles": 7280,
+    "materials": 3,
+    "source": "source/underworld-flora-fungal-spirestalk-towered.blend",
+    "glb": "glb/underworld-flora-fungal-spirestalk-towered.glb",
+    "runtime": "runtime/underworld-flora-fungal-spirestalk-towered.model.json",
+    "source_sha256": "46c112441b27e3487d0e2211f261355c38e04f87b6c2b8987e7e5bccc2bd8eb4",
+    "runtime_sha256": "353933ef2f539d41c0cfa8c2fb7bb0b27564b9e37c5c8e34b16601834e049593",
+    "glb_sha256": "aaa694b892277f03efb0daba5812b6651873d0eedc9252ddb17f5582798b282e"
+  },
+  {
+    "id": "underworld-flora-fungal-spirestalk-young",
+    "parts": 4,
+    "triangles": 3440,
+    "materials": 3,
+    "source": "source/underworld-flora-fungal-spirestalk-young.blend",
+    "glb": "glb/underworld-flora-fungal-spirestalk-young.glb",
+    "runtime": "runtime/underworld-flora-fungal-spirestalk-young.model.json",
+    "source_sha256": "96b60cb1e136ea2d97087247eefee927c4eaf52928f21bcb0d554cbafb07f0c3",
+    "runtime_sha256": "0d1710331dcd0d39f1e26543f2d0152638f4a156603c06fb5a4dc8047938e770",
+    "glb_sha256": "5701f69806a849cf006c3e854ae5be2bbf1f3282adac87558a10d34d65632666"
   },
   {
     "id": "underworld-flora-fungal-spirestalk",
@@ -3847,7 +3955,7 @@
     "source": "source/underworld-flora-fungal-spirestalk.blend",
     "glb": "glb/underworld-flora-fungal-spirestalk.glb",
     "runtime": "runtime/underworld-flora-fungal-spirestalk.model.json",
-    "source_sha256": "d566003eef0e74a6166062290853f498828b6c2e1b6e7a5222e07ec0c6038fa8",
+    "source_sha256": "b1a3cfe34eb009668b958ce5b872fb4175e775de5677e2cdd6cf882e74ee756b",
     "runtime_sha256": "c78f2a896cc8527a104e46277a11e31bc073f50d7c6994200a7e219141f87576",
     "glb_sha256": "d4196449bd937fe39fe07d1fbf1c8dc9dd49f2e0a6456488f0f0b7de0950e673"
   },
@@ -3859,9 +3967,45 @@
     "source": "source/underworld-flora-fungal-sporebrush.blend",
     "glb": "glb/underworld-flora-fungal-sporebrush.glb",
     "runtime": "runtime/underworld-flora-fungal-sporebrush.model.json",
-    "source_sha256": "d72b3c3bf8b81c495f5670c4d278d37784961894ea0b0644bbe67081b9715611",
+    "source_sha256": "8d74c38e9f5aea0e38088a60e813ac3a7addba2e20942a4650b031c289c8c1b4",
     "runtime_sha256": "45e62575ce006782abb6882cd479aa509c1c3914748a9a237230042616ab78e8",
     "glb_sha256": "29b542f2f0fb617d7e559614a6dfdeb24737d78ec4244afc208cf554d48e6b5f"
+  },
+  {
+    "id": "underworld-flora-fungal-tanglecap-splayed",
+    "parts": 4,
+    "triangles": 7440,
+    "materials": 3,
+    "source": "source/underworld-flora-fungal-tanglecap-splayed.blend",
+    "glb": "glb/underworld-flora-fungal-tanglecap-splayed.glb",
+    "runtime": "runtime/underworld-flora-fungal-tanglecap-splayed.model.json",
+    "source_sha256": "33fe0628be1767555613ccdf9341137fb556fb4593105cd60fb88c2bb2ef74a7",
+    "runtime_sha256": "791cb6ba2e2be3f032703d89c4879f8b1dd8948846b7739478537822eb1f5a59",
+    "glb_sha256": "b9f5d299012e676114f8c100fbcd97d7a0b04c5adf8deea9721b135e4777bd83"
+  },
+  {
+    "id": "underworld-flora-fungal-tanglecap-woven",
+    "parts": 4,
+    "triangles": 6704,
+    "materials": 3,
+    "source": "source/underworld-flora-fungal-tanglecap-woven.blend",
+    "glb": "glb/underworld-flora-fungal-tanglecap-woven.glb",
+    "runtime": "runtime/underworld-flora-fungal-tanglecap-woven.model.json",
+    "source_sha256": "b1e0df6270659728f69ea3952ad78dadf1338e7cff4c5c0bdb397990fd3ad165",
+    "runtime_sha256": "6fad890974b3af9070cf13e3aac3dae8c22b0bc34198091cd2b018b4d812ef9d",
+    "glb_sha256": "b288855609d7fc17436df38fb92f0113a88f5e20db892aec654992e7a561b621"
+  },
+  {
+    "id": "underworld-flora-fungal-tanglecap-young",
+    "parts": 4,
+    "triangles": 3312,
+    "materials": 3,
+    "source": "source/underworld-flora-fungal-tanglecap-young.blend",
+    "glb": "glb/underworld-flora-fungal-tanglecap-young.glb",
+    "runtime": "runtime/underworld-flora-fungal-tanglecap-young.model.json",
+    "source_sha256": "5c539c195692f42bbb9458af5d89dc1d5caf559cda9ded1ec5c74993411f0a9e",
+    "runtime_sha256": "30b90150a616c6186e74f1365b7ae9703df694b50b93456920799fd9b84536d2",
+    "glb_sha256": "067f44701c36a7aa0d77dd0dae6e81be0aa389e12043ea70f1331a20e807ca90"
   },
   {
     "id": "underworld-flora-fungal-tanglecap",
@@ -3871,7 +4015,7 @@
     "source": "source/underworld-flora-fungal-tanglecap.blend",
     "glb": "glb/underworld-flora-fungal-tanglecap.glb",
     "runtime": "runtime/underworld-flora-fungal-tanglecap.model.json",
-    "source_sha256": "ada2780f0341153fb827b39b9b381d4883168d07b365ed597e58c8011afac08e",
+    "source_sha256": "bd19824e2c437a0b7dab529a3277dfae899ed5787927c2d11192f76dd2388a12",
     "runtime_sha256": "428536226c44f73982b07dea5dd0c7508a8d1ceb823d246ce45ac1c665bc84fa",
     "glb_sha256": "db3b78d9824b6d3ba7c9222840bc5c7795b1b507498c75ba072d72655c8c34c4"
   },
@@ -3919,7 +4063,7 @@
     "source": "source/underworld-resource-glowcap-flesh.blend",
     "glb": "glb/underworld-resource-glowcap-flesh.glb",
     "runtime": "runtime/underworld-resource-glowcap-flesh.model.json",
-    "source_sha256": "467913d24aac76e437217beee68993379555682a7c260a539da2d32f0af0d5ee",
+    "source_sha256": "169be2af449d1a42238264b4b5201ef6dd3d9ce55c27eaeb8dd41368ae4e1c8c",
     "runtime_sha256": "6cfd5026705289e7144885e54a3c43139a7104b553de60e67920fd0ae6993370",
     "glb_sha256": "4e0a26b7ddf717fb2923cdb5585acbadd60d35901d9d74abdce06bbe2874532a"
   },
@@ -3943,7 +4087,7 @@
     "source": "source/underworld-resource-spire-fibre.blend",
     "glb": "glb/underworld-resource-spire-fibre.glb",
     "runtime": "runtime/underworld-resource-spire-fibre.model.json",
-    "source_sha256": "15323190e12af03b1ea44e3bf0c159a636811864561e7c54aa19e32d72ccb840",
+    "source_sha256": "c20be7a81223359ba0bedd7dfb389b41f605f510d5a8d3b8a7e51260358074b3",
     "runtime_sha256": "d0f8e2e6afd8f0ed1c4d16e7028551ee9e6dea61bb1cfa9444494680380d7ae2",
     "glb_sha256": "a7da9fdafb7c7b5c9c5d74def9c7b71d6bce564b2ee002fd5a5f8c9c9d7ae68f"
   },
@@ -3955,7 +4099,7 @@
     "source": "source/underworld-resource-understone.blend",
     "glb": "glb/underworld-resource-understone.glb",
     "runtime": "runtime/underworld-resource-understone.model.json",
-    "source_sha256": "dec5db63c697d9aa6ee654d55c41074656fd7e22dcb1cc506894b00efaef44f5",
+    "source_sha256": "b370076491540c9904dd5abea2295c28ffa0fb78f9e64b872915a8efba7a0ea4",
     "runtime_sha256": "2a5a821af6923b43c4671ede221cbc62410e8d9f352f7c960f14e505a49bbaf4",
     "glb_sha256": "a877eb3650d70ecfa9461829f6bbf3259b0f4601fb3ff09ac6b6d8ee1aca4010"
   },
@@ -3967,7 +4111,7 @@
     "source": "source/underworld-resource-worldroot-timber.blend",
     "glb": "glb/underworld-resource-worldroot-timber.glb",
     "runtime": "runtime/underworld-resource-worldroot-timber.model.json",
-    "source_sha256": "da3f734ab7df4e25f79f01b25126700ba9160ecd006a62d3beed65c9764d4c14",
+    "source_sha256": "f072e465e41c8571f70bc3a2dad6ddc966b4c302ede41ce8b547d1ca91f014bb",
     "runtime_sha256": "112bd5e5593a9bf83c93b58c84e7349a08def545252fc0660c1c42f504cbd9b9",
     "glb_sha256": "a6e6adb0c4fdee6de13e4b97caa3864658d252760a310debdb46206c4f5c49fc"
   },

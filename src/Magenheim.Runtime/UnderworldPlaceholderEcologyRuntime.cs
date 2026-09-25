@@ -171,9 +171,9 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         var role = member == 0 ? 0 : member <= 4 ? 1 : 2;
         var candidates = (biome, role) switch
         {
-            (UnderworldTerrainBiome.FungalForest, 0) => new[] { 0, 1, 2, 3, 4 },
-            (UnderworldTerrainBiome.FungalForest, 1) => new[] { 5, 7, 9, 0, 2 },
-            (UnderworldTerrainBiome.FungalForest, _) => new[] { 6, 8, 10, 5, 7, 9 },
+            (UnderworldTerrainBiome.FungalForest, 0) => new[] { 0, 1, 13, 16, 19, 22 },
+            (UnderworldTerrainBiome.FungalForest, 1) => new[] { 5, 7, 11, 12, 15, 17, 18, 21 },
+            (UnderworldTerrainBiome.FungalForest, _) => new[] { 6, 8, 10, 11, 14, 17, 18, 20, 21 },
             (UnderworldTerrainBiome.BlackwaterDeep, 0) => new[] { 0, 2, 4, 5 },
             (UnderworldTerrainBiome.BlackwaterDeep, 1) => new[] { 1, 2, 4, 5, 6 },
             (UnderworldTerrainBiome.BlackwaterDeep, _) => new[] { 1, 3, 6 },
@@ -193,16 +193,7 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
         };
         var roll = variant == int.MinValue ? 0 : Math.Abs(variant);
         var preferred = candidates[roll % candidates.Length];
-        var paletteSize = biome switch
-        {
-            UnderworldTerrainBiome.FungalForest => 11,
-            UnderworldTerrainBiome.BlackwaterDeep => 7,
-            UnderworldTerrainBiome.SulfurousWastes => 8,
-            UnderworldTerrainBiome.FrozenCaverns => 7,
-            UnderworldTerrainBiome.FractureZones => 8,
-            UnderworldTerrainBiome.GreatDecay => 12,
-            _ => 1,
-        };
+        var paletteSize = UnderworldVanillaDonorCatalog.Count(biome);
         return roll - roll % paletteSize + preferred;
     }
 

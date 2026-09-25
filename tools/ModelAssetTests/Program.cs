@@ -119,3 +119,19 @@ foreach (var biome in Enum.GetValues<Magenheim.Core.Underworld.UnderworldTerrain
  if (names.Count < 12) throw new Exception("Incomplete biome cover: " + biome);
 }
 Console.WriteLine("PASS: biome cover diversity, nonblocking donors and shoreline habitat contracts.");
+
+// Every fungal catalogue identity must resolve to an actual imported model with solid stems.
+var canopyIds = new HashSet<string>();
+var fungalBiome = Magenheim.Core.Underworld.UnderworldTerrainBiome.FungalForest;
+for (var i = 0; i < UnderworldVanillaDonorCatalog.Count(fungalBiome); i++)
+{
+ var donor = UnderworldVanillaDonorCatalog.Select(fungalBiome, i);
+ if (!UnderworldVanillaDonorCatalog.IsModel(donor) || !donor.Collidable)
+  throw new Exception("Fungal canopy lost its authored model or collision");
+ var id = UnderworldVanillaDonorCatalog.ModelId(donor);
+ var path = Path.Combine(AppContext.BaseDirectory, "assets/models/runtime", id + ".model.json");
+ if (!File.Exists(path)) throw new Exception("Unpackaged fungal canopy: " + id);
+ canopyIds.Add(id);
+}
+if (canopyIds.Count != 16) throw new Exception("Fungal forest must contain sixteen distinct canopy models");
+Console.WriteLine("PASS: all sixteen fungal canopy models reachable through the runtime donor catalogue.");

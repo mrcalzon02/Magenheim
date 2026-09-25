@@ -26,7 +26,17 @@ Includes all geometry formerly owned by active visual builders: 32 staffs; ten c
 
 The eleven Rootforged A0 construction definitions now have saved Blender sources, matching GLB/runtime mesh payloads, and owned Understone/Worldroot/forged-iron material textures. This is the asset layer only: Hammer registration, explicit snap transforms and live Valheim placement acceptance remain separate runtime work and are not implied by model presence.
 
-Validation: all model triplets have valid geometry, finite vertices, UVs, normals, referenced PNGs and hashes. A test harness exercises the production importer against all 281 files twice and verifies cached mesh reuse and failure guards. Actual Unity rendering, gameplay collision, multiplayer and world placement still require a live game test.
+Validation: all model triplets have valid geometry, finite vertices, UVs, normals, referenced PNGs and hashes. A test harness exercises the production importer against all 356 files twice and verifies cached mesh reuse and failure guards. Actual Unity rendering, gameplay collision, multiplayer and world placement still require a live game test.
+
+### Fungal canopy growth forms
+
+The four Fungal Forest archetypes each have three additional authored forms (sixteen canopy
+models total). Glowcaps bend, split into twin crowns or grow broad elder caps; spires vary
+curvature and cap tiers; puffcaps fork, spread or cluster; tangles vary strand count and spread.
+The existing generator owns all these forms and their baked atlases. Run the fungal freshness
+update to rebuild the full family, then `tools/blender.ps1 render-fungal-canopy-review` for four
+family sheets or add `--overview` for all sixteen specimens. See the
+[variant record](../../docs/validation/2026-09-25-fungal-canopy-variants.md).
 
 ## Review sheets
 
