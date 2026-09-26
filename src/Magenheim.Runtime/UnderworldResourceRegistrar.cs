@@ -77,6 +77,8 @@ internal sealed class UnderworldResourceRegistrar : IDisposable
                 pickable.m_maxLevelBonusChance = 0f;
                 pickable.m_bonusYieldAmount = 0;
                 if (model is not null) pickable.m_hideWhenPicked = UnderworldResourceVisuals.Apply(clone, model);
+                if (pickable.m_hideWhenPicked is null)
+                    throw new InvalidOperationException("Persistent natural resource pickup requires m_hideWhenPicked so Valheim retains picked state in its native ZDO.");
                 if (clone.GetComponent<UnderworldZdoStateAdapter>() is null) clone.AddComponent<UnderworldZdoStateAdapter>();
                 if (clone.GetComponent<UnderworldPersistentObjectBinding>() is null) clone.AddComponent<UnderworldPersistentObjectBinding>();
                 PrefabManager.Instance.AddPrefab(new CustomPrefab(clone, true));
