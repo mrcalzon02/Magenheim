@@ -91,6 +91,9 @@ internal static class UnderworldVanillaDonorCatalog
     {
         [UnderworldTerrainBiome.FungalForest] = new GroundCover[]
         {
+            new("Rootgrass carpet", new("model:underworld-ground-rootgrass-carpet", .85f, 1.15f, Vector3.one, -.04f), Color.white, -0.2f, 6000f, 32f),
+            new("Rootgrass tufts", new("model:underworld-ground-rootgrass-tufts", .85f, 1.15f, Vector3.one, -.04f), Color.white, -0.2f, 6000f, 38f),
+            new("Woven rootgrass", new("model:underworld-ground-rootgrass-woven", .85f, 1.15f, Vector3.one, -.04f), Color.white, -0.2f, 6000f, 35f),
             // Authored ground layer; colours are kept for the record but not applied to authored models.
             new("Jade fiddlefern", new("model:underworld-flora-fungal-fern", .85f, 1.15f, Vector3.one, -.03f), new Color(0.388f, 0.737f, 0.627f)),
             new("Violet sporebrush", new("model:underworld-flora-fungal-sporebrush", .85f, 1.2f, Vector3.one, -.03f), new Color(0.710f, 0.537f, 0.792f)),
@@ -107,6 +110,7 @@ internal static class UnderworldVanillaDonorCatalog
         },
         [UnderworldTerrainBiome.BlackwaterDeep] = new GroundCover[]
         {
+            new("Blackwater silt ripples", new("model:underworld-ground-blackwater-silt-ripples", .85f, 1.15f, Vector3.one, -.04f), Color.white, -800f, 3f, 24f),
             new("Brine fern", new("model:underworld-flora-blackwater-brine-fern", .85f, 1.15f, Vector3.one, -.03f), new Color(0.341f, 0.624f, 0.612f), 0f, 4f, 28f),
             new("Drowned bank brush", new("model:underworld-flora-blackwater-palefinger", .85f, 1.15f, Vector3.one, -.03f), new Color(0.337f, 0.549f, 0.580f), 0f, 4f, 28f),
             new("Pearl bank caps", new("model:underworld-flora-blackwater-pearl-caps", .85f, 1.15f, Vector3.one, -.03f), new Color(0.671f, 0.855f, 0.847f), 0f, 4f, 28f),
@@ -122,6 +126,9 @@ internal static class UnderworldVanillaDonorCatalog
         },
         [UnderworldTerrainBiome.SulfurousWastes] = new GroundCover[]
         {
+            new("Sulfur crescent drift", new("model:underworld-ground-sulfur-drift-crescent", .85f, 1.15f, Vector3.one, -.04f), Color.white, 0f, 6000f, 22f),
+            new("Rippled sulfur powder", new("model:underworld-ground-sulfur-drift-rippled", .85f, 1.15f, Vector3.one, -.04f), Color.white, 0f, 6000f, 25f),
+            new("Sulfur lee bank", new("model:underworld-ground-sulfur-drift-bank", .85f, 1.15f, Vector3.one, -.04f), Color.white, 0f, 6000f, 20f),
             new("Copper ashbrush", new("AshlandsBush1", 0.680f, 0.920f, Vector3.one, -.03f), new Color(0.773f, 0.545f, 0.357f)),
             new("Sulfur scrub", new("AshlandsBush2", 0.510f, 0.690f, Vector3.one, -.03f), new Color(0.831f, 0.749f, 0.408f)),
             new("Vent fringe fern", new("Fiddleheadfern", 0.468f, 0.632f, Vector3.one, -.03f), new Color(0.667f, 0.635f, 0.416f)),
@@ -137,6 +144,7 @@ internal static class UnderworldVanillaDonorCatalog
         },
         [UnderworldTerrainBiome.FrozenCaverns] = new GroundCover[]
         {
+            new("Frost needle fan", new("model:underworld-ground-frozen-rime-fan", .85f, 1.15f, Vector3.one, -.04f), Color.white, -2f, 6000f, 38f),
             new("Silver shelter fern", new("Fiddleheadfern", 0.552f, 0.747f, Vector3.one, -.03f), new Color(0.690f, 0.839f, 0.855f)),
             new("Rime brush", new("shrub_2_heath", 0.595f, 0.805f, Vector3.one, -.03f), new Color(0.663f, 0.749f, 0.863f)),
             new("Iceblue caps", new("Pickable_Mushroom_blue", 1.275f, 1.725f, Vector3.one, -.03f), new Color(0.588f, 0.796f, 0.906f)),
@@ -152,6 +160,7 @@ internal static class UnderworldVanillaDonorCatalog
         },
         [UnderworldTerrainBiome.FractureZones] = new GroundCover[]
         {
+            new("Shale scree bed", new("model:underworld-ground-fracture-shale-scree", .85f, 1.15f, Vector3.one, -.04f), Color.white, -2f, 6000f, 45f),
             new("Amethyst fault fern", new("Fiddleheadfern", 0.680f, 0.920f, Vector3.one, -.03f), new Color(0.714f, 0.596f, 0.812f)),
             new("Ridge brush", new("shrub_2_heath", 0.552f, 0.747f, Vector3.one, -.03f), new Color(0.635f, 0.616f, 0.733f)),
             new("Crevice caps", new("Pickable_Mushroom_Magecap", 1.190f, 1.610f, Vector3.one, -.03f), new Color(0.702f, 0.588f, 0.859f)),
@@ -167,6 +176,7 @@ internal static class UnderworldVanillaDonorCatalog
         },
         [UnderworldTerrainBiome.GreatDecay] = new GroundCover[]
         {
+            new("Fibrous peat mat", new("model:underworld-ground-decay-peat-mat", .85f, 1.15f, Vector3.one, -.04f), Color.white, -2f, 6000f, 30f),
             new("Sourgreen fern", new("Fiddleheadfern", 1.275f, 1.725f, Vector3.one, -.03f), new Color(0.655f, 0.725f, 0.404f)),
             new("Wine rotbrush", new("shrub_2", 1.105f, 1.495f, Vector3.one, -.03f), new Color(0.710f, 0.506f, 0.580f)),
             new("Ochre decay caps", new("Pickable_Mushroom_JotunPuffs", 1.870f, 2.530f, Vector3.one, -.03f), new Color(0.800f, 0.675f, 0.392f)),
@@ -184,6 +194,10 @@ internal static class UnderworldVanillaDonorCatalog
 
     internal static GroundCover SelectCover(UnderworldTerrainBiome biome, int variant) =>
         Cover[biome][(variant & int.MaxValue) % Cover[biome].Length];
+
+    // Low authored patches occupy the first palette slots, separate from upright understory.
+    internal static int GroundFeatureCount(UnderworldTerrainBiome biome) =>
+        biome == UnderworldTerrainBiome.FungalForest || biome == UnderworldTerrainBiome.SulfurousWastes ? 3 : 1;
 
     internal static int CoverCount(UnderworldTerrainBiome biome) => Cover[biome].Length;
     internal static int Count(UnderworldTerrainBiome biome) => Donors[biome].Length;

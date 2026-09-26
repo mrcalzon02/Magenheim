@@ -46,14 +46,15 @@ internal static class UnderworldDonorVisualFactory
     }
 
     internal static GameObject? CreateCover(UnderworldTerrainBiome biome, int variant, string name,
-        double heightAboveWater, double slopeDegrees)
+        double heightAboveWater, double slopeDegrees, Vector3 groundNormal, bool groundFeaturesOnly = false)
     {
         Exception? last = null;
         var eligible = false;
-        for (var attempt = 0; attempt < UnderworldVanillaDonorCatalog.CoverCount(biome); attempt++)
+        var count = groundFeaturesOnly ? UnderworldVanillaDonorCatalog.GroundFeatureCount(biome) : UnderworldVanillaDonorCatalog.CoverCount(biome);
+        for (var attempt = 0; attempt < count; attempt++)
         {
             var selected = unchecked(variant + attempt);
-            var cover = UnderworldVanillaDonorCatalog.SelectCover(biome, selected);
+            var cover = UnderworldVanillaDonorCatalog.SelectCover(biome, groundFeaturesOnly ? (selected & int.MaxValue) % count : selected);
             if (!UnderworldFloraPlacement.CanPlaceCover(heightAboveWater, slopeDegrees,
                 cover.MinHeightAboveWater, cover.MaxHeightAboveWater, cover.MaxSlope)) continue;
             eligible = true;
@@ -67,6 +68,8 @@ internal static class UnderworldDonorVisualFactory
                 root.transform.localPosition = Vector3.up * cover.Donor.GroundOffset;
                 root.transform.localRotation = Quaternion.Euler(0f, (selected & int.MaxValue) % 360, 0f);
                 root.transform.localScale = UnderworldVanillaDonorCatalog.Scale(cover.Donor, selected);
+                if (cover.Donor.PrefabName.StartsWith("model:underworld-ground-", StringComparison.Ordinal))
+                    root.transform.localRotation = Quaternion.FromToRotation(Vector3.up, groundNormal) * root.transform.localRotation;
                 // An authored model carries its own colour; tinting it would muddy the albedo.
                 if (!model) UnderworldCreaturePrototypeRegistrar.Tint(root, cover.Color);
                 return root;
@@ -97,6 +100,16 @@ internal static class UnderworldDonorVisualFactory
         try
         {
             ModelAssets.Load(root, id, hideOriginal: false);
+            if (id.StartsWith("underworld-ground-", StringComparison.Ordinal))
+            {
+                // Let Unity cull small ground detail by screen size without a second residency system.
+                var renderers = root.GetComponentsInChildren<Renderer>(true);
+                foreach (var renderer in renderers)
+                    renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                var lod = root.AddComponent<LODGroup>();
+                lod.SetLODs(new[] { new LOD(.035f, renderers) });
+                lod.RecalculateBounds();
+            }
             if (donor.Collidable && !root.GetComponentInChildren<Collider>(true)) AddConservativeCollider(root);
             return root;
         }

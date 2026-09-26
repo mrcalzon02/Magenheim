@@ -87,9 +87,9 @@ for file in sorted((assets/'runtime').glob('*.model.json')):
   for primitive in m['primitives']:
    for key in ('POSITION','NORMAL','TEXCOORD_0'):assert key in primitive['attributes'],(id,key)
  rows.append(dict(id=id,parts=len(doc['parts']),triangles=triangles,materials=len(materials),source='source/'+source.name,glb='glb/'+glb.name,runtime='runtime/'+file.name,source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),runtime_sha256=hashlib.sha256(file.read_bytes()).hexdigest(),glb_sha256=hashlib.sha256(data).hexdigest()))
-# 356 = 300 + twelve elemental Surtlings + sixteen original Fungal Forest models
-# + sixteen Blackwater flora/resources + twelve additional fungal canopy growth forms.
-assert len(rows)==356,('Unexpected asset coverage',len(rows))
+# 366 = 300 + twelve elemental Surtlings + sixteen original Fungal Forest models
+# + sixteen Blackwater flora/resources + twelve canopy growth forms + ten biome ground features.
+assert len(rows)==366,('Unexpected asset coverage',len(rows))
 # Magenheim imports authored geometry; it does not generate stand-in shapes at runtime. The rule
 # is about *art*: a cube or cylinder built in C# is a model that was never authored. It is not a
 # ban on constructing a UnityEngine.Mesh, which is also how authored data and generated terrain

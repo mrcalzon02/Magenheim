@@ -135,3 +135,19 @@ for (var i = 0; i < UnderworldVanillaDonorCatalog.Count(fungalBiome); i++)
 }
 if (canopyIds.Count != 16) throw new Exception("Fungal forest must contain sixteen distinct canopy models");
 Console.WriteLine("PASS: all sixteen fungal canopy models reachable through the runtime donor catalogue.");
+
+// New surface masses resolve through the real importer and stay separate from solid scenery.
+var groundIds = new HashSet<string>();
+foreach (var biome in Enum.GetValues<Magenheim.Core.Underworld.UnderworldTerrainBiome>())
+for (var i = 0; i < UnderworldVanillaDonorCatalog.GroundFeatureCount(biome); i++)
+{
+ var cover = UnderworldVanillaDonorCatalog.SelectCover(biome, i);
+ var id = UnderworldVanillaDonorCatalog.ModelId(cover.Donor);
+ if (!id.StartsWith("underworld-ground-")) throw new Exception("Missing native ground feature: " + biome);
+ var host = new GameObject(id);
+ ModelAssets.Load(host, id, hideOriginal: false);
+ if (host.GetComponentsInChildren<Collider>(true).Length != 0) throw new Exception("Ground cover blocks movement: " + id);
+ groundIds.Add(id);
+}
+if (groundIds.Count != 10) throw new Exception("Expected ten distinct biome ground features.");
+Console.WriteLine("PASS: all ten ground feature models imported through their biome palette without collision.");

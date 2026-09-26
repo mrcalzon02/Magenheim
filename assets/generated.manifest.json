@@ -802,6 +802,63 @@
       "output_sha256": {
         "assets/textures/underworld/sky/lava-fungal-roof-emission.png": "8e3268cc5d95c278cca54edcc148741781a7fc0a4cff832dfad46e7ff6a8a6a2"
       }
+    },
+    {
+      "id": "biome-ground-features",
+      "generator": "tools/author-biome-ground-features.py",
+      "command": [
+        "powershell",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-NoProfile",
+        "-Command",
+        "& './tools/rebuild-biome-ground-features.ps1'"
+      ],
+      "inputs": [
+        "tools/magenheim_blender_kit.py",
+        "tools/magenheim_flora_kit.py",
+        "tools/rebuild-biome-ground-features.ps1"
+      ],
+      "outputs": [
+        "assets/models/source/underworld-ground-*.blend",
+        "assets/models/runtime/underworld-ground-*.model.json",
+        "assets/models/glb/underworld-ground-*.glb"
+      ],
+      "hash": "generator-only",
+      "generator_sha256": "2ebb7ddb583fd3066d7f192adc2e575f38d9ac8995fa9ee3cd208c306590607e",
+      "inputs_sha256": "51a2e2eedb10f8197ab7cde065f2235a5914fc3464a7b6ff97b20e555ee406bb",
+      "output_sha256": {
+        "assets/models/glb/underworld-ground-blackwater-silt-ripples.glb": null,
+        "assets/models/glb/underworld-ground-decay-peat-mat.glb": null,
+        "assets/models/glb/underworld-ground-fracture-shale-scree.glb": null,
+        "assets/models/glb/underworld-ground-frozen-rime-fan.glb": null,
+        "assets/models/glb/underworld-ground-rootgrass-carpet.glb": null,
+        "assets/models/glb/underworld-ground-rootgrass-tufts.glb": null,
+        "assets/models/glb/underworld-ground-rootgrass-woven.glb": null,
+        "assets/models/glb/underworld-ground-sulfur-drift-bank.glb": null,
+        "assets/models/glb/underworld-ground-sulfur-drift-crescent.glb": null,
+        "assets/models/glb/underworld-ground-sulfur-drift-rippled.glb": null,
+        "assets/models/runtime/underworld-ground-blackwater-silt-ripples.model.json": null,
+        "assets/models/runtime/underworld-ground-decay-peat-mat.model.json": null,
+        "assets/models/runtime/underworld-ground-fracture-shale-scree.model.json": null,
+        "assets/models/runtime/underworld-ground-frozen-rime-fan.model.json": null,
+        "assets/models/runtime/underworld-ground-rootgrass-carpet.model.json": null,
+        "assets/models/runtime/underworld-ground-rootgrass-tufts.model.json": null,
+        "assets/models/runtime/underworld-ground-rootgrass-woven.model.json": null,
+        "assets/models/runtime/underworld-ground-sulfur-drift-bank.model.json": null,
+        "assets/models/runtime/underworld-ground-sulfur-drift-crescent.model.json": null,
+        "assets/models/runtime/underworld-ground-sulfur-drift-rippled.model.json": null,
+        "assets/models/source/underworld-ground-blackwater-silt-ripples.blend": null,
+        "assets/models/source/underworld-ground-decay-peat-mat.blend": null,
+        "assets/models/source/underworld-ground-fracture-shale-scree.blend": null,
+        "assets/models/source/underworld-ground-frozen-rime-fan.blend": null,
+        "assets/models/source/underworld-ground-rootgrass-carpet.blend": null,
+        "assets/models/source/underworld-ground-rootgrass-tufts.blend": null,
+        "assets/models/source/underworld-ground-rootgrass-woven.blend": null,
+        "assets/models/source/underworld-ground-sulfur-drift-bank.blend": null,
+        "assets/models/source/underworld-ground-sulfur-drift-crescent.blend": null,
+        "assets/models/source/underworld-ground-sulfur-drift-rippled.blend": null
+      }
     }
   ]
 }

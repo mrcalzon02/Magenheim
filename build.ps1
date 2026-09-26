@@ -52,6 +52,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Core tests failed.' }
     & python "$PSScriptRoot/tools/verify-model-assets.py"
     if ($LASTEXITCODE -ne 0) { throw 'Model asset validation failed.' }
+    & python "$PSScriptRoot/tools/verify-biome-ground-features.py"
+    if ($LASTEXITCODE -ne 0) { throw 'Biome ground feature validation failed.' }
     & python "$PSScriptRoot/tools/verify-fungal-canopy.py"
     if ($LASTEXITCODE -ne 0) { throw 'Fungal canopy variety validation failed.' }
     & python "$PSScriptRoot/tools/verify-underworld-native-assets.py"

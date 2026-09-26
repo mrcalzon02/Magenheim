@@ -126,33 +126,56 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
                     var distance = 2f + (float)coverRandom.NextDouble() * 4f;
                     var fx = x + Mathf.Cos(heading) * distance;
                     var fz = z + Mathf.Sin(heading) * distance;
-                    var floor = UnderworldTerrainRuntime.SampleInstanceTerrain(fx, center.y, fz);
-                    if (!floor.Admitted || floor.Biome != sample.Biome) continue;
-                    var east = UnderworldTerrainRuntime.SampleInstanceTerrain(fx + 1f, center.y, fz);
-                    var west = UnderworldTerrainRuntime.SampleInstanceTerrain(fx - 1f, center.y, fz);
-                    var north = UnderworldTerrainRuntime.SampleInstanceTerrain(fx, center.y, fz + 1f);
-                    var south = UnderworldTerrainRuntime.SampleInstanceTerrain(fx, center.y, fz - 1f);
-                    if (!east.Admitted || !west.Admitted || !north.Admitted || !south.Admitted ||
-                        east.Biome != floor.Biome || west.Biome != floor.Biome ||
-                        north.Biome != floor.Biome || south.Biome != floor.Biome) continue;
-                    var dx = Math.Max(Math.Abs(east.Height - floor.Height), Math.Abs(west.Height - floor.Height));
-                    var dz = Math.Max(Math.Abs(north.Height - floor.Height), Math.Abs(south.Height - floor.Height));
-                    var slope = Math.Atan(Math.Sqrt(dx * dx + dz * dz)) * 180d / Math.PI;
-                    var waterLevel = ZoneSystem.instance is null ? 30d : ZoneSystem.instance.m_waterLevel;
-                    try
-                    {
-                        var cover = UnderworldDonorVisualFactory.CreateCover(sample.Biome,
-                            unchecked(variant * 31 + fill), "Magenheim_UnderworldCover", floor.Height - waterLevel, slope);
-                        if (cover is null) continue;
-                        cover.transform.position += UnderworldInstanceLayer.ToEngine(
-                            new Vector3(fx, (float)floor.Height, fz));
-                        _spawned.Add(cover);
-                    }
-                    catch (InvalidOperationException exception) { _log?.LogWarning(exception.Message); }
+                    SpawnCover(fx, fz, sample.Biome, unchecked(variant * 31 + fill), false);
                 }
             }
         }
+        // A separate fixed cell grid puts low ground masses between groves as well as beneath them.
+        // It has its own seed stream, so adding ground detail never moves existing trees or rocks.
+        var groundRandom = new System.Random(unchecked(seed ^ 0x346AC1));
+        for (var gz = 0; gz < 6; gz++)
+        for (var gx = 0; gx < 6; gx++)
+        {
+            var x = (cellX + (gx + .2f + (float)groundRandom.NextDouble() * .6f) / 6f) * CellSize;
+            var z = (cellZ + (gz + .2f + (float)groundRandom.NextDouble() * .6f) / 6f) * CellSize;
+            var sample = UnderworldTerrainRuntime.SampleInstanceTerrain(x, 0, z);
+            if (!sample.Admitted) continue;
+            if (sample.Biome != UnderworldTerrainBiome.FungalForest && (gx + gz) % 2 != 0) continue;
+            SpawnCover(x, z, sample.Biome, unchecked(seed + gx * 397 + gz * 53), true);
+        }
         _log?.LogDebug($"Refreshed {_spawned.Count} spatially composed vanilla-donor Underworld ecology objects in instance space near ({center.x:0},{center.z:0}).");
+    }
+
+    private void SpawnCover(float x, float z, UnderworldTerrainBiome biome, int variant, bool groundFeaturesOnly)
+    {
+        if (x * x + z * z < 36f * 36f) return;
+        var floor = UnderworldTerrainRuntime.SampleInstanceTerrain(x, 0, z);
+        // Two-metre footprint probes reject cliff edges and provide the ground patch's support plane.
+        const float probe = 2f;
+        var east = UnderworldTerrainRuntime.SampleInstanceTerrain(x + probe, 0, z);
+        var west = UnderworldTerrainRuntime.SampleInstanceTerrain(x - probe, 0, z);
+        var north = UnderworldTerrainRuntime.SampleInstanceTerrain(x, 0, z + probe);
+        var south = UnderworldTerrainRuntime.SampleInstanceTerrain(x, 0, z - probe);
+        if (!floor.Admitted || !east.Admitted || !west.Admitted || !north.Admitted || !south.Admitted ||
+            floor.Biome != biome || east.Biome != biome || west.Biome != biome || north.Biome != biome || south.Biome != biome) return;
+        var dx = (east.Height - west.Height) / (2 * probe);
+        var dz = (north.Height - south.Height) / (2 * probe);
+        var steepX = Math.Max(Math.Abs(east.Height - floor.Height), Math.Abs(west.Height - floor.Height)) / probe;
+        var steepZ = Math.Max(Math.Abs(north.Height - floor.Height), Math.Abs(south.Height - floor.Height)) / probe;
+        var slope = Math.Atan(Math.Sqrt(steepX * steepX + steepZ * steepZ)) * 180 / Math.PI;
+        if (groundFeaturesOnly && (Math.Abs((east.Height + west.Height) * .5 - floor.Height) > .18 ||
+            Math.Abs((north.Height + south.Height) * .5 - floor.Height) > .18)) return;
+        var normal = new Vector3((float)-dx, 1, (float)-dz).normalized;
+        var water = ZoneSystem.instance is null ? 30d : ZoneSystem.instance.m_waterLevel;
+        try
+        {
+            var cover = UnderworldDonorVisualFactory.CreateCover(biome, variant, "Magenheim_UnderworldCover",
+                floor.Height - water, slope, normal, groundFeaturesOnly);
+            if (cover is null) return;
+            cover.transform.position += UnderworldInstanceLayer.ToEngine(new Vector3(x, (float)floor.Height, z));
+            _spawned.Add(cover);
+        }
+        catch (InvalidOperationException exception) { _log?.LogWarning(exception.Message); }
     }
 
     private static float ClusterRadius(UnderworldTerrainBiome biome) => biome switch

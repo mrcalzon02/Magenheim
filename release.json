@@ -1,4 +1,4 @@
 {
-  "version": "0.0.107",
-  "description": "0.0.107: Distinct biome terrain with unclipped relief: fungal hills, deep Blackwater basins, sulfur ridges, frozen ranges, faulted Fracture Zones and sunken decay. Smooth biome borders and a protected gate approach."
+  "version": "0.0.108",
+  "description": "0.0.108: Adds grass-like root carpets, tufts and woven mats; wind-shaped sulfur drifts, silt ripples, frost fans, shale scree and peat mats. Stable ground patches follow biome terrain slopes and keep the gate approach clear."
 }

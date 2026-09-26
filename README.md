@@ -2,7 +2,11 @@
 
 **Magic begins as geology.**
 
-## 0.0.107 testing candidate
+## 0.0.108 testing candidate
+
+Ten new ground features add grass-like root carpets, tufts and woven mats; sulfur powder
+drifts, rippled deposits and lee banks; Blackwater silt ripples, frost needle fans, shale scree
+and fibrous peat mats. Stable patches fill spaces between groves and align to terrain slopes.
 
 Ordinary Underworld terrain now uses distinct biome height and shape profiles without a shared
 height clamp. Deep basins, broad ridges and faulted ranges blend across province borders.
@@ -30,10 +34,10 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.107.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.108.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
-Launch **Modded**. Confirm `Loading [Magenheim 0.0.107]` in the BepInEx log.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.108]` in the BepInEx log.
 Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
 See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.

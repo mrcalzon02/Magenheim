@@ -1,3 +1,15 @@
+# Development closeout - 0.0.108 biome ground features
+
+Ten authored ground models add rootgrass carpets/tufts/woven mats, three sulfur drift forms,
+silt ripples, frost fans, shale scree and peat mats. A separate deterministic sampling grid
+fills gaps between groves without moving existing canopy placements. Low patches align to
+terrain normals; slope, water, biome-edge, gate-clearance and curvature checks limit placement.
+Ground meshes are nonblocking, share cached assets, and add no lights or gameplay components.
+
+Expected enabled launcher entry: Magenheim v0.0.108 by Local.
+Launcher description: "0.0.108: Adds grass-like root carpets, tufts and woven mats; wind-shaped sulfur drifts, silt ripples, frost fans, shale scree and peat mats. Stable ground patches follow biome terrain slopes and keep the gate approach clear."
+See TESTING.md and docs/validation/2026-09-25-biome-ground-features.md for acceptance.
+
 # Development closeout - 0.0.107 distinct biome relief
 
 Removes the shared ordinary-terrain clamp and the accidental zero-height basin floor.
