@@ -91,7 +91,6 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
                 _loaded.Add(key, UnderworldInstanceChunkSampler.Sample(_grid, key, identity.DerivedSeed32, waterLevel));
 
         _services.ChunkMaterializer.Reconcile();
-        UnderworldResourcePopulationRuntime.ReconcileResidentChunks(_services, identity, _log);
         // Every registered family consumes this exact derived-instance resident set after terrain
         // materialization, preventing structure placement from racing or escaping native chunk authority.
         _services.BiomeStructureResidency.Reconcile();
@@ -107,7 +106,6 @@ internal sealed class UnderworldInstanceChunkStreamingRuntime
         if (_loaded.Count > 0) _log.LogDebug($"Released {_loaded.Count} native Underworld chunk payload(s).");
         _loaded.Clear();
         _loadedInstanceKey = null;
-        UnderworldResourcePopulationRuntime.Reset();
         _services.ChunkMaterializer.Reconcile();
     }
 
