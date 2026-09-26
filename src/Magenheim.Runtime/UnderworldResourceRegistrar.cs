@@ -77,12 +77,14 @@ internal sealed class UnderworldResourceRegistrar : IDisposable
                 pickable.m_maxLevelBonusChance = 0f;
                 pickable.m_bonusYieldAmount = 0;
                 if (model is not null) pickable.m_hideWhenPicked = UnderworldResourceVisuals.Apply(clone, model);
+                if (clone.GetComponent<UnderworldZdoStateAdapter>() is null) clone.AddComponent<UnderworldZdoStateAdapter>();
+                if (clone.GetComponent<UnderworldPersistentObjectBinding>() is null) clone.AddComponent<UnderworldPersistentObjectBinding>();
                 PrefabManager.Instance.AddPrefab(new CustomPrefab(clone, true));
                 pickups++;
             }
             catch (Exception error) { _log.LogError("Underworld resource " + entry.Name + ": " + error); }
         }
-        _log.LogInfo($"Underworld resource prototypes: {items}/{UnderworldResourceCatalog.All.Count} items and {pickups} native pickups. Console-only; scenery and creature donor loot unchanged.");
+        _log.LogInfo($"Underworld resource prototypes: {items}/{UnderworldResourceCatalog.All.Count} items and {pickups} native persistent pickups. Natural population is admitted selectively by the Underworld ecology runtime; scenery and creature donor loot unchanged.");
         PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent;
     }
 
