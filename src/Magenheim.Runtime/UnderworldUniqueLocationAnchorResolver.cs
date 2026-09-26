@@ -29,7 +29,7 @@ internal sealed class UnderworldUniqueLocationAnchorResolver
         var cacheKey = new CacheKey(identity.DerivedWorldId, identity.DerivedSeed32, normalized, biome);
         if (_cache.TryGetValue(cacheKey, out var cached)) return cached;
 
-        var grid = _services.ChunkStreaming.Grid;
+        var grid = new UnderworldInstanceChunkGrid(_services.TerrainDomain);
         var radiusChunks = checked((int)Math.Ceiling(_services.TerrainDomain.RadiusMeters / grid.ChunkSizeMeters));
         UnderworldUniqueLocationAnchor? winner = null;
         ulong winnerScore = ulong.MaxValue;
