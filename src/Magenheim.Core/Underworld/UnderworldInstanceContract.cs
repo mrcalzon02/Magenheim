@@ -7,7 +7,7 @@ namespace Magenheim.Core.Underworld;
 /// </summary>
 public static class UnderworldInstanceContract
 {
-    public const string ContractId = "magenheim.underworld.instance-world-space.v1";
+    public const string ContractId = "magenheim.underworld.multi-world-save.v2";
 
     public const bool DedicatedInstanceWorldSpace = true;
     public const bool DedicatedInstanceMap = true;
@@ -16,6 +16,9 @@ public static class UnderworldInstanceContract
     public const bool DedicatedInstanceBiomeEnvironmentAuthority = true;
     public const bool DedicatedInstancePersistenceNamespace = true;
     public const bool UsesVanillaMinimapMechanics = true;
+    public const bool SingleSaveContainsMultipleWorldInstances = true;
+    public const bool NativeWorldServicesAreInstanceScoped = true;
+    public const bool PlayersMayOccupyDifferentInstancesConcurrently = true;
 
     public const bool ParallelMapEngine = false;
     public const bool ParallelFogOfWarEngine = false;
@@ -25,4 +28,8 @@ public static class UnderworldInstanceContract
     public const bool SurfaceMapIsUnderworldMap = false;
     public const bool PlayerPopulationControlsInstanceLifecycle = false;
     public const bool SeparateUserSelectedSave = false;
+    public const bool CoordinateOffsetDefinesInstanceIdentity = false;
+    public const bool VerticalEngineLayerDefinesInstanceIdentity = false;
+    public const bool WholeServerWorldSwapDefinesInstanceTransit = false;
+    public const bool SecondServerProcessDefinesInstanceTransit = false;
 }

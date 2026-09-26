@@ -58,8 +58,6 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         {
             _observedWorldUid = currentWorldUid;
             TryAdmitInstanceAuthority(znet);
-            TryAdmitWorldCenter();
-            TryReconcileChunkResidency();
             TryReconcileDeepBoons();
             return;
         }
@@ -73,8 +71,6 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         }
 
         TryAdmitInstanceAuthority(znet);
-        TryAdmitWorldCenter();
-        TryReconcileChunkResidency();
         TryReconcileDeepBoons();
     }
 
@@ -95,6 +91,8 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         {
             _services.InstanceLifecycle.EnsureAdmitted(identity);
             _services.InstanceLifecycle.EnsureActive(identity);
+            if (ZNet.World is not null && WorldGenerator.instance is not null && ZoneSystem.instance is not null && ZDOMan.instance is not null)
+                _services.WorldInstances.BindSurface(ZNet.World, WorldGenerator.instance, ZoneSystem.instance, ZDOMan.instance);
             _log.LogInfo($"Admitted persistent Underworld instance authority '{identity.DerivedWorldId}' for parent world '{identity.ParentWorldId}'.");
         }
         catch (Exception exception)
@@ -178,7 +176,12 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         if (ZNet.instance is null || !ZNet.instance.IsServer() || Time.unscaledTime < _nextBoonReconcileAt) return;
         _nextBoonReconcileAt = Time.unscaledTime + 2f;
         foreach (var player in Player.GetAllPlayers())
-            if (player) DeepBoonRuntime.Reconcile(player, out _);
+        {
+            if (!player) continue;
+            try { _services?.WorldInstances.GetOrBindSurface(player.GetPlayerID()); }
+            catch (InvalidOperationException) { }
+            DeepBoonRuntime.Reconcile(player, out _);
+        }
     }
 
     private static string InstanceKey(UnderworldWorldIdentity identity) =>

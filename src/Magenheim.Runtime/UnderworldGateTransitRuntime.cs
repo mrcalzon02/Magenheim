@@ -54,10 +54,9 @@ internal static class UnderworldGateTransitRuntime
             return false;
         }
 
-        // Gate role is physical authority. Entry endpoints belong to the Surface and return
-        // endpoints belong to the dedicated Underworld engine layer. Never allow a misplaced,
-        // duplicated, or stale endpoint to become a cross-layer transit oracle.
-        var isUnderworld = UnderworldInstanceLayer.IsUnderworldEnginePosition(player.transform.position);
+        // Instance membership is explicit authority. Coordinates are never consulted.
+        var currentInstance = services.WorldInstances.GetOrBindSurface(player.GetPlayerID());
+        var isUnderworld = currentInstance.IsUnderworld;
         if (role == UnderworldGateRole.EnterUnderworld && isUnderworld)
         {
             diagnostic = "This Deep Gate entry can only be used from the Surface.";
@@ -78,23 +77,16 @@ internal static class UnderworldGateTransitRuntime
                 return false;
             }
 
-            Vector3 target;
-            try { target = UnderworldWorldCenterRegistrar.ResolveEngineCenterPosition(); }
-            catch (InvalidOperationException exception) { diagnostic = exception.Message; return false; }
+            if (!services.WorldInstances.HasUnderworldContext)
+            {
+                diagnostic = "The native Underworld World/WorldGenerator/ZoneSystem/ZDOMan instance is not bound. Legacy coordinate-layer transit is disabled.";
+                return false;
+            }
+
             var source = new SurfaceAnchor(player.transform.position, player.transform.rotation);
             SurfaceReturn[playerId] = source;
             PersistReturnAnchor(player, source);
-
-            if (player.TeleportTo(target + Vector3.up * 1.2f, UnderworldWorldCenterRegistrar.ArrivalRotation, false))
-            {
-                _log?.LogInfo(
-                    $"Deep Gate moved player {playerId} into Underworld instance {identity.DerivedWorldId}.");
-                return true;
-            }
-
-            SurfaceReturn.Remove(playerId);
-            ClearPersistedReturnAnchor(player);
-            diagnostic = "Valheim rejected the Underworld teleport.";
+            diagnostic = "Underworld instance services are bound, but native per-player context handoff is not yet installed.";
             return false;
         }
 
@@ -148,7 +140,7 @@ internal static class UnderworldGateTransitRuntime
     {
         var services = _services;
         var phase = services?.InstanceLifecycle.Phase.ToString() ?? "not configured";
-        var layer = UnderworldInstanceLayer.IsUnderworldEnginePosition(player.transform.position) ? "Underworld" : "Surface";
+        var layer = services is not null && services.WorldInstances.GetOrBindSurface(player.GetPlayerID()).IsUnderworld ? "Underworld" : "Surface";
         return $"Underworld instance: {phase}; local layer: {layer}; Deep Gate unlocked: {UnderworldProgressionAuthority.IsUnlocked}; " +
                $"return anchor: {(HasReturnAnchor(player) ? "yes" : "no")}.";
     }
@@ -202,10 +194,6 @@ internal static class UnderworldGateTransitRuntime
         }
 
         var position = new Vector3(values[0], values[1], values[2]);
-        // A legitimate entry anchor can never itself be in the Underworld engine layer. Reject
-        // corrupt/stale data rather than allowing persisted transition state to become authority.
-        if (UnderworldInstanceLayer.IsUnderworldEnginePosition(position)) return false;
-
         var rotation = new Quaternion(values[3], values[4], values[5], values[6]);
         anchor = new SurfaceAnchor(position, rotation);
         return true;
