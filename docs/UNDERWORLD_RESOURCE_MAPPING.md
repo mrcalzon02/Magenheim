@@ -1,6 +1,6 @@
 # Underworld resource and drop mapping — 0.0.97
 
-Raw resource names follow the existing flora/terrain plan. All 22 now have unique item identities backed by vanilla models/icons and native Pickable review nodes. They are materials, including Glowcap Flesh: raw-food effects are not yet balanced or enabled. No smelting recipes, new stations or world harvesting claims are implied.
+Raw resource names follow the existing flora/terrain plan. All 22 now have unique item identities backed by vanilla models/icons and native Pickable nodes. They are materials, including Glowcap Flesh: raw-food effects are not yet balanced or enabled. Sulfurous Wastes now has deterministic native-instance natural pickup population in source; other biomes remain unpopulated and no smelting recipes or new stations are implied.
 
 | Biome | Resource | Item model/icon donor | Pickup donor | Intended source (not populated yet) |
 |---|---|---|---|---|
@@ -29,11 +29,11 @@ Raw resource names follow the existing flora/terrain plan. All 22 now have uniqu
 
 ## What actually drops
 
-Each new console-spawned pickup produces one matching custom material through native Pickable behavior. It has no extra donor loot or respawn timer. Spawn IDs are `Magenheim_Underworld_ResourcePickup_<NameWithoutSpaces>`; loose item IDs are `Magenheim_Underworld_Resource_<NameWithoutSpaces>`. Example: `spawn Magenheim_Underworld_ResourcePickup_WorldrootTimber 1`.
+Each registered pickup produces one matching custom material through native Pickable behavior. It has no extra donor loot or respawn timer. Sulfurous Wastes cells now deterministically admit Slagstone, Sulfur, Charred Timber and Emberiron pickups through native Valheim ZDO/ZNetView persistence; picked state is not tied to disposable ecology scenery. All pickup prefabs remain console-spawnable for review. Spawn IDs are `Magenheim_Underworld_ResourcePickup_<NameWithoutSpaces>`; loose item IDs are `Magenheim_Underworld_Resource_<NameWithoutSpaces>`.
 
 The 42 creature review prototypes still retain vanilla donor loot. No per-creature custom resource drops are claimed. The 72 scenery variants are stripped visuals and cannot be harvested. Rootforged still consumes core wood/stone/iron; fungal provisions still use their original vanilla ingredients. Those recipes stay playable until natural resource acquisition is admitted.
 
-Pending: biome-valid persistent node placement, native mining/tree donor conversion, creature-specific loot balance, food/refining recipes, multiplayer/save/reload and item pickup acceptance in-game. Do not add resource drops to disposable local scenery: its rebuild would replenish the same ground repeatedly.
+Pending: extend biome-valid persistent node placement beyond Sulfurous Wastes, native mining/tree donor conversion, creature-specific loot balance, food/refining recipes, and compile/runtime multiplayer/save/reload/item-pickup acceptance. Do not add resource drops to disposable local scenery: its rebuild would replenish the same ground repeatedly.
 
 ## Custom appearances — 2026-09-22
 
