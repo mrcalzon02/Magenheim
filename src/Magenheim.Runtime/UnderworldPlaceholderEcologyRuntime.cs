@@ -143,7 +143,10 @@ internal sealed class UnderworldPlaceholderEcologyRuntime : MonoBehaviour
             if (sample.Biome != UnderworldTerrainBiome.FungalForest && (gx + gz) % 2 != 0) continue;
             SpawnCover(x, z, sample.Biome, unchecked(seed + gx * 397 + gz * 53), true);
         }
-        if (_services is not null)\n            UnderworldResourcePopulationRuntime.PopulateSulfurousCell(_services, identity, new(cellX, cellZ), _log);\n\n        _log?.LogDebug($"Refreshed {_spawned.Count} spatially composed vanilla-donor Underworld ecology objects in instance space near ({center.x:0},{center.z:0}).");
+        if (_services is not null)
+            UnderworldResourcePopulationRuntime.PopulateCell(_services, identity, new(cellX, cellZ), _log);
+
+        _log?.LogDebug($"Refreshed {_spawned.Count} spatially composed vanilla-donor Underworld ecology objects in instance space near ({center.x:0},{center.z:0}).");
     }
 
     private void SpawnCover(float x, float z, UnderworldTerrainBiome biome, int variant, bool groundFeaturesOnly)
