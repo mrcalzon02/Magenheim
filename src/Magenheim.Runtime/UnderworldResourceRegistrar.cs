@@ -1,5 +1,6 @@
 using System;
 using BepInEx.Logging;
+using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using Magenheim.Core.Underworld;
@@ -7,7 +8,10 @@ using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>Content-only native items and console pickup prototypes. No world placement or save layer.</summary>
+/// <summary>
+/// Registers Underworld resource items and their natural pickups through Valheim/Jotunn vegetation.
+/// World placement, generated-zone state and picked-state persistence remain native Valheim authority.
+/// </summary>
 internal sealed class UnderworldResourceRegistrar : IDisposable
 {
     private readonly ManualLogSource _log;
@@ -79,14 +83,49 @@ internal sealed class UnderworldResourceRegistrar : IDisposable
                 if (model is not null) pickable.m_hideWhenPicked = UnderworldResourceVisuals.Apply(clone, model);
                 if (pickable.m_hideWhenPicked is null)
                     throw new InvalidOperationException("Persistent natural resource pickup requires m_hideWhenPicked so Valheim retains picked state in its native ZDO.");
-                if (clone.GetComponent<UnderworldZdoStateAdapter>() is null) clone.AddComponent<UnderworldZdoStateAdapter>();
-                if (clone.GetComponent<UnderworldPersistentObjectBinding>() is null) clone.AddComponent<UnderworldPersistentObjectBinding>();
-                PrefabManager.Instance.AddPrefab(new CustomPrefab(clone, true));
+                var biomeResourceCount = System.Linq.Enumerable.Count(
+                    UnderworldResourceCatalog.All,
+                    value => value.Biome == entry.Biome);
+                var targetPerZone = UnderworldResourcePlacementPlanner.SlotsPerCell / (float)biomeResourceCount;
+                var minPerZone = Mathf.Max(0.25f, targetPerZone - 0.75f);
+                var maxPerZone = targetPerZone + 0.75f;
+
+                var vegetationConfig = new VegetationConfig
+                {
+                    Biome = UnderworldTerrainRuntime.ToNativeBiome(entry.Biome),
+                    BiomeArea = JotunnWorldgenAdapter.MapArea(Magenheim.Core.Worldgen.SpawnArea.All),
+                    BlockCheck = true,
+                    ForcePlacement = false,
+                    Min = minPerZone,
+                    Max = maxPerZone,
+                    MinAltitude = -1000f,
+                    MaxAltitude = 1000f,
+                    MinOceanDepth = 0f,
+                    MaxOceanDepth = 0f,
+                    MinTerrainDelta = 0f,
+                    MaxTerrainDelta = 1000f,
+                    TerrainDeltaRadius = 2f,
+                    MinTilt = 0f,
+                    MaxTilt = 55f,
+                    InForest = false,
+                    ForestThresholdMin = 0f,
+                    ForestThresholdMax = 1f,
+                    ScaleMin = 0.9f,
+                    ScaleMax = 1.1f,
+                    GroupSizeMin = 1,
+                    GroupSizeMax = 1,
+                    GroupRadius = 0f,
+                    GroundOffset = 0f,
+                };
+
+                var vegetation = new CustomVegetation(clone, fixReference: true, vegetationConfig);
+                if (!ZoneManager.Instance.AddCustomVegetation(vegetation))
+                    throw new InvalidOperationException("Jotunn refused native vegetation registration for " + entry.PickupPrefab);
                 pickups++;
             }
             catch (Exception error) { _log.LogError("Underworld resource " + entry.Name + ": " + error); }
         }
-        _log.LogInfo($"Underworld resource prototypes: {items}/{UnderworldResourceCatalog.All.Count} items and {pickups} native persistent pickups. Natural population is admitted selectively by the Underworld ecology runtime; scenery and creature donor loot unchanged.");
+        _log.LogInfo($"Underworld resources: {items}/{UnderworldResourceCatalog.All.Count} items and {pickups} native ZoneSystem vegetation pickups registered across six Underworld-only biome flags. Placement and picked-state persistence are Valheim-owned.");
         PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent;
     }
 
