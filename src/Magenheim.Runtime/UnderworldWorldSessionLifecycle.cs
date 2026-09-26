@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BepInEx.Logging;
 using Magenheim.Core.Underworld;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Magenheim.Runtime;
 
@@ -60,6 +61,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         {
             _observedWorldUid = currentWorldUid;
             TryAdmitInstanceAuthority(znet);
+            TryAdmitWorldCenter();
             TryReconcileDeepBoons();
             return;
         }
@@ -73,6 +75,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         }
 
         TryAdmitInstanceAuthority(znet);
+        TryAdmitWorldCenter();
         TryReconcileDeepBoons();
     }
 
@@ -110,12 +113,14 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     private void TryAdmitWorldCenter()
     {
         if (_services is null || _log is null) return;
-        if (_services.InstanceLifecycle.Phase != UnderworldInstancePhase.Active || _services.InstanceLifecycle.Identity is not { } identity)
+        if (_services.InstanceLifecycle.Phase != UnderworldInstancePhase.Active ||
+            _services.InstanceLifecycle.Identity is not { } identity ||
+            !_services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out var context) ||
+            context is null)
         {
             if (_worldCenter) Destroy(_worldCenter);
             _worldCenter = null;
             _worldCenterInstanceKey = null;
-            _services.ChunkStreaming.Clear();
             return;
         }
 
@@ -126,24 +131,31 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         _worldCenterInstanceKey = null;
 
         GameObject? candidate = null;
+        var previousScene = SceneManager.GetActiveScene();
         try
         {
-            candidate = UnderworldWorldCenterRegistrar.Create(identity, _log);
-            if (!_services.ChunkStreaming.Reconcile(new[] { new UnderworldChunkFocus(0d, 0d) }))
-                throw new InvalidOperationException("Native Underworld chunk residency rejected an active instance admission.");
+            using (ValheimWorldInstanceExecution.Enter(context))
+            {
+                if (!SceneManager.SetActiveScene(context.Scene))
+                    throw new InvalidOperationException("Unable to activate the Underworld Unity scene for world-center composition.");
+                candidate = UnderworldWorldCenterRegistrar.Create(identity, _log);
+            }
 
             _worldCenter = candidate;
             candidate = null;
             _worldCenterInstanceKey = instanceKey;
-            _log.LogInfo($"Composed Underworld world center and admitted native terrain chunks for instance '{identity.DerivedWorldId}'.");
+            _log.LogInfo($"Composed Underworld world center directly in native instance scene '{context.Scene.name}'.");
         }
         catch (Exception exception)
         {
             if (candidate) Destroy(candidate);
-            _services.ChunkStreaming.Clear();
             _worldCenter = null;
             _worldCenterInstanceKey = null;
-            _log.LogError($"Underworld native-instance center admission failed: {exception}");
+            _log.LogError($"Underworld native world-center admission failed: {exception}");
+        }
+        finally
+        {
+            if (previousScene.IsValid() && previousScene.isLoaded) SceneManager.SetActiveScene(previousScene);
         }
     }
 
