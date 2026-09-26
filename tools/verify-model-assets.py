@@ -102,10 +102,6 @@ MESH_BUILDERS={
  'ModelAssets.cs':'builds the Mesh that an authored .model.json payload is imported into',
  'EarthAssets.cs':'builds the Mesh that an authored .mesh.json payload is imported into',
  'ModelExportRuntime.cs':'reads meshes back out of the running game for export',
- 'UnderworldInstanceChunkMaterializer.cs':'builds Underworld terrain from Core-authoritative '
-  'heightfield samples. Terrain is generated per chunk from a seed and cannot be authored in '
-  'Blender, and this file owns presentation only: heights, biomes and admission all arrive from '
-  'Magenheim.Core.Underworld.',
 }
 for name in MESH_BUILDERS:
  assert (root/'src/Magenheim.Runtime'/name).exists(),('Exempted mesh builder no longer exists',name)
