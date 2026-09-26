@@ -1,3 +1,4 @@
+using UnityEngine.SceneManagement;
 using System;
 using System.Collections.Generic;
 using Magenheim.Core.Underworld;
@@ -15,12 +16,26 @@ internal sealed class ValheimWorldInstanceRegistry
 
     internal void BindSurface(World world, WorldGenerator generator, ZoneSystem zoneSystem, ZDOMan zdoMan)
     {
-        Bind(new ValheimWorldInstanceContext(UnderworldWorldInstanceId.Surface, world, generator, zoneSystem, zdoMan));
+        var scene = zoneSystem.gameObject.scene;
+        Bind(new ValheimWorldInstanceContext(UnderworldWorldInstanceId.Surface, world, generator, zoneSystem, zdoMan, scene, scene.GetPhysicsScene()));
     }
 
-    internal void BindUnderworld(World world, WorldGenerator generator, ZoneSystem zoneSystem, ZDOMan zdoMan)
+    internal void BindUnderworld(
+        World world,
+        WorldGenerator generator,
+        ZoneSystem zoneSystem,
+        ZDOMan zdoMan,
+        Scene scene,
+        PhysicsScene physicsScene)
     {
-        Bind(new ValheimWorldInstanceContext(UnderworldWorldInstanceId.Underworld, world, generator, zoneSystem, zdoMan));
+        Bind(new ValheimWorldInstanceContext(
+            UnderworldWorldInstanceId.Underworld,
+            world,
+            generator,
+            zoneSystem,
+            zdoMan,
+            scene,
+            physicsScene));
     }
 
     internal void Bind(ValheimWorldInstanceContext context)
@@ -76,13 +91,19 @@ internal sealed class ValheimWorldInstanceContext
         World world,
         WorldGenerator worldGenerator,
         ZoneSystem zoneSystem,
-        ZDOMan zdoMan)
+        ZDOMan zdoMan,
+        Scene scene,
+        PhysicsScene physicsScene)
     {
+        if (!scene.IsValid()) throw new ArgumentException("World instance requires a valid Unity scene.", nameof(scene));
+        if (!physicsScene.IsValid()) throw new ArgumentException("World instance requires a valid Unity physics scene.", nameof(physicsScene));
         InstanceId = instanceId;
         World = world ?? throw new ArgumentNullException(nameof(world));
         WorldGenerator = worldGenerator ?? throw new ArgumentNullException(nameof(worldGenerator));
         ZoneSystem = zoneSystem ?? throw new ArgumentNullException(nameof(zoneSystem));
         ZdoMan = zdoMan ?? throw new ArgumentNullException(nameof(zdoMan));
+        Scene = scene;
+        PhysicsScene = physicsScene;
     }
 
     internal UnderworldWorldInstanceId InstanceId { get; }
@@ -90,4 +111,6 @@ internal sealed class ValheimWorldInstanceContext
     internal WorldGenerator WorldGenerator { get; }
     internal ZoneSystem ZoneSystem { get; }
     internal ZDOMan ZdoMan { get; }
+    internal Scene Scene { get; }
+    internal PhysicsScene PhysicsScene { get; }
 }

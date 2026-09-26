@@ -28,6 +28,15 @@ internal static class UnderworldInstanceContractTests
         Assert(!UnderworldInstanceContract.SurfaceMapIsUnderworldMap, "The Surface minimap must never be the Underworld map.");
         Assert(!UnderworldInstanceContract.PlayerPopulationControlsInstanceLifecycle, "Player population must never control Underworld lifecycle.");
         Assert(!UnderworldInstanceContract.SeparateUserSelectedSave, "The Underworld must not become a user-selected second save.");
+        Assert(UnderworldInstanceContract.SingleSaveContainsMultipleWorldInstances, "One save must own both Surface and Underworld world instances.");
+        Assert(UnderworldInstanceContract.NativeWorldServicesAreInstanceScoped, "World/WorldGenerator/ZoneSystem/ZDOMan authority must be instance-scoped.");
+        Assert(UnderworldInstanceContract.PlayersMayOccupyDifferentInstancesConcurrently, "Multiplayer must allow Surface and Underworld residency at the same time.");
+        Assert(!UnderworldInstanceContract.CoordinateOffsetDefinesInstanceIdentity, "Coordinates must never stand in for instance identity.");
+        Assert(!UnderworldInstanceContract.VerticalEngineLayerDefinesInstanceIdentity, "A vertical Y layer must never stand in for a world instance.");
+        Assert(!UnderworldInstanceContract.WholeServerWorldSwapDefinesInstanceTransit, "One player's transit must never swap the entire server world.");
+        Assert(!UnderworldInstanceContract.SecondServerProcessDefinesInstanceTransit, "Underworld transit must stay inside the same server process.");
+        Assert(UnderworldWorldInstanceId.Surface.Value == 0, "Surface instance id must remain 0.");
+        Assert(UnderworldWorldInstanceId.Underworld.Value == 1, "Underworld instance id must remain 1.");
         return assertions;
     }
 }
