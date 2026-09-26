@@ -225,6 +225,10 @@ The Scepter grants a player-scale **Gravity Inversion** ability. It uses the sam
 
 Do not copy the boss implementation into a second player implementation. The shared runtime owns wave intersection, radial falloff, vertical/horizontal impulse, physics safety, authority rules, and effect-event description; profiles provide King-versus-Scepter parameters.
 
+## Boss stone requirement
+
+The Nowhere King requires a dedicated **boss stone** as part of his finished Valheim-facing progression presentation. Treat this as an explicit remaining deliverable alongside the trophy and Dark Throne encounter rather than assuming the trophy alone satisfies boss-world integration. The stone's exact placement, activation/unlock behavior, power association, and visual treatment remain to be resolved against Magenheim's existing progression architecture before implementation.
+
 ## Implementation sequence
 
 1. Reconcile current Mistlands location registration, creature registry, combat hooks, elemental authority, ZDO patterns, and existing model/prefab factories.
