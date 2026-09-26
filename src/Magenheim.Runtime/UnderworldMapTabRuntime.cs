@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using BepInEx.Logging;
 using HarmonyLib;
 using Magenheim.Core.Underworld;
@@ -21,11 +20,6 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
     private const string CustomDataPrefix = "magenheim.map.underworld.v1.";
     private const float MapGenerationTimeoutSeconds = 120f;
 
-    // AsyncLocal deliberately replaces ThreadStatic here. Map-generation mods commonly move the
-    // ordinary GenerateWorldMap sampling work into Task.Run; ExecutionContext propagation carries
-    // this immutable Underworld sample context into those workers without globally rerouting the
-    // unrelated terrain-generation threads or touching Unity singletons off the main thread.
-    private static readonly AsyncLocal<MapGenerationContext?> UnderworldGenerationContext = new();
     private static UnderworldMapTabRuntime? _instance;
 
     private UnderworldRuntimeServices? _services;
@@ -143,66 +137,19 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
     {
         var runtime = _instance;
         var services = runtime?._services;
-        var identity = services?.InstanceLifecycle.Identity;
         if (runtime is null || runtime._map != map ||
             runtime._boundLayer != UnderworldLayer.Underworld ||
-            services is null || identity is null)
+            services is null ||
+            !services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out var context) ||
+            context is null)
             return null;
 
-        var previous = UnderworldGenerationContext.Value;
-        var waterLevel = ZoneSystem.instance is null ? 30d : ZoneSystem.instance.m_waterLevel;
-        UnderworldGenerationContext.Value = new MapGenerationContext(
-            services.TerrainDomain,
-            identity.DerivedSeed32,
-            waterLevel);
-        return new MapGenerationScope(previous);
+        // Generate the map against the actual native Underworld World/WorldGenerator/ZoneSystem.
+        // No donor biome projection or parallel terrain sampler participates in this call.
+        return new MapGenerationScope(ValheimWorldInstanceExecution.Enter(context));
     }
 
-    internal static void EndMapGeneration(MapGenerationScope? scope)
-    {
-        if (scope is null) return;
-        UnderworldGenerationContext.Value = scope.Previous;
-    }
-
-    internal static bool TryRouteMapSample(double x, double z, out UnderworldTerrainResult terrain)
-    {
-        terrain = default;
-        var context = UnderworldGenerationContext.Value;
-        if (context is null) return false;
-
-        var noise = UnderworldTerrainNoise.Fractal01(context.Seed, x, z);
-        terrain = UnderworldTerrainLifecycle.Evaluate(
-            context.Domain,
-            new UnderworldTerrainSample(x, 0d, z, context.WaterLevel, 0d, noise),
-            context.Seed);
-        return true;
-    }
-
-    internal static float CurrentMapOutsideHeight
-    {
-        get
-        {
-            var context = UnderworldGenerationContext.Value;
-            return (float)((context?.WaterLevel ?? 30d) - 200d);
-        }
-    }
-
-    internal static Heightmap.Biome MapDonorBiome(UnderworldTerrainResult terrain)
-    {
-        if (!terrain.Admitted) return Heightmap.Biome.Ocean;
-        return terrain.Biome switch
-        {
-            UnderworldTerrainBiome.FungalForest => Heightmap.Biome.Mistlands,
-            UnderworldTerrainBiome.BlackwaterDeep => terrain.WaterDepth > 0.5d
-                ? Heightmap.Biome.Ocean
-                : Heightmap.Biome.Swamp,
-            UnderworldTerrainBiome.SulfurousWastes => Heightmap.Biome.AshLands,
-            UnderworldTerrainBiome.FrozenCaverns => Heightmap.Biome.DeepNorth,
-            UnderworldTerrainBiome.FractureZones => Heightmap.Biome.Mountain,
-            UnderworldTerrainBiome.GreatDecay => Heightmap.Biome.Swamp,
-            _ => Heightmap.Biome.Ocean,
-        };
-    }
+    internal static void EndMapGeneration(MapGenerationScope? scope) => scope?.Dispose();
 
     private void OnVanillaMapLoaded(Minimap map)
     {
@@ -659,24 +606,19 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         if (ReferenceEquals(_instance, this)) _instance = null;
     }
 
-    internal sealed class MapGenerationContext
+    internal sealed class MapGenerationScope : IDisposable
     {
-        internal MapGenerationContext(UnderworldInstanceTerrainDomain domain, int seed, double waterLevel)
+        private IDisposable? _instanceScope;
+
+        internal MapGenerationScope(IDisposable instanceScope) =>
+            _instanceScope = instanceScope ?? throw new ArgumentNullException(nameof(instanceScope));
+
+        public void Dispose()
         {
-            Domain = domain ?? throw new ArgumentNullException(nameof(domain));
-            Seed = seed;
-            WaterLevel = waterLevel;
+            var scope = _instanceScope;
+            _instanceScope = null;
+            scope?.Dispose();
         }
-
-        internal UnderworldInstanceTerrainDomain Domain { get; }
-        internal int Seed { get; }
-        internal double WaterLevel { get; }
-    }
-
-    internal sealed class MapGenerationScope
-    {
-        internal MapGenerationScope(MapGenerationContext? previous) => Previous = previous;
-        internal MapGenerationContext? Previous { get; }
     }
 
     internal sealed class MapBindingScope : IDisposable
@@ -865,59 +807,6 @@ internal static class UnderworldMinimapGenerateWorldMapPatch
     {
         UnderworldMapTabRuntime.EndMapGeneration(__state);
         return __exception;
-    }
-}
-
-[HarmonyPatch(
-    typeof(WorldGenerator),
-    nameof(WorldGenerator.GetBiome),
-    new[] { typeof(float), typeof(float), typeof(float), typeof(bool) })]
-internal static class UnderworldMinimapWorldGeneratorBiomePatch
-{
-    private static bool Prefix(float __0, float __1, ref Heightmap.Biome __result)
-    {
-        if (!UnderworldMapTabRuntime.TryRouteMapSample(__0, __1, out var terrain)) return true;
-        __result = UnderworldMapTabRuntime.MapDonorBiome(terrain);
-        return false;
-    }
-}
-
-[HarmonyPatch(
-    typeof(WorldGenerator),
-    nameof(WorldGenerator.GetBiomeHeight),
-    new[]
-    {
-        typeof(Heightmap.Biome),
-        typeof(float),
-        typeof(float),
-        typeof(Color),
-        typeof(bool),
-        typeof(bool),
-    },
-    new[]
-    {
-        ArgumentType.Normal,
-        ArgumentType.Normal,
-        ArgumentType.Normal,
-        ArgumentType.Out,
-        ArgumentType.Normal,
-        ArgumentType.Normal,
-    })]
-internal static class UnderworldMinimapWorldGeneratorHeightPatch
-{
-    private static bool Prefix(float __1, float __2, ref Color __3, ref float __result)
-    {
-        if (!UnderworldMapTabRuntime.TryRouteMapSample(__1, __2, out var terrain)) return true;
-
-        __3 = Color.clear;
-        if (!terrain.Admitted)
-        {
-            __result = UnderworldMapTabRuntime.CurrentMapOutsideHeight;
-            return false;
-        }
-
-        __result = (float)terrain.Height;
-        return false;
     }
 }
 
