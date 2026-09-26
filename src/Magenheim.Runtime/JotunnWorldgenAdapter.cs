@@ -28,6 +28,13 @@ internal static class JotunnWorldgenAdapter
             "Mistlands" => ParseBiome("Mistlands"),
             "Ashlands" => ParseBiome("Ashlands", "AshLands"),
             "DeepNorth" => ParseBiome("DeepNorth"),
+            "magenheim.underworld.biome.fungal_forest" => UnderworldTerrainRuntime.FungalForestBiome,
+            "magenheim.underworld.biome.blackwater_deep" => UnderworldTerrainRuntime.BlackwaterDeepBiome,
+            "magenheim.underworld.biome.sulfurous_wastes" => UnderworldTerrainRuntime.SulfurousWastesBiome,
+            "magenheim.underworld.biome.frozen_caverns" => UnderworldTerrainRuntime.FrozenCavernsBiome,
+            "magenheim.underworld.biome.fracture_zones" => UnderworldTerrainRuntime.FractureZonesBiome,
+            "magenheim.underworld.biome.fracture" => UnderworldTerrainRuntime.FractureZonesBiome,
+            "magenheim.underworld.biome.great_decay" => UnderworldTerrainRuntime.GreatDecayBiome,
             _ => throw new InvalidOperationException($"Unsupported validated biome '{biome}' at the Jotunn adapter boundary."),
         };
     }

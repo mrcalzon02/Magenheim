@@ -15,7 +15,31 @@ internal static class UnderworldTerrainRuntime
 {
     private static UnderworldRuntimeServices? _services;
     private static ManualLogSource? _log;
-    internal const Heightmap.Biome UnderworldEnvelopeBiome = (Heightmap.Biome)128;
+    internal const Heightmap.Biome FungalForestBiome = (Heightmap.Biome)1024;
+    internal const Heightmap.Biome BlackwaterDeepBiome = (Heightmap.Biome)2048;
+    internal const Heightmap.Biome SulfurousWastesBiome = (Heightmap.Biome)4096;
+    internal const Heightmap.Biome FrozenCavernsBiome = (Heightmap.Biome)8192;
+    internal const Heightmap.Biome FractureZonesBiome = (Heightmap.Biome)16384;
+    internal const Heightmap.Biome GreatDecayBiome = (Heightmap.Biome)32768;
+
+    internal static Heightmap.Biome ToNativeBiome(UnderworldTerrainBiome biome) => biome switch
+    {
+        UnderworldTerrainBiome.FungalForest => FungalForestBiome,
+        UnderworldTerrainBiome.BlackwaterDeep => BlackwaterDeepBiome,
+        UnderworldTerrainBiome.SulfurousWastes => SulfurousWastesBiome,
+        UnderworldTerrainBiome.FrozenCaverns => FrozenCavernsBiome,
+        UnderworldTerrainBiome.FractureZones => FractureZonesBiome,
+        UnderworldTerrainBiome.GreatDecay => GreatDecayBiome,
+        _ => throw new ArgumentOutOfRangeException(nameof(biome), biome, null),
+    };
+
+    internal static bool IsUnderworldBiome(Heightmap.Biome biome) =>
+        biome == FungalForestBiome ||
+        biome == BlackwaterDeepBiome ||
+        biome == SulfurousWastesBiome ||
+        biome == FrozenCavernsBiome ||
+        biome == FractureZonesBiome ||
+        biome == GreatDecayBiome;
 
     internal static void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -107,8 +131,8 @@ internal static class UnderworldNativeWorldGeneratorBiomePatch
 {
     private static bool Prefix(WorldGenerator __instance, float __0, float __1, ref Heightmap.Biome __result)
     {
-        if (!UnderworldTerrainRuntime.TrySampleNativeGenerator(__instance, __0, __1, out _)) return true;
-        __result = UnderworldTerrainRuntime.UnderworldEnvelopeBiome;
+        if (!UnderworldTerrainRuntime.TrySampleNativeGenerator(__instance, __0, __1, out var terrain)) return true;
+        __result = UnderworldTerrainRuntime.ToNativeBiome(terrain.Biome);
         return false;
     }
 }
