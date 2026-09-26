@@ -15,6 +15,56 @@ namespace Magenheim.Runtime;
 internal static class UnderworldResourcePopulationRuntime
 {
     private const string ResourceKindPrefix = "resource:";
+    private static readonly HashSet<UnderworldInstanceChunkKey> ReconciledCells = new();
+    private static string _instanceKey = string.Empty;
+
+    internal static void ReconcileResidentChunks(
+        UnderworldRuntimeServices services,
+        UnderworldWorldIdentity identity,
+        ManualLogSource? log)
+    {
+        if (services is null) throw new ArgumentNullException(nameof(services));
+        if (identity is null) throw new ArgumentNullException(nameof(identity));
+        if (ZNet.instance is null || !ZNet.instance.IsServer() || ZDOMan.instance is null) return;
+
+        var instanceKey = identity.ParentWorldId + "\n" + identity.DerivedWorldId + "\n" + identity.DerivedSeedFingerprint;
+        if (!string.Equals(_instanceKey, instanceKey, StringComparison.Ordinal))
+        {
+            ReconciledCells.Clear();
+            _instanceKey = instanceKey;
+        }
+
+        foreach (var pair in services.ChunkStreaming.LoadedChunks)
+        {
+            var cell = pair.Key;
+            if (ReconciledCells.Contains(cell)) continue;
+            if (!CanPopulateCell(identity, cell)) continue;
+            PopulateCell(services, identity, cell, log);
+            ReconciledCells.Add(cell);
+        }
+    }
+
+    internal static void Reset()
+    {
+        ReconciledCells.Clear();
+        _instanceKey = string.Empty;
+    }
+
+    private static bool CanPopulateCell(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey cell)
+    {
+        var centerX = (cell.X + .5f) * UnderworldEcologyCells.SizeMeters;
+        var centerZ = (cell.Z + .5f) * UnderworldEcologyCells.SizeMeters;
+        var center = UnderworldTerrainRuntime.SampleInstanceTerrain(centerX, 0, centerZ);
+        if (!center.Admitted) return true;
+
+        foreach (var placement in UnderworldResourcePlacementPlanner.Plan(identity.DerivedSeed32, cell, center.Biome))
+        {
+            var source = PrefabManager.Instance.GetPrefab(placement.PickupPrefab);
+            if (!source || !source.GetComponent<Pickable>() || !source.GetComponent<ZNetView>())
+                return false;
+        }
+        return true;
+    }
 
     internal static int PopulateCell(
         UnderworldRuntimeServices services,
