@@ -89,7 +89,7 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
         if (Time.unscaledTime < _nextSampleAt) return;
         _nextSampleAt = Time.unscaledTime + SampleIntervalSeconds;
 
-        var position = UnderworldInstanceLayer.ToLogical(player.transform.position);
+        var position = player.transform.position;
         var terrain = UnderworldTerrainRuntime.SampleInstanceTerrain(position.x, position.y, position.z);
         if (!terrain.Admitted)
         {

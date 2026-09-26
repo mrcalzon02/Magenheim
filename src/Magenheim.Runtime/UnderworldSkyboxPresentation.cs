@@ -210,13 +210,11 @@ internal sealed class UnderworldSkyboxPresentation : IDisposable
         }
         _haze.SetActive(true);
         var position = camera.transform.position;
-        position.y = UnderworldInstanceLayer.EngineBaseY +
-                     (float)Magenheim.Core.Underworld.UnderworldSkyLighting.HazeTopMeters;
+        position.y = (float)Magenheim.Core.Underworld.UnderworldSkyLighting.HazeTopMeters;
         _haze.transform.position = position;
         // Anchor the native mesh's top at the visual line, accounting for its imported pivot.
         var top = _haze.GetComponent<MeshRenderer>().bounds.max.y;
-        position.y += UnderworldInstanceLayer.EngineBaseY +
-                      (float)Magenheim.Core.Underworld.UnderworldSkyLighting.HazeTopMeters - top;
+        position.y += (float)Magenheim.Core.Underworld.UnderworldSkyLighting.HazeTopMeters - top;
         _haze.transform.position = position;
     }
 

@@ -24,7 +24,7 @@ internal static class UnderworldDeepstoneInteractionRpc
     private const int ResponseMessage = 2;
     private static readonly UnderworldDeepstoneRequestLedger ReplayLedger = new();
     private static long _nextRequestId;
-    private static DefinitionAuthoritySynchronizer? _authority;
+    private static UnderworldRuntimeServices? _services;\n    private static DefinitionAuthoritySynchronizer? _authority;
     private static ManualLogSource? _log;
     private static CustomRPC? _rpc;
 
@@ -86,11 +86,21 @@ internal static class UnderworldDeepstoneInteractionRpc
     private static bool TryActivateServer(UnderworldDeepstoneRuntime stone, Humanoid user, out string diagnostic)
     {
         if (ZNet.instance is null || !ZNet.instance.IsServer()) { diagnostic = "Deepstone mutation requires server authority."; return false; }
-        // Deepstones are Underworld progression objects. Server authority must classify both the
-        // requesting character and the physical stone in the dedicated Underworld engine layer.
-        // This deliberately does not consult Player.m_localPlayer or maintain player population state.
-        if (!UnderworldInstanceLayer.IsUnderworldEnginePosition(user.transform.position)) { diagnostic = "Deepstone offerings may only be made from within the Underworld instance."; return false; }
-        if (!UnderworldInstanceLayer.IsUnderworldEnginePosition(stone.transform.position)) { diagnostic = "The requested Deepstone is not resident in the Underworld instance."; return false; }
+        // Deepstones are Underworld progression objects. Authority is explicit instance membership
+        // plus Unity-scene residency; coordinates never define world identity.
+        if (user is not Player player || _services is null ||
+            !_services.TryResolvePlayerSession(player, out _, out var layer, out diagnostic) ||
+            layer != UnderworldLayer.Underworld)
+        {
+            diagnostic = "Deepstone offerings may only be made from within the Underworld instance.";
+            return false;
+        }
+        if (!_services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out var context) ||
+            context is null || stone.gameObject.scene.handle != context.Scene.handle)
+        {
+            diagnostic = "The requested Deepstone is not resident in the Underworld world instance.";
+            return false;
+        }
         var boss = UnderworldDeepstoneRuntimeAuthority.BossForStone(stone.DeepstoneId);
         var inventory = user.GetInventory();
         var trophyItems = inventory.GetAllItems().Where(item => item.m_dropPrefab && string.Equals(item.m_dropPrefab.name, boss.TrophyPrefabName, StringComparison.Ordinal)).ToArray();

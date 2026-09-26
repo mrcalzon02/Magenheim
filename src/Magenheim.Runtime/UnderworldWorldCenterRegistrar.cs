@@ -77,7 +77,7 @@ internal static class UnderworldWorldCenterRegistrar
     {
         if (!_returnGate) throw new InvalidOperationException("Underworld return gate is not ready.");
         var point = _returnGate.TransformPoint(new Vector3(0f, 0f, _gateApproachDistance));
-        var logical = UnderworldInstanceLayer.ToLogical(point);
+        var logical = point;
         logical.y = 0f;
         return ResolveGroundedCenterPosition(logical);
     }
@@ -89,8 +89,7 @@ internal static class UnderworldWorldCenterRegistrar
         var terrain = UnderworldTerrainRuntime.SampleInstanceTerrain(logical.x, logical.y, logical.z);
         if (!terrain.Admitted)
             throw new InvalidOperationException("Native Underworld terrain authority did not admit the logical world center.");
-        return UnderworldInstanceLayer.ToEngine(
-            new Vector3((float)logical.x, (float)terrain.Height + 1.25f, (float)logical.z));
+        return new Vector3((float)logical.x, (float)terrain.Height + 1.25f, (float)logical.z);
     }
 
     private static void BuildStandingStones(Transform parent)

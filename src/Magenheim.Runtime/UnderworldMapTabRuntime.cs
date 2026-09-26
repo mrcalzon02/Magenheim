@@ -52,9 +52,9 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         if (runtime is null || !player) return false;
         var large = Minimap.IsOpen();
         var underworld = large ? runtime._boundLayer == UnderworldLayer.Underworld
-            : UnderworldInstanceLayer.IsUnderworldEnginePosition(player.transform.position);
+            : runtime.ResolvePhysicalLayer() == UnderworldLayer.Underworld;
         if (!underworld) return false;
-        var point = UnderworldInstanceLayer.ToLogical(player.transform.position);
+        var point = player.transform.position;
         if (large)
         {
             var cursor = ZInput.IsMouseActive() || ZInput.IsTouchPressedDown()

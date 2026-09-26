@@ -50,7 +50,7 @@ internal sealed class UnderworldUniqueLocationAnchorResolver
             if (winner is not null && score >= winnerScore) continue;
 
             winnerScore = score;
-            var engine = UnderworldInstanceLayer.ToEngine(new Vector3((float)localX, (float)terrain.Height, (float)localZ));
+            var engine = new Vector3((float)localX, (float)terrain.Height, (float)localZ);
             winner = new UnderworldUniqueLocationAnchor(normalized, biome, key, localX, terrain.Height, localZ, engine);
         }
 
