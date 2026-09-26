@@ -1,5 +1,7 @@
 using System;
 using BepInEx.Logging;
+using HarmonyLib;
+using UnityEngine;
 using Magenheim.Core.Underworld;
 
 namespace Magenheim.Runtime;
@@ -13,13 +15,14 @@ internal static class UnderworldTerrainRuntime
 {
     private static UnderworldRuntimeServices? _services;
     private static ManualLogSource? _log;
+    internal const Heightmap.Biome UnderworldEnvelopeBiome = (Heightmap.Biome)128;
 
     internal static void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
         _services = services ?? throw new ArgumentNullException(nameof(services));
         _log = log ?? throw new ArgumentNullException(nameof(log));
         _ = services.TerrainDomain ?? throw new InvalidOperationException("Native Underworld terrain domain is unavailable.");
-        log.LogInfo("Native Underworld terrain authority configured without Surface WorldGenerator hooks.");
+        log.LogInfo("Native Underworld terrain authority configured for instance-scoped WorldGenerator hooks; Surface worldgen remains untouched.");
     }
 
     internal static bool ContainsInstancePosition(double x, double y, double z) =>
@@ -79,9 +82,65 @@ internal static class UnderworldTerrainRuntime
         return services.UniqueLocationAnchors.Resolve(locationId, biome);
     }
 
+    internal static bool TrySampleNativeGenerator(WorldGenerator generator, double x, double z, out UnderworldTerrainResult terrain)
+    {
+        terrain = default;
+        var active = ValheimWorldInstanceExecution.Active;
+        if (active is null || !active.InstanceId.IsUnderworld || !ReferenceEquals(active.WorldGenerator, generator))
+            return false;
+        terrain = SampleInstanceTerrain(x, 0d, z);
+        return terrain.Admitted;
+    }
+
     private static bool InstanceAvailable(UnderworldRuntimeServices services)
     {
         var phase = services.InstanceLifecycle.Phase;
         return phase == UnderworldInstancePhase.Admitting || phase == UnderworldInstancePhase.Active;
+    }
+}
+
+[HarmonyPatch(
+    typeof(WorldGenerator),
+    nameof(WorldGenerator.GetBiome),
+    new[] { typeof(float), typeof(float), typeof(float), typeof(bool) })]
+internal static class UnderworldNativeWorldGeneratorBiomePatch
+{
+    private static bool Prefix(WorldGenerator __instance, float __0, float __1, ref Heightmap.Biome __result)
+    {
+        if (!UnderworldTerrainRuntime.TrySampleNativeGenerator(__instance, __0, __1, out _)) return true;
+        __result = UnderworldTerrainRuntime.UnderworldEnvelopeBiome;
+        return false;
+    }
+}
+
+[HarmonyPatch(
+    typeof(WorldGenerator),
+    nameof(WorldGenerator.GetBiomeHeight),
+    new[]
+    {
+        typeof(Heightmap.Biome),
+        typeof(float),
+        typeof(float),
+        typeof(Color),
+        typeof(bool),
+        typeof(bool),
+    },
+    new[]
+    {
+        ArgumentType.Normal,
+        ArgumentType.Normal,
+        ArgumentType.Normal,
+        ArgumentType.Out,
+        ArgumentType.Normal,
+        ArgumentType.Normal,
+    })]
+internal static class UnderworldNativeWorldGeneratorHeightPatch
+{
+    private static bool Prefix(WorldGenerator __instance, float __1, float __2, ref Color __3, ref float __result)
+    {
+        if (!UnderworldTerrainRuntime.TrySampleNativeGenerator(__instance, __1, __2, out var terrain)) return true;
+        __3 = Color.clear;
+        __result = (float)terrain.Height;
+        return false;
     }
 }
