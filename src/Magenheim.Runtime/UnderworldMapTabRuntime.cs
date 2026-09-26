@@ -74,8 +74,6 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         return true;
     }
 
-    internal static bool IsRoutingUnderworldGeneration => UnderworldGenerationContext.Value is not null;
-
     internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
         _services = services ?? throw new ArgumentNullException(nameof(services));
