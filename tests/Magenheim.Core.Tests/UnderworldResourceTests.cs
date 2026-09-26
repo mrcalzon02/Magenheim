@@ -41,6 +41,16 @@ internal static class UnderworldResourceTests
   var otherCell = UnderworldResourcePlacementPlanner.Plan(918273, new UnderworldInstanceChunkKey(cell.X + 1, cell.Z), UnderworldTerrainBiome.SulfurousWastes);
   Check(!first.SequenceEqual(otherCell));
   Check(UnderworldResourcePlacementPlanner.Plan(918273, cell, (UnderworldTerrainBiome)int.MaxValue).Count == 0);
+
+  foreach (UnderworldTerrainBiome biome in Enum.GetValues(typeof(UnderworldTerrainBiome)))
+  {
+   var planned = UnderworldResourcePlacementPlanner.Plan(-44129, cell, biome);
+   var biomeResources = all.Where(x => x.Biome == biome).Select(x => x.Id).ToHashSet();
+   Check(planned.Count == UnderworldResourcePlacementPlanner.SlotsPerCell);
+   Check(planned.All(x => x.Cell == cell && x.Biome == biome));
+   Check(planned.All(x => biomeResources.Contains(x.ResourceId)));
+   Check(planned.SequenceEqual(UnderworldResourcePlacementPlanner.Plan(-44129, cell, biome)));
+  }
   return assertions;
  }
 }
