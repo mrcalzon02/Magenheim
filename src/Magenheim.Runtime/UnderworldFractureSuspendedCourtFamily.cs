@@ -5,9 +5,8 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// The unique Fracture boss location. Unlike repeatable biome landmarks, this family is admitted
-/// only at the native instance chunk selected by UnderworldUniqueLocationAnchorResolver for the
-/// canonical Fracture boss-location identity. It participates in landmark arbitration with highest
+/// The unique Fracture boss location. Placement is owned by Valheim's native location system
+/// inside the dedicated Underworld instance. It participates in landmark arbitration with highest
 /// priority so ordinary ruins and navigation landmarks cannot displace the boss arena.
 /// </summary>
 internal sealed class FractureSuspendedCourtFamily : IUnderworldLandmarkStructureFamily
@@ -28,19 +27,10 @@ internal sealed class FractureSuspendedCourtFamily : IUnderworldLandmarkStructur
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.FractureZones;
     public int PlacementSlot => 20;
 
-    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
-    {
-        if (identity is null) throw new ArgumentNullException(nameof(identity));
-        var anchor = _services.UniqueLocationAnchors.Resolve(CanonicalLocationId, Biome);
-        return anchor.Chunk.X == key.X && anchor.Chunk.Z == key.Z;
-    }
+    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key) => false;
 
     public GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
-        var anchor = _services.UniqueLocationAnchors.Resolve(CanonicalLocationId, Biome);
-        if (anchor.Chunk.X != key.X || anchor.Chunk.Z != key.Z)
-            throw new InvalidOperationException("The Suspended Court may only materialize at its resolved unique-location anchor.");
-
         var root = new GameObject($"Magenheim_FractureSuspendedCourt_{key.X}_{key.Z}");
         root.transform.position = position;
         var seed = identity.DerivedSeed32 ^ key.X * 73856093 ^ key.Z * 19349663 ^ 0x4C71A2D;

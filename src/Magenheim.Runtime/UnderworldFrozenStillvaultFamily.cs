@@ -5,8 +5,7 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Unique Frozen Caverns boss location for the White Silence. Residency is restricted to the
-/// native Underworld-instance anchor selected for the canonical White Silence location identity.
+/// Unique Frozen Caverns boss location for the White Silence. Placement is owned by Valheim's native location system in the dedicated Underworld instance.
 /// Donor geometry is provisional; identity, deterministic residency and arbitration are durable.
 /// </summary>
 internal sealed class FrozenStillvaultFamily : IUnderworldLandmarkStructureFamily
@@ -24,20 +23,11 @@ internal sealed class FrozenStillvaultFamily : IUnderworldLandmarkStructureFamil
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.FrozenCaverns;
     public int PlacementSlot => 20;
 
-    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
-    {
-        if (identity is null) throw new ArgumentNullException(nameof(identity));
-        var anchor = _services.UniqueLocationAnchors.Resolve(CanonicalLocationId, Biome);
-        return anchor.Chunk.X == key.X && anchor.Chunk.Z == key.Z;
-    }
+    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key) => false;
 
     public GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
         if (identity is null) throw new ArgumentNullException(nameof(identity));
-        var anchor = _services.UniqueLocationAnchors.Resolve(CanonicalLocationId, Biome);
-        if (anchor.Chunk.X != key.X || anchor.Chunk.Z != key.Z)
-            throw new InvalidOperationException("The Stillvault may only materialize at its resolved unique-location anchor.");
-
         var root = new GameObject($"Magenheim_FrozenStillvault_{key.X}_{key.Z}");
         root.transform.position = position;
         var seed = identity.DerivedSeed32 ^ key.X * 73856093 ^ key.Z * 19349663 ^ 0x41C3E17;

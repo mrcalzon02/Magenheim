@@ -5,8 +5,7 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Unique Fungal Forest boss location for The First Bloom. Residency is restricted to the native
-/// Underworld instance chunk selected by unique-location authority for the canonical boss identity.
+/// Unique Fungal Forest boss location for The First Bloom. Placement is owned by Valheim's native location system in the dedicated Underworld instance.
 /// The arena geometry is deliberately donor-backed until authored Motherbed pieces replace it;
 /// location identity, deterministic residency and arbitration are production architecture.
 /// </summary>
@@ -25,20 +24,11 @@ internal sealed class FungalMotherbedFamily : IUnderworldLandmarkStructureFamily
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.FungalForest;
     public int PlacementSlot => 20;
 
-    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
-    {
-        if (identity is null) throw new ArgumentNullException(nameof(identity));
-        var anchor = _services.UniqueLocationAnchors.Resolve(CanonicalLocationId, Biome);
-        return anchor.Chunk.X == key.X && anchor.Chunk.Z == key.Z;
-    }
+    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key) => false;
 
     public GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
         if (identity is null) throw new ArgumentNullException(nameof(identity));
-        var anchor = _services.UniqueLocationAnchors.Resolve(CanonicalLocationId, Biome);
-        if (anchor.Chunk.X != key.X || anchor.Chunk.Z != key.Z)
-            throw new InvalidOperationException("The Motherbed may only materialize at its resolved unique-location anchor.");
-
         var root = new GameObject($"Magenheim_FungalMotherbed_{key.X}_{key.Z}");
         root.transform.position = position;
         var seed = identity.DerivedSeed32 ^ key.X * 73856093 ^ key.Z * 19349663 ^ 0x31B1006;

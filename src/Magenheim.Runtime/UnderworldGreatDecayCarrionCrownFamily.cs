@@ -5,8 +5,7 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Unique Great Decay boss location for the Carrion Crown. Residency is restricted to the
-/// native Underworld-instance anchor selected for the canonical Carrion Crown location identity.
+/// Unique Great Decay boss location for the Carrion Crown. Placement is owned by Valheim's native location system in the dedicated Underworld instance.
 /// Donor geometry is provisional; identity, deterministic residency and arbitration are durable.
 /// </summary>
 internal sealed class GreatDecayCarrionCrownFamily : IUnderworldLandmarkStructureFamily
@@ -24,20 +23,11 @@ internal sealed class GreatDecayCarrionCrownFamily : IUnderworldLandmarkStructur
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.GreatDecay;
     public int PlacementSlot => 20;
 
-    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
-    {
-        if (identity is null) throw new ArgumentNullException(nameof(identity));
-        var anchor = _services.UniqueLocationAnchors.Resolve(CanonicalLocationId, Biome);
-        return anchor.Chunk.X == key.X && anchor.Chunk.Z == key.Z;
-    }
+    public bool Eligible(UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key) => false;
 
     public GameObject Compose(Vector3 position, UnderworldWorldIdentity identity, UnderworldInstanceChunkKey key)
     {
         if (identity is null) throw new ArgumentNullException(nameof(identity));
-        var anchor = _services.UniqueLocationAnchors.Resolve(CanonicalLocationId, Biome);
-        if (anchor.Chunk.X != key.X || anchor.Chunk.Z != key.Z)
-            throw new InvalidOperationException("The Carrion Crown arena may only materialize at its resolved unique-location anchor.");
-
         var root = new GameObject($"Magenheim_GreatDecayCarrionCrown_{key.X}_{key.Z}");
         root.transform.position = position;
         var seed = identity.DerivedSeed32 ^ key.X * 73856093 ^ key.Z * 19349663 ^ 0x2D7A91B;
