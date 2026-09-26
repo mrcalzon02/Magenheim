@@ -19,6 +19,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     private UnderworldDeepGateRegistrar? _deepGateRegistrar;
     private UnderworldDeepGateLocationRegistrar? _deepGateLocationRegistrar;
     private ManualLogSource? _log;
+    private UnderworldNativeWorldHost? _nativeWorldHost;
     private long? _observedWorldUid;
     private GameObject? _worldCenter;
     private string? _worldCenterInstanceKey;
@@ -30,6 +31,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         if (_services is not null) throw new InvalidOperationException("Underworld world-session lifecycle is already configured.");
         _services = services ?? throw new ArgumentNullException(nameof(services));
         _log = log ?? throw new ArgumentNullException(nameof(log));
+        _nativeWorldHost = new UnderworldNativeWorldHost(services.WorldInstances, log);
         DeepBoonRuntime.Configure(services, log);
         _deepGateRegistrar = new UnderworldDeepGateRegistrar(log);
         _deepGateRegistrar.Register();
@@ -93,6 +95,10 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             _services.InstanceLifecycle.EnsureActive(identity);
             if (ZNet.World is not null && WorldGenerator.instance is not null && ZoneSystem.instance is not null && ZDOMan.instance is not null)
                 _services.WorldInstances.BindSurface(ZNet.World, WorldGenerator.instance, ZoneSystem.instance, ZDOMan.instance);
+
+            if (_nativeWorldHost is null || !_nativeWorldHost.TryCreate(identity, out var hostDiagnostic))
+                throw new InvalidOperationException(hostDiagnostic);
+
             _log.LogInfo($"Admitted persistent Underworld instance authority '{identity.DerivedWorldId}' for parent world '{identity.ParentWorldId}'.");
         }
         catch (Exception exception)
@@ -195,6 +201,8 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         DeepBoonRuntime.Reset();
         _nextBoonReconcileAt = 0f;
         _nextChunkResidencyReconcileAt = 0f;
+        _nativeWorldHost?.Dispose();
+        _nativeWorldHost = _services is null || _log is null ? null : new UnderworldNativeWorldHost(_services.WorldInstances, _log);
         _services?.ResetForWorldUnload();
     }
 
@@ -205,6 +213,8 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         _deepGateRegistrar?.Dispose();
         _deepGateRegistrar = null;
         ResetWorldState();
+        _nativeWorldHost?.Dispose();
+        _nativeWorldHost = null;
         _observedWorldUid = null;
     }
 }

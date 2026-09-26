@@ -48,6 +48,18 @@ internal sealed class ValheimWorldInstanceRegistry
     internal bool TryGetContext(UnderworldWorldInstanceId instanceId, out ValheimWorldInstanceContext? context) =>
         _contexts.TryGetValue(instanceId, out context);
 
+    internal bool TryGetContextForScene(int sceneHandle, out ValheimWorldInstanceContext? context)
+    {
+        foreach (var candidate in _contexts.Values)
+        {
+            if (candidate.Scene.handle != sceneHandle) continue;
+            context = candidate;
+            return true;
+        }
+        context = null;
+        return false;
+    }
+
     internal bool HasUnderworldContext => _contexts.ContainsKey(UnderworldWorldInstanceId.Underworld);
 
     internal void BindPlayer(long playerId, UnderworldWorldInstanceId instanceId)
