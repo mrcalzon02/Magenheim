@@ -155,36 +155,89 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
     {
         foreach (var field in typeof(ZoneSystem).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
         {
-            if (field.IsInitOnly || field.IsLiteral || field.Name.IndexOf("generated", StringComparison.OrdinalIgnoreCase) >= 0)
+            if (field.IsInitOnly || field.IsLiteral || IsRuntimeStateField(field.Name))
                 continue;
 
             var value = field.GetValue(source);
-            if (value is null) { field.SetValue(target, null); continue; }
+            if (value is null)
+            {
+                // Preserve the target's constructor/field-initializer defaults rather than
+                // overwriting a runtime-owned collection with null.
+                continue;
+            }
+
             if (value is UnityEngine.Object || field.FieldType.IsValueType || value is string)
             {
                 field.SetValue(target, value);
                 continue;
             }
 
-            if (value is IList list)
-            {
-                if (Activator.CreateInstance(field.FieldType) is IList copy)
-                {
-                    foreach (var item in list) copy.Add(item);
-                    field.SetValue(target, copy);
-                }
-                continue;
-            }
+            if (TryCloneCollection(field.FieldType, value, out var clone))
+                field.SetValue(target, clone);
+            // Unsupported reference types deliberately retain the fresh ZoneSystem default.
+            // Sharing arbitrary mutable runtime state with Surface would violate instance isolation.
+        }
+    }
 
-            if (value is IDictionary dictionary)
+    private static bool IsRuntimeStateField(string name)
+    {
+        var n = name.ToLowerInvariant();
+        return n.Contains("generated") ||
+               n.Contains("loaded") ||
+               n.Contains("active") ||
+               n.Contains("spawned") ||
+               n.Contains("locationinstances") ||
+               n.Contains("globalkeys") ||
+               n.Contains("temp") ||
+               n.Contains("cached");
+    }
+
+    private static bool TryCloneCollection(Type declaredType, object value, out object? clone)
+    {
+        clone = null;
+
+        if (value is Array array)
+        {
+            clone = array.Clone();
+            return true;
+        }
+
+        if (value is IDictionary dictionary)
+        {
+            var concrete = CreateCollectionInstance(declaredType, value.GetType()) as IDictionary;
+            if (concrete is null) return false;
+            foreach (DictionaryEntry entry in dictionary) concrete.Add(entry.Key, entry.Value);
+            clone = concrete;
+            return true;
+        }
+
+        if (value is IList list)
+        {
+            var concrete = CreateCollectionInstance(declaredType, value.GetType()) as IList;
+            if (concrete is null) return false;
+            foreach (var item in list) concrete.Add(item);
+            clone = concrete;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static object? CreateCollectionInstance(Type declaredType, Type runtimeType)
+    {
+        foreach (var type in new[] { runtimeType, declaredType })
+        {
+            if (type.IsArray || type.IsInterface || type.IsAbstract) continue;
+            try
             {
-                if (Activator.CreateInstance(field.FieldType) is IDictionary copy)
-                {
-                    foreach (DictionaryEntry entry in dictionary) copy.Add(entry.Key, entry.Value);
-                    field.SetValue(target, copy);
-                }
+                return Activator.CreateInstance(type);
+            }
+            catch
+            {
+                // Try the next candidate. Unsupported fields retain their fresh target default.
             }
         }
+        return null;
     }
 
     private static T GetFieldRequired<T>(object target, string name)
