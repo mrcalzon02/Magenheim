@@ -12,7 +12,7 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal sealed class UnderworldZdoStateAdapter : MonoBehaviour
 {
-    private const string StableObjectIdKey = "magenheim.underworld.object.id";
+    internal const string StableObjectIdKey = "magenheim.underworld.object.id";
     private const string DerivedWorldIdKey = "magenheim.underworld.world.id";
     private const string DerivedSeedKey = "magenheim.underworld.world.seed";
     private const string StatePrefix = "magenheim.underworld.state.";
