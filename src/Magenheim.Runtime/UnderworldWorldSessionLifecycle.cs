@@ -92,13 +92,13 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         try
         {
             _services.InstanceLifecycle.EnsureAdmitted(identity);
-            _services.InstanceLifecycle.EnsureActive(identity);
             if (ZNet.World is not null && WorldGenerator.instance is not null && ZoneSystem.instance is not null && ZDOMan.instance is not null)
                 _services.WorldInstances.BindSurface(ZNet.World, WorldGenerator.instance, ZoneSystem.instance, ZDOMan.instance);
 
             if (_nativeWorldHost is null || !_nativeWorldHost.TryCreate(identity, out var hostDiagnostic))
                 throw new InvalidOperationException(hostDiagnostic);
 
+            _services.InstanceLifecycle.EnsureActive(identity);
             _log.LogInfo($"Admitted persistent Underworld instance authority '{identity.DerivedWorldId}' for parent world '{identity.ParentWorldId}'.");
         }
         catch (Exception exception)

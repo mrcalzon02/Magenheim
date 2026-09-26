@@ -90,10 +90,10 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             .GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(source, Array.Empty<object>()) ?? throw new InvalidOperationException("Valheim World clone failed."));
 
-        SetFieldIfPresent(clone, "m_name", source.m_name + "::MagenheimUnderworld");
+        SetFieldIfPresent(clone, "m_name", GetFieldRequired<string>(source, "m_name") + "::MagenheimUnderworld");
         SetFieldIfPresent(clone, "m_seedName", identity.DerivedSeedFingerprint);
         SetFieldIfPresent(clone, "m_seed", identity.DerivedSeed32);
-        SetFieldIfPresent(clone, "m_uid", StableInstanceUid(source.m_uid, identity.DerivedSeedFingerprint));
+        SetFieldIfPresent(clone, "m_uid", StableInstanceUid(GetFieldRequired<long>(source, "m_uid"), identity.DerivedSeedFingerprint));
         return clone;
     }
 
@@ -185,6 +185,15 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
                 }
             }
         }
+    }
+
+    private static T GetFieldRequired<T>(object target, string name)
+    {
+        var field = AccessTools.Field(target.GetType(), name)
+            ?? throw new MissingFieldException(target.GetType().FullName, name);
+        var value = field.GetValue(target);
+        if (value is T typed) return typed;
+        throw new InvalidOperationException($"{target.GetType().Name}.{name} did not contain {typeof(T).Name}.");
     }
 
     private static void SetFieldIfPresent(object target, string name, object value)
