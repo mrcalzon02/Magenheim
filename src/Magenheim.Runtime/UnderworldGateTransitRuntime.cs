@@ -4,6 +4,7 @@ using System.Globalization;
 using BepInEx.Logging;
 using Magenheim.Core.Underworld;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Magenheim.Runtime;
 
@@ -77,16 +78,39 @@ internal static class UnderworldGateTransitRuntime
                 return false;
             }
 
-            if (!services.WorldInstances.HasUnderworldContext)
+            if (!services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out var targetContext) || targetContext is null)
             {
                 diagnostic = "The native Underworld World/WorldGenerator/ZoneSystem/ZDOMan instance is not bound. Legacy coordinate-layer transit is disabled.";
+                return false;
+            }
+
+            Vector3 target;
+            Quaternion rotation;
+            try
+            {
+                using (ValheimWorldInstanceExecution.Enter(targetContext))
+                {
+                    target = UnderworldWorldCenterRegistrar.ResolveEngineCenterPosition() + Vector3.up * 1.2f;
+                    rotation = UnderworldWorldCenterRegistrar.ArrivalRotation;
+                }
+            }
+            catch (Exception exception)
+            {
+                diagnostic = "Underworld arrival is not ready: " + exception.Message;
                 return false;
             }
 
             var source = new SurfaceAnchor(player.transform.position, player.transform.rotation);
             SurfaceReturn[playerId] = source;
             PersistReturnAnchor(player, source);
-            diagnostic = "Underworld instance services are bound, but native per-player context handoff is not yet installed.";
+            if (TryMovePlayerToInstance(player, targetContext, target, rotation, false, out diagnostic))
+            {
+                _log?.LogInfo($"Deep Gate moved player {playerId} into Underworld world instance {identity.DerivedWorldId}.");
+                return true;
+            }
+
+            SurfaceReturn.Remove(playerId);
+            ClearPersistedReturnAnchor(player);
             return false;
         }
 
@@ -96,16 +120,91 @@ internal static class UnderworldGateTransitRuntime
             return false;
         }
 
-        if (player.TeleportTo(returnAnchor.Position + Vector3.up * 0.25f, returnAnchor.Rotation, false))
+        if (!services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Surface, out var surfaceContext) || surfaceContext is null)
         {
-            SurfaceReturn.Remove(playerId);
-            ClearPersistedReturnAnchor(player);
-            _log?.LogInfo($"Deep Gate returned player {playerId} to the Surface.");
-            return true;
+            diagnostic = "Surface native world services are unavailable.";
+            return false;
         }
 
-        diagnostic = "Valheim rejected the Surface return teleport.";
-        return false;
+        if (!TryMovePlayerToInstance(
+                player,
+                surfaceContext,
+                returnAnchor.Position + Vector3.up * 0.25f,
+                returnAnchor.Rotation,
+                false,
+                out diagnostic))
+            return false;
+
+        SurfaceReturn.Remove(playerId);
+        ClearPersistedReturnAnchor(player);
+        _log?.LogInfo($"Deep Gate returned player {playerId} to the Surface world instance.");
+        return true;
+    }
+
+    internal static bool ApplyAcceptedTransit(
+        Player player,
+        UnderworldWorldInstanceId targetInstance,
+        Vector3 targetPosition,
+        Quaternion targetRotation,
+        out string diagnostic)
+    {
+        var services = _services;
+        if (services is null ||
+            !services.WorldInstances.TryGetContext(targetInstance, out var context) ||
+            context is null)
+        {
+            diagnostic = $"World instance {targetInstance} is unavailable.";
+            return false;
+        }
+        return TryMovePlayerToInstance(player, context, targetPosition, targetRotation, false, out diagnostic);
+    }
+
+    private static bool TryMovePlayerToInstance(
+        Player player,
+        ValheimWorldInstanceContext target,
+        Vector3 targetPosition,
+        Quaternion targetRotation,
+        bool distantTeleport,
+        out string diagnostic)
+    {
+        diagnostic = string.Empty;
+        var services = _services;
+        if (services is null) { diagnostic = "Underworld runtime services are unavailable."; return false; }
+
+        var playerId = player.GetPlayerID();
+        var previousInstance = services.WorldInstances.GetOrBindSurface(playerId);
+        if (!services.WorldInstances.TryGetContext(previousInstance, out var previousContext) || previousContext is null)
+        {
+            diagnostic = "The player's current world instance is unavailable.";
+            return false;
+        }
+
+        var root = player.transform.root.gameObject;
+        try
+        {
+            if (root.scene.handle != target.Scene.handle)
+                SceneManager.MoveGameObjectToScene(root, target.Scene);
+
+            services.WorldInstances.MovePlayer(playerId, target.InstanceId);
+            using (ValheimWorldInstanceExecution.Enter(target))
+            {
+                if (!player.TeleportTo(targetPosition, targetRotation, distantTeleport))
+                    throw new InvalidOperationException("Valheim rejected the target-instance teleport.");
+            }
+            return true;
+        }
+        catch (Exception exception)
+        {
+            try
+            {
+                if (root && root.scene.handle != previousContext.Scene.handle)
+                    SceneManager.MoveGameObjectToScene(root, previousContext.Scene);
+                services.WorldInstances.MovePlayer(playerId, previousInstance);
+            }
+            catch { }
+            diagnostic = "World-instance transfer failed: " + exception.Message;
+            return false;
+        }
     }
 
     internal static bool HasReturnAnchor(Player player) =>

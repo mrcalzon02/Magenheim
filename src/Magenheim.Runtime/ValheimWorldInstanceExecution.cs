@@ -140,3 +140,33 @@ internal static class UnderworldZoneSystemInstanceScopePatch
 
     internal static void Finalizer(IDisposable? __state) => __state?.Dispose();
 }
+
+
+/// <summary>
+/// Routes player/character frame callbacks through the world services owned by the Unity scene
+/// containing that character. This is the per-player half of simultaneous multiplayer residency.
+/// </summary>
+[HarmonyPatch]
+internal static class UnderworldCharacterInstanceScopePatch
+{
+    private static readonly string[] Names = { "Update", "FixedUpdate", "LateUpdate" };
+
+    internal static System.Collections.Generic.IEnumerable<MethodBase> TargetMethods()
+    {
+        foreach (var type in new[] { typeof(Character), typeof(Player) })
+        foreach (var name in Names)
+        {
+            var method = AccessTools.DeclaredMethod(type, name);
+            if (method is not null) yield return method;
+        }
+    }
+
+    internal static void Prefix(Character __instance, out IDisposable? __state)
+    {
+        __state = null;
+        if (!__instance) return;
+        ValheimWorldInstanceExecution.TryEnterScene(__instance.gameObject.scene.handle, out __state);
+    }
+
+    internal static void Finalizer(IDisposable? __state) => __state?.Dispose();
+}
