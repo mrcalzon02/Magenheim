@@ -22,6 +22,25 @@ internal static class UnderworldResourceTests
    Check(item.ItemDonor != item.Prefab && !string.IsNullOrWhiteSpace(item.ItemDonor));
    Check(item.PickupDonor.StartsWith("Pickable_") && item.PickupPrefab.StartsWith("Magenheim_Underworld_ResourcePickup_"));
   }
+
+  var cell = new UnderworldInstanceChunkKey(-3, 5);
+  var first = UnderworldResourcePlacementPlanner.Plan(918273, cell, UnderworldTerrainBiome.SulfurousWastes);
+  var second = UnderworldResourcePlacementPlanner.Plan(918273, cell, UnderworldTerrainBiome.SulfurousWastes);
+  Check(first.Count == UnderworldResourcePlacementPlanner.SlotsPerCell);
+  Check(first.SequenceEqual(second));
+  var allowed = all.Where(x => x.Biome == UnderworldTerrainBiome.SulfurousWastes).Select(x => x.Id).ToHashSet();
+  Check(first.All(x => x.Cell == cell && x.Biome == UnderworldTerrainBiome.SulfurousWastes));
+  Check(first.All(x => allowed.Contains(x.ResourceId)));
+  Check(first.Select(x => x.Slot).SequenceEqual(Enumerable.Range(0, UnderworldResourcePlacementPlanner.SlotsPerCell)));
+  var minX = cell.X * UnderworldEcologyCells.SizeMeters + UnderworldResourcePlacementPlanner.EdgeInsetMeters;
+  var minZ = cell.Z * UnderworldEcologyCells.SizeMeters + UnderworldResourcePlacementPlanner.EdgeInsetMeters;
+  var maxX = (cell.X + 1) * UnderworldEcologyCells.SizeMeters - UnderworldResourcePlacementPlanner.EdgeInsetMeters;
+  var maxZ = (cell.Z + 1) * UnderworldEcologyCells.SizeMeters - UnderworldResourcePlacementPlanner.EdgeInsetMeters;
+  Check(first.All(x => x.X >= minX && x.X < maxX && x.Z >= minZ && x.Z < maxZ));
+  Check(first.All(x => x.RotationDegrees >= 0d && x.RotationDegrees < 360d));
+  var otherCell = UnderworldResourcePlacementPlanner.Plan(918273, new UnderworldInstanceChunkKey(cell.X + 1, cell.Z), UnderworldTerrainBiome.SulfurousWastes);
+  Check(!first.SequenceEqual(otherCell));
+  Check(UnderworldResourcePlacementPlanner.Plan(918273, cell, (UnderworldTerrainBiome)int.MaxValue).Count == 0);
   return assertions;
  }
 }
