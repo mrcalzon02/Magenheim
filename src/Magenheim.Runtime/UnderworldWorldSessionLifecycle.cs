@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using BepInEx.Logging;
 using Magenheim.Core.Underworld;
 using UnityEngine;
@@ -14,8 +13,6 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
 {
-    private const float ChunkResidencyReconcileSeconds = 0.5f;
-
     private UnderworldRuntimeServices? _services;
     private UnderworldDeepGateRegistrar? _deepGateRegistrar;
     private UnderworldDeepGateLocationRegistrar? _deepGateLocationRegistrar;
@@ -25,7 +22,6 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     private GameObject? _worldCenter;
     private string? _worldCenterInstanceKey;
     private float _nextBoonReconcileAt;
-    private float _nextChunkResidencyReconcileAt;
 
     internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -62,6 +58,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             _observedWorldUid = currentWorldUid;
             TryAdmitInstanceAuthority(znet);
             TryAdmitWorldCenter();
+            UnderworldZdoPeerRouter.TickUnderworld(Time.deltaTime);
             TryReconcileDeepBoons();
             return;
         }
@@ -76,6 +73,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
 
         TryAdmitInstanceAuthority(znet);
         TryAdmitWorldCenter();
+        UnderworldZdoPeerRouter.TickUnderworld(Time.deltaTime);
         TryReconcileDeepBoons();
     }
 
@@ -160,36 +158,6 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         }
     }
 
-    private void TryReconcileChunkResidency()
-    {
-        if (_services is null || Time.unscaledTime < _nextChunkResidencyReconcileAt) return;
-        _nextChunkResidencyReconcileAt = Time.unscaledTime + ChunkResidencyReconcileSeconds;
-
-        if (_services.InstanceLifecycle.Phase != UnderworldInstancePhase.Active || _services.InstanceLifecycle.Identity is null)
-            return;
-
-        // The origin remains resident for the conclave/return gate. Each player's transform is
-        // admitted independently only when it occupies the disjoint engine-space Underworld layer.
-        // A Surface player can therefore never make another player's layer classification global.
-        var focuses = new List<UnderworldChunkFocus> { new(0d, 0d) };
-        foreach (var player in Player.GetAllPlayers())
-        {
-            if (!player || !UnderworldInstanceLayer.IsUnderworldEnginePosition(player.transform.position)) continue;
-            var position = UnderworldInstanceLayer.ToLogical(player.transform.position);
-            focuses.Add(new UnderworldChunkFocus(position.x, position.z));
-        }
-
-        try
-        {
-            if (!_services.ChunkStreaming.Reconcile(focuses))
-                _log?.LogWarning("Native Underworld chunk residency rejected an active instance-space focus reconciliation.");
-        }
-        catch (Exception exception)
-        {
-            _log?.LogError($"Underworld native chunk residency reconciliation failed: {exception}");
-        }
-    }
-
     private void TryReconcileDeepBoons()
     {
         if (ZNet.instance is null || !ZNet.instance.IsServer() || Time.unscaledTime < _nextBoonReconcileAt) return;
@@ -213,7 +181,6 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         _worldCenterInstanceKey = null;
         DeepBoonRuntime.Reset();
         _nextBoonReconcileAt = 0f;
-        _nextChunkResidencyReconcileAt = 0f;
         _nativeWorldHost?.Dispose();
         _nativeWorldHost = _services is null || _log is null ? null : new UnderworldNativeWorldHost(_services.WorldInstances, _log);
         UnderworldInstancePersistence.Reset();

@@ -180,6 +180,9 @@ internal static class UnderworldGateTransitRuntime
         }
 
         var root = player.transform.root.gameObject;
+        if (!UnderworldZdoPeerRouter.TryMovePlayer(player, previousContext, target, out diagnostic))
+            return false;
+
         try
         {
             if (root.scene.handle != target.Scene.handle)
@@ -195,14 +198,22 @@ internal static class UnderworldGateTransitRuntime
         }
         catch (Exception exception)
         {
+            var rollbackDiagnostic = string.Empty;
             try
             {
                 if (root && root.scene.handle != previousContext.Scene.handle)
                     SceneManager.MoveGameObjectToScene(root, previousContext.Scene);
                 services.WorldInstances.MovePlayer(playerId, previousInstance);
+                if (!UnderworldZdoPeerRouter.TryMovePlayer(player, target, previousContext, out rollbackDiagnostic))
+                    _log?.LogError($"World-instance ZDO/peer rollback failed: {rollbackDiagnostic}");
             }
-            catch { }
-            diagnostic = "World-instance transfer failed: " + exception.Message;
+            catch (Exception rollback)
+            {
+                rollbackDiagnostic = rollback.Message;
+                _log?.LogError($"World-instance rollback failed: {rollback}");
+            }
+            diagnostic = "World-instance transfer failed: " + exception.Message +
+                         (string.IsNullOrEmpty(rollbackDiagnostic) ? string.Empty : " Rollback: " + rollbackDiagnostic);
             return false;
         }
     }

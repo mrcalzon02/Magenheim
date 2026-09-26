@@ -122,7 +122,7 @@ internal static class UnderworldZdoPeerRouter
     internal static void TickUnderworld(float deltaTime)
     {
         var services = _services;
-        if (services is null || ZNet.instance is null ||
+        if (services is null || ZNet.instance is null || !ZNet.instance.IsServer() ||
             !services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out var context) ||
             context is null)
             return;
@@ -191,6 +191,7 @@ internal static class UnderworldZdoPeerRouter
     {
         var znet = ZNet.instance;
         if (znet is null) return null;
+        if (!znet.IsServer()) return znet.GetServerPeer();
         var id = player.GetZDOID();
         return znet.GetPeers().FirstOrDefault(value => value.m_characterID == id);
     }
