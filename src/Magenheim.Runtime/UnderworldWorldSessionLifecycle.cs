@@ -101,6 +101,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             if (_nativeWorldHost is null || !_nativeWorldHost.TryCreate(identity, out var hostDiagnostic))
                 throw new InvalidOperationException(hostDiagnostic);
 
+            UnderworldInstancePersistence.TryLoadBoundInstance();
             _services.InstanceLifecycle.EnsureActive(identity);
             _log.LogInfo($"Admitted persistent Underworld instance authority '{identity.DerivedWorldId}' for parent world '{identity.ParentWorldId}'.");
         }
@@ -215,6 +216,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         _nextChunkResidencyReconcileAt = 0f;
         _nativeWorldHost?.Dispose();
         _nativeWorldHost = _services is null || _log is null ? null : new UnderworldNativeWorldHost(_services.WorldInstances, _log);
+        UnderworldInstancePersistence.Reset();
         _services?.ResetForWorldUnload();
     }
 
