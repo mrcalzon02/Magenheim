@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
 using BepInEx.Logging;
 using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using Magenheim.Core.Underworld;
-using UnityEngine;
 
 namespace Magenheim.Runtime;
 
@@ -41,7 +39,9 @@ internal sealed class UnderworldBossLocationRegistrar : IDisposable
                 GreatDecayCarrionCrownFamily.CanonicalLocationId, new GreatDecayCarrionCrownFamily(services)),
         };
 
-        UnderworldNativeBossLocationRuntime.Configure(services, _locations, log);
+        UnderworldNativeStructureLocationRuntime.Configure(services, log);
+        foreach (var location in _locations)
+            UnderworldNativeStructureLocationRuntime.RegisterFamily(location.Family);
     }
 
     internal void Register()
@@ -66,7 +66,7 @@ internal sealed class UnderworldBossLocationRegistrar : IDisposable
                     ?? throw new InvalidOperationException(
                         $"Jotunn could not create Underworld boss location '{location.PrefabName}'.");
 
-                var runtime = container.AddComponent<UnderworldNativeBossLocationRuntime>();
+                var runtime = container.AddComponent<UnderworldNativeStructureLocationRuntime>();
                 runtime.Bind(location.Family.Kind);
 
                 var config = new LocationConfig
@@ -112,75 +112,4 @@ internal sealed class UnderworldBossLocationRegistrar : IDisposable
         string PrefabName,
         string CanonicalLocationId,
         IUnderworldBiomeStructureFamily Family);
-}
-
-/// <summary>
-/// Runs only on an actual location instance in the Underworld Unity scene. The prefab prototype
-/// and every Surface scene fail closed, preventing custom-biome content from leaking upward.
-/// </summary>
-internal sealed class UnderworldNativeBossLocationRuntime : MonoBehaviour
-{
-    private static UnderworldRuntimeServices? _services;
-    private static ManualLogSource? _log;
-    private static readonly Dictionary<string, IUnderworldBiomeStructureFamily> Families =
-        new(StringComparer.Ordinal);
-
-    [SerializeField] private string _familyKind = string.Empty;
-    private bool _composed;
-
-    internal static void Configure(
-        UnderworldRuntimeServices services,
-        IEnumerable<UnderworldBossLocationRegistrar.BossLocation> locations,
-        ManualLogSource log)
-    {
-        _services = services ?? throw new ArgumentNullException(nameof(services));
-        _log = log ?? throw new ArgumentNullException(nameof(log));
-        Families.Clear();
-        foreach (var location in locations)
-            Families.Add(location.Family.Kind, location.Family);
-    }
-
-    internal void Bind(string familyKind)
-    {
-        if (string.IsNullOrWhiteSpace(familyKind))
-            throw new ArgumentException("Boss location family kind is required.", nameof(familyKind));
-        _familyKind = familyKind;
-    }
-
-    private void Start()
-    {
-        if (_composed || _services is null || string.IsNullOrWhiteSpace(_familyKind)) return;
-        if (!_services.WorldInstances.TryGetContextForScene(gameObject.scene.handle, out var context) ||
-            context is null || !context.InstanceId.IsUnderworld)
-            return;
-        if (_services.InstanceLifecycle.Identity is not { } identity)
-            return;
-        if (!Families.TryGetValue(_familyKind, out var family))
-            throw new InvalidOperationException($"Unknown Underworld boss-location family '{_familyKind}'.");
-
-        var grid = new UnderworldInstanceChunkGrid(_services.TerrainDomain);
-        var key = grid.KeyAt(transform.position.x, transform.position.z);
-        if (!grid.IntersectsPlayableDomain(key))
-        {
-            _log?.LogWarning(
-                $"Native location '{name}' landed outside the playable Underworld terrain domain; content was not composed.");
-            return;
-        }
-
-        GameObject? content = null;
-        try
-        {
-            using (ValheimWorldInstanceExecution.Enter(context))
-                content = family.Compose(transform.position, identity, key);
-            content.transform.SetParent(transform, worldPositionStays: true);
-            _composed = true;
-            _log?.LogInfo(
-                $"Composed native Underworld boss location '{_familyKind}' at chunk {key.X},{key.Z}.");
-        }
-        catch
-        {
-            if (content) Destroy(content);
-            throw;
-        }
-    }
 }
