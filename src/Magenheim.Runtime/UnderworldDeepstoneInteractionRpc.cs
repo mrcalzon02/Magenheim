@@ -24,13 +24,15 @@ internal static class UnderworldDeepstoneInteractionRpc
     private const int ResponseMessage = 2;
     private static readonly UnderworldDeepstoneRequestLedger ReplayLedger = new();
     private static long _nextRequestId;
-    private static UnderworldRuntimeServices? _services;\n    private static DefinitionAuthoritySynchronizer? _authority;
+    private static UnderworldRuntimeServices? _services;
+    private static DefinitionAuthoritySynchronizer? _authority;
     private static ManualLogSource? _log;
     private static CustomRPC? _rpc;
 
-    internal static void Register(DefinitionAuthoritySynchronizer authority, ManualLogSource log)
+    internal static void Register(UnderworldRuntimeServices services, DefinitionAuthoritySynchronizer authority, ManualLogSource log)
     {
         if (_rpc is not null) return;
+        _services = services ?? throw new ArgumentNullException(nameof(services));
         _authority = authority ?? throw new ArgumentNullException(nameof(authority));
         _log = log ?? throw new ArgumentNullException(nameof(log));
         _rpc = NetworkManager.Instance.AddRPC("UnderworldDeepstoneInteraction", ReceiveServerMessage, ReceiveClientMessage);
