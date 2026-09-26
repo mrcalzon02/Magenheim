@@ -16,7 +16,7 @@ internal static class UnderworldResourcePopulationRuntime
 {
     private const string ResourceKindPrefix = "resource:";
 
-    internal static int PopulateSulfurousCell(
+    internal static int PopulateCell(
         UnderworldRuntimeServices services,
         UnderworldWorldIdentity identity,
         UnderworldInstanceChunkKey cell,
@@ -29,16 +29,16 @@ internal static class UnderworldResourcePopulationRuntime
         var centerX = (cell.X + .5f) * UnderworldEcologyCells.SizeMeters;
         var centerZ = (cell.Z + .5f) * UnderworldEcologyCells.SizeMeters;
         var center = UnderworldTerrainRuntime.SampleInstanceTerrain(centerX, 0, centerZ);
-        if (!center.Admitted || center.Biome != UnderworldTerrainBiome.SulfurousWastes) return 0;
+        if (!center.Admitted) return 0;
+        var biome = center.Biome;
 
         var spawned = 0;
-        foreach (var placement in UnderworldResourcePlacementPlanner.Plan(
-            identity.DerivedSeed32, cell, UnderworldTerrainBiome.SulfurousWastes))
+        foreach (var placement in UnderworldResourcePlacementPlanner.Plan(identity.DerivedSeed32, cell, biome))
         {
             if (placement.X * placement.X + placement.Z * placement.Z < 36d * 36d) continue;
 
             var support = UnderworldTerrainRuntime.SampleInstanceTerrain(placement.X, 0, placement.Z);
-            if (!support.Admitted || support.Biome != UnderworldTerrainBiome.SulfurousWastes) continue;
+            if (!support.Admitted || support.Biome != biome) continue;
 
             var objectKind = ResourceKindPrefix + placement.ResourceId;
             var placementKey = UnderworldStructurePlacementKey.For(cell, placement.Slot);
@@ -71,7 +71,7 @@ internal static class UnderworldResourcePopulationRuntime
         }
 
         if (spawned > 0)
-            log?.LogDebug($"Admitted {spawned} persistent Sulfurous Wastes resource pickup(s) in Underworld ecology cell ({cell.X},{cell.Z}).");
+            log?.LogDebug($"Admitted {spawned} persistent {biome} resource pickup(s) in Underworld ecology cell ({cell.X},{cell.Z}).");
         return spawned;
     }
 
