@@ -76,6 +76,15 @@ public static class UnderworldMonumentalLandforms
         return TryGet(domain, seed, cellX, cellZ, out var landform) ? landform.HeightAt(x, z) : 0d;
     }
 
+    public static double ApplyToTerrain(UnderworldInstanceTerrainDomain domain, int seed, double x, double z, double terrainHeight)
+    {
+        var cellX = checked((int)Math.Floor(x / CellSizeMeters));
+        var cellZ = checked((int)Math.Floor(z / CellSizeMeters));
+        if (!TryGet(domain, seed, cellX, cellZ, out var landform)) return terrainHeight;
+        var influence = landform.HeightAt(x, z) / landform.Height;
+        return terrainHeight + (landform.Height - terrainHeight) * influence;
+    }
+
     private static double Unit(uint hash, uint salt) =>
         UnderworldTerrainNoise.Mix(hash ^ salt * 2654435761u) / ((double)uint.MaxValue + 1d);
 }

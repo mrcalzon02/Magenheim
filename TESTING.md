@@ -4,21 +4,31 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.106 by Local** and start its description with
-**0.0.106: Fungal Forest expands to sixteen authored canopy forms**.
+show **Magenheim v0.0.107 by Local** and start its description with
+**0.0.107: Distinct biome terrain with unclipped relief**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.106]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.107]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
 is under `BepInEx/plugins/Local-Magenheim/Magenheim`. Launching vanilla Steam
 does not use this profile. Exit the game before rebuilding or installing.
 
-## Monumental terrain acceptance — 0.0.106
+## Biome terrain acceptance - 0.0.107
 
-### Fungal canopy variety acceptance — 0.0.106
+Use a disposable world: this release changes the deterministic terrain fingerprint.
+Check the dry, gentle first 80 metres around the gate, then increasing hills to 320 metres.
+Explore all six biomes: fungal hills, flooded Blackwater basins, sulfur ridges, frozen ranges,
+faulted Fracture Zones and sunken decay. Cross both central and outer biome borders and confirm
+continuous ground, terrain collision, water placement and scenery grounding on steep slopes.
+Check tall monument summits, gate return, reload and two peers viewing the same terrain.
+These live appearance, traversal, persistence and multiplayer checks remain pending.
+
+## Monumental terrain acceptance — 0.0.107
+
+### Fungal canopy variety acceptance — 0.0.107
 
 Walk several Fungal Forest groves, allowing the cell population to finish. Confirm bent and
 twin glowcaps, different spire tiers, spreading/forked puff crowns, and young/splayed/woven
@@ -45,7 +55,7 @@ identity and return travel. Recheck Motherbed, Drowned Ring, Furnace Heart and S
 against the changed terrain, then multiplayer agreement and save/reload. None of these live
 checks are established by the offline geometry renders or Core tests.
 
-## Sunless sky and haze acceptance - 0.0.106
+## Sunless sky and haze acceptance - 0.0.107
 
 Look up from every biome: the same basalt roof, lava fissures and fungal star colonies must
 remain, without a Surface sun, moon or cloud backdrop. Compare native dawn, noon, dusk and
@@ -107,7 +117,7 @@ Spawn IDs (`spawn <id> 1`):
 
 ## Candidate acceptance matrix
 
-Confirm the startup log reports **0.0.106** and has no Magenheim bootstrap or registration
+Confirm the startup log reports **0.0.107** and has no Magenheim bootstrap or registration
 errors. Keep logs and screenshots with each result. Mark checks PASS / FAIL / NOT RUN;
 record game version, mod list, host/client role, seed, steps, expected/actual result.
 
@@ -279,7 +289,7 @@ See `docs/validation/2026-09-14-earth-content-package.md`,
 acceptance boundaries. Natural worldgen, persistence, and multiplayer still require
 separate observations.
 
-## 0.0.106 live regression checks
+## 0.0.107 live regression checks
 
 - Enter through the console or Deep Gate. Arrival must be outside the actual Aesir gate's front
   footprint, facing toward the conclave, never inside the central monolith. Repeat enter while

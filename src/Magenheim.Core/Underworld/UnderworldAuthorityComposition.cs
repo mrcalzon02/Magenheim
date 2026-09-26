@@ -68,6 +68,7 @@ public static class UnderworldAuthorityComposer
             .Append("content=").Append(contentFingerprint).Append('\n')
             .Append("architecture=").Append(architectureFingerprint).Append('\n')
             .Append("terrain-shape=").Append(UnderworldMonumentalLandforms.AlgorithmId).Append('\n')
+            .Append("biome-relief=").Append(UnderworldBiomeTerrain.AlgorithmId).Append('\n')
             .Append("terrain-radius=").Append(Canonical(terrainDomain.RadiusMeters)).Append('\n')
             .Append("terrain-min-y=").Append(Canonical(terrainDomain.MinimumY)).Append('\n')
             .Append("terrain-max-y=").Append(Canonical(terrainDomain.MaximumY)).Append('\n')

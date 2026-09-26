@@ -35,8 +35,9 @@ public readonly record struct UnderworldTerrainResult(
 /// </summary>
 public static class UnderworldTerrainLifecycle
 {
-    public const double MaximumTerrainDelta = 300d;
-    public const double RegionalReliefRadiusFraction = 0.42d;
+    public const double ArrivalProtectionRadiusMeters = 80d;
+    public const double FullRegionalReliefRadiusMeters = 320d;
+    public const double ProvinceBlendWidthMeters = 256d;
     public const double BaseElevationMeters = 45d;
     public const double MaximumSlopeDegrees = 75d;
     public const double CentralFungalRadiusFraction = 0.16d;
@@ -57,17 +58,32 @@ public static class UnderworldTerrainLifecycle
         var noise = Clamp(sample.Noise01, 0d, 1d);
         var distance = Math.Sqrt(sample.X * sample.X + sample.Z * sample.Z);
         var biome = SelectBiome(sample.X, sample.Z, distance, domain.RadiusMeters, derivedSeed32);
-        var relief = UnderworldTerrainNoise.ReliefMetres(derivedSeed32, sample.X, sample.Z,
-            RegionalReliefWeight(distance, domain.RadiusMeters));
-        var delta = BiomeDelta(biome, relief);
+        var regionalWeight = RegionalReliefWeight(distance, domain.RadiusMeters);
+        double Delta(UnderworldTerrainBiome selected) => UnderworldBiomeTerrain.HeightDelta(
+            selected, derivedSeed32, sample.X, sample.Z, regionalWeight);
+        var delta = Delta(biome);
+        if (biome != UnderworldTerrainBiome.FungalForest)
+        {
+            // Blend geography across sector edges; biome identities and ecological rules stay discrete.
+            var sectorPosition = ProvinceAngle(sample.X, sample.Z, derivedSeed32) / (Math.PI * 2d / 5d);
+            var sector = (int)Math.Floor(sectorPosition);
+            var fraction = sectorPosition - sector;
+            var boundaryDistance = distance * Math.Sin(Math.Min(fraction, 1d - fraction) * (Math.PI * 2d / 5d));
+            if (boundaryDistance < ProvinceBlendWidthMeters)
+            {
+                var neighbour = ProvinceBiome((sector + (fraction < .5d ? 4 : 1)) % 5);
+                var t = boundaryDistance / ProvinceBlendWidthMeters;
+                delta = Lerp(delta, Delta(neighbour), .5d * (1d - t * t * (3d - 2d * t)));
+            }
+        }
         var fungalBlend = FungalTransition(distance, domain.RadiusMeters);
         if (fungalBlend > 0d && biome != UnderworldTerrainBiome.FungalForest)
-            delta = Lerp(delta, BiomeDelta(UnderworldTerrainBiome.FungalForest, relief), fungalBlend);
+            delta = Lerp(delta, Delta(UnderworldTerrainBiome.FungalForest), fungalBlend);
 
-        var height = BaseElevationMeters + Clamp(delta, -MaximumTerrainDelta, MaximumTerrainDelta);
-        // Monument heights are absolute, so underlying hill noise cannot push a tip above
-        // the agreed haze-line limit or flatten a spire by post-generation clipping.
-        height = Math.Max(height, UnderworldMonumentalLandforms.HeightAt(domain, derivedSeed32, sample.X, sample.Z));
+        var height = BaseElevationMeters + delta;
+        // A missing monument must not impose a zero-height floor on basins. Blend an actual
+        // footprint from its local terrain base to its absolute summit without clipping either.
+        height = UnderworldMonumentalLandforms.ApplyToTerrain(domain, derivedSeed32, sample.X, sample.Z, height);
         var water = Math.Max(0d, sample.WaterLevel - height);
         var cover = Cover(biome, noise, slope, water);
         var hazard = Hazard(biome, noise, water);
@@ -84,11 +100,18 @@ public static class UnderworldTerrainLifecycle
     private static UnderworldTerrainBiome SelectBiome(double x, double z, double distance, double radius, int seed)
     {
         if (distance <= radius * CentralFungalRadiusFraction) return UnderworldTerrainBiome.FungalForest;
+        return ProvinceBiome((int)Math.Floor(ProvinceAngle(x, z, seed) / (Math.PI * 2d / 5d)));
+    }
+
+    private static double ProvinceAngle(double x, double z, int seed)
+    {
         var angle = Math.Atan2(z, x) + SeedRotation(seed);
         if (angle < 0d) angle += Math.PI * 2d;
         if (angle >= Math.PI * 2d) angle -= Math.PI * 2d;
-        var sector = (int)Math.Floor(angle / (Math.PI * 2d / 5d));
-        return sector switch
+        return angle;
+    }
+
+    private static UnderworldTerrainBiome ProvinceBiome(int sector) => sector switch
         {
             0 => UnderworldTerrainBiome.BlackwaterDeep,
             1 => UnderworldTerrainBiome.SulfurousWastes,
@@ -96,12 +119,11 @@ public static class UnderworldTerrainLifecycle
             3 => UnderworldTerrainBiome.FractureZones,
             _ => UnderworldTerrainBiome.GreatDecay,
         };
-    }
 
     private static double RegionalReliefWeight(double distance, double radius)
     {
-        var inner = radius * CentralFungalRadiusFraction;
-        var outer = radius * RegionalReliefRadiusFraction;
+        var inner = Math.Min(ArrivalProtectionRadiusMeters, radius * .01d);
+        var outer = Math.Min(FullRegionalReliefRadiusMeters, radius * .04d);
         if (distance <= inner) return 0d;
         if (distance >= outer) return 1d;
         var t = (distance - inner) / (outer - inner);
@@ -121,17 +143,6 @@ public static class UnderworldTerrainLifecycle
 
     private static double SeedRotation(int seed) =>
         UnderworldTerrainNoise.Mix(unchecked((uint)seed)) / ((double)uint.MaxValue + 1d) * Math.PI * 2d;
-
-    private static double BiomeDelta(UnderworldTerrainBiome biome, double relief) => biome switch
-    {
-        UnderworldTerrainBiome.FungalForest => 6d + relief * 0.55d,
-        UnderworldTerrainBiome.BlackwaterDeep => -30d + relief * 0.40d,
-        UnderworldTerrainBiome.SulfurousWastes => 8d + relief * 0.85d,
-        UnderworldTerrainBiome.FrozenCaverns => 4d + relief * 0.65d,
-        UnderworldTerrainBiome.FractureZones => relief * 1.5d,
-        UnderworldTerrainBiome.GreatDecay => -10d + relief * 0.45d,
-        _ => 0d,
-    };
 
     private static double Cover(UnderworldTerrainBiome biome, double noise, double slope, double waterDepth) => biome switch
     {

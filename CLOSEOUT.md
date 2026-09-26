@@ -1,3 +1,17 @@
+# Development closeout - 0.0.107 distinct biome relief
+
+Removes the shared ordinary-terrain clamp and the accidental zero-height basin floor.
+Six biome profiles supply different amplitudes, wavelengths and landform shapes. Angular
+province borders blend over 256 metres on each side. The first 80 metres around the gate
+retain gentle relief; regional geography reaches full strength at 320 metres. The native
+instance minimum is expanded to -896 metres, within the existing engine instance layer.
+Monuments blend from local ground to their existing absolute summits.
+
+Expected enabled launcher entry: Magenheim v0.0.107 by Local.
+Launcher description: "0.0.107: Distinct biome terrain with unclipped relief: fungal hills, deep Blackwater basins, sulfur ridges, frozen ranges, faulted Fracture Zones and sunken decay. Smooth biome borders and a protected gate approach."
+Core tests and a same-seed terrain survey verify the change; live acceptance remains pending.
+See docs/validation/2026-09-25-biome-terrain.md and TESTING.md.
+
 # Development closeout - 0.0.106 fungal canopy variants
 
 Four fungal canopy archetypes now have four authored growth forms each, for sixteen distinct

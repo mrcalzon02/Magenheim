@@ -32,8 +32,8 @@ internal static class UnderworldTerrainLifecycleTests
         var first = UnderworldTerrainLifecycle.Evaluate(instanceDomain, sample, 777);
         var repeat = UnderworldTerrainLifecycle.Evaluate(instanceDomain, sample, 777);
         Assert(first == repeat, "Terrain evaluation must be deterministic for the same seed and sample.");
-        Assert(Math.Abs(first.Height - UnderworldTerrainLifecycle.BaseElevationMeters) <= UnderworldTerrainLifecycle.MaximumTerrainDelta + UnderworldMonumentalLandforms.MaximumHeightMeters + 0.0001d,
-            "Terrain shaping must remain inside the bounded height delta around the region's base elevation.");
+        Assert(instanceDomain.Contains(sample.X, first.Height, sample.Z),
+            "Generated terrain must fit the admitted instance, without a shared small height clamp.");
         Assert(first.Cover01 >= 0d && first.Cover01 <= 1d && first.Hazard01 >= 0d && first.Hazard01 <= 1d,
             "Terrain ecology outputs must remain normalized.");
 
@@ -64,8 +64,10 @@ internal static class UnderworldTerrainLifecycleTests
 
         var innerEdge = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
             transitionSample with { X = instanceDomain.RadiusMeters * (UnderworldTerrainLifecycle.CentralFungalRadiusFraction + 0.0001d) }, 777);
-        Assert(Math.Abs(innerEdge.Height - UnderworldTerrainLifecycle.BaseElevationMeters) < UnderworldTerrainLifecycle.MaximumTerrainDelta,
-            "Crossing the central biome edge must not create a maximum-delta terrain cliff.");
+        var forestEdge = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
+            transitionSample with { X = instanceDomain.RadiusMeters * (UnderworldTerrainLifecycle.CentralFungalRadiusFraction - 0.0001d) }, 777);
+        Assert(Math.Abs(innerEdge.Height - forestEdge.Height) < 4d,
+            "Crossing the central biome edge must blend heights continuously.");
         Assert(innerEdge.Hazard01 < transition.Hazard01 + 0.0001d,
             "Hazard must ramp outward rather than spike at the central biome boundary.");
 
@@ -110,18 +112,64 @@ internal static class UnderworldTerrainLifecycleTests
 
         var steepest = 0d;
         var previous = double.NaN;
-        for (var step = 0; step <= 400; step++)
+        for (var step = 0; step <= 60; step++)
         {
             var probe = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
-                new UnderworldTerrainSample(step, 0d, 96d, 30d, 0d,
-                    UnderworldTerrainNoise.Fractal01(precisionSeed, step, 96d)), precisionSeed);
+                new UnderworldTerrainSample(step, 0d, 0d, 30d, 0d,
+                    UnderworldTerrainNoise.Fractal01(precisionSeed, step, 0d)), precisionSeed);
             if (!probe.Admitted) continue;
             if (!double.IsNaN(previous)) steepest = Math.Max(steepest, Math.Abs(probe.Height - previous));
             previous = probe.Height;
         }
         Assert(steepest > 0.02d && steepest < 1d,
-            "Central-basin relief must be visible but walkable metre to metre.");
+            "Protected gate relief must be visible but walkable metre to metre.");
 
+        foreach (var seed in new[] { 12345, 777, precisionSeed })
+        {
+            var lows = new double[6];
+            var highs = new double[6];
+            Array.Fill(lows, double.MaxValue);
+            Array.Fill(highs, double.MinValue);
+            for (var z = -7840; z <= 7840; z += 160)
+            for (var x = -7840; x <= 7840; x += 160)
+            {
+                var point = new UnderworldTerrainSample(x, 0, z, 30, 0, .5);
+                var terrain = UnderworldTerrainLifecycle.Evaluate(instanceDomain, point, seed);
+                if (!terrain.Admitted) continue;
+                Assert(instanceDomain.Contains(x, terrain.Height, z) &&
+                    instanceDomain.Contains(x, terrain.Height + 2, z), "Terrain and standing players fit the native instance.");
+                Assert(terrain == UnderworldTerrainLifecycle.Evaluate(instanceDomain, point, seed),
+                    "Wide relief remains deterministic.");
+                if (UnderworldMonumentalLandforms.HeightAt(instanceDomain, seed, x, z) > 0) continue;
+                var index = (int)terrain.Biome;
+                lows[index] = Math.Min(lows[index], terrain.Height);
+                highs[index] = Math.Max(highs[index], terrain.Height);
+            }
+            var minimumSpans = new[] { 150d, 300d, 650d, 900d, 1400d, 450d };
+            for (var biome = 0; biome < 6; biome++)
+                Assert(highs[biome] - lows[biome] > minimumSpans[biome],
+                    $"{(UnderworldTerrainBiome)biome} must have substantial ordinary relief for seed {seed}.");
+            Assert(lows[1] < -100 && lows[4] < -255 && highs[4] > 345,
+                "Basins and ranges must extend past the retired floor and shared clamp.");
+            for (var x = -80; x <= 80; x += 5)
+            {
+                var gate = UnderworldTerrainLifecycle.Evaluate(instanceDomain, new(x, 0, 0, 30, 0, .5), seed);
+                Assert(Math.Abs(gate.Height - (51 + .55 * UnderworldTerrainNoise.ReliefMetres(seed, x, 0, 0))) < 1e-9,
+                    "The protected approach preserves its original fine relief.");
+                Assert(gate.WaterDepth == 0, "The protected approach stays dry.");
+            }
+            var rotation = UnderworldTerrainNoise.Mix(unchecked((uint)seed)) / ((double)uint.MaxValue + 1) * Math.PI * 2;
+            for (var sector = 0; sector < 5; sector++)
+            {
+                var angle = sector * Math.PI * 2 / 5 - rotation;
+                double BorderHeight(double offset) => UnderworldTerrainLifecycle.Evaluate(instanceDomain,
+                    new(6000 * Math.Cos(angle + offset), 0, 6000 * Math.Sin(angle + offset), 30, 0, .5), seed).Height;
+                Assert(Math.Abs(BorderHeight(-1e-7) - BorderHeight(1e-7)) < .1,
+                    "Province borders, including the angular wrap, have no height step.");
+            }
+        }
+        Assert(UnderworldMonumentalLandforms.ApplyToTerrain(instanceDomain, 12345, 0, 0, -200) == -200,
+            "An absent monument cannot flatten negative terrain to zero.");
         return assertions;
     }
 }

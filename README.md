@@ -2,7 +2,11 @@
 
 **Magic begins as geology.**
 
-## 0.0.106 testing candidate
+## 0.0.107 testing candidate
+
+Ordinary Underworld terrain now uses distinct biome height and shape profiles without a shared
+height clamp. Deep basins, broad ridges and faulted ranges blend across province borders.
+The gate approach retains gentle relief for 80 metres; full regional relief begins at 320 metres.
 
 The Fungal Forest now draws from sixteen authored canopy models: four species with four
 growth forms each. Twelve new meshes add bent/twin/elder glowcaps, young/crooked/towered
@@ -26,10 +30,10 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.106.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.107.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
-Launch **Modded**. Confirm `Loading [Magenheim 0.0.106]` in the BepInEx log.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.107]` in the BepInEx log.
 Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
 See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.
