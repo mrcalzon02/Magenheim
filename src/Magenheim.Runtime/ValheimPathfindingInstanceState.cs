@@ -30,6 +30,9 @@ internal sealed class ValheimPathfindingInstanceState : IDisposable
     private static readonly MethodInfo UpdateMethod =
         AccessTools.Method(typeof(Pathfinding), "Update", Type.EmptyTypes)
         ?? throw new MissingMethodException(typeof(Pathfinding).FullName, "Update()");
+    private static readonly MethodInfo DestroyMethod =
+        AccessTools.Method(typeof(Pathfinding), "OnDestroy", Type.EmptyTypes)
+        ?? throw new MissingMethodException(typeof(Pathfinding).FullName, "OnDestroy()");
 
     private readonly Dictionary<FieldInfo, object?> _values = new();
     private readonly List<int> _ownedAgentTypeIds = new();
@@ -231,6 +234,26 @@ internal sealed class ValheimPathfindingInstanceState : IDisposable
     public void Dispose()
     {
         if (_disposed) return;
+
+        // NavMeshData/links live in Unity's process-global NavMesh backend, not the local Unity
+        // scene. Run Valheim's own Pathfinding teardown while the detached Underworld state is
+        // swapped into the singleton, so only instance-1 tiles and links are removed.
+        var pathfinding = Pathfinding.instance;
+        if (pathfinding)
+        {
+            try
+            {
+                using (Enter(pathfinding))
+                    DestroyMethod.Invoke(pathfinding, Array.Empty<object>());
+            }
+            catch (TargetInvocationException exception) when (exception.InnerException is not null)
+            {
+                throw new InvalidOperationException(
+                    "Native Underworld Pathfinding teardown failed.",
+                    exception.InnerException);
+            }
+        }
+
         _disposed = true;
         foreach (var id in _ownedAgentTypeIds)
         {
