@@ -77,8 +77,10 @@ internal sealed class FrostStaffRegistrar : IDisposable
         }
         catch (Exception exception)
         {
-            _log.LogError($"Frost staff content registration failed: {exception}");
-            throw;
+            // Vanilla-prefab readiness is a multicast event. Re-throwing here aborts the invocation
+            // and prevents registrars subscribed after Frost from seeing it. Frost fails closed
+            // locally instead of taking later elemental families down with it.
+            _log.LogError($"Frost staff content registration failed; Frost is disabled for this load, but later content registrars will continue: {exception}");
         }
         finally
         {
