@@ -52,6 +52,7 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             var world = CloneWorld(surface.World, identity);
             var generator = CreateWorldGenerator(world);
             var zdoMan = CreateZdoMan(surface.ZdoMan);
+            ValidateDistinctZdoNamespace(surface.ZdoMan, zdoMan);
             var zoneSystem = CreateZoneSystem(surface.ZoneSystem, _scene);
 
             var context = new ValheimWorldInstanceContext(
@@ -139,6 +140,22 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             null) ?? throw new MissingMethodException(typeof(ZDOMan).FullName, ".ctor(int)");
         return (ZDOMan)(ctor.Invoke(new object[] { width })
             ?? throw new InvalidOperationException("ZDOMan constructor returned null."));
+    }
+
+    private static void ValidateDistinctZdoNamespace(ZDOMan surface, ZDOMan underworld)
+    {
+        var getMyId = AccessTools.Method(typeof(ZDOMan), "GetMyID", Type.EmptyTypes)
+            ?? throw new MissingMethodException(typeof(ZDOMan).FullName, "GetMyID()");
+        var surfaceId = Convert.ToInt64(getMyId.Invoke(surface, Array.Empty<object>()));
+        var underworldId = Convert.ToInt64(getMyId.Invoke(underworld, Array.Empty<object>()));
+
+        if (surfaceId == 0L || underworldId == 0L)
+            throw new InvalidOperationException(
+                $"Valheim ZDO manager identity is invalid (Surface={surfaceId}, Underworld={underworldId}).");
+        if (surfaceId == underworldId)
+            throw new InvalidOperationException(
+                $"Valheim assigned the same ZDO manager identity {surfaceId} to Surface and Underworld. " +
+                "A second native ZDO namespace cannot be admitted safely.");
     }
 
     private ZoneSystem CreateZoneSystem(ZoneSystem source, Scene scene)
