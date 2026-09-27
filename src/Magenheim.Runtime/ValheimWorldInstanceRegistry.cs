@@ -18,7 +18,7 @@ internal sealed class ValheimWorldInstanceRegistry
     internal void BindSurface(World world, WorldGenerator generator, ZoneSystem zoneSystem, ZDOMan zdoMan)
     {
         var scene = zoneSystem.gameObject.scene;
-        Bind(new ValheimWorldInstanceContext(UnderworldWorldInstanceId.Surface, world, generator, zoneSystem, zdoMan, scene, scene.GetPhysicsScene()));
+        Bind(new ValheimWorldInstanceContext(UnderworldWorldInstanceId.Surface, world, generator, zoneSystem, zdoMan, scene, scene.GetPhysicsScene(), null));
     }
 
     internal void BindUnderworld(
@@ -27,7 +27,8 @@ internal sealed class ValheimWorldInstanceRegistry
         ZoneSystem zoneSystem,
         ZDOMan zdoMan,
         Scene scene,
-        PhysicsScene physicsScene)
+        PhysicsScene physicsScene,
+        ValheimPathfindingInstanceState pathfindingState)
     {
         Bind(new ValheimWorldInstanceContext(
             UnderworldWorldInstanceId.Underworld,
@@ -36,7 +37,8 @@ internal sealed class ValheimWorldInstanceRegistry
             zoneSystem,
             zdoMan,
             scene,
-            physicsScene));
+            physicsScene,
+            pathfindingState));
     }
 
     internal void Bind(ValheimWorldInstanceContext context)
@@ -106,7 +108,8 @@ internal sealed class ValheimWorldInstanceContext
         ZoneSystem zoneSystem,
         ZDOMan zdoMan,
         Scene scene,
-        PhysicsScene physicsScene)
+        PhysicsScene physicsScene,
+        ValheimPathfindingInstanceState? pathfindingState)
     {
         if (!scene.IsValid()) throw new ArgumentException("World instance requires a valid Unity scene.", nameof(scene));
         if (!physicsScene.IsValid()) throw new ArgumentException("World instance requires a valid Unity physics scene.", nameof(physicsScene));
@@ -117,6 +120,7 @@ internal sealed class ValheimWorldInstanceContext
         ZdoMan = zdoMan ?? throw new ArgumentNullException(nameof(zdoMan));
         Scene = scene;
         PhysicsScene = physicsScene;
+        PathfindingState = pathfindingState;
     }
 
     internal UnderworldWorldInstanceId InstanceId { get; }
@@ -126,4 +130,5 @@ internal sealed class ValheimWorldInstanceContext
     internal ZDOMan ZdoMan { get; }
     internal Scene Scene { get; }
     internal PhysicsScene PhysicsScene { get; }
+    internal ValheimPathfindingInstanceState? PathfindingState { get; }
 }
