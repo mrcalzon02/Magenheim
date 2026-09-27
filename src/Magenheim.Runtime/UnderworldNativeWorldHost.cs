@@ -411,6 +411,7 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
         SceneManager.MoveGameObjectToScene(_zoneRoot, scene);
         var clone = _zoneRoot.AddComponent<ZoneSystem>();
         CopyZoneConfiguration(source, clone);
+        ValidateDetachedZoneSystemState(source, clone);
         return clone;
     }
 
@@ -439,6 +440,78 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
                 field.SetValue(target, clone);
             // Unsupported reference types deliberately retain the fresh ZoneSystem default.
             // Sharing arbitrary mutable runtime state with Surface would violate instance isolation.
+        }
+    }
+
+    private static void ValidateDetachedZoneSystemState(ZoneSystem surface, ZoneSystem underworld)
+    {
+        foreach (var name in new[]
+        {
+            "m_zonePrefab",
+            "m_zoneCtrlPrefab",
+            "m_locationProxyPrefab",
+            "m_waterLevel",
+            "m_locationVersion",
+            "m_locationScenes",
+            "m_locationLists",
+            "m_altBiomeLists",
+            "m_vegetation",
+            "m_locations",
+        })
+        {
+            var field = AccessTools.Field(typeof(ZoneSystem), name)
+                ?? throw new MissingFieldException(typeof(ZoneSystem).FullName, name);
+            var sourceValue = field.GetValue(surface);
+            var targetValue = field.GetValue(underworld);
+
+            if (sourceValue is IList sourceList)
+            {
+                if (targetValue is not IList targetList)
+                    throw new InvalidOperationException($"Underworld ZoneSystem field '{name}' lost its list configuration.");
+                if (ReferenceEquals(sourceList, targetList))
+                    throw new InvalidOperationException($"Underworld ZoneSystem field '{name}' still aliases Surface.");
+                if (sourceList.Count != targetList.Count)
+                    throw new InvalidOperationException(
+                        $"Underworld ZoneSystem field '{name}' copied {targetList.Count} entries from Surface's {sourceList.Count}.");
+                continue;
+            }
+
+            if (sourceValue is IDictionary sourceDictionary)
+            {
+                if (targetValue is not IDictionary targetDictionary)
+                    throw new InvalidOperationException($"Underworld ZoneSystem field '{name}' lost its dictionary configuration.");
+                if (ReferenceEquals(sourceDictionary, targetDictionary))
+                    throw new InvalidOperationException($"Underworld ZoneSystem field '{name}' still aliases Surface.");
+                if (sourceDictionary.Count != targetDictionary.Count)
+                    throw new InvalidOperationException(
+                        $"Underworld ZoneSystem field '{name}' copied {targetDictionary.Count} entries from Surface's {sourceDictionary.Count}.");
+                continue;
+            }
+
+            if (sourceValue is UnityEngine.Object)
+            {
+                if (!ReferenceEquals(sourceValue, targetValue))
+                    throw new InvalidOperationException($"Underworld ZoneSystem asset field '{name}' did not preserve Valheim's configured prefab reference.");
+                continue;
+            }
+
+            if (!Equals(sourceValue, targetValue))
+                throw new InvalidOperationException($"Underworld ZoneSystem scalar field '{name}' did not preserve Surface configuration.");
+        }
+
+        foreach (var field in typeof(ZoneSystem).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            if (field.FieldType.IsValueType || field.FieldType == typeof(string) ||
+                typeof(Delegate).IsAssignableFrom(field.FieldType) ||
+                typeof(UnityEngine.Object).IsAssignableFrom(field.FieldType))
+                continue;
+
+            var surfaceValue = field.GetValue(surface);
+            var underworldValue = field.GetValue(underworld);
+            if (surfaceValue is null || underworldValue is null) continue;
+            if (ReferenceEquals(surfaceValue, underworldValue))
+                throw new InvalidOperationException(
+                    $"Underworld ZoneSystem still shares mutable field '{field.Name}' ({field.FieldType.FullName}) with Surface.");
         }
     }
 
