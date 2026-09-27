@@ -206,6 +206,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         _nativeWorldHost?.Dispose();
         _nativeWorldHost = _services is null || _log is null ? null : new UnderworldNativeWorldHost(_services.WorldInstances, _log);
         UnderworldInstancePersistence.Reset();
+        UnderworldZoneInstanceState.Reset();
         _services?.ResetForWorldUnload();
     }
 

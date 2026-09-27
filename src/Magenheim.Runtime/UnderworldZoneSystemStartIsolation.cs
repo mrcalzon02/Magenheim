@@ -45,6 +45,7 @@ internal static class UnderworldZoneSystemStartIsolationPatch
             // These are the native non-network portions of ZoneSystem.Start.
             __instance.UpdateWorldRates();
             SetupLocations.Invoke(__instance, Array.Empty<object>());
+            UnderworldZoneInstanceState.NotifyZoneReady(__instance);
             ValidateVegetation.Invoke(__instance, Array.Empty<object>());
             var fixedTime = Time.fixedTime;
             StartTime.SetValue(__instance, fixedTime);

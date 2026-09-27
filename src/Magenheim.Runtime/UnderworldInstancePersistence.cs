@@ -53,10 +53,12 @@ internal static class UnderworldInstancePersistence
         if (!Directory.Exists(path))
         {
             _log?.LogInfo($"No persisted Underworld instance exists yet at '{path}'; starting a new instance namespace.");
+            UnderworldZoneInstanceState.NotifyZdosLoaded();
             return;
         }
 
         InvokeInstanceLoad(context, pending.Method, ReplacePath(pending.Arguments, path));
+        UnderworldZoneInstanceState.NotifyZdosLoaded();
         _log?.LogInfo($"Loaded Underworld instance ZDO chunks from parent-save namespace '{path}'.");
     }
 
