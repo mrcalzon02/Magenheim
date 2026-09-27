@@ -497,11 +497,14 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
                     ParticleTokens = new[] { "snow", "blizzard" }
                 };
             case UnderworldAtmosphereEvent.StoneRain:
+                // Fracture weather is mechanically violent mineral debris, not recycled Ashfall.
+                // Prefer rock/dust/debris donors and keep ash out of the identity entirely.
                 return style with
                 {
                     WindMin = 0.42f,
                     WindMax = 0.78f,
-                    ParticleTokens = new[] { "dust", "ash", "mist" }
+                    Fog = new Color(0.34f, 0.31f, 0.39f),
+                    ParticleTokens = new[] { "dust", "rock", "stone", "debris" }
                 };
             case UnderworldAtmosphereEvent.CrystalResonance:
                 return style with
@@ -511,12 +514,17 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
                     ParticleTokens = Array.Empty<string>()
                 };
             case UnderworldAtmosphereEvent.BlackBloom:
+                // Biological bloom: stagnant aerosol and spore-like motes rather than combustion
+                // smoke. Generic mist/fog remain fallbacks when installed donors lack organic VFX.
                 return style with
                 {
-                    WindMin = 0.04f,
-                    WindMax = 0.18f,
+                    WindMin = 0.02f,
+                    WindMax = 0.12f,
                     Fog = new Color(0.32f, 0.11f, 0.10f),
-                    ParticleTokens = new[] { "mist", "fog", "smoke" }
+                    Ambient = new Color(0.12f, 0.055f, 0.05f),
+                    LightDay = 0.19f,
+                    LightNight = 0.07f,
+                    ParticleTokens = new[] { "spore", "pollen", "mote", "mist", "fog" }
                 };
             default:
                 return style;
