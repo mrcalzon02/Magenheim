@@ -28,27 +28,39 @@ public static class SocketEffectDescription
     public const string StationLine = "Socket at the Crystal Enchanting Dais.";
 
     /// <summary>Label and unit for each effect, in the player's language rather than the enum's.</summary>
-    private static readonly IReadOnlyDictionary<SocketEffectKind, (string Label, string Unit)> Wording =
-        new Dictionary<SocketEffectKind, (string, string)>
+    private static readonly IReadOnlyDictionary<SocketEffectKind, EffectWording> Wording =
+        new Dictionary<SocketEffectKind, EffectWording>
         {
-            [SocketEffectKind.BluntDamage] = ("blunt damage", ""),
-            [SocketEffectKind.FireDamage] = ("fire damage", ""),
-            [SocketEffectKind.FrostDamage] = ("frost damage", ""),
-            [SocketEffectKind.LightningDamage] = ("lightning damage", ""),
-            [SocketEffectKind.PoisonDamage] = ("poison damage", ""),
-            [SocketEffectKind.SpiritDamage] = ("spirit damage", ""),
-            [SocketEffectKind.Armor] = ("armor", ""),
-            [SocketEffectKind.Knockback] = ("knockback", ""),
-            [SocketEffectKind.Stagger] = ("stagger", ""),
-            [SocketEffectKind.KnockbackResistance] = ("knockback resistance", ""),
-            [SocketEffectKind.CarryWeight] = ("carry weight", ""),
-            [SocketEffectKind.MiningEfficiency] = ("mining speed", "%"),
-            [SocketEffectKind.MovementSpeed] = ("movement speed", "%"),
-            [SocketEffectKind.StaminaRegeneration] = ("stamina regeneration", "%"),
-            [SocketEffectKind.EitrRegeneration] = ("eitr regeneration", "%"),
-            [SocketEffectKind.HealthRegeneration] = ("health regeneration", "%"),
-            [SocketEffectKind.Illumination] = ("light", ""),
+            [SocketEffectKind.BluntDamage] = new EffectWording("blunt damage", ""),
+            [SocketEffectKind.FireDamage] = new EffectWording("fire damage", ""),
+            [SocketEffectKind.FrostDamage] = new EffectWording("frost damage", ""),
+            [SocketEffectKind.LightningDamage] = new EffectWording("lightning damage", ""),
+            [SocketEffectKind.PoisonDamage] = new EffectWording("poison damage", ""),
+            [SocketEffectKind.SpiritDamage] = new EffectWording("spirit damage", ""),
+            [SocketEffectKind.Armor] = new EffectWording("armor", ""),
+            [SocketEffectKind.Knockback] = new EffectWording("knockback", ""),
+            [SocketEffectKind.Stagger] = new EffectWording("stagger", ""),
+            [SocketEffectKind.KnockbackResistance] = new EffectWording("knockback resistance", ""),
+            [SocketEffectKind.CarryWeight] = new EffectWording("carry weight", ""),
+            [SocketEffectKind.MiningEfficiency] = new EffectWording("mining speed", "%"),
+            [SocketEffectKind.MovementSpeed] = new EffectWording("movement speed", "%"),
+            [SocketEffectKind.StaminaRegeneration] = new EffectWording("stamina regeneration", "%"),
+            [SocketEffectKind.EitrRegeneration] = new EffectWording("eitr regeneration", "%"),
+            [SocketEffectKind.HealthRegeneration] = new EffectWording("health regeneration", "%"),
+            [SocketEffectKind.Illumination] = new EffectWording("light", ""),
         };
+
+    private readonly struct EffectWording
+    {
+        internal EffectWording(string label, string unit)
+        {
+            Label = label;
+            Unit = unit;
+        }
+
+        internal string Label { get; }
+        internal string Unit { get; }
+    }
 
     /// <summary>The slots a player can actually socket, in the order they are described.</summary>
     private static readonly EquipmentCategory[] Slots =
@@ -106,7 +118,7 @@ public static class SocketEffectDescription
                 {
                     var wording = Wording.TryGetValue(rule.Effect, out var found)
                         ? found
-                        : (Label: rule.Effect.ToString(), Unit: string.Empty);
+                        : new EffectWording(rule.Effect.ToString(), string.Empty);
                     return Amount(rule.SimpleMagnitude * scalar, wording.Unit) + " " + wording.Label;
                 })
                 .ToArray();
@@ -143,7 +155,7 @@ public static class SocketEffectDescription
             {
                 var wording = Wording.TryGetValue(rule.Effect, out var found)
                     ? found
-                    : (Label: rule.Effect.ToString(), Unit: string.Empty);
+                    : new EffectWording(rule.Effect.ToString(), string.Empty);
                 return Amount(rule.SimpleMagnitude * scalar, wording.Unit) + " " + wording.Label;
             })
             .ToArray();
