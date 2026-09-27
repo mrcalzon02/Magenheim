@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
 
@@ -62,9 +63,13 @@ internal static class UnderworldSpawnPlayerRangePatch
     }
 }
 
-[HarmonyPatch(typeof(BaseAI), nameof(BaseAI.BaseAIInstances), MethodType.Getter)]
+[HarmonyPatch]
 internal static class UnderworldSpawnBaseAiListPatch
 {
+    internal static MethodBase TargetMethod() =>
+        AccessTools.PropertyGetter(typeof(BaseAI), nameof(BaseAI.BaseAIInstances))
+        ?? throw new MissingMethodException(typeof(BaseAI).FullName, "get_BaseAIInstances");
+
     private static void Postfix(ref List<BaseAI> __result)
     {
         if (!UnderworldSpawnQueryIsolation.TryGetScene(out var sceneHandle) || __result is null) return;
