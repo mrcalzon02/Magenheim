@@ -37,15 +37,21 @@ internal static class UnderworldWorldGeneratorCacheIsolation
         if (!TryGetBiome(generator, point, out var center))
             return false;
 
-        var offsets = new Vector2s[]
+        var offsets = new[]
         {
-            new(-64, -64), new(64, -64), new(64, 64), new(-64, 64),
-            new(-64, 0), new(64, 0), new(0, -64), new(0, 64),
+            new BiomeOffset(-64, -64),
+            new BiomeOffset(64, -64),
+            new BiomeOffset(64, 64),
+            new BiomeOffset(-64, 64),
+            new BiomeOffset(-64, 0),
+            new BiomeOffset(64, 0),
+            new BiomeOffset(0, -64),
+            new BiomeOffset(0, 64),
         };
 
         foreach (var offset in offsets)
         {
-            var sample = new Vector2s(point.x + offset.x, point.y + offset.y);
+            var sample = new Vector2s(point.x + offset.X, point.y + offset.Y);
             if (!TryGetBiome(generator, sample, out var neighbor) || neighbor != center)
             {
                 area = Heightmap.BiomeArea.Edge;
@@ -110,6 +116,18 @@ internal static class UnderworldWorldGeneratorCacheIsolation
         dictionary.Clear();
         foreach (var entry in entries)
             dictionary.Add(entry.Key, entry.Value);
+    }
+
+    private readonly struct BiomeOffset
+    {
+        internal BiomeOffset(short x, short y)
+        {
+            X = x;
+            Y = y;
+        }
+
+        internal short X { get; }
+        internal short Y { get; }
     }
 
     internal readonly record struct CacheSnapshot(Entry[] BiomeAreas, Entry[] Biomes);

@@ -340,7 +340,21 @@ public static class DeepFractureLayoutPlanner
         };
     }
 
-    private static (int Upper, int Middle, int Deep) AllocateBands(
+    private readonly struct BandAllocation
+    {
+        internal BandAllocation(int upper, int middle, int deep)
+        {
+            Upper = upper;
+            Middle = middle;
+            Deep = deep;
+        }
+
+        internal int Upper { get; }
+        internal int Middle { get; }
+        internal int Deep { get; }
+    }
+
+    private static BandAllocation AllocateBands(
         int modulesBetweenEntranceAndHeart,
         DeepFractureGenerationPolicy policy)
     {
@@ -380,6 +394,6 @@ public static class DeepFractureLayoutPlanner
         if (upper < 1 || middle < 1 || deep < 1)
             throw new InvalidOperationException("Depth-band policy cannot produce at least one Upper, Middle, and Deep district.");
 
-        return (upper, middle, deep);
+        return new BandAllocation(upper, middle, deep);
     }
 }

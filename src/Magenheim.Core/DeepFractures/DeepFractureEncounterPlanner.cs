@@ -345,24 +345,36 @@ public static class DeepFractureEncounterPlanner
         return Math.Min(count, policy.MaximumUnitsPerGroup);
     }
 
-    private static (int Minimum, int Maximum) BaseCountRange(CreatureChassis chassis)
+    private static SpawnCountRange BaseCountRange(CreatureChassis chassis)
         => chassis switch
         {
-            CreatureChassis.AnnoyanceWisp => (2, 5),
-            CreatureChassis.GeodeCrawler => (2, 4),
-            CreatureChassis.Shardling => (3, 6),
-            CreatureChassis.CrystalParasite => (1, 3),
-            CreatureChassis.CrystalRevenant => (1, 3),
-            CreatureChassis.FacetSentry => (1, 3),
-            CreatureChassis.StoneSentinel => (1, 2),
-            CreatureChassis.CrystalHound => (2, 4),
-            CreatureChassis.Burrower => (1, 3),
-            CreatureChassis.StoneGuardian => (1, 1),
-            CreatureChassis.CrystalGolem => (1, 1),
-            CreatureChassis.ObeliskWarden => (1, 1),
-            CreatureChassis.DeepColossus => (1, 1),
+            CreatureChassis.AnnoyanceWisp => new SpawnCountRange(2, 5),
+            CreatureChassis.GeodeCrawler => new SpawnCountRange(2, 4),
+            CreatureChassis.Shardling => new SpawnCountRange(3, 6),
+            CreatureChassis.CrystalParasite => new SpawnCountRange(1, 3),
+            CreatureChassis.CrystalRevenant => new SpawnCountRange(1, 3),
+            CreatureChassis.FacetSentry => new SpawnCountRange(1, 3),
+            CreatureChassis.StoneSentinel => new SpawnCountRange(1, 2),
+            CreatureChassis.CrystalHound => new SpawnCountRange(2, 4),
+            CreatureChassis.Burrower => new SpawnCountRange(1, 3),
+            CreatureChassis.StoneGuardian => new SpawnCountRange(1, 1),
+            CreatureChassis.CrystalGolem => new SpawnCountRange(1, 1),
+            CreatureChassis.ObeliskWarden => new SpawnCountRange(1, 1),
+            CreatureChassis.DeepColossus => new SpawnCountRange(1, 1),
             _ => throw new InvalidOperationException($"No encounter count range is defined for chassis {chassis}."),
         };
+
+    private readonly struct SpawnCountRange
+    {
+        internal SpawnCountRange(int minimum, int maximum)
+        {
+            Minimum = minimum;
+            Maximum = maximum;
+        }
+
+        internal int Minimum { get; }
+        internal int Maximum { get; }
+    }
 
     private static bool IsLargeChassis(CreatureChassis chassis)
         => chassis == CreatureChassis.StoneGuardian

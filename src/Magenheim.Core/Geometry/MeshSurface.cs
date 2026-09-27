@@ -20,7 +20,7 @@ public static class MeshSurface
     public static bool IsClosed(MeshPrimitive primitive, out string error)
     {
         if (primitive is null) throw new ArgumentNullException(nameof(primitive));
-        var directed = new HashSet<(int From, int To)>();
+        var directed = new HashSet<DirectedEdge>();
         for (var i = 0; i < primitive.Triangles.Count; i += 3)
         {
             var a = primitive.Triangles[i];
@@ -31,11 +31,11 @@ public static class MeshSurface
                 error = $"{primitive.Name}: triangle {i / 3} is degenerate ({a},{b},{c}).";
                 return false;
             }
-            foreach (var edge in new[] { (a, b), (b, c), (c, a) })
+            foreach (var edge in new[] { new DirectedEdge(a, b), new DirectedEdge(b, c), new DirectedEdge(c, a) })
             {
                 if (!directed.Add(edge))
                 {
-                    error = $"{primitive.Name}: edge {edge.Item1}->{edge.Item2} is traversed twice in the same direction, so adjacent triangles disagree on winding.";
+                    error = $"{primitive.Name}: edge {edge.From}->{edge.To} is traversed twice in the same direction, so adjacent triangles disagree on winding.";
                     return false;
                 }
             }
@@ -43,7 +43,7 @@ public static class MeshSurface
 
         foreach (var edge in directed)
         {
-            if (!directed.Contains((edge.To, edge.From)))
+            if (!directed.Contains(new DirectedEdge(edge.To, edge.From)))
             {
                 error = $"{primitive.Name}: edge {edge.From}->{edge.To} has no opposing triangle, so the surface is not closed.";
                 return false;
@@ -134,4 +134,23 @@ public static class MeshSurface
         (double)a.X * ((double)b.Y * c.Z - (double)b.Z * c.Y)
         - (double)a.Y * ((double)b.X * c.Z - (double)b.Z * c.X)
         + (double)a.Z * ((double)b.X * c.Y - (double)b.Y * c.X);
+
+    private readonly struct DirectedEdge : IEquatable<DirectedEdge>
+    {
+        internal DirectedEdge(int from, int to)
+        {
+            From = from;
+            To = to;
+        }
+
+        internal int From { get; }
+        internal int To { get; }
+
+        public bool Equals(DirectedEdge other) => From == other.From && To == other.To;
+        public override bool Equals(object? obj) => obj is DirectedEdge other && Equals(other);
+        public override int GetHashCode()
+        {
+            unchecked { return (From * 397) ^ To; }
+        }
+    }
 }

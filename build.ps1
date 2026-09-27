@@ -50,6 +50,14 @@ try {
     # Compile both runtime and its Core dependency before the expensive Blender gates.
     & $DotNet build src/Magenheim.Runtime -c Release @restoreOptions "-p:BepInExPath=$ProfileRoot/BepInEx" "-p:ValheimManagedPath=$GameRoot/valheim_Data/Managed"
     if ($LASTEXITCODE -ne 0) { throw 'Runtime build failed.' }
+    # Loader compatibility is part of build admission, not an end-of-closeout surprise. Check
+    # every Magenheim assembly we actually ship before spending time on the expensive asset gates.
+    $ErrorActionPreference = 'Stop'
+    $runtimeOutput = Join-Path $PSScriptRoot 'src/Magenheim.Runtime/bin/Release/net462'
+    foreach ($assembly in @('Magenheim.dll', 'Magenheim.Core.dll')) {
+        & "$PSScriptRoot/tools/verify-runtime-type-availability.ps1" -Assembly (Join-Path $runtimeOutput $assembly) -ManagedDirectory "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx" -CecilPath "$ProfileRoot/BepInEx/core/Mono.Cecil.dll"
+    }
+    $ErrorActionPreference = 'Continue'
     & $DotNet run --project tests/Magenheim.Core.Tests -c Release @restoreOptions
     if ($LASTEXITCODE -ne 0) { throw 'Core tests failed.' }
     & python "$PSScriptRoot/tools/verify-model-assets.py"
@@ -102,8 +110,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Baked surface validation failed.' }
     & "$PSScriptRoot/tools/verify-patch-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
     & "$PSScriptRoot/tools/verify-dynamic-patch-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
-    & "$PSScriptRoot/tests/ReflectionBindings.Tests.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
-    & "$PSScriptRoot/tools/verify-runtime-type-availability.ps1" -Assembly "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -ManagedDirectory "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx" -CecilPath "$ProfileRoot/BepInEx/core/Mono.Cecil.dll"
+    & "$PSScriptRoot/tools/verify-reflection-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
 
     $package = Join-Path $PSScriptRoot "dist/Local-Magenheim-$pluginVersion"
     if (Test-Path -LiteralPath $package) {

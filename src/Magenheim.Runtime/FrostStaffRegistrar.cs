@@ -77,8 +77,10 @@ internal sealed class FrostStaffRegistrar : IDisposable
         }
         catch (Exception exception)
         {
-            _log.LogError($"Frost staff content registration failed: {exception}");
-            throw;
+            // Vanilla-prefab readiness is a multicast event. Re-throwing here aborts the invocation
+            // and prevents registrars subscribed after Frost from seeing it. Frost fails closed
+            // locally instead of taking later elemental families down with it.
+            _log.LogError($"Frost staff content registration failed; Frost is disabled for this load, but later content registrars will continue: {exception}");
         }
         finally
         {
@@ -118,7 +120,7 @@ internal sealed class FrostStaffRegistrar : IDisposable
         return custom.StatusEffect;
     }
 
-    private static void RegisterStaff(FrostStaffDefinition definition, PayloadSet payloads)
+    private void RegisterStaff(FrostStaffDefinition definition, PayloadSet payloads)
     {
         if (PrefabManager.Instance.GetPrefab(definition.PrefabName) || CustomItem.IsCustomItem(definition.PrefabName))
             throw new InvalidOperationException($"Cannot replace occupied Frost staff identity '{definition.PrefabName}'.");
@@ -161,7 +163,7 @@ internal sealed class FrostStaffRegistrar : IDisposable
         attack.m_projectileBursts = definition.Bursts;
         attack.m_burstInterval = definition.BurstInterval;
         attack.m_perBurstResourceUsage = false;
-        StaffBurstContract.Apply(attack, definition.PrefabName);
+        StaffBurstContract.Apply(attack, definition.PrefabName, _log);
 
         FrostStaffVisuals.Apply(item.ItemPrefab, definition.AssetName);
         if (!ItemManager.Instance.AddItem(item))
