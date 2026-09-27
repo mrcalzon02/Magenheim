@@ -2,7 +2,10 @@
 
 **Magic begins as geology.**
 
-## 0.0.135 testing candidate
+## 0.0.136 testing candidate
+
+Fixes the writable ZoneSystem singleton binding that broke startup. Packaging now initializes
+the world-instance adapter and checks all five native authority fields before delivery.
 
 Repairs native game API bindings, keeps Underworld zone metadata in Valheim's native chunk
 save index, and fixes reflection and dynamic patch validation. One process, one campaign and
@@ -41,10 +44,10 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.135.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.136.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
-Launch **Modded**. Confirm `Loading [Magenheim 0.0.135]` in the BepInEx log.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.136]` in the BepInEx log.
 Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
 See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.

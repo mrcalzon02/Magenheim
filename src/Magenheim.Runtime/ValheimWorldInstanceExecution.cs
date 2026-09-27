@@ -17,11 +17,23 @@ internal static class ValheimWorldInstanceExecution
     private static readonly AsyncLocal<ValheimWorldInstanceContext?> Current = new();
     private static ValheimWorldInstanceRegistry? _registry;
 
-    private static readonly StaticMember ZoneInstance = StaticMember.Find(typeof(ZoneSystem), "instance", "m_instance");
-    private static readonly StaticMember GeneratorInstance = StaticMember.Find(typeof(WorldGenerator), "instance", "m_instance");
-    private static readonly StaticMember ZdoInstance = StaticMember.Find(typeof(ZDOMan), "s_instance", "m_instance");
-    private static readonly FieldInfo? ZNetWorld = AccessTools.Field(typeof(ZNet), "m_world");
-    private static readonly FieldInfo? ZNetZdoMan = AccessTools.Field(typeof(ZNet), "m_zdoMan");
+    // Bind the writable native backing fields explicitly. The public singleton properties can
+    // be read-only; a guessed property/field fallback must not poison every patched callback.
+    private static readonly FieldInfo ZoneInstance =
+        typeof(ZoneSystem).GetField("s_instance", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+        ?? throw new MissingFieldException(typeof(ZoneSystem).FullName, "s_instance");
+    private static readonly FieldInfo GeneratorInstance =
+        typeof(WorldGenerator).GetField("m_instance", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+        ?? throw new MissingFieldException(typeof(WorldGenerator).FullName, "m_instance");
+    private static readonly FieldInfo ZdoInstance =
+        typeof(ZDOMan).GetField("s_instance", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+        ?? throw new MissingFieldException(typeof(ZDOMan).FullName, "s_instance");
+    private static readonly FieldInfo ZNetWorld =
+        typeof(ZNet).GetField("m_world", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+        ?? throw new MissingFieldException(typeof(ZNet).FullName, "m_world");
+    private static readonly FieldInfo ZNetZdoMan =
+        typeof(ZNet).GetField("m_zdoMan", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+        ?? throw new MissingFieldException(typeof(ZNet).FullName, "m_zdoMan");
 
     internal static void BindRegistry(ValheimWorldInstanceRegistry registry) =>
         _registry = registry ?? throw new ArgumentNullException(nameof(registry));
@@ -124,11 +136,11 @@ internal static class ValheimWorldInstanceExecution
         internal Scope(ValheimWorldInstanceContext context)
         {
             _previousContext = Current.Value;
-            _previousZone = ZoneInstance.Get();
-            _previousGenerator = GeneratorInstance.Get();
-            _previousZdoInstance = ZdoInstance.Get();
-            _previousWorld = ZNetWorld?.GetValue(null);
-            _previousZdoMan = ZNet.instance is null ? null : ZNetZdoMan?.GetValue(ZNet.instance);
+            _previousZone = ZoneInstance.GetValue(null);
+            _previousGenerator = GeneratorInstance.GetValue(null);
+            _previousZdoInstance = ZdoInstance.GetValue(null);
+            _previousWorld = ZNetWorld.GetValue(null);
+            _previousZdoMan = ZNet.instance is null ? null : ZNetZdoMan.GetValue(ZNet.instance);
             _previousActiveScene = SceneManager.GetActiveScene();
             _changedActiveScene =
                 context.Scene.IsValid() &&
@@ -140,11 +152,11 @@ internal static class ValheimWorldInstanceExecution
                     $"Unable to activate Unity scene '{context.Scene.name}' for world instance {context.InstanceId}.");
 
             Current.Value = context;
-            ZoneInstance.Set(context.ZoneSystem);
-            GeneratorInstance.Set(context.WorldGenerator);
-            ZdoInstance.Set(context.ZdoMan);
-            ZNetWorld?.SetValue(null, context.World);
-            if (ZNet.instance is not null && ZNetZdoMan is not null)
+            ZoneInstance.SetValue(null, context.ZoneSystem);
+            GeneratorInstance.SetValue(null, context.WorldGenerator);
+            ZdoInstance.SetValue(null, context.ZdoMan);
+            ZNetWorld.SetValue(null, context.World);
+            if (ZNet.instance is not null)
                 ZNetZdoMan.SetValue(ZNet.instance, context.ZdoMan);
 
             var pathfinding = Pathfinding.instance;
@@ -157,11 +169,11 @@ internal static class ValheimWorldInstanceExecution
             if (_disposed) return;
             _disposed = true;
             _pathfindingScope?.Dispose();
-            if (ZNet.instance is not null && ZNetZdoMan is not null) ZNetZdoMan.SetValue(ZNet.instance, _previousZdoMan);
-            ZNetWorld?.SetValue(null, _previousWorld);
-            ZdoInstance.Set(_previousZdoInstance);
-            GeneratorInstance.Set(_previousGenerator);
-            ZoneInstance.Set(_previousZone);
+            if (ZNet.instance is not null) ZNetZdoMan.SetValue(ZNet.instance, _previousZdoMan);
+            ZNetWorld.SetValue(null, _previousWorld);
+            ZdoInstance.SetValue(null, _previousZdoInstance);
+            GeneratorInstance.SetValue(null, _previousGenerator);
+            ZoneInstance.SetValue(null, _previousZone);
             Current.Value = _previousContext;
 
             if (_changedActiveScene &&
@@ -174,39 +186,7 @@ internal static class ValheimWorldInstanceExecution
         }
     }
 
-    private sealed class StaticMember
-    {
-        private readonly FieldInfo? _field;
-        private readonly PropertyInfo? _property;
 
-        private StaticMember(FieldInfo? field, PropertyInfo? property)
-        {
-            _field = field;
-            _property = property;
-        }
-
-        internal static StaticMember Find(Type type, params string[] names)
-        {
-            foreach (var name in names)
-            {
-                var field = AccessTools.Field(type, name);
-                if (field is not null && field.IsStatic) return new StaticMember(field, null);
-
-                var property = AccessTools.Property(type, name);
-                if (property is not null && property.GetMethod?.IsStatic == true && property.SetMethod?.IsStatic == true)
-                    return new StaticMember(null, property);
-            }
-            throw new MissingMemberException(type.FullName, string.Join("/", names));
-        }
-
-        internal object? Get() => _field is not null ? _field.GetValue(null) : _property!.GetValue(null, null);
-
-        internal void Set(object? value)
-        {
-            if (_field is not null) _field.SetValue(null, value);
-            else _property!.SetValue(null, value, null);
-        }
-    }
 }
 
 /// <summary>

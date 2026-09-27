@@ -154,7 +154,7 @@ and preserve the full BepInEx log; do not treat a later symptom as the first bro
 
 These are live acceptance steps, not claims made by passing the offline build.
 
-Confirm the startup log reports **0.0.135** and has no Magenheim bootstrap or registration
+Confirm the startup log reports **0.0.136** and has no Magenheim bootstrap or registration
 errors. Keep logs and screenshots with each result. Mark checks PASS / FAIL / NOT RUN;
 record game version, mod list, host/client role, seed, steps, expected/actual result.
 

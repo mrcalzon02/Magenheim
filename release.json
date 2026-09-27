@@ -1,4 +1,4 @@
 {
-  "version": "0.0.135",
-  "description": "0.0.135: Merges remote Frost fixes and removes unsupported tuple dependencies; repairs Underworld native API/chunk bindings and validation. Two-instance save/reload and multiplayer acceptance remain pending."
+  "version": "0.0.136",
+  "description": "0.0.136: Fixes the ZoneSystem singleton binding that interrupted Steam initialization and flooded startup errors. Validates adapter initialization and all five native authority fields before packaging. Live world acceptance remains pending."
 }

@@ -39,6 +39,24 @@ $handler = [Delegate]::CreateDelegate([ResolveEventHandler], $resolver, 'Resolve
 [AppDomain]::CurrentDomain.add_AssemblyResolve($handler)
 try {
     $runtime = [Reflection.Assembly]::LoadFrom((Resolve-Path -LiteralPath $RuntimeDll).Path)
+    # This initializer only resolves managed fields; it does not enter a scene or call Unity.
+    # Resolving Harmony targets alone missed a poisoned adapter initializer that broke startup.
+    $adapter = $runtime.GetType('Magenheim.Runtime.ValheimWorldInstanceExecution', $true)
+    [Runtime.CompilerServices.RuntimeHelpers]::RunClassConstructor($adapter.TypeHandle)
+    foreach ($binding in @(
+        @('ZoneInstance', 'ZoneSystem', $true),
+        @('GeneratorInstance', 'WorldGenerator', $true),
+        @('ZdoInstance', 'ZDOMan', $true),
+        @('ZNetWorld', 'World', $true),
+        @('ZNetZdoMan', 'ZDOMan', $false)
+    )) {
+        $field = $adapter.GetField($binding[0], [Reflection.BindingFlags]'Static,NonPublic').GetValue($null)
+        if ($field -isnot [Reflection.FieldInfo] -or $field.FieldType.FullName -cne $binding[1] -or
+            $field.IsStatic -ne $binding[2] -or $field.IsInitOnly -or $field.IsLiteral) {
+            throw "Invalid writable native authority binding: $($binding[0])."
+        }
+    }
+    Write-Output 'Verified world-instance adapter initialization and all five writable native authority bindings.'
     $flags = [Reflection.BindingFlags]'Static,Public,NonPublic'
     $dynamic = 0
     $resolvedCount = 0

@@ -1,3 +1,20 @@
+# Development closeout - 0.0.136 startup singleton repair
+
+The 0.0.135 startup log reported 31,939 ZoneSystem missing-member errors. The first interrupted
+SteamManager.Awake; repeated failures in the shared instance adapter then blocked scene and mod
+callbacks. Classification: native authority binding / adapter initialization failure, before
+Underworld host admission. The subsequent Steamworks-not-initialized error followed that failure.
+
+Bind ZoneSystem.s_instance, WorldGenerator.m_instance, ZDOMan.s_instance, ZNet.m_world and
+ZNet.m_zdoMan directly. Remove the guessed singleton helper and require all five bindings.
+The build now runs the adapter initializer and checks field type, static/instance identity and
+writability. A mutation regression rejects a missing binding in this exact adapter.
+
+The same log also contains a separate Valheim1012CompatRestorer file-lock error while overwriting
+OdinUndercroft.dll. That compatibility helper is outside this repository; this repair does not
+claim to fix it. Verify a fresh startup reaches the menu without the Magenheim/Steam error cascade,
+then resume the live admission, travel, persistence and multiplayer matrix in TESTING.md.
+
 # Development closeout - 0.0.135 native API repair
 
 Repairs compilation and installed-game binding failures without changing the required two-instance
