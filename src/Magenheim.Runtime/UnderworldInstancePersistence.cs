@@ -97,7 +97,7 @@ internal static class UnderworldInstancePersistence
 
         var path = InstancePath(parentPath);
         Directory.CreateDirectory(path);
-        InvokeInstance(context!, (MethodInfo)original, ReplacePath(args, path));
+        InvokeSnapshotIo(context!, (MethodInfo)original, ReplacePath(args, path));
         _log?.LogDebug($"Saved Underworld instance ZDO chunks inside parent-save namespace '{path}'.");
     }
 
@@ -105,7 +105,7 @@ internal static class UnderworldInstancePersistence
     {
         if (!IsSurfaceInvocation(source)) return;
         if (!TryGetUnderworld(out var context)) return;
-        InvokeInstance(context!, (MethodInfo)original, (object[])args.Clone());
+        InvokeSnapshotIo(context!, (MethodInfo)original, (object[])args.Clone());
     }
 
     private static void PrepareCombinedExtraDataSnapshot()
@@ -211,6 +211,33 @@ internal static class UnderworldInstancePersistence
         {
             throw new InvalidOperationException(
                 $"Native Valheim instance persistence call {method.Name} failed.",
+                exception.InnerException);
+        }
+        finally
+        {
+            Reentry.Value--;
+        }
+    }
+
+    private static void InvokeSnapshotIo(
+        ValheimWorldInstanceContext context,
+        MethodInfo method,
+        object[] arguments)
+    {
+        Reentry.Value++;
+        try
+        {
+            // SaveChunks runs on Valheim's background save thread. The manager's PrepareSave clone
+            // and the static ZDOExtraData save snapshot already exist, so chunk writing/cleanup are
+            // pure persistence work against this detached manager. Do not enter the normal instance
+            // execution scope here: that would call Unity SceneManager APIs and rewrite live
+            // process-wide world singletons from a worker thread.
+            method.Invoke(context.ZdoMan, arguments);
+        }
+        catch (TargetInvocationException exception) when (exception.InnerException is not null)
+        {
+            throw new InvalidOperationException(
+                $"Native Valheim instance snapshot I/O call {method.Name} failed.",
                 exception.InnerException);
         }
         finally
