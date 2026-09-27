@@ -448,11 +448,16 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
         switch (atmosphereEvent)
         {
             case UnderworldAtmosphereEvent.Sporefall:
+                // Healthy fungal precipitation: luminous motes and spores suspended in gentle air.
+                // Keep smoke/poison vocabulary out so the forest does not read as Great Decay.
                 return style with
                 {
                     WindMin = 0.03f,
                     WindMax = 0.12f,
-                    ParticleTokens = new[] { "mist", "firefly", "pollen" }
+                    Fog = new Color(0.14f, 0.31f, 0.32f),
+                    Ambient = new Color(0.20f, 0.39f, 0.39f),
+                    Sun = new Color(0.42f, 0.67f, 0.61f),
+                    ParticleTokens = new[] { "spore", "pollen", "firefly", "mote", "mist" }
                 };
             case UnderworldAtmosphereEvent.DeepFog:
                 return style with
@@ -507,11 +512,18 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
                     ParticleTokens = new[] { "dust", "rock", "stone", "debris" }
                 };
             case UnderworldAtmosphereEvent.CrystalResonance:
+                // Shared rare event: quiet the weather and make suspended luminous/mineral motes
+                // visible. This must remain readable in every biome instead of being particleless.
                 return style with
                 {
-                    WindMin = Math.Max(0.02f, style.WindMin * 0.5f),
-                    WindMax = Math.Max(0.08f, style.WindMax * 0.65f),
-                    ParticleTokens = Array.Empty<string>()
+                    WindMin = Math.Max(0.02f, style.WindMin * 0.35f),
+                    WindMax = Math.Max(0.08f, style.WindMax * 0.50f),
+                    Ambient = Blend(style.Ambient, new Color(0.20f, 0.34f, 0.42f), 0.32f),
+                    Fog = Blend(style.Fog, new Color(0.22f, 0.38f, 0.46f), 0.20f),
+                    Sun = Blend(style.Sun, new Color(0.42f, 0.70f, 0.78f), 0.38f),
+                    LightDay = Math.Min(0.46f, style.LightDay + 0.06f),
+                    LightNight = Math.Min(0.22f, style.LightNight + 0.05f),
+                    ParticleTokens = new[] { "crystal", "sparkle", "spark", "glow", "mote", "firefly" }
                 };
             case UnderworldAtmosphereEvent.BlackBloom:
                 // Biological bloom: stagnant aerosol and spore-like motes rather than combustion
@@ -576,6 +588,9 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
             Mathf.Clamp01(value.g * amount),
             Mathf.Clamp01(value.b * amount),
             value.a);
+
+    private static Color Blend(Color from, Color to, float amount) =>
+        Color.Lerp(from, to, Mathf.Clamp01(amount));
 
     private readonly record struct WeatherStyle(
         Color Ambient,
