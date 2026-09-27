@@ -41,7 +41,7 @@ internal sealed class DeepFractureBurrowerRuntime : MonoBehaviour
         {
             foreach (var player in Player.GetAllPlayers())
             {
-                if (player is null || player.IsDead()) continue;
+                if (player is null || player.IsDead() || player.gameObject.scene.handle != gameObject.scene.handle) continue;
                 if ((player.transform.position - _surfacePosition).sqrMagnitude > TriggerRadius * TriggerRadius) continue;
                 _emerging = true;
                 PlayEmergenceBurst();
