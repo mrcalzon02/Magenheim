@@ -203,7 +203,7 @@ internal sealed class FrostStaffRegistrar : IDisposable
             new StaffRequirement("YggdrasilWood", 10), new StaffRequirement("Silver", 4), new StaffRequirement("FreezeGland", 4), new StaffRequirement("Magenheim_Crystal_Frost_Advanced", 1)),
         new FrostStaffDefinition(
             "Magenheim_Staff_Frost_Master", "staff-frost-master", "Master Staff of Frost",
-            "Rime Torrent: pours paired shards through six rapid pulses. Every impact leaves a compact Rime field, creating a moving carpet of repeated Frost pressure and Deep Rime rather than only sixteen isolated projectiles.",
+            "Rime Torrent: releases twelve shards in one wide volley. Every impact leaves a compact Rime field that deals Frost damage and applies Deep Rime, reducing movement by twenty percent. The intended six-pulse cadence is not active yet.",
             4, 44f, 5f, .75f, .65f, .70f, 40f, 7f, 2, 6, .09f, PayloadKind.Torrent,
             new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("BlackMetal", 4), new StaffRequirement("FreezeGland", 6), new StaffRequirement("Magenheim_Crystal_Frost_Master", 1)),
     };
