@@ -13,9 +13,6 @@ namespace Magenheim.Runtime;
 [HarmonyPatch(typeof(ZoneSystem), "Start")]
 internal static class UnderworldZoneSystemStartIsolationPatch
 {
-    private static readonly MethodInfo SetupLocations =
-        AccessTools.Method(typeof(ZoneSystem), "SetupLocations")
-        ?? throw new MissingMethodException(typeof(ZoneSystem).FullName, "SetupLocations");
     private static readonly MethodInfo ValidateVegetation =
         AccessTools.Method(typeof(ZoneSystem), "ValidateVegetation")
         ?? throw new MissingMethodException(typeof(ZoneSystem).FullName, "ValidateVegetation");
@@ -42,11 +39,13 @@ internal static class UnderworldZoneSystemStartIsolationPatch
             if (!ReferenceEquals(ValheimWorldInstanceExecution.Active, context))
                 scope = ValheimWorldInstanceExecution.Enter(context);
 
-            // These are the native non-network portions of ZoneSystem.Start.
+            // The host cloned Surface's already-populated native location/vegetation catalog.
+            // Do NOT run SetupLocations again: it would duplicate the catalog and append the same
+            // environments, clutter and random events to process-global managers a second time.
             __instance.UpdateWorldRates();
-            SetupLocations.Invoke(__instance, Array.Empty<object>());
-            UnderworldZoneInstanceState.NotifyZoneReady(__instance);
+            UnderworldZoneCatalogGuard.Validate(__instance);
             ValidateVegetation.Invoke(__instance, Array.Empty<object>());
+            UnderworldZoneInstanceState.NotifyZoneReady(__instance);
             var fixedTime = Time.fixedTime;
             StartTime.SetValue(__instance, fixedTime);
             LastFixedTime.SetValue(__instance, fixedTime);

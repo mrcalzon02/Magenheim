@@ -32,6 +32,10 @@ REQUIRED_FILES = (
     RUNTIME / "UnderworldZdoPeerRouter.cs",
     RUNTIME / "UnderworldInstancePersistence.cs",
     RUNTIME / "UnderworldGateTransitRuntime.cs",
+    RUNTIME / "UnderworldZoneSystemStartIsolation.cs",
+    RUNTIME / "UnderworldZoneInstanceState.cs",
+    RUNTIME / "UnderworldSpawnQueryIsolation.cs",
+    RUNTIME / "UnderworldWorldGeneratorCacheIsolation.cs",
     CORE / "UnderworldInstanceContract.cs",
     CORE / "UnderworldWorldInstanceId.cs",
 )
@@ -62,10 +66,44 @@ REQUIRED_SNIPPETS = {
         "CreateSceneParameters(LocalPhysicsMode.Physics3D)",
         "UnderworldWorldInstanceId.Underworld",
         "ValheimWorldInstanceExecution.BindRegistry",
+        '"m_locationsByHash"',
+        'string.Equals(name, "m_globalKeys", StringComparison.Ordinal)',
+        'string.Equals(name, "m_globalKeysEnums", StringComparison.Ordinal)',
+        'string.Equals(name, "m_globalKeysValues", StringComparison.Ordinal)',
     ),
     RUNTIME / "UnderworldGateTransitRuntime.cs": (
         "WorldInstances.MovePlayer",
         "SceneManager.MoveGameObjectToScene",
+        "TryMovePlayerToInstance",
+        "CommitOldInstanceVisibility",
+    ),
+    RUNTIME / "UnderworldZoneSystemStartIsolation.cs": (
+        "UnderworldZoneCatalogGuard.Validate(__instance);",
+        "ValidateVegetation.Invoke(__instance, Array.Empty<object>());",
+        "UnderworldZoneInstanceState.NotifyZoneReady(__instance);",
+    ),
+    RUNTIME / "UnderworldZoneInstanceState.cs": (
+        "underworld.ZoneSystem.PrepareSave();",
+        "underworld.ZoneSystem.SaveASync(writer);",
+        "underworld.ZoneSystem.Load(reader, version);",
+        "metadata.Persistent = true;",
+        "SuppressSpatialIndex",
+        "IncludeMetadataSaveClone",
+    ),
+    RUNTIME / "UnderworldSpawnQueryIsolation.cs": (
+        "gameObject.scene.handle",
+        "Player.GetAllPlayers",
+        "BaseAI.BaseAIInstances",
+    ),
+    RUNTIME / "UnderworldWorldGeneratorCacheIsolation.cs": (
+        '"s_cachedBiomeAreas"',
+        '"s_cachedBiomes"',
+        "CaptureSurfaceCaches",
+        "RestoreSurfaceCaches",
+    ),
+    RUNTIME / "UnderworldInstancePersistence.cs": (
+        "UnderworldZoneInstanceState.NotifyZdosLoaded();",
+        "PreserveSharedSaveSnapshotDuringInstanceCleanup",
     ),
 }
 
@@ -109,6 +147,48 @@ sample_body = sample_match.group("body")
 for forbidden in ("ZoneSystem.instance", "ZNet.instance", "Player.", "SceneManager."):
     if forbidden in sample_body:
         fail(f"worker-thread terrain sampler reads process/Unity singleton {forbidden!r}")
+
+start_isolation = (RUNTIME / "UnderworldZoneSystemStartIsolation.cs").read_text(encoding="utf-8-sig")
+if "SetupLocations.Invoke" in start_isolation or 'AccessTools.Method(typeof(ZoneSystem), "SetupLocations")' in start_isolation:
+    fail("Underworld ZoneSystem Start reintroduced a second SetupLocations pass")
+
+gate = (RUNTIME / "UnderworldGateTransitRuntime.cs").read_text(encoding="utf-8-sig")
+return_match = re.search(
+    r"internal static bool TryReturnTo\([^)]*\)\s*\{(?P<body>.*?)\n    \}",
+    gate,
+    re.S,
+)
+if not return_match:
+    fail("could not locate TryReturnTo for instance-transfer audit")
+return_body = return_match.group("body")
+if "TryMovePlayerToInstance" not in return_body or ".TeleportTo(" in return_body:
+    fail("developer Surface return bypasses atomic world-instance transfer")
+
+plugin = (RUNTIME / "MagenheimPlugin.cs").read_text(encoding="utf-8-sig")
+for patch in (
+    "UnderworldZoneStateCapturePatch",
+    "UnderworldZoneMetadataSectorPatch",
+    "UnderworldZoneMetadataSaveClonePatch",
+    "UnderworldZoneMetadataLoadFilterPatch",
+    "UnderworldZoneMetadataShouldSendPatch",
+    "UnderworldZoneSystemStartIsolationPatch",
+    "UnderworldSpawnQueryScopePatch",
+):
+    if f"PatchAll(typeof({patch}))" not in plugin:
+        fail(f"runtime bootstrap no longer installs {patch}")
+if plugin.index("PatchAll(typeof(UnderworldZoneStateCapturePatch))") > plugin.index("PatchAll(typeof(UnderworldZdoPrepareSavePersistencePatch))"):
+    fail("Underworld ZoneSystem metadata is captured after ZDO PrepareSave instead of before it")
+
+plugin_version_match = re.search(r'PluginVersion\s*=\s*"([^"]+)"', plugin)
+project = (RUNTIME / "Magenheim.Runtime.csproj").read_text(encoding="utf-8-sig")
+project_version_match = re.search(r"<Version>([^<]+)</Version>", project)
+if not plugin_version_match or not project_version_match:
+    fail("could not resolve runtime/plugin version identity")
+if plugin_version_match.group(1) != project_version_match.group(1):
+    fail(
+        f"runtime assembly version {project_version_match.group(1)} does not match "
+        f"PluginVersion {plugin_version_match.group(1)}"
+    )
 
 instructions = (ROOT / "INSTRUCTIONS.md").read_text(encoding="utf-8-sig")
 for statement in (

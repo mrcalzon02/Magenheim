@@ -481,6 +481,7 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             "m_altBiomeLists",
             "m_vegetation",
             "m_locations",
+            "m_locationsByHash",
         })
         {
             var field = AccessTools.Field(typeof(ZoneSystem), name)
