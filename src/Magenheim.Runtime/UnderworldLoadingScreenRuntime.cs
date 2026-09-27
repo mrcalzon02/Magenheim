@@ -65,10 +65,17 @@ internal static class UnderworldLoadingScreenRuntime
         canvas.sortingOrder = short.MaxValue;
         _root.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
 
+        var backdrop = new GameObject("Backdrop");
+        backdrop.transform.SetParent(_root.transform, false);
+        var backdropImage = backdrop.AddComponent<Image>();
+        Stretch(backdropImage.rectTransform);
+        backdropImage.color = Color.black;
+
         var art = new GameObject("Artwork");
         art.transform.SetParent(_root.transform, false);
         _image = art.AddComponent<Image>();
         Stretch(_image.rectTransform);
+        _image.preserveAspect = true;
         _image.color = Color.black;
 
         var label = new GameObject("Caption");
