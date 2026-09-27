@@ -22,6 +22,7 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
     private readonly ManualLogSource _log;
     private Scene _scene;
     private GameObject? _zoneRoot;
+    private ZDOMan? _underworldZdoMan;
     private bool _disposed;
 
     internal UnderworldNativeWorldHost(ValheimWorldInstanceRegistry registry, ManualLogSource log)
@@ -53,6 +54,7 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             var world = CloneWorld(surface.World, identity);
             var generator = CreateWorldGenerator(world);
             var zdoMan = CreateZdoMan(surface.ZdoMan);
+            _underworldZdoMan = zdoMan;
             ValidateDistinctZdoNamespace(surface.ZdoMan, zdoMan);
             var zoneSystem = CreateZoneSystem(surface.ZoneSystem, _scene);
             UnderworldTerrainRuntime.CaptureInstanceWaterLevel(zoneSystem.m_waterLevel);
@@ -595,7 +597,45 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
     {
         if (_zoneRoot) UnityEngine.Object.Destroy(_zoneRoot);
         _zoneRoot = null;
-        if (_scene.IsValid() && _scene.isLoaded) SceneManager.UnloadSceneAsync(_scene);
+
+        var zdoMan = _underworldZdoMan;
+        _underworldZdoMan = null;
+
+        if (_scene.IsValid() && _scene.isLoaded)
+        {
+            var unload = SceneManager.UnloadSceneAsync(_scene);
+            if (unload is not null)
+            {
+                unload.completed += _ => ReleaseDetachedZdoState(zdoMan);
+                return;
+            }
+        }
+
+        ReleaseDetachedZdoState(zdoMan);
+    }
+
+    private static void ReleaseDetachedZdoState(ZDOMan? zdoMan)
+    {
+        if (zdoMan is null) return;
+
+        // Never call ZDOMan.ShutDown() on the child manager: vanilla ShutDown performs the
+        // process-wide ZDOExtraData.Reset(), which would erase Surface state. Once the Underworld
+        // scene has unloaded (all ZNetViews gone), release only this manager's native ZDO objects.
+        // ZDOPool.Release -> ZDO.Reset -> ZDOExtraData.Release(uid), so shared static extra-data
+        // stores lose only the globally unique instance-1 keys.
+        var objectsField = AccessTools.Field(typeof(ZDOMan), "m_objectsByID")
+            ?? throw new MissingFieldException(typeof(ZDOMan).FullName, "m_objectsByID");
+        if (objectsField.GetValue(zdoMan) is not IDictionary objects)
+            throw new InvalidOperationException("Underworld ZDOMan object store is not dictionary-compatible.");
+
+        var zdos = new List<ZDO>(objects.Count);
+        foreach (DictionaryEntry entry in objects)
+            if (entry.Value is ZDO zdo) zdos.Add(zdo);
+
+        foreach (var zdo in zdos)
+            ZDOPool.Release(zdo);
+
+        objects.Clear();
     }
 
     public void Dispose()
