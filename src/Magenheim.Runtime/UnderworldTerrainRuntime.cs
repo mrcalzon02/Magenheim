@@ -109,9 +109,15 @@ internal static class UnderworldTerrainRuntime
     internal static bool TrySampleNativeGenerator(WorldGenerator generator, double x, double z, out UnderworldTerrainResult terrain)
     {
         terrain = default;
-        var active = ValheimWorldInstanceExecution.Active;
-        if (active is null || !active.InstanceId.IsUnderworld || !ReferenceEquals(active.WorldGenerator, generator))
+        var services = _services;
+        if (services is null || !InstanceAvailable(services) ||
+            !services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out var context) ||
+            context is null || !ReferenceEquals(context.WorldGenerator, generator))
             return false;
+
+        // The generator object is the instance discriminator. Do not require AsyncLocal execution
+        // state here: HeightmapBuilder/worldgen work may resume on worker threads where the caller's
+        // ExecutionContext is not guaranteed to flow, while the dedicated WorldGenerator identity is.
         terrain = SampleInstanceTerrain(x, 0d, z);
         return terrain.Admitted;
     }
