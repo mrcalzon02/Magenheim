@@ -118,6 +118,7 @@ internal static class ValheimWorldInstanceExecution
         private readonly object? _previousZdoMan;
         private readonly Scene _previousActiveScene;
         private readonly bool _changedActiveScene;
+        private readonly IDisposable? _pathfindingScope;
         private bool _disposed;
 
         internal Scope(ValheimWorldInstanceContext context)
@@ -145,12 +146,17 @@ internal static class ValheimWorldInstanceExecution
             ZNetWorld?.SetValue(null, context.World);
             if (ZNet.instance is not null && ZNetZdoMan is not null)
                 ZNetZdoMan.SetValue(ZNet.instance, context.ZdoMan);
+
+            var pathfinding = Pathfinding.instance;
+            if (context.PathfindingState is not null && pathfinding)
+                _pathfindingScope = context.PathfindingState.Enter(pathfinding);
         }
 
         public void Dispose()
         {
             if (_disposed) return;
             _disposed = true;
+            _pathfindingScope?.Dispose();
             if (ZNet.instance is not null && ZNetZdoMan is not null) ZNetZdoMan.SetValue(ZNet.instance, _previousZdoMan);
             ZNetWorld?.SetValue(null, _previousWorld);
             ZdoInstance.Set(_previousZdoInstance);
@@ -225,7 +231,7 @@ internal static class UnderworldValheimBehaviourInstanceScopePatch
         var assembly = typeof(ZoneSystem).Assembly;
         foreach (var type in assembly.GetTypes())
         {
-            if (type.IsAbstract || !typeof(MonoBehaviour).IsAssignableFrom(type)) continue;
+            if (type.IsAbstract || type == typeof(Pathfinding) || !typeof(MonoBehaviour).IsAssignableFrom(type)) continue;
             foreach (var method in type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
             {
                 if (method.IsAbstract || method.ContainsGenericParameters || Array.IndexOf(Names, method.Name) < 0) continue;
