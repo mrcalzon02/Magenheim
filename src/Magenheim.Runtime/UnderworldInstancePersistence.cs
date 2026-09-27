@@ -27,6 +27,7 @@ internal static class UnderworldInstancePersistence
     private static UnderworldRuntimeServices? _services;
     private static ManualLogSource? _log;
     private static PendingLoad? _pendingLoad;
+    private static string? _parentSavePath;
 
     internal static void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -37,6 +38,30 @@ internal static class UnderworldInstancePersistence
     internal static void Reset()
     {
         _pendingLoad = null;
+        _parentSavePath = null;
+    }
+
+    internal static string ValidateBoundNamespace()
+    {
+        var parent = _parentSavePath;
+        if (string.IsNullOrWhiteSpace(parent))
+            throw new InvalidOperationException(
+                "Underworld persistence has no authoritative parent-save path from Valheim LoadChunks.");
+
+        var normalizedParent = Path.GetFullPath(parent);
+        var instance = InstancePath(normalizedParent);
+        var prefix = normalizedParent.TrimEnd(
+            Path.DirectorySeparatorChar,
+            Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+
+        if (!instance.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException(
+                "Underworld child persistence namespace escaped the authoritative parent save.");
+        if (string.Equals(instance, normalizedParent, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException(
+                "Underworld child persistence namespace collapsed onto the parent save directory.");
+
+        return instance;
     }
 
     internal static void TryLoadBoundInstance()
@@ -71,9 +96,10 @@ internal static class UnderworldInstancePersistence
         // bind the Surface context. ZDOMan.instance is therefore the authoritative identification.
         if (ZDOMan.instance is not null && !ReferenceEquals(source, ZDOMan.instance)) return;
 
+        _parentSavePath = Path.GetFullPath(parentPath);
         _pendingLoad = new PendingLoad(
             (MethodInfo)original,
-            parentPath,
+            _parentSavePath,
             (object[])args.Clone());
 
         if (services is not null && services.WorldInstances.HasUnderworldContext)

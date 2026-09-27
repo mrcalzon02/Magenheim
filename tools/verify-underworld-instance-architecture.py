@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import json
 import re
 import sys
 
@@ -33,6 +34,7 @@ REQUIRED_FILES = (
     RUNTIME / "UnderworldZonePeerRouting.cs",
     RUNTIME / "UnderworldZdoPeerRouter.cs",
     RUNTIME / "UnderworldInstancePersistence.cs",
+    RUNTIME / "UnderworldInstanceAdmissionAudit.cs",
     RUNTIME / "UnderworldZoneInstanceState.cs",
     RUNTIME / "UnderworldPhysicsInstanceRouting.cs",
     RUNTIME / "UnderworldZdoRoutedRpcBridge.cs",
@@ -114,6 +116,16 @@ REQUIRED_SNIPPETS = {
     RUNTIME / "UnderworldInstancePersistence.cs": (
         "UnderworldZoneInstanceState.NotifyZdosLoaded();",
         "PreserveSharedSaveSnapshotDuringInstanceCleanup",
+        "ValidateBoundNamespace",
+    ),
+    RUNTIME / "UnderworldInstanceAdmissionAudit.cs": (
+        "RequireDistinct(surface.World, underworld.World, \"World\")",
+        "RequireDistinct(surface.WorldGenerator, underworld.WorldGenerator, \"WorldGenerator\")",
+        "RequireDistinct(surface.ZoneSystem, underworld.ZoneSystem, \"ZoneSystem\")",
+        "RequireDistinct(surface.ZdoMan, underworld.ZdoMan, \"ZDOMan\")",
+        "ValidatePeerSets(surface.ZdoMan, underworld.ZdoMan)",
+        "UnderworldInstancePersistence.ValidateBoundNamespace()",
+        "ValidateAmbientSurfaceAuthority(surface)",
     ),
 }
 
@@ -198,6 +210,14 @@ if plugin_version_match.group(1) != project_version_match.group(1):
     fail(
         f"runtime assembly version {project_version_match.group(1)} does not match "
         f"PluginVersion {plugin_version_match.group(1)}"
+    )
+
+release = json.loads((ROOT / "release.json").read_text(encoding="utf-8-sig"))
+release_version = str(release.get("version", "")).strip()
+if release_version != plugin_version_match.group(1):
+    fail(
+        f"release.json version {release_version!r} does not match "
+        f"PluginVersion {plugin_version_match.group(1)!r}"
     )
 
 instructions = (ROOT / "INSTRUCTIONS.md").read_text(encoding="utf-8-sig")

@@ -123,8 +123,11 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
                 throw new InvalidOperationException(hostDiagnostic);
 
             UnderworldInstancePersistence.TryLoadBoundInstance();
+            var admission = UnderworldInstanceAdmissionAudit.Validate(_services, identity);
             _services.InstanceLifecycle.EnsureActive(identity);
-            _log.LogInfo($"Admitted persistent Underworld instance authority '{identity.DerivedWorldId}' for parent world '{identity.ParentWorldId}'.");
+            _log.LogInfo(
+                $"Admitted persistent Underworld instance authority '{identity.DerivedWorldId}' for parent world '{identity.ParentWorldId}'. " +
+                $"Admission audit: {admission}");
         }
         catch (Exception exception)
         {

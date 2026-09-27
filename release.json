@@ -1,4 +1,4 @@
 {
-  "version": "0.0.129",
-  "description": "0.0.129: Rebuilds the Underworld as a concurrent native world instance inside one save/server process, removes coordinate-layer hosting, and hardens multiplayer, persistence, map, physics, biome, and worldgen isolation."
+  "version": "0.0.133",
+  "description": "0.0.133: Adds fail-closed post-load admission auditing for the concurrent native Underworld instance, validates child-save containment, peer/ZDO/world/scene isolation, and locks release/plugin/assembly version authority."
 }
