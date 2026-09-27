@@ -43,6 +43,8 @@ try {
     # defect it catches is precisely the one that costs a full build to discover any later.
     & python "$PSScriptRoot/tools/verify-conflict-markers.py"
     if ($LASTEXITCODE -ne 0) { throw 'Resolve conflict markers before building.' }
+    & python "$PSScriptRoot/tools/verify-underworld-instance-architecture.py"
+    if ($LASTEXITCODE -ne 0) { throw 'Underworld instance architecture validation failed.' }
     & python "$PSScriptRoot/tools/verify-generated-freshness.py"
     if ($LASTEXITCODE -ne 0) { throw 'Generated assets are out of date with the generators that own them.' }
     # Compile both runtime and its Core dependency before the expensive Blender gates.

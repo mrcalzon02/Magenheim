@@ -1,4 +1,4 @@
 {
-  "version": "0.0.108",
-  "description": "0.0.108: Adds grass-like root carpets, tufts and woven mats; wind-shaped sulfur drifts, silt ripples, frost fans, shale scree and peat mats. Stable ground patches follow biome terrain slopes and keep the gate approach clear."
+  "version": "0.0.129",
+  "description": "0.0.129: Rebuilds the Underworld as a concurrent native world instance inside one save/server process, removes coordinate-layer hosting, and hardens multiplayer, persistence, map, physics, biome, and worldgen isolation."
 }

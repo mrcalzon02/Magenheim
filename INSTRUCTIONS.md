@@ -37,6 +37,12 @@ The Surface and Underworld remain part of the same Magenheim progression experie
 
 ## Underworld instance architecture — non-negotiable
 
+- **One parent save, one running Valheim server process, multiple live world instances.** The Surface and Underworld are two world instances inside the same selected save/session; they are not separate save selections, sibling server processes, or a whole-server hot-swap.
+- **Each live world instance owns its own native Valheim world-service context:** `World`, `WorldGenerator`, `ZoneSystem`, `ZDOMan`, generated-zone/location/vegetation state, Unity `Scene`, and 3D `PhysicsScene`. Magenheim may virtualize singleton access at the engine boundary, but it must not replace those Valheim systems with parallel terrain, placement, persistence, or networking engines.
+- **Instance identity is an explicit discriminator, never a coordinate transform.** Surface is instance 0 and Underworld is instance 1. X/Y/Z offsets, distant bands, vertical layers, projected coordinates, or hidden host regions are never acceptable substitutes for instance identity.
+- **Surface and Underworld players must coexist concurrently in multiplayer.** Moving one player through the Deep Gate changes only that player's world-instance membership and network/scene routing; it must not replace the server-wide active world for everyone else.
+- **Underworld persistence is a child namespace of the same parent save.** It may use a namespaced directory/chunk set inside that save, but it must never become a second user-selectable world/save or require another server process.
+
 - Treat the Underworld as a dedicated **instance world-space**, analogous in separation semantics to a Valheim dungeon interior but world-scale and Magenheim-generated.
 - Do **not** use the x=40000 horizontal band, Ashlands/Deep-North-style far-landmass hosting, or WorldGenerator.GetBiomeHeight/GetBiome patches against distant Surface columns as the final Underworld terrain mechanism.
 - Do **not** expose, project, or disguise distant Surface-world coordinates as Underworld geography.
