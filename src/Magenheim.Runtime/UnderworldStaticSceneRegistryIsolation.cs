@@ -180,7 +180,7 @@ internal static class UnderworldTerrainModifierRegistryScopePatch
 /// scene-filtered view while a world instance is identifiable so a modifier in instance 1 cannot
 /// mark an overlapping Surface tile dirty (or vice versa).
 /// </summary>
-[HarmonyPatch(typeof(Heightmap), nameof(Heightmap.GetAllHeightmaps), Type.EmptyTypes)]
+[HarmonyPatch(typeof(Heightmap), nameof(Heightmap.GetAllHeightmaps), new Type[] { })]
 internal static class UnderworldHeightmapAllInstancesPatch
 {
     private static void Postfix(ref List<Heightmap> __result)

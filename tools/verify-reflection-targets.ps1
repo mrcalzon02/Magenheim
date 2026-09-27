@@ -63,13 +63,24 @@ foreach ($type in $runtime.MainModule.Types) {
             $memberName = $null; $targetTypeName = $null; $signature = @()
             $walk = $instruction.Previous
             $seenName = $false
+            $byRef = $false
             for ($step = 0; $step -lt 40 -and $walk; $step++) {
                 if ($walk.OpCode.Name -eq 'ldstr' -and -not $seenName) {
                     $memberName = [string]$walk.Operand; $seenName = $true
                 }
                 elseif ($walk.OpCode.Name -eq 'ldtoken') {
                     if ($seenName) { $targetTypeName = $walk.Operand.FullName; break }
-                    $signature = ,$walk.Operand.FullName + $signature
+                    $signature = ,($walk.Operand.FullName + $(if ($byRef) { '&' } else { '' })) + $signature
+                    $byRef = $false
+                }
+                elseif (-not $seenName -and $walk.OpCode.Name -eq 'callvirt' -and
+                    $walk.Operand.Name -eq 'MakeByRefType') { $byRef = $true }
+                elseif ($seenName -and -not ($walk.OpCode.Name -eq 'call' -and
+                    $walk.Operand.DeclaringType.FullName -eq 'System.Type' -and
+                    $walk.Operand.Name -eq 'GetTypeFromHandle')) {
+                    # A local, field, nested-type lookup or GetType result is a dynamic receiver.
+                    # Never walk past it and attribute the member to an unrelated earlier typeof.
+                    break
                 }
                 $walk = $walk.Previous
             }
@@ -125,6 +136,22 @@ foreach ($type in $runtime.MainModule.Types) {
 # runtime assigns. Optional fields are compatibility enhancements whose absence is tolerated by
 # runtime code; the gate reports them without failing so the optional semantics remain truthful.
 $helperFieldContracts = @(
+    @{
+        Owner = 'Underworld peer routing and admission'
+        Type = 'ZDOMan/ZDOPeer'
+        Required = @{
+            m_peer = 'ZNetPeer'
+            m_zdos = 'System.Collections.Generic.Dictionary`2<ZDOID,ZDOMan/ZDOPeer/PeerZDOInfo>'
+            m_invalidSector = 'System.Collections.Generic.HashSet`1<ZDOID>'
+        }
+        Optional = @()
+    },
+    @{
+        Owner = 'ValheimPathfindingInstanceState'
+        Type = 'Pathfinding/AgentSettings'
+        Required = @{ m_agentType = 'Pathfinding/AgentType' }
+        Optional = @()
+    },
     @{
         Owner = 'StaffEffectPayloads.Projectile'
         Type = 'Projectile'

@@ -21,7 +21,6 @@ internal static class UnderworldInstanceAdmissionAudit
 
     private static readonly FieldInfo ZdoIdentityField =
         AccessTools.Field(typeof(ZDOMan), "m_sessionID") ??
-        AccessTools.Field(typeof(ZDOMan), "m_myid") ??
         throw new MissingFieldException(typeof(ZDOMan).FullName, "m_sessionID/m_myid");
 
     private static readonly FieldInfo ZdoPeersField =

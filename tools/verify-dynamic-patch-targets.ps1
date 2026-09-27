@@ -11,20 +11,30 @@ $searchDirectories = @(
     (Join-Path $BepInExPath 'core'),
     (Join-Path $BepInExPath 'plugins')
 ) | Where-Object { Test-Path -LiteralPath $_ }
+$searchDirectories += @(Get-ChildItem -LiteralPath (Join-Path $BepInExPath 'plugins') -Filter *.dll -Recurse |
+    ForEach-Object { $_.DirectoryName } | Sort-Object -Unique)
 
-$handler = [ResolveEventHandler]{
-    param($sender, $args)
-    try {
-        $fileName = ([Reflection.AssemblyName]$args.Name).Name + '.dll'
-        foreach ($directory in $searchDirectories) {
-            $candidate = Join-Path $directory $fileName
-            if (Test-Path -LiteralPath $candidate) {
-                return [Reflection.Assembly]::LoadFrom((Resolve-Path -LiteralPath $candidate).Path)
-            }
+if (-not ('MagenheimGateAssemblyResolver' -as [type])) {
+    Add-Type @'
+using System;
+using System.IO;
+using System.Reflection;
+public sealed class MagenheimGateAssemblyResolver {
+    public string[] Directories;
+    public Assembly Resolve(object sender, ResolveEventArgs request) {
+        string name = new AssemblyName(request.Name).Name + ".dll";
+        foreach (string directory in Directories) {
+            string path = Path.Combine(directory, name);
+            if (File.Exists(path)) return Assembly.LoadFrom(path);
         }
-    } catch { }
-    return $null
+        return null;
+    }
 }
+'@
+}
+$resolver = New-Object MagenheimGateAssemblyResolver
+$resolver.Directories = [string[]]$searchDirectories
+$handler = [Delegate]::CreateDelegate([ResolveEventHandler], $resolver, 'Resolve')
 
 [AppDomain]::CurrentDomain.add_AssemblyResolve($handler)
 try {
@@ -33,12 +43,17 @@ try {
     $dynamic = 0
     $resolvedCount = 0
 
-    foreach ($type in $runtime.GetTypes()) {
-        $hasHarmonyPatch = @($type.GetCustomAttributes($false) | Where-Object {
-            $_.GetType().FullName -eq 'HarmonyLib.HarmonyPatch'
-        }).Count -gt 0
-        if (!$hasHarmonyPatch) { continue }
-
+    # Inspect only resolver classes; unrelated game-facing types can contain interface features
+    # supported by Unity Mono but unavailable in the Framework verifier process.
+    Add-Type -Path (Join-Path $BepInExPath 'core/Mono.Cecil.dll')
+    $metadata = [Mono.Cecil.AssemblyDefinition]::ReadAssembly($RuntimeDll)
+    $resolverNames = @($metadata.MainModule.Types | Where-Object {
+        @($_.CustomAttributes | Where-Object { $_.AttributeType.FullName -eq 'HarmonyLib.HarmonyPatch' }).Count -gt 0 -and
+        @($_.Methods | Where-Object Name -in @('TargetMethod', 'TargetMethods')).Count -gt 0
+    } | ForEach-Object { $_.FullName })
+    $metadata.Dispose()
+    foreach ($typeName in $resolverNames) {
+        $type = $runtime.GetType($typeName, $true)
         $single = $type.GetMethod('TargetMethod', $flags)
         $many = $type.GetMethod('TargetMethods', $flags)
         if (!$single -and !$many) { continue }

@@ -86,7 +86,7 @@ internal static class UnderworldZonePeerFilterScopePatch
     private static void Finalizer(IDisposable? __state) => __state?.Dispose();
 }
 
-[HarmonyPatch(typeof(ZNet), nameof(ZNet.GetPeers), Type.EmptyTypes)]
+[HarmonyPatch(typeof(ZNet), nameof(ZNet.GetPeers), new Type[] { })]
 internal static class UnderworldZonePeerListPatch
 {
     private static void Postfix(ref List<ZNetPeer> __result) =>

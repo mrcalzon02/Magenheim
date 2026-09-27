@@ -94,11 +94,11 @@ REQUIRED_SNIPPETS = {
     ),
     RUNTIME / "UnderworldZoneInstanceState.cs": (
         "underworld.ZoneSystem.PrepareSave();",
-        "underworld.ZoneSystem.SaveASync(writer);",
-        "underworld.ZoneSystem.Load(reader, version);",
+        "underworld.ZoneSystem.Save(writer);",
+        "underworld.ZoneSystem.Load(reader, (Version.World)version);",
         "metadata.Persistent = true;",
-        "SuppressSpatialIndex",
-        "IncludeMetadataSaveClone",
+        "UnderworldZoneMetadataObjectPatch",
+        "AcceptMetadataWithoutPrefabWarning",
     ),
     RUNTIME / "UnderworldWorldGeneratorCacheIsolation.cs": (
         '"s_cachedBiomeAreas"',
@@ -182,8 +182,7 @@ if "TryMovePlayerToInstance" not in return_body or ".TeleportTo(" in return_body
 plugin = (RUNTIME / "MagenheimPlugin.cs").read_text(encoding="utf-8-sig")
 for patch in (
     "UnderworldZoneStateCapturePatch",
-    "UnderworldZoneMetadataSectorPatch",
-    "UnderworldZoneMetadataSaveClonePatch",
+    "UnderworldZoneMetadataObjectPatch",
     "UnderworldZoneMetadataLoadFilterPatch",
     "UnderworldZoneMetadataShouldSendPatch",
     "UnderworldZoneSystemStartIsolationPatch",

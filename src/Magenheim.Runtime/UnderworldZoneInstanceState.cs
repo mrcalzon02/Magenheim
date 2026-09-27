@@ -97,7 +97,7 @@ internal static class UnderworldZoneInstanceState
             using (var stream = new MemoryStream())
             {
                 using var writer = new BinaryWriter(stream);
-                underworld.ZoneSystem.SaveASync(writer);
+                underworld.ZoneSystem.Save(writer);
                 writer.Flush();
                 blob = stream.ToArray();
             }
@@ -116,24 +116,12 @@ internal static class UnderworldZoneInstanceState
                 Convert.ToInt32(WorldVersionField.GetValue(underworld.World)));
 
             _log?.LogDebug(
-                $"Prepared {blob.Length} bytes of native Underworld ZoneSystem state inside non-spatial metadata ZDO {metadata.m_uid}.");
+                $"Prepared {blob.Length} bytes of native Underworld ZoneSystem state inside native chunk-indexed metadata ZDO {metadata.m_uid}.");
         }
     }
 
     internal static bool IsMetadataZdo(ZDO? zdo) =>
         zdo is not null && zdo.GetBool(MarkerHash, false);
-
-    internal static bool SuppressSpatialIndex(ZDO zdo) => IsMetadataZdo(zdo);
-
-    internal static void IncludeMetadataSaveClone(ZDOMan manager, List<ZDO> saveClone)
-    {
-        var metadata = FindMetadataZdo(manager);
-        if (metadata is null || !metadata.Persistent) return;
-        foreach (var existing in saveClone)
-            if (existing.m_uid == metadata.m_uid)
-                return;
-        saveClone.Add(metadata.Clone());
-    }
 
     internal static bool AcceptMetadataWithoutPrefabWarning(
         ZDO zdo,
@@ -184,7 +172,7 @@ internal static class UnderworldZoneInstanceState
             using (ValheimWorldInstanceExecution.Enter(underworld))
             using (var stream = new MemoryStream(blob, writable: false))
             using (var reader = new BinaryReader(stream))
-                underworld.ZoneSystem.Load(reader, version);
+                underworld.ZoneSystem.Load(reader, (Version.World)version);
         }
         finally
         {
@@ -296,61 +284,48 @@ internal static class UnderworldZoneStateCapturePatch
 }
 
 /// <summary>
-/// Metadata is durable but deliberately absent from the spatial sector index, so ZNetScene never
-/// treats it as a world object.
+/// Keep metadata in Valheim's native sector/chunk save index, but never instantiate it as content.
+/// Native dirty-chunk selection, cloning and save mapping remain owned by ZDOMan.
 /// </summary>
-[HarmonyPatch(typeof(ZDOMan), nameof(ZDOMan.AddToSector))]
-internal static class UnderworldZoneMetadataSectorPatch
+[HarmonyPatch(typeof(ZNetScene), "CreateObject", new[] { typeof(ZDO) })]
+internal static class UnderworldZoneMetadataObjectPatch
 {
-    private static bool Prefix(ZDO __0) =>
-        !UnderworldZoneInstanceState.SuppressSpatialIndex(__0);
-}
-
-/// <summary>
-/// Because the metadata ZDO is intentionally non-spatial, add its normal native ZDO clone to the
-/// save snapshot after Valheim has gathered persistent sector objects.
-/// </summary>
-[HarmonyPatch]
-internal static class UnderworldZoneMetadataSaveClonePatch
-{
-    internal static MethodBase TargetMethod() =>
-        AccessTools.Method(typeof(ZDOMan), "GetSaveClone", Type.EmptyTypes)
-        ?? throw new MissingMethodException(typeof(ZDOMan).FullName, "GetSaveClone()");
-
-    private static void Postfix(ZDOMan __instance, ref List<ZDO> __result)
+    private static bool Prefix(ZDO __0, ref GameObject __result)
     {
-        if (__result is not null)
-            UnderworldZoneInstanceState.IncludeMetadataSaveClone(__instance, __result);
+        if (!UnderworldZoneInstanceState.IsMetadataZdo(__0)) return true;
+        __result = null!;
+        return false;
     }
 }
 
 /// <summary>
-/// Prefab hash 0 is intentional for the non-spatial metadata record. Admit it through native load
+/// Prefab hash 0 is intentional for the non-rendered metadata record. Admit it through native load
 /// without reporting it as a broken/unknown gameplay prefab.
 /// </summary>
 [HarmonyPatch]
 internal static class UnderworldZoneMetadataLoadFilterPatch
 {
     internal static MethodBase TargetMethod() =>
-        AccessTools.Method(
-            typeof(ZDOMan),
+        typeof(ZDOMan).GetMethod(
             "FilterZDO",
+            BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic, null,
             new[]
             {
+                typeof(bool),
                 typeof(ZDO),
                 typeof(List<ZDO>).MakeByRefType(),
                 typeof(List<ZDO>).MakeByRefType(),
                 typeof(List<ZDO>).MakeByRefType(),
-            })
+            }, null)
         ?? throw new MissingMethodException(
             typeof(ZDOMan).FullName,
-            "FilterZDO(ZDO,ref List<ZDO>,ref List<ZDO>,ref List<ZDO>)");
+            "FilterZDO(bool,ZDO,ref List<ZDO>,ref List<ZDO>,ref List<ZDO>)");
 
     private static bool Prefix(object[] __args)
     {
-        if (__args.Length < 2 ||
-            __args[0] is not ZDO zdo ||
-            __args[1] is not List<ZDO> loaded)
+        if (__args.Length < 3 ||
+            __args[1] is not ZDO zdo ||
+            __args[2] is not List<ZDO> loaded)
             return true;
 
         return !UnderworldZoneInstanceState.AcceptMetadataWithoutPrefabWarning(
@@ -368,9 +343,10 @@ internal static class UnderworldZoneMetadataShouldSendPatch
 {
     internal static MethodBase TargetMethod()
     {
-        var peerType = AccessTools.Inner(typeof(ZDOMan), "ZDOPeer")
+        var peerType = typeof(ZDOMan).GetNestedType("ZDOPeer", BindingFlags.Public | BindingFlags.NonPublic)
             ?? throw new MissingMemberException(typeof(ZDOMan).FullName, "ZDOPeer");
-        return AccessTools.Method(peerType, "ShouldSend", new[] { typeof(ZDO) })
+        return peerType.GetMethod("ShouldSend", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            null, new[] { typeof(ZDO) }, null)
             ?? throw new MissingMethodException(peerType.FullName, "ShouldSend(ZDO)");
     }
 

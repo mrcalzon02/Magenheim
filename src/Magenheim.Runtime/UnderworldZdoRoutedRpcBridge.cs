@@ -16,10 +16,10 @@ internal static class UnderworldZdoRoutedRpcBridge
 {
     private static readonly AsyncLocal<int> Reentry = new();
     private static readonly MethodInfo DestroyRpc =
-        AccessTools.Method(typeof(ZDOMan), "RPC_DestroyZDO")
+        AccessTools.Method(typeof(ZDOMan), "RPC_DestroyZDO", new[] { typeof(long), typeof(ZPackage) })
         ?? throw new MissingMethodException(typeof(ZDOMan).FullName, "RPC_DestroyZDO");
     private static readonly MethodInfo RequestRpc =
-        AccessTools.Method(typeof(ZDOMan), "RPC_RequestZDO")
+        AccessTools.Method(typeof(ZDOMan), "RPC_RequestZDO", new[] { typeof(long), typeof(ZDOID) })
         ?? throw new MissingMethodException(typeof(ZDOMan).FullName, "RPC_RequestZDO");
 
     internal static bool ReplayDestroy(long sender, ZPackage package)

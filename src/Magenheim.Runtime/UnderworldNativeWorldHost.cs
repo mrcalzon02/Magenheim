@@ -411,7 +411,6 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
     {
         var identityField =
             AccessTools.Field(typeof(ZDOMan), "m_sessionID") ??
-            AccessTools.Field(typeof(ZDOMan), "m_myid") ??
             throw new MissingFieldException(typeof(ZDOMan).FullName, "m_sessionID/m_myid");
         var surfaceId = Convert.ToInt64(identityField.GetValue(surface));
         var underworldId = Convert.ToInt64(identityField.GetValue(underworld));

@@ -119,7 +119,8 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             if (ZNet.World is not null && WorldGenerator.instance is not null && ZoneSystem.instance is not null && ZDOMan.instance is not null)
                 _services.WorldInstances.BindSurface(ZNet.World, WorldGenerator.instance, ZoneSystem.instance, ZDOMan.instance);
 
-            if (_nativeWorldHost is null || !_nativeWorldHost.TryCreate(identity, out var hostDiagnostic))
+            if (_nativeWorldHost is null) throw new InvalidOperationException("Native world host is unavailable.");
+            if (!_nativeWorldHost.TryCreate(identity, out var hostDiagnostic))
                 throw new InvalidOperationException(hostDiagnostic);
 
             UnderworldInstancePersistence.TryLoadBoundInstance();

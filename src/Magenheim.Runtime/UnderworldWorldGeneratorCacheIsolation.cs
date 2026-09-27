@@ -37,15 +37,15 @@ internal static class UnderworldWorldGeneratorCacheIsolation
         if (!TryGetBiome(generator, point, out var center))
             return false;
 
-        var offsets = new (short X, short Y)[]
+        var offsets = new Vector2s[]
         {
-            (-64, -64), (64, -64), (64, 64), (-64, 64),
-            (-64, 0), (64, 0), (0, -64), (0, 64),
+            new(-64, -64), new(64, -64), new(64, 64), new(-64, 64),
+            new(-64, 0), new(64, 0), new(0, -64), new(0, 64),
         };
 
         foreach (var offset in offsets)
         {
-            var sample = new Vector2s(point.x + offset.X, point.y + offset.Y);
+            var sample = new Vector2s(point.x + offset.x, point.y + offset.y);
             if (!TryGetBiome(generator, sample, out var neighbor) || neighbor != center)
             {
                 area = Heightmap.BiomeArea.Edge;
@@ -147,7 +147,8 @@ internal static class UnderworldWorldGeneratorBiomeAreaCachePatch
 internal static class UnderworldWorldGeneratorVectorBiomeCachePatch
 {
     internal static MethodBase TargetMethod() =>
-        AccessTools.Method(typeof(WorldGenerator), "GetBiome", new[] { typeof(Vector2s) })
+        typeof(WorldGenerator).GetMethod("GetBiome", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            null, new[] { typeof(Vector2s) }, null)
         ?? throw new MissingMethodException(typeof(WorldGenerator).FullName, "GetBiome(Vector2s)");
 
     private static void Prefix(

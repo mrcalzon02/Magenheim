@@ -1,4 +1,4 @@
 {
-  "version": "0.0.134",
-  "description": "0.0.134: Adds a live fail-closed Underworld admission audit command for disposable-world acceptance, reporting native World/ZDO/scene/save identities and refusing to treat failed isolation as admitted."
+  "version": "0.0.135",
+  "description": "0.0.135: Repairs installed-game API bindings and native chunk persistence for Underworld zone metadata; fixes nested-type validation and dynamic patch checks. Two-instance save/reload and multiplayer acceptance remain pending."
 }

@@ -1,3 +1,19 @@
+# Development closeout - 0.0.135 native API repair
+
+Repairs compilation and installed-game binding failures without changing the required two-instance
+architecture. Zone metadata now follows native sector/chunk persistence and is excluded from object
+creation and peer replication. The load filter includes the installed boolean argument, native
+ZoneSystem save/load use current signatures, and teardown restores `s_instance`.
+
+The prior report's 12 flags were not 12 missing APIs: seven were incorrect receiver/fallback
+inferences, two requested explicit RPC parameter signatures, and three exposed real stale bindings.
+The checker now verifies nested peer/pathfinding fields explicitly and tests rejection of a missing
+singleton and a damaged by-ref signature. Dynamic resolvers use plain reflection for inspection.
+
+Expected launcher entry: Magenheim v0.0.135 by Local. Release description is in release.json.
+Compilation and binding checks do not establish live instance admission, native save/reload,
+multiplayer isolation, map behavior or Deep Gate acceptance. Follow the ordered test in TESTING.md.
+
 # Development closeout - 0.0.108 biome ground features
 
 Ten authored ground models add rootgrass carpets/tufts/woven mats, three sulfur drift forms,

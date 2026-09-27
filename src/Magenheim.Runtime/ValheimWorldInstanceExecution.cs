@@ -336,7 +336,8 @@ internal static class UnderworldZoneSystemLocationIteratorScopePatch
         foreach (var method in typeof(ZoneSystem).GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
         {
             if (!string.Equals(method.Name, "GenerateLocationsTimeSliced", StringComparison.Ordinal)) continue;
-            var moveNext = AccessTools.EnumeratorMoveNext(method);
+            var iterator = method.GetCustomAttribute<System.Runtime.CompilerServices.IteratorStateMachineAttribute>();
+            var moveNext = iterator?.StateMachineType.GetMethod("MoveNext", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             if (moveNext is not null) yield return moveNext;
         }
     }
@@ -435,7 +436,7 @@ internal static class UnderworldCharacterInstanceScopePatch
         foreach (var type in new[] { typeof(Character), typeof(Player) })
         foreach (var name in Names)
         {
-            var method = AccessTools.DeclaredMethod(type, name);
+            var method = type.GetMethod(name, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
             if (method is not null) yield return method;
         }
     }

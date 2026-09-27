@@ -2,7 +2,14 @@
 
 **Magic begins as geology.**
 
-## 0.0.108 testing candidate
+## 0.0.135 testing candidate
+
+Repairs native game API bindings, keeps Underworld zone metadata in Valheim's native chunk
+save index, and fixes reflection and dynamic patch validation. One process, one campaign and
+two native world instances remain the required architecture. Live admission, save/reload,
+gate travel and simultaneous two-player isolation still require acceptance in TESTING.md.
+
+## Earlier content: 0.0.108
 
 Ten new ground features add grass-like root carpets, tufts and woven mats; sulfur powder
 drifts, rippled deposits and lee banks; Blackwater silt ripples, frost needle fans, shale scree
@@ -34,10 +41,10 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.108.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.135.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
-Launch **Modded**. Confirm `Loading [Magenheim 0.0.108]` in the BepInEx log.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.135]` in the BepInEx log.
 Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
 See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.

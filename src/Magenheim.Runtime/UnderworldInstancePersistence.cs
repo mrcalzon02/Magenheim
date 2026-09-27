@@ -396,7 +396,7 @@ internal static class UnderworldZdoSaveCleanupPersistencePatch
 [HarmonyPatch(typeof(ZDOMan), nameof(ZDOMan.GetZDO), new[] { typeof(ZDOID) })]
 internal static class UnderworldZdoCombinedSaveLookupPatch
 {
-    private static void Postfix(ZDOMan __instance, ZDOID __0, ref ZDO __result) =>
+    private static void Postfix(ZDOMan __instance, ZDOID __0, ref ZDO? __result) =>
         UnderworldInstancePersistence.ResolveCombinedExtraDataZdo(__instance, __0, ref __result);
 }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using HarmonyLib;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace Magenheim.Runtime;
 internal static class UnderworldDefaultPhysicsScenePatch
 {
     internal static System.Reflection.MethodBase TargetMethod() =>
-        AccessTools.PropertyGetter(typeof(Physics), nameof(Physics.defaultPhysicsScene))
+        typeof(Physics).GetProperty(nameof(Physics.defaultPhysicsScene))?.GetGetMethod()
         ?? throw new MissingMethodException(typeof(Physics).FullName, "get_defaultPhysicsScene");
 
     private static void Postfix(ref PhysicsScene __result)
@@ -37,7 +38,7 @@ internal static class UnderworldHeightmapLookup
         result = null;
         if (!ValheimWorldInstanceExecution.TryGetQueryScene(out var scene)) return false;
 
-        foreach (var heightmap in Heightmap.s_heightmaps)
+        foreach (var heightmap in Heightmap.GetAllHeightmaps())
         {
             if (!heightmap || heightmap.gameObject.scene.handle != scene.handle) continue;
             if (!heightmap.IsPointInside(point, 0f)) continue;
@@ -51,7 +52,7 @@ internal static class UnderworldHeightmapLookup
     {
         if (!ValheimWorldInstanceExecution.TryGetQueryScene(out var scene)) return false;
 
-        foreach (var heightmap in Heightmap.s_heightmaps)
+        foreach (var heightmap in Heightmap.GetAllHeightmaps())
         {
             if (!heightmap || heightmap.gameObject.scene.handle != scene.handle) continue;
             if (!heightmap.IsPointInside(point, radius) || results.Contains(heightmap)) continue;
@@ -87,15 +88,21 @@ internal static class UnderworldHeightmapFindRadiusPatch
 [HarmonyPatch(typeof(TerrainComp), nameof(TerrainComp.FindTerrainCompiler), new[] { typeof(Vector3) })]
 internal static class UnderworldTerrainCompilerFindPatch
 {
-    private static bool Prefix(Vector3 point, ref TerrainComp __result)
+    private static readonly System.Reflection.FieldInfo Instances =
+        AccessTools.Field(typeof(TerrainComp), "s_instances")
+        ?? throw new MissingFieldException(typeof(TerrainComp).FullName, "s_instances");
+    private static readonly AccessTools.FieldRef<TerrainComp, Heightmap> HeightmapField =
+        AccessTools.FieldRefAccess<TerrainComp, Heightmap>("m_hmap");
+
+    private static bool Prefix(Vector3 __0, ref TerrainComp __result)
     {
         if (!ValheimWorldInstanceExecution.TryGetQueryScene(out var scene)) return true;
 
-        foreach (var compiler in TerrainComp.s_instances)
+        foreach (var compiler in (List<TerrainComp>)Instances.GetValue(null))
         {
             if (!compiler || compiler.gameObject.scene.handle != scene.handle) continue;
-            var heightmap = compiler.m_hmap;
-            if (!heightmap || !heightmap.IsPointInside(point, 0f)) continue;
+            var heightmap = HeightmapField(compiler);
+            if (!heightmap || !heightmap.IsPointInside(__0, 0f)) continue;
             __result = compiler;
             return false;
         }

@@ -226,7 +226,7 @@ internal static class UnderworldGateTransitRpc
     }
 }
 
-[HarmonyPatch(typeof(ZNet), nameof(ZNet.OnNewConnection), new[] { typeof(ZNetPeer) })]
+[HarmonyPatch(typeof(ZNet), "OnNewConnection", new[] { typeof(ZNetPeer) })]
 internal static class UnderworldGatePeerRpcRegistrationPatch
 {
     private static void Postfix(ZNetPeer peer) =>

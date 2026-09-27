@@ -114,11 +114,15 @@ Launch with `-console`, press F5, and run `devcommands` first; every command bel
 
 | Command | Effect |
 |---|---|
-| `magenheim_underworld audit` | Re-runs the fail-closed native instance admission audit and prints the Surface/Underworld World IDs, ZDO namespaces, Unity scene, and child-save namespace. Run this first. |\n| `magenheim_underworld status` | Reports whether the paired Underworld instance is active, whether the Deep Gate is unlocked, and whether you hold a return anchor. |
+| `magenheim_underworld audit` | Re-runs the fail-closed native instance admission audit and prints the Surface/Underworld World IDs, ZDO namespaces, Unity scene, and child-save namespace. Run this first. |
+| `magenheim_underworld status` | Reports whether the paired Underworld instance is active, whether the Deep Gate is unlocked, and whether you hold a return anchor. |
 | `magenheim_underworld enter` | Enters the Underworld through the same transit the Deep Gate uses, skipping the Nowhere King unlock. Records a return anchor where you stood. |
 | `magenheim_underworld return` | Returns to that anchor. With no anchor (for example after relogging below ground) it returns you to your bed, or your home point if you have none. |
 
-`audit` must report **AUDIT PASS** before transit acceptance is meaningful. If it reports **AUDIT FAIL**, preserve the exact line and log; do not continue treating the instance as admitted.\n\n`enter` refuses with the reason if the Underworld instance is not active yet; load fully into the\nworld and try again. The gate path itself still requires the unlock.
+`audit` must report **AUDIT PASS** before transit acceptance is meaningful. If it reports **AUDIT FAIL**, preserve the exact line and log; do not continue treating the instance as admitted.
+
+`enter` refuses with the reason if the Underworld instance is not active yet; load fully into the
+world and try again. The gate path itself still requires the unlock.
 
 Spawn IDs (`spawn <id> 1`):
 
@@ -128,7 +132,29 @@ Spawn IDs (`spawn <id> 1`):
 
 ## Candidate acceptance matrix
 
-Confirm the startup log reports **0.0.134** and has no Magenheim bootstrap or registration
+### 0.0.135 dependency-ordered Underworld acceptance
+
+Use a disposable campaign with identical packages on host and client. Stop at the first failure
+and preserve the full BepInEx log; do not treat a later symptom as the first broken dependency.
+
+1. **Bootstrap/bindings:** confirm 0.0.135 loads with no patch, missing-member or registration errors.
+2. **Native host admission:** run `magenheim_underworld audit`; require AUDIT PASS, distinct native
+   World/WorldGenerator/ZoneSystem/ZDOMan and scene/physics identities, and a child save namespace.
+3. **Gate and worldgen:** enter and return; verify terrain, collision, vegetation and locations use
+   the Underworld context, and character inventory/progression survive travel.
+4. **Two-instance persistence:** put identifiable objects and connected structures/portals in both
+   instances. Save twice (the second save must exercise incremental dirty chunks), quit, reload,
+   audit again, and verify objects, connections and generated-zone state in both instances. Check
+   logs for both chunk writes and no early shared-snapshot cleanup or failed child write.
+5. **Concurrent multiplayer:** keep one player in each instance at overlapping logical coordinates.
+   Move, build, fight and cross the gate independently. Neither player's objects, collisions or
+   native peer visibility may leak into the other instance. Repeat save/reload and reconnect.
+6. **Maps:** explore and pin both layers; browsing the other map tab must not move the player or
+   alter the active world context. Verify both map payloads after restart.
+
+These are live acceptance steps, not claims made by passing the offline build.
+
+Confirm the startup log reports **0.0.135** and has no Magenheim bootstrap or registration
 errors. Keep logs and screenshots with each result. Mark checks PASS / FAIL / NOT RUN;
 record game version, mod list, host/client role, seed, steps, expected/actual result.
 

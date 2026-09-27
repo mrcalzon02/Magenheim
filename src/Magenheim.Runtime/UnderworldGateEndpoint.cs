@@ -26,8 +26,8 @@ internal sealed class UnderworldGateEndpoint : MonoBehaviour, Hoverable, Interac
 
     public bool Interact(Humanoid character, bool hold, bool alt)
     {
-        if (hold || character is null) return false;
-        if (character is Player player && UnderworldGateTransitRpc.TryTransit(Role, player, out var diagnostic)) return true;
+        if (hold || character is not Player) return false;
+        if (UnderworldGateTransitRpc.TryTransit(Role, (Player)character, out var diagnostic)) return true;
         if (character is Player failedPlayer && !string.IsNullOrEmpty(diagnostic))
             failedPlayer.Message(MessageHud.MessageType.Center, diagnostic);
         return false;

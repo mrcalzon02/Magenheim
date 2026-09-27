@@ -16,8 +16,8 @@ internal static class UnderworldZoneSystemLifetimeGuard
     private static readonly object Sync = new();
     private static readonly Dictionary<int, ZoneSystem> SurfaceByUnderworld = new();
     private static readonly FieldInfo ZoneInstance =
-        AccessTools.Field(typeof(ZoneSystem), "m_instance")
-        ?? throw new MissingFieldException(typeof(ZoneSystem).FullName, "m_instance");
+        AccessTools.Field(typeof(ZoneSystem), "s_instance")
+        ?? throw new MissingFieldException(typeof(ZoneSystem).FullName, "s_instance");
 
     internal static void Register(ZoneSystem underworld, ZoneSystem surface)
     {
@@ -57,7 +57,8 @@ internal static class UnderworldZoneSystemLifetimeGuard
 internal static class UnderworldZoneSystemDestroySingletonPatch
 {
     internal static MethodBase TargetMethod() =>
-        AccessTools.Method(typeof(ZoneSystem), "OnDestroy", Type.EmptyTypes)
+        typeof(ZoneSystem).GetMethod("OnDestroy", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            null, Type.EmptyTypes, null)
         ?? throw new MissingMethodException(typeof(ZoneSystem).FullName, "OnDestroy()");
 
     private static void Prefix(ZoneSystem __instance, out ZoneSystem? __state)

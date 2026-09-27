@@ -103,7 +103,7 @@ internal static class UnderworldZoneCatalogGuard
         string.IsNullOrWhiteSpace(name) ? "<unnamed>" : name;
 }
 
-[HarmonyPatch(typeof(ZoneSystem), nameof(ZoneSystem.SetupLocations))]
+[HarmonyPatch(typeof(ZoneSystem), "SetupLocations")]
 internal static class UnderworldZoneCatalogGuardPatch
 {
     [HarmonyPriority(Priority.Last)]
