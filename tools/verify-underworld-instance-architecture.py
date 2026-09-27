@@ -38,6 +38,7 @@ REQUIRED_FILES = (
     RUNTIME / "UnderworldZdoRoutedRpcBridge.cs",
     RUNTIME / "UnderworldZonePeerRouting.cs",
     RUNTIME / "UnderworldSpawnQueryIsolation.cs",
+    RUNTIME / "ValheimPathfindingInstanceState.cs",
     RUNTIME / "UnderworldGateTransitRuntime.cs",
     RUNTIME / "UnderworldZoneSystemStartIsolation.cs",
     RUNTIME / "UnderworldZoneInstanceState.cs",
@@ -68,6 +69,7 @@ REQUIRED_SNIPPETS = {
         "ZDOMan ZdoMan",
         "Scene Scene",
         "PhysicsScene PhysicsScene",
+        "PathfindingState",
     ),
     RUNTIME / "UnderworldNativeWorldHost.cs": (
         "CreateSceneParameters(LocalPhysicsMode.Physics3D)",
