@@ -77,6 +77,15 @@ internal static class ValheimWorldInstanceExecution
         return false;
     }
 
+    internal static bool TryGetContextForScene(int sceneHandle, out ValheimWorldInstanceContext? context)
+    {
+        var registry = _registry;
+        if (registry is not null && registry.TryGetContextForScene(sceneHandle, out context) && context is not null)
+            return true;
+        context = null;
+        return false;
+    }
+
     internal static bool TryGetQueryScene(out Scene scene)
     {
         if (TryGetAmbientContext(out var context) && context is not null)
@@ -233,6 +242,7 @@ internal static class UnderworldZoneSystemInstanceScopePatch
     {
         "Awake", "Start", "Update", "FixedUpdate", "LateUpdate",
         "SetupLocations", "PlaceVegetation", "GenerateLocationsTimeSliced",
+        "CreateLocalZones", "CreateGhostZones", "PokeLocalZone", "SpawnZone",
     };
 
     internal static System.Collections.Generic.IEnumerable<MethodBase> TargetMethods()
