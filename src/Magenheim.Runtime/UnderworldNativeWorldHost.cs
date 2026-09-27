@@ -475,7 +475,7 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
         throw new InvalidOperationException($"{target.GetType().Name}.{name} did not contain {typeof(T).Name}.");
     }
 
-    private static void SetFieldIfPresent(object target, string name, object value)
+    private static void SetFieldIfPresent(object target, string name, object? value)
     {
         var field = AccessTools.Field(target.GetType(), name);
         if (field is not null) field.SetValue(target, value);
