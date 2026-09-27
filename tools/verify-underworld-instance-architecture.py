@@ -25,6 +25,12 @@ FORBIDDEN_RUNTIME_TOKENS = (
     "UnderworldInstanceChunkStreamingRuntime",
     "UnderworldPlaceholderEcologyRuntime",
     "UnderworldStructureAdmissionController",
+    "UnderworldSpawnPlayerListPatch",
+    "UnderworldSpawnPlayerRangePatch",
+    "UnderworldSpawnPlayerRangeCountPatch",
+    "UnderworldSpawnInstanceCountPatch",
+    "UnderworldSpawnHaveInstanceInRangePatch",
+    "UnderworldSpawnQueryScopePatch",
 )
 
 REQUIRED_FILES = (
