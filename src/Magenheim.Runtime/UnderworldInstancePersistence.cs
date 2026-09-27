@@ -22,6 +22,7 @@ internal static class UnderworldInstancePersistence
     private static readonly AsyncLocal<int> Reentry = new();
     private static readonly AsyncLocal<int> CombinedExtraDataPrepare = new();
     private static readonly AsyncLocal<int> CombinedLookupReentry = new();
+    private static readonly AsyncLocal<int> PreserveSharedStaticsDuringInstanceLoad = new();
     private static UnderworldRuntimeServices? _services;
     private static ManualLogSource? _log;
     private static PendingLoad? _pendingLoad;
@@ -54,7 +55,7 @@ internal static class UnderworldInstancePersistence
             return;
         }
 
-        InvokeInstance(context, pending.Method, ReplacePath(pending.Arguments, path));
+        InvokeInstanceLoad(context, pending.Method, ReplacePath(pending.Arguments, path));
         _log?.LogInfo($"Loaded Underworld instance ZDO chunks from parent-save namespace '{path}'.");
     }
 
@@ -196,6 +197,38 @@ internal static class UnderworldInstancePersistence
         return instance;
     }
 
+    internal static bool AllowSharedStaticReset() =>
+        PreserveSharedStaticsDuringInstanceLoad.Value == 0;
+
+    private static void InvokeInstanceLoad(
+        ValheimWorldInstanceContext context,
+        MethodInfo method,
+        object[] arguments)
+    {
+        Reentry.Value++;
+        PreserveSharedStaticsDuringInstanceLoad.Value++;
+        try
+        {
+            // Surface and Underworld intentionally share Valheim's static ZDOExtraData/ZDOID support
+            // stores, partitioned by globally distinct ZDOIDs. A child-instance load must add its
+            // records to those stores; it must never run a session-wide Init/Reset that erases the
+            // already-loaded Surface entries.
+            using (ValheimWorldInstanceExecution.Enter(context))
+                method.Invoke(context.ZdoMan, arguments);
+        }
+        catch (TargetInvocationException exception) when (exception.InnerException is not null)
+        {
+            throw new InvalidOperationException(
+                $"Native Valheim instance load call {method.Name} failed.",
+                exception.InnerException);
+        }
+        finally
+        {
+            PreserveSharedStaticsDuringInstanceLoad.Value--;
+            Reentry.Value--;
+        }
+    }
+
     private static void InvokeInstance(
         ValheimWorldInstanceContext context,
         MethodInfo method,
@@ -320,4 +353,23 @@ internal static class UnderworldZdoCombinedSaveLookupPatch
 {
     private static void Postfix(ZDOMan __instance, ZDOID __0, ref ZDO __result) =>
         UnderworldInstancePersistence.ResolveCombinedExtraDataZdo(__instance, __0, ref __result);
+}
+
+
+[HarmonyPatch(typeof(ZDOExtraData), nameof(ZDOExtraData.Init))]
+internal static class UnderworldZdoExtraDataInitGuardPatch
+{
+    private static bool Prefix() => UnderworldInstancePersistence.AllowSharedStaticReset();
+}
+
+[HarmonyPatch(typeof(ZDOExtraData), nameof(ZDOExtraData.Reset))]
+internal static class UnderworldZdoExtraDataResetGuardPatch
+{
+    private static bool Prefix() => UnderworldInstancePersistence.AllowSharedStaticReset();
+}
+
+[HarmonyPatch(typeof(ZDOID), nameof(ZDOID.Reset))]
+internal static class UnderworldZdoIdResetGuardPatch
+{
+    private static bool Prefix() => UnderworldInstancePersistence.AllowSharedStaticReset();
 }
