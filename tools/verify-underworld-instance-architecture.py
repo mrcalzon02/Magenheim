@@ -13,6 +13,7 @@ FORBIDDEN_FILES = (
     RUNTIME / "UnderworldInstanceChunkMaterializer.cs",
     RUNTIME / "UnderworldInstanceChunkStreamingRuntime.cs",
     RUNTIME / "UnderworldPlaceholderEcologyRuntime.cs",
+    RUNTIME / "UnderworldStructureAdmissionController.cs",
 )
 
 FORBIDDEN_RUNTIME_TOKENS = (
@@ -22,6 +23,7 @@ FORBIDDEN_RUNTIME_TOKENS = (
     "UnderworldInstanceChunkMaterializer",
     "UnderworldInstanceChunkStreamingRuntime",
     "UnderworldPlaceholderEcologyRuntime",
+    "UnderworldStructureAdmissionController",
 )
 
 REQUIRED_FILES = (
@@ -31,6 +33,11 @@ REQUIRED_FILES = (
     RUNTIME / "UnderworldZonePeerRouting.cs",
     RUNTIME / "UnderworldZdoPeerRouter.cs",
     RUNTIME / "UnderworldInstancePersistence.cs",
+    RUNTIME / "UnderworldZoneInstanceState.cs",
+    RUNTIME / "UnderworldPhysicsInstanceRouting.cs",
+    RUNTIME / "UnderworldZdoRoutedRpcBridge.cs",
+    RUNTIME / "UnderworldZonePeerRouting.cs",
+    RUNTIME / "UnderworldSpawnInstanceRouting.cs",
     RUNTIME / "UnderworldGateTransitRuntime.cs",
     RUNTIME / "UnderworldZoneSystemStartIsolation.cs",
     RUNTIME / "UnderworldZoneInstanceState.cs",
