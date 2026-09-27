@@ -161,7 +161,7 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
         var environment = donor.Clone();
         environment.m_name = name;
         environment.m_default = false;
-        ApplyPresentation(environment, biome, atmosphereEvent);
+        ApplyPresentation(manager, environment, biome, atmosphereEvent);
         manager.m_environments.Add(environment);
         _registeredNames.Add(name);
     }
@@ -200,6 +200,7 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
     }
 
     private static void ApplyPresentation(
+        EnvMan manager,
         EnvSetup environment,
         UnderworldTerrainBiome biome,
         UnderworldAtmosphereEvent atmosphereEvent)
@@ -249,24 +250,47 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
         environment.m_ambientLoop = null;
         environment.m_ambientVol = 0f;
         environment.m_psystemsOutsideOnly = false;
-        environment.m_psystems = FilterParticles(
+        environment.m_psystems = ResolveParticles(
+            manager,
             environment.m_psystems,
             style.ParticleTokens,
             atmosphereEvent == UnderworldAtmosphereEvent.Whiteout);
     }
 
-    private static GameObject[] FilterParticles(
+    private static GameObject[] ResolveParticles(
+        EnvMan manager,
+        GameObject[]? preferredDonors,
+        string[] tokens,
+        bool allowSnowStorm)
+    {
+        if (tokens.Length == 0)
+            return Array.Empty<GameObject>();
+
+        var accepted = new List<GameObject>();
+        AddMatchingParticles(accepted, preferredDonors, tokens, allowSnowStorm);
+
+        // Environment donors are useful for colour/light/wind, but their particle arrays are not
+        // comprehensive. Resolve missing subterranean particulate from every installed Valheim
+        // environment before requiring a custom asset. This preserves mod-added compatible donors
+        // while still rejecting surface rain/thunder/storm presentation.
+        foreach (var candidate in manager.m_environments)
+            AddMatchingParticles(accepted, candidate.m_psystems, tokens, allowSnowStorm);
+
+        return accepted.ToArray();
+    }
+
+    private static void AddMatchingParticles(
+        List<GameObject> accepted,
         GameObject[]? donors,
         string[] tokens,
         bool allowSnowStorm)
     {
-        if (donors is null || donors.Length == 0 || tokens.Length == 0)
-            return Array.Empty<GameObject>();
+        if (donors is null || donors.Length == 0)
+            return;
 
-        var accepted = new List<GameObject>();
         foreach (var donor in donors)
         {
-            if (!donor) continue;
+            if (!donor || accepted.Contains(donor)) continue;
             var name = donor.name ?? string.Empty;
             var surfaceStorm = LooksLikeThunderStorm(name);
             if (surfaceStorm &&
@@ -282,7 +306,6 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
                 break;
             }
         }
-        return accepted.ToArray();
     }
 
     private static bool LooksLikeThunderStorm(string value) =>
