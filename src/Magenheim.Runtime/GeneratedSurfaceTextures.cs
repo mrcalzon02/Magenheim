@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Jotunn.Managers;
 using UnityEngine;
 
@@ -7,8 +8,9 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Shared runtime surface authority for Magenheim-owned procedural geometry.
-/// Generated models receive repeatable 256px material surfaces instead of flat placeholder color.
-/// Reconciliation is strictly owned-only and never replaces authored/file-backed textures.
+/// The authored 256px material-family library is preferred; the historical procedural patterns are
+/// retained only as a defensive fallback if packaged artwork is missing.
+/// Reconciliation is strictly owned-only and never replaces authored/file-backed model textures.
 /// </summary>
 internal static class GeneratedSurfaceTextures
 {
@@ -92,6 +94,29 @@ internal static class GeneratedSurfaceTextures
 
     private static Texture2D Build(SurfaceKind kind)
     {
+        var family = kind.ToString().ToLowerInvariant();
+        var assemblyDirectory = Path.GetDirectoryName(typeof(GeneratedSurfaceTextures).Assembly.Location)
+            ?? throw new InvalidOperationException("Unable to locate Magenheim assembly directory.");
+        var authoredPath = Path.Combine(assemblyDirectory, "assets", "models", "textures",
+            "surface-" + family + "-authored.png");
+        if (File.Exists(authoredPath))
+        {
+            var authored = new Texture2D(2, 2, TextureFormat.RGBA32, mipChain: true)
+            {
+                name = "magenheim.authored.surface." + family,
+                wrapMode = TextureWrapMode.Repeat,
+                filterMode = FilterMode.Trilinear,
+                anisoLevel = 4,
+                hideFlags = HideFlags.HideAndDontSave,
+            };
+            if (!ModelAssets.LoadImage(authored, File.ReadAllBytes(authoredPath)))
+                throw new InvalidDataException("Invalid authored Magenheim surface: " + authoredPath);
+            authored.wrapMode = TextureWrapMode.Repeat;
+            authored.filterMode = FilterMode.Trilinear;
+            authored.anisoLevel = 4;
+            return authored;
+        }
+
         var texture = new Texture2D(TextureSize, TextureSize, TextureFormat.RGBA32, mipChain: true)
         {
             name = "magenheim.surface." + kind.ToString().ToLowerInvariant(),

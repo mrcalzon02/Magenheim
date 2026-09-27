@@ -252,6 +252,11 @@ internal static class ModelAssets
         var color = Colour(data["color"]!); material.color = color;
         material.mainTexture = Texture2D.whiteTexture; material.mainTextureScale = Vector2.one; material.mainTextureOffset = Vector2.zero;
         var textureName = (string?)data["texture"];
+        // 0.0.76 deliberately exported the 1,303 obsolete generated bakes as null so the bad
+        // semantic could not remain frozen into the model. Null must not mean white/untextured:
+        // resolve it to the authored material-family library. An explicit texture always wins.
+        if (string.IsNullOrEmpty(textureName))
+            textureName = AuthoredSurfaceTextureName((string?)data["name"] ?? key);
         if (!string.IsNullOrEmpty(textureName))
         {
             if (Path.GetFileName(textureName) != textureName) throw new InvalidDataException("Invalid texture path.");
@@ -292,6 +297,48 @@ internal static class ModelAssets
         if (transparent) material.EnableKeyword("_ALPHABLEND_ON"); else material.DisableKeyword("_ALPHABLEND_ON");
         Materials.Add(key, material); return material;
     }
+    /// <summary>File-backed neutral albedo used only when a model payload has no explicit texture.</summary>
+    internal static string AuthoredSurfaceTextureName(string semantic) =>
+        "surface-" + AuthoredSurfaceFamily(semantic) + "-authored.png";
+
+    internal static string AuthoredSurfaceFamily(string semantic)
+    {
+        var key = SurfaceSemanticToken(semantic ?? string.Empty).ToLowerInvariant();
+        if (SurfaceContainsAny(key, "water", "liquid", "solution")) return "liquid";
+        if (SurfaceContainsAny(key, "hide", "leather", "pelt")) return "leather";
+        if (SurfaceContainsAny(key, "stone", "marble", "rock", "earth", "strata", "slate", "basalt")) return "stone";
+        if (SurfaceContainsAny(key, "wood", "timber", "root", "shaft", "bark")) return "timber";
+        if (SurfaceContainsAny(key, "iron", "bronze", "silver", "gold", "metal", "band", "collar", "brace", "rail", "rim")) return "metal";
+        if (SurfaceContainsAny(key, "cloth", "banner", "fabric")) return "cloth";
+        if (SurfaceContainsAny(key, "bone", "ivory", "antler")) return "bone";
+        if (SurfaceContainsAny(key, "crystal", "frost", "rime", "ice", "spirit", "radiance", "venom", "seidr", "fate", "eitr", "gem", "shard", "growth", "focus", "core", "light")) return "crystal";
+        return "generic";
+    }
+
+    private static string SurfaceSemanticToken(string semantic)
+    {
+        if (string.IsNullOrEmpty(semantic)) return string.Empty;
+        var segments = semantic.Split('.');
+        var last = segments.Length - 1;
+        while (last > 0 && SurfaceIsIndex(segments[last])) last--;
+        return segments[last];
+    }
+
+    private static bool SurfaceIsIndex(string segment)
+    {
+        if (segment.Length == 0) return false;
+        foreach (var character in segment)
+            if (character < '0' || character > '9') return false;
+        return true;
+    }
+
+    private static bool SurfaceContainsAny(string value, params string[] needles)
+    {
+        foreach (var needle in needles)
+            if (value.IndexOf(needle, StringComparison.Ordinal) >= 0) return true;
+        return false;
+    }
+
     internal static Vector3 Vector(JToken v) => new((float)v[0]!, (float)v[1]!, (float)v[2]!);
     private static Color Colour(JToken v) => new((float)v[0]!, (float)v[1]!, (float)v[2]!, v.Count() > 3 ? (float)v[3]! : 1f);
     private static bool Finite(float v) => !float.IsNaN(v) && !float.IsInfinity(v);

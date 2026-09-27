@@ -3,6 +3,8 @@ blender --background --python tools/export-model-assets.py -- [model-id ...]
 """
 import bpy,json,sys,hashlib
 from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from model_surface_authoring import bind_surface_if_needed
 from mathutils import Vector
 root=Path(__file__).resolve().parents[1]
 out=root/'assets/models'
@@ -34,23 +36,19 @@ for file in files:
   if len(mesh.materials)!=1:raise ValueError(f'{file.name}/{obj.name}: split objects by material before export')
   material=mesh.materials[0];bs=material.node_tree.nodes.get('Principled BSDF')
   if bs is None:raise ValueError('Principled material required: '+material.name)
+  # Preserve real authored art. Only materials that are blank or still carry one of the obsolete
+  # magenheim.surface.* runtime bakes are rebound to the semantic authored surface library.
+  # Because this exporter saves the opened .blend at the end, exporting is also the source migration.
+  bind_surface_if_needed(bpy,material)
   color=list(bs.inputs['Base Color'].default_value);color[3]=bs.inputs['Alpha'].default_value
   texture=None
   for node in material.node_tree.nodes:
    if node.type=='TEX_IMAGE' and node.image:
     image=node.image
-    # `magenheim.surface.*` is OUR OWN runtime generator's output, baked back into the source at some
-    # point and thereafter indistinguishable from authored art. It is not art, and treating it as art
-    # is what broke the crystal placeables. Those bakes were taken before the 0.0.66 classifier fix,
-    # when Classify matched the model id, so `architecture-crystal-foundation-2m` contains "crystal"
-    # and every material on it -- darkstone, iron, rainbow-crystal alike -- was frozen as Crystal.
-    # 0.0.66 corrected the classifier but could never reach these models, because the runtime repair
-    # pass only replaces textures of 4px or smaller and these bakes are 256px and file-backed.
-    # Measured across the committed library: 100 of 283 models and 1,303 materials carry one, among
-    # them the crystal dais, foundations, beams and hearth at 100% baked and 0% authored.
-    # Dropping it here emits no texture, which lets the runtime classify the surface correctly at
-    # load from the material's own semantic. Genuinely authored images are untouched.
-    if image.name.startswith('magenheim.surface.'):continue
+    # bind_surface_if_needed must have migrated this before export. Keep a hard guard so a future
+    # refactor cannot silently turn the old misclassified runtime bakes back into authored art.
+    if image.name.startswith('magenheim.surface.'):
+     raise ValueError(f'{file.name}/{material.name}: obsolete generated surface was not rebound')
     if min(image.size)<256:raise ValueError(f'{file.name}/{image.name}: packed source texture must be at least 256px')
     # Name the texture by its CONTENT, not by the Blender image's name. Hashing the name meant every
     # image called the same thing across different .blend files wrote to the same PNG and each export
