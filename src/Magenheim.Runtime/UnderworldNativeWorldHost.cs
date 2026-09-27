@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -127,27 +128,211 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
 
     private static ZDOMan CreateZdoMan(ZDOMan surface)
     {
-        var sectors = AccessTools.Field(typeof(ZDOMan), "m_objectsBySector")?.GetValue(surface) as Array
-            ?? throw new MissingFieldException(typeof(ZDOMan).FullName, "m_objectsBySector");
-        var width = (int)Math.Round(Math.Sqrt(sectors.Length));
-        if (width <= 0 || width * width != sectors.Length)
-            throw new InvalidOperationException("Surface ZDO sector table is not square.");
+        // Do not call ZDOMan(int) a second time. Valheim's constructor mutates the process-wide
+        // ZDOMan singleton, registers duplicate DestroyZDO/RequestZDO routed RPC handlers, resets
+        // the global ZDOID allocator and reinitializes the global ZDOExtraData store. A second call
+        // can therefore corrupt Surface state before the Underworld has admitted a single zone.
+        //
+        // Start from Valheim's already-initialized native manager layout, then detach every mutable
+        // instance store. Native ZDOMan methods remain the implementation authority.
+        var clone = (ZDOMan)(typeof(object)
+            .GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .Invoke(surface, Array.Empty<object>())
+            ?? throw new InvalidOperationException("Valheim ZDOMan clone failed."));
 
-        var ctor = typeof(ZDOMan).GetConstructor(
-            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-            null,
-            new[] { typeof(int) },
-            null) ?? throw new MissingMethodException(typeof(ZDOMan).FullName, ".ctor(int)");
-        return (ZDOMan)(ctor.Invoke(new object[] { width })
-            ?? throw new InvalidOperationException("ZDOMan constructor returned null."));
+        foreach (var field in typeof(ZDOMan).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            var value = field.GetValue(surface);
+            if (field.Name is "m_sessionID" or "m_myid")
+            {
+                SetField(field, clone, GenerateDistinctSessionId(surface, field));
+                continue;
+            }
+
+            if (field.Name == "m_nextUid")
+            {
+                SetField(field, clone, Convert.ChangeType(1u, field.FieldType));
+                continue;
+            }
+
+            if (field.Name == "m_nextSendPeer")
+            {
+                SetField(field, clone, Convert.ChangeType(-1, field.FieldType));
+                continue;
+            }
+
+            if (field.Name == "m_saveData")
+            {
+                SetField(field, clone, null);
+                continue;
+            }
+
+            if (value is null || field.FieldType.IsValueType || value is string || value is Delegate)
+                continue;
+
+            if (value is Array array)
+            {
+                SetField(field, clone, Array.CreateInstance(array.GetType().GetElementType()!, ArrayLengths(array)));
+                continue;
+            }
+
+            if (field.Name == "m_tempNearObjectsForRemoval")
+            {
+                SetField(field, clone, CloneNestedScratchList(value));
+                continue;
+            }
+
+            if (field.Name == "m_tempNearObjectsForRemovalAreasActive")
+            {
+                SetField(field, clone, CloneValueList(value));
+                continue;
+            }
+
+            if (TryCreateEmptyCollection(value.GetType(), out var emptyCollection))
+            {
+                SetField(field, clone, emptyCollection);
+                continue;
+            }
+
+            if (TryCreateFreshReference(value.GetType(), out var freshReference))
+            {
+                SetField(field, clone, freshReference);
+                continue;
+            }
+
+            throw new InvalidOperationException(
+                $"Cannot isolate mutable ZDOMan field '{field.Name}' ({field.FieldType.FullName}) for the Underworld instance.");
+        }
+
+        ValidateDetachedZdoState(surface, clone);
+        return clone;
+    }
+
+    private static long GenerateDistinctSessionId(ZDOMan surface, FieldInfo identityField)
+    {
+        var surfaceId = Convert.ToInt64(identityField.GetValue(surface));
+        var generateUid = AccessTools.Method(typeof(Utils), "GenerateUID", Type.EmptyTypes)
+            ?? throw new MissingMethodException(typeof(Utils).FullName, "GenerateUID()");
+        for (var attempt = 0; attempt < 8; attempt++)
+        {
+            var candidate = Convert.ToInt64(generateUid.Invoke(null, Array.Empty<object>()));
+            if (candidate != 0L && candidate != surfaceId) return candidate;
+        }
+        throw new InvalidOperationException("Valheim did not provide a distinct non-zero session ID for the Underworld ZDO namespace.");
+    }
+
+    private static int[] ArrayLengths(Array array)
+    {
+        var lengths = new int[array.Rank];
+        for (var i = 0; i < lengths.Length; i++) lengths[i] = array.GetLength(i);
+        return lengths;
+    }
+
+    private static object CloneNestedScratchList(object source)
+    {
+        if (source is not IList list)
+            throw new InvalidOperationException("ZDOMan nested scratch field is no longer an IList.");
+        var clone = CreateCollectionInstance(source.GetType(), source.GetType()) as IList
+            ?? throw new InvalidOperationException("Unable to create the ZDOMan nested scratch list.");
+        foreach (var item in list)
+        {
+            if (item is null) { clone.Add(null); continue; }
+            if (!TryCreateEmptyCollection(item.GetType(), out var inner))
+                throw new InvalidOperationException($"Unable to detach nested ZDOMan scratch collection {item.GetType().FullName}.");
+            clone.Add(inner);
+        }
+        return clone;
+    }
+
+    private static object CloneValueList(object source)
+    {
+        if (source is not IList list)
+            throw new InvalidOperationException("ZDOMan value scratch field is no longer an IList.");
+        var clone = CreateCollectionInstance(source.GetType(), source.GetType()) as IList
+            ?? throw new InvalidOperationException("Unable to create the ZDOMan value scratch list.");
+        foreach (var item in list) clone.Add(item);
+        return clone;
+    }
+
+    private static bool TryCreateEmptyCollection(Type type, out object? collection)
+    {
+        collection = null;
+        if (type == typeof(string) || typeof(Delegate).IsAssignableFrom(type) || !typeof(IEnumerable).IsAssignableFrom(type))
+            return false;
+        try
+        {
+            collection = Activator.CreateInstance(type);
+            return collection is not null;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static bool TryCreateFreshReference(Type type, out object? value)
+    {
+        value = null;
+        if (type.IsAbstract || type.IsInterface || typeof(UnityEngine.Object).IsAssignableFrom(type))
+            return false;
+        try
+        {
+            value = Activator.CreateInstance(type, nonPublic: true);
+            return value is not null;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static void SetField(FieldInfo field, object target, object? value)
+    {
+        try
+        {
+            field.SetValue(target, value);
+        }
+        catch (Exception exception)
+        {
+            throw new InvalidOperationException(
+                $"Unable to initialize detached ZDOMan field '{field.Name}'.",
+                exception);
+        }
+    }
+
+    private static void ValidateDetachedZdoState(ZDOMan surface, ZDOMan underworld)
+    {
+        foreach (var field in typeof(ZDOMan).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            if (field.FieldType.IsValueType || field.FieldType == typeof(string) || typeof(Delegate).IsAssignableFrom(field.FieldType))
+                continue;
+            var surfaceValue = field.GetValue(surface);
+            var underworldValue = field.GetValue(underworld);
+            if (surfaceValue is null || underworldValue is null) continue;
+            if (ReferenceEquals(surfaceValue, underworldValue))
+                throw new InvalidOperationException(
+                    $"Detached Underworld ZDOMan still shares mutable field '{field.Name}' with Surface.");
+        }
+
+        var objects = AccessTools.Field(typeof(ZDOMan), "m_objectsByID")?.GetValue(underworld) as IDictionary
+            ?? throw new MissingFieldException(typeof(ZDOMan).FullName, "m_objectsByID");
+        if (objects.Count != 0)
+            throw new InvalidOperationException("Detached Underworld ZDOMan inherited Surface ZDO objects.");
+
+        var peers = AccessTools.Field(typeof(ZDOMan), "m_peers")?.GetValue(underworld) as IEnumerable
+            ?? throw new MissingFieldException(typeof(ZDOMan).FullName, "m_peers");
+        foreach (var _ in peers)
+            throw new InvalidOperationException("Detached Underworld ZDOMan inherited Surface peers.");
     }
 
     private static void ValidateDistinctZdoNamespace(ZDOMan surface, ZDOMan underworld)
     {
-        var getMyId = AccessTools.Method(typeof(ZDOMan), "GetMyID", Type.EmptyTypes)
-            ?? throw new MissingMethodException(typeof(ZDOMan).FullName, "GetMyID()");
-        var surfaceId = Convert.ToInt64(getMyId.Invoke(surface, Array.Empty<object>()));
-        var underworldId = Convert.ToInt64(getMyId.Invoke(underworld, Array.Empty<object>()));
+        var identityField =
+            AccessTools.Field(typeof(ZDOMan), "m_sessionID") ??
+            AccessTools.Field(typeof(ZDOMan), "m_myid") ??
+            throw new MissingFieldException(typeof(ZDOMan).FullName, "m_sessionID/m_myid");
+        var surfaceId = Convert.ToInt64(identityField.GetValue(surface));
+        var underworldId = Convert.ToInt64(identityField.GetValue(underworld));
 
         if (surfaceId == 0L || underworldId == 0L)
             throw new InvalidOperationException(

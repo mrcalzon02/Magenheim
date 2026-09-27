@@ -19,6 +19,7 @@ internal static class ValheimWorldInstanceExecution
 
     private static readonly StaticMember ZoneInstance = StaticMember.Find(typeof(ZoneSystem), "instance", "m_instance");
     private static readonly StaticMember GeneratorInstance = StaticMember.Find(typeof(WorldGenerator), "instance", "m_instance");
+    private static readonly StaticMember ZdoInstance = StaticMember.Find(typeof(ZDOMan), "s_instance", "m_instance");
     private static readonly FieldInfo? ZNetWorld = AccessTools.Field(typeof(ZNet), "m_world");
     private static readonly FieldInfo? ZNetZdoMan = AccessTools.Field(typeof(ZNet), "m_zdoMan");
 
@@ -103,6 +104,7 @@ internal static class ValheimWorldInstanceExecution
         private readonly ValheimWorldInstanceContext? _previousContext;
         private readonly object? _previousZone;
         private readonly object? _previousGenerator;
+        private readonly object? _previousZdoInstance;
         private readonly object? _previousWorld;
         private readonly object? _previousZdoMan;
         private readonly Scene _previousActiveScene;
@@ -114,6 +116,7 @@ internal static class ValheimWorldInstanceExecution
             _previousContext = Current.Value;
             _previousZone = ZoneInstance.Get();
             _previousGenerator = GeneratorInstance.Get();
+            _previousZdoInstance = ZdoInstance.Get();
             _previousWorld = ZNetWorld?.GetValue(null);
             _previousZdoMan = ZNet.instance is null ? null : ZNetZdoMan?.GetValue(ZNet.instance);
             _previousActiveScene = SceneManager.GetActiveScene();
@@ -129,6 +132,7 @@ internal static class ValheimWorldInstanceExecution
             Current.Value = context;
             ZoneInstance.Set(context.ZoneSystem);
             GeneratorInstance.Set(context.WorldGenerator);
+            ZdoInstance.Set(context.ZdoMan);
             ZNetWorld?.SetValue(null, context.World);
             if (ZNet.instance is not null && ZNetZdoMan is not null)
                 ZNetZdoMan.SetValue(ZNet.instance, context.ZdoMan);
@@ -140,6 +144,7 @@ internal static class ValheimWorldInstanceExecution
             _disposed = true;
             if (ZNet.instance is not null && ZNetZdoMan is not null) ZNetZdoMan.SetValue(ZNet.instance, _previousZdoMan);
             ZNetWorld?.SetValue(null, _previousWorld);
+            ZdoInstance.Set(_previousZdoInstance);
             GeneratorInstance.Set(_previousGenerator);
             ZoneInstance.Set(_previousZone);
             Current.Value = _previousContext;
