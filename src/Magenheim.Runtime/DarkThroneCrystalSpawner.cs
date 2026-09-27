@@ -106,7 +106,7 @@ internal sealed class DarkThroneCrystalSpawner : MonoBehaviour
         var count = 0;
         foreach (var character in Character.GetAllCharacters())
         {
-            if (character == null || character.IsDead()) continue;
+            if (character == null || character.IsDead() || character.gameObject.scene.handle != gameObject.scene.handle) continue;
             var nview = character.GetComponent<ZNetView>();
             if (nview == null || !nview.IsValid()) continue;
             if (string.Equals(nview.GetZDO().GetString(SpawnOwnerKey, string.Empty), identity, StringComparison.Ordinal))
