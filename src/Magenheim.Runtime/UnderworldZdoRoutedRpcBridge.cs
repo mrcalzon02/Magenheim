@@ -56,7 +56,8 @@ internal static class UnderworldZdoRoutedRpcBridge
             return true;
         }
 
-        if (ValheimWorldInstanceExecution.Active is { InstanceId.IsUnderworld: true } &&
+        var active = ValheimWorldInstanceExecution.Active;
+        if (active is not null && active.InstanceId.IsUnderworld &&
             ValheimWorldInstanceExecution.TryGetContext(UnderworldWorldInstanceId.Surface, out var surface) &&
             surface is not null && surface.ZdoMan.GetZDO(target) is not null)
         {
@@ -110,21 +111,21 @@ internal static class UnderworldZdoRoutedRpcBridge
     }
 }
 
-[HarmonyPatch(typeof(ZDOMan), "RPC_DestroyZDO")]
+[HarmonyPatch(typeof(ZDOMan), "RPC_DestroyZDO", new[] { typeof(long), typeof(ZPackage) })]
 internal static class UnderworldZdoDestroyRoutedRpcPatch
 {
     private static bool Prefix(long __0, ZPackage __1) =>
         !UnderworldZdoRoutedRpcBridge.ReplayDestroy(__0, __1);
 }
 
-[HarmonyPatch(typeof(ZDOMan), "RPC_RequestZDO")]
+[HarmonyPatch(typeof(ZDOMan), "RPC_RequestZDO", new[] { typeof(long), typeof(ZDOID) })]
 internal static class UnderworldZdoRequestRoutedRpcPatch
 {
     private static bool Prefix(long __0, ZDOID __1) =>
         !UnderworldZdoRoutedRpcBridge.ReplayRequest(__0, __1);
 }
 
-[HarmonyPatch(typeof(ZRoutedRpc), "HandleRoutedRPC")]
+[HarmonyPatch(typeof(ZRoutedRpc), "HandleRoutedRPC", new[] { typeof(ZRoutedRpc.RoutedRPCData) })]
 internal static class UnderworldObjectRoutedRpcInstancePatch
 {
     private static void Prefix(ZRoutedRpc.RoutedRPCData __0, out IDisposable? __state)
