@@ -55,6 +55,7 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             var zdoMan = CreateZdoMan(surface.ZdoMan);
             ValidateDistinctZdoNamespace(surface.ZdoMan, zdoMan);
             var zoneSystem = CreateZoneSystem(surface.ZoneSystem, _scene);
+            UnderworldTerrainRuntime.CaptureInstanceWaterLevel(zoneSystem.m_waterLevel);
 
             var context = new ValheimWorldInstanceContext(
                 UnderworldWorldInstanceId.Underworld,

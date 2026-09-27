@@ -17,6 +17,7 @@ internal static class UnderworldTerrainRuntime
 {
     private static UnderworldRuntimeServices? _services;
     private static ManualLogSource? _log;
+    private static double _capturedWaterLevel = 30d;
     private static readonly object SectorLock = new();
     private static readonly Dictionary<Heightmap.Biome, BiomeSector> NativeSectors = new();
     private static readonly ConstructorInfo BiomeSectorConstructor =
@@ -112,7 +113,15 @@ internal static class UnderworldTerrainRuntime
         _services = services ?? throw new ArgumentNullException(nameof(services));
         _log = log ?? throw new ArgumentNullException(nameof(log));
         _ = services.TerrainDomain ?? throw new InvalidOperationException("Native Underworld terrain domain is unavailable.");
+        _capturedWaterLevel = 30d;
         log.LogInfo("Native Underworld terrain authority configured for instance-scoped WorldGenerator hooks; Surface worldgen remains untouched.");
+    }
+
+    internal static void CaptureInstanceWaterLevel(float waterLevel)
+    {
+        if (float.IsNaN(waterLevel) || float.IsInfinity(waterLevel))
+            throw new ArgumentOutOfRangeException(nameof(waterLevel), waterLevel, "Underworld water level must be finite.");
+        _capturedWaterLevel = waterLevel;
     }
 
     internal static bool ContainsInstancePosition(double x, double y, double z) =>
@@ -153,10 +162,9 @@ internal static class UnderworldTerrainRuntime
 
         var seed = identity.DerivedSeed32;
         var noise = UnderworldTerrainNoise.Fractal01(seed, x, z);
-        var waterLevel = ZoneSystem.instance is null ? 30d : ZoneSystem.instance.m_waterLevel;
         return UnderworldTerrainLifecycle.Evaluate(
             services.TerrainDomain,
-            new UnderworldTerrainSample(x, y, z, waterLevel, slopeDegrees, noise),
+            new UnderworldTerrainSample(x, y, z, _capturedWaterLevel, slopeDegrees, noise),
             seed);
     }
 
