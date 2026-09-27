@@ -20,6 +20,8 @@ internal static class UnderworldInstancePersistence
     private const string UnderworldDirectoryName = "1";
 
     private static readonly AsyncLocal<int> Reentry = new();
+    private static readonly AsyncLocal<int> CombinedExtraDataPrepare = new();
+    private static readonly AsyncLocal<int> CombinedLookupReentry = new();
     private static UnderworldRuntimeServices? _services;
     private static ManualLogSource? _log;
     private static PendingLoad? _pendingLoad;
@@ -78,7 +80,14 @@ internal static class UnderworldInstancePersistence
     {
         if (!IsSurfaceInvocation(source)) return;
         if (!TryGetUnderworld(out var context)) return;
+
+        // Build the Underworld manager's own native save clone first. Both managers share Valheim's
+        // static ZDOExtraData store (their ZDOIDs are globally distinct), so each native PrepareSave
+        // snapshots the same scalar data. Connection hashes are different: Valheim regenerates them
+        // by asking ZDOMan.instance whether both endpoints exist. A second per-instance prepare would
+        // leave only the last manager's connection hashes in the global save snapshot.
         InvokeInstance(context!, (MethodInfo)original, (object[])args.Clone());
+        PrepareCombinedExtraDataSnapshot();
     }
 
     internal static void MirrorSaveChunks(ZDOMan source, MethodBase original, object[] args)
@@ -97,6 +106,55 @@ internal static class UnderworldInstancePersistence
         if (!IsSurfaceInvocation(source)) return;
         if (!TryGetUnderworld(out var context)) return;
         InvokeInstance(context!, (MethodInfo)original, (object[])args.Clone());
+    }
+
+    private static void PrepareCombinedExtraDataSnapshot()
+    {
+        CombinedExtraDataPrepare.Value++;
+        try
+        {
+            // During this single call only, the GetZDO postfix below lets Valheim's native
+            // connection-hash regeneration see endpoints in either manager. The resulting static
+            // snapshot remains keyed by the original globally unique ZDOIDs and is then consumed by
+            // both managers' ordinary native chunk writers.
+            ZDOExtraData.PrepareSave();
+        }
+        finally
+        {
+            CombinedExtraDataPrepare.Value--;
+        }
+    }
+
+    internal static void ResolveCombinedExtraDataZdo(ZDOMan source, ZDOID id, ref ZDO? result)
+    {
+        if (result is not null || CombinedExtraDataPrepare.Value == 0 || CombinedLookupReentry.Value != 0)
+            return;
+
+        var services = _services;
+        if (services is null) return;
+
+        ValheimWorldInstanceContext? other = null;
+        if (services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Surface, out var surface) &&
+            surface is not null && ReferenceEquals(source, surface.ZdoMan))
+        {
+            services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out other);
+        }
+        else if (services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out var underworld) &&
+                 underworld is not null && ReferenceEquals(source, underworld.ZdoMan))
+        {
+            services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Surface, out other);
+        }
+
+        if (other is null) return;
+        try
+        {
+            CombinedLookupReentry.Value++;
+            result = other.ZdoMan.GetZDO(id);
+        }
+        finally
+        {
+            CombinedLookupReentry.Value--;
+        }
     }
 
     private static bool IsSurfaceInvocation(ZDOMan source)
@@ -222,4 +280,17 @@ internal static class UnderworldZdoSaveCleanupPersistencePatch
 
     private static void Postfix(ZDOMan __instance, MethodBase __originalMethod, object[] __args) =>
         UnderworldInstancePersistence.MirrorSaveCleanup(__instance, __originalMethod, __args);
+}
+
+
+/// <summary>
+/// ZDOExtraData.PrepareSave regenerates connection hashes through ZDOMan.instance.GetZDO. During the
+/// one combined snapshot pass, allow that lookup to fall through to the other native manager so
+/// Surface and Underworld connections are both serialized. Normal gameplay lookups never use this.
+/// </summary>
+[HarmonyPatch(typeof(ZDOMan), nameof(ZDOMan.GetZDO), new[] { typeof(ZDOID) })]
+internal static class UnderworldZdoCombinedSaveLookupPatch
+{
+    private static void Postfix(ZDOMan __instance, ZDOID __0, ref ZDO __result) =>
+        UnderworldInstancePersistence.ResolveCombinedExtraDataZdo(__instance, __0, ref __result);
 }
