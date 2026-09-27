@@ -52,6 +52,36 @@ internal static class UnderworldTerrainRuntime
         biome == FractureZonesBiome ||
         biome == GreatDecayBiome;
 
+    internal static bool TryGetCanonicalBiomeId(Heightmap.Biome biome, out string id)
+    {
+        id = biome switch
+        {
+            FungalForestBiome => "fungal_forest",
+            BlackwaterDeepBiome => "blackwater_deep",
+            SulfurousWastesBiome => "sulfurous_wastes",
+            FrozenCavernsBiome => "frozen_caverns",
+            FractureZonesBiome => "fracture_zones",
+            GreatDecayBiome => "great_decay",
+            _ => string.Empty,
+        };
+        return id.Length != 0;
+    }
+
+    internal static bool TryGetBiomeDisplayName(Heightmap.Biome biome, out string name)
+    {
+        name = biome switch
+        {
+            FungalForestBiome => "Fungal Forest",
+            BlackwaterDeepBiome => "Blackwater Deep",
+            SulfurousWastesBiome => "Sulfurous Wastes",
+            FrozenCavernsBiome => "Frozen Caverns",
+            FractureZonesBiome => "Fracture Zones",
+            GreatDecayBiome => "Great Decay",
+            _ => string.Empty,
+        };
+        return name.Length != 0;
+    }
+
     internal static BiomeSector NativeSectorFor(UnderworldTerrainBiome biome)
     {
         var native = ToNativeBiome(biome);
@@ -250,6 +280,35 @@ internal static class UnderworldNativeHeightmapBiomePatch
     {
         if (!UnderworldTerrainRuntime.TrySampleUnderworldHeightmap(__instance, __0, out var terrain)) return true;
         __result = UnderworldTerrainRuntime.ToNativeBiome(terrain.Biome);
+        return false;
+    }
+}
+
+
+[HarmonyPatch(
+    typeof(BiomeSector),
+    nameof(BiomeSector.GetBiomeName),
+    new[] { typeof(Heightmap.Biome) })]
+internal static class UnderworldNativeBiomeSectorNamePatch
+{
+    private static bool Prefix(Heightmap.Biome __0, ref string __result)
+    {
+        if (!UnderworldTerrainRuntime.TryGetBiomeDisplayName(__0, out var name)) return true;
+        __result = name;
+        return false;
+    }
+}
+
+[HarmonyPatch(
+    typeof(Heightmap),
+    nameof(Heightmap.BiomeToString),
+    new[] { typeof(Heightmap.Biome) })]
+internal static class UnderworldNativeBiomeStringPatch
+{
+    private static bool Prefix(Heightmap.Biome __0, ref string __result)
+    {
+        if (!UnderworldTerrainRuntime.TryGetCanonicalBiomeId(__0, out var id)) return true;
+        __result = id;
         return false;
     }
 }
