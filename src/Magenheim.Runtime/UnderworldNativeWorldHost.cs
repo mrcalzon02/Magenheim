@@ -110,6 +110,9 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
         SetFieldIfPresent(clone, "m_seedName", identity.DerivedSeedFingerprint);
         SetFieldIfPresent(clone, "m_seed", identity.DerivedSeed32);
         SetFieldIfPresent(clone, "m_uid", StableInstanceUid(GetFieldRequired<long>(source, "m_uid"), identity.DerivedSeedFingerprint));
+        // Surface AltBiomeWorldData is a mutable world-owned sector grid. The Underworld has its own
+        // biome authority and must never alias or regenerate Surface biome sectors.
+        SetFieldIfPresent(clone, "m_biomeData", null);
         return clone;
     }
 

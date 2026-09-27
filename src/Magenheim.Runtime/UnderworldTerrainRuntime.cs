@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
@@ -15,6 +17,15 @@ internal static class UnderworldTerrainRuntime
 {
     private static UnderworldRuntimeServices? _services;
     private static ManualLogSource? _log;
+    private static readonly object SectorLock = new();
+    private static readonly Dictionary<Heightmap.Biome, BiomeSector> NativeSectors = new();
+    private static readonly ConstructorInfo BiomeSectorConstructor =
+        typeof(BiomeSector).GetConstructor(
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            null,
+            new[] { typeof(AltBiomeWorldData), typeof(Heightmap.Biome) },
+            null)
+        ?? throw new MissingMethodException(typeof(BiomeSector).FullName, ".ctor(AltBiomeWorldData, Heightmap.Biome)");
     internal const Heightmap.Biome FungalForestBiome = (Heightmap.Biome)1024;
     internal const Heightmap.Biome BlackwaterDeepBiome = (Heightmap.Biome)2048;
     internal const Heightmap.Biome SulfurousWastesBiome = (Heightmap.Biome)4096;
@@ -40,6 +51,31 @@ internal static class UnderworldTerrainRuntime
         biome == FrozenCavernsBiome ||
         biome == FractureZonesBiome ||
         biome == GreatDecayBiome;
+
+    internal static BiomeSector NativeSectorFor(UnderworldTerrainBiome biome)
+    {
+        var native = ToNativeBiome(biome);
+        lock (SectorLock)
+        {
+            if (NativeSectors.TryGetValue(native, out var existing)) return existing;
+            var created = BiomeSectorConstructor.Invoke(new object?[] { null, native }) as BiomeSector
+                ?? throw new InvalidOperationException($"Valheim refused a native BiomeSector for Magenheim biome {(int)native}.");
+            NativeSectors.Add(native, created);
+            return created;
+        }
+    }
+
+    internal static bool TrySampleUnderworldHeightmap(Heightmap heightmap, Vector3 point, out UnderworldTerrainResult terrain)
+    {
+        terrain = default;
+        if (!heightmap) return false;
+        if (!ValheimWorldInstanceExecution.TryGetContextForScene(heightmap.gameObject.scene.handle, out var context) ||
+            context is null || !context.InstanceId.IsUnderworld)
+            return false;
+
+        terrain = SampleInstanceTerrain(point.x, 0d, point.z);
+        return terrain.Admitted;
+    }
 
     internal static void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -171,6 +207,49 @@ internal static class UnderworldNativeWorldGeneratorHeightPatch
         if (!UnderworldTerrainRuntime.TrySampleNativeGenerator(__instance, __1, __2, out var terrain)) return true;
         __3 = Color.clear;
         __result = (float)terrain.Height;
+        return false;
+    }
+}
+
+
+[HarmonyPatch(
+    typeof(WorldGenerator),
+    nameof(WorldGenerator.GetBiomeSector),
+    new[] { typeof(float), typeof(float), typeof(bool) })]
+internal static class UnderworldNativeWorldGeneratorBiomeSectorColumnPatch
+{
+    private static bool Prefix(WorldGenerator __instance, float __0, float __1, ref BiomeSector __result)
+    {
+        if (!UnderworldTerrainRuntime.TrySampleNativeGenerator(__instance, __0, __1, out var terrain)) return true;
+        __result = UnderworldTerrainRuntime.NativeSectorFor(terrain.Biome);
+        return false;
+    }
+}
+
+[HarmonyPatch(
+    typeof(WorldGenerator),
+    nameof(WorldGenerator.GetBiomeSector),
+    new[] { typeof(Vector3), typeof(bool) })]
+internal static class UnderworldNativeWorldGeneratorBiomeSectorPointPatch
+{
+    private static bool Prefix(WorldGenerator __instance, Vector3 __0, ref BiomeSector __result)
+    {
+        if (!UnderworldTerrainRuntime.TrySampleNativeGenerator(__instance, __0.x, __0.z, out var terrain)) return true;
+        __result = UnderworldTerrainRuntime.NativeSectorFor(terrain.Biome);
+        return false;
+    }
+}
+
+[HarmonyPatch(
+    typeof(Heightmap),
+    nameof(Heightmap.GetBiome),
+    new[] { typeof(Vector3), typeof(float), typeof(bool) })]
+internal static class UnderworldNativeHeightmapBiomePatch
+{
+    private static bool Prefix(Heightmap __instance, Vector3 __0, ref Heightmap.Biome __result)
+    {
+        if (!UnderworldTerrainRuntime.TrySampleUnderworldHeightmap(__instance, __0, out var terrain)) return true;
+        __result = UnderworldTerrainRuntime.ToNativeBiome(terrain.Biome);
         return false;
     }
 }
