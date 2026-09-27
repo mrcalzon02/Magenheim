@@ -87,6 +87,15 @@ internal static class ValheimWorldInstanceExecution
         return false;
     }
 
+    internal static bool TryGetContext(UnderworldWorldInstanceId instanceId, out ValheimWorldInstanceContext? context)
+    {
+        var registry = _registry;
+        if (registry is not null && registry.TryGetContext(instanceId, out context) && context is not null)
+            return true;
+        context = null;
+        return false;
+    }
+
     internal static bool TryGetQueryScene(out Scene scene)
     {
         if (TryGetAmbientContext(out var context) && context is not null)
