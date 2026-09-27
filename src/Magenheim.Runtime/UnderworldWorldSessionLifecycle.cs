@@ -61,6 +61,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     private void Update()
     {
         if (_services is null) return;
+        UnderworldLoadingScreenRuntime.Tick();
         var znet = ZNet.instance;
         if (znet is null)
         {
@@ -115,6 +116,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
 
         try
         {
+            UnderworldLoadingScreenRuntime.Show(_log, "Delving beneath the world…");
             _services.InstanceLifecycle.EnsureAdmitted(identity);
             if (ZNet.World is not null && WorldGenerator.instance is not null && ZoneSystem.instance is not null && ZDOMan.instance is not null)
                 _services.WorldInstances.BindSurface(ZNet.World, WorldGenerator.instance, ZoneSystem.instance, ZDOMan.instance);
@@ -132,6 +134,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         }
         catch (Exception exception)
         {
+            UnderworldLoadingScreenRuntime.Hide();
             _log.LogError($"Underworld instance authority admission failed: {exception}");
         }
     }
@@ -170,6 +173,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             _worldCenter = candidate;
             candidate = null;
             _worldCenterInstanceKey = instanceKey;
+            UnderworldLoadingScreenRuntime.Hide();
             _log.LogInfo($"Composed Underworld world center directly in native instance scene '{context.Scene.name}'.");
         }
         catch (Exception exception)
@@ -223,6 +227,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
 
     private void ResetWorldState()
     {
+        UnderworldLoadingScreenRuntime.Hide();
         if (_worldCenter) Destroy(_worldCenter);
         _worldCenter = null;
         _worldCenterInstanceKey = null;
@@ -245,6 +250,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         ResetWorldState();
         _nativeWorldHost?.Dispose();
         _nativeWorldHost = null;
+        UnderworldLoadingScreenRuntime.Reset();
         _observedWorldUid = null;
     }
 }

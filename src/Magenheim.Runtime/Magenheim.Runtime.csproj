@@ -49,6 +49,9 @@
     <None Include="../../assets/textures/underworld/sky/lava-fungal-roof-v2.png;../../assets/textures/underworld/sky/lava-fungal-roof-emission.png"
           Link="assets/textures/underworld/sky/%(Filename)%(Extension)"
           CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../assets/loading/underworld/*.png"
+          Link="assets/loading/underworld/%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../default-data/foundation.json"
           Link="default-data/foundation.json"
           CopyToOutputDirectory="PreserveNewest" />
