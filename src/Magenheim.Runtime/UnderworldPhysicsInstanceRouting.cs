@@ -10,9 +10,13 @@ namespace Magenheim.Runtime;
 /// Physics.defaultPhysicsScene; overriding this getter while instance 1 is scoped preserves
 /// vanilla call sites without merging Surface and Underworld colliders.
 /// </summary>
-[HarmonyPatch(typeof(Physics), nameof(Physics.defaultPhysicsScene), MethodType.Getter)]
+[HarmonyPatch]
 internal static class UnderworldDefaultPhysicsScenePatch
 {
+    internal static System.Reflection.MethodBase TargetMethod() =>
+        AccessTools.PropertyGetter(typeof(Physics), nameof(Physics.defaultPhysicsScene))
+        ?? throw new MissingMethodException(typeof(Physics).FullName, "get_defaultPhysicsScene");
+
     private static void Postfix(ref PhysicsScene __result)
     {
         if (!ValheimWorldInstanceExecution.TryGetAmbientContext(out var context) ||

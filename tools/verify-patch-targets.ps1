@@ -15,16 +15,28 @@ $runtimeAssembly = [Mono.Cecil.AssemblyDefinition]::ReadAssembly($RuntimeDll, $r
 $gameAssembly = [Mono.Cecil.AssemblyDefinition]::ReadAssembly((Join-Path $GameManagedPath 'assembly_valheim.dll'), $readerParameters)
 try {
     $count = 0
+    $dynamicCount = 0
     foreach ($type in $runtimeAssembly.MainModule.Types) {
         foreach ($provider in @($type) + @($type.Methods)) {
             foreach ($attribute in $provider.CustomAttributes | Where-Object { $_.AttributeType.FullName -eq 'HarmonyLib.HarmonyPatch' }) {
                 $arguments = $attribute.ConstructorArguments
+                if ($arguments.Count -eq 0 -and $provider -is [Mono.Cecil.TypeDefinition]) {
+                    $resolverMethod = @($provider.Methods | Where-Object {
+                        $_.IsStatic -and $_.Name -in @('TargetMethod','TargetMethods')
+                    })
+                    if ($resolverMethod.Count -ne 1) {
+                        throw "Dynamic Harmony patch $($provider.FullName) must declare exactly one static TargetMethod or TargetMethods resolver."
+                    }
+                    $dynamicCount++
+                    continue
+                }
                 if ($arguments.Count -lt 2 -or $arguments[0].Type.FullName -ne 'System.Type' -or
                     $arguments[1].Type.FullName -ne 'System.String') { throw "Unsupported patch declaration on $($provider.FullName)." }
-                $targetName = $arguments[0].Value.FullName
+                $targetReference = [Mono.Cecil.TypeReference]$arguments[0].Value
+                $targetName = $targetReference.FullName
                 $methodName = [string]$arguments[1].Value
-                $target = $gameAssembly.MainModule.GetType($targetName)
-                if (!$target) { $target = $runtimeAssembly.MainModule.GetType($targetName) }
+                try { $target = $targetReference.Resolve() }
+                catch { throw "Missing patch type: $targetName ($($_.Exception.Message))" }
                 if (!$target) { throw "Missing patch type: $targetName" }
                 $candidates = @($target.Methods | Where-Object Name -eq $methodName)
                 if ($arguments.Count -gt 2) {
@@ -73,6 +85,6 @@ try {
             }
         }
     }
-    if ($count -eq 0) { throw 'No Harmony targets were inspected.' }
-    Write-Output "Verified $count Harmony patch targets and named argument bindings against installed assemblies."
+    if (($count + $dynamicCount) -eq 0) { throw 'No Harmony targets were inspected.' }
+    Write-Output "Verified $count explicit Harmony patch targets and named argument bindings; found $dynamicCount dynamic resolver declaration(s) for runtime-resolution verification."
 } finally { $runtimeAssembly.Dispose(); $gameAssembly.Dispose() }
