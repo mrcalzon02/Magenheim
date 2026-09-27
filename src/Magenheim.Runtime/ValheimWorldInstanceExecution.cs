@@ -339,8 +339,16 @@ internal static class UnderworldSpawnSystemInstanceScopePatch
     internal static void Prefix(SpawnSystem __instance, out IDisposable? __state)
     {
         __state = null;
-        if (!__instance) return;
-        ValheimWorldInstanceExecution.TryEnterScene(__instance.gameObject.scene.handle, out __state);
+        if (!__instance ||
+            !ValheimWorldInstanceExecution.TryGetContextForScene(__instance.gameObject.scene.handle, out var context) ||
+            context is null ||
+            ReferenceEquals(ValheimWorldInstanceExecution.Active, context))
+            return;
+
+        // SpawnSystem must carry explicit instance identity even for Surface. Its native code reads
+        // process-global Player/BaseAI registries, so the query adapters below need to know which
+        // scene's population the current zone controller is allowed to see.
+        __state = ValheimWorldInstanceExecution.Enter(context);
     }
 
     internal static void Finalizer(IDisposable? __state) => __state?.Dispose();
