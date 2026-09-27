@@ -178,8 +178,20 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             null,
             new[] { typeof(World) },
             null) ?? throw new MissingMethodException(typeof(WorldGenerator).FullName, ".ctor(World)");
-        return (WorldGenerator)(ctor.Invoke(new object[] { world })
-            ?? throw new InvalidOperationException("WorldGenerator constructor returned null."));
+
+        // Valheim's constructor clears process-global biome memo tables even though the generator
+        // itself is an ordinary per-world object. Preserve Surface's memo contents while creating
+        // instance 1; Underworld bypasses those static memos entirely through Harmony patches.
+        var cacheSnapshot = UnderworldWorldGeneratorCacheIsolation.CaptureSurfaceCaches();
+        try
+        {
+            return (WorldGenerator)(ctor.Invoke(new object[] { world })
+                ?? throw new InvalidOperationException("WorldGenerator constructor returned null."));
+        }
+        finally
+        {
+            UnderworldWorldGeneratorCacheIsolation.RestoreSurfaceCaches(cacheSnapshot);
+        }
     }
 
     private static ZDOMan CreateZdoMan(ZDOMan surface)
