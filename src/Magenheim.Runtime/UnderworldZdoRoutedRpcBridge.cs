@@ -125,6 +125,37 @@ internal static class UnderworldZdoRequestRoutedRpcPatch
         !UnderworldZdoRoutedRpcBridge.ReplayRequest(__0, __1);
 }
 
+[HarmonyPatch(typeof(ZNetScene), "CreateObject", new[] { typeof(ZDO) })]
+internal static class UnderworldZNetSceneCreateObjectInstancePatch
+{
+    private static void Prefix(ZDO __0, out IDisposable? __state)
+    {
+        __state = null;
+        if (__0 is null) return;
+        UnderworldZdoRoutedRpcBridge.TryEnterTarget(__0.m_uid, out __state);
+    }
+
+    private static void Finalizer(IDisposable? __state) => __state?.Dispose();
+}
+
+[HarmonyPatch(typeof(ZNetScene), nameof(ZNetScene.Destroy), new[] { typeof(UnityEngine.GameObject) })]
+internal static class UnderworldZNetSceneDestroyInstancePatch
+{
+    private static void Prefix(UnityEngine.GameObject __0, out IDisposable? __state)
+    {
+        __state = null;
+        if (!__0) return;
+        if (ValheimWorldInstanceExecution.TryEnterScene(__0.scene.handle, out __state)) return;
+
+        var view = __0.GetComponent<ZNetView>();
+        var zdo = view && view.IsValid() ? view.GetZDO() : null;
+        if (zdo is not null)
+            UnderworldZdoRoutedRpcBridge.TryEnterTarget(zdo.m_uid, out __state);
+    }
+
+    private static void Finalizer(IDisposable? __state) => __state?.Dispose();
+}
+
 [HarmonyPatch(typeof(ZRoutedRpc), "HandleRoutedRPC", new[] { typeof(ZRoutedRpc.RoutedRPCData) })]
 internal static class UnderworldObjectRoutedRpcInstancePatch
 {
