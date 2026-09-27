@@ -45,6 +45,7 @@ internal sealed class ValheimWorldInstanceRegistry
     {
         if (context is null) throw new ArgumentNullException(nameof(context));
         _contexts[context.InstanceId] = context;
+        if (context.InstanceId.IsUnderworld) ValheimWorldInstanceExecution.EnableSceneCallbacks();
     }
 
     internal bool TryGetContext(UnderworldWorldInstanceId instanceId, out ValheimWorldInstanceContext? context) =>
@@ -94,6 +95,7 @@ internal sealed class ValheimWorldInstanceRegistry
 
     internal void Reset()
     {
+        ValheimWorldInstanceExecution.DisableSceneCallbacks();
         _players.Clear();
         _contexts.Clear();
     }

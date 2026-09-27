@@ -2,7 +2,12 @@
 
 **Magic begins as geology.**
 
-## 0.0.137 testing candidate
+## 0.0.138 testing candidate
+
+Copies the readonly native location index into the independent Underworld catalog. Failed native
+construction stops for the session instead of rebuilding every frame. Broad scene callback hooks
+are installed only when the Underworld is bound and removed on unload. Main-menu FPS and successful
+world generation still require live confirmation; offline gates exercise the actual catalog copier.
 
 Adds ten individually cropped Underworld loading backdrops from the supplied artwork. The remote
 Underworld loading presenter rotates them while preserving the image aspect ratio.
@@ -45,10 +50,10 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.137.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.138.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
-Launch **Modded**. Confirm `Loading [Magenheim 0.0.137]` in the BepInEx log.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.138]` in the BepInEx log.
 Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
 See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.

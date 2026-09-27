@@ -57,6 +57,29 @@ try {
         }
     }
     Write-Output 'Verified world-instance adapter initialization and all five writable native authority bindings.'
+    # Exercise the real copier against the installed game's readonly catalog field. No Unity
+    # objects are constructed or activated; uninitialized shells contain managed collections only.
+    $game = [Reflection.Assembly]::LoadFrom((Join-Path $GameManagedPath 'assembly_valheim.dll'))
+    $zoneType = $game.GetType('ZoneSystem', $true)
+    $instanceFlags = [Reflection.BindingFlags]'Instance,Public,NonPublic'
+    $indexField = $zoneType.GetField('m_locationsByHash', $instanceFlags)
+    $sourceZone = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($zoneType)
+    $targetZone = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($zoneType)
+    $sourceIndex = [Activator]::CreateInstance($indexField.FieldType)
+    $targetIndex = [Activator]::CreateInstance($indexField.FieldType)
+    $location = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($indexField.FieldType.GetGenericArguments()[1])
+    for ($i = 0; $i -lt 260; $i++) { $sourceIndex.Add($i, $location) }
+    $targetIndex.Add(-1, $location)
+    $indexField.SetValue($sourceZone, $sourceIndex)
+    $indexField.SetValue($targetZone, $targetIndex)
+    $copier = $runtime.GetType('Magenheim.Runtime.UnderworldNativeWorldHost', $true).GetMethod('CopyZoneConfiguration', [Reflection.BindingFlags]'Static,NonPublic')
+    $copier.Invoke($null, @($sourceZone, $targetZone)) | Out-Null
+    if ($targetIndex.Count -ne 260 -or $sourceIndex.Count -ne 260 -or $targetIndex.ContainsKey(-1) -or
+        ![Object]::ReferenceEquals($indexField.GetValue($targetZone), $targetIndex) -or
+        ![Object]::ReferenceEquals($targetIndex[259], $location)) { throw 'Native readonly location catalog copy failed.' }
+    $targetIndex.Remove(0) | Out-Null
+    if (!$sourceIndex.ContainsKey(0)) { throw 'Location catalog mutation leaked into Surface.' }
+    Write-Output 'Verified actual native ZoneSystem copier: 260 catalog entries retained, readonly target preserved, stale entries removed, Surface mutation isolated.'
     $flags = [Reflection.BindingFlags]'Static,Public,NonPublic'
     $dynamic = 0
     $resolvedCount = 0

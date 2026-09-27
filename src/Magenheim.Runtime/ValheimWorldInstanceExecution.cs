@@ -16,6 +16,28 @@ internal static class ValheimWorldInstanceExecution
 {
     private static readonly AsyncLocal<ValheimWorldInstanceContext?> Current = new();
     private static ValheimWorldInstanceRegistry? _registry;
+    private static Harmony? _sceneCallbacks;
+
+    // Menu/Surface-only sessions need no generic behaviour interception. Install these broad
+    // adapters only once the second scene exists, before its components are activated.
+    internal static void EnableSceneCallbacks()
+    {
+        if (_sceneCallbacks is not null) return;
+        var harmony = new Harmony(MagenheimPlugin.PluginGuid + ".scene-callbacks");
+        try
+        {
+            harmony.PatchAll(typeof(UnderworldValheimBehaviourInstanceScopePatch));
+            harmony.PatchAll(typeof(UnderworldMagenheimBehaviourInstanceScopePatch));
+            _sceneCallbacks = harmony;
+        }
+        catch { harmony.UnpatchSelf(); throw; }
+    }
+
+    internal static void DisableSceneCallbacks()
+    {
+        _sceneCallbacks?.UnpatchSelf();
+        _sceneCallbacks = null;
+    }
 
     // Bind the writable native backing fields explicitly. The public singleton properties can
     // be read-only; a guessed property/field fallback must not poison every patched callback.
@@ -72,7 +94,7 @@ internal static class ValheimWorldInstanceExecution
         if (context is not null) return true;
 
         var registry = _registry;
-        if (registry is null) return false;
+        if (registry is null || !registry.HasUnderworldContext) return false;
 
         var localPlayer = Player.m_localPlayer;
         if (localPlayer &&

@@ -1,4 +1,4 @@
 {
-  "version": "0.0.137",
-  "description": "0.0.137: Adds ten individual Underworld loading backdrops from the supplied artwork. Includes remote loading and weather updates. Fixes one-shot resource pickup registration, the YggaShoot1 flora donor and loading image/font compatibility."
+  "version": "0.0.138",
+  "description": "0.0.138: Fixes the empty Underworld location catalog that blocked generation. Stops repeated failed world construction and defers broad scene callback patches until the Underworld exists, removing their main-menu overhead."
 }

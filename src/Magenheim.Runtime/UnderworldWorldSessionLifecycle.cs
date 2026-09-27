@@ -23,6 +23,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     private string? _worldCenterInstanceKey;
     private float _nextBoonReconcileAt;
     private bool _physicsSimulationFaulted;
+    private bool _admissionFailed;
 
     internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -104,10 +105,11 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     private void TryAdmitInstanceAuthority(ZNet znet)
     {
         if (_services is null || _log is null) return;
+        if (_admissionFailed) return;
         if (_services.InstanceLifecycle.Phase == UnderworldInstancePhase.Active) return;
 
         var world = ZNet.World;
-        if (world is null) return;
+        if (world is null || WorldGenerator.instance is null || ZoneSystem.instance is null || ZDOMan.instance is null) return;
         if (!UnderworldRuntimeIdentityResolver.TryResolveWorldIdentity(znet, world, out var identity, out var diagnostic) || identity is null)
         {
             _log.LogWarning($"Underworld instance admission is waiting for authoritative world identity: {diagnostic}");
@@ -134,6 +136,9 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         }
         catch (Exception exception)
         {
+            // A failed native construction is not a readiness poll. Rebuilding the same world
+            // every Update stalls the game and floods errors; retry only in a new session.
+            _admissionFailed = true;
             UnderworldLoadingScreenRuntime.Hide();
             _log.LogError($"Underworld instance authority admission failed: {exception}");
         }
@@ -234,6 +239,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         DeepBoonRuntime.Reset();
         _nextBoonReconcileAt = 0f;
         _physicsSimulationFaulted = false;
+        _admissionFailed = false;
         _nativeWorldHost?.Dispose();
         _nativeWorldHost = _services is null || _log is null ? null : new UnderworldNativeWorldHost(_services.WorldInstances, _log);
         UnderworldInstancePersistence.Reset();

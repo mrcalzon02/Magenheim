@@ -455,6 +455,19 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
                 continue;
             }
 
+            // readonly protects the dictionary reference, not its contents. Its fresh native
+            // instance must receive the catalog too; skipping it leaves every hash unresolved.
+            if (field.Name == "m_locationsByHash")
+            {
+                var sourceIndex = (IDictionary)field.GetValue(source)!;
+                var targetIndex = (IDictionary)field.GetValue(target)!;
+                if (ReferenceEquals(sourceIndex, targetIndex))
+                    throw new InvalidOperationException("Location catalog dictionary must be instance-owned.");
+                targetIndex.Clear();
+                foreach (DictionaryEntry entry in sourceIndex) targetIndex.Add(entry.Key, entry.Value);
+                continue;
+            }
+
             if (field.IsInitOnly || IsRuntimeStateField(field.Name))
                 continue;
 
@@ -682,13 +695,13 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
                 unload.completed += _ =>
                 {
                     pathfindingState?.Dispose();
-                    pathfindingState?.Dispose();
-        ReleaseDetachedZdoState(zdoMan);
+                    ReleaseDetachedZdoState(zdoMan);
                 };
                 return;
             }
         }
 
+        pathfindingState?.Dispose();
         ReleaseDetachedZdoState(zdoMan);
     }
 

@@ -1,3 +1,20 @@
+# Development closeout - 0.0.138 native catalog and menu callbacks
+
+The 0.0.137 live log loaded all ten backdrops and passed resource/flora registration, then repeatedly
+failed native world creation: m_locationsByHash copied 0 of 260 entries. CopyZoneConfiguration
+skipped readonly fields even though this dictionary's contents remain mutable. Populate the child's
+existing native dictionary without aliasing the Surface dictionary. The installed-game test invokes
+the actual copier with 260 entries and checks reference preservation and independent mutation.
+
+Stop failed admission attempts until the world session resets, avoiding repeated multi-second
+WorldGenerator/scene construction. Wait normally for missing native services before admission.
+Defer both generic behaviour patch families until the Underworld context is bound; remove them on
+session reset. Ambient scene lookup also returns immediately when no Underworld exists.
+
+The user observed 16 FPS in the main character/world-selection menu. The failed admission loop is
+a separate post-selection problem. Removed menu callback overhead is source-verified; FPS recovery
+is not yet measured. Successful admission, generation and travel remain live acceptance requirements.
+
 # Development closeout - 0.0.137 content registration and loading artwork
 
 The 0.0.136 live log reached boot without the prior singleton cascade, but rejected eleven
