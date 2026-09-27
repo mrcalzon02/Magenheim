@@ -57,6 +57,7 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             _underworldZdoMan = zdoMan;
             ValidateDistinctZdoNamespace(surface.ZdoMan, zdoMan);
             var zoneSystem = CreateZoneSystem(surface.ZoneSystem, _scene);
+            UnderworldZoneSystemLifetimeGuard.Register(zoneSystem, surface.ZoneSystem);
             UnderworldTerrainRuntime.CaptureInstanceWaterLevel(zoneSystem.m_waterLevel);
 
             var context = new ValheimWorldInstanceContext(
@@ -425,6 +426,12 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
         SceneManager.MoveGameObjectToScene(_zoneRoot, scene);
         var clone = _zoneRoot.AddComponent<ZoneSystem>();
         CopyZoneConfiguration(source, clone);
+
+        // Surface has already assembled the native/Jotunn catalog before instance 1 is admitted.
+        // Keep the populated location/vegetation/hash catalogs, but remove the source prefab lists
+        // before Awake so Valheim cannot instantiate a second process-global set of
+        // LocationList / AltBiomeList objects.
+        ClearCatalogSourcePrefabs(clone);
         ValidateDetachedZoneSystemState(source, clone);
         return clone;
     }
@@ -467,6 +474,19 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
         }
     }
 
+    private static void ClearCatalogSourcePrefabs(ZoneSystem target)
+    {
+        foreach (var name in new[] { "m_locationLists", "m_altBiomeLists" })
+        {
+            var field = AccessTools.Field(typeof(ZoneSystem), name)
+                ?? throw new MissingFieldException(typeof(ZoneSystem).FullName, name);
+            if (field.GetValue(target) is not IList list)
+                throw new InvalidOperationException(
+                    $"Underworld ZoneSystem source list '{name}' is not IList-compatible.");
+            list.Clear();
+        }
+    }
+
     private static void ValidateDetachedZoneSystemState(ZoneSystem surface, ZoneSystem underworld)
     {
         foreach (var name in new[]
@@ -495,6 +515,15 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
                     throw new InvalidOperationException($"Underworld ZoneSystem field '{name}' lost its list configuration.");
                 if (ReferenceEquals(sourceList, targetList))
                     throw new InvalidOperationException($"Underworld ZoneSystem field '{name}' still aliases Surface.");
+
+                if (name is "m_locationLists" or "m_altBiomeLists")
+                {
+                    if (targetList.Count != 0)
+                        throw new InvalidOperationException(
+                            $"Underworld ZoneSystem source list '{name}' retained {targetList.Count} prefab entries and would duplicate process-global catalog registration during Awake.");
+                    continue;
+                }
+
                 if (sourceList.Count != targetList.Count)
                     throw new InvalidOperationException(
                         $"Underworld ZoneSystem field '{name}' copied {targetList.Count} entries from Surface's {sourceList.Count}.");
