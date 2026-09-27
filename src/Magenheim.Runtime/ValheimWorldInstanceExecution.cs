@@ -246,6 +246,47 @@ internal static class UnderworldValheimBehaviourInstanceScopePatch
 
 
 /// <summary>
+/// Applies the same world-instance scope to Magenheim-authored MonoBehaviour callbacks. This is
+/// intentionally separate from the Valheim-assembly adapter: Underworld encounters, creature
+/// runtimes, rewards and effects often Instantiate native/networked content from their callbacks,
+/// and Unity must see the owning instance scene as active for those operations.
+/// </summary>
+[HarmonyPatch]
+internal static class UnderworldMagenheimBehaviourInstanceScopePatch
+{
+    private static readonly string[] Names =
+    {
+        "Awake", "Start", "Update", "FixedUpdate", "LateUpdate",
+        "OnTriggerEnter", "OnTriggerStay", "OnTriggerExit",
+        "OnCollisionEnter", "OnCollisionStay", "OnCollisionExit",
+    };
+
+    internal static System.Collections.Generic.IEnumerable<MethodBase> TargetMethods()
+    {
+        var assembly = typeof(MagenheimPlugin).Assembly;
+        foreach (var type in assembly.GetTypes())
+        {
+            if (type.IsAbstract || !typeof(MonoBehaviour).IsAssignableFrom(type)) continue;
+            foreach (var method in type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+            {
+                if (method.IsAbstract || method.ContainsGenericParameters || Array.IndexOf(Names, method.Name) < 0) continue;
+                yield return method;
+            }
+        }
+    }
+
+    internal static void Prefix(object __instance, out IDisposable? __state)
+    {
+        __state = null;
+        if (__instance is not Component component || !component) return;
+        ValheimWorldInstanceExecution.TryEnterScene(component.gameObject.scene.handle, out __state);
+    }
+
+    internal static void Finalizer(IDisposable? __state) => __state?.Dispose();
+}
+
+
+/// <summary>
 /// Ensures lifecycle callbacks on the Underworld ZoneSystem execute with its instance-native
 /// World/WorldGenerator/ZDOMan bindings. Other ZoneSystem instances remain vanilla.
 /// </summary>
