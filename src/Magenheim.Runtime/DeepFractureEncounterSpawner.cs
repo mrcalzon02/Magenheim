@@ -33,7 +33,7 @@ internal static class DeepFractureEncounterSpawner
                     if (!authority.IsCleared(identity)) authority.MarkCleared(identity);
                     continue;
                 }
-                if (FindLivingSpawn(identity) is not null) continue;
+                if (FindLivingSpawn(identity, district.gameObject.scene.handle) is not null) continue;
 
                 var anchor = DeepFractureEncounterAnchors.Resolve(district.transform, placement.PieceFamilyId, encounter.Definition.Chassis, groupIndex, unitIndex, encounter.SpawnCount);
                 var instance = UnityEngine.Object.Instantiate(source, anchor.position, anchor.rotation);
@@ -55,11 +55,11 @@ internal static class DeepFractureEncounterSpawner
         }
     }
 
-    private static Character? FindLivingSpawn(string identity)
+    private static Character? FindLivingSpawn(string identity, int sceneHandle)
     {
         foreach (var character in Character.GetAllCharacters())
         {
-            if (character is null || character.IsDead()) continue;
+            if (character is null || character.IsDead() || character.gameObject.scene.handle != sceneHandle) continue;
             var view = character.GetComponent<ZNetView>();
             if (view is null || !view.IsValid()) continue;
             if (string.Equals(view.GetZDO().GetString(SpawnIdentityKey, string.Empty), identity, StringComparison.Ordinal)) return character;
