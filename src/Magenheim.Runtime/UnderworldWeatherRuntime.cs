@@ -463,19 +463,29 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
                     ParticleTokens = new[] { "mist", "fog" }
                 };
             case UnderworldAtmosphereEvent.Ashfall:
+                // Airborne fallout: favour visible ash/dust driven laterally through the cavern.
+                // Embers are deliberately excluded so this reads as particulate weather rather
+                // than a geothermal flare-up.
                 return style with
                 {
-                    WindMin = 0.30f,
-                    WindMax = 0.68f,
-                    ParticleTokens = new[] { "ash", "smoke", "ember" }
+                    WindMin = 0.34f,
+                    WindMax = 0.72f,
+                    Fog = new Color(0.36f, 0.30f, 0.16f),
+                    ParticleTokens = new[] { "ash", "dust" }
                 };
             case UnderworldAtmosphereEvent.ThermalSurge:
+                // Geothermal pulse: hot smoke/steam and incandescent material around the miasma.
+                // Ashfall owns the dry falling particulate identity.
                 return style with
                 {
-                    WindMin = 0.18f,
-                    WindMax = 0.48f,
+                    WindMin = 0.12f,
+                    WindMax = 0.38f,
                     Fog = new Color(0.52f, 0.37f, 0.12f),
-                    ParticleTokens = new[] { "ash", "smoke", "ember" }
+                    Ambient = new Color(0.38f, 0.25f, 0.10f),
+                    Sun = new Color(0.78f, 0.39f, 0.12f),
+                    LightDay = 0.44f,
+                    LightNight = 0.18f,
+                    ParticleTokens = new[] { "smoke", "steam", "ember", "spark" }
                 };
             case UnderworldAtmosphereEvent.Whiteout:
                 return style with
