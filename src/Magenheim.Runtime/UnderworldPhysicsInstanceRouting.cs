@@ -78,3 +78,29 @@ internal static class UnderworldHeightmapFindRadiusPatch
     private static bool Prefix(Vector3 point, float radius, List<Heightmap> heightmaps) =>
         !UnderworldHeightmapLookup.TryFind(point, radius, heightmaps);
 }
+
+
+/// <summary>
+/// TerrainComp also keeps a global static registry. Filter it by the same world-instance scene as
+/// Heightmap so terrain operations at identical X/Z never bind to the other world's compiler.
+/// </summary>
+[HarmonyPatch(typeof(TerrainComp), nameof(TerrainComp.FindTerrainCompiler), new[] { typeof(Vector3) })]
+internal static class UnderworldTerrainCompilerFindPatch
+{
+    private static bool Prefix(Vector3 point, ref TerrainComp __result)
+    {
+        if (!ValheimWorldInstanceExecution.TryGetQueryScene(out var scene)) return true;
+
+        foreach (var compiler in TerrainComp.s_instances)
+        {
+            if (!compiler || compiler.gameObject.scene.handle != scene.handle) continue;
+            var heightmap = compiler.m_hmap;
+            if (!heightmap || !heightmap.IsPointInside(point, 0f)) continue;
+            __result = compiler;
+            return false;
+        }
+
+        __result = null!;
+        return false;
+    }
+}
