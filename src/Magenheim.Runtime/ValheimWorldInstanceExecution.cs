@@ -203,6 +203,38 @@ internal static class UnderworldZoneSystemLocationIteratorScopePatch
 
 
 /// <summary>
+/// Routes native _ZoneCtrl SpawnSystem callbacks through the world services owned by the scene
+/// containing that zone controller. Surface controllers remain Surface-scoped; Underworld
+/// controllers therefore evaluate biome, terrain, ZDO ownership and spawning against instance 1.
+/// </summary>
+[HarmonyPatch]
+internal static class UnderworldSpawnSystemInstanceScopePatch
+{
+    private static readonly string[] Names =
+    {
+        "Awake", "Start", "Update", "UpdateSpawning", "UpdateSpawnList",
+        "FindBaseSpawnPoint", "IsSpawnPointGood", "Spawn",
+    };
+
+    internal static System.Collections.Generic.IEnumerable<MethodBase> TargetMethods()
+    {
+        foreach (var method in typeof(SpawnSystem).GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            if (Array.IndexOf(Names, method.Name) >= 0)
+                yield return method;
+    }
+
+    internal static void Prefix(SpawnSystem __instance, out IDisposable? __state)
+    {
+        __state = null;
+        if (!__instance) return;
+        ValheimWorldInstanceExecution.TryEnterScene(__instance.gameObject.scene.handle, out __state);
+    }
+
+    internal static void Finalizer(IDisposable? __state) => __state?.Dispose();
+}
+
+
+/// <summary>
 /// Routes player/character frame callbacks through the world services owned by the Unity scene
 /// containing that character. This is the per-player half of simultaneous multiplayer residency.
 /// </summary>
