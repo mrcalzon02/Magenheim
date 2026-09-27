@@ -433,7 +433,17 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
     {
         foreach (var field in typeof(ZoneSystem).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
         {
-            if (field.IsInitOnly || field.IsLiteral || IsRuntimeStateField(field.Name))
+            if (field.IsLiteral) continue;
+
+            if (IsSharedCampaignStateField(field.Name))
+            {
+                // Global keys belong to the parent campaign/save, not to a physical world instance.
+                // Share exactly these native collections; generated zones/locations remain detached.
+                field.SetValue(target, field.GetValue(source));
+                continue;
+            }
+
+            if (field.IsInitOnly || IsRuntimeStateField(field.Name))
                 continue;
 
             var value = field.GetValue(source);
@@ -523,11 +533,25 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             var surfaceValue = field.GetValue(surface);
             var underworldValue = field.GetValue(underworld);
             if (surfaceValue is null || underworldValue is null) continue;
+
+            if (IsSharedCampaignStateField(field.Name))
+            {
+                if (!ReferenceEquals(surfaceValue, underworldValue))
+                    throw new InvalidOperationException(
+                        $"Campaign global-key field '{field.Name}' is not shared between Surface and Underworld.");
+                continue;
+            }
+
             if (ReferenceEquals(surfaceValue, underworldValue))
                 throw new InvalidOperationException(
                     $"Underworld ZoneSystem still shares mutable field '{field.Name}' ({field.FieldType.FullName}) with Surface.");
         }
     }
+
+    private static bool IsSharedCampaignStateField(string name) =>
+        string.Equals(name, "m_globalKeys", StringComparison.Ordinal) ||
+        string.Equals(name, "m_globalKeysEnums", StringComparison.Ordinal) ||
+        string.Equals(name, "m_globalKeysValues", StringComparison.Ordinal);
 
     private static bool IsRuntimeStateField(string name)
     {
