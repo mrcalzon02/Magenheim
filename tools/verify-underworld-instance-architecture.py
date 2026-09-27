@@ -39,6 +39,7 @@ REQUIRED_FILES = (
     RUNTIME / "UnderworldZonePeerRouting.cs",
     RUNTIME / "UnderworldSpawnQueryIsolation.cs",
     RUNTIME / "ValheimPathfindingInstanceState.cs",
+    RUNTIME / "UnderworldStaticSceneRegistryIsolation.cs",
     RUNTIME / "UnderworldGateTransitRuntime.cs",
     RUNTIME / "UnderworldZoneSystemStartIsolation.cs",
     RUNTIME / "UnderworldZoneInstanceState.cs",
