@@ -23,6 +23,7 @@ internal static class UnderworldInstancePersistence
     private static readonly AsyncLocal<int> CombinedExtraDataPrepare = new();
     private static readonly AsyncLocal<int> CombinedLookupReentry = new();
     private static readonly AsyncLocal<int> PreserveSharedStaticsDuringInstanceLoad = new();
+    private static readonly AsyncLocal<int> PreserveSharedSaveSnapshotDuringInstanceCleanup = new();
     private static UnderworldRuntimeServices? _services;
     private static ManualLogSource? _log;
     private static PendingLoad? _pendingLoad;
@@ -106,8 +107,24 @@ internal static class UnderworldInstancePersistence
     {
         if (!IsSurfaceInvocation(source)) return;
         if (!TryGetUnderworld(out var context)) return;
-        InvokeSnapshotIo(context!, (MethodInfo)original, (object[])args.Clone());
+
+        // Surface and Underworld have both completed SaveChunks before Valheim reaches SaveCleanup.
+        // Clean the detached manager first, but suppress only its process-global
+        // ZDOExtraData.ClearSave. Surface's ordinary SaveCleanup then performs that global clear
+        // exactly once after both managers' native per-save state has been released.
+        PreserveSharedSaveSnapshotDuringInstanceCleanup.Value++;
+        try
+        {
+            InvokeSnapshotIo(context!, (MethodInfo)original, (object[])args.Clone());
+        }
+        finally
+        {
+            PreserveSharedSaveSnapshotDuringInstanceCleanup.Value--;
+        }
     }
+
+    internal static bool AllowSharedSaveSnapshotClear() =>
+        PreserveSharedSaveSnapshotDuringInstanceCleanup.Value == 0;
 
     private static void PrepareCombinedExtraDataSnapshot()
     {
@@ -338,7 +355,7 @@ internal static class UnderworldZdoSaveCleanupPersistencePatch
                 yield return method;
     }
 
-    private static void Postfix(ZDOMan __instance, MethodBase __originalMethod, object[] __args) =>
+    private static void Prefix(ZDOMan __instance, MethodBase __originalMethod, object[] __args) =>
         UnderworldInstancePersistence.MirrorSaveCleanup(__instance, __originalMethod, __args);
 }
 
@@ -372,4 +389,16 @@ internal static class UnderworldZdoExtraDataResetGuardPatch
 internal static class UnderworldZdoIdResetGuardPatch
 {
     private static bool Prefix() => UnderworldInstancePersistence.AllowSharedStaticReset();
+}
+
+
+/// <summary>
+/// Instance 1 runs its native SaveCleanup immediately before Surface cleanup. Suppress only the
+/// detached manager's process-global save-snapshot clear; Surface remains the one authority that
+/// clears ZDOExtraData's shared prepared-save snapshot after both native managers are cleaned.
+/// </summary>
+[HarmonyPatch(typeof(ZDOExtraData), nameof(ZDOExtraData.ClearSave))]
+internal static class UnderworldZdoExtraDataClearSaveGuardPatch
+{
+    private static bool Prefix() => UnderworldInstancePersistence.AllowSharedSaveSnapshotClear();
 }
