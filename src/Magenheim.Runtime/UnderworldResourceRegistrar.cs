@@ -81,8 +81,9 @@ internal sealed class UnderworldResourceRegistrar : IDisposable
                 pickable.m_maxLevelBonusChance = 0f;
                 pickable.m_bonusYieldAmount = 0;
                 if (model is not null) pickable.m_hideWhenPicked = UnderworldResourceVisuals.Apply(clone, model);
-                if (pickable.m_hideWhenPicked is null)
-                    throw new InvalidOperationException("Persistent natural resource pickup requires m_hideWhenPicked so Valheim retains picked state in its native ZDO.");
+                // Keep both native Pickable lifecycles: authored visuals retain the picked ZDO;
+                // one-shot donors without a hide target are removed by native ZNetView.Destroy.
+                // ZoneSystem owns generated-zone persistence, so neither needs a custom respawn loop.
                 var biomeResourceCount = System.Linq.Enumerable.Count(
                     UnderworldResourceCatalog.All,
                     value => value.Biome == entry.Biome);

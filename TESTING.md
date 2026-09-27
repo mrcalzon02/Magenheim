@@ -4,12 +4,12 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.108 by Local** and start its description with
-**0.0.108: Adds grass-like root carpets, tufts and woven mats**.
+show **Magenheim v0.0.137 by Local** and start its description with
+**0.0.137: Adds ten individual Underworld loading backdrops**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.108]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.137]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
@@ -341,3 +341,11 @@ separate observations.
   hides unexplored names. Surface names must return when leaving or browsing the Surface tab.
 - Check denser fungal groves, stronger background haze, rougher local relief, and remaining
   massive cliffs in clearer biomes. Terrain relief changed: use a disposable test world first.
+# 0.0.137 loading artwork and content registration acceptance
+
+- Fresh boot: confirm 22 resource items and 22 native vegetation pickups, with no hide-target
+  rejection and no missing YggaShoot1 donor warning.
+- Underworld generation: confirm individual panoramic loading artwork and no stretched image
+  or collage dividers. While the presenter is visible, panels should rotate every eight seconds.
+- Collect a one-shot stone resource, save and reload: it must stay depleted through native persistence.
+- Game startup, rendered loading screens and collection persistence still require live validation.

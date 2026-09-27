@@ -1,3 +1,21 @@
+# Development closeout - 0.0.137 content registration and loading artwork
+
+The 0.0.136 live log reached boot without the prior singleton cascade, but rejected eleven
+resource pickups and could not find the incorrectly named YggdrasilShoot1 flora donor.
+Allow native Pickable one-shot destruction when no hide target exists; Valheim retains zone
+generation state. Use the installed game's YggaShoot1 donor. The asset gate verifies the flora
+and pickup donor names against the installed game's SoftRef manifest.
+
+Ten separate PNG crops of the user-supplied artwork are packaged under assets/loading/underworld
+for the remote Underworld loading presenter. The six remote commits through 40585ed9 retain their
+loading/weather implementation. Use the existing byte-array PNG loader and current Unity font
+to avoid the ReadOnlySpan compile error and obsolete Arial resource. Preserve image aspect ratio.
+
+Live acceptance: confirm all 22 resource pickups register, flora has no missing-donor warning,
+and Underworld generation displays separate panels without dividers or stretching.
+Collect one-shot resources, save/reload and verify depletion. These are not offline-proven claims.
+The separate Valheim1012CompatRestorer/OdinUndercroft file-lock error remains outside this repair.
+
 # Development closeout - 0.0.136 startup singleton repair
 
 The 0.0.135 startup log reported 31,939 ZoneSystem missing-member errors. The first interrupted

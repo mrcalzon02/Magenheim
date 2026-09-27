@@ -81,7 +81,7 @@ internal static class UnderworldLoadingScreenRuntime
         var label = new GameObject("Caption");
         label.transform.SetParent(_root.transform, false);
         _caption = label.AddComponent<Text>();
-        _caption.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+        _caption.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         _caption.fontSize = 24;
         _caption.alignment = TextAnchor.LowerCenter;
         _caption.color = Color.white;
@@ -98,7 +98,8 @@ internal static class UnderworldLoadingScreenRuntime
                 try
                 {
                     var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                    if (!ImageConversion.LoadImage(texture, File.ReadAllBytes(path), false)) { UnityEngine.Object.Destroy(texture); continue; }
+                    if (!ModelAssets.LoadImage(texture, File.ReadAllBytes(path))) { UnityEngine.Object.Destroy(texture); continue; }
+                    texture.Apply(false, true);
                     texture.wrapMode = TextureWrapMode.Clamp;
                     Slides.Add(Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(.5f, .5f)));
                 }

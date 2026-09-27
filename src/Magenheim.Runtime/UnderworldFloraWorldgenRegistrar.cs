@@ -15,7 +15,7 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal sealed class UnderworldFloraWorldgenRegistrar : IDisposable
 {
-    private const string NativeTreeDonor = "YggdrasilShoot1";
+    private const string NativeTreeDonor = "YggaShoot1";
 
     private static readonly IReadOnlyDictionary<string, string> ModelBySpecies =
         new Dictionary<string, string>(StringComparer.Ordinal)
