@@ -149,3 +149,50 @@ internal static class UnderworldStationExtensionRegistryScopePatch
 
     private static void Finalizer(IDisposable? __state) => __state?.Dispose();
 }
+
+
+[HarmonyPatch]
+internal static class UnderworldTerrainModifierRegistryScopePatch
+{
+    private static readonly HashSet<string> Names = new(StringComparer.Ordinal)
+    {
+        "GetAllInstances",
+        "FindClosestModifierPieceInRange",
+        "RemoveOthers",
+        "GetModifiers",
+    };
+
+    internal static IEnumerable<MethodBase> TargetMethods()
+    {
+        foreach (var method in typeof(TerrainModifier).GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+            if (Names.Contains(method.Name))
+                yield return method;
+    }
+
+    private static void Prefix(out IDisposable? __state) =>
+        __state = UnderworldStaticSceneRegistryIsolation.Enter(typeof(TerrainModifier), "s_instances", "m_instances");
+
+    private static void Finalizer(IDisposable? __state) => __state?.Dispose();
+}
+
+/// <summary>
+/// TerrainModifier.PokeHeightmaps obtains Valheim's process-global Heightmap registry. Return a
+/// scene-filtered view while a world instance is identifiable so a modifier in instance 1 cannot
+/// mark an overlapping Surface tile dirty (or vice versa).
+/// </summary>
+[HarmonyPatch(typeof(Heightmap), nameof(Heightmap.GetAllHeightmaps), Type.EmptyTypes)]
+internal static class UnderworldHeightmapAllInstancesPatch
+{
+    private static void Postfix(ref List<Heightmap> __result)
+    {
+        if (__result is null ||
+            !ValheimWorldInstanceExecution.TryGetQueryScene(out var scene))
+            return;
+
+        var filtered = new List<Heightmap>(__result.Count);
+        foreach (var heightmap in __result)
+            if (heightmap && heightmap.gameObject.scene.handle == scene.handle)
+                filtered.Add(heightmap);
+        __result = filtered;
+    }
+}
