@@ -37,7 +37,7 @@ REQUIRED_FILES = (
     RUNTIME / "UnderworldPhysicsInstanceRouting.cs",
     RUNTIME / "UnderworldZdoRoutedRpcBridge.cs",
     RUNTIME / "UnderworldZonePeerRouting.cs",
-    RUNTIME / "UnderworldSpawnInstanceRouting.cs",
+    RUNTIME / "UnderworldSpawnQueryIsolation.cs",
     RUNTIME / "UnderworldGateTransitRuntime.cs",
     RUNTIME / "UnderworldZoneSystemStartIsolation.cs",
     RUNTIME / "UnderworldZoneInstanceState.cs",
