@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Developer console access to the Underworld: <c>magenheim_underworld enter|return|status</c>.
+/// Developer console access to the Underworld: <c>magenheim_underworld enter|return|status|audit</c>.
 /// </summary>
 /// <remarks>
 /// A cheat command, so Valheim's own <c>devcommands</c> gate applies. It is not a second transit
@@ -22,10 +22,12 @@ namespace Magenheim.Runtime;
 internal sealed class UnderworldDevCommands : ConsoleCommand
 {
     private static bool _registered;
+    private static UnderworldRuntimeServices? _services;
     private static ManualLogSource? _log;
 
-    internal static void Register(ManualLogSource log)
+    internal static void Register(UnderworldRuntimeServices services, ManualLogSource log)
     {
+        _services = services ?? throw new ArgumentNullException(nameof(services));
         _log = log;
         if (_registered) return;
         CommandManager.Instance.AddConsoleCommand(new UnderworldDevCommands());
@@ -33,9 +35,9 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
     }
 
     public override string Name => "magenheim_underworld";
-    public override string Help => "enter | return | status -- move to or from the Underworld through the Deep Gate path (devcommands)";
+    public override string Help => "enter | return | status | audit -- Deep Gate transit/status plus fail-closed native instance admission audit (devcommands)";
     public override bool IsCheat => true;
-    public override List<string> CommandOptionList() => new() { "enter", "return", "status" };
+    public override List<string> CommandOptionList() => new() { "enter", "return", "status", "audit" };
 
     public override void Run(string[] args)
     {
@@ -72,9 +74,40 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
             case "status":
                 Say(UnderworldGateTransitRuntime.Describe(player));
                 break;
-            default:
-                Say($"Unknown option '{verb}'. Use: {Name} enter | return | status");
+            case "audit":
+                RunAudit();
                 break;
+            default:
+                Say($"Unknown option '{verb}'. Use: {Name} enter | return | status | audit");
+                break;
+        }
+    }
+
+    private static void RunAudit()
+    {
+        var services = _services;
+        if (services is null)
+        {
+            Say("AUDIT FAIL: Underworld runtime services are unavailable.");
+            return;
+        }
+
+        var identity = services.InstanceLifecycle.Identity;
+        if (identity is null)
+        {
+            Say("AUDIT FAIL: no admitted Underworld world identity.");
+            return;
+        }
+
+        try
+        {
+            var proof = UnderworldInstanceAdmissionAudit.Validate(services, identity);
+            Say("AUDIT PASS: " + proof);
+        }
+        catch (Exception exception)
+        {
+            _log?.LogError("magenheim_underworld audit failed: " + exception);
+            Say("AUDIT FAIL: " + exception.Message);
         }
     }
 

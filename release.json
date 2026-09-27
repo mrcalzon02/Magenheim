@@ -1,4 +1,4 @@
 {
-  "version": "0.0.133",
-  "description": "0.0.133: Adds fail-closed post-load admission auditing for the concurrent native Underworld instance, validates child-save containment, peer/ZDO/world/scene isolation, and locks release/plugin/assembly version authority."
+  "version": "0.0.134",
+  "description": "0.0.134: Adds a live fail-closed Underworld admission audit command for disposable-world acceptance, reporting native World/ZDO/scene/save identities and refusing to treat failed isolation as admitted."
 }

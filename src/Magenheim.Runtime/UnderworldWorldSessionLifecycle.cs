@@ -35,7 +35,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         _deepGateRegistrar.Register();
         _deepGateLocationRegistrar = new UnderworldDeepGateLocationRegistrar(log);
         _deepGateLocationRegistrar.Register();
-        UnderworldDevCommands.Register(log);
+        UnderworldDevCommands.Register(services, log);
     }
 
     private void FixedUpdate()

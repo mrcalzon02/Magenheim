@@ -114,12 +114,11 @@ Launch with `-console`, press F5, and run `devcommands` first; every command bel
 
 | Command | Effect |
 |---|---|
-| `magenheim_underworld status` | Reports whether the paired Underworld instance is active, whether the Deep Gate is unlocked, and whether you hold a return anchor. |
+| `magenheim_underworld audit` | Re-runs the fail-closed native instance admission audit and prints the Surface/Underworld World IDs, ZDO namespaces, Unity scene, and child-save namespace. Run this first. |\n| `magenheim_underworld status` | Reports whether the paired Underworld instance is active, whether the Deep Gate is unlocked, and whether you hold a return anchor. |
 | `magenheim_underworld enter` | Enters the Underworld through the same transit the Deep Gate uses, skipping the Nowhere King unlock. Records a return anchor where you stood. |
 | `magenheim_underworld return` | Returns to that anchor. With no anchor (for example after relogging below ground) it returns you to your bed, or your home point if you have none. |
 
-`enter` refuses with the reason if the Underworld instance is not active yet; load fully into the
-world and try again. The gate path itself still requires the unlock.
+`audit` must report **AUDIT PASS** before transit acceptance is meaningful. If it reports **AUDIT FAIL**, preserve the exact line and log; do not continue treating the instance as admitted.\n\n`enter` refuses with the reason if the Underworld instance is not active yet; load fully into the\nworld and try again. The gate path itself still requires the unlock.
 
 Spawn IDs (`spawn <id> 1`):
 
@@ -129,7 +128,7 @@ Spawn IDs (`spawn <id> 1`):
 
 ## Candidate acceptance matrix
 
-Confirm the startup log reports **0.0.108** and has no Magenheim bootstrap or registration
+Confirm the startup log reports **0.0.134** and has no Magenheim bootstrap or registration
 errors. Keep logs and screenshots with each result. Mark checks PASS / FAIL / NOT RUN;
 record game version, mod list, host/client role, seed, steps, expected/actual result.
 
