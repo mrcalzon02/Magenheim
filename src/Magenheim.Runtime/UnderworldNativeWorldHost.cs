@@ -23,6 +23,7 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
     private Scene _scene;
     private GameObject? _zoneRoot;
     private ZDOMan? _underworldZdoMan;
+    private ValheimPathfindingInstanceState? _underworldPathfindingState;
     private bool _disposed;
 
     internal UnderworldNativeWorldHost(ValheimWorldInstanceRegistry registry, ManualLogSource log)
@@ -58,6 +59,10 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             ValidateDistinctZdoNamespace(surface.ZdoMan, zdoMan);
             var zoneSystem = CreateZoneSystem(surface.ZoneSystem, _scene);
             UnderworldZoneSystemLifetimeGuard.Register(zoneSystem, surface.ZoneSystem);
+            var pathfinding = Pathfinding.instance
+                ?? throw new InvalidOperationException("Valheim Pathfinding singleton is unavailable.");
+            var pathfindingState = ValheimPathfindingInstanceState.CreateUnderworld(pathfinding, _log);
+            _underworldPathfindingState = pathfindingState;
             UnderworldTerrainRuntime.CaptureInstanceWaterLevel(zoneSystem.m_waterLevel);
 
             var context = new ValheimWorldInstanceContext(
@@ -67,7 +72,8 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
                 zoneSystem,
                 zdoMan,
                 _scene,
-                physics);
+                physics,
+                pathfindingState);
 
             _registry.Bind(context);
             ValheimWorldInstanceExecution.BindRegistry(_registry);
@@ -80,7 +86,7 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
 
             _log.LogInfo(
                 $"Created native Underworld world instance '{identity.DerivedWorldId}' in Unity scene '{_scene.name}' " +
-                "with independent WorldGenerator/ZoneSystem/ZDOMan authority.");
+                "with independent WorldGenerator/ZoneSystem/ZDOMan/Pathfinding state authority.");
             return true;
         }
         catch (Exception exception)
@@ -666,13 +672,20 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
 
         var zdoMan = _underworldZdoMan;
         _underworldZdoMan = null;
+        var pathfindingState = _underworldPathfindingState;
+        _underworldPathfindingState = null;
 
         if (_scene.IsValid() && _scene.isLoaded)
         {
             var unload = SceneManager.UnloadSceneAsync(_scene);
             if (unload is not null)
             {
-                unload.completed += _ => ReleaseDetachedZdoState(zdoMan);
+                unload.completed += _ =>
+                {
+                    pathfindingState?.Dispose();
+                    pathfindingState?.Dispose();
+        ReleaseDetachedZdoState(zdoMan);
+                };
                 return;
             }
         }
