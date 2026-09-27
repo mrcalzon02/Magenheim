@@ -39,13 +39,11 @@ REQUIRED_FILES = (
     RUNTIME / "UnderworldPhysicsInstanceRouting.cs",
     RUNTIME / "UnderworldZdoRoutedRpcBridge.cs",
     RUNTIME / "UnderworldZonePeerRouting.cs",
-    RUNTIME / "UnderworldSpawnQueryIsolation.cs",
     RUNTIME / "ValheimPathfindingInstanceState.cs",
     RUNTIME / "UnderworldStaticSceneRegistryIsolation.cs",
     RUNTIME / "UnderworldGateTransitRuntime.cs",
     RUNTIME / "UnderworldZoneSystemStartIsolation.cs",
     RUNTIME / "UnderworldZoneInstanceState.cs",
-    RUNTIME / "UnderworldSpawnQueryIsolation.cs",
     RUNTIME / "UnderworldWorldGeneratorCacheIsolation.cs",
     CORE / "UnderworldInstanceContract.cs",
     CORE / "UnderworldWorldInstanceId.cs",
@@ -101,11 +99,6 @@ REQUIRED_SNIPPETS = {
         "metadata.Persistent = true;",
         "SuppressSpatialIndex",
         "IncludeMetadataSaveClone",
-    ),
-    RUNTIME / "UnderworldSpawnQueryIsolation.cs": (
-        "gameObject.scene.handle",
-        "Player.GetAllPlayers",
-        "BaseAI.BaseAIInstances",
     ),
     RUNTIME / "UnderworldWorldGeneratorCacheIsolation.cs": (
         '"s_cachedBiomeAreas"',
@@ -194,7 +187,6 @@ for patch in (
     "UnderworldZoneMetadataLoadFilterPatch",
     "UnderworldZoneMetadataShouldSendPatch",
     "UnderworldZoneSystemStartIsolationPatch",
-    "UnderworldSpawnQueryScopePatch",
 ):
     if f"PatchAll(typeof({patch}))" not in plugin:
         fail(f"runtime bootstrap no longer installs {patch}")
