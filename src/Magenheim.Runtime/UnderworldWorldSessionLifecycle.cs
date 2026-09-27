@@ -79,6 +79,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             _observedWorldUid = currentWorldUid;
             TryAdmitInstanceAuthority(znet);
             TryAdmitWorldCenter();
+            TickUnderworldPathfinding();
             UnderworldZdoPeerRouter.TickUnderworld(Time.deltaTime);
             TryReconcileDeepBoons();
             return;
@@ -94,6 +95,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
 
         TryAdmitInstanceAuthority(znet);
         TryAdmitWorldCenter();
+        TickUnderworldPathfinding();
         UnderworldZdoPeerRouter.TickUnderworld(Time.deltaTime);
         TryReconcileDeepBoons();
     }
@@ -176,6 +178,26 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         finally
         {
             if (previousScene.IsValid() && previousScene.isLoaded) SceneManager.SetActiveScene(previousScene);
+        }
+    }
+
+    private void TickUnderworldPathfinding()
+    {
+        if (_services is null ||
+            !_services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out var context) ||
+            context is null ||
+            context.PathfindingState is null ||
+            Pathfinding.instance is null)
+            return;
+
+        try
+        {
+            using (ValheimWorldInstanceExecution.Enter(context))
+                context.PathfindingState.TickActive(Pathfinding.instance);
+        }
+        catch (Exception exception)
+        {
+            _log?.LogError("Underworld native pathfinding tick failed: " + exception);
         }
     }
 
