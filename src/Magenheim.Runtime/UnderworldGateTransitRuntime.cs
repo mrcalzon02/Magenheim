@@ -9,12 +9,12 @@ using UnityEngine.SceneManagement;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Thin Deep Gate transport adapter. Valheim owns player movement; Magenheim supplies the
-/// engine-backed destination for instance index 1. A player's layer is derived from the disjoint
-/// engine-space instance it physically occupies; it is never stored as global multiplayer state.
-/// Return anchors are transition safety only and are never population/layer authority. The last
-/// legitimate Surface gate origin is also copied to the player's durable ZDO so a relog while in
-/// the Underworld cannot strand that player merely because the process-local cache was rebuilt.
+/// Thin Deep Gate transport adapter. Valheim owns player movement and character state; Magenheim
+/// switches only the player's explicit world-instance membership and the native service/Unity scene
+/// that owns that character. Return anchors are transition safety only and are never population or
+/// world-identity authority. The last legitimate Surface gate origin is copied to the player's
+/// durable ZDO so a relog in the Underworld cannot strand the player if the process-local cache was
+/// rebuilt.
 /// </summary>
 internal static class UnderworldGateTransitRuntime
 {
@@ -227,8 +227,8 @@ internal static class UnderworldGateTransitRuntime
         SurfaceReturn.ContainsKey(player.GetPlayerID()) || TryReadPersistedReturnAnchor(player, out _);
 
     /// <summary>
-    /// Surface return without an anchor, for the developer console after a relog below ground.
-    /// The destination itself restores Surface classification; no global layer state is mutated.
+    /// Surface return without an anchor for the developer console. This uses the same atomic
+    /// ZDO/peer + Unity-scene + instance-membership transfer as a normal Deep Gate return.
     /// </summary>
     internal static bool TryReturnTo(Player player, Vector3 position, out string diagnostic)
     {
@@ -240,15 +240,31 @@ internal static class UnderworldGateTransitRuntime
             diagnostic = "The paired Underworld instance is not active.";
             return false;
         }
-        if (player.TeleportTo(position + Vector3.up * 0.5f, player.transform.rotation, true))
+
+        if (!services.WorldInstances.TryGetContext(
+                UnderworldWorldInstanceId.Surface,
+                out var surfaceContext) ||
+            surfaceContext is null)
         {
-            SurfaceReturn.Remove(player.GetPlayerID());
-            ClearPersistedReturnAnchor(player);
-            _log?.LogInfo($"Developer console returned player {player.GetPlayerID()} to the Surface without an anchor.");
-            return true;
+            diagnostic = "Surface native world services are unavailable.";
+            return false;
         }
-        diagnostic = "Valheim rejected the Surface teleport.";
-        return false;
+
+        var rotation = player.transform.rotation;
+        if (!TryMovePlayerToInstance(
+                player,
+                surfaceContext,
+                position + Vector3.up * 0.5f,
+                rotation,
+                true,
+                out diagnostic))
+            return false;
+
+        SurfaceReturn.Remove(player.GetPlayerID());
+        ClearPersistedReturnAnchor(player);
+        _log?.LogInfo(
+            $"Developer console returned player {player.GetPlayerID()} to the Surface world instance without an anchor.");
+        return true;
     }
 
     internal static string Describe(Player player)
@@ -266,7 +282,7 @@ internal static class UnderworldGateTransitRuntime
         if (!TryReadPersistedReturnAnchor(player, out anchor)) return false;
 
         // Rehydrate only the requesting player's transition cache. This is not a player registry:
-        // the physical engine layer remains authoritative for where that player actually is.
+        // explicit world-instance membership remains authoritative for where that player belongs.
         SurfaceReturn[player.GetPlayerID()] = anchor;
         return true;
     }
