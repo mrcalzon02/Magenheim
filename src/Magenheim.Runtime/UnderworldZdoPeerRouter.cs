@@ -119,6 +119,57 @@ internal static class UnderworldZdoPeerRouter
         }
     }
 
+    internal static void CommitOldInstanceVisibility(
+        Player player,
+        ValheimWorldInstanceContext source)
+    {
+        if (player is null || source is null) return;
+
+        var view = player.GetComponent<ZNetView>();
+        var zdo = view is not null && view.IsValid() ? view.GetZDO() : null;
+        if (zdo is null) return;
+
+        var movingPeer = ResolvePeer(player);
+        var peersField = AccessTools.Field(typeof(ZDOMan), "m_peers")
+            ?? throw new MissingFieldException(typeof(ZDOMan).FullName, "m_peers");
+        if (peersField.GetValue(source.ZdoMan) is not IEnumerable peers)
+            throw new InvalidOperationException("Source ZDOMan peer list is unavailable.");
+
+        var invalidated = 0;
+        foreach (var peerState in peers)
+        {
+            if (peerState is null) continue;
+            var type = peerState.GetType();
+            var peerField = AccessTools.Field(type, "m_peer")
+                ?? throw new MissingFieldException(type.FullName, "m_peer");
+            var knownField = AccessTools.Field(type, "m_zdos")
+                ?? throw new MissingFieldException(type.FullName, "m_zdos");
+            var invalidField = AccessTools.Field(type, "m_invalidSector")
+                ?? throw new MissingFieldException(type.FullName, "m_invalidSector");
+
+            var peer = peerField.GetValue(peerState) as ZNetPeer;
+            if (peer is null || ReferenceEquals(peer, movingPeer)) continue;
+
+            if (knownField.GetValue(peerState) is not IDictionary known ||
+                invalidField.GetValue(peerState) is not IEnumerable invalidEnumerable)
+                throw new InvalidOperationException("Valheim ZDOPeer visibility state is unavailable.");
+
+            if (!known.Contains(zdo.m_uid)) continue;
+
+            // HashSet<ZDOID> implements ICollection<ZDOID>, but avoid depending on its concrete type
+            // through reflection so this remains compatible with 1.0.x field-layout changes.
+            var add = invalidEnumerable.GetType().GetMethod("Add", new[] { typeof(ZDOID) })
+                ?? throw new MissingMethodException(invalidEnumerable.GetType().FullName, "Add(ZDOID)");
+            add.Invoke(invalidEnumerable, new object[] { zdo.m_uid });
+            known.Remove(zdo.m_uid);
+            invalidated++;
+        }
+
+        if (invalidated > 0)
+            _log?.LogDebug(
+                $"Queued character ZDO {zdo.m_uid} for native sector invalidation on {invalidated} peer(s) remaining in instance {source.InstanceId}.");
+    }
+
     internal static void TickUnderworld(float deltaTime)
     {
         var services = _services;

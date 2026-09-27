@@ -194,6 +194,11 @@ internal static class UnderworldGateTransitRuntime
                 if (!player.TeleportTo(targetPosition, targetRotation, distantTeleport))
                     throw new InvalidOperationException("Valheim rejected the target-instance teleport.");
             }
+
+            // Only after the move is committed tell peers left in the old world to release the
+            // transferred character instance. The persistent ZDO itself now belongs to the target
+            // manager and is never destroyed/recreated.
+            UnderworldZdoPeerRouter.CommitOldInstanceVisibility(player, previousContext);
             return true;
         }
         catch (Exception exception)
