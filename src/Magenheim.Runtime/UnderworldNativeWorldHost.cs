@@ -107,14 +107,50 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             .GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic)!
             .Invoke(source, Array.Empty<object>()) ?? throw new InvalidOperationException("Valheim World clone failed."));
 
+        foreach (var field in typeof(World).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            var value = field.GetValue(source);
+            if (value is null || field.FieldType.IsValueType || value is string || value is Delegate)
+                continue;
+
+            if (field.Name == "m_biomeData")
+            {
+                field.SetValue(clone, null);
+                continue;
+            }
+
+            if (TryCloneCollection(field.FieldType, value, out var detachedCollection))
+            {
+                field.SetValue(clone, detachedCollection);
+                continue;
+            }
+
+            throw new InvalidOperationException(
+                $"Cannot isolate mutable Valheim World field '{field.Name}' ({field.FieldType.FullName}) for the Underworld instance.");
+        }
+
         SetFieldIfPresent(clone, "m_name", GetFieldRequired<string>(source, "m_name") + "::MagenheimUnderworld");
         SetFieldIfPresent(clone, "m_seedName", identity.DerivedSeedFingerprint);
         SetFieldIfPresent(clone, "m_seed", identity.DerivedSeed32);
         SetFieldIfPresent(clone, "m_uid", StableInstanceUid(GetFieldRequired<long>(source, "m_uid"), identity.DerivedSeedFingerprint));
-        // Surface AltBiomeWorldData is a mutable world-owned sector grid. The Underworld has its own
-        // biome authority and must never alias or regenerate Surface biome sectors.
-        SetFieldIfPresent(clone, "m_biomeData", null);
+        ValidateDetachedWorldState(source, clone);
         return clone;
+    }
+
+    private static void ValidateDetachedWorldState(World surface, World underworld)
+    {
+        foreach (var field in typeof(World).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            if (field.FieldType.IsValueType || field.FieldType == typeof(string) || typeof(Delegate).IsAssignableFrom(field.FieldType))
+                continue;
+
+            var surfaceValue = field.GetValue(surface);
+            var underworldValue = field.GetValue(underworld);
+            if (surfaceValue is null || underworldValue is null) continue;
+            if (ReferenceEquals(surfaceValue, underworldValue))
+                throw new InvalidOperationException(
+                    $"Underworld World still shares mutable field '{field.Name}' with Surface.");
+        }
     }
 
     private static long StableInstanceUid(long parentUid, string fingerprint)
