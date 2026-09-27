@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading;
 using HarmonyLib;
 using Magenheim.Core.Underworld;
+using UnityEngine.SceneManagement;
 
 namespace Magenheim.Runtime;
 
@@ -48,6 +49,8 @@ internal static class ValheimWorldInstanceExecution
         private readonly object? _previousGenerator;
         private readonly object? _previousWorld;
         private readonly object? _previousZdoMan;
+        private readonly Scene _previousActiveScene;
+        private readonly bool _changedActiveScene;
         private bool _disposed;
 
         internal Scope(ValheimWorldInstanceContext context)
@@ -57,6 +60,15 @@ internal static class ValheimWorldInstanceExecution
             _previousGenerator = GeneratorInstance.Get();
             _previousWorld = ZNetWorld?.GetValue(null);
             _previousZdoMan = ZNet.instance is null ? null : ZNetZdoMan?.GetValue(ZNet.instance);
+            _previousActiveScene = SceneManager.GetActiveScene();
+            _changedActiveScene =
+                context.Scene.IsValid() &&
+                context.Scene.isLoaded &&
+                _previousActiveScene.handle != context.Scene.handle;
+
+            if (_changedActiveScene && !SceneManager.SetActiveScene(context.Scene))
+                throw new InvalidOperationException(
+                    $"Unable to activate Unity scene '{context.Scene.name}' for world instance {context.InstanceId}.");
 
             Current.Value = context;
             ZoneInstance.Set(context.ZoneSystem);
@@ -75,6 +87,14 @@ internal static class ValheimWorldInstanceExecution
             GeneratorInstance.Set(_previousGenerator);
             ZoneInstance.Set(_previousZone);
             Current.Value = _previousContext;
+
+            if (_changedActiveScene &&
+                _previousActiveScene.IsValid() &&
+                _previousActiveScene.isLoaded &&
+                SceneManager.GetActiveScene().handle != _previousActiveScene.handle)
+            {
+                SceneManager.SetActiveScene(_previousActiveScene);
+            }
         }
     }
 
@@ -120,15 +140,17 @@ internal static class ValheimWorldInstanceExecution
 [HarmonyPatch]
 internal static class UnderworldZoneSystemInstanceScopePatch
 {
-    private static readonly string[] Names = { "Awake", "Start", "Update", "FixedUpdate", "LateUpdate" };
+    private static readonly string[] Names =
+    {
+        "Awake", "Start", "Update", "FixedUpdate", "LateUpdate",
+        "SetupLocations", "PlaceVegetation", "GenerateLocationsTimeSliced",
+    };
 
     internal static System.Collections.Generic.IEnumerable<MethodBase> TargetMethods()
     {
-        foreach (var name in Names)
-        {
-            var method = AccessTools.Method(typeof(ZoneSystem), name);
-            if (method is not null) yield return method;
-        }
+        foreach (var method in typeof(ZoneSystem).GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            if (Array.IndexOf(Names, method.Name) >= 0)
+                yield return method;
     }
 
     internal static void Prefix(ZoneSystem __instance, out IDisposable? __state)
@@ -136,6 +158,44 @@ internal static class UnderworldZoneSystemInstanceScopePatch
         __state = null;
         if (!__instance) return;
         ValheimWorldInstanceExecution.TryEnterScene(__instance.gameObject.scene.handle, out __state);
+    }
+
+    internal static void Finalizer(IDisposable? __state) => __state?.Dispose();
+}
+
+/// <summary>
+/// GenerateLocationsTimeSliced is an iterator in current Valheim. Its MoveNext calls resume outside
+/// the original method frame, so scope those resumptions too; otherwise location instantiation can
+/// fall back into the Surface Unity scene between yields.
+/// </summary>
+[HarmonyPatch]
+internal static class UnderworldZoneSystemLocationIteratorScopePatch
+{
+    internal static System.Collections.Generic.IEnumerable<MethodBase> TargetMethods()
+    {
+        foreach (var method in typeof(ZoneSystem).GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            if (!string.Equals(method.Name, "GenerateLocationsTimeSliced", StringComparison.Ordinal)) continue;
+            var moveNext = AccessTools.EnumeratorMoveNext(method);
+            if (moveNext is not null) yield return moveNext;
+        }
+    }
+
+    internal static void Prefix(object __instance, out IDisposable? __state)
+    {
+        __state = null;
+        if (__instance is null) return;
+
+        ZoneSystem? zoneSystem = null;
+        foreach (var field in __instance.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+        {
+            if (!typeof(ZoneSystem).IsAssignableFrom(field.FieldType)) continue;
+            zoneSystem = field.GetValue(__instance) as ZoneSystem;
+            if (zoneSystem) break;
+        }
+
+        if (!zoneSystem) return;
+        ValheimWorldInstanceExecution.TryEnterScene(zoneSystem.gameObject.scene.handle, out __state);
     }
 
     internal static void Finalizer(IDisposable? __state) => __state?.Dispose();
