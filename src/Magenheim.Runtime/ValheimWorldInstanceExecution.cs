@@ -316,6 +316,25 @@ internal static class UnderworldZoneSystemLocationIteratorScopePatch
 
 
 /// <summary>
+/// Heightmap.Regenerate validates queued build data against WorldGenerator.instance and passes that
+/// singleton to HeightmapBuilder.RequestTerrainSync. Scope the call by the Heightmap's scene so a
+/// completed Underworld build is not discarded merely because Surface is the ambient singleton.
+/// </summary>
+[HarmonyPatch(typeof(Heightmap), "Regenerate")]
+internal static class UnderworldHeightmapRegenerateInstanceScopePatch
+{
+    private static void Prefix(Heightmap __instance, out IDisposable? __state)
+    {
+        __state = null;
+        if (!__instance) return;
+        ValheimWorldInstanceExecution.TryEnterScene(__instance.gameObject.scene.handle, out __state);
+    }
+
+    private static void Finalizer(IDisposable? __state) => __state?.Dispose();
+}
+
+
+/// <summary>
 /// Routes native _ZoneCtrl SpawnSystem callbacks through the world services owned by the scene
 /// containing that zone controller. Surface controllers remain Surface-scoped; Underworld
 /// controllers therefore evaluate biome, terrain, ZDO ownership and spawning against instance 1.
