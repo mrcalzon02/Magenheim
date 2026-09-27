@@ -22,6 +22,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     private GameObject? _worldCenter;
     private string? _worldCenterInstanceKey;
     private float _nextBoonReconcileAt;
+    private bool _physicsSimulationFaulted;
 
     internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -35,6 +36,26 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         _deepGateLocationRegistrar = new UnderworldDeepGateLocationRegistrar(log);
         _deepGateLocationRegistrar.Register();
         UnderworldDevCommands.Register(log);
+    }
+
+    private void FixedUpdate()
+    {
+        if (_physicsSimulationFaulted || _services is null) return;
+        if (!_services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out var context) ||
+            context is null || !context.PhysicsScene.IsValid())
+            return;
+
+        try
+        {
+            // Unity does not automatically advance non-default local PhysicsScenes. The Underworld
+            // owns one deliberately so identical logical coordinates cannot collide with Surface.
+            context.PhysicsScene.Simulate(Time.fixedDeltaTime);
+        }
+        catch (Exception exception)
+        {
+            _physicsSimulationFaulted = true;
+            _log?.LogError("Underworld local PhysicsScene simulation failed; instance physics is disabled until the world session resets: " + exception);
+        }
     }
 
     private void Update()
@@ -181,6 +202,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         _worldCenterInstanceKey = null;
         DeepBoonRuntime.Reset();
         _nextBoonReconcileAt = 0f;
+        _physicsSimulationFaulted = false;
         _nativeWorldHost?.Dispose();
         _nativeWorldHost = _services is null || _log is null ? null : new UnderworldNativeWorldHost(_services.WorldInstances, _log);
         UnderworldInstancePersistence.Reset();

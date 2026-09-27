@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading;
 using HarmonyLib;
 using Magenheim.Core.Underworld;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Magenheim.Runtime;
@@ -38,8 +39,54 @@ internal static class ValheimWorldInstanceExecution
         var registry = _registry;
         if (registry is null || !registry.TryGetContextForScene(sceneHandle, out var context) || context is null)
             return false;
+
+        var current = Current.Value;
+        if (ReferenceEquals(current, context))
+            return false;
+
+        // Surface is Valheim's ordinary ambient state. Avoid wrapping every Surface callback when no
+        // Underworld scope is active; enter Surface only when unwinding/cross-calling from instance 1.
+        if (context.InstanceId.IsSurface && (current is null || current.InstanceId.IsSurface))
+            return false;
+
         scope = Enter(context);
         return true;
+    }
+
+    internal static bool TryGetAmbientContext(out ValheimWorldInstanceContext? context)
+    {
+        context = Current.Value;
+        if (context is not null) return true;
+
+        var registry = _registry;
+        if (registry is null) return false;
+
+        var localPlayer = Player.m_localPlayer;
+        if (localPlayer &&
+            registry.TryGetContextForScene(localPlayer.gameObject.scene.handle, out context) &&
+            context is not null)
+            return true;
+
+        var activeScene = SceneManager.GetActiveScene();
+        if (activeScene.IsValid() &&
+            registry.TryGetContextForScene(activeScene.handle, out context) &&
+            context is not null)
+            return true;
+
+        context = null;
+        return false;
+    }
+
+    internal static bool TryGetQueryScene(out Scene scene)
+    {
+        if (TryGetAmbientContext(out var context) && context is not null)
+        {
+            scene = context.Scene;
+            return scene.IsValid();
+        }
+
+        scene = default;
+        return false;
     }
 
     private sealed class Scope : IDisposable
@@ -132,6 +179,48 @@ internal static class ValheimWorldInstanceExecution
         }
     }
 }
+
+/// <summary>
+/// Generic scene-context adapter for Valheim MonoBehaviour callbacks. This is the missing engine
+/// discriminator for components that are not ZoneSystem, SpawnSystem or Character themselves:
+/// AI, ships, cameras, interactables and other ordinary Valheim behaviours in instance 1 receive
+/// the same World/WorldGenerator/ZoneSystem/ZDOMan/PhysicsScene context without custom replicas.
+/// Surface callbacks are a no-op in the ordinary ambient state.
+/// </summary>
+[HarmonyPatch]
+internal static class UnderworldValheimBehaviourInstanceScopePatch
+{
+    private static readonly string[] Names =
+    {
+        "Awake", "Start", "Update", "FixedUpdate", "LateUpdate",
+        "OnTriggerEnter", "OnTriggerStay", "OnTriggerExit",
+        "OnCollisionEnter", "OnCollisionStay", "OnCollisionExit",
+    };
+
+    internal static System.Collections.Generic.IEnumerable<MethodBase> TargetMethods()
+    {
+        var assembly = typeof(ZoneSystem).Assembly;
+        foreach (var type in assembly.GetTypes())
+        {
+            if (type.IsAbstract || !typeof(MonoBehaviour).IsAssignableFrom(type)) continue;
+            foreach (var method in type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+            {
+                if (method.IsAbstract || method.ContainsGenericParameters || Array.IndexOf(Names, method.Name) < 0) continue;
+                yield return method;
+            }
+        }
+    }
+
+    internal static void Prefix(object __instance, out IDisposable? __state)
+    {
+        __state = null;
+        if (__instance is not Component component || !component) return;
+        ValheimWorldInstanceExecution.TryEnterScene(component.gameObject.scene.handle, out __state);
+    }
+
+    internal static void Finalizer(IDisposable? __state) => __state?.Dispose();
+}
+
 
 /// <summary>
 /// Ensures lifecycle callbacks on the Underworld ZoneSystem execute with its instance-native
