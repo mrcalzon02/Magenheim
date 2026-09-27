@@ -72,6 +72,8 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             using (ValheimWorldInstanceExecution.Enter(context))
                 _zoneRoot!.SetActive(true);
 
+            ValidateSurfaceSingletonsRestored(surface);
+
             _log.LogInfo(
                 $"Created native Underworld world instance '{identity.DerivedWorldId}' in Unity scene '{_scene.name}' " +
                 "with independent WorldGenerator/ZoneSystem/ZDOMan authority.");
@@ -84,6 +86,18 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             DestroyPartial();
             return false;
         }
+    }
+
+    private static void ValidateSurfaceSingletonsRestored(ValheimWorldInstanceContext surface)
+    {
+        if (!ReferenceEquals(ZDOMan.instance, surface.ZdoMan))
+            throw new InvalidOperationException("Underworld admission did not restore Surface ZDOMan.instance.");
+        if (!ReferenceEquals(ZoneSystem.instance, surface.ZoneSystem))
+            throw new InvalidOperationException("Underworld admission did not restore Surface ZoneSystem.instance.");
+        if (!ReferenceEquals(WorldGenerator.instance, surface.WorldGenerator))
+            throw new InvalidOperationException("Underworld admission did not restore Surface WorldGenerator.instance.");
+        if (!ReferenceEquals(ZNet.World, surface.World))
+            throw new InvalidOperationException("Underworld admission did not restore Surface ZNet.World.");
     }
 
     private static World CloneWorld(World source, UnderworldWorldIdentity identity)
@@ -140,12 +154,19 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             .Invoke(surface, Array.Empty<object>())
             ?? throw new InvalidOperationException("Valheim ZDOMan clone failed."));
 
+        var identityFields = Array.FindAll(
+            typeof(ZDOMan).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic),
+            field => field.Name is "m_sessionID" or "m_myid");
+        if (identityFields.Length == 0)
+            throw new MissingFieldException(typeof(ZDOMan).FullName, "m_sessionID/m_myid");
+        var detachedSessionId = GenerateDistinctSessionId(surface, identityFields[0]);
+
         foreach (var field in typeof(ZDOMan).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
         {
             var value = field.GetValue(surface);
             if (field.Name is "m_sessionID" or "m_myid")
             {
-                SetField(field, clone, GenerateDistinctSessionId(surface, field));
+                SetField(field, clone, Convert.ChangeType(detachedSessionId, field.FieldType));
                 continue;
             }
 
