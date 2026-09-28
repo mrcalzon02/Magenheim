@@ -85,14 +85,22 @@ try {
     $resolvedCount = 0
 
     # Inspect only resolver classes; unrelated game-facing types can contain interface features
-    # supported by Unity Mono but unavailable in the Framework verifier process.
+    # supported by Unity Mono but unavailable in the Windows PowerShell 5.1 verifier process.
+    Write-Output 'Dynamic patch gate v2: using Cecil metadata for Valheim resolver families that desktop CLR cannot safely materialize.'
     Add-Type -Path (Join-Path $BepInExPath 'core/Mono.Cecil.dll')
-    $metadata = [Mono.Cecil.AssemblyDefinition]::ReadAssembly($RuntimeDll)
+    $cecilResolver = New-Object Mono.Cecil.DefaultAssemblyResolver
+    foreach ($directory in $searchDirectories) {
+        if (Test-Path -LiteralPath $directory) { $cecilResolver.AddSearchDirectory($directory) }
+    }
+    $reader = New-Object Mono.Cecil.ReaderParameters
+    $reader.AssemblyResolver = $cecilResolver
+    $metadata = [Mono.Cecil.AssemblyDefinition]::ReadAssembly($RuntimeDll, $reader)
+    $gameMetadata = [Mono.Cecil.AssemblyDefinition]::ReadAssembly(
+        (Join-Path $GameManagedPath 'assembly_valheim.dll'), $reader)
     $resolverNames = @($metadata.MainModule.Types | Where-Object {
         @($_.CustomAttributes | Where-Object { $_.AttributeType.FullName -eq 'HarmonyLib.HarmonyPatch' }).Count -gt 0 -and
         @($_.Methods | Where-Object Name -in @('TargetMethod', 'TargetMethods')).Count -gt 0
     } | ForEach-Object { $_.FullName })
-    $metadata.Dispose()
 
     function Test-CecilDerivesFrom {
         param($TypeDefinition, [string]$ExpectedBase)
@@ -108,51 +116,78 @@ try {
         return $false
     }
 
-    function Get-CecilValheimBehaviourTargetCount {
-        # Windows PowerShell 5.1 uses desktop .NET Framework. Current Unity/Valheim metadata
-        # contains interface constructs that Unity Mono accepts but desktop CLR rejects while
-        # Assembly.GetTypes() materializes the whole game assembly ("Non-abstract, non-.ctor
-        # method in an interface"). Audit this one broad resolver directly with Cecil instead of
-        # weakening the gate or asking desktop CLR to load unrelated game types.
-        $cecilResolver = New-Object Mono.Cecil.DefaultAssemblyResolver
-        foreach ($directory in $searchDirectories) {
-            if (Test-Path -LiteralPath $directory) { $cecilResolver.AddSearchDirectory($directory) }
-        }
-        $reader = New-Object Mono.Cecil.ReaderParameters
-        $reader.AssemblyResolver = $cecilResolver
-        $gameMetadata = [Mono.Cecil.AssemblyDefinition]::ReadAssembly(
-            (Join-Path $GameManagedPath 'assembly_valheim.dll'), $reader)
-        try {
-            $callbackNames = @(
-                'Awake','Start','Update','FixedUpdate','LateUpdate',
-                'OnTriggerEnter','OnTriggerStay','OnTriggerExit',
-                'OnCollisionEnter','OnCollisionStay','OnCollisionExit'
-            )
-            $count = 0
-            foreach ($candidateType in $gameMetadata.MainModule.Types) {
-                if ($candidateType.IsAbstract -or $candidateType.FullName -ceq 'Pathfinding') { continue }
-                if (!(Test-CecilDerivesFrom $candidateType 'UnityEngine.MonoBehaviour')) { continue }
-                foreach ($candidateMethod in $candidateType.Methods) {
-                    if ($candidateMethod.IsStatic -or $candidateMethod.IsAbstract -or
-                        $candidateMethod.HasGenericParameters -or
-                        $candidateMethod.Name -notin $callbackNames) { continue }
-                    $count++
-                }
+    function Get-CecilBehaviourTargetCount {
+        param($AssemblyDefinition, [switch]$ExcludePathfinding)
+        $callbackNames = @(
+            'Awake','Start','Update','FixedUpdate','LateUpdate',
+            'OnTriggerEnter','OnTriggerStay','OnTriggerExit',
+            'OnCollisionEnter','OnCollisionStay','OnCollisionExit'
+        )
+        $count = 0
+        foreach ($candidateType in $AssemblyDefinition.MainModule.Types) {
+            if ($candidateType.IsAbstract) { continue }
+            if ($ExcludePathfinding -and $candidateType.FullName -ceq 'Pathfinding') { continue }
+            if (!(Test-CecilDerivesFrom $candidateType 'UnityEngine.MonoBehaviour')) { continue }
+            foreach ($candidateMethod in $candidateType.Methods) {
+                if ($candidateMethod.IsStatic -or $candidateMethod.IsAbstract -or
+                    $candidateMethod.HasGenericParameters -or
+                    $candidateMethod.Name -notin $callbackNames) { continue }
+                $count++
             }
-            return $count
         }
-        finally { $gameMetadata.Dispose() }
+        return $count
+    }
+
+    function Get-CecilGameMethodCount {
+        param([string]$TypeName, [string[]]$Names)
+        $type = $gameMetadata.MainModule.GetType($TypeName)
+        if ($null -eq $type) { throw "Installed assembly_valheim.dll has no type '$TypeName'." }
+        return @($type.Methods | Where-Object { $_.Name -in $Names }).Count
+    }
+
+    $cecilGameResolvers = @{
+        'Magenheim.Runtime.UnderworldPrivateAreaRegistryScopePatch' = @('PrivateArea', @('CheckAccess'))
+        'Magenheim.Runtime.UnderworldPieceRegistryScopePatch' = @('Piece', @('GetAllPiecesInRadius'))
+        'Magenheim.Runtime.UnderworldCraftingStationRegistryScopePatch' = @('CraftingStation', @('HaveBuildStationInRange','FindClosestStationInRange','GetCraftingStation'))
+        'Magenheim.Runtime.UnderworldStationExtensionRegistryScopePatch' = @('StationExtension', @('FindExtensions','FindClosestStationInRange','OtherExtensionInRange'))
+        'Magenheim.Runtime.UnderworldTerrainModifierRegistryScopePatch' = @('TerrainModifier', @('GetAllInstances','FindClosestModifierPieceInRange','RemoveOthers','GetModifiers'))
+        'Magenheim.Runtime.UnderworldZoneSystemInstanceScopePatch' = @('ZoneSystem', @('Awake','Start','Update','FixedUpdate','LateUpdate','SetupLocations','PlaceVegetation','GenerateLocationsTimeSliced','CreateLocalZones','CreateGhostZones','PokeLocalZone','SpawnZone'))
+        'Magenheim.Runtime.UnderworldSpawnSystemInstanceScopePatch' = @('SpawnSystem', @('Awake','Start','Update','UpdateSpawning','UpdateSpawnList','FindBaseSpawnPoint','IsSpawnPointGood','Spawn'))
+        'Magenheim.Runtime.UnderworldZNetSceneInstanceScopePatch' = @('ZNetScene', @('Update','CreateDestroyObjects','IsAreaReady'))
     }
 
     foreach ($typeName in $resolverNames) {
         if ($typeName -ceq 'Magenheim.Runtime.UnderworldValheimBehaviourInstanceScopePatch') {
             $dynamic++
-            $metadataTargets = Get-CecilValheimBehaviourTargetCount
+            $metadataTargets = Get-CecilBehaviourTargetCount $gameMetadata -ExcludePathfinding
             if ($metadataTargets -le 0) {
                 throw "$typeName resolved zero Valheim MonoBehaviour callback targets through Cecil metadata."
             }
             $resolvedCount += $metadataTargets
-            Write-Output "Dynamic Harmony resolver ${typeName}: $metadataTargets target(s) verified through Cecil metadata (desktop CLR cannot safely materialize all Unity game types)."
+            Write-Output "Dynamic Harmony resolver $($typeName): $metadataTargets target(s) verified through Cecil metadata."
+            continue
+        }
+
+        if ($typeName -ceq 'Magenheim.Runtime.UnderworldMagenheimBehaviourInstanceScopePatch') {
+            $dynamic++
+            $metadataTargets = Get-CecilBehaviourTargetCount $metadata
+            if ($metadataTargets -le 0) {
+                throw "$typeName resolved zero Magenheim MonoBehaviour callback targets through Cecil metadata."
+            }
+            $resolvedCount += $metadataTargets
+            Write-Output "Dynamic Harmony resolver $($typeName): $metadataTargets target(s) verified through Cecil metadata."
+            continue
+        }
+
+        if ($cecilGameResolvers.ContainsKey($typeName)) {
+            $dynamic++
+            $spec = $cecilGameResolvers[$typeName]
+            $metadataTargets = Get-CecilGameMethodCount ([string]$spec[0]) ([string[]]$spec[1])
+            if ($metadataTargets -le 0) {
+                throw "$typeName resolved zero installed-game targets through Cecil metadata."
+            }
+            $resolvedCount += $metadataTargets
+            Write-Output "Dynamic Harmony resolver $($typeName): $metadataTargets target(s) verified through Cecil metadata."
             continue
         }
 
@@ -200,5 +235,7 @@ try {
     Write-Output "Verified $dynamic dynamic Harmony resolver(s), $resolvedCount resolved installed-runtime target(s)."
 }
 finally {
+    if ($null -ne $metadata) { $metadata.Dispose() }
+    if ($null -ne $gameMetadata) { $gameMetadata.Dispose() }
     [AppDomain]::CurrentDomain.remove_AssemblyResolve($handler)
 }
