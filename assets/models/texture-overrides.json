@@ -1,0 +1,12 @@
+{
+  "furniture-crystal-bench": {
+    "seat": "furniture-crystal-bench-p00-seat.png",
+    "leg--0.61": "furniture-crystal-bench-p01-leg--0.61.png",
+    "end-band--0.61": "furniture-crystal-bench-p02-end-band--0.61.png",
+    "end-crystal--0.61": "furniture-crystal-bench-p03-end-crystal--0.61.png",
+    "leg-0.61": "furniture-crystal-bench-p04-leg-0.61.png",
+    "end-band-0.61": "furniture-crystal-bench-p05-end-band-0.61.png",
+    "end-crystal-0.61": "furniture-crystal-bench-p06-end-crystal-0.61.png",
+    "stretcher": "furniture-crystal-bench-p07-stretcher.png"
+  }
+}

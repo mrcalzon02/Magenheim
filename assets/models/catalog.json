@@ -2660,7 +2660,7 @@
     "glb": "glb/furniture-crystal-bench.glb",
     "runtime": "runtime/furniture-crystal-bench.model.json",
     "source_sha256": "245a045a483eef2ee97394449f3ad65f2d724273ca319351f3c516eb540318a6",
-    "runtime_sha256": "2f4a8f2cc489cf42d50ae57e8d6b8d9e7ee5f1c9868758ce481a4676842bc6f1",
+    "runtime_sha256": "a60903aca391ed93b2c57d1f6858e6a31b9fed445285b71abcb982223a7216c9",
     "glb_sha256": "8a1228c24f48d28660badf2384ee65fce38e9fb913bbfd721b3a68fed349183a"
   },
   {

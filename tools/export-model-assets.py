@@ -10,6 +10,8 @@ root=Path(__file__).resolve().parents[1]
 out=root/'assets/models'
 args=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 files=[out/'source'/(x+'.blend') for x in args] if args else sorted((out/'source').glob('*.blend'))
+override_path=out/'texture-overrides.json'
+texture_overrides=json.loads(override_path.read_text()) if override_path.is_file() else {}
 for file in files:
  if file.resolve().parent != (out/'source').resolve():raise ValueError('Invalid model path')
  bpy.ops.wm.open_mainfile(filepath=str(file))
@@ -41,8 +43,10 @@ for file in files:
   # Because this exporter saves the opened .blend at the end, exporting is also the source migration.
   bind_surface_if_needed(bpy,material)
   color=list(bs.inputs['Base Color'].default_value);color[3]=bs.inputs['Alpha'].default_value
-  texture=None
+  texture=texture_overrides.get(file.stem,{}).get(obj.name)
+  if texture is not None and not (out/'textures'/texture).is_file():raise ValueError(f'{file.name}/{obj.name}: missing texture override {texture}')
   for node in material.node_tree.nodes:
+   if texture is not None:break
    if node.type=='TEX_IMAGE' and node.image:
     image=node.image
     # bind_surface_if_needed must have migrated this before export. Keep a hard guard so a future

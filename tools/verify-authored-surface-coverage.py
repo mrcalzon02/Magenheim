@@ -12,13 +12,20 @@ FAMILIES = ("stone", "timber", "metal", "cloth", "bone", "liquid", "leather", "c
 BASELINE_MODELS = 87
 BASELINE_PARTS = 1048
 
-ITEM_TEXTURE_BINDINGS = {
+PART_TEXTURE_BINDINGS = {
     "furniture-crystal-bench": {
-        "magenheim.furniture.furniture-crystal-bench.dark-stone": "furniture-crystal-bench-dark-stone.png",
-        "magenheim.furniture.furniture-crystal-bench.wood": "furniture-crystal-bench-wood.png",
-        "magenheim.furniture.furniture-crystal-bench.iron": "furniture-crystal-bench-iron.png",
-        "magenheim.furniture.furniture-crystal-bench.crystal": "furniture-crystal-bench-crystal.png",
+        "seat": "furniture-crystal-bench-p00-seat.png",
+        "leg--0.61": "furniture-crystal-bench-p01-leg--0.61.png",
+        "end-band--0.61": "furniture-crystal-bench-p02-end-band--0.61.png",
+        "end-crystal--0.61": "furniture-crystal-bench-p03-end-crystal--0.61.png",
+        "leg-0.61": "furniture-crystal-bench-p04-leg-0.61.png",
+        "end-band-0.61": "furniture-crystal-bench-p05-end-band-0.61.png",
+        "end-crystal-0.61": "furniture-crystal-bench-p06-end-crystal-0.61.png",
+        "stretcher": "furniture-crystal-bench-p07-stretcher.png",
     },
+}
+
+ITEM_TEXTURE_BINDINGS = {
     "furniture-geode-table": {
         "magenheim.furniture.furniture-geode-table.dark-stone": "furniture-geode-table-dark-stone.png",
         "magenheim.furniture.furniture-geode-table.wood": "furniture-geode-table-wood.png",
@@ -193,6 +200,24 @@ print(f"VERIFIED authored surfaces: {len(FAMILIES)} distinct readable 256px pack
 if usage:
     print("Fallback family usage: " + usage)
 
+for model_id, expected in PART_TEXTURE_BINDINGS.items():
+    document = json.loads((RUNTIME / (model_id + ".model.json")).read_text(encoding="utf-8"))
+    seen = set()
+    for part in document.get("parts", []):
+        name = part.get("name")
+        if name not in expected:
+            continue
+        texture = (part.get("material") or {}).get("texture")
+        if texture != expected[name]:
+            raise SystemExit(f"{model_id}/{name}: expected UV-baked texture {expected[name]}, got {texture}")
+        image = Image.open(TEXTURES / texture)
+        if image.size != (256, 256):
+            raise SystemExit(f"{model_id}/{name}: UV-baked placeable texture must be 256x256, got {image.size}")
+        seen.add(name)
+    missing = sorted(set(expected) - seen)
+    if missing:
+        raise SystemExit(f"{model_id}: missing UV-baked part texture(s): {', '.join(missing)}")
+
 for model_id, expected in ITEM_TEXTURE_BINDINGS.items():
     document = json.loads((RUNTIME / (model_id + ".model.json")).read_text(encoding="utf-8"))
     seen = {}
@@ -211,4 +236,4 @@ for model_id, expected in ITEM_TEXTURE_BINDINGS.items():
     missing = sorted(set(expected) - set(seen))
     if missing:
         raise SystemExit(f"{model_id}: missing bound material(s): {', '.join(missing)}")
-print("VERIFIED model-specific Valheim-scale textures: crystal bench 8/8, geode table 9/9, crystal beds 128/128, enchanting dais 62/62, crystal hearth 21/21, crystalline ice box 27/27 parts.")
+print("VERIFIED model-specific Valheim-scale textures: crystal bench 8/8 UV-baked per part; geode table 9/9, crystal beds 128/128, enchanting dais 62/62, crystal hearth 21/21, crystalline ice box 27/27 parts.")

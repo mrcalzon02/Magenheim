@@ -21,3 +21,12 @@ this model-specific decision. Existing non-fallback authored images still win.
 
 Admission checks require the seven maps to remain 256x256 and require all 17 affected runtime parts to
 reference the intended model-specific files.
+
+
+## 2026-09-27 correction — UV conformance
+
+The first bench/table pass used model-specific filenames but still assigned donor-derived material images directly. That was not UV-conformed authoring and is superseded for the crystal bench.
+
+`furniture-crystal-bench` now has eight separate 256px textures, one per actual mesh object. Each texture was rasterized through that object's committed UV triangles; value breakup is derived from the corresponding mesh geometry with restrained material-scale tooth inside the islands. A five-pixel bleed surrounds sampled islands. `assets/models/previews/furniture-crystal-bench-uv-texture-audit.png` overlays the committed UV edges in magenta on the baked pixels.
+
+`assets/models/texture-overrides.json` records model-id + object-name bindings so normal Blender export preserves the per-object choices rather than collapsing them back to a shared family image.
