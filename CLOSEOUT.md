@@ -1,3 +1,26 @@
+# Development closeout - 0.0.141 fresh-world admission and worldgen catalog partition
+
+The 0.0.140 live fresh-world log reached native Underworld construction, then exposed three
+world-generation boundary defects. A new parent save has no `_main.0.db2`, therefore Valheim does
+not call `ZDOMan.LoadChunks` before Magenheim admission; the child namespace now starts empty and
+binds the authoritative parent path on the first native `SaveChunks` call, while later path changes
+still fail closed.
+
+Jötunn registers CustomLocation/CustomVegetation rows process-wide. After the detached Underworld
+ZoneSystem receives its copy, Magenheim now removes only `Magenheim_Underworld_*` rows that use the
+reserved 1024+ biome flags from Surface generation. This prevents Surface
+`AltBiomeWorldData.GetRandomPointByBiomes` from indexing unsupported custom biome keys while keeping
+the rows available to instance 1.
+
+Foreign negative/complement biome masks such as GemstoneSpawner's `-33` are no longer treated as
+explicit claims on Magenheim's future high bits. They are excluded from the detached Underworld
+catalog without mutating the shared foreign registration object; positive foreign masks that
+explicitly claim a reserved bit still fail closed.
+
+Source/static architecture checks are updated for these boundaries. Live acceptance still requires
+a fresh 0.0.141 world load proving admission, Surface location generation, Underworld startup, first
+save binding and reload.
+
 # Development closeout - 0.0.138 native catalog and menu callbacks
 
 The 0.0.137 live log loaded all ten backdrops and passed resource/flora registration, then repeatedly

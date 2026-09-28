@@ -1,4 +1,4 @@
 {
-  "version": "0.0.140",
-  "description": "0.0.140: Unifies all 37 UV-textured parts of the Crystal Bench, Geode Table, Chair and Pedestal across editable sources, GLB previews and runtime; refreshes their Hammer icons and checks packed texture and tint consistency."
+  "version": "0.0.141",
+  "description": "0.0.141: Repairs fresh-world Underworld save admission, isolates Underworld-only worldgen rows from Surface generation, and filters legacy negative foreign biome masks before Underworld startup."
 }
