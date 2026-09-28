@@ -93,7 +93,69 @@ try {
         @($_.Methods | Where-Object Name -in @('TargetMethod', 'TargetMethods')).Count -gt 0
     } | ForEach-Object { $_.FullName })
     $metadata.Dispose()
+
+    function Test-CecilDerivesFrom {
+        param($TypeDefinition, [string]$ExpectedBase)
+        $cursor = $TypeDefinition
+        $seen = @{}
+        while ($null -ne $cursor -and $null -ne $cursor.BaseType) {
+            if ($cursor.BaseType.FullName -ceq $ExpectedBase) { return $true }
+            if ($seen.ContainsKey($cursor.BaseType.FullName)) { return $false }
+            $seen[$cursor.BaseType.FullName] = $true
+            try { $cursor = $cursor.BaseType.Resolve() }
+            catch { return $false }
+        }
+        return $false
+    }
+
+    function Get-CecilValheimBehaviourTargetCount {
+        # Windows PowerShell 5.1 uses desktop .NET Framework. Current Unity/Valheim metadata
+        # contains interface constructs that Unity Mono accepts but desktop CLR rejects while
+        # Assembly.GetTypes() materializes the whole game assembly ("Non-abstract, non-.ctor
+        # method in an interface"). Audit this one broad resolver directly with Cecil instead of
+        # weakening the gate or asking desktop CLR to load unrelated game types.
+        $cecilResolver = New-Object Mono.Cecil.DefaultAssemblyResolver
+        foreach ($directory in $searchDirectories) {
+            if (Test-Path -LiteralPath $directory) { $cecilResolver.AddSearchDirectory($directory) }
+        }
+        $reader = New-Object Mono.Cecil.ReaderParameters
+        $reader.AssemblyResolver = $cecilResolver
+        $gameMetadata = [Mono.Cecil.AssemblyDefinition]::ReadAssembly(
+            (Join-Path $GameManagedPath 'assembly_valheim.dll'), $reader)
+        try {
+            $callbackNames = @(
+                'Awake','Start','Update','FixedUpdate','LateUpdate',
+                'OnTriggerEnter','OnTriggerStay','OnTriggerExit',
+                'OnCollisionEnter','OnCollisionStay','OnCollisionExit'
+            )
+            $count = 0
+            foreach ($candidateType in $gameMetadata.MainModule.Types) {
+                if ($candidateType.IsAbstract -or $candidateType.FullName -ceq 'Pathfinding') { continue }
+                if (!(Test-CecilDerivesFrom $candidateType 'UnityEngine.MonoBehaviour')) { continue }
+                foreach ($candidateMethod in $candidateType.Methods) {
+                    if ($candidateMethod.IsStatic -or $candidateMethod.IsAbstract -or
+                        $candidateMethod.HasGenericParameters -or
+                        $candidateMethod.Name -notin $callbackNames) { continue }
+                    $count++
+                }
+            }
+            return $count
+        }
+        finally { $gameMetadata.Dispose() }
+    }
+
     foreach ($typeName in $resolverNames) {
+        if ($typeName -ceq 'Magenheim.Runtime.UnderworldValheimBehaviourInstanceScopePatch') {
+            $dynamic++
+            $metadataTargets = Get-CecilValheimBehaviourTargetCount
+            if ($metadataTargets -le 0) {
+                throw "$typeName resolved zero Valheim MonoBehaviour callback targets through Cecil metadata."
+            }
+            $resolvedCount += $metadataTargets
+            Write-Output "Dynamic Harmony resolver ${typeName}: $metadataTargets target(s) verified through Cecil metadata (desktop CLR cannot safely materialize all Unity game types)."
+            continue
+        }
+
         $type = $runtime.GetType($typeName, $true)
         $single = $type.GetMethod('TargetMethod', $flags)
         $many = $type.GetMethod('TargetMethods', $flags)

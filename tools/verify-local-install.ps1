@@ -51,6 +51,6 @@ if ($otherStale.Count -gt 0) {
         (($otherStale | ForEach-Object { "$($_.Profile)=$($_.Version)" }) -join ', '))
 }
 if ($otherCurrent.Count -gt 0) {
-    Write-Output ("Other profiles also contain current Magenheim $expectedVersion: " +
+    Write-Output ("Other profiles also contain current Magenheim ${expectedVersion}: " +
         (($otherCurrent | ForEach-Object { $_.Profile }) -join ', '))
 }
