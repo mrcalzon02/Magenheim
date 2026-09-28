@@ -62,11 +62,7 @@ PART_TEXTURE_BINDINGS = {
 }
 
 ITEM_TEXTURE_BINDINGS = {
-    "furniture-geode-table": {
-        "magenheim.furniture.furniture-geode-table.dark-stone": "furniture-geode-table-dark-stone.png",
-        "magenheim.furniture.furniture-geode-table.wood": "furniture-geode-table-wood.png",
-        "magenheim.furniture.furniture-geode-table.iron": "furniture-geode-table-iron.png",
-    },    "crystal-bed-earth": {
+    "crystal-bed-earth": {
         "magenheim.crystal-bed.stone": "crystal-bed-stone.png",
         "magenheim.crystal-bed.iron": "crystal-bed-iron.png",
         "magenheim.crystal-bed.mineral-water": "crystal-bed-mineral-water.png",

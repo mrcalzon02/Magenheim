@@ -110,6 +110,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Baked surface validation failed.' }
     & python "$PSScriptRoot/tools/verify-authored-surface-coverage.py"
     if ($LASTEXITCODE -ne 0) { throw 'Authored model surface coverage failed.' }
+    & "$PSScriptRoot/tools/blender.ps1" verify-object-texture-bindings
+    if ($LASTEXITCODE -ne 0) { throw 'Source/runtime object texture bindings diverged.' }
     & "$PSScriptRoot/tools/verify-patch-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
     & "$PSScriptRoot/tools/verify-dynamic-patch-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
     & "$PSScriptRoot/tools/verify-reflection-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"

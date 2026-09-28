@@ -135,3 +135,37 @@ def bind_surface_if_needed(bpy, material):
         tree.links.new(node.outputs["Color"], bsdf.inputs["Base Color"])
     image.pack()
     return True
+
+
+def bind_object_texture(bpy, obj, filename):
+    """Make a runtime override real, packed source art without changing sibling parts."""
+    path = SURFACES / filename
+    if path.parent != SURFACES or not path.is_file():
+        raise ValueError("Invalid object texture: " + filename)
+    material = obj.data.materials[0]
+    semantic = material.get("magenheim_material_name", material.name)
+    if material.users > 1:
+        material = material.copy()
+        obj.data.materials[0] = material
+    material["magenheim_material_name"] = semantic
+    tree = material.node_tree
+    bsdf = tree.nodes.get("Principled BSDF")
+    if bsdf is None:
+        raise ValueError("Principled material required: " + semantic)
+    # Keep the default value as the runtime tint, and multiply it in source/GLB.
+    tint = list(bsdf.inputs["Base Color"].default_value)
+    for node in list(tree.nodes):
+        if node.type == "TEX_IMAGE" or node.name == "Magenheim Surface Tint":
+            tree.nodes.remove(node)
+    image = bpy.data.images.load(str(path), check_existing=True)
+    image.reload()
+    image.pack()
+    node = tree.nodes.new("ShaderNodeTexImage")
+    node.image = image
+    multiply = tree.nodes.new("ShaderNodeMixRGB")
+    multiply.name = "Magenheim Surface Tint"
+    multiply.blend_type = "MULTIPLY"
+    multiply.inputs[0].default_value = 1.0
+    multiply.inputs[2].default_value = tint
+    tree.links.new(node.outputs["Color"], multiply.inputs[1])
+    tree.links.new(multiply.outputs[0], bsdf.inputs["Base Color"])

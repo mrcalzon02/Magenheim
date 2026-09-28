@@ -2659,9 +2659,9 @@
     "source": "source/furniture-crystal-bench.blend",
     "glb": "glb/furniture-crystal-bench.glb",
     "runtime": "runtime/furniture-crystal-bench.model.json",
-    "source_sha256": "245a045a483eef2ee97394449f3ad65f2d724273ca319351f3c516eb540318a6",
-    "runtime_sha256": "a60903aca391ed93b2c57d1f6858e6a31b9fed445285b71abcb982223a7216c9",
-    "glb_sha256": "8a1228c24f48d28660badf2384ee65fce38e9fb913bbfd721b3a68fed349183a"
+    "source_sha256": "d599dd2a1066956d8117370943c98a7058e2f5010cb50687db1a1f02d2e89aaf",
+    "runtime_sha256": "26c202659129695684cdde6e2231dd6c41eebe0af260063c0e9ff788bc3ecca9",
+    "glb_sha256": "9cff6d7f190bafbb3787dcfc7283142134394d776e35b6e1ec8e2598ef48f146"
   },
   {
     "id": "furniture-crystal-divider",
@@ -2707,9 +2707,9 @@
     "source": "source/furniture-geode-chair.blend",
     "glb": "glb/furniture-geode-chair.glb",
     "runtime": "runtime/furniture-geode-chair.model.json",
-    "source_sha256": "8578929cfef215bf18afc036b3a8b2fea4bfdef2b7944245959446260721b4a4",
-    "runtime_sha256": "60d91e9b4d2c4de3d1f57d456ec640af5734fcf0d91f06ebab4fc8baf9d7b83a",
-    "glb_sha256": "07dfa48ba2c19c840d28615bdf6ec8b2c140a58e988eb6af44f17211a1d96fd5"
+    "source_sha256": "826cb7c66b18e9bc6661c0c3ff0184efa4a834b8048ab304c6bd3e4f815ffd1a",
+    "runtime_sha256": "8c93da83820c040bad99583547308ebd7760af3571d522c83cd636b9aeb1ebd2",
+    "glb_sha256": "6f8bc8ecee2f07cfa2f3fe237481ad469bc1030bfa3c80e43e45912e4fe06be4"
   },
   {
     "id": "furniture-geode-pedestal",
@@ -2719,9 +2719,9 @@
     "source": "source/furniture-geode-pedestal.blend",
     "glb": "glb/furniture-geode-pedestal.glb",
     "runtime": "runtime/furniture-geode-pedestal.model.json",
-    "source_sha256": "d9166daaddc0b116cc326236e1d6c5c174db2c1624adbdab5ebac093c72b759b",
-    "runtime_sha256": "f88c26128d47ba6385a75e76650433f710ebecdb05ed86c23aea2fc749c889eb",
-    "glb_sha256": "cbfb75b57a2daf3c841e5afc4a3d94f6d18b6f062c55ec275556e6f35704b676"
+    "source_sha256": "4afa0d0d526f5e9649e4f156c42685e524c059fc5809121a187a8d4eabdb9c19",
+    "runtime_sha256": "54fdb89276e60cd29081b451fae5ca0e930cbc6221848619fa897230792f26e0",
+    "glb_sha256": "798a417e4fdea6a6300fc6208565cf1aafaab3c00a085a8a4fda9c9373dc623b"
   },
   {
     "id": "furniture-geode-table",
@@ -2731,9 +2731,9 @@
     "source": "source/furniture-geode-table.blend",
     "glb": "glb/furniture-geode-table.glb",
     "runtime": "runtime/furniture-geode-table.model.json",
-    "source_sha256": "46a1e042dae8eef0bc0b08b14433e2e67461eb973d3f77fb9069b00e2b2922e8",
-    "runtime_sha256": "72c30fe9d5ca481181a3822d942b749aea98bfe8c994cfdad9aa2d84bfa3be40",
-    "glb_sha256": "f69bba2751d9397a5b463a63b3dde75e458463918a5c3d71adc5709bf1766645"
+    "source_sha256": "9f5e0aac90c03fad9c999d86518244337d2c8c451b28768898a371e878b4f494",
+    "runtime_sha256": "e0618ef2f34bff4c4f9b76974f1928773c1b85d2a0c99593306f0f19fa88acd0",
+    "glb_sha256": "4c9d5908057dcc750e868b8267c3c7027ab2eda4b7cc7e90acb95e4f0f17cfb3"
   },
   {
     "id": "furniture-lapidary-cabinet",

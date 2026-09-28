@@ -22,6 +22,14 @@ The migration scripts and old geometry sources under `tools/ModelExporter/Legacy
 
 ## Coverage and limits
 
+Per-object UV maps are assigned in `texture-overrides.json`. Export now packs those
+images into each affected object's source material, preserves its original tint
+and runtime semantic name, and embeds the result in GLB. After changing an override,
+export the affected model and regenerate its icon. The build checks packed image
+bytes and bindings across source, runtime and GLB; a runtime-only filename change
+does not complete a texture update. The bench, table, chair and pedestal now follow
+this workflow for all 37 parts.
+
 Includes all geometry formerly owned by active visual builders: 32 staffs; ten crystal weapons; furniture and geology decor; crystal construction; 24 elemental banners; eight crystal beds; the enchanting dais, ice box and complete aiming Sentinel; eight ammunition indicators; world and capstone artifacts; 104 creature/alignment variants; 20 dungeon districts and their passage/traversal pieces; the entrance and Dark Throne; geode and workshop assets; the crown and elemental focus.
 
 The eleven Rootforged A0 construction definitions now have saved Blender sources, matching GLB/runtime mesh payloads, and owned Understone/Worldroot/forged-iron material textures. This is the asset layer only: Hammer registration, explicit snap transforms and live Valheim placement acceptance remain separate runtime work and are not implied by model presence.

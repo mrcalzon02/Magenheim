@@ -2,7 +2,14 @@
 
 **Magic begins as geology.**
 
-## 0.0.138 testing candidate
+## 0.0.140 testing candidate
+
+The Crystal Bench, Geode Table, Chair and Pedestal now use the same 37 per-part
+UV textures in editable Blender sources, GLB previews and runtime. Material tints
+are preserved, their Hammer icons are refreshed, and packaging verifies source
+pixels and bindings. Includes 0.0.139's clean managed installation replacement.
+
+### Earlier fixes in 0.0.138
 
 Copies the readonly native location index into the independent Underworld catalog. Failed native
 construction stops for the session instead of rebuilding every frame. Broad scene callback hooks
@@ -50,10 +57,10 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.138.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.140.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
-Launch **Modded**. Confirm `Loading [Magenheim 0.0.138]` in the BepInEx log.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.140]` in the BepInEx log.
 Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
 See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.

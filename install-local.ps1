@@ -88,6 +88,12 @@ if (Test-Path -LiteralPath $target) {
 if (Test-Path -LiteralPath $target) {
     # The package is authoritative for this one managed directory. Overlay-copying leaves removed
     # or renamed textures behind, so a successful update can still run a hybrid of two versions.
+    $resolvedTarget = (Resolve-Path -LiteralPath $target).Path
+    $expectedTarget = [IO.Path]::GetFullPath((Join-Path $profile 'BepInEx/plugins/Local-Magenheim'))
+    if ($resolvedTarget -ne $expectedTarget -or
+        ((Get-Item -LiteralPath $target).Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+        throw "Refusing to replace an unexpected managed installation path: $resolvedTarget"
+    }
     Remove-Item -LiteralPath $target -Recurse -Force
 }
 New-Item -ItemType Directory -Force -Path $target | Out-Null

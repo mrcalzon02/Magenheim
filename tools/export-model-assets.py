@@ -4,7 +4,7 @@ blender --background --python tools/export-model-assets.py -- [model-id ...]
 import bpy,json,sys,hashlib
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from model_surface_authoring import bind_surface_if_needed
+from model_surface_authoring import bind_surface_if_needed, bind_object_texture
 from mathutils import Vector
 root=Path(__file__).resolve().parents[1]
 out=root/'assets/models'
@@ -33,6 +33,8 @@ for file in files:
   previous=bindings.get(path,{})
   if 'game_collision' not in obj:obj['game_collision']=bool(previous.get('collider',False))
   if 'game_crystal' not in obj:obj['game_crystal']=json.dumps(previous.get('crystal'))
+  texture=texture_overrides.get(file.stem,{}).get(obj.name)
+  if texture is not None:bind_object_texture(bpy,obj,texture)
   evaluated=obj.evaluated_get(bpy.context.evaluated_depsgraph_get());mesh=evaluated.to_mesh();mesh.calc_loop_triangles()
   if not mesh.uv_layers:raise ValueError(f'{file.name}/{obj.name}: UV map required')
   if len(mesh.materials)!=1:raise ValueError(f'{file.name}/{obj.name}: split objects by material before export')
@@ -71,7 +73,7 @@ for file in files:
     if file.stem.startswith('earth-'):
      image.filepath_raw=str(root/'assets/earth'/(file.stem[6:]+'.png'));image.save()
     image.pack();break
-  md=dict(doubleSided=not material.use_backface_culling,name=material.name,color=color,metallic=bs.inputs['Metallic'].default_value,roughness=bs.inputs['Roughness'].default_value,
+  md=dict(doubleSided=not material.use_backface_culling,name=material.get('magenheim_material_name',material.name),color=color,metallic=bs.inputs['Metallic'].default_value,roughness=bs.inputs['Roughness'].default_value,
           emission=[v*bs.inputs['Emission Strength'].default_value for v in bs.inputs['Emission Color'].default_value[:3]],texture=texture)
   vertices=[];normals=[];uv=[];triangles=[];normal_matrix=obj.matrix_world.to_3x3().inverted().transposed()
   for face in mesh.loop_triangles:

@@ -1,4 +1,4 @@
 {
-  "version": "0.0.139",
-  "description": "0.0.139: UV-bakes the Geode Chair and Geode Pedestal through their real mesh islands, and makes local installs replace the managed Magenheim payload so stale files cannot survive updates."
+  "version": "0.0.140",
+  "description": "0.0.140: Unifies all 37 UV-textured parts of the Crystal Bench, Geode Table, Chair and Pedestal across editable sources, GLB previews and runtime; refreshes their Hammer icons and checks packed texture and tint consistency."
 }
