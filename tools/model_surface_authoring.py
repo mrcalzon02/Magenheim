@@ -45,6 +45,11 @@ ITEM_TEXTURE_OVERRIDES = {
     "magenheim.architecture.architecture-crystal-hearth.rainbow-crystal.4": "architecture-crystal-hearth-rainbow-crystal.png",
     "magenheim.architecture.architecture-crystal-hearth.rainbow-crystal.5": "architecture-crystal-hearth-rainbow-crystal.png",
     "magenheim.architecture.architecture-crystal-hearth.rainbow-crystal.6": "architecture-crystal-hearth-rainbow-crystal.png",
+    "magenheim.crystalline-ice-box.black-stone": "crystalline-ice-box-black-stone.png",
+    "magenheim.crystalline-ice-box.ice-crystal": "crystalline-ice-box-ice-crystal.png",
+    "magenheim.crystalline-ice-box.iron": "crystalline-ice-box-iron.png",
+    "magenheim.crystalline-ice-box.silver": "crystalline-ice-box-silver.png",
+    "magenheim.crystalline-ice-box.frost-crystal": "crystalline-ice-box-frost-crystal.png",
 
 }
 

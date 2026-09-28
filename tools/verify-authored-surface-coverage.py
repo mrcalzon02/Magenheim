@@ -9,8 +9,8 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / "assets" / "models" / "runtime"
 TEXTURES = ROOT / "assets" / "models" / "textures"
 FAMILIES = ("stone", "timber", "metal", "cloth", "bone", "liquid", "leather", "crystal", "generic")
-BASELINE_MODELS = 88
-BASELINE_PARTS = 1075
+BASELINE_MODELS = 87
+BASELINE_PARTS = 1048
 
 ITEM_TEXTURE_BINDINGS = {
     "furniture-crystal-bench": {
@@ -95,6 +95,13 @@ ITEM_TEXTURE_BINDINGS = {
         "magenheim.architecture.architecture-crystal-hearth.rainbow-crystal.4": "architecture-crystal-hearth-rainbow-crystal.png",
         "magenheim.architecture.architecture-crystal-hearth.rainbow-crystal.5": "architecture-crystal-hearth-rainbow-crystal.png",
         "magenheim.architecture.architecture-crystal-hearth.rainbow-crystal.6": "architecture-crystal-hearth-rainbow-crystal.png",
+    },
+    "crystalline-ice-box": {
+        "magenheim.crystalline-ice-box.black-stone": "crystalline-ice-box-black-stone.png",
+        "magenheim.crystalline-ice-box.ice-crystal": "crystalline-ice-box-ice-crystal.png",
+        "magenheim.crystalline-ice-box.iron": "crystalline-ice-box-iron.png",
+        "magenheim.crystalline-ice-box.silver": "crystalline-ice-box-silver.png",
+        "magenheim.crystalline-ice-box.frost-crystal": "crystalline-ice-box-frost-crystal.png",
     },
 
 }
@@ -204,4 +211,4 @@ for model_id, expected in ITEM_TEXTURE_BINDINGS.items():
     missing = sorted(set(expected) - set(seen))
     if missing:
         raise SystemExit(f"{model_id}: missing bound material(s): {', '.join(missing)}")
-print("VERIFIED model-specific Valheim-scale textures: crystal bench 8/8, geode table 9/9, crystal beds 128/128, enchanting dais 62/62, crystal hearth 21/21 parts.")
+print("VERIFIED model-specific Valheim-scale textures: crystal bench 8/8, geode table 9/9, crystal beds 128/128, enchanting dais 62/62, crystal hearth 21/21, crystalline ice box 27/27 parts.")

@@ -764,7 +764,7 @@
     "glb": "glb/crystalline-ice-box.glb",
     "runtime": "runtime/crystalline-ice-box.model.json",
     "source_sha256": "eedd199ac343a57b945498371c05d84c2e09868b1a114e3ce8abdcf7428084d1",
-    "runtime_sha256": "691110e952ad3ef6d96a631881323a08978d13affa4d2dfa668d5371fa57e9f1",
+    "runtime_sha256": "1dc9a4ebb52f82fb2df5ae9dbc15e395f2fc6852fe9e6af3cc1183751183a10b",
     "glb_sha256": "088d5773ffa3976ead2b9f4383dcd7168a1a54e46a84d69446d41f4682502a17"
   },
   {
