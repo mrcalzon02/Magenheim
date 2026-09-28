@@ -17,29 +17,34 @@ internal static class UnderworldMapPersistenceScope
 {
     private const string LegacyPrefix = "magenheim.map.underworld.v1.";
     private const string ScopedPrefix = "magenheim.map.underworld.v2.";
-    private static string _preparedScope = string.Empty;
-
-    internal static void PrepareForMapLoad()
+    internal static bool PrepareForMapLoad()
     {
         var player = Player.m_localPlayer;
         var net = ZNet.instance;
-        if (player is null || net is null) return;
-        if (!UnderworldTerrainRuntime.TryGetAdmittedIdentity(out var identity) || identity is null) return;
+        if (player is null || net is null) return false;
+        if (!UnderworldTerrainRuntime.TryGetAdmittedIdentity(out var identity) || identity is null) return false;
 
         var legacyKey = LegacyKey(net.GetWorldUID());
         var scopedKey = ScopedKey(net.GetWorldUID(), identity);
-        if (string.Equals(_preparedScope, scopedKey, StringComparison.Ordinal)) return;
 
-        // Prefer already-scoped state. This also overwrites any stale session bridge left behind by
-        // an interrupted save from another derived instance.
-        if (player.m_customData.TryGetValue(scopedKey, out var scoped) && !string.IsNullOrWhiteSpace(scoped))
-            player.m_customData[legacyKey] = scoped;
-        else if (player.m_customData.TryGetValue(legacyKey, out var legacy) && !string.IsNullOrWhiteSpace(legacy))
-            // One-way migration for pre-v2 saves. Migration is allowed only while an authoritative
-            // derived instance is admitted; after the next player save the legacy slot is retired.
-            player.m_customData[scopedKey] = legacy;
+        // Never overwrite a live session bridge with the older durable snapshot. If a bridge is
+        // already present, it is the current native Minimap payload; only perform one-way migration
+        // when the scoped slot has never existed.
+        if (player.m_customData.TryGetValue(legacyKey, out var legacy) &&
+            !string.IsNullOrWhiteSpace(legacy))
+        {
+            if (!player.m_customData.TryGetValue(scopedKey, out var migrated) ||
+                string.IsNullOrWhiteSpace(migrated))
+                player.m_customData[scopedKey] = legacy;
+            return false;
+        }
 
-        _preparedScope = scopedKey;
+        if (!player.m_customData.TryGetValue(scopedKey, out var scoped) ||
+            string.IsNullOrWhiteSpace(scoped))
+            return false;
+
+        player.m_customData[legacyKey] = scoped;
+        return true;
     }
 
     internal static void CommitScopedPayload(Player player)
@@ -56,6 +61,18 @@ internal static class UnderworldMapPersistenceScope
         player.m_customData.Remove(legacyKey);
     }
 
+    internal static void RestoreSessionBridge(Player player)
+    {
+        var net = ZNet.instance;
+        if (player is null || net is null || player != Player.m_localPlayer) return;
+        if (!UnderworldTerrainRuntime.TryGetAdmittedIdentity(out var identity) || identity is null) return;
+
+        var scopedKey = ScopedKey(net.GetWorldUID(), identity);
+        if (player.m_customData.TryGetValue(scopedKey, out var encoded) &&
+            !string.IsNullOrWhiteSpace(encoded))
+            player.m_customData[LegacyKey(net.GetWorldUID())] = encoded;
+    }
+
     private static string LegacyKey(long worldUid) => LegacyPrefix + worldUid.ToString("X16");
 
     private static string ScopedKey(long worldUid, UnderworldWorldIdentity identity) =>
@@ -66,7 +83,7 @@ internal static class UnderworldMapPersistenceScope
 internal static class UnderworldMapPersistenceScopeLoadPatch
 {
     [HarmonyPriority(Priority.First)]
-    private static void Prefix() => UnderworldMapPersistenceScope.PrepareForMapLoad();
+    private static void Prefix() => _ = UnderworldMapPersistenceScope.PrepareForMapLoad();
 }
 
 // Instance admission can complete after vanilla Minimap.LoadMapData during world startup. Retry the
@@ -87,4 +104,7 @@ internal static class UnderworldMapPersistenceScopeSavePatch
     // then retire the bridge before PlayerProfile serializes custom data.
     [HarmonyPriority(Priority.Last)]
     private static void Prefix(Player __0) => UnderworldMapPersistenceScope.CommitScopedPayload(__0);
+
+    [HarmonyPriority(Priority.Last)]
+    private static void Postfix(Player __0) => UnderworldMapPersistenceScope.RestoreSessionBridge(__0);
 }

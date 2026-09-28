@@ -50,6 +50,8 @@ REQUIRED_FILES = (
     RUNTIME / "UnderworldGateTransitRuntime.cs",
     RUNTIME / "UnderworldZoneSystemStartIsolation.cs",
     RUNTIME / "UnderworldZoneCatalogGuard.cs",
+    RUNTIME / "UnderworldWorldgenContentBridge.cs",
+    RUNTIME / "UnderworldMapPersistenceScope.cs",
     RUNTIME / "UnderworldZoneInstanceState.cs",
     RUNTIME / "UnderworldWorldGeneratorCacheIsolation.cs",
     CORE / "UnderworldInstanceContract.cs",
@@ -84,6 +86,7 @@ REQUIRED_SNIPPETS = {
         "UnderworldWorldInstanceId.Underworld",
         "ValheimWorldInstanceExecution.BindRegistry",
         "UnderworldZoneCatalogGuard.DetachUnderworldOnlyGenerationFromSurface",
+        "UnderworldWorldgenContentBridge.PopulateGeodes",
         '"m_locationsByHash"',
         'string.Equals(name, "m_globalKeys", StringComparison.Ordinal)',
         'string.Equals(name, "m_globalKeysEnums", StringComparison.Ordinal)',
@@ -104,7 +107,25 @@ REQUIRED_SNIPPETS = {
         "DetachUnderworldOnlyGenerationFromSurface",
         "RemoveForeignImplicitWildcardVegetation",
         "RemoveForeignImplicitWildcardLocations",
+        "UnderworldWorldgenContentBridge.ValidateUnderworldCatalog",
         "rawMask >= 0",
+    ),
+    RUNTIME / "UnderworldWorldgenContentBridge.cs": (
+        "GeodeWorldPrefabIdentity.FromItemPrefabName",
+        "source.Clone()",
+        "UnderworldResourceCatalog.All",
+        "ValidateUnderworldCatalog",
+    ),
+    RUNTIME / "UnderworldMapPersistenceScope.cs": (
+        "ScopedPrefix",
+        "RestoreSessionBridge",
+        "player.m_customData.Remove(legacyKey)",
+    ),
+    RUNTIME / "UnderworldMapTabRuntime.cs": (
+        "UnderworldMapPersistenceScope.PrepareForMapLoad()",
+        "color.r > 0.001f",
+        "color.g > 0.001f",
+        "color.b > 0.001f",
     ),
     RUNTIME / "UnderworldZoneInstanceState.cs": (
         "underworld.ZoneSystem.PrepareSave();",
@@ -202,6 +223,10 @@ for patch in (
     "UnderworldZoneMetadataLoadFilterPatch",
     "UnderworldZoneMetadataShouldSendPatch",
     "UnderworldZoneSystemStartIsolationPatch",
+    "UnderworldWorldGeneratorSeedPatch",
+    "UnderworldMapPersistenceScopeLoadPatch",
+    "UnderworldMapPersistenceScopeAdmissionPatch",
+    "UnderworldMapPersistenceScopeSavePatch",
 ):
     if f"PatchAll(typeof({patch}))" not in plugin:
         fail(f"runtime bootstrap no longer installs {patch}")

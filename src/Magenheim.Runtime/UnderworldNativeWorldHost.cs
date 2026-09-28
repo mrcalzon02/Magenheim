@@ -84,6 +84,7 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             UnderworldZoneCatalogGuard.DetachUnderworldOnlyGenerationFromSurface(
                 surface.ZoneSystem,
                 zoneSystem);
+            UnderworldWorldgenContentBridge.PopulateGeodes(surface.ZoneSystem, zoneSystem);
 
             // Awake/Start of the copied ZoneSystem must see its own native world services.
             using (ValheimWorldInstanceExecution.Enter(context))

@@ -21,6 +21,7 @@ namespace Magenheim.Runtime;
 internal static class UnderworldZoneCatalogGuard
 {
     private const string OwnedPrefix = "Magenheim_Underworld_";
+    private const string OwnedGeodePrefix = "Magenheim_Geode_";
     private static UnderworldRuntimeServices? _services;
     private static ManualLogSource? _log;
 
@@ -61,6 +62,7 @@ internal static class UnderworldZoneCatalogGuard
         var wildcardLocations = RemoveForeignImplicitWildcardLocations(zoneSystem);
         ValidateVegetationOwnership(zoneSystem);
         ValidateLocationOwnership(zoneSystem);
+        UnderworldWorldgenContentBridge.ValidateUnderworldCatalog(zoneSystem);
 
         if (duplicateVegetation > 0)
             _log?.LogInfo(
@@ -214,7 +216,9 @@ internal static class UnderworldZoneCatalogGuard
     }
 
     private static bool IsMagenheimOwned(string name) =>
-        !string.IsNullOrWhiteSpace(name) && name.StartsWith(OwnedPrefix, StringComparison.Ordinal);
+        !string.IsNullOrWhiteSpace(name) &&
+        (name.StartsWith(OwnedPrefix, StringComparison.Ordinal) ||
+         name.StartsWith(OwnedGeodePrefix, StringComparison.Ordinal));
 
     private static string Display(string name) =>
         string.IsNullOrWhiteSpace(name) ? "<unnamed>" : name;

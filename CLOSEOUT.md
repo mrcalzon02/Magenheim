@@ -1,3 +1,26 @@
+# Development closeout - 0.0.142 Underworld resources, geodes, map display and deployment proof
+
+The repeated 0.0.140-style live exceptions supplied after a local install prove that the running
+process was not executing the repaired 0.0.141 image: the current source no longer contains the
+fresh-world parent-path exception path, and foreign negative biome masks are filtered before
+ownership validation. 0.0.142 therefore adds a startup provenance line containing the exact loaded
+assembly path and checkpoint `UW-142` so a wrong-profile/stale-DLL launch is immediately visible.
+
+All eight compatibility-approved Magenheim geode world prefabs now receive explicit instance-only
+Underworld vegetation rows. They reuse the already-registered prefab and authored placement data;
+only Surface-specific altitude/ocean limits are widened. The final detached Underworld catalog now
+fails admission if any of the 22 required raw-resource pickup spawners is absent and verifies every
+admitted geode row before ZoneSystem startup continues.
+
+The dual-map audit found that the instance-scoped v2 map persistence Harmony classes existed but
+were never installed by MagenheimPlugin. They are now installed. The session bridge is rehydratable
+after save/reload instead of being blocked by process-static one-shot state, and asynchronous map
+completion no longer treats alpha=1 on an otherwise black RGB24/RFloat texture as proof that pixels
+were published. Map-generation workers may also use the carried AsyncLocal Underworld scope when a
+third-party generator caches the process WorldGenerator singleton inside Task.Run.
+
+Live acceptance remains required after a verified 0.0.142 install.
+
 # Development closeout - 0.0.141 fresh-world admission and worldgen catalog partition
 
 The 0.0.140 live fresh-world log reached native Underworld construction, then exposed three

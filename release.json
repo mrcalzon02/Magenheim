@@ -1,4 +1,4 @@
 {
-  "version": "0.0.141",
-  "description": "0.0.141: Repairs fresh-world Underworld save admission, isolates Underworld-only worldgen rows from Surface generation, and filters legacy negative foreign biome masks before Underworld startup."
+  "version": "0.0.142",
+  "description": "0.0.142: Adds Underworld geodes/resource audits, repairs dual-map patch wiring and async display, and logs the exact runtime assembly path for deployment proof."
 }

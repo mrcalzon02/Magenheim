@@ -186,14 +186,36 @@ internal static class UnderworldTerrainRuntime
         var services = _services;
         if (services is null || !InstanceAvailable(services) ||
             !services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out var context) ||
-            context is null || !ReferenceEquals(context.WorldGenerator, generator))
+            context is null)
             return false;
 
-        // The generator object is the instance discriminator. Do not require AsyncLocal execution
-        // state here: HeightmapBuilder/worldgen work may resume on worker threads where the caller's
-        // ExecutionContext is not guaranteed to flow, while the dedicated WorldGenerator identity is.
+        // Native terrain workers normally carry the dedicated generator. Map-generation mods may
+        // cache WorldGenerator.instance inside Task.Run; the map scope is AsyncLocal and flows into
+        // that worker, so accept either discriminator without changing unrelated Surface calls.
+        var ownsGenerator = ReferenceEquals(context.WorldGenerator, generator);
+        var carriedUnderworldScope = ReferenceEquals(ValheimWorldInstanceExecution.Active, context);
+        if (!ownsGenerator && !carriedUnderworldScope) return false;
+
         terrain = SampleInstanceTerrain(x, 0d, z);
         return terrain.Admitted;
+    }
+
+    internal static bool TryGetScopedUnderworldSeed(WorldGenerator generator, out int seed)
+    {
+        seed = default;
+        var services = _services;
+        var identity = services?.InstanceLifecycle.Identity;
+        if (services is null || identity is null || !InstanceAvailable(services) ||
+            !services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out var context) ||
+            context is null)
+            return false;
+
+        if (!ReferenceEquals(context.WorldGenerator, generator) &&
+            !ReferenceEquals(ValheimWorldInstanceExecution.Active, context))
+            return false;
+
+        seed = identity.DerivedSeed32;
+        return true;
     }
 
     private static bool InstanceAvailable(UnderworldRuntimeServices services)
@@ -317,6 +339,18 @@ internal static class UnderworldNativeBiomeStringPatch
     {
         if (!UnderworldTerrainRuntime.TryGetCanonicalBiomeId(__0, out var id)) return true;
         __result = id;
+        return false;
+    }
+}
+
+
+[HarmonyPatch(typeof(WorldGenerator), nameof(WorldGenerator.GetSeed))]
+internal static class UnderworldWorldGeneratorSeedPatch
+{
+    private static bool Prefix(WorldGenerator __instance, ref int __result)
+    {
+        if (!UnderworldTerrainRuntime.TryGetScopedUnderworldSeed(__instance, out var seed)) return true;
+        __result = seed;
         return false;
     }
 }

@@ -371,7 +371,9 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
                 texture.GetPixel(texture.width * 3 / 4, texture.height * 3 / 4),
             };
             foreach (var color in probes)
-                if (color.a > 0.001f || color.r > 0.001f || color.g > 0.001f || color.b > 0.001f)
+                // RGB24/RFloat can report alpha=1 while newly allocated pixel data is still black.
+                // Alpha is therefore not evidence that an asynchronous generator has published.
+                if (color.r > 0.001f || color.g > 0.001f || color.b > 0.001f)
                     return true;
             return false;
         }
@@ -458,6 +460,8 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         MapLayerState state,
         bool applyToBoundMap)
     {
+        if (UnderworldMapPersistenceScope.PrepareForMapLoad())
+            _loadedPlayerUnderworldData = false;
         if (_loadedPlayerUnderworldData) return;
         var player = Player.m_localPlayer;
         if (player is null || ZNet.instance is null) return;
