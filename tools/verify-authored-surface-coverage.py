@@ -9,8 +9,8 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / "assets" / "models" / "runtime"
 TEXTURES = ROOT / "assets" / "models" / "textures"
 FAMILIES = ("stone", "timber", "metal", "cloth", "bone", "liquid", "leather", "crystal", "generic")
-BASELINE_MODELS = 90
-BASELINE_PARTS = 1158
+BASELINE_MODELS = 88
+BASELINE_PARTS = 1075
 
 ITEM_TEXTURE_BINDINGS = {
     "furniture-crystal-bench": {
@@ -70,7 +70,33 @@ ITEM_TEXTURE_BINDINGS = {
         "magenheim.crystal-bed.iron": "crystal-bed-iron.png",
         "magenheim.crystal-bed.mineral-water": "crystal-bed-mineral-water.png",
         "magenheim.crystal-bed.crystal-growth": "crystal-bed-crystal-growth.png",
+    },    "crystal-enchanting-dais": {
+        "magenheim.crystal-enchanting-dais.dark-stone": "crystal-enchanting-dais-dark-stone.png",
+        "magenheim.crystal-enchanting-dais.face-stone": "crystal-enchanting-dais-face-stone.png",
+        "magenheim.crystal-enchanting-dais.iron": "crystal-enchanting-dais-iron.png",
+        "magenheim.crystal-enchanting-dais.node-crystal-earth": "crystal-enchanting-dais-crystal.png",
+        "magenheim.crystal-enchanting-dais.node-crystal-fire": "crystal-enchanting-dais-crystal.png",
+        "magenheim.crystal-enchanting-dais.node-crystal-frost": "crystal-enchanting-dais-crystal.png",
+        "magenheim.crystal-enchanting-dais.node-crystal-storm": "crystal-enchanting-dais-crystal.png",
+        "magenheim.crystal-enchanting-dais.node-crystal-venom": "crystal-enchanting-dais-crystal.png",
+        "magenheim.crystal-enchanting-dais.node-crystal-radiance": "crystal-enchanting-dais-crystal.png",
+        "magenheim.crystal-enchanting-dais.node-crystal-seidr": "crystal-enchanting-dais-crystal.png",
+        "magenheim.crystal-enchanting-dais.node-crystal-spirit": "crystal-enchanting-dais-crystal.png",
+        "magenheim.crystal-enchanting-dais.central-crystal": "crystal-enchanting-dais-crystal.png",
     },
+    "architecture-crystal-hearth": {
+        "magenheim.architecture.architecture-crystal-hearth.stone": "architecture-crystal-hearth-stone.png",
+        "magenheim.architecture.architecture-crystal-hearth.darkstone": "architecture-crystal-hearth-darkstone.png",
+        "magenheim.architecture.architecture-crystal-hearth.iron": "architecture-crystal-hearth-iron.png",
+        "magenheim.architecture.architecture-crystal-hearth.rainbow-crystal.0": "architecture-crystal-hearth-rainbow-crystal.png",
+        "magenheim.architecture.architecture-crystal-hearth.rainbow-crystal.1": "architecture-crystal-hearth-rainbow-crystal.png",
+        "magenheim.architecture.architecture-crystal-hearth.rainbow-crystal.2": "architecture-crystal-hearth-rainbow-crystal.png",
+        "magenheim.architecture.architecture-crystal-hearth.rainbow-crystal.3": "architecture-crystal-hearth-rainbow-crystal.png",
+        "magenheim.architecture.architecture-crystal-hearth.rainbow-crystal.4": "architecture-crystal-hearth-rainbow-crystal.png",
+        "magenheim.architecture.architecture-crystal-hearth.rainbow-crystal.5": "architecture-crystal-hearth-rainbow-crystal.png",
+        "magenheim.architecture.architecture-crystal-hearth.rainbow-crystal.6": "architecture-crystal-hearth-rainbow-crystal.png",
+    },
+
 }
 
 CLASSIFIERS = (
@@ -178,4 +204,4 @@ for model_id, expected in ITEM_TEXTURE_BINDINGS.items():
     missing = sorted(set(expected) - set(seen))
     if missing:
         raise SystemExit(f"{model_id}: missing bound material(s): {', '.join(missing)}")
-print("VERIFIED model-specific Valheim-scale textures: crystal bench 8/8, geode table 9/9, crystal beds 128/128 parts.")
+print("VERIFIED model-specific Valheim-scale textures: crystal bench 8/8, geode table 9/9, crystal beds 128/128, enchanting dais 62/62, crystal hearth 21/21 parts.")

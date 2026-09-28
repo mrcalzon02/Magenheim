@@ -80,7 +80,7 @@
     "glb": "glb/architecture-crystal-hearth.glb",
     "runtime": "runtime/architecture-crystal-hearth.model.json",
     "source_sha256": "9af6f4535b809bde5452b4cd755a6f4068949eebdcd0746047f9aa29834439cd",
-    "runtime_sha256": "d5105481abe3d8b79cb85f218d27e7986af12702a020e02d245f01891fd98e36",
+    "runtime_sha256": "cfd7068df7deee3c118b1b76bff762cebb83c44c07a89de49f89220e5202e5c6",
     "glb_sha256": "585ed50e80b925e82e5fd3844e85150a3748a3a8f6515570a4a3e398efa6bc01"
   },
   {
@@ -596,7 +596,7 @@
     "glb": "glb/crystal-enchanting-dais.glb",
     "runtime": "runtime/crystal-enchanting-dais.model.json",
     "source_sha256": "bbce20f44274d02a7320872ecab3213bf53e3c23287b72bca415d0189595ba51",
-    "runtime_sha256": "48bf48e2c17bcf843ffbb7a20c651e70e6b99f6df5b73d3f56258e6fe80ae066",
+    "runtime_sha256": "5b964b5fa3b93e6ce498a993efd9c772144d3d0dd247c254e9df0c29b3e8ac24",
     "glb_sha256": "ff27afeb92790c57bd12f8f21da7f22a0e72eb6a6e688b5624fb7139c48100bf"
   },
   {
