@@ -28,6 +28,39 @@ if ($Offline) {
     Write-Warning 'Offline build: online dependency vulnerability audit is unavailable.'
 }
 
+# Managed verification scripts that call Assembly.LoadFrom must not execute inside the caller's
+# long-lived PowerShell process. Windows cannot unload those assemblies from an AppDomain, so one
+# failed verification run used to leave Magenheim.Core.dll/Magenheim.dll locked until the terminal
+# itself exited. Run every compiled-assembly PowerShell gate in a disposable child process instead.
+$powerShellHost = (Get-Process -Id $PID -ErrorAction Stop).Path
+function Invoke-IsolatedPowerShellGate {
+    param(
+        [Parameter(Mandatory=$true)][string]$ScriptPath,
+        [Parameter(Mandatory=$true)][string[]]$ScriptArguments,
+        [Parameter(Mandatory=$true)][string]$FailureMessage
+    )
+    & $powerShellHost -NoLogo -NoProfile -ExecutionPolicy Bypass -File $ScriptPath @ScriptArguments
+    if ($LASTEXITCODE -ne 0) { throw $FailureMessage }
+}
+
+function Assert-PreviousBuildOutputsUnlocked {
+    $runtimeOutput = Join-Path $PSScriptRoot 'src/Magenheim.Runtime/bin/Release/net462'
+    foreach ($name in @('Magenheim.dll','Magenheim.Core.dll')) {
+        $path = Join-Path $runtimeOutput $name
+        if (!(Test-Path -LiteralPath $path -PathType Leaf)) { continue }
+        $stream = $null
+        try {
+            $stream = [IO.File]::Open($path, [IO.FileMode]::Open, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
+        }
+        catch {
+            throw "Previous Magenheim build output is still locked: '$path'. A pre-fix PowerShell verification run loaded it into this terminal process and .NET Framework cannot unload it. Close this PowerShell window once, open a fresh terminal, pull current main, and rerun install-local.ps1. Current build gates are isolated so this lock will not recur."
+        }
+        finally {
+            if ($null -ne $stream) { $stream.Dispose() }
+        }
+    }
+}
+
 Push-Location $PSScriptRoot
 try {
     # Windows PowerShell 5.1 wraps every native stderr line in an ErrorRecord, so under
@@ -48,6 +81,9 @@ try {
     & python "$PSScriptRoot/tools/verify-generated-freshness.py"
     if ($LASTEXITCODE -ne 0) { throw 'Generated assets are out of date with the generators that own them.' }
     # Compile both runtime and its Core dependency before the expensive Blender gates.
+    # A terminal that ran the old in-process reflection gate may already own these files; diagnose
+    # that immediately instead of waiting through MSBuild's ten futile copy retries.
+    Assert-PreviousBuildOutputsUnlocked
     & $DotNet build src/Magenheim.Runtime -c Release @restoreOptions "-p:BepInExPath=$ProfileRoot/BepInEx" "-p:ValheimManagedPath=$GameRoot/valheim_Data/Managed"
     if ($LASTEXITCODE -ne 0) { throw 'Runtime build failed.' }
     # Loader compatibility is part of build admission, not an end-of-closeout surprise. Check
@@ -55,7 +91,8 @@ try {
     $ErrorActionPreference = 'Stop'
     $runtimeOutput = Join-Path $PSScriptRoot 'src/Magenheim.Runtime/bin/Release/net462'
     foreach ($assembly in @('Magenheim.dll', 'Magenheim.Core.dll')) {
-        & "$PSScriptRoot/tools/verify-runtime-type-availability.ps1" -Assembly (Join-Path $runtimeOutput $assembly) -ManagedDirectory "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx" -CecilPath "$ProfileRoot/BepInEx/core/Mono.Cecil.dll"
+        $gateArgs = @('-Assembly',(Join-Path $runtimeOutput $assembly),'-ManagedDirectory',"$GameRoot/valheim_Data/Managed",'-BepInExPath',"$ProfileRoot/BepInEx",'-CecilPath',"$ProfileRoot/BepInEx/core/Mono.Cecil.dll")
+        Invoke-IsolatedPowerShellGate -ScriptPath "$PSScriptRoot/tools/verify-runtime-type-availability.ps1" -ScriptArguments $gateArgs -FailureMessage "Runtime type-availability verification failed for $assembly."
     }
     $ErrorActionPreference = 'Continue'
     & $DotNet run --project tests/Magenheim.Core.Tests -c Release @restoreOptions
@@ -112,9 +149,12 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Authored model surface coverage failed.' }
     & "$PSScriptRoot/tools/blender.ps1" verify-object-texture-bindings
     if ($LASTEXITCODE -ne 0) { throw 'Source/runtime object texture bindings diverged.' }
-    & "$PSScriptRoot/tools/verify-patch-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
-    & "$PSScriptRoot/tools/verify-dynamic-patch-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
-    & "$PSScriptRoot/tools/verify-reflection-targets.ps1" -RuntimeDll "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll" -GameManagedPath "$GameRoot/valheim_Data/Managed" -BepInExPath "$ProfileRoot/BepInEx"
+    $runtimeDll = "$PSScriptRoot/src/Magenheim.Runtime/bin/Release/net462/Magenheim.dll"
+    $managedPath = "$GameRoot/valheim_Data/Managed"
+    $bepInExPath = "$ProfileRoot/BepInEx"
+    Invoke-IsolatedPowerShellGate -ScriptPath "$PSScriptRoot/tools/verify-patch-targets.ps1" -ScriptArguments @('-RuntimeDll',$runtimeDll,'-GameManagedPath',$managedPath,'-BepInExPath',$bepInExPath) -FailureMessage 'Explicit Harmony patch target verification failed.'
+    Invoke-IsolatedPowerShellGate -ScriptPath "$PSScriptRoot/tools/verify-dynamic-patch-targets.ps1" -ScriptArguments @('-RuntimeDll',$runtimeDll,'-GameManagedPath',$managedPath,'-BepInExPath',$bepInExPath) -FailureMessage 'Dynamic Harmony patch target verification failed.'
+    Invoke-IsolatedPowerShellGate -ScriptPath "$PSScriptRoot/tools/verify-reflection-targets.ps1" -ScriptArguments @('-RuntimeDll',$runtimeDll,'-GameManagedPath',$managedPath,'-BepInExPath',$bepInExPath) -FailureMessage 'Reflection binding verification failed.'
 
     $package = Join-Path $PSScriptRoot "dist/Local-Magenheim-$pluginVersion"
     if (Test-Path -LiteralPath $package) {
