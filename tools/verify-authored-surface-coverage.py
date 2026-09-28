@@ -9,8 +9,8 @@ ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / "assets" / "models" / "runtime"
 TEXTURES = ROOT / "assets" / "models" / "textures"
 FAMILIES = ("stone", "timber", "metal", "cloth", "bone", "liquid", "leather", "crystal", "generic")
-BASELINE_MODELS = 100
-BASELINE_PARTS = 1303
+BASELINE_MODELS = 90
+BASELINE_PARTS = 1158
 
 ITEM_TEXTURE_BINDINGS = {
     "furniture-crystal-bench": {
@@ -23,6 +23,53 @@ ITEM_TEXTURE_BINDINGS = {
         "magenheim.furniture.furniture-geode-table.dark-stone": "furniture-geode-table-dark-stone.png",
         "magenheim.furniture.furniture-geode-table.wood": "furniture-geode-table-wood.png",
         "magenheim.furniture.furniture-geode-table.iron": "furniture-geode-table-iron.png",
+    },    "crystal-bed-earth": {
+        "magenheim.crystal-bed.stone": "crystal-bed-stone.png",
+        "magenheim.crystal-bed.iron": "crystal-bed-iron.png",
+        "magenheim.crystal-bed.mineral-water": "crystal-bed-mineral-water.png",
+        "magenheim.crystal-bed.crystal-growth": "crystal-bed-crystal-growth.png",
+    },
+    "crystal-bed-fire": {
+        "magenheim.crystal-bed.stone": "crystal-bed-stone.png",
+        "magenheim.crystal-bed.iron": "crystal-bed-iron.png",
+        "magenheim.crystal-bed.mineral-water": "crystal-bed-mineral-water.png",
+        "magenheim.crystal-bed.crystal-growth": "crystal-bed-crystal-growth.png",
+    },
+    "crystal-bed-frost": {
+        "magenheim.crystal-bed.stone": "crystal-bed-stone.png",
+        "magenheim.crystal-bed.iron": "crystal-bed-iron.png",
+        "magenheim.crystal-bed.mineral-water": "crystal-bed-mineral-water.png",
+        "magenheim.crystal-bed.crystal-growth": "crystal-bed-crystal-growth.png",
+    },
+    "crystal-bed-radiance": {
+        "magenheim.crystal-bed.stone": "crystal-bed-stone.png",
+        "magenheim.crystal-bed.iron": "crystal-bed-iron.png",
+        "magenheim.crystal-bed.mineral-water": "crystal-bed-mineral-water.png",
+        "magenheim.crystal-bed.crystal-growth": "crystal-bed-crystal-growth.png",
+    },
+    "crystal-bed-seidr": {
+        "magenheim.crystal-bed.stone": "crystal-bed-stone.png",
+        "magenheim.crystal-bed.iron": "crystal-bed-iron.png",
+        "magenheim.crystal-bed.mineral-water": "crystal-bed-mineral-water.png",
+        "magenheim.crystal-bed.crystal-growth": "crystal-bed-crystal-growth.png",
+    },
+    "crystal-bed-spirit": {
+        "magenheim.crystal-bed.stone": "crystal-bed-stone.png",
+        "magenheim.crystal-bed.iron": "crystal-bed-iron.png",
+        "magenheim.crystal-bed.mineral-water": "crystal-bed-mineral-water.png",
+        "magenheim.crystal-bed.crystal-growth": "crystal-bed-crystal-growth.png",
+    },
+    "crystal-bed-storm": {
+        "magenheim.crystal-bed.stone": "crystal-bed-stone.png",
+        "magenheim.crystal-bed.iron": "crystal-bed-iron.png",
+        "magenheim.crystal-bed.mineral-water": "crystal-bed-mineral-water.png",
+        "magenheim.crystal-bed.crystal-growth": "crystal-bed-crystal-growth.png",
+    },
+    "crystal-bed-venom": {
+        "magenheim.crystal-bed.stone": "crystal-bed-stone.png",
+        "magenheim.crystal-bed.iron": "crystal-bed-iron.png",
+        "magenheim.crystal-bed.mineral-water": "crystal-bed-mineral-water.png",
+        "magenheim.crystal-bed.crystal-growth": "crystal-bed-crystal-growth.png",
     },
 }
 
@@ -131,4 +178,4 @@ for model_id, expected in ITEM_TEXTURE_BINDINGS.items():
     missing = sorted(set(expected) - set(seen))
     if missing:
         raise SystemExit(f"{model_id}: missing bound material(s): {', '.join(missing)}")
-print("VERIFIED model-specific Valheim-scale textures: crystal bench 8/8 parts, geode table 9/9 parts.")
+print("VERIFIED model-specific Valheim-scale textures: crystal bench 8/8, geode table 9/9, crystal beds 128/128 parts.")

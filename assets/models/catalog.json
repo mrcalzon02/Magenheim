@@ -488,7 +488,7 @@
     "glb": "glb/crystal-bed-earth.glb",
     "runtime": "runtime/crystal-bed-earth.model.json",
     "source_sha256": "da2edb4ed9a3c4dfa7e4a021ac4bf93e36f5c12e11a8325c52627c7afdc436fb",
-    "runtime_sha256": "8e521596c36e4804a44479cce0313305cfe01f13b1851ea8b2b3a972f4d709ef",
+    "runtime_sha256": "bed8e7a07c669bcf0b620f82c55e124bb06ac0b6be81494cbb23bb749de39028",
     "glb_sha256": "5dc95307ba29cc026fc02b85adcd46dddb559723786caed5f2510366d0a4fe8e"
   },
   {
@@ -500,7 +500,7 @@
     "glb": "glb/crystal-bed-fire.glb",
     "runtime": "runtime/crystal-bed-fire.model.json",
     "source_sha256": "81e47eb32c6d9d6ba88c4eb6164de20926fb6d07787a23c398f39dfad09108da",
-    "runtime_sha256": "4bf1b34b6d44390d06a4757667a80c9fb6e21c217b1b09908a7a3da154aea811",
+    "runtime_sha256": "c8cbd9ea38c44c4108cf5fae4add2b184b65833162f35c15e8c91d693688cf7e",
     "glb_sha256": "44fba8f0a4bf575dafd71e5e5c1002b0f2f2019da2159ee462a1edbffba1326a"
   },
   {
@@ -512,7 +512,7 @@
     "glb": "glb/crystal-bed-frost.glb",
     "runtime": "runtime/crystal-bed-frost.model.json",
     "source_sha256": "3be1e5a4a1627313b3f6c53c9ab09bf55d1fc7c41d49734a3a81f874e6bd4ea8",
-    "runtime_sha256": "dafca7ab693b59de8b21cc0b70e5d731254d8196700bce9f5388064668ab47fc",
+    "runtime_sha256": "84e567f082ea80cf1d9cc4c3553a528b0cedf942a340ed7c724fdd621f79f720",
     "glb_sha256": "aa2dad30ab927b629fa7e42a9326b6c4bb3ba4e87a62e9cf69a81410d0ac2e0d"
   },
   {
@@ -524,7 +524,7 @@
     "glb": "glb/crystal-bed-radiance.glb",
     "runtime": "runtime/crystal-bed-radiance.model.json",
     "source_sha256": "9481bf081f483a51e8a6b3fab57b1c2ec419db6a2a0b88ad2ed0b5e41f44dd48",
-    "runtime_sha256": "7cd1464b5f861b0e35e8e6fbeb5b1cdb458e712154bedc0847e59cf88056f7fb",
+    "runtime_sha256": "fc5cc56e983a8c7355c871bb72bc65fd9f9ab9066d2cef36a0d956f2395348f3",
     "glb_sha256": "6cab124c8dee07b0ec754bd7353b8c6c2ad68da670c6493ada5e93c22c103254"
   },
   {
@@ -536,7 +536,7 @@
     "glb": "glb/crystal-bed-seidr.glb",
     "runtime": "runtime/crystal-bed-seidr.model.json",
     "source_sha256": "2cc05f2fdaefd70a34ce08dce92e69e819e6050f64e34dcdf02179779afc9f3e",
-    "runtime_sha256": "f3de5fd395af666877b3f9cc7209fd2c1f9034fc9426b1e78d2cd8c1058e67dc",
+    "runtime_sha256": "d646b6e62d24cadff45a00b74a85d1945a002f24e13aa4b8fc1db8d6823350cb",
     "glb_sha256": "be480273516adaf3b8b8f0fa0ae1f12a9943362c4ae1e7182687d00db3e7f61c"
   },
   {
@@ -548,7 +548,7 @@
     "glb": "glb/crystal-bed-spirit.glb",
     "runtime": "runtime/crystal-bed-spirit.model.json",
     "source_sha256": "533182ae5e5a42182ce5363f74c9fb398ef6a1899700b9e791cd328f065021ae",
-    "runtime_sha256": "2c716601c8571b0c67cfc00137262661eb0f66061bfcfe9de2a9567dcc3c9b21",
+    "runtime_sha256": "6c32cfad0bb3b66d0297be9eaf4872d39e082c7f796007abe25974f394fc8c2b",
     "glb_sha256": "a593ce32d50adcd8a0e5c4a7947ae3228fde36f1d31fa3196d905c400cfb2ab8"
   },
   {
@@ -560,7 +560,7 @@
     "glb": "glb/crystal-bed-storm.glb",
     "runtime": "runtime/crystal-bed-storm.model.json",
     "source_sha256": "7e9af06021d7f6d76c017558a794ed71a2560be822db4554e3be1241308c9495",
-    "runtime_sha256": "830b3953456df68eb35246c5c8af7e55d9a9e64b4d12abf69c2e8a44be8fd23b",
+    "runtime_sha256": "55f96d00040dd91fcd721eaeeb8ae773ee717bc5ebb3e79eedbc17ca6c97ce40",
     "glb_sha256": "a0d685a5d31af8d0b7bd5f1adfeff34173c48edd60edd565808abe9724d6a63a"
   },
   {
@@ -572,7 +572,7 @@
     "glb": "glb/crystal-bed-venom.glb",
     "runtime": "runtime/crystal-bed-venom.model.json",
     "source_sha256": "15f65126fdd4e3dfc2762300e875f6d28a716b7b02489d9ce030372553d9b103",
-    "runtime_sha256": "3e39d33006e40b0a5e22555b04969e42794a06414696c23a5b32b658b3d2f696",
+    "runtime_sha256": "be3c2688f1a155641746dd73e4a62fca0bbc2f2eb789a05f309e96ab553a9097",
     "glb_sha256": "6e4891b728624cf2ebb39c08dee3727e0a5f24d6cef999db554ab886b86a7111"
   },
   {
