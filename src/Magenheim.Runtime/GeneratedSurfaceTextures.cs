@@ -8,7 +8,7 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Shared runtime surface authority for Magenheim-owned procedural geometry.
-/// The authored 1024px material-family library is preferred; the historical procedural patterns are
+/// The authored 256px packaged material-family library is preferred; the historical procedural patterns are
 /// retained only as a defensive fallback if packaged artwork is missing.
 /// Reconciliation is strictly owned-only and never replaces authored/file-backed model textures.
 /// </summary>

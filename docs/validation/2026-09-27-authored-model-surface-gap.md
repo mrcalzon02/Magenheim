@@ -10,29 +10,15 @@ visual quality bar for production Magenheim assets and is now superseded.
 
 ## Production repair
 
-Nine production material-family fallbacks now live under `assets/models/textures/`: stone, timber,
-metal, cloth, bone, liquid, leather, crystal, and generic. Each active texture is a 1024x1024
-image-authored, painterly game material derived from the approved replacement artwork rather than a
-mathematical placeholder pattern.
+Nine accepted material-family source artworks are retained at 1024x1024 under
+`assets/models/texture-source/`. They preserve the approved painterly source work for future
+model-specific authoring.
 
-The families are intentionally distinct in material language:
-
-- stone: large fractured slabs, chipped edges, gravel, moss, and lichen;
-- timber: weathered plank grain, knots, splitting, and crevice growth;
-- metal: forged/riveted plates, scratches, oxidation, and edge wear;
-- cloth: coarse woven fibers with irregular weathering;
-- bone: aged ivory, pores, striation, staining, and cracks;
-- leather: worn hide, wrinkles, scarring, creases, and value variation;
-- liquid: authored ripple/caustic structure;
-- crystal: hand-painted faceting and mineral fracture structure;
-- generic: packed dirt, rubble, aggregate, and small stone breakup.
-
-Crystal and liquid use neutralized runtime copies so existing elemental/material tinting remains in
-control instead of every crystal or fluid inheriting the blue/teal source palette. The authored
-structure is preserved; only the production color treatment is neutralized for shader tinting.
-
-The active 1024px PNGs are indexed production copies to keep repository and package size practical
-while preserving the visible medium-scale brushwork and material definition.
+The packaged shared fallbacks under `assets/models/textures/` are 256x256 neutral derivatives,
+matching the established shared world/equipment floor. They preserve material structure at
+Valheim-scale while allowing each model's Base Color to remain authoritative for hue. The fallback
+is deliberately a rendering floor rather than final art: model-specific texture passes replace it
+where an existing asset needs its own wear, surface language, or close-view treatment.
 
 `ModelAssets` resolves only null exported texture slots to the semantic authored family. Explicit
 texture references remain authoritative and are not replaced.
@@ -47,8 +33,8 @@ A material that already has a real image is left alone.
 
 ## Admission gate
 
-`tools/verify-authored-surface-coverage.py` requires all nine production maps, distinct SHA-256
-content, exact 1024x1024 resolution, source contrast, and contrast that survives a 64x64 gameplay-
+`tools/verify-authored-surface-coverage.py` requires all nine packaged fallback maps, distinct SHA-256
+content, exact 256x256 resolution, source contrast, and contrast that survives a 64x64 gameplay-
 scale downsample. It also resolves every null runtime slot through the same semantic rules, rejects
 missing explicit textures, and prevents the audited fallback population from growing above 100
 models / 1,303 parts. The count may fall as Blender sources are migrated and re-exported; zero is

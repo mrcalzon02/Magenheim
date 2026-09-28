@@ -66,8 +66,8 @@ for family in FAMILIES:
         raise SystemExit(f"Authored surface families collapse to identical files: {family} and {digests[digest]}")
     digests[digest] = family
     image = Image.open(path).convert("L")
-    if image.size != (1024, 1024):
-        raise SystemExit(f"{family}: production authored surface must be 1024x1024, got {image.size}")
+    if image.size != (256, 256):
+        raise SystemExit(f"{family}: packaged fallback surface must be 256x256, got {image.size}")
     lo, hi = image.getextrema()
     reduced = image.resize((64, 64), Image.Resampling.LANCZOS)
     rlo, rhi = reduced.getextrema()
@@ -107,7 +107,7 @@ if fallback_models > BASELINE_MODELS or fallback_parts > BASELINE_PARTS:
                      f"the audited baseline {BASELINE_MODELS}/{BASELINE_PARTS}.")
 
 usage = ", ".join(f"{family}={family_counts[family]}" for family in FAMILIES if family_counts[family])
-print(f"VERIFIED authored surfaces: {len(FAMILIES)} distinct readable 1024px production families; "
+print(f"VERIFIED authored surfaces: {len(FAMILIES)} distinct readable 256px packaged fallback families; "
       f"{fallback_parts} null exported slot(s) across {fallback_models} model(s) resolve to file-backed art "
       f"(baseline ceiling {BASELINE_PARTS}/{BASELINE_MODELS}).")
 if usage:
