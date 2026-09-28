@@ -286,8 +286,8 @@ internal sealed class ValheimPathfindingInstanceState : IDisposable
         {
             if (_disposed) return;
             _disposed = true;
-            foreach (var pair in _owner._values)
-                _owner._values[pair.Key] = pair.Key.GetValue(_pathfinding);
+            foreach (var field in new List<FieldInfo>(_owner._values.Keys))
+                _owner._values[field] = field.GetValue(_pathfinding);
             foreach (var pair in _previous)
                 pair.Key.SetValue(_pathfinding, pair.Value);
         }
