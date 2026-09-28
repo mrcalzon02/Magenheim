@@ -30,3 +30,8 @@ The first bench/table pass used model-specific filenames but still assigned dono
 `furniture-crystal-bench` now has eight separate 256px textures, one per actual mesh object. Each texture was rasterized through that object's committed UV triangles; value breakup is derived from the corresponding mesh geometry with restrained material-scale tooth inside the islands. A five-pixel bleed surrounds sampled islands. `assets/models/previews/furniture-crystal-bench-uv-texture-audit.png` overlays the committed UV edges in magenta on the baked pixels.
 
 `assets/models/texture-overrides.json` records model-id + object-name bindings so normal Blender export preserves the per-object choices rather than collapsing them back to a shared family image.
+
+
+### Geode table UV correction
+
+`furniture-geode-table` now follows the same rule: nine separate 256px textures for its nine actual mesh objects (slab, front/rear aprons, four legs and two iron inlays). Each image was rasterized through that object's committed UV triangle layout rather than assigning the same donor image to every object sharing a material. The audit image `assets/models/previews/furniture-geode-table-uv-texture-audit.png` overlays the real UV edges in magenta.

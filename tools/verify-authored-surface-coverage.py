@@ -23,6 +23,18 @@ PART_TEXTURE_BINDINGS = {
         "end-crystal-0.61": "furniture-crystal-bench-p06-end-crystal-0.61.png",
         "stretcher": "furniture-crystal-bench-p07-stretcher.png",
     },
+
+    "furniture-geode-table": {
+        "slab": "furniture-geode-table-p00-slab.png",
+        "front-apron": "furniture-geode-table-p01-front-apron.png",
+        "rear-apron": "furniture-geode-table-p02-rear-apron.png",
+        "leg--0.72--0.31": "furniture-geode-table-p03-leg--0.72--0.31.png",
+        "leg--0.72-0.31": "furniture-geode-table-p04-leg--0.72-0.31.png",
+        "leg-0.72--0.31": "furniture-geode-table-p05-leg-0.72--0.31.png",
+        "leg-0.72-0.31": "furniture-geode-table-p06-leg-0.72-0.31.png",
+        "iron-inlay-a": "furniture-geode-table-p07-iron-inlay-a.png",
+        "iron-inlay-b": "furniture-geode-table-p08-iron-inlay-b.png",
+    },
 }
 
 ITEM_TEXTURE_BINDINGS = {
@@ -236,4 +248,4 @@ for model_id, expected in ITEM_TEXTURE_BINDINGS.items():
     missing = sorted(set(expected) - set(seen))
     if missing:
         raise SystemExit(f"{model_id}: missing bound material(s): {', '.join(missing)}")
-print("VERIFIED model-specific Valheim-scale textures: crystal bench 8/8 UV-baked per part; geode table 9/9, crystal beds 128/128, enchanting dais 62/62, crystal hearth 21/21, crystalline ice box 27/27 parts.")
+print("VERIFIED model-specific Valheim-scale textures: crystal bench 8/8 and geode table 9/9 UV-baked per part; crystal beds 128/128, enchanting dais 62/62, crystal hearth 21/21, crystalline ice box 27/27 parts.")
