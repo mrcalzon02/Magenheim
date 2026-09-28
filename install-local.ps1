@@ -85,14 +85,28 @@ if (Test-Path -LiteralPath $target) {
     Write-Output "Previous installation backed up: $backup"
 }
 
+if (Test-Path -LiteralPath $target) {
+    # The package is authoritative for this one managed directory. Overlay-copying leaves removed
+    # or renamed textures behind, so a successful update can still run a hybrid of two versions.
+    Remove-Item -LiteralPath $target -Recurse -Force
+}
 New-Item -ItemType Directory -Force -Path $target | Out-Null
 Copy-Item -Path "$source/*" -Destination $target -Recurse -Force
+$expectedInstalledFiles = @{}
 foreach ($file in Get-ChildItem -LiteralPath $source -File -Recurse) {
     $relative = $file.FullName.Substring($source.Length).TrimStart('\','/')
+    $normalizedRelative = $relative.Replace('\','/')
+    $expectedInstalledFiles[$normalizedRelative] = $true
     $installed = Join-Path $target $relative
     if (!(Test-Path -LiteralPath $installed)) { throw "Installed file is missing: $relative" }
     if ((Get-FileHash -LiteralPath $file.FullName).Hash -ne (Get-FileHash -LiteralPath $installed).Hash) {
         throw "Installed file verification failed: $relative"
+    }
+}
+foreach ($file in Get-ChildItem -LiteralPath $target -File -Recurse) {
+    $relative = $file.FullName.Substring($target.Length).TrimStart('\','/').Replace('\','/')
+    if (!$expectedInstalledFiles.ContainsKey($relative)) {
+        throw "Unexpected stale installed file after reconciliation: $relative"
     }
 }
 

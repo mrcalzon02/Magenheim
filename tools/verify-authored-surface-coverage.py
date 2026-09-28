@@ -35,6 +35,30 @@ PART_TEXTURE_BINDINGS = {
         "iron-inlay-a": "furniture-geode-table-p07-iron-inlay-a.png",
         "iron-inlay-b": "furniture-geode-table-p08-iron-inlay-b.png",
     },
+    "furniture-geode-chair": {
+        "seat": "furniture-geode-chair-p00-seat.png",
+        "leg--0.23--0.23": "furniture-geode-chair-p01-leg--0.23--0.23.png",
+        "leg--0.23-0.23": "furniture-geode-chair-p02-leg--0.23-0.23.png",
+        "leg-0.23--0.23": "furniture-geode-chair-p03-leg-0.23--0.23.png",
+        "leg-0.23-0.23": "furniture-geode-chair-p04-leg-0.23-0.23.png",
+        "left-back": "furniture-geode-chair-p05-left-back.png",
+        "right-back": "furniture-geode-chair-p06-right-back.png",
+        "back-rail": "furniture-geode-chair-p07-back-rail.png",
+        "back-crystal--1": "furniture-geode-chair-p08-back-crystal--1.png",
+        "back-crystal-0": "furniture-geode-chair-p09-back-crystal-0.png",
+        "back-crystal-1": "furniture-geode-chair-p10-back-crystal-1.png",
+    },
+    "furniture-geode-pedestal": {
+        "base": "furniture-geode-pedestal-p00-base.png",
+        "column": "furniture-geode-pedestal-p01-column.png",
+        "cap": "furniture-geode-pedestal-p02-cap.png",
+        "geode-shell": "furniture-geode-pedestal-p03-geode-shell.png",
+        "geode-crystal-0": "furniture-geode-pedestal-p04-geode-crystal-0.png",
+        "geode-crystal-1": "furniture-geode-pedestal-p05-geode-crystal-1.png",
+        "geode-crystal-2": "furniture-geode-pedestal-p06-geode-crystal-2.png",
+        "geode-crystal-3": "furniture-geode-pedestal-p07-geode-crystal-3.png",
+        "geode-crystal-4": "furniture-geode-pedestal-p08-geode-crystal-4.png",
+    },
 }
 
 ITEM_TEXTURE_BINDINGS = {
@@ -248,4 +272,4 @@ for model_id, expected in ITEM_TEXTURE_BINDINGS.items():
     missing = sorted(set(expected) - set(seen))
     if missing:
         raise SystemExit(f"{model_id}: missing bound material(s): {', '.join(missing)}")
-print("VERIFIED model-specific Valheim-scale textures: crystal bench 8/8 and geode table 9/9 UV-baked per part; crystal beds 128/128, enchanting dais 62/62, crystal hearth 21/21, crystalline ice box 27/27 parts.")
+print("VERIFIED model-specific Valheim-scale textures: crystal bench 8/8, geode table 9/9, geode chair 11/11 and geode pedestal 9/9 UV-baked per part; crystal beds 128/128, enchanting dais 62/62, crystal hearth 21/21, crystalline ice box 27/27 parts.")

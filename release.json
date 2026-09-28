@@ -1,4 +1,4 @@
 {
-  "version": "0.0.138",
-  "description": "0.0.138: Fixes the empty Underworld location catalog that blocked generation. Stops repeated failed world construction and defers broad scene callback patches until the Underworld exists, removing their main-menu overhead."
+  "version": "0.0.139",
+  "description": "0.0.139: UV-bakes the Geode Chair and Geode Pedestal through their real mesh islands, and makes local installs replace the managed Magenheim payload so stale files cannot survive updates."
 }

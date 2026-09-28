@@ -2708,7 +2708,7 @@
     "glb": "glb/furniture-geode-chair.glb",
     "runtime": "runtime/furniture-geode-chair.model.json",
     "source_sha256": "8578929cfef215bf18afc036b3a8b2fea4bfdef2b7944245959446260721b4a4",
-    "runtime_sha256": "4601ef93ee65307c53b32bc815b5db699dc53de5d7da350109d93511444da3cc",
+    "runtime_sha256": "60d91e9b4d2c4de3d1f57d456ec640af5734fcf0d91f06ebab4fc8baf9d7b83a",
     "glb_sha256": "07dfa48ba2c19c840d28615bdf6ec8b2c140a58e988eb6af44f17211a1d96fd5"
   },
   {
@@ -2720,7 +2720,7 @@
     "glb": "glb/furniture-geode-pedestal.glb",
     "runtime": "runtime/furniture-geode-pedestal.model.json",
     "source_sha256": "d9166daaddc0b116cc326236e1d6c5c174db2c1624adbdab5ebac093c72b759b",
-    "runtime_sha256": "630a5faef2653aaf9b53d3da4397fafa5e9087e7d11626206f7a3ea435377576",
+    "runtime_sha256": "f88c26128d47ba6385a75e76650433f710ebecdb05ed86c23aea2fc749c889eb",
     "glb_sha256": "cbfb75b57a2daf3c841e5afc4a3d94f6d18b6f062c55ec275556e6f35704b676"
   },
   {
