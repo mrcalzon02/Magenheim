@@ -145,6 +145,23 @@ try {
         return @($type.Methods | Where-Object { $_.Name -in $Names }).Count
     }
 
+    function Get-CecilCharacterScopeTargetCount {
+        $names = @('Update','FixedUpdate','LateUpdate')
+        $count = 0
+        foreach ($typeName in @('Character','Player')) {
+            $type = $gameMetadata.MainModule.GetType($typeName)
+            if ($null -eq $type) { throw "Installed assembly_valheim.dll has no type '$typeName'." }
+            foreach ($name in $names) {
+                $matches = @($type.Methods | Where-Object { $_.Name -ceq $name })
+                if ($matches.Count -gt 1) {
+                    throw "Character instance-scope target '$typeName.$name' is ambiguous in installed metadata ($($matches.Count) methods)."
+                }
+                if ($matches.Count -eq 1) { $count++ }
+            }
+        }
+        return $count
+    }
+
     $cecilGameResolvers = @{
         'Magenheim.Runtime.UnderworldPrivateAreaRegistryScopePatch' = @('PrivateArea', @('CheckAccess'))
         'Magenheim.Runtime.UnderworldPieceRegistryScopePatch' = @('Piece', @('GetAllPiecesInRadius'))
@@ -173,6 +190,17 @@ try {
             $metadataTargets = Get-CecilBehaviourTargetCount $metadata
             if ($metadataTargets -le 0) {
                 throw "$typeName resolved zero Magenheim MonoBehaviour callback targets through Cecil metadata."
+            }
+            $resolvedCount += $metadataTargets
+            Write-Output "Dynamic Harmony resolver $($typeName): $metadataTargets target(s) verified through Cecil metadata."
+            continue
+        }
+
+        if ($typeName -ceq 'Magenheim.Runtime.UnderworldCharacterInstanceScopePatch') {
+            $dynamic++
+            $metadataTargets = Get-CecilCharacterScopeTargetCount
+            if ($metadataTargets -le 0) {
+                throw "$typeName resolved zero Character/Player frame callback targets through Cecil metadata."
             }
             $resolvedCount += $metadataTargets
             Write-Output "Dynamic Harmony resolver $($typeName): $metadataTargets target(s) verified through Cecil metadata."
