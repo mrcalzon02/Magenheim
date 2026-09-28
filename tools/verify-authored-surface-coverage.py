@@ -11,6 +11,21 @@ TEXTURES = ROOT / "assets" / "models" / "textures"
 FAMILIES = ("stone", "timber", "metal", "cloth", "bone", "liquid", "leather", "crystal", "generic")
 BASELINE_MODELS = 100
 BASELINE_PARTS = 1303
+
+ITEM_TEXTURE_BINDINGS = {
+    "furniture-crystal-bench": {
+        "magenheim.furniture.furniture-crystal-bench.dark-stone": "furniture-crystal-bench-dark-stone.png",
+        "magenheim.furniture.furniture-crystal-bench.wood": "furniture-crystal-bench-wood.png",
+        "magenheim.furniture.furniture-crystal-bench.iron": "furniture-crystal-bench-iron.png",
+        "magenheim.furniture.furniture-crystal-bench.crystal": "furniture-crystal-bench-crystal.png",
+    },
+    "furniture-geode-table": {
+        "magenheim.furniture.furniture-geode-table.dark-stone": "furniture-geode-table-dark-stone.png",
+        "magenheim.furniture.furniture-geode-table.wood": "furniture-geode-table-wood.png",
+        "magenheim.furniture.furniture-geode-table.iron": "furniture-geode-table-iron.png",
+    },
+}
+
 CLASSIFIERS = (
     ("liquid", ("water", "liquid", "solution")),
     ("leather", ("hide", "leather", "pelt")),
@@ -97,3 +112,23 @@ print(f"VERIFIED authored surfaces: {len(FAMILIES)} distinct readable 1024px pro
       f"(baseline ceiling {BASELINE_PARTS}/{BASELINE_MODELS}).")
 if usage:
     print("Fallback family usage: " + usage)
+
+for model_id, expected in ITEM_TEXTURE_BINDINGS.items():
+    document = json.loads((RUNTIME / (model_id + ".model.json")).read_text(encoding="utf-8"))
+    seen = {}
+    for part in document.get("parts", []):
+        material = part.get("material") or {}
+        name = material.get("name")
+        if name in expected:
+            texture = material.get("texture")
+            if texture != expected[name]:
+                raise SystemExit(f"{model_id}/{name}: expected model-specific texture {expected[name]}, got {texture}")
+            path = TEXTURES / texture
+            image = Image.open(path)
+            if image.size != (256, 256):
+                raise SystemExit(f"{model_id}/{name}: placeable texture must be 256x256, got {image.size}")
+            seen[name] = texture
+    missing = sorted(set(expected) - set(seen))
+    if missing:
+        raise SystemExit(f"{model_id}: missing bound material(s): {', '.join(missing)}")
+print("VERIFIED model-specific Valheim-scale textures: crystal bench 8/8 parts, geode table 9/9 parts.")

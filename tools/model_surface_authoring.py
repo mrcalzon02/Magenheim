@@ -12,6 +12,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SURFACES = ROOT / "assets" / "models" / "textures"
 
+ITEM_TEXTURE_OVERRIDES = {
+    "magenheim.furniture.furniture-crystal-bench.dark-stone": "furniture-crystal-bench-dark-stone.png",
+    "magenheim.furniture.furniture-crystal-bench.wood": "furniture-crystal-bench-wood.png",
+    "magenheim.furniture.furniture-crystal-bench.iron": "furniture-crystal-bench-iron.png",
+    "magenheim.furniture.furniture-crystal-bench.crystal": "furniture-crystal-bench-crystal.png",
+    "magenheim.furniture.furniture-geode-table.dark-stone": "furniture-geode-table-dark-stone.png",
+    "magenheim.furniture.furniture-geode-table.wood": "furniture-geode-table-wood.png",
+    "magenheim.furniture.furniture-geode-table.iron": "furniture-geode-table-iron.png",
+}
+
 CLASSIFIERS = (
     ("liquid", ("water", "liquid", "solution")),
     ("leather", ("hide", "leather", "pelt")),
@@ -48,12 +58,23 @@ def surface_path(family):
     return path
 
 
-def load_surface_image(bpy, family):
-    name = "magenheim.authored.surface." + family
+def desired_texture_path(material_name):
+    override = ITEM_TEXTURE_OVERRIDES.get(material_name)
+    if override:
+        path = SURFACES / override
+        if not path.is_file():
+            raise FileNotFoundError("Missing model-specific authored surface: " + str(path))
+        return path
+    return surface_path(surface_family(material_name))
+
+
+def load_surface_image(bpy, material_name):
+    path = desired_texture_path(material_name)
+    name = "magenheim.authored." + path.stem
     existing = bpy.data.images.get(name)
     if existing is not None:
         return existing
-    image = bpy.data.images.load(str(surface_path(family)), check_existing=False)
+    image = bpy.data.images.load(str(path), check_existing=False)
     image.name = name
     image.pack()
     return image
@@ -65,13 +86,15 @@ def bind_surface_if_needed(bpy, material):
     if tree is None:
         raise ValueError("Node material required: " + material.name)
     image_nodes = [node for node in tree.nodes if node.type == "TEX_IMAGE"]
+    override = ITEM_TEXTURE_OVERRIDES.get(material.name)
     usable = next((node for node in image_nodes
-                   if node.image is not None and not node.image.name.startswith("magenheim.surface.")), None)
+                   if node.image is not None
+                   and not node.image.name.startswith("magenheim.surface.")
+                   and not (override and node.image.name.startswith("magenheim.authored.surface-"))), None)
     if usable is not None:
         return False
 
-    family = surface_family(material.name)
-    image = load_surface_image(bpy, family)
+    image = load_surface_image(bpy, material.name)
     node = image_nodes[0] if image_nodes else tree.nodes.new("ShaderNodeTexImage")
     node.image = image
     bsdf = tree.nodes.get("Principled BSDF")
