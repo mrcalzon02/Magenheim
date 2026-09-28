@@ -49,6 +49,7 @@ REQUIRED_FILES = (
     RUNTIME / "UnderworldStaticSceneRegistryIsolation.cs",
     RUNTIME / "UnderworldGateTransitRuntime.cs",
     RUNTIME / "UnderworldZoneSystemStartIsolation.cs",
+    RUNTIME / "UnderworldZoneCatalogGuard.cs",
     RUNTIME / "UnderworldZoneInstanceState.cs",
     RUNTIME / "UnderworldWorldGeneratorCacheIsolation.cs",
     CORE / "UnderworldInstanceContract.cs",
@@ -82,6 +83,7 @@ REQUIRED_SNIPPETS = {
         "CreateSceneParameters(LocalPhysicsMode.Physics3D)",
         "UnderworldWorldInstanceId.Underworld",
         "ValheimWorldInstanceExecution.BindRegistry",
+        "UnderworldZoneCatalogGuard.DetachUnderworldOnlyGenerationFromSurface",
         '"m_locationsByHash"',
         'string.Equals(name, "m_globalKeys", StringComparison.Ordinal)',
         'string.Equals(name, "m_globalKeysEnums", StringComparison.Ordinal)',
@@ -97,6 +99,12 @@ REQUIRED_SNIPPETS = {
         "UnderworldZoneCatalogGuard.Validate(__instance);",
         "ValidateVegetation.Invoke(__instance, Array.Empty<object>());",
         "UnderworldZoneInstanceState.NotifyZoneReady(__instance);",
+    ),
+    RUNTIME / "UnderworldZoneCatalogGuard.cs": (
+        "DetachUnderworldOnlyGenerationFromSurface",
+        "RemoveForeignImplicitWildcardVegetation",
+        "RemoveForeignImplicitWildcardLocations",
+        "rawMask >= 0",
     ),
     RUNTIME / "UnderworldZoneInstanceState.cs": (
         "underworld.ZoneSystem.PrepareSave();",
@@ -116,6 +124,8 @@ REQUIRED_SNIPPETS = {
         "UnderworldZoneInstanceState.NotifyZdosLoaded();",
         "PreserveSharedSaveSnapshotDuringInstanceCleanup",
         "ValidateBoundNamespace",
+        '"deferred:first-save"',
+        "BindParentSavePath(parentPath)",
     ),
     RUNTIME / "UnderworldInstanceAdmissionAudit.cs": (
         "RequireDistinct(surface.World, underworld.World, \"World\")",

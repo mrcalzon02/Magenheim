@@ -28,6 +28,7 @@ internal static class UnderworldInstancePersistence
     private static ManualLogSource? _log;
     private static PendingLoad? _pendingLoad;
     private static string? _parentSavePath;
+    private static bool _freshNamespaceReady;
 
     internal static void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -39,14 +40,14 @@ internal static class UnderworldInstancePersistence
     {
         _pendingLoad = null;
         _parentSavePath = null;
+        _freshNamespaceReady = false;
     }
 
     internal static string ValidateBoundNamespace()
     {
         var parent = _parentSavePath;
         if (string.IsNullOrWhiteSpace(parent))
-            throw new InvalidOperationException(
-                "Underworld persistence has no authoritative parent-save path from Valheim LoadChunks.");
+            return "deferred:first-save";
 
         var normalizedParent = Path.GetFullPath(parent);
         var instance = InstancePath(normalizedParent);
@@ -66,12 +67,28 @@ internal static class UnderworldInstancePersistence
 
     internal static void TryLoadBoundInstance()
     {
-        var pending = _pendingLoad;
         var services = _services;
-        if (pending is null || services is null ||
+        if (services is null ||
             !services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out var context) ||
             context is null)
             return;
+
+        var pending = _pendingLoad;
+        if (pending is null)
+        {
+            // A brand-new Valheim world has no _main.0.db2 yet, so ZDOMan.LoadChunks is never
+            // invoked and there is no parent path to observe before admission. There is also
+            // nothing for instance 1 to load. Admit the empty child namespace now and bind the
+            // authoritative parent directory on Valheim's first native SaveChunks call.
+            if (!_freshNamespaceReady && string.IsNullOrWhiteSpace(_parentSavePath))
+            {
+                _freshNamespaceReady = true;
+                UnderworldZoneInstanceState.NotifyZdosLoaded();
+                _log?.LogInfo(
+                    "Fresh parent world has no LoadChunks snapshot; Underworld starts with an empty native ZDO namespace and will bind its child save directory on the first parent SaveChunks call.");
+            }
+            return;
+        }
 
         _pendingLoad = null;
         var path = InstancePath(pending.ParentPath);
@@ -96,10 +113,10 @@ internal static class UnderworldInstancePersistence
         // bind the Surface context. ZDOMan.instance is therefore the authoritative identification.
         if (ZDOMan.instance is not null && !ReferenceEquals(source, ZDOMan.instance)) return;
 
-        _parentSavePath = Path.GetFullPath(parentPath);
+        var boundParentPath = BindParentSavePath(parentPath);
         _pendingLoad = new PendingLoad(
             (MethodInfo)original,
-            _parentSavePath,
+            boundParentPath,
             (object[])args.Clone());
 
         if (services is not null && services.WorldInstances.HasUnderworldContext)
@@ -125,7 +142,7 @@ internal static class UnderworldInstancePersistence
         if (!IsSurfaceInvocation(source) || args.Length == 0 || args[0] is not string parentPath) return;
         if (!TryGetUnderworld(out var context)) return;
 
-        var path = InstancePath(parentPath);
+        var path = InstancePath(BindParentSavePath(parentPath));
         Directory.CreateDirectory(path);
         InvokeSnapshotIo(context!, (MethodInfo)original, ReplacePath(args, path));
         _log?.LogDebug($"Saved Underworld instance ZDO chunks inside parent-save namespace '{path}'.");
@@ -227,6 +244,21 @@ internal static class UnderworldInstancePersistence
         var copy = (object[])arguments.Clone();
         copy[0] = path;
         return copy;
+    }
+
+    private static string BindParentSavePath(string parentPath)
+    {
+        if (string.IsNullOrWhiteSpace(parentPath))
+            throw new InvalidOperationException("Valheim supplied an empty parent save path.");
+
+        var normalized = Path.GetFullPath(parentPath);
+        if (!string.IsNullOrWhiteSpace(_parentSavePath) &&
+            !string.Equals(_parentSavePath, normalized, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException(
+                $"Valheim parent-save path changed inside one active world session: '{_parentSavePath}' -> '{normalized}'.");
+
+        _parentSavePath = normalized;
+        return normalized;
     }
 
     private static string InstancePath(string parentPath)

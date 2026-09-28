@@ -78,6 +78,13 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
             _registry.Bind(context);
             ValheimWorldInstanceExecution.BindRegistry(_registry);
 
+            // Jotunn registers worldgen rows process-wide. The detached ZoneSystem already owns a
+            // copy, so remove Magenheim's custom-biome rows from Surface before Valheim begins the
+            // parent world's GenerateLocationsTimeSliced pass.
+            UnderworldZoneCatalogGuard.DetachUnderworldOnlyGenerationFromSurface(
+                surface.ZoneSystem,
+                zoneSystem);
+
             // Awake/Start of the copied ZoneSystem must see its own native world services.
             using (ValheimWorldInstanceExecution.Enter(context))
                 _zoneRoot!.SetActive(true);
