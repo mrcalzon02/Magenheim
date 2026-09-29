@@ -1,0 +1,66 @@
+name: Nowhere King Compile Gate
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/nowhere-king-compile.run'
+
+permissions:
+  contents: read
+
+jobs:
+  compile:
+    runs-on: windows-2025
+    timeout-minutes: 30
+    steps:
+      - name: Checkout authoritative main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: .NET
+        uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9
+        with:
+          dotnet-version: '8.0.425'
+
+      - name: Verify merged Nowhere King generated assets
+        shell: pwsh
+        run: |
+          python tools/verify-nowhere-king-generated-assets.py
+          if ($LASTEXITCODE -ne 0) { throw 'Merged Nowhere King generated assets failed verification.' }
+
+      - name: Provision current Valheim references with pinned DepotDownloader
+        shell: pwsh
+        run: |
+          $depot = Join-Path $env:RUNNER_TEMP 'depotdownloader'
+          $game = Join-Path $env:RUNNER_TEMP 'valheim-server'
+          $bep = Join-Path $env:RUNNER_TEMP 'bepinex'
+          New-Item -ItemType Directory -Force -Path $depot,$game,$bep | Out-Null
+
+          $depotZip = Join-Path $depot 'DepotDownloader-windows-x64.zip'
+          Invoke-WebRequest 'https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_3.4.0/DepotDownloader-windows-x64.zip' -OutFile $depotZip
+          Expand-Archive $depotZip -DestinationPath $depot -Force
+          $depotExe = Join-Path $depot 'DepotDownloader.exe'
+          if (!(Test-Path $depotExe)) { throw 'Pinned DepotDownloader executable missing after extraction.' }
+
+          & $depotExe -app 896660 -depot 896662 -branch public -os windows -osarch 64 -dir $game -validate
+          if ($LASTEXITCODE -ne 0) { throw 'DepotDownloader failed to provision current Valheim Windows dedicated-server depot 896662.' }
+
+          Invoke-WebRequest 'https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.2351/' -OutFile "$bep/bepinex.zip"
+          Expand-Archive "$bep/bepinex.zip" -DestinationPath $bep -Force
+
+          $assembly = Get-ChildItem -LiteralPath $game -Filter assembly_valheim.dll -File -Recurse | Select-Object -First 1
+          $bepDll = Get-ChildItem -LiteralPath $bep -Filter BepInEx.dll -File -Recurse | Select-Object -First 1
+          if (!$assembly -or !$bepDll) { throw 'Required current Valheim/BepInEx compile references were not provisioned.' }
+
+          "MAGENHEIM_VALHEIM_MANAGED=$($assembly.DirectoryName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "MAGENHEIM_BEPINEX=$(Split-Path $bepDll.DirectoryName -Parent)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Compile Nowhere King runtime slice against current Valheim
+        shell: pwsh
+        run: |
+          dotnet build src/Magenheim.Runtime -c Release "-p:ValheimManagedPath=$env:MAGENHEIM_VALHEIM_MANAGED" "-p:BepInExPath=$env:MAGENHEIM_BEPINEX"
+          if ($LASTEXITCODE -ne 0) { throw 'Current-Valheim runtime compile failed.' }
