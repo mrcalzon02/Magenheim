@@ -36,7 +36,7 @@ internal sealed class UnderworldToolRegistrar:IDisposable
         var count=0;
         try
         {
-            _anchorTable=new CustomPieceTable(AnchorPieceTable,new PieceTableConfig{CanRemovePieces=true,GuessUsage=true});
+            _anchorTable=new CustomPieceTable(AnchorPieceTable,new PieceTableConfig{CanRemovePieces=false,GuessUsage=true});
             if(!PieceManager.Instance.AddPieceTable(_anchorTable))throw new InvalidOperationException("Jotunn refused Anchor Spike piece table.");
             foreach(var definition in UnderworldEquipmentCatalog.Tools)
             {
@@ -80,8 +80,8 @@ internal sealed class UnderworldToolRegistrar:IDisposable
             else if(d.Prefab==AnchorSpikePrefab)
             {
                 shared.m_buildPieces=_anchorTable?.PieceTable??throw new InvalidOperationException("Anchor piece table unavailable.");
-                shared.m_useDurability=true;shared.m_maxDurability=1f;shared.m_destroyBroken=true;
-                shared.m_canBeReparied=false;shared.m_maxQuality=1;
+                shared.m_useDurability=true;shared.m_useDurabilityDrain=1f;shared.m_maxDurability=1f;shared.m_destroyBroken=true;
+                shared.m_canBeReparied=false;shared.m_maxQuality=1;item.ItemDrop.m_itemData.m_durability=1f;
                 shared.m_damages=new HitData.DamageTypes();shared.m_damagesPerLevel=new HitData.DamageTypes();
             }
         }
