@@ -35,13 +35,23 @@ public readonly record struct UnderworldTerrainResult(
 /// </summary>
 public static class UnderworldTerrainLifecycle
 {
+    public const string BiomeLayoutAlgorithmId = "biome-layout-v1-warped-multifield";
     public const double ArrivalProtectionRadiusMeters = 80d;
     public const double FullRegionalReliefRadiusMeters = 320d;
-    public const double ProvinceBlendWidthMeters = 256d;
     public const double BaseElevationMeters = 45d;
     public const double MaximumSlopeDegrees = 75d;
+
+    // One inner safe core is guaranteed Fungal. Beyond it, Fungal is only a broad bias in the
+    // same seeded field as every other biome, so the arrival country has an organic edge.
+    public const double GuaranteedFungalRadiusFraction = 0.10d;
     public const double CentralFungalRadiusFraction = 0.16d;
-    public const double FungalTransitionRadiusFraction = 0.22d;
+    public const double FungalTransitionRadiusFraction = 0.24d;
+
+    public const double BiomeRegionFeatureMeters = 2800d;
+    public const double BiomeBroadFeatureMeters = 6200d;
+    public const double BiomeWarpFeatureMeters = 4800d;
+    public const double BiomeWarpAmplitudeMeters = 850d;
+    public const double BiomeBlendScoreWidth = 0.08d;
 
     public static UnderworldTerrainResult Evaluate(
         UnderworldInstanceTerrainDomain domain,
@@ -57,24 +67,20 @@ public static class UnderworldTerrainLifecycle
         var slope = Clamp(sample.SlopeDegrees, 0d, MaximumSlopeDegrees);
         var noise = Clamp(sample.Noise01, 0d, 1d);
         var distance = Math.Sqrt(sample.X * sample.X + sample.Z * sample.Z);
-        var biome = SelectBiome(sample.X, sample.Z, distance, domain.RadiusMeters, derivedSeed32);
+        var selection = SelectBiome(sample.X, sample.Z, distance, domain.RadiusMeters, derivedSeed32);
+        var biome = selection.Primary;
         var regionalWeight = RegionalReliefWeight(distance, domain.RadiusMeters);
         double Delta(UnderworldTerrainBiome selected) => UnderworldBiomeTerrain.HeightDelta(
             selected, derivedSeed32, sample.X, sample.Z, regionalWeight);
         var delta = Delta(biome);
-        if (biome != UnderworldTerrainBiome.FungalForest)
+
+        // Ecology/weather ownership remains discrete, but near-tied biome fields blend their
+        // terrain profiles so organic borders do not create artificial height steps.
+        if (selection.Secondary != biome && selection.ScoreMargin < BiomeBlendScoreWidth)
         {
-            // Blend geography across sector edges; biome identities and ecological rules stay discrete.
-            var sectorPosition = ProvinceAngle(sample.X, sample.Z, derivedSeed32) / (Math.PI * 2d / 5d);
-            var sector = (int)Math.Floor(sectorPosition);
-            var fraction = sectorPosition - sector;
-            var boundaryDistance = distance * Math.Sin(Math.Min(fraction, 1d - fraction) * (Math.PI * 2d / 5d));
-            if (boundaryDistance < ProvinceBlendWidthMeters)
-            {
-                var neighbour = ProvinceBiome((sector + (fraction < .5d ? 4 : 1)) % 5);
-                var t = boundaryDistance / ProvinceBlendWidthMeters;
-                delta = Lerp(delta, Delta(neighbour), .5d * (1d - t * t * (3d - 2d * t)));
-            }
+            var t = Clamp(selection.ScoreMargin / BiomeBlendScoreWidth, 0d, 1d);
+            t = t * t * (3d - 2d * t);
+            delta = Lerp(delta, Delta(selection.Secondary), .5d * (1d - t));
         }
         var fungalBlend = FungalTransition(distance, domain.RadiusMeters);
         if (fungalBlend > 0d && biome != UnderworldTerrainBiome.FungalForest)
@@ -97,28 +103,108 @@ public static class UnderworldTerrainLifecycle
             Clamp(cover, 0d, 1d), Clamp(hazard, 0d, 1d));
     }
 
-    private static UnderworldTerrainBiome SelectBiome(double x, double z, double distance, double radius, int seed)
-    {
-        if (distance <= radius * CentralFungalRadiusFraction) return UnderworldTerrainBiome.FungalForest;
-        return ProvinceBiome((int)Math.Floor(ProvinceAngle(x, z, seed) / (Math.PI * 2d / 5d)));
-    }
+    private readonly record struct BiomeSelection(
+        UnderworldTerrainBiome Primary,
+        UnderworldTerrainBiome Secondary,
+        double ScoreMargin);
 
-    private static double ProvinceAngle(double x, double z, int seed)
+    private static BiomeSelection SelectBiome(double x, double z, double distance, double radius, int seed)
     {
-        var angle = Math.Atan2(z, x) + SeedRotation(seed);
-        if (angle < 0d) angle += Math.PI * 2d;
-        if (angle >= Math.PI * 2d) angle -= Math.PI * 2d;
-        return angle;
-    }
+        if (distance <= radius * GuaranteedFungalRadiusFraction)
+            return new BiomeSelection(
+                UnderworldTerrainBiome.FungalForest,
+                UnderworldTerrainBiome.FungalForest,
+                1d);
 
-    private static UnderworldTerrainBiome ProvinceBiome(int sector) => sector switch
+        var warpedX = x + SignedField(seed, 0xc2b2ae35u, x, z, 3, BiomeWarpFeatureMeters) * BiomeWarpAmplitudeMeters;
+        var warpedZ = z + SignedField(seed, 0x27d4eb2fu, x, z, 3, BiomeWarpFeatureMeters) * BiomeWarpAmplitudeMeters;
+
+        var heat = Field01(seed, 0x165667b1u, warpedX, warpedZ, 4, 5200d);
+        var moisture = Field01(seed, 0xd3a2646cu, warpedX, warpedZ, 4, 4600d);
+        var tectonic = Field01(seed, 0xfd7046c5u, warpedX, warpedZ, 4, 3600d);
+        var decay = Field01(seed, 0xb55a4f09u, warpedX, warpedZ, 4, 4200d);
+        var fungal = Field01(seed, 0x9e3779b9u, warpedX, warpedZ, 4, 3200d);
+
+        var bestBiome = UnderworldTerrainBiome.FungalForest;
+        var secondBiome = UnderworldTerrainBiome.FungalForest;
+        var bestScore = double.MinValue;
+        var secondScore = double.MinValue;
+
+        foreach (UnderworldTerrainBiome candidate in Enum.GetValues(typeof(UnderworldTerrainBiome)))
         {
-            0 => UnderworldTerrainBiome.BlackwaterDeep,
-            1 => UnderworldTerrainBiome.SulfurousWastes,
-            2 => UnderworldTerrainBiome.FrozenCaverns,
-            3 => UnderworldTerrainBiome.FractureZones,
-            _ => UnderworldTerrainBiome.GreatDecay,
-        };
+            var salt = BiomeSalt(candidate);
+            var score =
+                Field01(seed, salt, warpedX, warpedZ, 4, BiomeRegionFeatureMeters) * .70d +
+                Field01(seed, salt ^ 0x6c8e9cf5u, warpedX, warpedZ, 3, BiomeBroadFeatureMeters) * .30d;
+
+            switch (candidate)
+            {
+                case UnderworldTerrainBiome.FungalForest:
+                    score += fungal * .14d - .09d + CentralFungalBias(distance, radius);
+                    break;
+                case UnderworldTerrainBiome.BlackwaterDeep:
+                    score += moisture * .16d + (1d - heat) * .05d;
+                    break;
+                case UnderworldTerrainBiome.SulfurousWastes:
+                    score += heat * .18d + tectonic * .05d;
+                    break;
+                case UnderworldTerrainBiome.FrozenCaverns:
+                    score += (1d - heat) * .18d + (1d - moisture) * .04d;
+                    break;
+                case UnderworldTerrainBiome.FractureZones:
+                    score += tectonic * .18d + Math.Abs(heat - moisture) * .05d;
+                    break;
+                case UnderworldTerrainBiome.GreatDecay:
+                    score += decay * .15d + moisture * .06d;
+                    break;
+            }
+
+            if (score > bestScore)
+            {
+                secondScore = bestScore;
+                secondBiome = bestBiome;
+                bestScore = score;
+                bestBiome = candidate;
+            }
+            else if (score > secondScore)
+            {
+                secondScore = score;
+                secondBiome = candidate;
+            }
+        }
+
+        return new BiomeSelection(bestBiome, secondBiome, Math.Max(0d, bestScore - secondScore));
+    }
+
+    private static double CentralFungalBias(double distance, double radius)
+    {
+        var inner = radius * GuaranteedFungalRadiusFraction;
+        var outer = radius * .26d;
+        if (distance <= inner) return .55d;
+        if (distance >= outer) return 0d;
+        var t = Clamp((distance - inner) / (outer - inner), 0d, 1d);
+        t = t * t * (3d - 2d * t);
+        return (1d - t) * .55d;
+    }
+
+    private static uint BiomeSalt(UnderworldTerrainBiome biome) => biome switch
+    {
+        UnderworldTerrainBiome.FungalForest => 0x1f123bb5u,
+        UnderworldTerrainBiome.BlackwaterDeep => 0x34d7a2c1u,
+        UnderworldTerrainBiome.SulfurousWastes => 0x5a17d3e9u,
+        UnderworldTerrainBiome.FrozenCaverns => 0x72c8b4f3u,
+        UnderworldTerrainBiome.FractureZones => 0x8f31a6d7u,
+        UnderworldTerrainBiome.GreatDecay => 0xa5c94e21u,
+        _ => 0x4cf5ad43u,
+    };
+
+    private static double Field01(int seed, uint salt, double x, double z, int octaves, double featureMetres) =>
+        UnderworldTerrainNoise.Fractal01(
+            unchecked((int)UnderworldTerrainNoise.Mix(unchecked((uint)seed) ^ salt)),
+            x, z, octaves, featureMetres);
+
+    private static double SignedField(int seed, uint salt, double x, double z, int octaves, double featureMetres) =>
+        Field01(seed, salt, x, z, octaves, featureMetres) * 2d - 1d;
 
     private static double RegionalReliefWeight(double distance, double radius)
     {
@@ -132,7 +218,7 @@ public static class UnderworldTerrainLifecycle
 
     private static double FungalTransition(double distance, double radius)
     {
-        var inner = radius * CentralFungalRadiusFraction;
+        var inner = radius * GuaranteedFungalRadiusFraction;
         var outer = radius * FungalTransitionRadiusFraction;
         if (distance <= inner) return 1d;
         if (distance >= outer) return 0d;
@@ -141,8 +227,6 @@ public static class UnderworldTerrainLifecycle
         return 1d - t;
     }
 
-    private static double SeedRotation(int seed) =>
-        UnderworldTerrainNoise.Mix(unchecked((uint)seed)) / ((double)uint.MaxValue + 1d) * Math.PI * 2d;
 
     private static double Cover(UnderworldTerrainBiome biome, double noise, double slope, double waterDepth) => biome switch
     {
