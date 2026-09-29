@@ -235,6 +235,32 @@ internal static class UnderworldTerrainLifecycleTests
             Assert(repeatedArcBiome,
                 "At least one biome must reappear in disconnected arcs on the same ring.");
         }
+        // The hex/Voronoi boundary network is not decorative map ink: its strong seams are
+        // physically submerged Blackwater corridors distributed throughout the outer realm.
+        var riverQuadrants = new bool[4];
+        var deepBlackwater = 0;
+        var hydroSamples = 0;
+        for (var z = -7200; z <= 7200; z += 160)
+        for (var x = -7200; x <= 7200; x += 160)
+        {
+            if (x * x + z * z > 7200 * 7200 || x * x + z * z < 1800 * 1800) continue;
+            var hydro = UnderworldTerrainLifecycle.Evaluate(
+                instanceDomain,
+                new UnderworldTerrainSample(x, 0, z, 30, 0, .5),
+                12345);
+            if (!hydro.Admitted) continue;
+            hydroSamples++;
+            if (hydro.Biome != UnderworldTerrainBiome.BlackwaterDeep || hydro.WaterDepth < 2d) continue;
+            deepBlackwater++;
+            var quadrant = (x >= 0 ? 1 : 0) + (z >= 0 ? 2 : 0);
+            riverQuadrants[quadrant] = true;
+        }
+        Assert(hydroSamples > 2000, "Hydrology gate must sample a broad outer-world area.");
+        Assert(deepBlackwater > hydroSamples * .08 && deepBlackwater < hydroSamples * .45,
+            "Voronoi river/ocean-depth corridors must be common without drowning the majority of the realm.");
+        Assert(riverQuadrants[0] && riverQuadrants[1] && riverQuadrants[2] && riverQuadrants[3],
+            "Deep Blackwater corridors must cross all four world quadrants rather than pooling in one province.");
+
         var compared = 0;
         var changed = 0;
         for (var z = -7000; z <= 7000; z += 400)
