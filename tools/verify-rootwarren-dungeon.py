@@ -34,6 +34,10 @@ for model_id in requested:
  if len(meshes)<4: raise RuntimeError(f"{model_id}: insufficient modeled parts ({len(meshes)})")
  colliders=[o for o in meshes if bool(o.get("game_collision"))]
  if len(colliders)<2: raise RuntimeError(f"{model_id}: needs at least two collidable structural parts")
+ collider_names={o.name for o in colliders}
+ required_shell="passage-shell" if suffix=="passage" else "cavern-shell"
+ if required_shell not in collider_names:
+  raise RuntimeError(f"{model_id}: missing collidable authored cave envelope {required_shell}")
  tris=0; xs=[]; ys=[]; zs=[]; surfaces=set()
  for obj in meshes:
   obj.data.calc_loop_triangles(); tris+=len(obj.data.loop_triangles)
