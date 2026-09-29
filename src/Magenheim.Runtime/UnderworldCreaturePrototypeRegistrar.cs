@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>Spawnable review content. Valheim retains rig, clips, attacks, AI and persistence.</summary>
+/// <summary>Native Underworld fauna reusing Valheim rig/clip/AI machinery with Magenheim balance, loot and presentation.</summary>
 internal sealed class UnderworldCreaturePrototypeRegistrar : IDisposable
 {
     private readonly ManualLogSource _log;
