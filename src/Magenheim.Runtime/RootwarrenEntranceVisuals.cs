@@ -11,6 +11,7 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal static class RootwarrenEntranceVisuals
 {
+    internal const string EntrancePortalAnchorName = "Magenheim_Rootwarren_EntrancePortalAnchor";
     internal const string InteriorAnchorName = "Magenheim_Rootwarren_InteriorAnchor";
 
     internal static void Build(GameObject locationContainer)
@@ -25,10 +26,18 @@ internal static class RootwarrenEntranceVisuals
             scale: .55f,
             hideOriginal: false);
 
-        var anchor = new GameObject(InteriorAnchorName);
-        anchor.transform.SetParent(locationContainer.transform, false);
-        anchor.transform.localPosition = new Vector3(0f, 1.15f, -6.8f);
-        anchor.transform.localRotation = Quaternion.identity;
+        var portalAnchor = new GameObject(EntrancePortalAnchorName);
+        portalAnchor.transform.SetParent(locationContainer.transform, false);
+        portalAnchor.transform.localPosition = new Vector3(0f, 1.05f, -4.5f);
+        portalAnchor.transform.localRotation = Quaternion.identity;
+
+        // The full-size room kit is a buried dungeon, not a duplicate prop sitting on the mouth.
+        // Keep room zero well below/behind the visible entrance so its colliders and cave shell do
+        // not overlap the reduced exterior Fracture Mouth presentation.
+        var interiorAnchor = new GameObject(InteriorAnchorName);
+        interiorAnchor.transform.SetParent(locationContainer.transform, false);
+        interiorAnchor.transform.localPosition = new Vector3(0f, -28f, -26f);
+        interiorAnchor.transform.localRotation = Quaternion.identity;
     }
 
     private static UnderworldDungeonRoomDefinition FindEntranceDefinition()
