@@ -46,14 +46,20 @@ internal static class UnderworldDungeonCatalogTests
             .ToArray();
         Assert(ordinary.Length == 5,
             "Five ordinary biome dungeon programs must exist alongside Deep Fracture.");
+        UnderworldVanillaDungeonReuseCatalog.Validate();
         foreach (var dungeon in ordinary)
         {
-            Assert(dungeon.TargetRoomFamilyMinimum == 15 &&
-                   dungeon.TargetRoomFamilyMaximum == 20,
-                dungeon.DisplayName + " must retain the 15-20 large-room-family production target.");
-            Assert(dungeon.MinimumRoomFamilyUses == 2 &&
-                   dungeon.MaximumRoomFamilyUses == 3,
-                dungeon.DisplayName + " must retain the 2-3 uses-per-family run target.");
+            var reuse = UnderworldVanillaDungeonReuseCatalog.Require(dungeon.Id);
+            Assert(reuse.Biome == dungeon.Biome,
+                dungeon.DisplayName + " vanilla donor profile must remain in the same Underworld biome.");
+            Assert(reuse.LinearRoomScale >= 1.5d,
+                dungeon.DisplayName + " donor rooms must be at least 1.5x vanilla linear size.");
+            Assert(reuse.RoomCountMultiplier >= 3.5d,
+                dungeon.DisplayName + " must target at least 3.5x the vanilla donor room count.");
+            Assert(reuse.ReplaceVanillaEnemies && reuse.ReplaceVanillaLoot && reuse.UseBiomeResources,
+                dungeon.DisplayName + " must replace vanilla gameplay population with Magenheim ecology.");
+            Assert(!reuse.AllowMagenheimAuthoredRoomInjection,
+                dungeon.DisplayName + " must not mix bespoke Magenheim architecture into its vanilla tileset.");
         }
 
         Assert(all.Count(value => value.Status == UnderworldDungeonStatus.RuntimeReady) >= 1,
