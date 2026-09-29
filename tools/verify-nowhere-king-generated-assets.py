@@ -54,13 +54,15 @@ for model_id in IDS:
     if entry.get("source") != f"source/{model_id}.blend" or entry.get("glb") != f"glb/{model_id}.glb":
         raise RuntimeError(f"{model_id}: catalog path mismatch")
     doc = json.loads(runtime.read_text(encoding="utf-8"))
-    if doc.get("id") != model_id:
-        raise RuntimeError(f"{model_id}: runtime id mismatch")
     parts = doc.get("parts")
     minimum = 18 if model_id.endswith("firmament") else 22
     if not isinstance(parts, list) or len(parts) < minimum:
         raise RuntimeError(f"{model_id}: insufficient runtime parts")
     names = {str(part.get("name","")) for part in parts}
+    paths = [str(part.get("path","")) for part in parts]
+    expected_prefix = f"attach/magenheim.{model_id}.visual/"
+    if not paths or any(not path.startswith(expected_prefix) for path in paths):
+        raise RuntimeError(f"{model_id}: runtime part path identity mismatch")
     required = ({"firmament-frame","firmament-cosmos","firmament-heart"}
                 if model_id.endswith("firmament")
                 else {"null-gate-absence","null-gate-filament","null-gate-ring-0","null-gate-ring-1","null-gate-ring-2"})
