@@ -159,10 +159,10 @@ unoccupied terrain. Do not use console-spawned creatures as proof of natural eco
    motes, Sulfurous smoke/ember glow, Frozen rime mist, Fracture sparks and Great Decay motes.
    Selected luminous creatures should cast a restrained local glow without washing out the whole
    cavern or producing obvious point-light popping.
-9. Compare temperament against the donor. Apex hunters (including Deep Hunter, Cinder Hound,
-   Glacier Stalker, Chasm Stalker, Decay Hound and Graft Warden) should acquire and pressure a
-   player earlier and spend less time circling/idling. Ambient forms such as Lantern Moth, Cave Ray
-   and Rime Moth must remain much closer to donor pressure and must not become map-wide pursuers.
+9. Compare temperament against the donor. High-pressure hunters (including Deep Hunter, Cinder
+   Hound, Glacier Stalker, Chasm Stalker, Decay Hound and Graft Warden) should acquire and pressure
+   a player earlier and spend less time circling/idling. Ambient forms such as Lantern Moth, Cave
+   Ray and Rime Moth must remain much closer to donor pressure and must not become map-wide pursuers.
 10. Confirm the eight explicit apex `HuntPlayer` species can pursue naturally spawned players, while
     ordinary fauna do not inherit that spawn flag.
 11. Exercise elemental tolerances with controlled hits. Sulfurous creatures must strongly resist
@@ -172,12 +172,44 @@ unoccupied terrain. Do not use console-spawned creatures as proof of natural eco
     overrides on Furnace Golem (fire), Cryolith Guardian (frost), Fume Wraith/Corpse Orchard/Spore
     Husk (poison) and the stronger Fracture Wisp lightning resistance.
 12. Land the same donor attack from a vanilla creature and its Underworld derivative against an
-    identical target. The Underworld hit should preserve the donor attack animation/timing while
-    adding only its biome rider: poison (Fungal/Decay), frost (Blackwater/Frozen), fire
-    (Sulfurous), or lightning (Fracture). The vanilla donor must not gain that extra elemental
-    component.
-13. Repeat VFX, aggression and elemental-hit checks with a second peer. Presentation may be local,
-    but combat results and target behavior must agree with the authoritative simulation.
+    identical target. The Underworld hit must preserve the donor animation while its total damage
+    obeys the creature's role/biome multiplier and per-hit cap, then adds the biome rider: poison
+    (Fungal/Decay), frost (Blackwater/Frozen), fire (Sulfurous), or lightning (Fracture). The
+    vanilla donor must remain completely unchanged.
+13. Verify the role tradeoff directly. Swarm creatures should be the most mobile but have the
+    lowest health and per-hit damage; Heavy/Apex creatures should have clearly larger health pools
+    and stronger hits but materially slower movement and longer pauses between attacks.
+14. Compare the same role across progression: a Fungal creature and Great Decay creature of the
+    same role must preserve the same movement relationship while the later-biome creature has
+    higher health and a higher damage envelope.
+15. Specifically test Glacier Stalker as a mobile Hunter rather than an Apex tank, and Graft Warden
+    as a slow Heavy. The former should pressure movement without huge individual hits; the latter
+    should be easy to read and punish badly if its slower attack connects.
+16. Repeat VFX, aggression, balance and elemental-hit checks with a second peer. Presentation may
+    be local, but combat results and target behavior must agree with the authoritative simulation.
+
+## Underworld creature combat-balance acceptance
+
+This pass replaces inherited donor health/damage assumptions for the 42 ordinary Underworld fauna
+and twelve elemental Surtlings with an explicit biome × role policy.
+
+1. Check at least one Swarm, Skirmisher, Hunter, Bruiser, Heavy and Apex creature. Record displayed
+   health, observed locomotion and repeated attack damage against the same armor/resistance setup.
+2. Confirm role ordering: Swarm/Skirmisher are faster and cheaper per hit; Heavy/Apex are slower,
+   tougher and hit harder. No Heavy/Apex should gain speed as a consequence of higher aggression.
+3. Confirm minimum attack recovery is visibly longer for Heavy/Apex creatures. This is the monster
+   pacing equivalent used instead of inventing player-style stamina for AI creatures.
+4. Confirm the per-hit cap actually constrains extreme donor attacks; a reused Troll/StoneGolem
+   chassis must not bypass the Magenheim role envelope merely because its vanilla donor attack is
+   unusually large.
+5. Confirm all six biome bands scale upward in health/damage envelope while movement remains role
+   controlled rather than biome controlled.
+6. Verify AoE/shared-hit attacks on two targets. Damage to target two must not be multiplied again
+   because target one was hit first; Magenheim clones the incoming HitData before modifying it.
+7. Verify the twelve elemental Surtlings use the same role policy: Wind is Skirmisher, Fire/Water/
+   Umbral are Hunters, Radiance is Bruiser and Earth is Heavy.
+8. Verify Deep Fracture creatures retain their existing explicit health/speed ladder and Nowhere
+   King retains its separate boss profile; this pass must not silently overwrite those systems.
 
 ## Advanced / Master staff damage acceptance
 
