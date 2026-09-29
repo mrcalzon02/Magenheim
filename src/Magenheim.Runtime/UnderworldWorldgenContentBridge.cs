@@ -118,29 +118,57 @@ internal static class UnderworldWorldgenContentBridge
                 $"Underworld geothermal catalog incomplete: {UnderworldGeothermalVentRegistrar.Vents.Length - missingVents.Count}/{UnderworldGeothermalVentRegistrar.Vents.Length} live-vent spawners present. Missing: {string.Join(", ", missingVents)}");
 
         var missingDungeons = new List<string>();
+        var invalidDungeons = new List<string>();
         foreach (var dungeon in UnderworldDungeonCatalog.All)
         {
-            if (dungeon.Status != UnderworldDungeonStatus.RuntimeReady) continue;
             var expectedBiome = UnderworldTerrainRuntime.ToNativeBiome(dungeon.Biome);
-            var found = false;
+            var matches = new List<ZoneSystem.ZoneLocation>();
             foreach (var location in underworld.m_locations)
             {
                 if (location is null) continue;
                 var name = location.m_prefab.Name ?? string.Empty;
-                if (!string.Equals(name, dungeon.PrefabName, StringComparison.Ordinal)) continue;
-                if ((location.m_biome & expectedBiome) == Heightmap.Biome.None &&
-                    location.m_biome != expectedBiome)
-                    continue;
-                found = true;
-                break;
+                if (string.Equals(name, dungeon.PrefabName, StringComparison.Ordinal))
+                    matches.Add(location);
             }
-            if (!found) missingDungeons.Add(dungeon.PrefabName + "@" + dungeon.Biome);
+
+            if (dungeon.Status != UnderworldDungeonStatus.RuntimeReady)
+            {
+                if (matches.Count != 0)
+                    invalidDungeons.Add(
+                        dungeon.PrefabName + " is Planned but has " + matches.Count +
+                        " detached Underworld location row(s)");
+                continue;
+            }
+
+            if (matches.Count == 0)
+            {
+                missingDungeons.Add(dungeon.PrefabName + "@" + dungeon.Biome);
+                continue;
+            }
+
+            if (matches.Count != 1)
+            {
+                invalidDungeons.Add(
+                    dungeon.PrefabName + " has " + matches.Count +
+                    " detached Underworld location rows; exactly one is required");
+                continue;
+            }
+
+            var row = matches[0];
+            if (row.m_biome != expectedBiome)
+                invalidDungeons.Add(
+                    dungeon.PrefabName + " owns biome mask " + (int)row.m_biome +
+                    " but must be exactly " + (int)expectedBiome + " (" + dungeon.Biome + ")");
         }
 
         if (missingDungeons.Count != 0)
             throw new InvalidOperationException(
                 "Underworld runtime-ready dungeon catalog incomplete: " +
                 string.Join(", ", missingDungeons));
+        if (invalidDungeons.Count != 0)
+            throw new InvalidOperationException(
+                "Underworld dungeon worldgen admission invalid: " +
+                string.Join("; ", invalidDungeons));
 
         var missingGeodes = new List<string>();
         foreach (var prefabName in AdmittedGeodePrefabs)
