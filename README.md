@@ -2,7 +2,19 @@
 
 **Magic begins as geology.**
 
-## 0.0.151 testing candidate
+## 0.0.152 testing candidate
+
+The Underworld terrain plate now fades into a broad Blackwater ocean ring before the hard 8 km
+instance boundary. A plasma-warped shoreline begins around 84% of world radius, varies by roughly
+260 m, and reaches guaranteed full ocean depth by about 96.5% radius. The outer band is forced to
+Blackwater Deep and carved after monumental terrain so spires and plateaus cannot punch through
+the edge barrier.
+
+The deepest outer ocean reaches roughly 140 m below the shared water level. The logical world
+boundary therefore sits beyond deep water rather than at the edge of walkable terrain.
+
+### Earlier fixes in 0.0.151
+
 
 Underworld biome geography now uses a hybrid cellular generator instead of smooth noise alone:
 an ideal hex lattice supplies macro spacing, each cell seed may move by up to 50% of the nominal
@@ -124,7 +136,7 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.151.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.152.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
 Launch **Modded**. Confirm `Loading [Magenheim 0.0.145]` in the BepInEx log.
