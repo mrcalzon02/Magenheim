@@ -17,6 +17,13 @@
 - Adds a sixteen-room Fungal Rootwarren production manifest with stable model identities,
   gameplay roles and large target dimensions, consumed by the generic topology planner but not yet
   runtime-admitted.
+- Adds the sixteen-family Frozen Rime Sepulcher authority with explicit shelter, readable-gallery,
+  frost-field, whiteout-choke and ice-shear route states tied to the existing Frozen atmosphere.
+- Adds Rime Sepulcher room/passage registration, deterministic physical interior assembly,
+  room-role-aware Frozen encounters/resources, server-owned clear/harvest persistence and exact
+  same-instance entrance/return travel.
+- Adds the Blender author/verifier plus fail-closed 17/17/17 production, provenance and promotion
+  gate. Frozen Caverns remains Planned until those real payloads are forged and verified.
 - Source candidate only; build and live Underworld placement/return acceptance remain required.
 
 ## 0.0.154 - Bespoke Underworld weather closure
