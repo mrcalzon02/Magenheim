@@ -128,8 +128,29 @@ world and try again. The gate path itself still requires the unlock.
 Spawn IDs (`spawn <id> 1`):
 
 - Elemental Surtlings: `Magenheim_Underworld_Surtling_<Fire|Water|Earth|Wind|Radiance|Umbral>_<Feminine|Masculine>`
-- Underworld creature prototypes: `Magenheim_Underworld_Prototype_<NameWithoutSpaces>` (see docs/UNDERWORLD_CONTENT_PROTOTYPES.md)
+- Underworld creatures (native biome spawns plus direct review): `Magenheim_Underworld_Prototype_<NameWithoutSpaces>` (see docs/UNDERWORLD_CONTENT_PROTOTYPES.md)
 - Underworld resource items and pickups: see docs/UNDERWORLD_RESOURCE_MAPPING.md
+
+## Underworld creature spawn and skin acceptance
+
+Enter each Underworld biome normally and spend at least one native spawn interval moving through
+unoccupied terrain. Do not use console-spawned creatures as proof of natural ecology.
+
+1. Confirm all seven roster creatures for the biome can appear through the native SpawnSystem over
+   repeated traversal; heavy/hero forms are intentionally much rarer than small fauna.
+2. Confirm no `Magenheim_Underworld_Prototype_*` creature naturally appears on the Surface.
+3. In Blackwater Deep, confirm Serpent/Leech-derived creatures remain submerged or near water and
+   Shoreclaw/Abyss Shellback remain in the shoreline altitude band.
+4. Compare the shared Wolf chassis directly: Mycelial Stalker, Cinder Hound, Iceblind, Glacier
+   Stalker and Decay Hound must read as different creature skins at gameplay distance, not simple
+   grayscale/hue variants.
+5. Compare StoneGolem derivatives: Furnace Golem, Cryolith Guardian, Stonebound and Rift Colossus
+   must have clearly different mineral structure, contrast and accent placement.
+6. Compare Bat/membrane and Seeker/carapace derivatives across biomes. Their large-scale markings
+   must remain readable in motion and under each biome's actual lighting/fog.
+7. Verify donor animation, attack sockets, hitboxes, ragdolls where applicable, faction and loot
+   remain intact, and verify the corresponding vanilla donor elsewhere still uses its untouched
+   original material.
 
 ## Candidate acceptance matrix
 
