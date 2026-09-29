@@ -47,3 +47,16 @@ their vanilla appearance until their biome's custom pass. See
 ## Closeout
 
 0.0.97 installed and hash-verified in Central Fuckery. Runtime compiled without warnings/errors; 43,504 Core assertions plus separate suites passed. Catalog tests check unique item/pickup identities, coverage of all six biomes and compatibility with the existing Worldroot Timber/Understone IDs. Live registration and pickup/save/multiplayer acceptance remain untested. Local closeout log: dist/resource-closeout.log.
+
+
+## First economy consumer slice — 2026-09-29
+
+The first dependency-valid economy consumers are now in source. Rootforged construction resolves
+Worldroot Timber and Understone to these registered resource prefabs instead of the temporary
+RoundLog/Stone aliases. Fungal provision recipes consume Glowcap Flesh. The Mycelial Bench is built
+from Worldroot Timber, Understone and Spire Fibre, and the first two planned Fungal Forest weapons
+are admitted there as upgrades of existing crystal weapons: Worldroot Club consumes a Crystal Mace
+and Worldroot Bow consumes a Crystal Bow. Their runtime visuals inherit the existing crystal chassis
+and receive a Fungal/Worldroot material accent; authored derivative geometry remains a separate asset
+pass. Later biome weapon ancestry is catalogued but not runtime-admitted until the matching station
+and refining loop exists.

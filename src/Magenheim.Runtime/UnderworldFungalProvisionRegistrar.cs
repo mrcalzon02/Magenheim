@@ -9,8 +9,8 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Runtime content adapter for the canonical Fungal Forest provisions admitted by Core.
-/// Recipes deliberately use existing Valheim ingredients until dedicated Underworld harvest
-/// materials become registered content; prefab admission remains owned by Core.
+/// Recipes consume the registered Fungal Forest ecology resources while native food donors
+/// continue to provide ordinary Valheim item/food behavior; prefab admission remains owned by Core.
 /// </summary>
 internal sealed class UnderworldFungalProvisionRegistrar : IDisposable
 {
@@ -44,14 +44,14 @@ internal sealed class UnderworldFungalProvisionRegistrar : IDisposable
                 health: 78f, stamina: 48f, eitr: 22f, duration: 1800f, regen: 4f);
 
             RegisterRecipe("Magenheim_Recipe_Underworld_GlowcapStew", UnderworldFungalProvisionCatalog.GlowcapStew,
-                Requirement("MushroomMagecap", 2), Requirement("RoyalJelly", 1), Requirement("Sap", 1));
+                Requirement("Magenheim_Underworld_Resource_GlowcapFlesh", 2), Requirement("RoyalJelly", 1), Requirement("Sap", 1));
             RegisterRecipe("Magenheim_Recipe_Underworld_MycelialBroth", UnderworldFungalProvisionCatalog.MycelialBroth,
-                Requirement("MushroomMagecap", 2), Requirement("MushroomJotunPuffs", 2), Requirement("Sap", 1));
+                Requirement("Magenheim_Underworld_Resource_GlowcapFlesh", 2), Requirement("MushroomJotunPuffs", 2), Requirement("Sap", 1));
             RegisterRecipe("Magenheim_Recipe_Underworld_HeartcapRation", UnderworldFungalProvisionCatalog.HeartcapRation,
-                Requirement("MushroomMagecap", 2), Requirement("RoyalJelly", 2), Requirement("MisthareSupreme", 1));
+                Requirement("Magenheim_Underworld_Resource_GlowcapFlesh", 3), Requirement("RoyalJelly", 2), Requirement("MisthareSupreme", 1));
 
             _registered = true;
-            _log.LogInfo("Registered the three canonical Fungal Forest provisions and cauldron recipes for Spore Communion.");
+            _log.LogInfo("Registered the three canonical Fungal Forest provisions; recipes now consume harvested Glowcap Flesh.");
         }
         catch (Exception exception)
         {

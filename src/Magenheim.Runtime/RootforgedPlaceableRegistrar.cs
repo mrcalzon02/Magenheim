@@ -19,13 +19,14 @@ internal sealed class RootforgedPlaceableRegistrar : IDisposable
     internal void Register() => PrefabManager.OnVanillaPrefabsAvailable += RegisterPieces;
     internal static string ModelId(UnderworldBuildPieceDefinition piece) =>
         "rootforged-" + piece.Id.Substring(UnderworldArchitectureValidator.BuildIdPrefix.Length).Replace('_', '-');
-    private static string Resource(string id) => id switch
+    private static string Resource(string id)
     {
-        UnderworldArchitectureValidator.WorldrootTimberResourceId => "RoundLog",
-        UnderworldArchitectureValidator.UnderstoneResourceId => "Stone",
-        UnderworldArchitectureValidator.IronResourceId => "Iron",
-        _ => throw new InvalidOperationException($"No live construction resource binding for {id}."),
-    };
+        if (id == UnderworldArchitectureValidator.IronResourceId) return "Iron";
+        var resource = UnderworldResourceCatalog.All.FirstOrDefault(value =>
+            string.Equals(value.Id, id, StringComparison.Ordinal));
+        return resource?.Prefab
+            ?? throw new InvalidOperationException("No live Underworld construction resource binding for " + id + ".");
+    }
     private void RegisterPieces()
     {
         var count = 0;
@@ -36,7 +37,7 @@ internal sealed class RootforgedPlaceableRegistrar : IDisposable
                 try { RegisterPiece(definition); count++; }
                 catch (Exception exception) { _log.LogError($"Rootforged piece {definition.PrefabName} failed: {exception}"); }
             }
-            _log.LogInfo($"Registered {count}/{_definitions.Pieces.Count} Rootforged pieces in Hammer > Rootforged. Interim materials: core wood, stone and iron.");
+            _log.LogInfo($"Registered {count}/{_definitions.Pieces.Count} Rootforged pieces in Hammer > Rootforged using live Worldroot Timber, Understone and iron requirements.");
         }
         finally { Dispose(); }
     }
@@ -53,7 +54,7 @@ internal sealed class RootforgedPlaceableRegistrar : IDisposable
         var config = new PieceConfig
         {
             Name = definition.DisplayName,
-            Description = "Grown root and stone construction. Uses core wood/stone until Underworld harvesting is available.",
+            Description = "Grown root and stone construction using resources gathered in the Underworld.",
             PieceTable = "Hammer", Category = "Rootforged",
             CraftingStation = definition.CraftingStationPrefabName,
             Icon = EarthAssets.Icon(ModelId(definition)),
