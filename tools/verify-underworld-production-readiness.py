@@ -115,9 +115,10 @@ literal_names += [
 ]
 material_item_specs=json.loads((ROOT/"tools"/"underworld-material-item-specs.json").read_text())
 material_item_author=(ROOT/"tools"/"author-underworld-material-items.py").read_text()
+weapon_author=(ROOT/"tools"/"author-underworld-weapons.py").read_text()
 require("bind_underworld_material(bpy,m,semantic)" in material_item_author,
         "Material-item author must bind shared PBR by explicit semantic, not model-id-bearing material name")
-require("semantic=None" in uw and "bind_underworld_material(bpy,m,semantic or name)" in uw,
+require("semantic=None" in weapon_author and "bind_underworld_material(bpy,m,semantic or name)" in weapon_author,
         "Underworld weapon author must separate unique material names from shared PBR semantics")
 require(len(material_item_specs)==32,"Underworld material-item catalog must own exactly 32 newly-authored models")
 require(sum(1 for model_id in material_item_specs if model_id.startswith("underworld-resource-"))==14,
