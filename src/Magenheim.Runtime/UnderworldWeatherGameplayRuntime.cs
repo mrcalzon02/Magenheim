@@ -60,12 +60,21 @@ internal sealed class UnderworldWeatherGameplayRuntime : MonoBehaviour
                 terrain.Biome,
                 identity.DerivedSeed32,
                 worldTime);
+            var hazard = terrain.Hazard01;
+            if (UnderworldLocalWeatherOverride.TryResolve(player, terrain.Biome, out var localWeather))
+            {
+                weather = new UnderworldWeatherState(
+                    weather.Period,
+                    localWeather.Event,
+                    Math.Max(weather.Intensity01, localWeather.Intensity01));
+                hazard = Math.Max(hazard, localWeather.HazardFloor01);
+            }
             var mitigation = UnderworldWeatherMitigationRuntime.Resolve(player, terrain.Biome);
             var atmosphere = UnderworldAtmosphere.Evaluate(new UnderworldAtmosphereInput(
                 terrain.Biome,
                 terrain.Height,
                 terrain.WaterDepth,
-                terrain.Hazard01,
+                hazard,
                 weather.Event,
                 weather.Intensity01,
                 mitigation.Resistance01,
@@ -210,6 +219,7 @@ internal sealed class UnderworldWeatherGameplayRuntime : MonoBehaviour
     private void OnDestroy()
     {
         _lastPulseByPlayer.Clear();
+        UnderworldLocalWeatherOverride.ClearAll();
         if (ReferenceEquals(_sharedServices, _services))
             _sharedServices = null;
         _services = null;

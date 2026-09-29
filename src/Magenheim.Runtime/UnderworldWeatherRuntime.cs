@@ -70,6 +70,11 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
             terrain.Biome,
             identity.DerivedSeed32,
             ZNet.instance.GetTimeSeconds());
+        if (UnderworldLocalWeatherOverride.TryResolve(player, terrain.Biome, out var localWeather))
+            weather = new UnderworldWeatherState(
+                weather.Period,
+                localWeather.Event,
+                Math.Max(weather.Intensity01, localWeather.Intensity01));
 
         var environmentName = EnvironmentName(terrain.Biome, weather.Event);
         if (!string.Equals(_forcedEnvironment, environmentName, StringComparison.Ordinal))
@@ -564,6 +569,8 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
         _atmosphere?.ApplySynchronizedEvent(UnderworldAtmosphereEvent.None, 0d);
         _atmosphere?.ApplyMitigation(0d, 0d);
         _vfx?.Clear();
+        var player = Player.m_localPlayer;
+        if (player is not null) UnderworldLocalWeatherOverride.Clear(player);
     }
 
     private void OnDisable() => Deactivate();

@@ -97,13 +97,23 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
             return;
         }
 
+        var atmosphereEvent = _event;
+        var eventIntensity = _eventIntensity;
+        var hazard = terrain.Hazard01;
+        if (UnderworldLocalWeatherOverride.TryResolve(player, terrain.Biome, out var localWeather))
+        {
+            atmosphereEvent = localWeather.Event;
+            eventIntensity = Math.Max(eventIntensity, localWeather.Intensity01);
+            hazard = Math.Max(hazard, localWeather.HazardFloor01);
+        }
+
         var target = UnderworldAtmosphere.Evaluate(new UnderworldAtmosphereInput(
             terrain.Biome,
             terrain.Height,
             terrain.WaterDepth,
-            terrain.Hazard01,
-            _event,
-            _eventIntensity,
+            hazard,
+            atmosphereEvent,
+            eventIntensity,
             _resistance,
             _suppression));
 
