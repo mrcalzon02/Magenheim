@@ -52,6 +52,7 @@ internal sealed class UnderworldMycelialBenchRegistrar : IDisposable
         catch (Exception exception)
         {
             _log.LogError("Underworld station registration failed after " + registered + " stations: " + exception);
+            throw;
         }
         finally
         {
@@ -108,6 +109,17 @@ internal sealed class UnderworldMycelialBenchRegistrar : IDisposable
 
         if (!PieceManager.Instance.AddPiece(custom))
             throw new InvalidOperationException("Jotunn refused Underworld station " + definition.Name + ".");
+
+        // Jotunn RecipeConfig stores our custom station prefab name unchanged and resolves its
+        // CraftingStation component later through PrefabManager. Keep the display m_name human
+        // readable, but prove the prefab identity that recipes use is registered to this component.
+        var registeredPiece = PieceManager.Instance.GetPiece(definition.Prefab);
+        var registeredPrefab = PrefabManager.Instance.GetPrefab(definition.Prefab);
+        if (registeredPiece is null || registeredPiece.PiecePrefab != prefab ||
+            !registeredPrefab || registeredPrefab.GetComponent<CraftingStation>() != station)
+            throw new InvalidOperationException(
+                definition.Name + " did not register its CraftingStation under recipe prefab identity " +
+                definition.Prefab + ".");
 
         _log.LogInfo("Registered Underworld station " + definition.Name + " (" + definition.PlacementRule +
             "), built at " + (string.IsNullOrEmpty(definition.BuildStationPrefab) ? "Hammer foothold" : definition.BuildStationPrefab) + ".");

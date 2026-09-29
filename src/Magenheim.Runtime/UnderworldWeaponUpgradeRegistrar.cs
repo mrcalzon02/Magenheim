@@ -50,6 +50,7 @@ internal sealed class UnderworldWeaponUpgradeRegistrar : IDisposable
         {
             _log.LogError("Underworld weapon upgrade registration failed after " + registered +
                 " items: " + exception);
+            throw;
         }
         finally
         {
