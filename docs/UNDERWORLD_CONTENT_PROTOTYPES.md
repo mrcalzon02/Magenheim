@@ -141,3 +141,45 @@ Donor-name reference: [Jotunn generated prefab catalog](https://valheim-modding.
 | Great Decay | Rotroot | Raised paths through tangled understory |
 
 Spawn names use the same prototype prefix; for example `Magenheim_Underworld_Prototype_MycelialWalkway`, `Magenheim_Underworld_Prototype_RiftSupport`, `Magenheim_Underworld_Prototype_BlackwaterFooting`. These compositions are intended review uses, not claims of generated settlements.
+
+
+## 2026-09-29 combat balance ladder
+
+The ordinary Underworld fauna and elemental Surtlings now share an explicit progression/role combat
+policy instead of inheriting donor health and damage wholesale.
+
+Biome progression supplies the baseline:
+
+| Biome | Base HP | Damage progression | Base per-hit cap |
+|---|---:|---:|---:|
+| Fungal Forest | 180 | 0.90x | 36 |
+| Blackwater Deep | 220 | 1.00x | 44 |
+| Sulfurous Wastes | 270 | 1.10x | 54 |
+| Frozen Caverns | 330 | 1.20x | 66 |
+| Fracture Zones | 410 | 1.32x | 80 |
+| Great Decay | 500 | 1.45x | 96 |
+
+Combat role then deliberately trades mobility for punishment:
+
+| Role | HP scale | Damage scale | Hit-cap scale | Movement | Minimum attack recovery |
+|---|---:|---:|---:|---:|---:|
+| Swarm | 0.55x | 0.45x | 0.55x | 1.15x | 0.75 s |
+| Skirmisher | 0.80x | 0.65x | 0.80x | 1.08x | 1.00 s |
+| Hunter | 1.10x | 0.85x | 1.00x | 1.00x | 1.40 s |
+| Bruiser | 1.55x | 1.05x | 1.25x | 0.88x | 2.00 s |
+| Heavy | 2.15x | 1.25x | 1.55x | 0.72x | 2.80 s |
+| Apex | 3.00x | 1.45x | 1.90x | 0.60x | 3.60 s |
+
+This is the governing fairness rule: fast enemies are allowed to be difficult to pin down but do
+small per-hit damage; high-damage enemies become slower, tougher and more deliberate, with enough
+attack recovery that a player can read the threat and own a failed dodge. Biome progression raises
+the whole envelope without breaking that inverse relationship.
+
+Valheim monsters do not use the player's ordinary stamina economy for attack pacing. The equivalent
+balance lever is native `MonsterAI.m_minAttackInterval`, so the role policy uses attack recovery
+rather than inventing a fake monster-stamina system.
+
+Outgoing damage is applied per Magenheim creature instance at the `Character.Damage` boundary and
+then capped by the role/biome envelope. The incoming `HitData` is cloned before modification so an
+AoE or shared donor hit cannot accumulate the multiplier/rider from one victim to the next. Vanilla
+donor attack prefabs remain untouched.
