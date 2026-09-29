@@ -1,6 +1,6 @@
 # Underworld Biome Dungeon Program
 
-**Status:** ACTIVE STRUCTURE PROGRAM — Deep Fracture admitted; Rootwarren, Drowned Vaults and Cinderworks source/runtime architecture complete but asset-gated; Rime Sepulcher and Carrion Catacombs remain.
+**Status:** ACTIVE STRUCTURE PROGRAM — Deep Fracture admitted; Rootwarren, Drowned Vaults, Cinderworks and Rime Sepulcher source/runtime architecture complete but asset-gated; Carrion Catacombs remains.
 
 The Underworld is a world-scale realm, not a chain of dungeons. Dungeons therefore function as
 major local destinations inside its biomes rather than replacing biome exploration.
@@ -83,14 +83,25 @@ hot chambers.
 
 ## Frozen Caverns — working dungeon program: Rime Sepulcher
 
-**Runtime status: PLANNED; no entrance may spawn yet.**
+**Runtime status: PLANNED; source/runtime architecture complete, forge pending.**
 
-A frozen cavern/ruin system with ice fins, pressure cracks, buried chambers and still-air vaults.
-The layout should preserve long cold sightlines in some rooms and tight whiteout-prone transitions
-in others.
+The sixteen-family kit now owns Shelter, ClearGallery, FrostField, WhiteoutChoke and IceShear route
+states. Rooms use real authored dimensions and the generic topology/spatial planners; adaptive
+passage modules physically connect the embedded layout rather than substituting teleports.
 
-Rimebound/Rimeward mitigation and cold-weather readability should matter without turning every
-room into a constant damage field.
+Room and passage exposure reuse the existing Frozen Caverns atmosphere authority. Shelter and clear
+routes can suppress local obscuration, while FrostField/IceShear/Whiteout routes raise the ordinary
+hazard floor and reuse Deep Fog or Whiteout. Rimebound/Rimeward therefore changes route pressure
+without creating a second dungeon-only cold meter.
+
+Encounter dressing is role-aware: Frost Tick, Rime Moth, Iceblind, Pale Burrower, Rimewing,
+Glacier Stalker and Cryolith Guardian are used only in pressure/encounter/final spaces that call for
+them. Resource rooms use the canonical Rimewood, Clear Ice and Rimesilver pickup vocabulary with
+server-owned harvest persistence.
+
+The buried interior, physical passage assembly, exact same-instance return path and Frozen-only
+location registrar are implemented, but registration stays fail-closed while the 17 authored
+room/passage payloads are absent.
 
 ## Great Decay — working dungeon program: Carrion Catacombs
 
@@ -109,8 +120,8 @@ advantages rather than merely reducing a number in the HUD.
 2. Fungal Rootwarren 15–20 room-family kit + entrance/interior binder.
 3. Blackwater Drowned Vaults 16-room + adaptive-passage forge/admission.
 4. Sulfur Cinderworks 16-room + adaptive-passage forge/admission.
-5. Frozen Rime Sepulcher, followed by Great Decay Carrion Catacombs.
-5. Great Decay Carrion Catacombs after contamination/Censer live tuning.
+5. Frozen Rime Sepulcher forge/admission.
+6. Great Decay Carrion Catacombs after contamination/Censer live tuning.
 
 Each promotion from PLANNED to RuntimeReady must include:
 
