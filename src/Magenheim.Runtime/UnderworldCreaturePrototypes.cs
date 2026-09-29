@@ -1,7 +1,7 @@
 using UnityEngine;
 namespace Magenheim.Runtime;
 
-// Content-only rough roster. These are intact donors, not accepted replacement meshes.
+// Underworld fauna roster. Entries intentionally reuse proven donor chassis; Magenheim replaces surface identity, temperament, physiology and biome effects at registration.
 internal static class UnderworldCreaturePrototypes
 {
     internal sealed record Entry(string Name, string Biome, string Donor, float Scale, Color Color, string Limit)
