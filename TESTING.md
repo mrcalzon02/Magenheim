@@ -175,6 +175,22 @@ unoccupied terrain. Do not use console-spawned creatures as proof of natural eco
 13. Repeat VFX, aggression and elemental-hit checks with a second peer. Presentation may be local,
     but combat results and target behavior must agree with the authoritative simulation.
 
+## Advanced / Master staff damage acceptance
+
+The 2026-09-29 balance pass raises both Advanced and Master staff damage by 50% across all eight
+families. Test with the same character skill, target, range and resistance state.
+
+1. Confirm Simple and Crystal tier damage is unchanged.
+2. Confirm each Advanced and Master primary hit is approximately 1.5x its pre-rebalance value.
+3. Confirm each tier-specific damaging field/impact is also approximately 1.5x its previous value.
+4. Confirm stamina cost, projectile count, burst cadence, accuracy, force/stagger and durability are
+   unchanged.
+5. For Fire, Frost, Storm, Venom, Seidr and Spirit multi-projectile/multi-pulse casts, record both a
+   single-projectile hit and a full-cast all-projectiles-hit case so the resulting total cast damage
+   can be judged independently of the requested 50% per-damage-component increase.
+6. Confirm Frost control, Venom corrosion strength, Seidr binding and Spirit suppression retain
+   their prior non-damage values.
+
 ## Candidate acceptance matrix
 
 ### 0.0.135 dependency-ordered Underworld acceptance
