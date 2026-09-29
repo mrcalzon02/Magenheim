@@ -51,6 +51,9 @@ for path in (
  "tools/author-rime-sepulcher-dungeon.py","tools/verify-rime-sepulcher-dungeon.py",
  "tools/verify-rime-sepulcher-production-contract.py","tools/record-rime-sepulcher-generated-assets.py",
  "tools/promote-rime-sepulcher-runtime.py","tools/rebuild-rime-sepulcher-dungeon.ps1",
+ "tools/author-carrion-catacombs-dungeon.py","tools/verify-carrion-catacombs-dungeon.py",
+ "tools/verify-carrion-catacombs-production-contract.py","tools/record-carrion-catacombs-generated-assets.py",
+ "tools/promote-carrion-catacombs-runtime.py","tools/rebuild-carrion-catacombs-dungeon.ps1",
  "tools/verify-underworld-production-assets.py",
  ".github/workflows/magenheim-production-forge.yml",
 ):
@@ -75,7 +78,9 @@ python_sources=(
  "tools/promote-cinderworks-runtime.py","tools/render-cinderworks-review.py","tools/build-cinderworks-review-sheets.py",
  "tools/verify-cinderworks-review.py","tools/author-rime-sepulcher-dungeon.py","tools/verify-rime-sepulcher-dungeon.py",
  "tools/verify-rime-sepulcher-production-contract.py","tools/record-rime-sepulcher-generated-assets.py",
- "tools/promote-rime-sepulcher-runtime.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
+ "tools/promote-rime-sepulcher-runtime.py","tools/author-carrion-catacombs-dungeon.py","tools/verify-carrion-catacombs-dungeon.py",
+ "tools/verify-carrion-catacombs-production-contract.py","tools/record-carrion-catacombs-generated-assets.py",
+ "tools/promote-carrion-catacombs-runtime.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
  "tools/export-model-assets.py",
 )
 for source in python_sources:
@@ -292,6 +297,17 @@ require("rebuild-rime-sepulcher-dungeon.ps1" in production_rebuild and
         "record-rime-sepulcher-generated-assets.py" in production_rebuild and
         "promote-rime-sepulcher-runtime.py" in production_rebuild,
         "One-run Underworld production forge no longer includes Rime Sepulcher provenance/promotion")
+carrion_author=(ROOT/"tools"/"author-carrion-catacombs-dungeon.py").read_text()
+carrion_rebuild=(ROOT/"tools"/"rebuild-carrion-catacombs-dungeon.ps1").read_text()
+require('REVISION="carrion-catacombs-dungeon-r1"' in carrion_author and
+        "none-runtime-atmosphere-authority" in carrion_author,
+        "Carrion Catacombs authoring lost its r1 runtime-atmosphere source contract")
+require("verify-carrion-catacombs-dungeon" in carrion_rebuild and "export-model-assets" in carrion_rebuild,
+        "Carrion Catacombs rebuild no longer verifies and exports its 17-model family")
+require("rebuild-carrion-catacombs-dungeon.ps1" in production_rebuild and
+        "record-carrion-catacombs-generated-assets.py" in production_rebuild and
+        "promote-carrion-catacombs-runtime.py" in production_rebuild,
+        "One-run Underworld production forge no longer includes Carrion Catacombs provenance/promotion")
 
 wrapper=(ROOT/"tools"/"blender.ps1").read_text()
 require("MAGENHEIM_BLENDER" in wrapper,"Blender wrapper cannot accept the Actions executable through environment")
