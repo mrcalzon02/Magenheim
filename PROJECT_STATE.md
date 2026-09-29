@@ -1,3 +1,24 @@
+# Current source candidate - 0.0.155 (2026-09-29)
+
+Deep structure work is now active. The established Deep Fracture expedition is admitted as a sparse
+Underworld Fracture Zones dungeon: six entrances, 1.4 km minimum similar-site spacing, reusing the
+existing exact-plan 20-district interior, encounters, passages, traversal and return authority.
+Return labeling is entrance-context aware, so an Underworld fracture returns to Fracture Zones
+without implying a Surface transition.
+
+A six-biome Underworld dungeon catalog and deterministic generic biome-dungeon planner are now
+source authority. The five new biome dungeon programs require 15-20 large authored room families
+used 2-3 times per run with branching topology and bounded loops. They remain non-spawning until
+their real interior binders exist. Deep Fracture is explicitly excluded from the generic planner.
+
+Underworld startup validation now requires every RuntimeReady dungeon row to survive native
+ZoneSystem catalog partitioning. Validation record:
+docs/validation/2026-09-29-underworld-deep-fracture-dungeon-program.md.
+
+No local build/install/live-world claim is attached to this candidate from the current execution
+environment. Run the normal closeout/build/install path, then execute TESTING.md 0.0.155 before
+promoting it to live-accepted.
+
 # Current source candidate - 0.0.154 (2026-09-29)
 
 Underworld weather/VFX/effects/gameplay coupling is source-complete. All eight deterministic
