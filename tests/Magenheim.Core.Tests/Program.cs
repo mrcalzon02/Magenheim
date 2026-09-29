@@ -13,7 +13,7 @@ internal static class Program
         _assertions += UnderworldInstanceContractTests.Run();
         _assertions += UnderworldInstanceTerrainDomainTests.Run();
         _assertions += UnderworldInstanceChunkTests.Run();
-        _assertions += UnderworldMonumentalLandformTests.Run();
+        _assertions += UnderworldRareCellMassifTests.Run();
         _assertions += UnderworldEcologyCellTests.Run();
         _assertions += UnderworldFloraTests.Run();
         _assertions += UnderworldResourceTests.Run();
