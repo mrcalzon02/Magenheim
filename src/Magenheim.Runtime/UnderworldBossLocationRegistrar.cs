@@ -47,6 +47,7 @@ internal sealed class UnderworldBossLocationRegistrar : IDisposable
     internal void Register()
     {
         if (_subscribed) return;
+        UnderworldBossTrophyRegistrar.Register(_log);
         ZoneManager.OnVanillaLocationsAvailable += RegisterLocations;
         _subscribed = true;
     }
