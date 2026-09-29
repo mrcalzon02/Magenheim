@@ -36,7 +36,7 @@ internal sealed class UnderworldToolRegistrar:IDisposable
         var count=0;
         try
         {
-            _anchorTable=new CustomPieceTable(AnchorPieceTable,new PieceTableConfig{CanRemovePieces=false,GuessUsage=true});
+            _anchorTable=new CustomPieceTable(AnchorPieceTable,new PieceTableConfig{CanRemovePieces=false});
             if(!PieceManager.Instance.AddPieceTable(_anchorTable))throw new InvalidOperationException("Jotunn refused Anchor Spike piece table.");
             foreach(var definition in UnderworldEquipmentCatalog.Tools)
             {
