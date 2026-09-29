@@ -19,7 +19,8 @@ internal static class UnderworldBiomeDungeonSpatialPlannerTests
         var topology = UnderworldBiomeDungeonPlanner.Build(
             UnderworldDungeonCatalog.FungalForest,
             0x24681357,
-            UnderworldFungalRootwarrenCatalog.RoomFamilyIds());
+            UnderworldFungalRootwarrenCatalog.RoomFamilyIds(),
+            UnderworldFungalRootwarrenCatalog.EntranceRoomId);
         var first = UnderworldBiomeDungeonSpatialPlanner.Build(
             topology,
             UnderworldFungalRootwarrenCatalog.Rooms);
@@ -42,6 +43,8 @@ internal static class UnderworldBiomeDungeonSpatialPlannerTests
             "Large Rootwarren rooms need a conservative physical spacing envelope.");
         Assert(first.Rooms[0].X == 0d && first.Rooms[0].Z == 0d,
             "Entrance room must remain the spatial origin.");
+        Assert(first.Rooms[0].RoomFamilyId == UnderworldFungalRootwarrenCatalog.EntranceRoomId,
+            "The spatial origin must be the authored Rootwarren Fracture Mouth.");
         Assert(first.Rooms.Skip(1).Any(room => room.Y < 0d),
             "Rootwarren must descend rather than remaining one flat plane.");
 
@@ -78,7 +81,8 @@ internal static class UnderworldBiomeDungeonSpatialPlannerTests
             var candidateTopology = UnderworldBiomeDungeonPlanner.Build(
                 UnderworldDungeonCatalog.FungalForest,
                 seed,
-                UnderworldFungalRootwarrenCatalog.RoomFamilyIds());
+                UnderworldFungalRootwarrenCatalog.RoomFamilyIds(),
+                UnderworldFungalRootwarrenCatalog.EntranceRoomId);
             var candidateSpatial = UnderworldBiomeDungeonSpatialPlanner.Build(
                 candidateTopology,
                 UnderworldFungalRootwarrenCatalog.Rooms);
