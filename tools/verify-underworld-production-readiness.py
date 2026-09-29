@@ -128,10 +128,38 @@ require(sum(1 for model_id in material_item_specs if model_id.startswith("underw
 require(sum(1 for model_id in material_item_specs if model_id.startswith("underworld-refined-"))==18,
         "Material-item author must own all eighteen refinement models")
 visuals=(ROOT/"src"/"Magenheim.Runtime"/"UnderworldResourceVisuals.cs").read_text()
-raw_visuals=re.findall(r'\["Magenheim_Underworld_Resource_[^"]+"\]\s*=\s*"underworld-resource-[^"]+"',visuals)
-refined_visuals=re.findall(r'\["Magenheim_Underworld_Refined_[^"]+"\]\s*=\s*"underworld-refined-[^"]+"',visuals)
-require(len(raw_visuals)==22,"Runtime visual map must cover all 22 raw Underworld materials")
-require(len(refined_visuals)==18,"Runtime visual map must cover all 18 refined Underworld materials")
+visual_pairs=dict(re.findall(
+    r'\["(Magenheim_Underworld_(?:Resource|Refined)_[^"]+)"\]\s*=\s*"([^"]+)"',visuals))
+raw_catalog_text=(ROOT/"src"/"Magenheim.Core"/"Underworld"/"UnderworldResourceCatalog.cs").read_text()
+fungal_refinement_text=(ROOT/"src"/"Magenheim.Core"/"Underworld"/"UnderworldFungalRefinementCatalog.cs").read_text()
+biome_refinement_text=(ROOT/"src"/"Magenheim.Core"/"Underworld"/"UnderworldBiomeRefinementCatalog.cs").read_text()
+raw_catalog=set(re.findall(
+    r'new UnderworldResourceDefinition\(\s*"[^"]+"\s*,\s*"(Magenheim_Underworld_Resource_[^"]+)"',
+    raw_catalog_text))
+refined_catalog=set(re.findall(
+    r'public const string \w+\s*=\s*"(Magenheim_Underworld_Refined_[^"]+)"',
+    fungal_refinement_text+"\n"+biome_refinement_text))
+mapped_raw={prefab for prefab in visual_pairs if prefab.startswith("Magenheim_Underworld_Resource_")}
+mapped_refined={prefab for prefab in visual_pairs if prefab.startswith("Magenheim_Underworld_Refined_")}
+require(len(raw_catalog)==22,"Raw Underworld authority must contain exactly 22 prefab identities")
+require(len(refined_catalog)==18,"Refined Underworld authority must contain exactly 18 prefab identities")
+require(mapped_raw==raw_catalog,
+        "Runtime raw-material visual identities drifted from UnderworldResourceCatalog: missing="+
+        repr(sorted(raw_catalog-mapped_raw))+" extra="+repr(sorted(mapped_raw-raw_catalog)))
+require(mapped_refined==refined_catalog,
+        "Runtime refined-material visual identities drifted from refinement catalogs: missing="+
+        repr(sorted(refined_catalog-mapped_refined))+" extra="+repr(sorted(mapped_refined-refined_catalog)))
+mapped_models=set(visual_pairs.values())
+new_models=set(material_item_specs)
+require(new_models <= mapped_models,
+        "Every newly-authored material model must be consumed by the runtime visual map")
+legacy_material_models=mapped_models-new_models
+require(len(legacy_material_models)==8 and all(model.startswith("underworld-resource-") for model in legacy_material_models),
+        "Exactly eight pre-existing Fungal/Blackwater raw material models must remain outside the 32-model author")
+for model_id in legacy_material_models:
+    require((ROOT/"assets"/"models"/"source"/(model_id+".blend")).is_file() and
+            (ROOT/"assets"/"models"/"runtime"/(model_id+".model.json")).is_file(),
+            "Legacy raw material visual lacks an admitted source/runtime model: "+model_id)
 material_item_manifest=entries.get("underworld-material-item-models",{})
 require(material_item_manifest.get("generator")=="tools/author-underworld-material-items.py",
         "Underworld material-item generator authority is missing")

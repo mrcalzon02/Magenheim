@@ -58,6 +58,7 @@ internal sealed class UnderworldFungalRefinementRegistrar : IDisposable
             _log.LogError(
                 "Fungal Forest refinement registration failed after " + items +
                 " items and " + recipes + " recipes: " + exception);
+            throw;
         }
         finally
         {
