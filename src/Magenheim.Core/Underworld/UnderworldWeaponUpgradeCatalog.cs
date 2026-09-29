@@ -19,6 +19,8 @@ public sealed record UnderworldWeaponIngredient(string Prefab, int Amount);
 public sealed record UnderworldWeaponUpgradeDefinition(
     string Prefab,
     string Name,
+    string ModelId,
+    string BaseModelId,
     UnderworldTerrainBiome Biome,
     string BasePrefab,
     string StationPrefab,
@@ -41,28 +43,28 @@ public static class UnderworldWeaponUpgradeCatalog
 
     public static IReadOnlyList<UnderworldWeaponUpgradeDefinition> All { get; } = Array.AsReadOnly(new[]
     {
-        Upgrade("Magenheim_Underworld_Weapon_WorldrootClub", "Worldroot Club",
+        Upgrade("Magenheim_Underworld_Weapon_WorldrootClub", "Worldroot Club", "underworld-weapon-worldroot-club", "crystal-weapon-mace",
             UnderworldTerrainBiome.FungalForest, "Magenheim_Weapon_CrystalMace", MycelialBenchPrefab,
             UnderworldWeaponAccent.Worldroot,
             Ingredient("Magenheim_Underworld_Resource_WorldrootTimber", 12),
             Ingredient("Magenheim_Underworld_Resource_Understone", 4),
             Ingredient("Magenheim_Underworld_Resource_SpireFibre", 4)),
 
-        Upgrade("Magenheim_Underworld_Weapon_WorldrootBow", "Worldroot Bow",
+        Upgrade("Magenheim_Underworld_Weapon_WorldrootBow", "Worldroot Bow", "underworld-weapon-worldroot-bow", "crystal-weapon-bow",
             UnderworldTerrainBiome.FungalForest, "Magenheim_Weapon_CrystalBow", MycelialBenchPrefab,
             UnderworldWeaponAccent.Worldroot,
             Ingredient("Magenheim_Underworld_Resource_WorldrootTimber", 10),
             Ingredient("Magenheim_Underworld_Resource_SpireFibre", 8),
             Ingredient("Magenheim_Underworld_Resource_GlowcapFlesh", 2)),
 
-        Upgrade("Magenheim_Underworld_Weapon_FlowstoneMaul", "Flowstone Maul",
+        Upgrade("Magenheim_Underworld_Weapon_FlowstoneMaul", "Flowstone Maul", "underworld-weapon-flowstone-maul", "crystal-weapon-mace",
             UnderworldTerrainBiome.BlackwaterDeep, "Magenheim_Weapon_CrystalMace", TidalBasinPrefab,
             UnderworldWeaponAccent.Flowstone,
             Ingredient("Magenheim_Underworld_Resource_BlackwaterFlowstone", 14),
             Ingredient("Magenheim_Underworld_Resource_BlackwaterPearl", 4),
             Ingredient("Magenheim_Underworld_Resource_PaleFibre", 6)),
 
-        Upgrade("Magenheim_Underworld_Weapon_BlackwaterHarpoon", "Blackwater Harpoon",
+        Upgrade("Magenheim_Underworld_Weapon_BlackwaterHarpoon", "Blackwater Harpoon", "underworld-weapon-blackwater-harpoon", "crystal-weapon-spear",
             UnderworldTerrainBiome.BlackwaterDeep, "Magenheim_Weapon_CrystalSpear", TidalBasinPrefab,
             UnderworldWeaponAccent.Flowstone,
             Ingredient("Magenheim_Underworld_Resource_BlackwaterFlowstone", 8),
@@ -70,7 +72,7 @@ public static class UnderworldWeaponUpgradeCatalog
             Ingredient("Magenheim_Underworld_Resource_PaleFibre", 8),
             Ingredient("Magenheim_Underworld_Resource_DeepSalt", 2)),
 
-        Upgrade("Magenheim_Underworld_Weapon_EmberironAxe", "Emberiron Axe",
+        Upgrade("Magenheim_Underworld_Weapon_EmberironAxe", "Emberiron Axe", "underworld-weapon-emberiron-axe", "crystal-weapon-axe",
             UnderworldTerrainBiome.SulfurousWastes, "Magenheim_Weapon_CrystalAxe", FurnaceHeartForgePrefab,
             UnderworldWeaponAccent.Emberiron,
             Ingredient("Magenheim_Underworld_Resource_Emberiron", 12),
@@ -78,7 +80,7 @@ public static class UnderworldWeaponUpgradeCatalog
             Ingredient("Magenheim_Underworld_Resource_CharredTimber", 4),
             Ingredient("Magenheim_Underworld_Resource_Sulfur", 2)),
 
-        Upgrade("Magenheim_Underworld_Weapon_EmberironGreatsword", "Emberiron Greatsword",
+        Upgrade("Magenheim_Underworld_Weapon_EmberironGreatsword", "Emberiron Greatsword", "underworld-weapon-emberiron-greatsword", "crystal-weapon-greatsword",
             UnderworldTerrainBiome.SulfurousWastes, "Magenheim_Weapon_CrystalGreatsword", FurnaceHeartForgePrefab,
             UnderworldWeaponAccent.Emberiron,
             Ingredient("Magenheim_Underworld_Resource_Emberiron", 18),
@@ -86,35 +88,35 @@ public static class UnderworldWeaponUpgradeCatalog
             Ingredient("Magenheim_Underworld_Resource_CharredTimber", 6),
             Ingredient("Magenheim_Underworld_Resource_Sulfur", 3)),
 
-        Upgrade("Magenheim_Underworld_Weapon_RimesilverSpear", "Rimesilver Spear",
+        Upgrade("Magenheim_Underworld_Weapon_RimesilverSpear", "Rimesilver Spear", "underworld-weapon-rimesilver-spear", "crystal-weapon-spear",
             UnderworldTerrainBiome.FrozenCaverns, "Magenheim_Weapon_CrystalSpear", SilenceTablePrefab,
             UnderworldWeaponAccent.Rime,
             Ingredient("Magenheim_Underworld_Resource_Rimesilver", 12),
             Ingredient("Magenheim_Underworld_Resource_ClearIce", 8),
             Ingredient("Magenheim_Underworld_Resource_Rimewood", 6)),
 
-        Upgrade("Magenheim_Underworld_Weapon_IcebindStaff", "Icebind Staff",
+        Upgrade("Magenheim_Underworld_Weapon_IcebindStaff", "Icebind Staff", "underworld-weapon-icebind-staff", "staff-frost-crystal",
             UnderworldTerrainBiome.FrozenCaverns, "Magenheim_Staff_Frost_Crystal", SilenceTablePrefab,
             UnderworldWeaponAccent.Rime,
             Ingredient("Magenheim_Underworld_Resource_Rimesilver", 10),
             Ingredient("Magenheim_Underworld_Resource_ClearIce", 12),
             Ingredient("Magenheim_Underworld_Resource_Rimewood", 6)),
 
-        Upgrade("Magenheim_Underworld_Weapon_TitanboneAtgeir", "Titanbone Atgeir",
+        Upgrade("Magenheim_Underworld_Weapon_TitanboneAtgeir", "Titanbone Atgeir", "underworld-weapon-titanbone-atgeir", "crystal-weapon-atgeir",
             UnderworldTerrainBiome.FractureZones, "Magenheim_Weapon_CrystalAtgeir", AnchorForgePrefab,
             UnderworldWeaponAccent.Fracture,
             Ingredient("Magenheim_Underworld_Resource_Titanbone", 14),
             Ingredient("Magenheim_Underworld_Resource_FractureCrystal", 10),
             Ingredient("Magenheim_Underworld_Resource_Shardstone", 8)),
 
-        Upgrade("Magenheim_Underworld_Weapon_ShardstoneCrossbow", "Shardstone Crossbow",
+        Upgrade("Magenheim_Underworld_Weapon_ShardstoneCrossbow", "Shardstone Crossbow", "underworld-weapon-shardstone-crossbow", "crystal-weapon-crossbow",
             UnderworldTerrainBiome.FractureZones, "Magenheim_Weapon_CrystalCrossbow", AnchorForgePrefab,
             UnderworldWeaponAccent.Fracture,
             Ingredient("Magenheim_Underworld_Resource_Shardstone", 10),
             Ingredient("Magenheim_Underworld_Resource_FractureCrystal", 8),
             Ingredient("Magenheim_Underworld_Resource_Titanbone", 6)),
 
-        Upgrade("Magenheim_Underworld_Weapon_AmberBlade", "Amber Blade",
+        Upgrade("Magenheim_Underworld_Weapon_AmberBlade", "Amber Blade", "underworld-weapon-amber-blade", "crystal-weapon-sword",
             UnderworldTerrainBiome.GreatDecay, "Magenheim_Weapon_CrystalSword", CrownReliquaryPrefab,
             UnderworldWeaponAccent.Decay,
             Ingredient("Magenheim_Underworld_Resource_CarrionAmber", 12),
@@ -122,7 +124,7 @@ public static class UnderworldWeaponUpgradeCatalog
             Ingredient("Magenheim_Underworld_Resource_DecaySpore", 4),
             Ingredient("Magenheim_Underworld_Resource_BoneGravel", 4)),
 
-        Upgrade("Magenheim_Underworld_Weapon_CrownSceptre", "Crown Sceptre",
+        Upgrade("Magenheim_Underworld_Weapon_CrownSceptre", "Crown Sceptre", "underworld-weapon-crown-sceptre", "crystal-weapon-mace",
             UnderworldTerrainBiome.GreatDecay, "Magenheim_Weapon_CrystalMace", CrownReliquaryPrefab,
             UnderworldWeaponAccent.Decay,
             Ingredient("Magenheim_Underworld_Resource_CarrionAmber", 14),
@@ -142,12 +144,14 @@ public static class UnderworldWeaponUpgradeCatalog
     private static UnderworldWeaponUpgradeDefinition Upgrade(
         string prefab,
         string name,
+        string modelId,
+        string baseModelId,
         UnderworldTerrainBiome biome,
         string basePrefab,
         string stationPrefab,
         UnderworldWeaponAccent accent,
         params UnderworldWeaponIngredient[] ingredients) =>
-        new(prefab, name, biome, basePrefab, stationPrefab, accent, Array.AsReadOnly(ingredients));
+        new(prefab, name, modelId, baseModelId, biome, basePrefab, stationPrefab, accent, Array.AsReadOnly(ingredients));
 
     private static UnderworldWeaponIngredient Ingredient(string prefab, int amount) => new(prefab, amount);
 }

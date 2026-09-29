@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using BepInEx.Logging;
 using Jotunn.Configs;
 using Jotunn.Entities;
@@ -75,7 +76,18 @@ internal sealed class UnderworldWeaponUpgradeRegistrar : IDisposable
         shared.m_value = 0;
         shared.m_dlc = string.Empty;
 
-        ApplyAccent(item.ItemPrefab, definition.Accent);
+        if (HasAuthoredModel(definition.ModelId))
+        {
+            ModelAssets.Load(item.ItemPrefab, definition.ModelId, item: true);
+            if (HasAuthoredIcon(definition.ModelId))
+                shared.m_icons = new[] { EarthAssets.Icon(definition.ModelId) };
+        }
+        else
+        {
+            // Transitional fallback only. The recipe ancestry is already real; until a derivative
+            // .blend has been exported, keep the inherited crystal chassis visible and accent it.
+            ApplyAccent(item.ItemPrefab, definition.Accent);
+        }
 
         if (!ItemManager.Instance.AddItem(item))
             throw new InvalidOperationException("Jotunn refused Underworld weapon item " + definition.Prefab);
@@ -107,12 +119,15 @@ internal sealed class UnderworldWeaponUpgradeRegistrar : IDisposable
             var material = renderer.sharedMaterial;
             if (!material) continue;
             var materialName = material.name ?? string.Empty;
-            var isCrystal = HasToken(materialName, ".crystal");
+            // Classify by the final family token, not by substring. Every material namespace
+            // begins with "magenheim.crystal-weapon", so substring matching ".crystal" incorrectly
+            // classified the timber, leather and metal parts as crystal too.
+            var isCrystal = HasFamily(materialName, "crystal");
             var isStructure =
-                HasToken(materialName, ".timber") ||
-                HasToken(materialName, ".leather") ||
-                HasToken(materialName, ".metal") ||
-                HasToken(materialName, ".silver");
+                HasFamily(materialName, "timber") ||
+                HasFamily(materialName, "leather") ||
+                HasFamily(materialName, "metal") ||
+                HasFamily(materialName, "silver");
             if (!isCrystal && !isStructure) continue;
 
             var block = new MaterialPropertyBlock();
@@ -126,8 +141,22 @@ internal sealed class UnderworldWeaponUpgradeRegistrar : IDisposable
         }
     }
 
-    private static bool HasToken(string value, string token) =>
-        value.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0;
+    private static bool HasFamily(string value, string family) =>
+        value.EndsWith("." + family, StringComparison.OrdinalIgnoreCase);
+
+    private static bool HasAuthoredModel(string modelId)
+    {
+        var directory = Path.GetDirectoryName(typeof(UnderworldWeaponUpgradeRegistrar).Assembly.Location);
+        if (string.IsNullOrEmpty(directory)) return false;
+        return File.Exists(Path.Combine(directory, "assets", "models", "runtime", modelId + ".model.json"));
+    }
+
+    private static bool HasAuthoredIcon(string modelId)
+    {
+        var directory = Path.GetDirectoryName(typeof(UnderworldWeaponUpgradeRegistrar).Assembly.Location);
+        if (string.IsNullOrEmpty(directory)) return false;
+        return File.Exists(Path.Combine(directory, "assets", "earth", modelId + ".icon.png"));
+    }
 
     private static void AccentPalette(
         UnderworldWeaponAccent accent,

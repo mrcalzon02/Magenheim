@@ -24,3 +24,32 @@ That same shape is now catalogued for Blackwater, Sulfurous Wastes, Frozen Caver
 ## Validation status
 
 Source admission is implemented and committed. A full local Runtime compile and live Valheim acceptance cannot be claimed from the GitHub connector environment. The new code deliberately avoids System.ValueTuple and string.Contains overloads unavailable under the Runtime net462 target. Live acceptance still needs to confirm Mycelial Bench placement, custom-resource requirement resolution, recipe consumption of the base crystal weapon, inherited held visuals, accent readability, repair behavior, multiplayer and save/reload.
+
+
+## Crystal-model derivation pipeline
+
+The asset boundary now records model ancestry separately from prefab ancestry. Every planned weapon
+has a unique `underworld-weapon-*` model identity and names the Crystal model it is designed to
+develop. The first authoring tool, `tools/author-underworld-weapons.py`, opens the committed
+`crystal-weapon-mace.blend` and `crystal-weapon-bow.blend` directly, keeps their original parts,
+grip origin and envelope, and adds Worldroot bindings, structural root ribs and fungal crystal
+accents around them. It does not rebuild a vaguely similar club or bow from primitives and call it
+related after the fact.
+
+`tools/rebuild-underworld-weapons.ps1` is the bounded local production path: author the two
+derivative .blend files, export them through the normal model exporter, rebuild the model catalog,
+render icons from those exact sources, and run the icon gate. Runtime checks for the exported model
+and icon and automatically graduates from the transitional tinted Crystal clone to the authored
+derivative when those files are present.
+
+Held-item alignment now has an explicit derivative-to-Crystal profile map. This matters for later
+Greatsword, Spear, Atgeir and Crossbow upgrades: their Crystal ancestors already carry field-tested
+trim/forward-axis corrections, and adding biome plating must not discard that knowledge.
+
+The temporary accent path also received a correctness repair: material classification is by the
+final family suffix. The previous substring test for `.crystal` matched the namespace
+`magenheim.crystal-weapon` on every material, which would have tinted timber, leather and metal as
+crystal. The suffix gate distinguishes those families correctly.
+
+The author/export command itself still requires the project's local Blender environment; no
+generated .blend/GLB/runtime JSON/icon is claimed by this connector-only commit.

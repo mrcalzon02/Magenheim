@@ -1,4 +1,4 @@
-"""Render one inventory icon per crystal weapon from the authoritative Blender sources.
+"""Render one inventory icon per crystal-derived weapon from the authoritative Blender sources.
 
     tools/blender.ps1 render-weapon-icons [model-id ...]
 
@@ -20,7 +20,7 @@ OUT = ROOT / 'assets/earth'
 SIZE = 256
 SAMPLES = 96
 
-# A crystal weapon's catalog id is already the asset name its registrar passes to EarthAssets.Icon.
+# A weapon catalog id is already the asset name its registrar passes to EarthAssets.Icon.
 def asset_name(model_id: str) -> str:
     return model_id
 
@@ -103,9 +103,10 @@ def frame_and_render(entry, out_path: Path) -> None:
 
 def main() -> None:
     catalog = json.loads((MODELS / 'catalog.json').read_text())
-    weapons = [e for e in catalog if e['id'].startswith('crystal-weapon-')]
-    if len(weapons) != 10:
-        raise SystemExit(f'Expected 10 crystal weapon models in the catalog, found {len(weapons)}.')
+    weapons = [e for e in catalog
+               if e['id'].startswith('crystal-weapon-') or e['id'].startswith('underworld-weapon-')]
+    if len([e for e in weapons if e['id'].startswith('crystal-weapon-')]) != 10:
+        raise SystemExit('The ten base crystal weapon models must remain present in the catalog.')
 
     requested = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
     if requested:
@@ -116,7 +117,7 @@ def main() -> None:
         frame_and_render(entry, OUT / f'{name}.icon.png')
         print('RENDERED', name, flush=True)
 
-    print(f'Rendered {len(weapons)} crystal weapon icons at {SIZE}px into {OUT}', flush=True)
+    print(f'Rendered {len(weapons)} crystal-derived weapon icons at {SIZE}px into {OUT}', flush=True)
 
 
 main()

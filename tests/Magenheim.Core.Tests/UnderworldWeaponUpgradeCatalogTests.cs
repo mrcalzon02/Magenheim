@@ -18,6 +18,14 @@ internal static class UnderworldWeaponUpgradeCatalogTests
         Assert(all.Count == 12, "The six biome parity tiers must expose the twelve planned weapon identities.");
         Assert(all.Select(value => value.Prefab).Distinct(StringComparer.Ordinal).Count() == all.Count,
             "Underworld weapon prefab identities must be unique.");
+        Assert(all.Select(value => value.ModelId).Distinct(StringComparer.Ordinal).Count() == all.Count,
+            "Every Underworld weapon must have its own derivative model identity.");
+        Assert(all.All(value => value.ModelId.StartsWith("underworld-weapon-", StringComparison.Ordinal)),
+            "Underworld derivative models must remain in the dedicated weapon namespace.");
+        Assert(all.All(value =>
+                value.BaseModelId.StartsWith("crystal-weapon-", StringComparison.Ordinal) ||
+                string.Equals(value.BaseModelId, "staff-frost-crystal", StringComparison.Ordinal)),
+            "Every derivative model must explicitly name the existing crystal-grade model it develops.");
         Assert(all.All(value =>
                 value.BasePrefab.StartsWith("Magenheim_Weapon_Crystal", StringComparison.Ordinal) ||
                 (value.BasePrefab.StartsWith("Magenheim_Staff_", StringComparison.Ordinal) &&
@@ -38,6 +46,10 @@ internal static class UnderworldWeaponUpgradeCatalogTests
             "Worldroot Club must visibly and mechanically descend from the Crystal Mace chassis.");
         Assert(fungal.Single(value => value.Name == "Worldroot Bow").BasePrefab == "Magenheim_Weapon_CrystalBow",
             "Worldroot Bow must visibly and mechanically descend from the Crystal Bow chassis.");
+        Assert(fungal.Single(value => value.Name == "Worldroot Club").BaseModelId == "crystal-weapon-mace",
+            "Worldroot Club art must be derived from the Crystal Mace model.");
+        Assert(fungal.Single(value => value.Name == "Worldroot Bow").BaseModelId == "crystal-weapon-bow",
+            "Worldroot Bow art must be derived from the Crystal Bow model.");
 
         Assert(all.Single(value => value.Name == "Amber Blade").BasePrefab == "Magenheim_Weapon_CrystalSword",
             "The Great Decay sword must consume and inherit the Crystal Sword.");

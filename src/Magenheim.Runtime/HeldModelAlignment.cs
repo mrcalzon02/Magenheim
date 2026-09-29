@@ -86,6 +86,27 @@ internal static class HeldModelAlignment
         ["crystal-weapon-crossbow"] = 1,
     };
 
+    /// <summary>
+    /// Derivative Underworld models deliberately preserve their crystal ancestor's grip, working
+    /// axis and envelope. Reuse the field-tested alignment profile rather than relearning or
+    /// guessing it for a model that is explicitly an augmented version of the same chassis.
+    /// </summary>
+    private static readonly Dictionary<string, string> AlignmentProfile = new(StringComparer.Ordinal)
+    {
+        ["underworld-weapon-worldroot-club"] = "crystal-weapon-mace",
+        ["underworld-weapon-worldroot-bow"] = "crystal-weapon-bow",
+        ["underworld-weapon-flowstone-maul"] = "crystal-weapon-mace",
+        ["underworld-weapon-blackwater-harpoon"] = "crystal-weapon-spear",
+        ["underworld-weapon-emberiron-axe"] = "crystal-weapon-axe",
+        ["underworld-weapon-emberiron-greatsword"] = "crystal-weapon-greatsword",
+        ["underworld-weapon-rimesilver-spear"] = "crystal-weapon-spear",
+        ["underworld-weapon-icebind-staff"] = "staff-frost-crystal",
+        ["underworld-weapon-titanbone-atgeir"] = "crystal-weapon-atgeir",
+        ["underworld-weapon-shardstone-crossbow"] = "crystal-weapon-crossbow",
+        ["underworld-weapon-amber-blade"] = "crystal-weapon-sword",
+        ["underworld-weapon-crown-sceptre"] = "crystal-weapon-mace",
+    };
+
     /// <summary>Hand-authored trim applied after the measured alignment, in attach space.</summary>
     /// <remarks>
     /// Measurement gets a held model into the donor's frame; it cannot know that a grip reads a few
@@ -231,8 +252,9 @@ internal static class HeldModelAlignment
         if (attach is null || root is null) return;
         if (!TryMeasureBounds(attach, donorRenderers, null, root.transform, out var donor)) return;
         if (!TryMeasureBounds(attach, root.GetComponentsInChildren<Renderer>(true), root.transform, null, out var replacement)) return;
+        var profileId = AlignmentProfile.TryGetValue(id, out var inheritedProfile) ? inheritedProfile : id;
         var correction = Measure(attach, donor, replacement,
-            ForwardAxisOverride.TryGetValue(id, out var declared) ? declared : (int?)null);
+            ForwardAxisOverride.TryGetValue(profileId, out var declared) ? declared : (int?)null);
         root.transform.localRotation = correction * root.transform.localRotation;
 
         // No seating offset: models are placed exactly as authored. Magenheim hafts put the grip
@@ -243,7 +265,7 @@ internal static class HeldModelAlignment
         // attempt to reshape it fixed one weapon by breaking another. Orientation is corrected in
         // the source model, not here.
 
-        if (Trim.TryGetValue(id, out var trim))
+        if (Trim.TryGetValue(profileId, out var trim))
         {
             root.transform.localRotation = Quaternion.Euler(trim.Rotation) * root.transform.localRotation;
             root.transform.localPosition += trim.Offset;
