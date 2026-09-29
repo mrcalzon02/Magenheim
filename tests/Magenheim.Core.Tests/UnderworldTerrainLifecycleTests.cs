@@ -186,11 +186,38 @@ internal static class UnderworldTerrainLifecycleTests
                     $"{(UnderworldTerrainBiome)biome} must have substantial ordinary relief for seed {seed}.");
             Assert(lows[1] < -100 && lows[4] < -255 && highs[4] > 345,
                 "Basins and ranges must extend past the retired floor and shared clamp.");
+            var gateHalfDiagonal = Math.Sqrt(17.89d * 17.89d + 10.04d * 10.04d);
+            Assert(UnderworldTerrainLifecycle.GateFoundationRadiusMeters > gateHalfDiagonal,
+                "The flat Deep Gate foundation must contain the measured Aesir gate footprint.");
+
+            var foundation = UnderworldTerrainLifecycle.Evaluate(
+                instanceDomain,
+                new UnderworldTerrainSample(
+                    UnderworldTerrainLifecycle.GateFoundationCenterXMeters,
+                    0d,
+                    UnderworldTerrainLifecycle.GateFoundationCenterZMeters,
+                    30d,
+                    0d,
+                    .5d),
+                seed);
+            for (var z = -10; z <= 10; z += 5)
+            for (var x = 18; x <= 54; x += 6)
+            {
+                var gate = UnderworldTerrainLifecycle.Evaluate(instanceDomain, new(x, 0, z, 30, 0, .5), seed);
+                Assert(Math.Abs(gate.Height - foundation.Height) < 1e-9,
+                    "Every sampled point beneath the measured Deep Gate footprint must share one level foundation.");
+                Assert(gate.WaterDepth == 0, "The Deep Gate foundation must stay dry.");
+            }
+
             for (var x = -80; x <= 80; x += 5)
             {
                 var gate = UnderworldTerrainLifecycle.Evaluate(instanceDomain, new(x, 0, 0, 30, 0, .5), seed);
-                Assert(Math.Abs(gate.Height - (51 + .55 * UnderworldTerrainNoise.ReliefMetres(seed, x, 0, 0))) < 1e-9,
-                    "The protected approach preserves its original fine relief.");
+                var gateDistance = Math.Abs(x - UnderworldTerrainLifecycle.GateFoundationCenterXMeters);
+                if (gateDistance >= UnderworldTerrainLifecycle.GateFoundationBlendRadiusMeters)
+                {
+                    Assert(Math.Abs(gate.Height - (51 + .55 * UnderworldTerrainNoise.ReliefMetres(seed, x, 0, 0))) < 1e-9,
+                        "The protected approach must recover its original fine relief beyond the Deep Gate foundation blend.");
+                }
                 Assert(gate.WaterDepth == 0, "The protected approach stays dry.");
             }
             var ringBiomes = new UnderworldTerrainBiome[360];
