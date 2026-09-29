@@ -80,13 +80,21 @@ internal static class UnderworldStationPlacementRuntime
 [HarmonyPatch(typeof(Player), "UpdatePlacementGhost", typeof(bool))]
 internal static class UnderworldStationPlacementGhostPatch
 {
+    private static readonly System.Reflection.MethodInfo SetPlacementGhostValid =
+        AccessTools.Method(typeof(Player),"SetPlacementGhostValid",new[]{typeof(bool)})
+        ?? throw new MissingMethodException(typeof(Player).FullName,"SetPlacementGhostValid(bool)");
+
     [HarmonyPostfix]
-    private static void Postfix(Player __instance)
+    private static void Postfix(
+        Player __instance,
+        GameObject ___m_placementGhost,
+        ref Player.PlacementStatus ___m_placementStatus)
     {
-        if(__instance!=Player.m_localPlayer||!__instance.m_placementGhost||__instance.m_placementStatus!=Player.PlacementStatus.Valid)return;
-        if(!UnderworldStationPlacementRuntime.TryEvaluateGhost(__instance.m_placementGhost,out var decision)||decision.Allowed)return;
-        __instance.m_placementStatus=Player.PlacementStatus.Invalid;
-        __instance.SetPlacementGhostValid(false);
+        if(__instance!=Player.m_localPlayer||!___m_placementGhost||
+           ___m_placementStatus!=Player.PlacementStatus.Valid)return;
+        if(!UnderworldStationPlacementRuntime.TryEvaluateGhost(___m_placementGhost,out var decision)||decision.Allowed)return;
+        ___m_placementStatus=Player.PlacementStatus.Invalid;
+        SetPlacementGhostValid.Invoke(__instance,new object[]{false});
     }
 }
 
@@ -94,9 +102,9 @@ internal static class UnderworldStationPlacementGhostPatch
 internal static class UnderworldStationTryPlacePatch
 {
     [HarmonyPrefix]
-    private static bool Prefix(Player __instance,ref bool __result)
+    private static bool Prefix(Player __instance,GameObject ___m_placementGhost,ref bool __result)
     {
-        if(!UnderworldStationPlacementRuntime.TryEvaluateGhost(__instance.m_placementGhost,out var decision)||decision.Allowed)return true;
+        if(!UnderworldStationPlacementRuntime.TryEvaluateGhost(___m_placementGhost,out var decision)||decision.Allowed)return true;
         __result=false;
         if(__instance==Player.m_localPlayer&&!string.IsNullOrWhiteSpace(decision.Diagnostic))
             __instance.Message(MessageHud.MessageType.Center,decision.Diagnostic);
@@ -104,11 +112,10 @@ internal static class UnderworldStationTryPlacePatch
     }
 
     [HarmonyPostfix]
-    private static void Postfix(Player __instance,bool __result)
+    private static void Postfix(Player __instance,Piece piece,bool __result)
     {
-        if(!__result||__instance is null||__instance.m_buildPieces is null)return;
-        var selected=__instance.m_buildPieces.GetSelectedPiece();
-        if(selected is null||!string.Equals(Utils.GetPrefabName(selected.gameObject),UnderworldToolPlaceables.AnchorPlacedPrefab,StringComparison.Ordinal))return;
+        if(!__result||__instance is null||piece is null)return;
+        if(!string.Equals(Utils.GetPrefabName(piece.gameObject),UnderworldToolPlaceables.AnchorPlacedPrefab,StringComparison.Ordinal))return;
         var tool=__instance.GetCurrentWeapon();
         if(tool?.m_dropPrefab is null||!string.Equals(tool.m_dropPrefab.name,UnderworldToolRegistrar.AnchorSpikePrefab,StringComparison.Ordinal))return;
         var inventory=__instance.GetInventory();
