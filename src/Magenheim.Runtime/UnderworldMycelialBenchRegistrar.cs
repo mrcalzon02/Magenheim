@@ -102,6 +102,9 @@ internal sealed class UnderworldMycelialBenchRegistrar : IDisposable
             ApplyBiomeFallbackAccent(prefab, definition.Biome);
 
         ConfigureCollider(prefab, definition.Dimensions);
+        var siting = prefab.GetComponent<UnderworldStationPlacementConstraint>()
+            ?? prefab.AddComponent<UnderworldStationPlacementConstraint>();
+        siting.Bind(definition.Prefab);
 
         if (!PieceManager.Instance.AddPiece(custom))
             throw new InvalidOperationException("Jotunn refused Underworld station " + definition.Name + ".");

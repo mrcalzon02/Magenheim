@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using Magenheim.Core.Underworld;
 using UnityEngine;
 
@@ -14,8 +16,35 @@ internal sealed class UnderworldGeothermalHazardVolume : MonoBehaviour
     internal const string ThermalStateKey = "magenheim.underworld.thermal.v1";
     internal const float MaximumHeat = 100f;
 
+    private static readonly HashSet<UnderworldGeothermalHazardVolume> Active = new();
+
     [SerializeField] private string _hazardId = UnderworldGeothermalHazard.VentField;
     [SerializeField] private float _intensity = 1f;
+    [SerializeField] private float _placementRadius = 4.5f;
+
+    internal void Bind(string hazardId, float intensity, float placementRadius)
+    {
+        if (string.IsNullOrWhiteSpace(hazardId)) throw new ArgumentException("Geothermal hazard id is required.", nameof(hazardId));
+        if (float.IsNaN(intensity) || float.IsInfinity(intensity) || intensity <= 0f) throw new ArgumentOutOfRangeException(nameof(intensity));
+        if (float.IsNaN(placementRadius) || float.IsInfinity(placementRadius) || placementRadius <= 0f) throw new ArgumentOutOfRangeException(nameof(placementRadius));
+        _hazardId = hazardId; _intensity = intensity; _placementRadius = placementRadius;
+    }
+
+    private void OnEnable() => Active.Add(this);
+    private void OnDisable() => Active.Remove(this);
+    private void OnDestroy() => Active.Remove(this);
+
+    internal static bool IsNearLiveVent(Vector3 position, float extraRadius)
+    {
+        if (float.IsNaN(extraRadius) || float.IsInfinity(extraRadius) || extraRadius < 0f) return false;
+        foreach (var volume in Active)
+        {
+            if (!volume || !volume.isActiveAndEnabled) continue;
+            var radius = volume._placementRadius + extraRadius;
+            if ((volume.transform.position - position).sqrMagnitude <= radius * radius) return true;
+        }
+        return false;
+    }
 
     private void OnTriggerStay(Collider other)
     {
