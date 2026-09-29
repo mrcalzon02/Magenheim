@@ -25,13 +25,16 @@ PASSAGES = ROOT / "src/Magenheim.Runtime/RootwarrenPassageAssembler.cs"
 ENCOUNTERS = ROOT / "src/Magenheim.Runtime/RootwarrenEncounterRuntime.cs"
 LOCATION = ROOT / "src/Magenheim.Runtime/RootwarrenLocationRegistrar.cs"
 PLUGIN = ROOT / "src/Magenheim.Runtime/MagenheimPlugin.cs"
+ENTRANCE = ROOT / "src/Magenheim.Runtime/RootwarrenEntranceVisuals.cs"
+TRAVEL = ROOT / "src/Magenheim.Runtime/RootwarrenTravel.cs"
+PROMOTE = ROOT / "tools/promote-rootwarren-runtime.py"
 
 PREFIX = "underworld-dungeon-fungal-rootwarren-"
 PASSAGE = "passage"
 
 required_files = (
     CORE, DUNGEONS, AUTHOR, REBUILD, VERIFY, VISUALS, ROOMS,
-    INTERIOR, PASSAGES, ENCOUNTERS, LOCATION, PLUGIN,
+    INTERIOR, PASSAGES, ENCOUNTERS, LOCATION, PLUGIN, ENTRANCE, TRAVEL, PROMOTE,
 )
 missing_files = [str(path.relative_to(ROOT)) for path in required_files if not path.is_file()]
 if missing_files:
@@ -49,6 +52,8 @@ passages = PASSAGES.read_text(encoding="utf-8")
 encounters = ENCOUNTERS.read_text(encoding="utf-8")
 location = LOCATION.read_text(encoding="utf-8")
 plugin = PLUGIN.read_text(encoding="utf-8")
+entrance = ENTRANCE.read_text(encoding="utf-8")
+travel = TRAVEL.read_text(encoding="utf-8")
 
 room_suffixes = re.findall(r'Room\("([a-z0-9-]+)"\s*,', core)
 if len(room_suffixes) != 16 or len(set(room_suffixes)) != 16:
@@ -112,6 +117,26 @@ runtime_contracts = {
         "UnderworldResourceCatalog.All" in encounters and
         "resource.PickupPrefab" in encounters
     ),
+    "authored entrance lifecycle": (
+        "RootwarrenEntranceVisuals.Build" in location and
+        "RootwarrenTravel.AttachEntrancePortal" in interior and
+        "RootwarrenTravel.Bind" in interior and
+        "EntranceRoomId" in interior
+    ),
+    "same-instance return portal": (
+        "RootwarrenTravelPortal" in travel and
+        "TeleportTo" in travel and
+        "Fungal Forest" in travel
+    ),
+    "server-authority population retry": (
+        "TryPopulate()" in interior and
+        "authority.HasAuthority" in interior and
+        "_populationApplied" in interior
+    ),
+    "fungal interior environment": (
+        "UnderworldWeatherRuntime.EnvironmentName" in interior and
+        "UnderworldTerrainBiome.FungalForest" in interior
+    ),
     "plugin room lifecycle": (
         "_rootwarrenRoomRegistrar=new RootwarrenRoomRegistrar" in plugin and
         "_rootwarrenRoomRegistrar?.Dispose()" in plugin
@@ -131,14 +156,11 @@ planned = re.search(
     dungeons,
     re.MULTILINE,
 ) is not None
-ready = (
-    re.search(
-        r'FungalForest\s*\{\s*get;\s*\}\s*=\s*new\(',
-        dungeons,
-        re.MULTILINE,
-    ) is not None and
-    "UnderworldDungeonStatus.RuntimeReady" in dungeons
-)
+ready = re.search(
+    r'FungalForest\s*\{\s*get;\s*\}\s*=\s*Ready\(',
+    dungeons,
+    re.MULTILINE,
+) is not None
 if planned == ready:
     raise SystemExit(
         "FAIL Rootwarren contract: cannot determine exactly one Planned/RuntimeReady Fungal state")
