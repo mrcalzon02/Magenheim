@@ -38,6 +38,7 @@ internal sealed class UnderworldStructureLocationRegistrar : IDisposable
 
             // Blackwater Deep.
             new LocationSpec(new BlackwaterSparsePocketFamily(), LocationClass.Repeatable),
+            new LocationSpec(new BlackwaterWorldrootSpanLandmarkFamily(), LocationClass.Landmark),
             new LocationSpec(new BlackwaterDeepSigilFamily(), LocationClass.DeepSigil),
 
             // Sulfurous Wastes.
