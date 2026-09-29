@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Jotunn.Managers;
+using HarmonyLib;
 using Magenheim.Core.Underworld;
 using UnityEngine;
 
@@ -10,6 +11,7 @@ namespace Magenheim.Runtime;
 internal sealed class RootwarrenEncounterAuthority : MonoBehaviour
 {
     private const string ClearedPrefix = "magenheim.rootwarren.cleared.";
+    private const string HarvestedPrefix = "magenheim.rootwarren.harvested.";
     private ZNetView _view = null!;
 
     private void Awake() => _view = GetComponent<ZNetView>();
@@ -37,6 +39,23 @@ internal sealed class RootwarrenEncounterAuthority : MonoBehaviour
             throw new ArgumentException("Rootwarren encounter identity is required.", nameof(identity));
         _view.GetZDO().Set(ClearedPrefix + identity, true);
     }
+
+    internal bool IsHarvested(string identity)
+    {
+        if (string.IsNullOrWhiteSpace(identity))
+            throw new ArgumentException("Rootwarren resource identity is required.", nameof(identity));
+        return _view is not null &&
+               _view.IsValid() &&
+               _view.GetZDO().GetBool(HarvestedPrefix + identity, false);
+    }
+
+    internal void MarkHarvested(string identity)
+    {
+        if (!HasAuthority) return;
+        if (string.IsNullOrWhiteSpace(identity))
+            throw new ArgumentException("Rootwarren resource identity is required.", nameof(identity));
+        _view.GetZDO().Set(HarvestedPrefix + identity, true);
+    }
 }
 
 internal sealed class RootwarrenEncounterDeathTracker : MonoBehaviour
@@ -63,6 +82,37 @@ internal sealed class RootwarrenEncounterDeathTracker : MonoBehaviour
         if (_recorded || _character is null || !_character.IsDead()) return;
         _authority.MarkCleared(_identity);
         if (_authority.HasAuthority) _recorded = true;
+    }
+}
+
+internal sealed class RootwarrenResourceTracker : MonoBehaviour
+{
+    private RootwarrenEncounterAuthority _authority = null!;
+    private string _identity = string.Empty;
+
+    internal void Bind(RootwarrenEncounterAuthority authority, string identity)
+    {
+        _authority = authority ?? throw new ArgumentNullException(nameof(authority));
+        _identity = string.IsNullOrWhiteSpace(identity)
+            ? throw new ArgumentException("Rootwarren resource identity is required.", nameof(identity))
+            : identity;
+    }
+
+    internal void RecordHarvest()
+    {
+        if (_authority is null || string.IsNullOrWhiteSpace(_identity)) return;
+        _authority.MarkHarvested(_identity);
+    }
+}
+
+[HarmonyPatch(typeof(Pickable), "RPC_Pick")]
+internal static class RootwarrenPickablePersistencePatch
+{
+    [HarmonyPrefix]
+    private static void Prefix(Pickable __instance)
+    {
+        if (__instance is null) return;
+        __instance.GetComponent<RootwarrenResourceTracker>()?.RecordHarvest();
     }
 }
 
@@ -96,7 +146,7 @@ internal static class RootwarrenEncounterSpawner
                 unitIndex);
 
         if (definition.Role == UnderworldDungeonRoomRole.Resource)
-            PopulateResources(room, placement, definition, locationSeed);
+            PopulateResources(room, placement, definition, authority, locationSeed);
     }
 
     private static IReadOnlyList<string> EncounterRoster(
@@ -196,6 +246,7 @@ internal static class RootwarrenEncounterSpawner
         GameObject room,
         UnderworldDungeonRoomPlacement placement,
         UnderworldDungeonRoomDefinition definition,
+        RootwarrenEncounterAuthority authority,
         int locationSeed)
     {
         var resources = UnderworldResourceCatalog.All
@@ -211,7 +262,9 @@ internal static class RootwarrenEncounterSpawner
             var resource = resources[index % resources.Length];
             var identity =
                 $"{unchecked((uint)locationSeed):X8}.{placement.InstanceId}.resource.{index + 1:00}";
-            if (FindResource(identity, room.scene.handle) is not null) continue;
+            if (authority.IsHarvested(identity) ||
+                FindResource(identity, room.scene.handle) is not null)
+                continue;
 
             var source = PrefabManager.Instance.GetPrefab(resource.PickupPrefab)
                 ?? throw new InvalidOperationException(
@@ -238,6 +291,9 @@ internal static class RootwarrenEncounterSpawner
             }
 
             view.GetZDO().Set(ResourceIdentityKey, identity);
+            var tracker = instance.GetComponent<RootwarrenResourceTracker>()
+                ?? instance.AddComponent<RootwarrenResourceTracker>();
+            tracker.Bind(authority, identity);
             instance.SetActive(true);
         }
     }
