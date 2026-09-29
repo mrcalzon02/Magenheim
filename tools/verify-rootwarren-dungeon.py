@@ -28,7 +28,7 @@ for model_id in requested:
  bpy.ops.wm.open_mainfile(filepath=str(path))
  scene=bpy.context.scene
  if scene.get("model_id")!=model_id: raise RuntimeError(f"{model_id}: scene model_id drifted")
- if scene.get("underworld_authoring")!="rootwarren-dungeon-r1":
+ if scene.get("underworld_authoring")!="rootwarren-dungeon-r2":
   raise RuntimeError(f"{model_id}: wrong authoring revision")
  meshes=[o for o in scene.objects if o.type=="MESH"]
  if len(meshes)<4: raise RuntimeError(f"{model_id}: insufficient modeled parts ({len(meshes)})")
