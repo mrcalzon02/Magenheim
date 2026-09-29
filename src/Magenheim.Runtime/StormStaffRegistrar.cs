@@ -47,7 +47,7 @@ internal sealed class StormStaffRegistrar : IDisposable
 
             var arcDischarge = StaffEffectPayloads.CreateField(
                 "Magenheim_Storm_ArcDischarge",
-                new HitData.DamageTypes { m_lightning = 9f },
+                new HitData.DamageTypes { m_lightning = 13.5f },
                 radius: 4.5f,
                 ttl: .12f,
                 hitInterval: .12f,
@@ -56,7 +56,7 @@ internal sealed class StormStaffRegistrar : IDisposable
                 emission: 1.75f);
             var thunderheadPulse = StaffEffectPayloads.CreateField(
                 "Magenheim_Storm_ThunderheadPulse",
-                new HitData.DamageTypes { m_lightning = 4f },
+                new HitData.DamageTypes { m_lightning = 6f },
                 radius: 3.2f,
                 ttl: .35f,
                 hitInterval: .17f,
@@ -183,7 +183,7 @@ internal sealed class StormStaffRegistrar : IDisposable
             "staff-storm-advanced",
             "Advanced Staff of Storm",
             "Arc Chain: fires two successive electrical leaders. Every impact erupts into a 4.5-meter secondary discharge, so the struck target becomes the origin of real lightning pressure against nearby clustered enemies.",
-            3, 32f, 16f, .85f, 1.05f, 1.00f, 44f, 2.5f, 1, 2, .13f, PayloadKind.Arc,
+            3, 32f, 24f, .85f, 1.05f, 1.00f, 44f, 2.5f, 1, 2, .13f, PayloadKind.Arc,
             new StaffRequirement("YggdrasilWood", 10), new StaffRequirement("Silver", 3), new StaffRequirement("BlackMetal", 2), new StaffRequirement("Magenheim_Crystal_Storm_Advanced", 1)),
 
         new StormStaffDefinition(
@@ -191,7 +191,7 @@ internal sealed class StormStaffRegistrar : IDisposable
             "staff-storm-master",
             "Master Staff of Storm",
             "Thunderhead: throws three branches through three rapid waves. Each impact seeds a short two-pulse lightning burst around itself, creating overlapping electrical pressure and knockback across a broad front.",
-            4, 50f, 10f, .60f, 1.25f, 1.10f, 40f, 13f, 3, 3, .13f, PayloadKind.Thunderhead,
+            4, 50f, 15f, .60f, 1.25f, 1.10f, 40f, 13f, 3, 3, .13f, PayloadKind.Thunderhead,
             new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("BlackMetal", 5), new StaffRequirement("Magenheim_Crystal_Storm_Master", 1)),
     };
 
