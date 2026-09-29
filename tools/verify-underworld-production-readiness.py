@@ -33,7 +33,10 @@ for path in (
  "tools/author-underworld-stations.py","tools/author-underworld-tools.py",
  "tools/author-underworld-armour.py","tools/verify-underworld-armour.py",
  "tools/author-underworld-weapons.py","tools/author-crystal-weapons.py",
- "tools/rebuild-staff-production-assets.ps1","tools/rebuild-underworld-production.ps1","tools/render-underworld-production-review.py",
+ "tools/rebuild-staff-production-assets.ps1","tools/rebuild-underworld-production.ps1",
+ "tools/author-rootwarren-dungeon.py","tools/verify-rootwarren-dungeon.py",
+ "tools/verify-rootwarren-production-contract.py","tools/record-rootwarren-generated-assets.py",
+ "tools/rebuild-rootwarren-dungeon.ps1","tools/render-underworld-production-review.py",
  "tools/render-underworld-armour-articulation-review.py",
  "tools/build-underworld-production-review-sheets.py","tools/verify-underworld-production-review.py",
  "tools/verify-underworld-production-assets.py",
@@ -49,6 +52,8 @@ python_sources=(
  "tools/author-underworld-stations.py","tools/author-underworld-tools.py",
  "tools/author-underworld-armour.py","tools/verify-underworld-armour.py",
  "tools/author-underworld-weapons.py","tools/author-crystal-weapons.py",
+ "tools/author-rootwarren-dungeon.py","tools/verify-rootwarren-dungeon.py",
+ "tools/verify-rootwarren-production-contract.py","tools/record-rootwarren-generated-assets.py",
  "tools/render-underworld-production-review.py","tools/render-underworld-armour-articulation-review.py","tools/build-underworld-production-review-sheets.py",
  "tools/verify-underworld-production-review.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
  "tools/export-model-assets.py",
@@ -164,6 +169,21 @@ require("DETAIL_REVISION = 2" in stations and "endgame-station-r2" in stations a
 arm=(ROOT/"tools"/"author-underworld-armour.py").read_text()
 require("valheim-player-attach-skin" in arm and "BONE_ORDER=[" in arm,
         "Underworld armour source rig contract is absent")
+rootwarren_author=(ROOT/"tools"/"author-rootwarren-dungeon.py").read_text()
+rootwarren_rebuild=(ROOT/"tools"/"rebuild-rootwarren-dungeon.ps1").read_text()
+production_rebuild=(ROOT/"tools"/"rebuild-underworld-production.ps1").read_text()
+require("SPECS = {" in rootwarren_author and rootwarren_author.count('underworld-dungeon-fungal-rootwarren-') >= 1,
+        "Rootwarren authoring authority is absent")
+require("bake_flora_atlas" in rootwarren_author and "unwrap(" in rootwarren_author,
+        "Rootwarren author lost authored UV/atlas production")
+require("bpy.ops.uv.smart_project" not in rootwarren_author,
+        "Rootwarren author must use the shared deterministic unwrap authority rather than inline smart_project")
+require("verify-rootwarren-dungeon" in rootwarren_rebuild and "export-model-assets" in rootwarren_rebuild,
+        "Rootwarren rebuild no longer verifies and exports its authored sources")
+require("rebuild-rootwarren-dungeon.ps1" in production_rebuild and
+        "record-rootwarren-generated-assets.py" in production_rebuild,
+        "One-run Underworld production forge no longer includes Rootwarren or its provenance record")
+
 wrapper=(ROOT/"tools"/"blender.ps1").read_text()
 require("MAGENHEIM_BLENDER" in wrapper,"Blender wrapper cannot accept the Actions executable through environment")
 workflow_path=ROOT/".github/workflows/magenheim-production-forge.yml"
