@@ -102,7 +102,7 @@ def build_model(model_id):
 
     destination = SOURCE / f"{model_id}.blend"
     bpy.ops.wm.save_as_mainfile(filepath=str(destination), compress=True)
-    print(f"MATERIALIZED {model_id}: {len(payload['parts'])} parts -> {destination}")
+    print(f"AUTHORED {model_id}: {len(payload['parts'])} parts -> {destination}")
 
 
 def main():
