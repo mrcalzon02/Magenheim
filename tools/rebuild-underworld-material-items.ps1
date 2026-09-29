@@ -12,10 +12,4 @@ if ($LASTEXITCODE -ne 0) { throw 'Underworld material-item export failed.' }
 python "$PSScriptRoot/verify-model-assets.py"
 if ($LASTEXITCODE -ne 0) { throw 'Underworld material-item model verification failed.' }
 
-& "$PSScriptRoot/blender.ps1" render-underworld-resource-icons @ids
-if ($LASTEXITCODE -ne 0) { throw 'Underworld material-item icon rendering failed.' }
-
-python "$PSScriptRoot/verify-icon-assets.py"
-if ($LASTEXITCODE -ne 0) { throw 'Underworld material-item icon verification failed.' }
-
-Write-Host 'REBUILT 14 missing raw + 18 refined Underworld material item models and icons.'
+Write-Host 'REBUILT 14 missing raw + 18 refined Underworld material item models; icon ownership remains underworld-resource-icons.'
