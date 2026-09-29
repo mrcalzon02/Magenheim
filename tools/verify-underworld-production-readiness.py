@@ -18,6 +18,9 @@ def require(ok,msg):
     if not ok: fail.append(msg)
 
 require(len(scope["regenerate"])==len(set(scope["regenerate"])),"production generator order contains duplicates")
+require("staff-model-exports" in scope["regenerate"] and "staff-icons" in scope["regenerate"],
+        "all 32 elemental staff exports and icons must participate in the production run")
+require("staff-icons" not in scope["verify_only"],"staff icons cannot remain verification-only in the weapon production run")
 for gid in scope["regenerate"]+scope["verify_only"]:
     require(gid in entries,"manifest missing production authority: "+gid)
 for path in (
@@ -26,7 +29,7 @@ for path in (
  "tools/author-underworld-stations.py","tools/author-underworld-tools.py",
  "tools/author-underworld-armour.py","tools/verify-underworld-armour.py",
  "tools/author-underworld-weapons.py","tools/author-crystal-weapons.py",
- "tools/rebuild-underworld-production.ps1","tools/render-underworld-production-review.py",
+ "tools/rebuild-staff-production-assets.ps1","tools/rebuild-underworld-production.ps1","tools/render-underworld-production-review.py",
  "tools/build-underworld-production-review-sheets.py","tools/verify-underworld-production-review.py",
  ".github/workflows/magenheim-production-forge.yml",
 ):

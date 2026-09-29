@@ -4,6 +4,8 @@
     "underworld-material-library",
     "crystal-weapon-models",
     "weapon-icons",
+    "staff-model-exports",
+    "staff-icons",
     "underworld-weapon-models",
     "rootforged-models",
     "rootforged-icons",
@@ -12,7 +14,6 @@
     "underworld-armour-models"
   ],
   "verify_only": [
-    "staff-icons",
     "crystal-tier-icons"
   ],
   "review_prefixes": [
