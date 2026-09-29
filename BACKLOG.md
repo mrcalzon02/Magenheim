@@ -534,40 +534,22 @@ Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the cur
   Verify fresh-world Fracture Zones placement, no Surface leakage of the Underworld-only location,
   full interior build, encounters, host/client agreement, save/reload, return to the owning
   Fracture Zones entrance, and no collision with ordinary Fracture structures or boss locations.
-- [x] **Implement Fungal Rootwarren dungeon runtime and production pipeline — SOURCE COMPLETE, PREFORGE.**
-  The 16-room Core manifest, deterministic 2-3-use topology, collision-safe spatial routing,
-  authored passage graph, reduced exterior Fracture Mouth, buried interior anchor, same-instance
-  return travel, persistent server-owned encounters/resources, Fungal environment binding, native
-  Fungal Forest location registrar, startup validation path, Blender r2 cave-shell author, source
-  verifier, visual review sheets, generated-asset provenance recorder and fail-closed promotion
-  script are all in source. Rootwarren remains Planned until the complete forged payload family
-  exists; no placeholder/dead entrance is admitted.
-- [ ] **Forge/review/promote the 17 Rootwarren model payloads.**
-  Run the prepared manual production forge to generate 16 enclosed room families plus the authored
-  passage source/GLB/runtime payload, inspect the dedicated Rootwarren contact sheets, record
-  generated freshness/provenance, and only then allow the narrow promotion gate to change Fungal
-  Rootwarren from Planned to RuntimeReady. Partial 1-16/17 families or RuntimeReady without the full
-  source/GLB/runtime set are explicit release failures.
-- [ ] **Live-accept Rootwarren worldgen/interior/persistence.**
-  Verify Fungal-only placement and grounding, no Surface leakage, 32-48 major room placements,
-  branch/loop readability, passage seams/slopes, encounter and one-shot resource persistence,
-  host/client agreement, save/reload, and exact Fungal Forest return from the entrance room.
-- [ ] **Author Blackwater Drowned Vaults dungeon kit.**
-  Build the flooded/dry route kit with water as structural gameplay and Deep Current progression
-  relevance.
-- [ ] **Forge and live-accept Sulfur Cinderworks.**
-  Source/runtime architecture is complete: 16 rooms plus adaptive passage, explicit Safe/Warm/Hot/
-  VentCycle/SlagChannel routing, canonical geothermal heat accumulation, Furnace Blood advantage
-  without immunity, deterministic timed vents, persistent Sulfur encounters/resources and
-  asset-gated same-instance location/return travel. Production forge admission and live acceptance remain.
-- [ ] **Forge and live-accept Frozen Rime Sepulcher.**
-  Source/runtime architecture is complete: 16 authored room families plus adaptive passage,
-  Shelter/ClearGallery/FrostField/WhiteoutChoke/IceShear route authority, canonical Frozen weather
-  exposure, deterministic physical topology, persistent room-role encounters/resources, and
-  asset-gated same-instance location/return travel. Production forge admission and live acceptance remain.
-- [ ] **Forge and live-accept Great Decay Carrion Catacombs.**
-  Source/runtime architecture is complete: 16 room families plus adaptive passage,
-  Sanctuary/PreservedRuin/TaintedRuin/RootIngress/BlackBloom route authority, canonical Great Decay
-  contamination, Defiant Flesh/armour resistance and Censer suppression relevance, persistent
-  room-role encounters/resources, and asset-gated same-instance location/return travel.
-  Production forge admission and live acceptance remain.
+- [x] **Redefine ordinary Underworld dungeons as expanded vanilla reuse.**
+  Deep Fracture remains the bespoke custom-architecture dungeon. Fungal, Blackwater, Sulfurous,
+  Frozen and Great Decay now map respectively to Burial Chambers, Sunken Crypts, Infested Mines,
+  Frost Caves and Winding Tunnels. Core authority requires at least 1.5x donor-room linear scale,
+  at least 3.5x live donor room-count bounds, Magenheim creature/resource population, and forbids
+  bespoke Magenheim room injection into these five ordinary donor tilesets.
+- [x] **Implement fail-closed vanilla dungeon clone runtime — SOURCE IMPLEMENTED.**
+  `UnderworldVanillaDungeonRegistrar` clones donor room families into private themes without
+  mutating vanilla DungeonDB content, scales geometry plus `Room.m_size`, expands live donor
+  min/max room counts and generator zone span, remaps required rooms, scales donor doors, replaces
+  CreatureSpawner/SpawnArea inhabitants, replaces chest/pickable/mineable/destructible loot with
+  biome resources, and clones donor entrances into the owning native Underworld biome. The five
+  catalog entries remain Planned pending compile/runtime acceptance.
+- [ ] **Compile and live-accept expanded vanilla dungeon reuse before RuntimeReady promotion.**
+  Verify all five donor families on fresh Underworld seeds: recognizable vanilla construction,
+  >=1.5x room dimensions, >=3.5x live donor room-count bounds, no overlap/truncation, only owning
+  Underworld creatures/resources, no vanilla progression loot, no Surface leakage, stable
+  save/reload and host/client generation, and exact dungeon return behavior. Promote each ordinary
+  dungeon independently only after its donor clone passes installed-Valheim acceptance.
