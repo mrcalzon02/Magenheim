@@ -1,0 +1,157 @@
+name: Magenheim Production Forge
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: magenheim-production-forge
+  cancel-in-progress: false
+
+jobs:
+  forge:
+    runs-on: windows-latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout authoritative main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Production Python dependencies
+        shell: pwsh
+        run: python -m pip install --disable-pip-version-check Pillow==12.3.0
+
+      - name: Cheap production preflight
+        shell: pwsh
+        run: |
+          python tools/verify-underworld-production-readiness.py
+          if ($LASTEXITCODE -ne 0) { throw 'Production preflight failed before Blender provisioning.' }
+          dotnet run --project tests/Magenheim.Core.Tests -c Release
+          if ($LASTEXITCODE -ne 0) { throw 'Core authority tests failed before Blender provisioning.' }
+
+      - name: Provision Valheim compile references
+        shell: pwsh
+        run: |
+          $steam = Join-Path $env:RUNNER_TEMP 'steamcmd'
+          $game = Join-Path $env:RUNNER_TEMP 'valheim-server'
+          $bep = Join-Path $env:RUNNER_TEMP 'bepinex'
+          New-Item -ItemType Directory -Force -Path $steam,$game,$bep | Out-Null
+          Invoke-WebRequest 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip' -OutFile "$steam/steamcmd.zip"
+          Expand-Archive "$steam/steamcmd.zip" -DestinationPath $steam -Force
+          & "$steam/steamcmd.exe" +force_install_dir $game +login anonymous +app_update 896660 validate +quit
+          if ($LASTEXITCODE -ne 0) { throw 'Valheim Dedicated Server reference install failed.' }
+
+          Invoke-WebRequest 'https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.2350/' -OutFile "$bep/bepinex.zip"
+          Expand-Archive "$bep/bepinex.zip" -DestinationPath $bep -Force
+
+          $assembly = Get-ChildItem -LiteralPath $game -Filter assembly_valheim.dll -File -Recurse | Select-Object -First 1
+          if (!$assembly) { throw 'Dedicated Server did not supply assembly_valheim.dll.' }
+          $bepDll = Get-ChildItem -LiteralPath $bep -Filter BepInEx.dll -File -Recurse | Select-Object -First 1
+          if (!$bepDll) { throw 'Pinned BepInEx pack did not supply BepInEx.dll.' }
+          $managed = $assembly.DirectoryName
+          $bepCore = $bepDll.DirectoryName
+          if ((Split-Path $bepCore -Leaf) -ne 'core') { throw "Unexpected BepInEx.dll layout: $bepCore" }
+          $bepPath = Split-Path $bepCore -Parent
+          "MAGENHEIM_VALHEIM_MANAGED=$managed" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "MAGENHEIM_BEPINEX=$bepPath" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Compile runtime against current Valheim
+        shell: pwsh
+        run: |
+          dotnet build src/Magenheim.Runtime -c Release "-p:ValheimManagedPath=$env:MAGENHEIM_VALHEIM_MANAGED" "-p:BepInExPath=$env:MAGENHEIM_BEPINEX"
+          if ($LASTEXITCODE -ne 0) { throw 'Runtime compile failed before Blender execution.' }
+
+      - name: Provision pinned Blender 5.0.0
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP 'blender'
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          $file = 'blender-5.0.0-windows-x64.zip'
+          $base = 'https://download.blender.org/release/Blender5.0'
+          Invoke-WebRequest "$base/$file" -OutFile "$dir/$file"
+          Invoke-WebRequest "$base/blender-5.0.0.sha256" -OutFile "$dir/blender.sha256"
+          $line = Get-Content "$dir/blender.sha256" | Where-Object { $_ -match [regex]::Escape($file) } | Select-Object -First 1
+          if (!$line) { throw 'Official Blender checksum file does not contain the pinned archive.' }
+          $expected = ($line -split '\s+')[0].ToLowerInvariant()
+          $actual = (Get-FileHash "$dir/$file" -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne $expected) { throw "Blender checksum mismatch: $actual != $expected" }
+          Expand-Archive "$dir/$file" -DestinationPath $dir -Force
+          $exe = Join-Path $dir 'blender-5.0.0-windows-x64/blender.exe'
+          if (!(Test-Path $exe)) { throw 'Pinned Blender executable missing after extraction.' }
+          "MAGENHEIM_BLENDER=$exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: One-run production rebuild
+        shell: pwsh
+        run: |
+          ./tools/rebuild-underworld-production.ps1
+          if ($LASTEXITCODE -ne 0) { throw 'Magenheim production forge failed.' }
+
+      - name: Preserve generated fallback before push
+        shell: pwsh
+        run: |
+          $fallback = 'dist/generated-fallback'
+          New-Item -ItemType Directory -Force -Path $fallback | Out-Null
+          $changed = git status --porcelain | ForEach-Object { $_.Substring(3) }
+          if (!$changed) { throw 'Production forge completed without generated asset changes.' }
+          foreach ($path in $changed) {
+            if (!(Test-Path -LiteralPath $path -PathType Leaf)) { continue }
+            $target = Join-Path $fallback $path
+            New-Item -ItemType Directory -Force -Path (Split-Path $target -Parent) | Out-Null
+            Copy-Item -LiteralPath $path -Destination $target -Force
+          }
+          $changed | Set-Content -LiteralPath "$fallback/changed-files.txt"
+
+      - name: Commit generated result to review branch
+        id: push_generated
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          $branch = "production/blender-$env:GITHUB_RUN_ID"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -b $branch
+          git add -A assets
+          if (git diff --cached --quiet) { throw 'No generated asset changes were staged.' }
+          git commit -m "Generate gated Magenheim production assets ($env:GITHUB_RUN_ID)"
+          git push origin "HEAD:refs/heads/$branch"
+          "branch=$branch" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "### Generated branch: $branch" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          "Blender 5.0.0 output passed machine gates. Review the contact sheets before merging." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+
+      - name: Upload visual acceptance plates
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: magenheim-production-review-${{ github.run_id }}
+          path: |
+            dist/underworld-production-review/**
+            ${{ runner.temp }}/magenheim-blender/**
+          if-no-files-found: warn
+          retention-days: 3
+
+      - name: Preserve generated assets if branch push failed
+        if: steps.push_generated.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: magenheim-generated-fallback-${{ github.run_id }}
+          path: dist/generated-fallback/**
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Require durable generated branch
+        if: steps.push_generated.outcome == 'failure'
+        shell: pwsh
+        run: throw 'Generated assets passed production but could not be pushed; one-day fallback artifact was preserved.'
