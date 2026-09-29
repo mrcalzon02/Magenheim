@@ -10,4 +10,13 @@ if ($LASTEXITCODE -ne 0) { throw 'Nowhere King sword source verification failed.
 & "$PSScriptRoot/blender.ps1" export-model-assets @ids
 if ($LASTEXITCODE -ne 0) { throw 'Nowhere King sword export failed.' }
 
-Write-Host 'Nowhere King Last Argument pair authored, verified, and exported.'
+python "$PSScriptRoot/verify-model-assets.py"
+if ($LASTEXITCODE -ne 0) { throw 'Nowhere King sword model/catalog verification failed.' }
+
+& "$PSScriptRoot/blender.ps1" render-weapon-icons @ids
+if ($LASTEXITCODE -ne 0) { throw 'Nowhere King sword icon rendering failed.' }
+
+python "$PSScriptRoot/verify-icon-assets.py"
+if ($LASTEXITCODE -ne 0) { throw 'Nowhere King sword icon verification failed.' }
+
+Write-Host 'REBUILT Firmament and Null Gate only: source, GLB, runtime payload, catalog and icons.'
