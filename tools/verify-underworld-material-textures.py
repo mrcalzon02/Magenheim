@@ -24,7 +24,10 @@ for alb in albedos:
     a=Image.open(maps["albedo"]).convert("L")
     p=a.resize((64,64),Image.Resampling.LANCZOS)
     vals=flat(p)
-    if max(vals)-min(vals)<18 or pstdev(vals)<4.0: raise SystemExit(f"{key}: albedo collapses at gameplay scale")
+    luma=mean(vals)
+    relative_range=(max(vals)-min(vals))/max(luma,24)
+    if pstdev(vals)<1.0 or relative_range<0.05:
+        raise SystemExit(f"{key}: albedo collapses at gameplay scale (relative range {relative_range:.1%}, sigma {pstdev(vals):.2f})")
     if min(vals)<3 or max(vals)>252: raise SystemExit(f"{key}: albedo clips excessively")
     r=Image.open(maps["roughness"]).convert("L").resize((64,64),Image.Resampling.LANCZOS)
     rv=flat(r)

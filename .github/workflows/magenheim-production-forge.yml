@@ -18,6 +18,7 @@ jobs:
       - name: Checkout authoritative main
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 1
 
       - name: Python
@@ -75,7 +76,7 @@ jobs:
           & "$steam/steamcmd.exe" +force_install_dir $game +login anonymous +app_update 896660 validate +quit
           if ($LASTEXITCODE -ne 0) { throw 'Valheim Dedicated Server reference install failed.' }
 
-          Invoke-WebRequest 'https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.2350/' -OutFile "$bep/bepinex.zip"
+          Invoke-WebRequest 'https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.2351/' -OutFile "$bep/bepinex.zip"
           Expand-Archive "$bep/bepinex.zip" -DestinationPath $bep -Force
 
           $assembly = Get-ChildItem -LiteralPath $game -Filter assembly_valheim.dll -File -Recurse | Select-Object -First 1
@@ -140,7 +141,7 @@ jobs:
         continue-on-error: true
         shell: pwsh
         run: |
-          $branch = "production/blender-$env:GITHUB_RUN_ID"
+          $branch = "production/blender-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git checkout -b $branch

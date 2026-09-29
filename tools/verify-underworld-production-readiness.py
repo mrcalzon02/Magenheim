@@ -101,7 +101,9 @@ if workflow_path.is_file():
     workflow=workflow_path.read_text()
     require("workflow_dispatch:" in workflow and "pull_request:" not in workflow and "\npush:" not in workflow,
             "production forge must remain manual-only")
+    require("ref: main" in workflow,"production forge checkout must be pinned to authoritative main")
     require("blender-5.0.0" in workflow,"workflow does not pin Blender 5.0.0")
+    require("BepInExPack_Valheim/5.4.2351/" in workflow,"workflow does not pin the current BepInExPack compile reference")
 
 patterns={}
 for gid in scope["regenerate"]:

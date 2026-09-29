@@ -23,6 +23,51 @@ foreach(var file in Directory.GetFiles(Path.Combine(AppContext.BaseDirectory,"as
  if(first.GetComponent<MeshRenderer>()!.enabled)throw new Exception("Inherited geometry still visible: "+id);
  count++;
 }
+// Runtime PBR regression: a payload that declares authored normal, metallic/smoothness and
+// emission maps must survive donor cleanup and reach the final Unity material with the correct
+// color-space intent and shader keywords.
+{
+ var textureDirectory=Path.Combine(AppContext.BaseDirectory,"assets/models/textures");
+ var sourceTexture=Directory.GetFiles(textureDirectory,"*.png").First();
+ var textureName=Path.GetFileName(sourceTexture);
+ var pbrId="__magenheim-pbr-runtime-test";
+ var runtimeDirectory=Path.Combine(AppContext.BaseDirectory,"assets/models/runtime");
+ var pbrPath=Path.Combine(runtimeDirectory,pbrId+".model.json");
+ var payload=JObject.FromObject(new {
+  parts=new[]{new {
+   name="surface",path="surface",
+   vertices=new[]{new[]{0f,0f,0f},new[]{1f,0f,0f},new[]{0f,1f,0f}},
+   normals=new[]{new[]{0f,0f,1f},new[]{0f,0f,1f},new[]{0f,0f,1f}},
+   uv=new[]{new[]{0f,0f},new[]{1f,0f},new[]{0f,1f}},triangles=new[]{0,1,2},
+   material=new {
+    doubleSided=false,name="magenheim.test.pbr",color=new[]{1f,1f,1f,1f},
+    metallic=.4f,roughness=.6f,emission=new[]{.8f,.8f,.8f},
+    texture=textureName,normalTexture=textureName,normalScale=.42f,
+    metallicGlossTexture=textureName,emissionTexture=textureName
+   },collider=false,crystal=(object?)null
+  }},lights=Array.Empty<object>()
+ });
+ File.WriteAllText(pbrPath,payload.ToString(Newtonsoft.Json.Formatting.None));
+ try
+ {
+  var host=new GameObject("pbr-host");host.AddComponent<Character>();host.AddComponent<ZNetView>();
+  host.AddComponent<MeshRenderer>().sharedMaterial=new Material(Shader.Find("Standard"));
+  var body=new GameObject("body");body.transform.SetParent(host.transform);host.AddComponent<Turret>().m_turretBody=body;
+  var loaded=ModelAssets.Load(host,pbrId,hideOriginal:false);
+  var material=loaded.GetComponentsInChildren<MeshRenderer>(true).Single().sharedMaterial!;
+  foreach(var slot in new[]{"_BumpMap","_MetallicGlossMap","_EmissionMap"})
+   if(!material.Textures.TryGetValue(slot,out var value) || value is not Texture2D)throw new Exception("Runtime PBR texture missing: "+slot);
+  if(material.Textures["_BumpMap"] is not Texture2D normal || !normal.linear)throw new Exception("Normal map must load linear.");
+  if(material.Textures["_MetallicGlossMap"] is not Texture2D metalGloss || !metalGloss.linear)throw new Exception("Metallic/smoothness map must load linear.");
+  if(material.Textures["_EmissionMap"] is not Texture2D emissionMap || emissionMap.linear)throw new Exception("Emission map must load sRGB.");
+  foreach(var keyword in new[]{"_NORMALMAP","_METALLICGLOSSMAP","_EMISSION"})
+   if(!material.Keywords.Contains(keyword))throw new Exception("Runtime PBR keyword missing: "+keyword);
+  if(!material.Floats.TryGetValue("_BumpScale",out var bump) || MathF.Abs(bump-.42f)>.001f)throw new Exception("Runtime normal scale drift.");
+  Console.WriteLine("PASS: explicit runtime PBR maps survive donor cleanup with linear normal/metal maps and sRGB emission.");
+ }
+ finally { if(File.Exists(pbrPath))File.Delete(pbrPath); }
+}
+
 var untouched=new GameObject("missing");var original=untouched.AddComponent<MeshRenderer>();original.sharedMaterial=new Material();
 try{ModelAssets.Load(untouched,"missing-asset-for-test");throw new Exception("Missing asset silently accepted");}catch(FileNotFoundException){}
 if(!original.enabled || untouched.transform.childCount!=0)throw new Exception("Failed load mutated host");

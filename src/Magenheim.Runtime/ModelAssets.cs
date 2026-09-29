@@ -258,6 +258,23 @@ internal static class ModelAssets
         "_MossTex", "_StyleTex", "_SnowTex", "_RainTex",
     };
 
+    private static Texture2D LoadModelTexture(string textureName, bool linear)
+    {
+        if (string.IsNullOrEmpty(textureName) || Path.GetFileName(textureName) != textureName)
+            throw new InvalidDataException("Invalid texture path.");
+        var cacheKey = (linear ? "linear:" : "srgb:") + textureName;
+        if (Textures.TryGetValue(cacheKey, out var cached)) return cached;
+        var texture = new Texture2D(2, 2, TextureFormat.RGBA32, true, linear)
+        {
+            name = textureName,
+            wrapMode = TextureWrapMode.Repeat,
+        };
+        if (!LoadImage(texture, File.ReadAllBytes(Path.Combine(DirectoryPath, "textures", textureName))))
+            throw new InvalidDataException("Invalid model texture: " + textureName);
+        Textures.Add(cacheKey, texture);
+        return texture;
+    }
+
     private static Material LoadMaterial(string key, JToken data, Material source)
     {
         if (Materials.TryGetValue(key, out var cached)) return cached;
@@ -271,16 +288,7 @@ internal static class ModelAssets
         if (string.IsNullOrEmpty(textureName))
             textureName = AuthoredSurfaceTextureName((string?)data["name"] ?? key);
         if (!string.IsNullOrEmpty(textureName))
-        {
-            if (Path.GetFileName(textureName) != textureName) throw new InvalidDataException("Invalid texture path.");
-            if (!Textures.TryGetValue(textureName!, out var texture))
-            {
-                texture = new Texture2D(2, 2, TextureFormat.RGBA32, true) { name = textureName, wrapMode = TextureWrapMode.Repeat };
-                if (!LoadImage(texture, File.ReadAllBytes(Path.Combine(DirectoryPath,"textures",textureName)))) throw new InvalidDataException("Invalid model texture: " + textureName);
-                Textures.Add(textureName!, texture);
-            }
-            material.mainTexture = texture;
-        }
+            material.mainTexture = LoadModelTexture(textureName!, linear: false);
         if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", (float)data["metallic"]!);
         if (material.HasProperty("_Glossiness")) material.SetFloat("_Glossiness", 1f - (float)data["roughness"]!);
         // Strip every auxiliary map the donor material brought with it. `new Material(source)` copies
@@ -302,6 +310,32 @@ internal static class ModelAssets
         // Moss is blend-driven on Valheim piece shaders, so nulling its texture is not enough.
         foreach (var blend in new[] { "_MossBlend", "_MossAlpha", "_AddSnow", "_AddRain" })
             if (material.HasProperty(blend)) material.SetFloat(blend, 0f);
+
+        // Owned Underworld PBR maps are exported as explicit runtime references. Apply them only
+        // after donor maps/keywords are cleared so a donor can never win by load order.
+        var normalName = (string?)data["normalTexture"];
+        if (!string.IsNullOrEmpty(normalName) && material.HasProperty("_BumpMap"))
+        {
+            material.SetTexture("_BumpMap", LoadModelTexture(normalName!, linear: true));
+            if (material.HasProperty("_BumpScale"))
+                material.SetFloat("_BumpScale", (float?)data["normalScale"] ?? 1f);
+            material.EnableKeyword("_NORMALMAP");
+        }
+
+        var metallicGlossName = (string?)data["metallicGlossTexture"];
+        if (!string.IsNullOrEmpty(metallicGlossName) && material.HasProperty("_MetallicGlossMap"))
+        {
+            material.SetTexture("_MetallicGlossMap", LoadModelTexture(metallicGlossName!, linear: true));
+            material.EnableKeyword("_METALLICGLOSSMAP");
+        }
+
+        var emissionMapName = (string?)data["emissionTexture"];
+        if (!string.IsNullOrEmpty(emissionMapName) && material.HasProperty("_EmissionMap"))
+        {
+            material.SetTexture("_EmissionMap", LoadModelTexture(emissionMapName!, linear: false));
+            material.EnableKeyword("_EMISSION");
+        }
+
         var emission = Colour(data["emission"]!);
         if (material.HasProperty("_EmissionColor")) material.SetColor("_EmissionColor", emission);
         if (emission.r + emission.g + emission.b > 0) material.EnableKeyword("_EMISSION"); else material.DisableKeyword("_EMISSION");

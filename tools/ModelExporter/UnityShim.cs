@@ -270,20 +270,21 @@ public class Light:Component{public Color color;public float intensity;public fl
 
 public class Material:Object
 {
-    public Color color=Color.white;public Texture? mainTexture;public Vector2 mainTextureScale=Vector2.one;public Vector2 mainTextureOffset=Vector2.zero;public int renderQueue; public Dictionary<string,float> Floats=new(); public Dictionary<string,Color> Colors=new();
+    public Color color=Color.white;public Texture? mainTexture;public Vector2 mainTextureScale=Vector2.one;public Vector2 mainTextureOffset=Vector2.zero;public int renderQueue; public Dictionary<string,float> Floats=new(); public Dictionary<string,Color> Colors=new(); public Dictionary<string,Texture?> Textures=new(); public HashSet<string> Keywords=new();
     // ModelAssets reads material.shader to detect a donor that projects its surface from world
     // position instead of sampling mesh UVs, so the shim has to carry one.
     public Shader? shader;
-    public Material(){}public Material(Shader shader){this.shader=shader;}public Material(Material source){name=source.name;shader=source.shader;color=source.color;mainTexture=source.mainTexture;mainTextureScale=source.mainTextureScale;mainTextureOffset=source.mainTextureOffset;renderQueue=source.renderQueue;}
-    public bool HasProperty(string name)=>true;public void SetColor(string name,Color value){Colors[name]=value;if(name=="_Color")color=value;}public void SetFloat(string name,float value){Floats[name]=value;}public void SetInt(string name,int value){Floats[name]=value;}public void SetTexture(string name,Texture? value){}public void EnableKeyword(string keyword){}public void DisableKeyword(string keyword){}public void SetOverrideTag(string tag,string value){}
+    public Material(){}public Material(Shader shader){this.shader=shader;}public Material(Material source){name=source.name;shader=source.shader;color=source.color;mainTexture=source.mainTexture;mainTextureScale=source.mainTextureScale;mainTextureOffset=source.mainTextureOffset;renderQueue=source.renderQueue;Floats=new(source.Floats);Colors=new(source.Colors);Textures=new(source.Textures);Keywords=new(source.Keywords);}
+    public bool HasProperty(string name)=>true;public void SetColor(string name,Color value){Colors[name]=value;if(name=="_Color")color=value;}public void SetFloat(string name,float value){Floats[name]=value;}public void SetInt(string name,int value){Floats[name]=value;}public void SetTexture(string name,Texture? value){Textures[name]=value;}public void EnableKeyword(string keyword){Keywords.Add(keyword);}public void DisableKeyword(string keyword){Keywords.Remove(keyword);}public void SetOverrideTag(string tag,string value){}
 }
 
 public class Texture:Object{} public enum TextureFormat{RGBA32} public enum TextureWrapMode{Clamp,Repeat} public enum FilterMode{Point,Bilinear,Trilinear}
 public class Texture2D:Texture
 {
-    public int width,height,anisoLevel; public Color[] pixels=Array.Empty<Color>();
+    public int width,height,anisoLevel; public bool linear; public Color[] pixels=Array.Empty<Color>();
     public TextureWrapMode wrapMode;public FilterMode filterMode;public static Texture2D whiteTexture{get;}=new(1,1,TextureFormat.RGBA32,false);
-    public Texture2D(int width,int height,TextureFormat format,bool mipChain){this.width=width;this.height=height;}public void SetPixels(Color[] colors){pixels=colors;}public void Apply(bool updateMipmaps=true,bool makeNoLongerReadable=false){}
+    public Texture2D(int width,int height,TextureFormat format,bool mipChain):this(width,height,format,mipChain,false){}
+    public Texture2D(int width,int height,TextureFormat format,bool mipChain,bool linear){this.width=width;this.height=height;this.linear=linear;}public void SetPixels(Color[] colors){pixels=colors;}public void Apply(bool updateMipmaps=true,bool makeNoLongerReadable=false){}
 }
 public struct Rect{public float x,y,width,height;public Rect(float x,float y,float width,float height){this.x=x;this.y=y;this.width=width;this.height=height;}}
 public class Sprite:Object{public static Sprite Create(Texture2D texture,Rect rect,Vector2 pivot,float pixelsPerUnit)=>new();}
