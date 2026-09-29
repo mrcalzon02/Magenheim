@@ -74,6 +74,8 @@ internal static class DefinitionAuthorityTests
         assertions += UnderworldCinderworksThermalRoutePolicyTests.Run();
         assertions += UnderworldFrozenRimeSepulcherCatalogTests.Run();
         assertions += UnderworldRimeSepulcherExposurePolicyTests.Run();
+        assertions += UnderworldGreatDecayCarrionCatacombsCatalogTests.Run();
+        assertions += UnderworldCarrionCatacombsContaminationPolicyTests.Run();
         assertions += UnderworldStationPlacementTests.Run();
         assertions += UnderworldEquipmentCatalogTests.Run();
         assertions += UnderworldVesselCatalogTests.Run();
