@@ -38,6 +38,24 @@ narrow promotion script refuses FrozenCaverns RuntimeReady admission before the 
 exists. Validation record:
 docs/validation/2026-09-29-rime-sepulcher-preforge-source-closure.md.
 
+Great Decay Carrion Catacombs now closes the final ordinary-biome dungeon source/runtime seam. It
+owns 16 room families plus one adaptive passage across Sanctuary, PreservedRuin, TaintedRuin,
+RootIngress and BlackBloom route states; deterministic topology/spatial assembly; physical passage
+contamination inherited from endpoint routes; Great Decay Black Bloom integration; room-role-aware
+Decay encounters; persistent Rotwood/Decay Spore/Carrion Amber/Bone Gravel pickups; a buried
+same-instance interior and exact Great Decay return path.
+
+Defiant Flesh and Defiant armour continue to use the shared atmosphere resistance path. The existing
+16m Defiant Censer suppression radius remains the only local clearing verb, so Carrion does not add
+a second contamination meter or a dungeon-only immunity. Two Sanctuary rooms are authored as
+low-pressure work/recovery spaces where that existing Censer behavior has practical spatial value.
+
+Carrion Catacombs remains Planned because its 17 source/GLB/runtime payloads were not forged in this
+execution. Its contract permits only 0/0/0 or 17/17/17 generated-family states, and the narrow
+promotion script refuses GreatDecay RuntimeReady admission before the complete family exists.
+Validation record:
+docs/validation/2026-09-29-carrion-catacombs-preforge-source-closure.md.
+
 Underworld startup validation now requires every RuntimeReady dungeon row to survive native
 ZoneSystem catalog partitioning. Validation record:
 docs/validation/2026-09-29-underworld-deep-fracture-dungeon-program.md.
