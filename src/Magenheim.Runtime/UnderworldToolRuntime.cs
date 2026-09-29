@@ -68,33 +68,47 @@ internal static class DivingBellSwimmingStaminaPatch
 internal static class UnderworldToolPickablePatch
 {
     private const string Fracture="Magenheim_Underworld_ResourcePickup_FractureCrystal";
+
+    [HarmonyPrefix]
+    private static bool Prefix(Pickable __instance,Humanoid character,bool repeat,ref bool __result)
+    {
+        if(__instance is null||character is not Player player)return true;
+        if(!string.Equals(Utils.GetPrefabName(__instance.gameObject),Fracture,StringComparison.Ordinal))return true;
+        if(UnderworldToolIdentity.Held(player,UnderworldToolRegistrar.SlagPickPrefab))return true;
+        __result=false;
+        if(!repeat)player.Message(MessageHud.MessageType.Center,"Fracture Crystal seams require a Slag Pick.");
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(Pickable),"RPC_Pick")]
+internal static class UnderworldToolPickRpcPatch
+{
     private const string Ice="Magenheim_Underworld_ResourcePickup_ClearIce";
 
     [HarmonyPrefix]
-    private static bool Prefix(Pickable __instance,Humanoid character,bool repeat,bool alt,ref bool __result,out int __state)
+    private static void Prefix(Pickable __instance,long sender,ref int bonus)
     {
-        __state=-1;
-        if(__instance is null||character is not Player player)return true;
-        var prefab=Utils.GetPrefabName(__instance.gameObject);
-        if(string.Equals(prefab,Fracture,StringComparison.Ordinal)&&
-           !UnderworldToolIdentity.Held(player,UnderworldToolRegistrar.SlagPickPrefab))
-        {
-            __result=false;
-            if(!repeat)player.Message(MessageHud.MessageType.Center,"Fracture Crystal seams require a Slag Pick.");
-            return false;
-        }
-        if(string.Equals(prefab,Ice,StringComparison.Ordinal)&&
-           UnderworldToolIdentity.Held(player,UnderworldToolRegistrar.RimeChiselPrefab))
-        {
-            __state=__instance.m_amount;
-            __instance.m_amount=Math.Max(2,__instance.m_amount);
-        }
-        return true;
+        if(__instance is null||!string.Equals(Utils.GetPrefabName(__instance.gameObject),Ice,StringComparison.Ordinal))return;
+        if(!TryResolveSender(sender,out var player)||player.gameObject.scene.handle!=__instance.gameObject.scene.handle)return;
+        if(UnderworldToolIdentity.Held(player,UnderworldToolRegistrar.RimeChiselPrefab))bonus+=1;
     }
 
-    [HarmonyPostfix]
-    private static void Postfix(Pickable __instance,int __state)
+    private static bool TryResolveSender(long sender,out Player player)
     {
-        if(__state>=0&&__instance)__instance.m_amount=__state;
+        player=null!;
+        if(ZDOMan.instance is not null&&sender==ZDOMan.GetSessionID()&&Player.m_localPlayer)
+        {
+            player=Player.m_localPlayer;
+            return true;
+        }
+        if(ZNet.instance is null||ZNetScene.instance is null)return false;
+        var peer=ZNet.instance.GetPeer(sender);
+        var instance=peer is null?null:ZNetScene.instance.FindInstance(peer.m_characterID);
+        var resolved=instance?instance.GetComponent<Player>():null;
+        if(!resolved)return false;
+        player=resolved;
+        return true;
     }
 }
+
