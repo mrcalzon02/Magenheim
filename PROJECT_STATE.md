@@ -11,6 +11,11 @@ source authority. The five new biome dungeon programs require 15-20 large author
 used 2-3 times per run with branching topology and bounded loops. They remain non-spawning until
 their real interior binders exist. Deep Fracture is explicitly excluded from the generic planner.
 
+The first ordinary kit is defined at the production-authority level: Fungal Rootwarren currently
+owns 16 stable room/model identities spanning entrance, route, junction, vertical, hazard,
+resource, encounter and landmark roles. Those are asset briefs only; no Rootwarren entrance is
+runtime-admitted until the authored room payloads and binder exist.
+
 Underworld startup validation now requires every RuntimeReady dungeon row to survive native
 ZoneSystem catalog partitioning. Validation record:
 docs/validation/2026-09-29-underworld-deep-fracture-dungeon-program.md.
