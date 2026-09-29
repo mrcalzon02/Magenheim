@@ -4,12 +4,12 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.147 by Local** and start its description with
-**0.0.147: Populates Sulfurous Wastes with stripped burnt-tree, branch, stump and cinder-bush scenery**.
+show **Magenheim v0.0.148 by Local** and start its description with
+**0.0.148: Adds canonical-home world spawns for custom Fire, Water, Earth and Wind Surtlings**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.147]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.148]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
@@ -404,3 +404,16 @@ Underworld biome, then repeat on a second peer and after save/reload.
 The 42 ordinary donor creature prototypes remain review-only and are not accepted final biome
 inhabitants. In particular, Lantern Moth still uses the Bat donor body until its custom
 HOST-INSECT-FLY art is generated, exported and runtime-bound.
+
+
+## 0.0.148 canonical Surtling population acceptance
+
+In newly generated Underworld areas, verify the authored Surtling bodies spawn only in homes already
+declared by the roster: Fire in Sulfurous Wastes, Water on dry/shoreline ground in Blackwater Deep,
+and Earth plus Wind in Fracture Zones. Radiance and Umbral must remain absent from general biome
+spawning because their roster homes are site conditions rather than canonical terrain biomes.
+
+Check several spawn intervals in each biome, then cross biome boundaries. Counts should remain
+sparse: Fire allows at most two of each body variant from its row; Water/Earth/Wind allow one of
+each body variant. Verify donor combat/AI/loot still function, no Surface spawn-list pollution
+occurs, and host/client observe the same creatures.

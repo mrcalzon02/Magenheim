@@ -2,7 +2,16 @@
 
 **Magic begins as geology.**
 
-## 0.0.147 testing candidate
+## 0.0.148 testing candidate
+
+The authored elemental Surtlings now provide genuine non-donor-silhouette inhabitants in every
+canonical home already declared by their roster: Fire in Sulfurous Wastes, Water in Blackwater
+Deep, and Earth/Wind in Fracture Zones. Radiance and Umbral remain site-specific rather than being
+forced into a biome. Population limits are deliberately sparse while bespoke fauna are being
+re-bodied.
+
+### Earlier fixes in 0.0.147
+
 
 Sulfurous Wastes now receives a much denser burnt ecology layer through Magenheim-owned native
 vegetation: multiple scorched tree silhouettes, charred fallen branches, burnt stumps and cinder
@@ -80,7 +89,7 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.147.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.148.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
 Launch **Modded**. Confirm `Loading [Magenheim 0.0.145]` in the BepInEx log.

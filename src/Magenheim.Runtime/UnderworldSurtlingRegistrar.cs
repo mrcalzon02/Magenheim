@@ -37,7 +37,7 @@ internal sealed class UnderworldSurtlingRegistrar : IDisposable
                 _log.LogWarning($"Underworld Surtling {entry.Prefab} unavailable: {exception.Message}");
             }
         }
-        _log.LogInfo($"Registered {registered}/{UnderworldSurtlings.All.Length} elemental Surtlings. Fire Surtlings have native Sulfurous Wastes world spawns; other variants remain console-only. Donor combat, AI and loot are unchanged.");
+        _log.LogInfo($"Registered {registered}/{UnderworldSurtlings.All.Length} elemental Surtlings. Fire, Water, Earth and Wind variants have native spawns in their canonical roster homes; Radiance and Umbral remain site/console-only. Donor combat, AI and loot are unchanged.");
         Dispose();
     }
 
@@ -61,26 +61,27 @@ internal sealed class UnderworldSurtlingRegistrar : IDisposable
             ModelAssets.Load(clone, entry.ModelId, arrange: arrange);
             var ragdolls = BindRagdolls(entry, character, donor, rig);
             var creatureConfig = new CreatureConfig { Name = entry.DisplayName };
-            if (string.Equals(entry.Element, "Fire", StringComparison.Ordinal))
+            if (TryHomeBiome(entry.Home, out var homeBiome))
             {
+                var shoreline = homeBiome == UnderworldTerrainRuntime.BlackwaterDeepBiome;
                 creatureConfig.AddSpawnConfig(new SpawnConfig
                 {
-                    Name = entry.Prefab + "_SulfurousWastes",
-                    Biome = UnderworldTerrainRuntime.SulfurousWastesBiome,
+                    Name = entry.Prefab + "_" + entry.Home.Replace(" ", string.Empty),
+                    Biome = homeBiome,
                     BiomeArea = Heightmap.BiomeArea.Everything,
-                    SpawnChance = 24f,
-                    SpawnInterval = 45f,
-                    SpawnDistance = 22f,
-                    MinSpawnRadius = 35f,
-                    MaxSpawnRadius = 78f,
-                    MaxSpawned = 2,
+                    SpawnChance = string.Equals(entry.Element, "Fire", StringComparison.Ordinal) ? 18f : 12f,
+                    SpawnInterval = string.Equals(entry.Element, "Fire", StringComparison.Ordinal) ? 55f : 75f,
+                    SpawnDistance = 24f,
+                    MinSpawnRadius = 38f,
+                    MaxSpawnRadius = 82f,
+                    MaxSpawned = string.Equals(entry.Element, "Fire", StringComparison.Ordinal) ? 2 : 1,
                     MinGroupSize = 1,
                     MaxGroupSize = 2,
                     GroupRadius = 5f,
-                    MinAltitude = 1f,
-                    MaxAltitude = 1000f,
+                    MinAltitude = shoreline ? 0.5f : 1f,
+                    MaxAltitude = shoreline ? 12f : 1000f,
                     MinTilt = 0f,
-                    MaxTilt = 38f,
+                    MaxTilt = shoreline ? 24f : 38f,
                     SpawnAtDay = true,
                     SpawnAtNight = true,
                     HuntPlayer = false,
@@ -93,6 +94,21 @@ internal sealed class UnderworldSurtlingRegistrar : IDisposable
         {
             UnityEngine.Object.DestroyImmediate(clone);
             throw;
+        }
+    }
+
+    private static bool TryHomeBiome(string home, out Heightmap.Biome biome)
+    {
+        switch (home)
+        {
+            case "Sulfurous Wastes":
+                biome = UnderworldTerrainRuntime.SulfurousWastesBiome; return true;
+            case "Blackwater Deep":
+                biome = UnderworldTerrainRuntime.BlackwaterDeepBiome; return true;
+            case "Fracture Zones":
+                biome = UnderworldTerrainRuntime.FractureZonesBiome; return true;
+            default:
+                biome = Heightmap.Biome.None; return false;
         }
     }
 

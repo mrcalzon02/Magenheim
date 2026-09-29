@@ -1,4 +1,4 @@
 {
-  "version": "0.0.147",
-  "description": "0.0.147: Populates Sulfurous Wastes with stripped burnt-tree, branch, stump and cinder-bush scenery, gives custom Fire Surtlings native biome spawns, and keeps Magenheim loading art scoped to Underworld construction/transit."
+  "version": "0.0.148",
+  "description": "0.0.148: Adds canonical-home world spawns for custom Fire, Water, Earth and Wind Surtlings, retains burnt Sulfurous Wastes scenery, and keeps loading art scoped to Underworld construction/transit."
 }
