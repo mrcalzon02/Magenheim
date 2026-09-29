@@ -42,8 +42,8 @@ internal sealed class SeidrStaffRegistrar : IDisposable
 
             var hexMark = StaffEffectPayloads.CreateField("Magenheim_Seidr_HexMark", new HitData.DamageTypes { m_spirit = .5f }, .70f, .15f, .15f, 0f, new Color(.57f, .19f, .88f, 1f), 1.35f, snare);
             var runeSeal = StaffEffectPayloads.CreateField("Magenheim_Seidr_RuneSeal", new HitData.DamageTypes { m_spirit = 3f }, 2.4f, .22f, .22f, 8f, new Color(.67f, .28f, .96f, 1f), 1.50f, snare);
-            var witchweave = StaffEffectPayloads.CreateField("Magenheim_Seidr_WitchweaveSeal", new HitData.DamageTypes { m_spirit = 1.5f }, 1.35f, .26f, .26f, 3f, new Color(.75f, .39f, 1f, 1f), 1.60f, snare);
-            var fateKnot = StaffEffectPayloads.CreateField("Magenheim_Seidr_FateKnot", new HitData.DamageTypes { m_spirit = 2f }, 1.65f, .36f, .36f, 4f, new Color(.88f, .64f, 1f, 1f), 1.80f, fateBind);
+            var witchweave = StaffEffectPayloads.CreateField("Magenheim_Seidr_WitchweaveSeal", new HitData.DamageTypes { m_spirit = 2.25f }, 1.35f, .26f, .26f, 3f, new Color(.75f, .39f, 1f, 1f), 1.60f, snare);
+            var fateKnot = StaffEffectPayloads.CreateField("Magenheim_Seidr_FateKnot", new HitData.DamageTypes { m_spirit = 3f }, 1.65f, .36f, .36f, 4f, new Color(.88f, .64f, 1f, 1f), 1.80f, fateBind);
 
             var payloads = new PayloadSet(
                 StaffEffectPayloads.CreateProjectile("Magenheim_Seidr_HexProjectile", new Color(.52f, .16f, .85f, 1f), 1.35f, hexMark, BaseStaffPrefab),
@@ -159,11 +159,11 @@ internal sealed class SeidrStaffRegistrar : IDisposable
             new Requirement("ElderBark", 10), new Requirement("AncientSeed", 3), new Requirement("Silver", 2), new Requirement("Magenheim_Crystal_Seidr_Crystal", 1)),
         new Definition("Magenheim_Staff_Seidr_Advanced", "staff-seidr-advanced", "Advanced Staff of Seidr",
             "Witchweave: casts five crossing omen-lines. Every line leaves a small binding seal, trading raw impact for a fan of overlapping snares that catches evasive or clustered enemies.",
-            3, 28f, 9f, .50f, .35f, .55f, 42f, 9f, 5, 1, 0f, PayloadKind.Weave,
+            3, 28f, 13.5f, .50f, .35f, .55f, 42f, 9f, 5, 1, 0f, PayloadKind.Weave,
             new Requirement("YggdrasilWood", 10), new Requirement("BlackCore", 2), new Requirement("Magenheim_Crystal_Seidr_Advanced", 1)),
         new Definition("Magenheim_Staff_Seidr_Master", "staff-seidr-master", "Master Staff of Seidr",
             "Fate Loom: releases three omen-lines through four successive responses. Every impact knots a stronger Fate Bind into the ground, reducing movement by thirty-five percent for four seconds and turning the target lane into controlled sorcery.",
-            4, 48f, 8f, .40f, .40f, .65f, 45f, 7f, 3, 4, .13f, PayloadKind.Fate,
+            4, 48f, 12f, .40f, .40f, .65f, 45f, 7f, 3, 4, .13f, PayloadKind.Fate,
             new Requirement("YggdrasilWood", 15), new Requirement("BlackCore", 4), new Requirement("Magenheim_Crystal_Seidr_Master", 1)),
     };
 
