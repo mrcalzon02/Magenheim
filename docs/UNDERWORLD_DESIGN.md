@@ -62,7 +62,7 @@ The intended progression boundary is:
 4. The player enters The Underworld with their established character, inventory, skills, Magenheim Crystal Shaping progression, socketed equipment and other character-level state intact.
 5. Underworld progression extends those systems rather than replacing them.
 
-Existing Magenheim Deep Fractures and megadungeon language should act as foreshadowing. Deep Fractures remain discrete underground adventure spaces. The Underworld is the much larger world beneath them. Some late Deep Fracture environments may imply that deeper geology continues beyond accessible dungeon boundaries, but they are not secretly the same runtime space.
+Existing Magenheim Deep Fractures and megadungeon language should act as foreshadowing, but that relationship is not one-way. Deep Fractures remain discrete dungeon instances rather than becoming ordinary open-world terrain, while the Underworld is the much larger world around and beneath them. Geological fracture entrances may occur on the Surface or inside Fracture Zones in the Underworld; either entrance opens the same kind of isolated Deep Fracture expedition and returns to the entrance that owns it. The dungeon interior is therefore not secretly continuous with the surrounding terrain, but Deep Fractures are a recurring geological phenomenon in both layers.
 
 ## 4. Core world illusion: not true volumetric caverns
 
