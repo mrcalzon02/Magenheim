@@ -1,4 +1,4 @@
 {
-  "version": "0.0.154",
-  "description": "0.0.154: Completes source-side Underworld weather coupling with bespoke event VFX, server-authoritative weather damage/creature reactions, Deep Boon and armour mitigation, Thermal Surge hazard amplification, Crystal Resonance world response, and a runtime Defiant Censer clearing radius."
+  "version": "0.0.155",
+  "description": "0.0.155: Admits the existing 20-district Deep Fracture as a sparse Fracture Zones dungeon in the Underworld, adds runtime dungeon catalog validation, and establishes deterministic branching 15–20-room-family / 2–3-use biome-dungeon authority for the five new Underworld dungeon programs."
 }
