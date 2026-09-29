@@ -5,13 +5,12 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Authored appearances for Underworld raw resources, replacing the vanilla item and pickup donors'
-/// looks. Visual only: the item's identity, stack, weight and the pickup's behaviour are unchanged.
+/// Authored appearances for Underworld raw and refined materials, replacing vanilla donor looks.
+/// Visual only: item identity, stack, weight, pickup lifecycle and recipe authority are unchanged.
 /// </summary>
 internal static class UnderworldResourceVisuals
 {
-    // Resource prefab -> authored model (biome author tools). Resources without
-    // an entry keep their vanilla appearance until their biome's custom pass.
+    // Material prefab -> authored model. Production gates prove each canonical mapping before release.
     private static readonly Dictionary<string, string> Models = new(StringComparer.Ordinal)
     {
         ["Magenheim_Underworld_Resource_WorldrootTimber"] = "underworld-resource-worldroot-timber",
@@ -22,6 +21,38 @@ internal static class UnderworldResourceVisuals
         ["Magenheim_Underworld_Resource_PaleFibre"] = "underworld-resource-pale-fibre",
         ["Magenheim_Underworld_Resource_BlackwaterPearl"] = "underworld-resource-blackwater-pearl",
         ["Magenheim_Underworld_Resource_DeepSalt"] = "underworld-resource-deep-salt",
+        ["Magenheim_Underworld_Resource_Slagstone"] = "underworld-resource-slagstone",
+        ["Magenheim_Underworld_Resource_Sulfur"] = "underworld-resource-sulfur",
+        ["Magenheim_Underworld_Resource_CharredTimber"] = "underworld-resource-charred-timber",
+        ["Magenheim_Underworld_Resource_Emberiron"] = "underworld-resource-emberiron",
+        ["Magenheim_Underworld_Resource_Rimewood"] = "underworld-resource-rimewood",
+        ["Magenheim_Underworld_Resource_ClearIce"] = "underworld-resource-clear-ice",
+        ["Magenheim_Underworld_Resource_Rimesilver"] = "underworld-resource-rimesilver",
+        ["Magenheim_Underworld_Resource_FractureCrystal"] = "underworld-resource-fracture-crystal",
+        ["Magenheim_Underworld_Resource_Shardstone"] = "underworld-resource-shardstone",
+        ["Magenheim_Underworld_Resource_Titanbone"] = "underworld-resource-titanbone",
+        ["Magenheim_Underworld_Resource_Rotwood"] = "underworld-resource-rotwood",
+        ["Magenheim_Underworld_Resource_DecaySpore"] = "underworld-resource-decay-spore",
+        ["Magenheim_Underworld_Resource_CarrionAmber"] = "underworld-resource-carrion-amber",
+        ["Magenheim_Underworld_Resource_BoneGravel"] = "underworld-resource-bone-gravel",
+        ["Magenheim_Underworld_Refined_WorldrootPlank"] = "underworld-refined-worldroot-plank",
+        ["Magenheim_Underworld_Refined_SpireCord"] = "underworld-refined-spire-cord",
+        ["Magenheim_Underworld_Refined_CuredGlowcap"] = "underworld-refined-cured-glowcap",
+        ["Magenheim_Underworld_Refined_FlowstonePlate"] = "underworld-refined-flowstone-plate",
+        ["Magenheim_Underworld_Refined_PaleCord"] = "underworld-refined-pale-cord",
+        ["Magenheim_Underworld_Refined_BrinedPearl"] = "underworld-refined-brined-pearl",
+        ["Magenheim_Underworld_Refined_EmberironBar"] = "underworld-refined-emberiron-bar",
+        ["Magenheim_Underworld_Refined_TemperedSlag"] = "underworld-refined-tempered-slag",
+        ["Magenheim_Underworld_Refined_CharredRootGrip"] = "underworld-refined-charred-root-grip",
+        ["Magenheim_Underworld_Refined_RimesilverBar"] = "underworld-refined-rimesilver-bar",
+        ["Magenheim_Underworld_Refined_IceglassLens"] = "underworld-refined-iceglass-lens",
+        ["Magenheim_Underworld_Refined_RimewoodLaminate"] = "underworld-refined-rimewood-laminate",
+        ["Magenheim_Underworld_Refined_TitanbonePlate"] = "underworld-refined-titanbone-plate",
+        ["Magenheim_Underworld_Refined_ShardstoneBlock"] = "underworld-refined-shardstone-block",
+        ["Magenheim_Underworld_Refined_FracturePrism"] = "underworld-refined-fracture-prism",
+        ["Magenheim_Underworld_Refined_CarrionAmberSeal"] = "underworld-refined-carrion-amber-seal",
+        ["Magenheim_Underworld_Refined_OssuaryComposite"] = "underworld-refined-ossuary-composite",
+        ["Magenheim_Underworld_Refined_RotwoodLaminate"] = "underworld-refined-rotwood-laminate",
     };
 
     internal static string? ModelFor(string prefab) => Models.TryGetValue(prefab, out var model) ? model : null;
