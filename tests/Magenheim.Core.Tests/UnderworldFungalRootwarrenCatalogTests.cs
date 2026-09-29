@@ -31,7 +31,11 @@ internal static class UnderworldFungalRootwarrenCatalogTests
         var plan = UnderworldBiomeDungeonPlanner.Build(
             UnderworldDungeonCatalog.FungalForest,
             0x13572468,
-            UnderworldFungalRootwarrenCatalog.RoomFamilyIds());
+            UnderworldFungalRootwarrenCatalog.RoomFamilyIds(),
+            UnderworldFungalRootwarrenCatalog.EntranceRoomId);
+
+        Assert(plan.Rooms[0].RoomFamilyId == UnderworldFungalRootwarrenCatalog.EntranceRoomId,
+            "Rootwarren must always begin in the authored Fracture Mouth family.");
 
         Assert(plan.Rooms.Count >= 32 && plan.Rooms.Count <= 48,
             "Sixteen room families reused 2-3 times should produce 32-48 major room placements.");
