@@ -32,23 +32,24 @@ internal sealed class UnderworldCreaturePrototypeRegistrar : IDisposable
                 if (PrefabManager.Instance.GetPrefab(entry.Prefab))
                     throw new InvalidOperationException($"Prefab identity {entry.Prefab} is already occupied.");
                 var clone = PrefabManager.Instance.CreateClonedPrefab(entry.Prefab, source);
-                clone.GetComponent<Character>().m_name = entry.Name + " (prototype)";
+                clone.GetComponent<Character>().m_name = entry.Name;
                 // Uniform scale keeps the donor's bone hierarchy and attack sockets together.
                 clone.transform.localScale *= entry.Scale;
                 var materialCount = UnderworldCreatureBiomeVisuals.Apply(clone, entry);
+                var identity = UnderworldCreatureIdentityPass.Apply(clone, entry);
                 var creatureConfig = new CreatureConfig { Name = entry.Name };
                 creatureConfig.AddSpawnConfig(BuildSpawnConfig(entry));
                 if (!CreatureManager.Instance.AddCreature(new CustomCreature(clone, true, creatureConfig)))
                     throw new InvalidOperationException($"Jotunn refused creature registration for '{entry.Prefab}'.");
                 registered++;
-                _log.LogDebug($"Underworld creature {entry.Prefab}: intact {entry.Donor} skeleton/controller; {materialCount} renderer material(s) retextured for {entry.Biome}; native biome spawn enabled; {entry.Limit}");
+                _log.LogDebug($"Underworld creature {entry.Prefab}: intact {entry.Donor} skeleton/controller; {materialCount} renderer material(s) retextured for {entry.Biome}; {identity}; native biome spawn enabled; {entry.Limit}");
             }
             catch (Exception exception)
             {
                 _log.LogWarning($"Underworld prototype {entry.Name} unavailable: {exception.Message}");
             }
         }
-        _log.LogInfo($"Registered {registered}/{UnderworldCreaturePrototypes.All.Length} Underworld creatures with biome-specific native spawn rows and owned material replacements. Donor combat and loot remain unchanged.");
+        _log.LogInfo($"Registered {registered}/{UnderworldCreaturePrototypes.All.Length} Underworld creatures with biome-specific native spawns, owned material/VFX identities, native-AI temperament tuning, home-biome tolerances and additive elemental attack riders. Donor rigs, animations, attack definitions and loot remain intact.");
         RegisterInfrastructure();
         Dispose();
     }
@@ -83,7 +84,7 @@ internal sealed class UnderworldCreaturePrototypeRegistrar : IDisposable
             MaxTilt = aquatic ? 48f : shoreline ? 30f : 42f,
             SpawnAtDay = true,
             SpawnAtNight = true,
-            HuntPlayer = false,
+            HuntPlayer = UnderworldCreatureIdentityPass.HuntsPlayer(entry),
         };
     }
 
