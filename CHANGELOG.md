@@ -31,8 +31,8 @@
   Decay encounters/resources, server-owned clear/harvest persistence and exact same-instance return.
 - Adds the Carrion Blender author/verifier plus fail-closed 17/17/17 production/provenance/promotion
   gate. Great Decay remains Planned until those payloads are physically forged and verified.
-- Reactivates the Cinderworks and Rime Sepulcher Core suites in the executable test harness and adds
-  Carrion catalog/contamination tests.
+- Extends the existing DefinitionAuthority Core suite with Carrion catalog/contamination tests,
+  preserving the established Cinderworks/Rime test routing without duplicate execution.
 - Source candidate only; build and live Underworld placement/return acceptance remain required.
 
 ## 0.0.154 - Bespoke Underworld weather closure
