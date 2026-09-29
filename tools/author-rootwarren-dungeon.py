@@ -23,7 +23,7 @@ from magenheim_flora_kit import Model, cap, gills, tube, bake_flora_atlas
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "assets/models/source"
-REVISION = "rootwarren-dungeon-r1"
+REVISION = "rootwarren-dungeon-r2"
 PREFIX = "underworld-dungeon-fungal-rootwarren-"
 Z = Vector((0.0, 0.0, 1.0))
 
@@ -90,6 +90,43 @@ def rot(mesh, angle, axis="Z", origin=(0,0,0)):
     return transformed(mesh, matrix)
 
 
+def cave_shell(m, width, depth, height, seed, floor_z=0.0):
+    """Irregular cave envelope with eight broad approach gaps.
+
+    Rock masses sit between the eight cardinal/diagonal approach directions rather than on them,
+    so routed passages can enter from any grid direction without requiring runtime boolean cuts.
+    """
+    rng = random.Random(seed)
+    shell = []
+    for i in range(8):
+        a = (i + .5) * math.tau / 8.0 + rng.uniform(-.055, .055)
+        x = math.cos(a) * width * .47
+        y = math.sin(a) * depth * .47
+        rx = rng.uniform(2.2, 3.5) + width * .035
+        ry = rng.uniform(2.2, 3.5) + depth * .035
+        rz = max(2.8, height * rng.uniform(.24, .36))
+        shell.append(blob(
+            (x, y, floor_z + rz * .72),
+            (rx, ry, rz),
+            9, 7))
+
+    # Broken ceiling masses close the chamber silhouette without creating a featureless flat roof.
+    # The offset ring preserves a central high vault and leaves the luminous fungi readable.
+    for i in range(10):
+        a = (i + .35) * math.tau / 10.0 + rng.uniform(-.08, .08)
+        x = math.cos(a) * width * rng.uniform(.16, .32)
+        y = math.sin(a) * depth * rng.uniform(.16, .32)
+        rx = rng.uniform(2.8, 4.8) + width * .025
+        ry = rng.uniform(2.8, 4.8) + depth * .025
+        rz = rng.uniform(1.7, 3.2)
+        shell.append(blob(
+            (x, y, floor_z + height * rng.uniform(.72, .86)),
+            (rx, ry, rz),
+            9, 6))
+
+    m.part("cavern-shell", merge(*shell), "understone", collider=True, smooth=False)
+
+
 def floor_and_boundary(m, width, depth, seed, broken=0.22):
     rng = random.Random(seed)
     floor = box_mesh((0, 0, -0.65), (width * 0.92, depth * 0.92, 1.3))
@@ -104,6 +141,7 @@ def floor_and_boundary(m, width, depth, seed, broken=0.22):
                            (radius, radius * rng.uniform(.65, 1.1), radius * rng.uniform(.45, .85)),
                            8, 6))
     m.part("boundary-rubble", merge(*rubble), "understone", collider=True, smooth=False)
+    cave_shell(m, width, depth, max(12.0, min(width, depth) * .62), seed + 101)
 
 
 def ruin_bays(m, width, depth, height, seed, density=1.0):
@@ -255,6 +293,7 @@ def tangle_junction(m,w,d,h,seed):
 
 def shelf_drop(m,w,d,h,seed):
     # Upper shelf plus lower landing establish genuine vertical navigation.
+    cave_shell(m, w, d, h, seed + 90, floor_z=-9.0)
     m.part("upper-shelf",box_mesh((0,-d*.20,2.0),(w*.86,d*.38,1.4)),
            "understone",collider=True,smooth=False)
     m.part("lower-shelf",box_mesh((0,d*.25,-9.0),(w*.82,d*.32,1.4)),
@@ -364,6 +403,20 @@ def heartcap_sanctum(m,w,d,h,seed):
 def passage(m,w,d,h,seed):
     m.part("passage-floor",box_mesh((0,0,-.35),(w*.72,d,.7)),
            "understone",collider=True,smooth=False)
+    rng = random.Random(seed + 41)
+    banks = []
+    for y in (-d*.42, -d*.20, .0, d*.20, d*.42):
+        for side in (-1, 1):
+            banks.append(blob(
+                (side*w*.46, y, h*.28),
+                (rng.uniform(1.3,2.0), rng.uniform(1.7,2.6), h*rng.uniform(.28,.38)),
+                8, 6))
+    for y in (-d*.30, 0.0, d*.30):
+        banks.append(blob(
+            (rng.uniform(-1.2,1.2), y, h*.78),
+            (w*.38, rng.uniform(2.0,3.2), rng.uniform(1.3,2.2)),
+            8, 6))
+    m.part("passage-shell", merge(*banks), "understone", collider=True, smooth=False)
     roots=[]
     for y in (-d*.38,-d*.12,d*.14,d*.40):
         roots.append(tube([Vector((-w*.46,y,.05)),Vector((0,y,h*.78)),Vector((w*.46,y,.05))],
