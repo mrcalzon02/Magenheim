@@ -504,9 +504,15 @@ Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the cur
 
 ## Deferred Underworld environment closure — logged 2026-09-28
 
-- [ ] **Finished bespoke Underworld weather VFX/effects/gameplay coupling remains OPEN.**
-  The biome-owned weather/atmosphere authority is bound, but final spores, sulfur/ash, fracture
-  dust, decay aerosol, Crystal Resonance world reactions, event gameplay coupling, mitigation
-  binding and live visual acceptance are not complete. Preserve this as later environment closure;
-  do not mark weather DONE merely because the deterministic EnvSetup/fog framework is active.
-  Canonical detail remains in `docs/UNDERWORLD_ATMOSPHERE_VFX_CLOSURE.md`.
+- [x] **Finished bespoke Underworld weather VFX/effects/gameplay coupling — SOURCE COMPLETE 0.0.154.**
+  Magenheim-owned procedural weather VFX now cover the full event vocabulary; server-authoritative
+  gameplay coupling handles Ashfall, Thermal Surge, Whiteout, Stone Rain and Black Bloom;
+  Thermal Surge amplifies the existing geothermal hazard; Black Bloom temporarily increases
+  nearby Underworld creature perception; Crystal Resonance visibly pulses nearby crystal/geode/shard
+  renderers; Deep Boons and matching armour feed resistance; and the runtime Defiant Censer creates
+  a 16m Great Decay suppression radius. Canonical detail is in
+  `docs/UNDERWORLD_ATMOSPHERE_VFX_CLOSURE.md`.
+- [ ] **Live-accept 0.0.154 Underworld weather and tune it from observed play.**
+  Source completion is not visual/runtime acceptance. Verify host/client event agreement, damage,
+  VFX readability, mitigation, Censer radius, Crystal Resonance restoration, Surface weather
+  restoration, save/reload and balance in a fresh current build.
