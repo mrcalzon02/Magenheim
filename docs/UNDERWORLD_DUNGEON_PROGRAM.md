@@ -1,6 +1,6 @@
 # Underworld Biome Dungeon Program
 
-**Status:** ACTIVE STRUCTURE PROGRAM — Deep Fracture admitted; Rootwarren and Drowned Vault source/runtime architecture complete but asset-gated; three biome dungeon kits remain.
+**Status:** ACTIVE STRUCTURE PROGRAM — Deep Fracture admitted; Rootwarren, Drowned Vaults and Cinderworks source/runtime architecture complete but asset-gated; Rime Sepulcher and Carrion Catacombs remain.
 
 The Underworld is a world-scale realm, not a chain of dungeons. Dungeons therefore function as
 major local destinations inside its biomes rather than replacing biome exploration.
@@ -72,7 +72,7 @@ has real dungeon value. Entrances should read as flooded sinkholes or fractured 
 
 ## Sulfurous Wastes — working dungeon program: Cinderworks
 
-**Runtime status: PLANNED; no entrance may spawn yet.**
+**Runtime status: SOURCE COMPLETE / ASSET-GATED; catalog remains PLANNED until the production forge admits all 17 payloads.**
 
 A geothermal ruin/industrial-sacral complex built around vents, slag channels and failed furnace
 infrastructure. Rooms should use height, heat exposure and vent timing rather than generic lava
@@ -108,8 +108,8 @@ advantages rather than merely reducing a number in the HUD.
 1. Deep Fracture Underworld placement and live acceptance.
 2. Fungal Rootwarren 15–20 room-family kit + entrance/interior binder.
 3. Blackwater Drowned Vaults 16-room + adaptive-passage forge/admission.
-4. Sulfur Cinderworks and Frozen Rime Sepulcher in parallel after their environmental interactions
-   are stable.
+4. Sulfur Cinderworks 16-room + adaptive-passage forge/admission.
+5. Frozen Rime Sepulcher, followed by Great Decay Carrion Catacombs.
 5. Great Decay Carrion Catacombs after contamination/Censer live tuning.
 
 Each promotion from PLANNED to RuntimeReady must include:

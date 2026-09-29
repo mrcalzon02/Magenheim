@@ -48,6 +48,21 @@ if($LASTEXITCODE -ne 0){throw 'Drowned Vault runtime promotion failed after comp
 & python "$PSScriptRoot/verify-drowned-vaults-production-contract.py"
 if($LASTEXITCODE -ne 0){throw 'Drowned Vault RuntimeReady contract failed after promotion.'}
 
+# Cinderworks remains catalog-Planned until its 16 rooms plus adaptive passage are forged,
+# verified, provenance-recorded and reviewed. Heat gameplay already binds to canonical geothermal state.
+& "$PSScriptRoot/rebuild-cinderworks-dungeon.ps1"
+if($LASTEXITCODE -ne 0){throw 'Cinderworks dungeon production forge failed.'}
+& python "$PSScriptRoot/verify-cinderworks-production-contract.py"
+if($LASTEXITCODE -ne 0){throw 'Cinderworks source/asset contract failed after forge.'}
+& python "$PSScriptRoot/record-cinderworks-generated-assets.py"
+if($LASTEXITCODE -ne 0){throw 'Cinderworks generated-asset provenance recording failed.'}
+& python "$PSScriptRoot/verify-generated-freshness.py" cinderworks-dungeon-models
+if($LASTEXITCODE -ne 0){throw 'Cinderworks generated assets are stale immediately after forge.'}
+& python "$PSScriptRoot/promote-cinderworks-runtime.py"
+if($LASTEXITCODE -ne 0){throw 'Cinderworks runtime promotion failed after complete asset forge.'}
+& python "$PSScriptRoot/verify-cinderworks-production-contract.py"
+if($LASTEXITCODE -ne 0){throw 'Cinderworks RuntimeReady contract failed after promotion.'}
+
 foreach($gate in @(
  'verify-model-assets','verify-model-geometry','verify-model-surface-continuity','verify-model-scale',
  'verify-weapon-materials','verify-held-model-orientation','verify-held-model-grip-direction',
@@ -92,5 +107,11 @@ if(!$SkipReview){
     if($LASTEXITCODE -ne 0){throw 'Drowned Vault review sheet assembly failed.'}
     & python "$PSScriptRoot/verify-drowned-vaults-review.py"
     if($LASTEXITCODE -ne 0){throw 'Drowned Vault visual review completeness gate failed.'}
+    & "$PSScriptRoot/blender.ps1" render-cinderworks-review
+    if($LASTEXITCODE -ne 0){throw 'Cinderworks dungeon review render failed.'}
+    & python "$PSScriptRoot/build-cinderworks-review-sheets.py"
+    if($LASTEXITCODE -ne 0){throw 'Cinderworks review sheet assembly failed.'}
+    & python "$PSScriptRoot/verify-cinderworks-review.py"
+    if($LASTEXITCODE -ne 0){throw 'Cinderworks visual review completeness gate failed.'}
 }
-Write-Host 'PRODUCTION READY: 25 PBR families, 40 raw/refined material items, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools, armour, and the 17-model Rootwarren and 17-model Drowned Vault dungeon families regenerated and gated.'
+Write-Host 'PRODUCTION READY: 25 PBR families, 40 raw/refined material items, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools, armour, and the 17-model Rootwarren, Drowned Vault and Cinderworks dungeon families regenerated and gated.'

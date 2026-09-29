@@ -44,6 +44,10 @@ for path in (
  "tools/render-underworld-armour-articulation-review.py","tools/render-rootwarren-review.py","tools/render-drowned-vaults-review.py",
  "tools/build-underworld-production-review-sheets.py","tools/build-rootwarren-review-sheets.py","tools/build-drowned-vaults-review-sheets.py",
  "tools/verify-underworld-production-review.py","tools/verify-rootwarren-review.py","tools/verify-drowned-vaults-review.py",
+ "tools/author-cinderworks-dungeon.py","tools/verify-cinderworks-dungeon.py",
+ "tools/verify-cinderworks-production-contract.py","tools/record-cinderworks-generated-assets.py",
+ "tools/promote-cinderworks-runtime.py","tools/rebuild-cinderworks-dungeon.ps1",
+ "tools/render-cinderworks-review.py","tools/build-cinderworks-review-sheets.py","tools/verify-cinderworks-review.py",
  "tools/verify-underworld-production-assets.py",
  ".github/workflows/magenheim-production-forge.yml",
 ):
@@ -63,7 +67,10 @@ python_sources=(
  "tools/verify-drowned-vaults-production-contract.py","tools/record-drowned-vaults-generated-assets.py",
  "tools/promote-drowned-vaults-runtime.py","tools/render-underworld-production-review.py","tools/render-underworld-armour-articulation-review.py",
  "tools/render-rootwarren-review.py","tools/render-drowned-vaults-review.py","tools/build-underworld-production-review-sheets.py","tools/build-rootwarren-review-sheets.py","tools/build-drowned-vaults-review-sheets.py",
- "tools/verify-underworld-production-review.py","tools/verify-rootwarren-review.py","tools/verify-drowned-vaults-review.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
+ "tools/verify-underworld-production-review.py","tools/verify-rootwarren-review.py","tools/verify-drowned-vaults-review.py","tools/author-cinderworks-dungeon.py","tools/verify-cinderworks-dungeon.py",
+ "tools/verify-cinderworks-production-contract.py","tools/record-cinderworks-generated-assets.py",
+ "tools/promote-cinderworks-runtime.py","tools/render-cinderworks-review.py","tools/build-cinderworks-review-sheets.py",
+ "tools/verify-cinderworks-review.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
  "tools/export-model-assets.py",
 )
 for source in python_sources:
@@ -254,6 +261,21 @@ require("render-drowned-vaults-review" in production_rebuild and
         "build-drowned-vaults-review-sheets.py" in production_rebuild and
         "verify-drowned-vaults-review.py" in production_rebuild,
         "Drowned Vault production forge no longer emits/validates its dedicated visual acceptance plates")
+cinder_author=(ROOT/"tools"/"author-cinderworks-dungeon.py").read_text()
+cinder_rebuild=(ROOT/"tools"/"rebuild-cinderworks-dungeon.ps1").read_text()
+require('REVISION="cinderworks-dungeon-r1"' in cinder_author and
+        "none-runtime-thermal-authority" in cinder_author,
+        "Cinderworks authoring lost its r1 runtime-thermal source contract")
+require("verify-cinderworks-dungeon" in cinder_rebuild and "export-model-assets" in cinder_rebuild,
+        "Cinderworks rebuild no longer verifies and exports its 17-model family")
+require("rebuild-cinderworks-dungeon.ps1" in production_rebuild and
+        "record-cinderworks-generated-assets.py" in production_rebuild and
+        "promote-cinderworks-runtime.py" in production_rebuild,
+        "One-run Underworld production forge no longer includes Cinderworks provenance/promotion")
+require("render-cinderworks-review" in production_rebuild and
+        "build-cinderworks-review-sheets.py" in production_rebuild and
+        "verify-cinderworks-review.py" in production_rebuild,
+        "Cinderworks production forge no longer emits/validates its dedicated visual acceptance plates")
 
 wrapper=(ROOT/"tools"/"blender.ps1").read_text()
 require("MAGENHEIM_BLENDER" in wrapper,"Blender wrapper cannot accept the Actions executable through environment")
