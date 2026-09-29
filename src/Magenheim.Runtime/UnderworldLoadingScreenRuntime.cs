@@ -16,12 +16,14 @@ internal static class UnderworldLoadingScreenRuntime
     private static Text? _caption;
     private static int _index;
     private static float _nextRotation;
+    private static int _hideAfterFrame = -1;
 
     internal static void Show(ManualLogSource log, string caption)
     {
         if (ZNet.instance is not null && ZNet.instance.IsDedicated()) return;
         Ensure(log);
         if (_root is null) return;
+        _hideAfterFrame = -1;
         _root.SetActive(true);
         if (_caption is not null) _caption.text = caption;
         ApplySlide();
@@ -30,21 +32,34 @@ internal static class UnderworldLoadingScreenRuntime
 
     internal static void Tick()
     {
-        if (_root is null || !_root.activeSelf || Slides.Count < 2 || Time.unscaledTime < _nextRotation) return;
+        if (_root is null || !_root.activeSelf) return;
+        if (_hideAfterFrame >= 0 && Time.frameCount >= _hideAfterFrame)
+        {
+            Hide();
+            return;
+        }
+        if (Slides.Count < 2 || Time.unscaledTime < _nextRotation) return;
         _index = (_index + 1) % Slides.Count;
         _nextRotation = Time.unscaledTime + 8f;
         ApplySlide();
     }
 
+    internal static void HideAfterFrames(int frames = 3)
+    {
+        if (_root is null || !_root.activeSelf) return;
+        _hideAfterFrame = Time.frameCount + Math.Max(1, frames);
+    }
+
     internal static void Hide()
     {
+        _hideAfterFrame = -1;
         if (_root) _root.SetActive(false);
     }
 
     internal static void Reset()
     {
         if (_root is not null) UnityEngine.Object.Destroy(_root);
-        _root = null; _image = null; _caption = null; _index = 0;
+        _root = null; _image = null; _caption = null; _index = 0; _hideAfterFrame = -1;
         foreach (var sprite in Slides)
         {
             if (sprite is null) continue;

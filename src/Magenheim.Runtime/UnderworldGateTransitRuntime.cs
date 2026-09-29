@@ -103,7 +103,10 @@ internal static class UnderworldGateTransitRuntime
             var source = new SurfaceAnchor(player.transform.position, player.transform.rotation);
             SurfaceReturn[playerId] = source;
             PersistReturnAnchor(player, source);
-            if (TryMovePlayerToInstance(player, targetContext, target, rotation, false, out diagnostic))
+            BeginLocalLoading(player, "Descending into the Underworld…");
+            var entered = TryMovePlayerToInstance(player, targetContext, target, rotation, false, out diagnostic);
+            FinishLocalLoading(player, entered);
+            if (entered)
             {
                 _log?.LogInfo($"Deep Gate moved player {playerId} into Underworld world instance {identity.DerivedWorldId}.");
                 return true;
@@ -126,14 +129,16 @@ internal static class UnderworldGateTransitRuntime
             return false;
         }
 
-        if (!TryMovePlayerToInstance(
-                player,
-                surfaceContext,
-                returnAnchor.Position + Vector3.up * 0.25f,
-                returnAnchor.Rotation,
-                false,
-                out diagnostic))
-            return false;
+        BeginLocalLoading(player, "Returning to the Surface…");
+        var returned = TryMovePlayerToInstance(
+            player,
+            surfaceContext,
+            returnAnchor.Position + Vector3.up * 0.25f,
+            returnAnchor.Rotation,
+            false,
+            out diagnostic);
+        FinishLocalLoading(player, returned);
+        if (!returned) return false;
 
         SurfaceReturn.Remove(playerId);
         ClearPersistedReturnAnchor(player);
@@ -156,7 +161,12 @@ internal static class UnderworldGateTransitRuntime
             diagnostic = $"World instance {targetInstance} is unavailable.";
             return false;
         }
-        return TryMovePlayerToInstance(player, context, targetPosition, targetRotation, false, out diagnostic);
+        BeginLocalLoading(
+            player,
+            targetInstance.IsUnderworld ? "Descending into the Underworld…" : "Returning to the Surface…");
+        var moved = TryMovePlayerToInstance(player, context, targetPosition, targetRotation, false, out diagnostic);
+        FinishLocalLoading(player, moved);
+        return moved;
     }
 
     private static bool TryMovePlayerToInstance(
@@ -251,20 +261,35 @@ internal static class UnderworldGateTransitRuntime
         }
 
         var rotation = player.transform.rotation;
-        if (!TryMovePlayerToInstance(
-                player,
-                surfaceContext,
-                position + Vector3.up * 0.5f,
-                rotation,
-                true,
-                out diagnostic))
-            return false;
+        BeginLocalLoading(player, "Returning to the Surface…");
+        var returned = TryMovePlayerToInstance(
+            player,
+            surfaceContext,
+            position + Vector3.up * 0.5f,
+            rotation,
+            true,
+            out diagnostic);
+        FinishLocalLoading(player, returned);
+        if (!returned) return false;
 
         SurfaceReturn.Remove(player.GetPlayerID());
         ClearPersistedReturnAnchor(player);
         _log?.LogInfo(
             $"Developer console returned player {player.GetPlayerID()} to the Surface world instance without an anchor.");
         return true;
+    }
+
+    private static void BeginLocalLoading(Player player, string caption)
+    {
+        if (_log is null || player != Player.m_localPlayer) return;
+        UnderworldLoadingScreenRuntime.Show(_log, caption);
+    }
+
+    private static void FinishLocalLoading(Player player, bool success)
+    {
+        if (player != Player.m_localPlayer) return;
+        if (success) UnderworldLoadingScreenRuntime.HideAfterFrames();
+        else UnderworldLoadingScreenRuntime.Hide();
     }
 
     internal static string Describe(Player player)

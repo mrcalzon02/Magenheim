@@ -1,4 +1,4 @@
 {
-  "version": "0.0.145",
-  "description": "0.0.145: Stops cross-layer map serialization stalls, idles empty Underworld simulation, repairs displaced placeable materials, shrinks the Crystal Hearth effect, and corrects Crystal Sentinel facing."
+  "version": "0.0.146",
+  "description": "0.0.146: Keeps Magenheim loading art scoped to Underworld construction and local Deep Gate transfers, with rendered-frame transition visibility instead of replacing Valheim's global loading presentation."
 }
