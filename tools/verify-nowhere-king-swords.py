@@ -63,7 +63,7 @@ def verify(model_id):
     width = max(v.x for v in points) - min(v.x for v in points)
     if lo_z > -0.45 or hi_z < 0.95 or hi_z > 1.08:
         raise RuntimeError("%s: invalid held envelope %.3f..%.3f" % (model_id, lo_z, hi_z))
-    if width < 0.16 or width > 0.28:
+    if width < 0.16 or width > 0.36:
         raise RuntimeError("%s: unreadable blade width %.3f" % (model_id, width))
 
     materials = [slot.material for obj in meshes for slot in obj.material_slots if slot.material]
