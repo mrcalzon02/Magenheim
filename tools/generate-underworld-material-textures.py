@@ -19,29 +19,29 @@ PROXY=64
 
 # key: base RGB 0..1, contrast, roughness mean, motif, optional emissive RGB
 SPECS={
-"worldroot-bark":((.30,.19,.085),.18,205,"wood",None),
-"worldroot-heartwood":((.48,.32,.16),.14,190,"wood",None),
-"understone":((.29,.31,.29),.13,214,"stone",None),
-"forged-iron":((.15,.16,.17),.12,112,"metal",None),
-"glowcap":((.34,.72,.38),.18,128,"fungal",(.10,.40,.13)),
-"flowstone":((.29,.39,.41),.15,186,"stone",None),
-"pale-fibre":((.54,.57,.52),.12,202,"fibre",None),
-"pearl-metal":((.39,.50,.52),.10,104,"metal",None),
-"blackwater-pearl":((.60,.82,.84),.14,92,"pearl",(.06,.22,.27)),
-"slagstone":((.19,.15,.13),.17,222,"stone",None),
-"charred-root":((.16,.075,.035),.18,220,"wood",None),
-"emberiron":((.30,.16,.09),.14,98,"metal",None),
-"ember-heat":((.86,.24,.035),.20,88,"heat",(.72,.08,.01)),
-"rimewood":((.34,.44,.46),.12,180,"wood",None),
-"rimesilver":((.72,.77,.79),.08,72,"metal",None),
-"clear-ice":((.64,.86,.93),.12,62,"ice",(.08,.22,.30)),
-"shardstone":((.25,.22,.28),.16,204,"stone",None),
-"titanbone":((.54,.49,.39),.13,182,"bone",None),
-"fracture-crystal":((.56,.39,.77),.16,78,"crystal",(.20,.07,.36)),
-"rotwood":((.18,.105,.045),.19,224,"wood",None),
-"bone":((.37,.33,.26),.12,188,"bone",None),
-"carrion-amber":((.76,.43,.09),.16,86,"amber",(.34,.10,.01)),
-"sporeweave-fibre":((.30,.40,.23),.15,198,"fibre",None),
+"worldroot-bark":((.30,.19,.085),.18,205,0.00,"wood",None),
+"worldroot-heartwood":((.48,.32,.16),.14,190,0.00,"wood",None),
+"understone":((.29,.31,.29),.13,214,0.00,"stone",None),
+"forged-iron":((.15,.16,.17),.12,112,0.78,"metal",None),
+"glowcap":((.34,.72,.38),.18,128,0.00,"fungal",(.10,.40,.13)),
+"flowstone":((.29,.39,.41),.15,186,0.00,"stone",None),
+"pale-fibre":((.54,.57,.52),.12,202,0.00,"fibre",None),
+"pearl-metal":((.39,.50,.52),.10,104,0.50,"metal",None),
+"blackwater-pearl":((.60,.82,.84),.14,92,0.08,"pearl",(.06,.22,.27)),
+"slagstone":((.19,.15,.13),.17,222,0.00,"stone",None),
+"charred-root":((.16,.075,.035),.18,220,0.00,"wood",None),
+"emberiron":((.30,.16,.09),.14,98,0.84,"metal",None),
+"ember-heat":((.86,.24,.035),.20,88,0.05,"heat",(.72,.08,.01)),
+"rimewood":((.34,.44,.46),.12,180,0.00,"wood",None),
+"rimesilver":((.72,.77,.79),.08,72,0.92,"metal",None),
+"clear-ice":((.64,.86,.93),.12,62,0.00,"ice",(.08,.22,.30)),
+"shardstone":((.25,.22,.28),.16,204,0.00,"stone",None),
+"titanbone":((.54,.49,.39),.13,182,0.00,"bone",None),
+"fracture-crystal":((.56,.39,.77),.16,78,0.00,"crystal",(.20,.07,.36)),
+"rotwood":((.18,.105,.045),.19,224,0.00,"wood",None),
+"bone":((.37,.33,.26),.12,188,0.00,"bone",None),
+"carrion-amber":((.76,.43,.09),.16,86,0.05,"amber",(.34,.10,.01)),
+"sporeweave-fibre":((.30,.40,.23),.15,198,0.00,"fibre",None),
 }
 
 def seed_for(key):
@@ -65,11 +65,12 @@ def motif_value(motif,x,y,phase):
 def clamp(v): return max(0,min(255,int(round(v))))
 
 def build(key,spec):
-    base,contrast,rough_mean,motif,emissive=spec
+    base,contrast,rough_mean,metallic,motif,emissive=spec
     rng=random.Random(seed_for(key)); phase=rng.random()*2*pi
     alb=Image.new("RGB",(SIZE,SIZE)); ap=alb.load()
     rough=Image.new("L",(SIZE,SIZE)); rp=rough.load()
     normal=Image.new("RGB",(SIZE,SIZE)); np=normal.load()
+    metalgloss=Image.new("RGBA",(SIZE,SIZE)); mp=metalgloss.load()
     field=[[0.0]*SIZE for _ in range(SIZE)]
     for y in range(SIZE):
         for x in range(SIZE):
@@ -78,7 +79,10 @@ def build(key,spec):
             v=max(-1,min(1,broad*.78+micro*.22)); field[y][x]=v
             shade=1+contrast*v
             ap[x,y]=tuple(clamp(c*255*shade) for c in base)
-            rp[x,y]=clamp(rough_mean + 28*v + rng.uniform(-5,5))
+            rough=clamp(rough_mean + 28*v + rng.uniform(-5,5))
+            rp[x,y]=rough
+            metal=clamp(metallic*255)
+            mp[x,y]=(metal,metal,metal,255-rough)
     for y in range(SIZE):
         ym=(y-1)%SIZE; yp=(y+1)%SIZE
         for x in range(SIZE):
@@ -89,6 +93,7 @@ def build(key,spec):
     alb.save(OUT/f"{key}-albedo.png")
     rough.save(OUT/f"{key}-roughness.png")
     normal.save(OUT/f"{key}-normal.png")
+    metalgloss.save(OUT/f"{key}-metallic-smoothness.png")
     if emissive:
         em=Image.new("RGB",(SIZE,SIZE)); ep=em.load()
         for y in range(SIZE):

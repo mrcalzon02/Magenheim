@@ -16,7 +16,7 @@ albedos=sorted(DIR.glob("*-albedo.png"))
 if len(albedos)!=23: raise SystemExit(f"Expected 23 Underworld material families, found {len(albedos)}")
 for alb in albedos:
     key=alb.name[:-11]
-    maps={suffix:DIR/f"{key}-{suffix}.png" for suffix in ("albedo","roughness","normal")}
+    maps={suffix:DIR/f"{key}-{suffix}.png" for suffix in ("albedo","roughness","normal","metallic-smoothness")}
     for suffix,path in maps.items():
         if not path.is_file(): raise SystemExit(f"{key}: missing {suffix}")
         im=Image.open(path)
@@ -33,6 +33,9 @@ for alb in albedos:
     nv=flat(n)
     if mean(v[2] for v in nv)<150 or mean(abs(v[0]-128)+abs(v[1]-128) for v in nv)<1.8:
         raise SystemExit(f"{key}: normal relief is invalid or disappears at gameplay scale")
+    mg=Image.open(maps["metallic-smoothness"]).convert("RGBA").resize((64,64),Image.Resampling.LANCZOS)
+    smooth=[p[3] for p in flat(mg)]
+    if pstdev(smooth)<2.5: raise SystemExit(f"{key}: metallic/smoothness map loses gloss variation at gameplay scale")
 expected_emission={"glowcap","blackwater-pearl","ember-heat","clear-ice","fracture-crystal","carrion-amber"}
 actual_emission={p.name[:-13] for p in DIR.glob("*-emission.png")}
 if actual_emission!=expected_emission:

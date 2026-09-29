@@ -12,6 +12,13 @@ args=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 files=[out/'source'/(x+'.blend') for x in args] if args else sorted((out/'source').glob('*.blend'))
 override_path=out/'texture-overrides.json'
 texture_overrides=json.loads(override_path.read_text()) if override_path.is_file() else {}
+def runtime_texture_from_file(source):
+ data=source.read_bytes()
+ if data[:8]!=b'\x89PNG\r\n\x1a\n':raise ValueError('Runtime PBR source is not PNG: '+str(source))
+ name=hashlib.sha256(data).hexdigest()[:16]+'.png'
+ target=out/'textures'/name
+ if not target.exists():target.write_bytes(data)
+ return name
 for file in files:
  if file.resolve().parent != (out/'source').resolve():raise ValueError('Invalid model path')
  bpy.ops.wm.open_mainfile(filepath=str(file))
@@ -73,8 +80,20 @@ for file in files:
     if file.stem.startswith('earth-'):
      image.filepath_raw=str(root/'assets/earth'/(file.stem[6:]+'.png'));image.save()
     image.pack();break
+  pbr_key=material.get('magenheim_material_source_key')
+  normal_texture=metallic_gloss_texture=emission_texture=None
+  emission_value=[v*bs.inputs['Emission Strength'].default_value for v in bs.inputs['Emission Color'].default_value[:3]]
+  if pbr_key:
+   pbr_dir=root/'assets'/'material-source'/'underworld'
+   normal_texture=runtime_texture_from_file(pbr_dir/(pbr_key+'-normal.png'))
+   metallic_gloss_texture=runtime_texture_from_file(pbr_dir/(pbr_key+'-metallic-smoothness.png'))
+   emission_file=pbr_dir/(pbr_key+'-emission.png')
+   if emission_file.is_file():
+    emission_texture=runtime_texture_from_file(emission_file)
+    emission_value=[bs.inputs['Emission Strength'].default_value]*3
   md=dict(doubleSided=not material.use_backface_culling,name=material.get('magenheim_material_name',material.name),color=color,metallic=bs.inputs['Metallic'].default_value,roughness=bs.inputs['Roughness'].default_value,
-          emission=[v*bs.inputs['Emission Strength'].default_value for v in bs.inputs['Emission Color'].default_value[:3]],texture=texture)
+          emission=emission_value,texture=texture,normalTexture=normal_texture,normalScale=.42 if pbr_key else None,
+          metallicGlossTexture=metallic_gloss_texture,emissionTexture=emission_texture)
   vertices=[];normals=[];uv=[];triangles=[];normal_matrix=obj.matrix_world.to_3x3().inverted().transposed()
   for face in mesh.loop_triangles:
    # Drop triangles with no world-space area. verify-model-assets rejects these, and they render
