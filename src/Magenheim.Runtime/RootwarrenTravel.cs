@@ -31,17 +31,30 @@ internal static class RootwarrenTravel
         if (interiorRoot is null) throw new ArgumentNullException(nameof(interiorRoot));
         if (entranceRoom is null) throw new ArgumentNullException(nameof(entranceRoom));
 
-        var anchor = interiorRoot.parent
+        var interiorAnchor = interiorRoot.parent
             ?? throw new InvalidOperationException(
-                "Rootwarren interior root is detached from its entrance anchor.");
+                "Rootwarren interior root is detached from its interior anchor.");
         if (!string.Equals(
-                anchor.name,
+                interiorAnchor.name,
                 RootwarrenEntranceVisuals.InteriorAnchorName,
                 StringComparison.Ordinal))
             throw new InvalidOperationException(
-                "Rootwarren interior root is not attached to the authoritative entrance anchor.");
+                "Rootwarren interior root is not attached to the authoritative buried interior anchor.");
 
-        var entrancePortal = AttachEntrancePortal(anchor);
+        var locationRoot = interiorAnchor.parent
+            ?? throw new InvalidOperationException(
+                "Rootwarren buried interior anchor is detached from its location root.");
+        var exteriorAnchor = locationRoot
+            .GetComponentsInChildren<Transform>(true)
+            .SingleOrDefault(value =>
+                string.Equals(
+                    value.name,
+                    RootwarrenEntranceVisuals.EntrancePortalAnchorName,
+                    StringComparison.Ordinal))
+            ?? throw new InvalidOperationException(
+                "Rootwarren location has no authoritative exterior mouth anchor.");
+
+        var entrancePortal = AttachEntrancePortal(exteriorAnchor);
         var returnPortal = GetOrCreateReturnPortal(entranceRoom.transform);
 
         var room = entranceRoom.GetComponent<Room>()
@@ -54,14 +67,14 @@ internal static class RootwarrenTravel
         var returnLocal = new Vector3(0f, 1.05f, -halfDepth * .78f);
         returnPortal.transform.localPosition = returnLocal;
 
-        var exteriorArrival = anchor.TransformPoint(new Vector3(0f, .45f, 3.4f));
+        var exteriorArrival = exteriorAnchor.TransformPoint(new Vector3(0f, .45f, 3.4f));
         entrancePortal.Configure(
             interiorArrival,
             entranceRoom.transform.rotation,
             "Rootwarren");
         returnPortal.Configure(
             exteriorArrival,
-            anchor.rotation,
+            exteriorAnchor.rotation,
             "Fungal Forest");
     }
 
