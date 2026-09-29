@@ -1,4 +1,17 @@
-# Underworld donor prototype review — 2026-09-21
+# Underworld donor prototype review â€” 2026-09-21
+
+## 2026-09-28 creature visual status correction
+
+The donor prototypes are still **runtime stand-ins**, not a finished retexture/re-body pass.
+Lantern Moth is presently a 0.65-scale Bat with a tint; Sporeling and Capcrawler have committed
+custom source/texture work but still have no runtime model consumer; most later-biome creature
+authoring scripts have not yet produced committed source/runtime assets. The loading-screen
+inhabitant contract now makes this gap player-facing, so creature visual replacement is a priority
+rather than something that can remain indefinitely behind the donor prototype layer.
+
+Lantern Moth is the first explicit donor-replacement benchmark; see
+docs/validation/2026-09-28-lantern-moth-donor-replacement.md.
+
 
 > 0.0.90 scope correction: infrastructure in this task means natural terrain/scenery features, not player construction. No Hammer entries or new player-buildable content are introduced. The 18 console review identities from 0.0.89 are retained only for compatibility; the infrastructure section below is historical. Current work focuses on vegetation, roots, rock formations, banks and lakebeds.
 
