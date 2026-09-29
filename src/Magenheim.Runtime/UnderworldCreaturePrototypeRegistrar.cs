@@ -38,6 +38,8 @@ internal sealed class UnderworldCreaturePrototypeRegistrar : IDisposable
                 var materialCount = UnderworldCreatureBiomeVisuals.Apply(clone, entry);
                 var identity = UnderworldCreatureIdentityPass.Apply(clone, entry);
                 var creatureConfig = new CreatureConfig { Name = entry.Name };
+                foreach (var drop in UnderworldCreatureLootRuntime.OrdinaryDrops(entry))
+                    creatureConfig.AddDropConfig(drop);
                 creatureConfig.AddSpawnConfig(BuildSpawnConfig(entry));
                 if (!CreatureManager.Instance.AddCreature(new CustomCreature(clone, true, creatureConfig)))
                     throw new InvalidOperationException($"Jotunn refused creature registration for '{entry.Prefab}'.");
@@ -49,7 +51,7 @@ internal sealed class UnderworldCreaturePrototypeRegistrar : IDisposable
                 _log.LogWarning($"Underworld prototype {entry.Name} unavailable: {exception.Message}");
             }
         }
-        _log.LogInfo($"Registered {registered}/{UnderworldCreaturePrototypes.All.Length} Underworld creatures with biome-specific native spawns, owned material/VFX identities, native-AI temperament tuning, home-biome tolerances and additive elemental attack riders. Donor rigs, animations, attack definitions and loot remain intact.");
+        _log.LogInfo($"Registered {registered}/{UnderworldCreaturePrototypes.All.Length} Underworld creatures with native spawns, owned material/VFX identities, combat scaling, home-biome tolerances, progression-resource loot and species trophies. Donor rigs, animations and attack definitions remain intact; donor loot is replaced.");
         RegisterInfrastructure();
         Dispose();
     }
