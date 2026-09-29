@@ -68,7 +68,7 @@ def build(key,spec):
     base,contrast,rough_mean,metallic,motif,emissive=spec
     rng=random.Random(seed_for(key)); phase=rng.random()*2*pi
     alb=Image.new("RGB",(SIZE,SIZE)); ap=alb.load()
-    rough=Image.new("L",(SIZE,SIZE)); rp=rough.load()
+    rough_img=Image.new("L",(SIZE,SIZE)); rp=rough_img.load()
     normal=Image.new("RGB",(SIZE,SIZE)); np=normal.load()
     metalgloss=Image.new("RGBA",(SIZE,SIZE)); mp=metalgloss.load()
     field=[[0.0]*SIZE for _ in range(SIZE)]
@@ -79,10 +79,10 @@ def build(key,spec):
             v=max(-1,min(1,broad*.78+micro*.22)); field[y][x]=v
             shade=1+contrast*v
             ap[x,y]=tuple(clamp(c*255*shade) for c in base)
-            rough=clamp(rough_mean + 28*v + rng.uniform(-5,5))
-            rp[x,y]=rough
+            rough_value=clamp(rough_mean + 28*v + rng.uniform(-5,5))
+            rp[x,y]=rough_value
             metal=clamp(metallic*255)
-            mp[x,y]=(metal,metal,metal,255-rough)
+            mp[x,y]=(metal,metal,metal,255-rough_value)
     for y in range(SIZE):
         ym=(y-1)%SIZE; yp=(y+1)%SIZE
         for x in range(SIZE):
@@ -91,7 +91,7 @@ def build(key,spec):
             mag=sqrt(dx*dx+dy*dy+1)
             np[x,y]=(clamp((-.5*dx/mag+.5)*255),clamp((-.5*dy/mag+.5)*255),clamp((.5/mag+.5)*255))
     alb.save(OUT/f"{key}-albedo.png")
-    rough.save(OUT/f"{key}-roughness.png")
+    rough_img.save(OUT/f"{key}-roughness.png")
     normal.save(OUT/f"{key}-normal.png")
     metalgloss.save(OUT/f"{key}-metallic-smoothness.png")
     if emissive:
