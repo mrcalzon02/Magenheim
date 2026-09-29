@@ -60,7 +60,7 @@ internal static class UnderworldCreatureBiomeVisuals
                 var original = originals[slot];
                 if (!original)
                 {
-                    materials[slot] = original;
+                    materials[slot] = original!;
                     continue;
                 }
 
