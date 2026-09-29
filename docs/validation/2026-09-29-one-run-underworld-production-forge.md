@@ -117,16 +117,27 @@ forty material icons. Post-forge admission requires albedo, normal and metallic/
 maps for every one of the twenty-two raw and eighteen refined material models.
 
 
-## Five dungeon families: forge and review parity
+## Ordinary dungeon architecture retirement
 
-The one-run forge now treats all five authored biome dungeon families as equal production citizens:
-Fungal Rootwarren, Blackwater Drowned Vaults, Sulfur Cinderworks, Frozen Rime Sepulcher and Great
-Decay Carrion Catacombs. Each family is rebuilt, contract-verified, provenance-recorded, promoted
-only after a complete 17/17/17 source/GLB/runtime family exists, and then contract-verified again.
+The production forge no longer authors, rebuilds, promotes or renders Rootwarren, Drowned Vault,
+Cinderworks, Rime Sepulcher or Carrion Catacombs as bespoke 17-model dungeon families.
 
-Each family also owns dedicated visual acceptance plates. Rime Sepulcher and Carrion Catacombs now
-match the earlier dungeon pattern: seventeen models, context plus top-down views (34 renders), three
-contact sheets and minimum-file-size completeness gates. The Actions cheap parser covers all five
-dungeon rebuild wrappers, and the post-forge step re-runs all five production contracts before the
-final Core tests and Valheim runtime compilation. A future dungeon added to the production script
-without matching workflow coverage now fails the cheap readiness gate.
+The five ordinary Underworld dungeons now use private clones of live vanilla dungeon architecture,
+governed by `UnderworldVanillaDungeonReuseCatalog`:
+
+- Burial Chambers / Fungal Forest;
+- Sunken Crypts / Blackwater Deep;
+- Infested Mines / Sulfurous Wastes;
+- Frost Caves / Frozen Caverns;
+- Winding Tunnels / Great Decay.
+
+Their minimum contract is 1.5x donor room linear scale and 3.5x live donor min/max room count, with
+vanilla enemy/loot population replaced by Magenheim biome creatures and resources. Because this is
+runtime donor reuse, spending Blender time regenerating five replacement room families would work
+against the current architecture rather than advance it.
+
+The old authored room-kit sources remain repository history/reference material. They are not an
+admission dependency and must not be silently promoted by the one-run production forge.
+
+Deep Fracture remains the bespoke Magenheim dungeon architecture lane and is unaffected by this
+retirement.
