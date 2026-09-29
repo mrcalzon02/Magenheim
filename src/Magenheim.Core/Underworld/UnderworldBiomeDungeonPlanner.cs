@@ -32,7 +32,8 @@ public static class UnderworldBiomeDungeonPlanner
     public static UnderworldBiomeDungeonPlan Build(
         UnderworldDungeonDefinition definition,
         int seed,
-        IEnumerable<string> roomFamilyIds)
+        IEnumerable<string> roomFamilyIds,
+        string? rootFamilyId = null)
     {
         if (definition is null) throw new ArgumentNullException(nameof(definition));
         if (roomFamilyIds is null) throw new ArgumentNullException(nameof(roomFamilyIds));
@@ -55,6 +56,10 @@ public static class UnderworldBiomeDungeonPlanner
                 $"{definition.TargetRoomFamilyMaximum} authored room families; received {families.Length}.");
         if (families.Distinct(StringComparer.Ordinal).Count() != families.Length)
             throw new InvalidOperationException("Biome dungeon room-family identities must be unique.");
+        if (!string.IsNullOrWhiteSpace(rootFamilyId) &&
+            !families.Contains(rootFamilyId, StringComparer.Ordinal))
+            throw new InvalidOperationException(
+                $"Required dungeon root family '{rootFamilyId}' is not present in the authored room kit.");
 
         var random = new Sequence(seed ^ StableHash(definition.Id));
         var pool = new List<RoomToken>();
@@ -68,7 +73,23 @@ public static class UnderworldBiomeDungeonPlanner
                 pool.Add(new RoomToken(family, use));
         }
 
-        Shuffle(pool, random);
+        if (!string.IsNullOrWhiteSpace(rootFamilyId))
+        {
+            var rootIndex = pool.FindIndex(token =>
+                string.Equals(token.Family, rootFamilyId, StringComparison.Ordinal) &&
+                token.Use == 1);
+            if (rootIndex < 0)
+                throw new InvalidOperationException(
+                    $"Dungeon root family '{rootFamilyId}' did not produce its canonical first use.");
+            var root = pool[rootIndex];
+            pool.RemoveAt(rootIndex);
+            Shuffle(pool, random);
+            pool.Insert(0, root);
+        }
+        else
+        {
+            Shuffle(pool, random);
+        }
 
         var rooms = new List<UnderworldDungeonRoomPlacement>(pool.Count);
         var connections = new List<UnderworldDungeonConnection>(pool.Count + pool.Count / 8);
