@@ -1,3 +1,13 @@
+## 0.0.153 - Biome-cell massifs and progression geography
+
+- Removes the independent 3,072m random spire/plateau terrain grid. Rare height extremes are now
+  variants of the same jittered Voronoi cells that own biome geography.
+- Roughly 5.5% of eligible land cells become broad 1.5–3.3 km massif uplifts; arrival and edge-ocean
+  bands are excluded, and Blackwater seams carve after uplift.
+- Nominal biome height now rises in progression order from Fungal Forest through Great Decay.
+- Biome scoring gains a broad inner-to-outer progression preference without hard radial rings.
+- Widens nominal Blackwater cellular seams from 320m to 440m and increases plasma width variation.
+
 ## 0.0.102 - Blackwater Deep custom ecology
 
 - Replaces Blackwater's seven canopy and twelve cover slots with sixteen authored scenery and
