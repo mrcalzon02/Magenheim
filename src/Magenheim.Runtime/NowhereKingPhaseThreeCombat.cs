@@ -3,23 +3,201 @@ using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>Server-owned 35%-0% Broken Crown phase, including the telegraphed gravity inversion wave.</summary>
+/// <summary>Server-owned 35%-0% leap and ground-impact phase for the Nowhere King.</summary>
 internal sealed class NowhereKingPhaseThreeCombat : MonoBehaviour
 {
-    private const float Upper=.35f,GravityRadius=27f,GravityWindup=2.25f;
-    private Character _king = null!; private ZNetView _view = null!; private Vector3 _center; private bool _configured,_busy; private float _next; private int _sequence; private GameObject? _gravityTelegraph;
+    private const float Upper=.35f;
+    private Character _king=null!;
+    private ZNetView _view=null!;
+    private Vector3 _center;
+    private bool _configured,_busy;
+    private float _next;
+    private int _sequence;
+    private GameObject? _marker;
+
     internal void Configure(Vector3 center){_center=center;_configured=true;}
-    internal void ResetState(){StopAllCoroutines();DestroyGravityTelegraph();_busy=false;_next=0f;_sequence=0;}
+    internal void ResetState(){StopAllCoroutines();DestroyMarker();_busy=false;_next=0f;_sequence=0;}
     private void Awake(){_king=GetComponent<Character>();_view=GetComponent<ZNetView>();}
-    private bool EncounterEngaged(){var link=GetComponent<NowhereKingEncounterLink>();return link!=null&&link.IsEncounterEngaged;}
+    private bool Engaged(){var link=GetComponent<NowhereKingEncounterLink>();return link!=null&&link.IsEncounterEngaged;}
     private bool Staggered(){var stagger=GetComponent<NowhereKingRoyalStagger>();return stagger!=null&&stagger.IsOpening;}
-    private void Update(){if(!_configured||!EncounterEngaged()||_busy||Staggered()||_king==null||_king.IsDead()||_view==null||!_view.IsValid()||!_view.IsOwner()||Time.time<_next||_king.GetHealthPercentage()>Upper)return;var target=Target();if(target==null)return;switch((_sequence++)%4){case 0:BrokenCrown(target);break;case 1:StartCoroutine(GravityInversion());break;case 2:KingsJudgment(target);break;default:NoKingdomRemains();break;}}
-    private Player? Target(){Player? best=null;var bestSq=float.MaxValue;foreach(var p in Player.GetAllPlayers()){if(p==null||p.IsDead()||p.gameObject.scene.handle!=gameObject.scene.handle)continue;var d=p.transform.position-_center;if(Mathf.Abs(d.x)>34f||Mathf.Abs(d.z)>38f)continue;var sq=(p.transform.position-transform.position).sqrMagnitude;if(sq<bestSq){best=p;bestSq=sq;}}return best;}
-    private void BrokenCrown(Player target){Strike(target,92f,38f,1.45f);_next=Time.time+2.1f;}
-    private void KingsJudgment(Player target){var d=target.transform.position-transform.position;d.y=0f;if(d.magnitude<=12f)Strike(target,132f,58f,1.8f);_next=Time.time+3.6f;}
-    private void NoKingdomRemains(){foreach(var p in Player.GetAllPlayers()){if(p==null||p.IsDead()||p.gameObject.scene.handle!=gameObject.scene.handle)continue;var d=p.transform.position-_center;d.y=0f;var r=d.magnitude;if(r>=8f&&r<=22f)Strike(p,58f,46f,1.15f);}_next=Time.time+5.2f;}
-    private IEnumerator GravityInversion(){_busy=true;_gravityTelegraph=new GameObject("NowhereKing_GravityTelegraph");_gravityTelegraph.transform.position=transform.position+Vector3.up*.25f;var light=_gravityTelegraph.AddComponent<Light>();light.color=new Color(.56f,.22f,.92f);light.range=7f;light.intensity=2.8f;var elapsed=0f;while(elapsed<GravityWindup){if(!EncounterEngaged()||Staggered()){DestroyGravityTelegraph();_next=Time.time+3f;_busy=false;yield break;}elapsed+=Time.deltaTime;light.range=Mathf.Lerp(7f,18f,elapsed/GravityWindup);light.intensity=Mathf.Lerp(2.8f,6f,elapsed/GravityWindup);yield return null;}DestroyGravityTelegraph();if(EncounterEngaged())ReleaseGravityWave();_next=Time.time+10.5f;_busy=false;}
-    private void DestroyGravityTelegraph(){if(_gravityTelegraph!=null)Destroy(_gravityTelegraph);_gravityTelegraph=null;}
-    private void ReleaseGravityWave(){foreach(var p in Player.GetAllPlayers()){if(p==null||p.IsDead()||p.gameObject.scene.handle!=gameObject.scene.handle)continue;var offset=p.transform.position-transform.position;var planar=new Vector3(offset.x,0f,offset.z);var distance=planar.magnitude;if(distance>GravityRadius)continue;var strength=1f-Mathf.Clamp01(distance/GravityRadius);var outward=planar.sqrMagnitude>.01f?planar.normalized:transform.forward;var body=p.GetComponent<Rigidbody>();if(body!=null){var launch=Vector3.up*Mathf.Lerp(7.5f,13.5f,strength)+outward*Mathf.Lerp(2f,5f,strength);body.linearVelocity=new Vector3(body.linearVelocity.x,Mathf.Max(body.linearVelocity.y,0f),body.linearVelocity.z);body.AddForce(launch,ForceMode.VelocityChange);}Strike(p,24f,34f,.7f);}var pulse=new GameObject("NowhereKing_GravityRelease");pulse.transform.position=transform.position+Vector3.up*.3f;var light=pulse.AddComponent<Light>();light.color=new Color(.82f,.66f,1f);light.range=GravityRadius;light.intensity=7f;Destroy(pulse,.45f);}
-    private void Strike(Character target,float slash,float blunt,float stagger){if(target==null||target.IsDead())return;var hit=new HitData();hit.m_point=target.GetCenterPoint();hit.m_dir=(target.transform.position-transform.position).normalized;hit.m_damage.m_slash=slash;hit.m_damage.m_blunt=blunt;hit.m_staggerMultiplier=stagger;hit.SetAttacker(_king);target.Damage(hit);}
+
+    private void Update()
+    {
+        if(!_configured||_busy||!Engaged()||Staggered()||_king==null||_king.IsDead()||
+           _view==null||!_view.IsValid()||!_view.IsOwner()||Time.time<_next||
+           _king.GetHealthPercentage()>Upper)return;
+
+        var target=Target();
+        if(target==null)return;
+        switch((_sequence++)%4)
+        {
+            case 0:StartCoroutine(KingsDescent(target));break;
+            case 1:StartCoroutine(Thronebreaker());break;
+            case 2:StartCoroutine(RuinousPursuit(target));break;
+            default:StartCoroutine(NoKingdomRemains(target));break;
+        }
+    }
+
+    private IEnumerator KingsDescent(Player target)
+    {
+        _busy=true;
+        var landing=ClampToArena(target.transform.position+Planar(target.transform.forward)*1.5f);
+        _marker=Marker("NowhereKing_DescentLanding",landing,new Color(.48f,.08f,.16f),7f,3.2f);
+        Face(landing);
+        yield return new WaitForSeconds(.85f);
+        DestroyMarker();
+        yield return LeapTo(landing,.92f,7.5f);
+        Impact(landing,7.2f,165f,2.1f);
+        Flash(landing,9f,5.5f);
+        _next=Time.time+2.7f;_busy=false;
+    }
+
+    private IEnumerator Thronebreaker()
+    {
+        _busy=true;
+        var point=transform.position;
+        _marker=Marker("NowhereKing_Thronebreaker",point,new Color(.62f,.15f,.08f),8f,3.8f);
+        yield return new WaitForSeconds(1.15f);
+        DestroyMarker();
+        Impact(point,10.5f,132f,1.85f);
+        Flash(point,12f,6f);
+        _next=Time.time+3.2f;_busy=false;
+    }
+
+    private IEnumerator RuinousPursuit(Player target)
+    {
+        _busy=true;
+        for(var hop=0;hop<3&&Engaged();hop++)
+        {
+            if(target==null||target.IsDead())break;
+            var landing=ClampToArena(target.transform.position);
+            _marker=Marker("NowhereKing_PursuitLanding",landing,new Color(.42f,.05f,.12f),4.5f,2.6f);
+            Face(landing);
+            yield return new WaitForSeconds(.38f);
+            DestroyMarker();
+            yield return LeapTo(landing,.52f,3.8f);
+            Impact(landing,4.6f,58f,1.0f);
+            yield return new WaitForSeconds(.18f);
+        }
+        _next=Time.time+2.4f;_busy=false;
+    }
+
+    private IEnumerator NoKingdomRemains(Player target)
+    {
+        _busy=true;
+        for(var slam=0;slam<3&&Engaged();slam++)
+        {
+            var toward=target!=null&&!target.IsDead()?Planar(target.transform.position-transform.position):Planar(transform.forward);
+            if(toward.sqrMagnitude>.01f)
+            {
+                toward.Normalize();
+                var step=ClampToArena(transform.position+toward*3.2f);
+                transform.position=step;
+                Face(target!=null?target.transform.position:step+toward);
+            }
+            var radius=6f+slam*1.5f;
+            _marker=Marker("NowhereKing_NoKingdomRemains",transform.position,new Color(.55f,.06f,.10f),radius,3f+slam);
+            yield return new WaitForSeconds(.58f+slam*.12f);
+            DestroyMarker();
+            Impact(transform.position,radius,72f+slam*30f,1.2f+slam*.25f);
+            Flash(transform.position,radius+2f,4.5f+slam);
+            yield return new WaitForSeconds(.24f);
+        }
+        _next=Time.time+4.4f;_busy=false;
+    }
+
+    private IEnumerator LeapTo(Vector3 landing,float duration,float apex)
+    {
+        var start=transform.position;
+        var body=GetComponent<Rigidbody>();
+        if(body!=null){body.linearVelocity=Vector3.zero;body.angularVelocity=Vector3.zero;}
+        var elapsed=0f;
+        while(elapsed<duration&&Engaged())
+        {
+            elapsed+=Time.deltaTime;
+            var t=Mathf.Clamp01(elapsed/duration);
+            var point=Vector3.Lerp(start,landing,t);
+            point.y+=Mathf.Sin(t*Mathf.PI)*apex;
+            transform.position=point;
+            if(body!=null)body.linearVelocity=Vector3.zero;
+            yield return null;
+        }
+        transform.position=landing;
+        if(body!=null)body.linearVelocity=Vector3.zero;
+    }
+
+    private void Impact(Vector3 point,float radius,float centerDamage,float stagger)
+    {
+        foreach(var p in Player.GetAllPlayers())
+        {
+            if(!Valid(p))continue;
+            var distance=Planar(p.transform.position-point).magnitude;
+            if(distance>radius)continue;
+            var falloff=1f-Mathf.Clamp01(distance/radius);
+            var damage=centerDamage*Mathf.Lerp(.35f,1f,falloff);
+            Hit(p,damage,Mathf.Lerp(.75f,stagger,falloff));
+        }
+    }
+
+    private Player? Target()
+    {
+        Player? best=null;var bestSq=float.MaxValue;
+        foreach(var p in Player.GetAllPlayers())
+        {
+            if(!Valid(p))continue;
+            var sq=(p.transform.position-transform.position).sqrMagnitude;
+            if(sq<bestSq){best=p;bestSq=sq;}
+        }
+        return best;
+    }
+
+    private bool Valid(Player? p)
+    {
+        if(p==null||p.IsDead()||p.gameObject.scene.handle!=gameObject.scene.handle)return false;
+        var d=p.transform.position-_center;
+        return Mathf.Abs(d.x)<=34f&&Mathf.Abs(d.z)<=38f;
+    }
+
+    private void Face(Vector3 point)
+    {
+        var planar=Planar(point-transform.position);
+        if(planar.sqrMagnitude>.01f)transform.rotation=Quaternion.LookRotation(planar.normalized);
+    }
+
+    private Vector3 ClampToArena(Vector3 requested)
+    {
+        var local=requested-_center;
+        local.x=Mathf.Clamp(local.x,-24f,24f);
+        local.z=Mathf.Clamp(local.z,-28f,28f);
+        return _center+local;
+    }
+
+    private GameObject Marker(string name,Vector3 point,Color color,float range,float intensity)
+    {
+        var marker=new GameObject(name);
+        marker.transform.position=point+Vector3.up*.18f;
+        var light=marker.AddComponent<Light>();
+        light.color=color;light.range=range;light.intensity=intensity;
+        return marker;
+    }
+
+    private void Flash(Vector3 point,float range,float intensity)
+    {
+        var marker=Marker("NowhereKing_Impact",point,new Color(.78f,.18f,.10f),range,intensity);
+        Destroy(marker,.42f);
+    }
+
+    private void DestroyMarker(){if(_marker!=null)Destroy(_marker);_marker=null;}
+    private static Vector3 Planar(Vector3 value)=>new(value.x,0f,value.z);
+
+    private void Hit(Character target,float blunt,float stagger)
+    {
+        var hit=new HitData();
+        hit.m_point=target.GetCenterPoint();
+        hit.m_dir=(target.transform.position-transform.position).normalized;
+        hit.m_damage.m_blunt=blunt;
+        hit.m_staggerMultiplier=stagger;
+        hit.SetAttacker(_king);
+        target.Damage(hit);
+    }
 }
