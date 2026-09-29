@@ -19,7 +19,7 @@ public sealed record UnderworldAuthoritySnapshot(
 
 public static class UnderworldAuthorityComposer
 {
-    public const int CurrentSchemaVersion = 8;
+    public const int CurrentSchemaVersion = 9;
 
     public static UnderworldAuthoritySnapshot Compose(
         UnderworldDefinitionSet content,
@@ -67,7 +67,7 @@ public static class UnderworldAuthorityComposer
             .Append("instance-contract=").Append(UnderworldInstanceContract.ContractId).Append('\n')
             .Append("content=").Append(contentFingerprint).Append('\n')
             .Append("architecture=").Append(architectureFingerprint).Append('\n')
-            .Append("terrain-shape=").Append(UnderworldMonumentalLandforms.AlgorithmId).Append('\n')
+            .Append("rare-cell-elevation=").Append(UnderworldTerrainLifecycle.RareCellElevationAlgorithmId).Append('\n')
             .Append("biome-layout=").Append(UnderworldTerrainLifecycle.BiomeLayoutAlgorithmId).Append('\n')
             .Append("edge-ocean=").Append(UnderworldTerrainLifecycle.EdgeOceanAlgorithmId).Append('\n')
             .Append("biome-relief=").Append(UnderworldBiomeTerrain.AlgorithmId).Append('\n')
