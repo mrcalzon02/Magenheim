@@ -53,27 +53,34 @@ internal sealed class RootwarrenInteriorBinder
         if (locationContainer is null)
             throw new ArgumentNullException(nameof(locationContainer));
 
-        var anchor = locationContainer
-            .GetComponentsInChildren<Transform>(includeInactive: true)
-            .SingleOrDefault(value =>
-                string.Equals(
-                    value.name,
-                    RootwarrenEntranceVisuals.InteriorAnchorName,
-                    StringComparison.Ordinal))
+        var transforms = locationContainer
+            .GetComponentsInChildren<Transform>(includeInactive: true);
+        var portalAnchor = transforms.SingleOrDefault(value =>
+            string.Equals(
+                value.name,
+                RootwarrenEntranceVisuals.EntrancePortalAnchorName,
+                StringComparison.Ordinal))
             ?? throw new InvalidOperationException(
-                $"Rootwarren location '{locationContainer.name}' has no authoritative entrance anchor '{RootwarrenEntranceVisuals.InteriorAnchorName}'.");
+                $"Rootwarren location '{locationContainer.name}' has no authoritative mouth anchor '{RootwarrenEntranceVisuals.EntrancePortalAnchorName}'.");
+        var interiorAnchor = transforms.SingleOrDefault(value =>
+            string.Equals(
+                value.name,
+                RootwarrenEntranceVisuals.InteriorAnchorName,
+                StringComparison.Ordinal))
+            ?? throw new InvalidOperationException(
+                $"Rootwarren location '{locationContainer.name}' has no authoritative interior anchor '{RootwarrenEntranceVisuals.InteriorAnchorName}'.");
 
-        var existing = anchor.Cast<Transform>()
+        var existing = interiorAnchor.Cast<Transform>()
             .SingleOrDefault(value =>
                 string.Equals(value.name, InteriorRootName, StringComparison.Ordinal));
         if (existing is not null)
             throw new InvalidOperationException(
                 "Rootwarren interior authority is already attached.");
 
-        RootwarrenTravel.AttachEntrancePortal(anchor);
+        RootwarrenTravel.AttachEntrancePortal(portalAnchor);
 
         var root = new GameObject(InteriorRootName);
-        root.transform.SetParent(anchor, false);
+        root.transform.SetParent(interiorAnchor, false);
         root.transform.localPosition = Vector3.zero;
         root.transform.localRotation = Quaternion.identity;
         root.AddComponent<ZNetView>();
