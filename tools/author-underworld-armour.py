@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Author all twenty-four owned Underworld armour pieces on the canonical Valheim player bone order.
 
-The sources are genuine skinned wearable art. They are not runtime-admitted by ModelAssets because
-.model.json intentionally has no vertex-weight stream; Blender/GLB retain the armature and weights
-for the later attach_skin/asset-bundle admission path.
+The sources are genuine skinned wearable art. The production exporter serializes their canonical
+player-bone weights into .model.json so ModelAssets can rebuild SkinnedMeshRenderer equipment under
+Valheim's native attach_skin hierarchy without an AssetBundle-only parallel pipeline.
 """
 import json
 import math

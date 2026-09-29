@@ -42,7 +42,18 @@ pbr_prefixes=("rootforged-","underworld-station-","underworld-tool-","underworld
 pbr_models=[x for x in production_ids if x.startswith(pbr_prefixes)]
 for model_id in pbr_models:
     doc=json.loads((RUNTIME/(model_id+".model.json")).read_text())
+    if model_id.startswith("underworld-armor-"):
+        rig=doc.get("skinRig") or {}
+        if rig.get("kind")!="valheim-player-attach-skin" or rig.get("root")!="Hips" or len(rig.get("bones") or [])!=53:
+            raise SystemExit(f"{model_id}: canonical 53-bone Valheim attach_skin contract missing")
     for index,part in enumerate(doc.get("parts",[])):
+        if model_id.startswith("underworld-armor-"):
+            weights=part.get("skinWeights")
+            if not isinstance(weights,list) or len(weights)!=len(part.get("vertices") or []):
+                raise SystemExit(f"{model_id}/part {index}: skin weights do not match exported vertices")
+            for vertex,row in enumerate(weights):
+                if not 1<=len(row)<=4 or abs(sum(float(pair[1]) for pair in row)-1.0)>.002:
+                    raise SystemExit(f"{model_id}/part {index}/vertex {vertex}: invalid normalized skin weights")
         material=part.get("material") or {}
         for field in ("texture","normalTexture","metallicGlossTexture"):
             name=material.get(field)
