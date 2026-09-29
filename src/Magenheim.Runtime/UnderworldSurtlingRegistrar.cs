@@ -87,7 +87,8 @@ internal sealed class UnderworldSurtlingRegistrar : IDisposable
                     HuntPlayer = false,
                 });
             }
-            CreatureManager.Instance.AddCreature(new CustomCreature(clone, true, creatureConfig));
+            if (!CreatureManager.Instance.AddCreature(new CustomCreature(clone, true, creatureConfig)))
+                throw new InvalidOperationException($"Jotunn refused Surtling creature registration for '{entry.Prefab}'.");
             _log.LogInfo($"Underworld Surtling {entry.Prefab} on {entry.Donor}: {report()}; {ragdolls} death ragdoll(s) re-bodied; {stripped} donor armour visual(s) removed. Home: {entry.Home}.");
         }
         catch
