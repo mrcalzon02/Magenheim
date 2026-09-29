@@ -85,18 +85,23 @@ internal sealed class RootwarrenInteriorBinder
 
 internal sealed class RootwarrenInteriorRuntime : MonoBehaviour
 {
-    private bool _built;
+    private readonly List<PendingPopulation> _pendingPopulation = new();
+    private RootwarrenEncounterAuthority? _authority;
+    private int _locationSeed;
+    private bool _geometryBuilt;
+    private bool _populationApplied;
 
     private void Start()
     {
-        if (_built) return;
+        if (_geometryBuilt) return;
 
         UnderworldFungalRootwarrenCatalog.Validate();
-        var authority = GetComponent<RootwarrenEncounterAuthority>()
+        _authority = GetComponent<RootwarrenEncounterAuthority>()
             ?? throw new InvalidOperationException(
                 "Rootwarren interior has no persistent encounter authority.");
 
-        var seed = StableLocationSeed(transform.position);
+        _locationSeed = StableLocationSeed(transform.position);
+        var seed = _locationSeed;
         var topology = UnderworldBiomeDungeonPlanner.Build(
             UnderworldDungeonCatalog.FungalForest,
             seed,
@@ -138,12 +143,10 @@ internal sealed class RootwarrenInteriorRuntime : MonoBehaviour
                 ?? throw new InvalidOperationException(
                     $"Rootwarren room '{instance.name}' has no Room component.");
             _ = room;
-            RootwarrenEncounterSpawner.Populate(
+            _pendingPopulation.Add(new PendingPopulation(
                 instance,
                 placement,
-                definition,
-                authority,
-                seed);
+                definition));
 
             if (string.Equals(
                     placement.InstanceId,
@@ -157,8 +160,37 @@ internal sealed class RootwarrenInteriorRuntime : MonoBehaviour
             throw new InvalidOperationException(
                 "Rootwarren did not instantiate its authored entrance room.");
         RootwarrenTravel.Bind(transform, entranceRoom);
-        _built = true;
+        _geometryBuilt = true;
+        TryPopulate();
     }
+
+    private void Update()
+    {
+        if (!_geometryBuilt || _populationApplied) return;
+        TryPopulate();
+    }
+
+    private void TryPopulate()
+    {
+        var authority = _authority;
+        if (authority is null || !authority.HasAuthority) return;
+
+        foreach (var pending in _pendingPopulation)
+            RootwarrenEncounterSpawner.Populate(
+                pending.Room,
+                pending.Placement,
+                pending.Definition,
+                authority,
+                _locationSeed);
+
+        _pendingPopulation.Clear();
+        _populationApplied = true;
+    }
+
+    private sealed record PendingPopulation(
+        GameObject Room,
+        UnderworldDungeonRoomPlacement Placement,
+        UnderworldDungeonRoomDefinition Definition);
 
     internal static int StableLocationSeed(Vector3 worldPosition)
     {
