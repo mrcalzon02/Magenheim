@@ -135,6 +135,36 @@ Spawn IDs (`spawn <id> 1`):
 - Underworld creatures (native biome spawns plus direct review): `Magenheim_Underworld_Prototype_<NameWithoutSpaces>` (see docs/UNDERWORLD_CONTENT_PROTOTYPES.md)
 - Underworld resource items and pickups: see docs/UNDERWORLD_RESOURCE_MAPPING.md
 
+## Deepstone Conclave model / material acceptance
+
+The six canonical Deepstones now use distinct multi-part runtime models instead of six instances of
+the old generic standing-stone mesh.
+
+1. Inspect all six stones at the Conclave in normal Underworld lighting and fog. Confirm each one is
+   immediately distinguishable by silhouette and surface language before reading hover text:
+   Bloom (roots/glowcaps), Tide (barnacle/shell/pearl), Cinder (basalt/ember fissures), Rime
+   (ice/rime growth), Fracture (detached shard geometry/violet seams), Decay (root/bone/amber rot).
+2. Walk to within one metre of every stone and inspect the authored surface textures. No visible
+   renderer may be flat untextured grey, magenta, donor-projected, or uniformly white. Stone,
+   crystal, timber, bone and liquid material families must sample their owned authored UV textures.
+3. Inspect the carved Deepstone glyph on both ordinary and activated stones. Before activation it
+   should remain readable but restrained; after the canonical trophy/boon activation it should
+   brighten materially and the local light should become stronger without washing the whole
+   Conclave.
+4. Save/reload after activating a stone. The brighter awakened state must reconstruct from the
+   authoritative Deepstone persistent state rather than resetting visually.
+5. Repeat activation/reload on a second peer. Progression authority remains server-owned, while both
+   peers must agree on which stones visibly appear awakened.
+6. Walk and jump around every base. Only the primary stone core is collidable. Decorative roots,
+   shells, icicles, shards, amber sacs and bones must not create invisible snag points.
+7. Inspect the central Descent Monolith separately. It must use
+   `underworld-descent-monolith`, not the old standing-stone mesh.
+8. Check performance at the centre with all six stones in view. Their local point lights and
+   emissive materials must remain bounded and must not create obvious frame spikes or excessive
+   overlapping illumination.
+9. Confirm Surface contains zero Conclave objects in a normal world session; this visual pass must
+   not regress the detached-world centre admission boundary.
+
 ## Underworld creature spawn and skin acceptance
 
 Enter each Underworld biome normally and spend at least one native spawn interval moving through
