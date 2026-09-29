@@ -1,0 +1,28 @@
+{
+  "blender_version": "5.0.0",
+  "regenerate": [
+    "underworld-material-library",
+    "crystal-weapon-models",
+    "weapon-icons",
+    "underworld-weapon-models",
+    "rootforged-models",
+    "rootforged-icons",
+    "underworld-station-models",
+    "underworld-tool-models",
+    "underworld-armour-models"
+  ],
+  "verify_only": [
+    "staff-icons",
+    "crystal-tier-icons"
+  ],
+  "review_prefixes": [
+    "crystal-weapon-",
+    "underworld-weapon-",
+    "rootforged-",
+    "underworld-station-",
+    "underworld-tool-",
+    "underworld-armor-",
+    "staff-",
+    "Magenheim_Staff_"
+  ]
+}

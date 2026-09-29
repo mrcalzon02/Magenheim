@@ -24,6 +24,8 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 
+if (!$PSBoundParameters.ContainsKey('Blender') -and $env:MAGENHEIM_BLENDER) { $Blender = $env:MAGENHEIM_BLENDER }
+
 $script = Join-Path $PSScriptRoot ($Tool -replace '\.py$', '') 
 $script = "$script.py"
 if (!(Test-Path -LiteralPath $script)) { throw "No such Blender tool: $script" }

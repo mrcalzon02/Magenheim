@@ -115,7 +115,6 @@
         "assets/models/runtime/crystal-weapon-*.model.json"
       ],
       "hash": "generator-only",
-      "generator_sha256": "c4b57be5c451c6605f3bb19ff39835c19d51de84ca4142e81b606f12017e95d9",
       "output_sha256": {
         "assets/models/glb/crystal-weapon-atgeir.glb": null,
         "assets/models/glb/crystal-weapon-axe.glb": null,
@@ -149,9 +148,11 @@
         "assets/models/source/crystal-weapon-sword.blend": null
       },
       "inputs": [
-        "tools/magenheim_blender_kit.py"
-      ],
-      "inputs_sha256": "2695f6532b90c599e28c35406d9853bf2f2eb27452ac998c8f57fd192471efb7"
+        "tools/magenheim_blender_kit.py",
+        "tools/rebuild-crystal-weapons.ps1",
+        "tools/export-model-assets.py",
+        "tools/model_surface_authoring.py"
+      ]
     },
     {
       "id": "weapon-icons",
@@ -165,7 +166,6 @@
       "outputs": [
         "assets/earth/crystal-weapon-*.icon.png"
       ],
-      "generator_sha256": "81d764240e9c1ab91012203e39eb3b3fa7992af2fc4ac278541f78a8a82baaf7",
       "output_sha256": {
         "assets/earth/crystal-weapon-atgeir.icon.png": null,
         "assets/earth/crystal-weapon-axe.icon.png": null,
@@ -178,7 +178,12 @@
         "assets/earth/crystal-weapon-spear.icon.png": null,
         "assets/earth/crystal-weapon-sword.icon.png": null
       },
-      "hash": "generator-only"
+      "hash": "generator-only",
+      "inputs": [
+        "tools/author-crystal-weapons.py",
+        "tools/magenheim_blender_kit.py",
+        "tools/render-weapon-icons.py"
+      ]
     },
     {
       "id": "crystal-tier-icons",
@@ -366,7 +371,6 @@
         "assets/models/runtime/rootforged-*.model.json"
       ],
       "hash": "generator-only",
-      "generator_sha256": "91479368aebadb2429b6b469054e06e36ab688a22cf606dc3d55a0ad2e5cf799",
       "output_sha256": {
         "assets/models/glb/rootforged-great-column-plinth.glb": null,
         "assets/models/glb/rootforged-iron-banded-worldroot-beam-4m.glb": null,
@@ -419,7 +423,15 @@
         "assets/models/source/rootforged-worldroot-pillar-8m.blend": null,
         "assets/models/source/rootforged-worldroot-t-brace-4m.blend": null,
         "assets/models/source/rootforged-worldroot-y-brace-4m.blend": null
-      }
+      },
+      "inputs": [
+        "default-data/foundation.json",
+        "tools/rebuild-rootforged-assets.ps1",
+        "tools/export-model-assets.py",
+        "tools/model_surface_authoring.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py"
+      ]
     },
     {
       "id": "rootforged-icons",
@@ -435,7 +447,6 @@
         "assets/earth/rootforged-*.icon.png"
       ],
       "hash": "generator-only",
-      "generator_sha256": "02c67018c0f325db9881f3ca8e4e4bb376a272d8b5189b91b04b21a92152e60a",
       "output_sha256": {
         "assets/earth/rootforged-great-column-plinth.icon.png": null,
         "assets/earth/rootforged-iron-banded-worldroot-beam-4m.icon.png": null,
@@ -454,7 +465,11 @@
         "assets/earth/rootforged-worldroot-pillar-8m.icon.png": null,
         "assets/earth/rootforged-worldroot-t-brace-4m.icon.png": null,
         "assets/earth/rootforged-worldroot-y-brace-4m.icon.png": null
-      }
+      },
+      "inputs": [
+        "tools/author-rootforged-placeables.py",
+        "tools/render-rootforged-icons.py"
+      ]
     },
     {
       "id": "underworld-surtling-models",
@@ -862,7 +877,7 @@
     },
     {
       "id": "underworld-station-models",
-      "generator": "tools/rebuild-underworld-stations.ps1",
+      "generator": "tools/author-underworld-stations.py",
       "command": [
         "pwsh",
         "-NoProfile",
@@ -895,7 +910,6 @@
         "assets/models/runtime/underworld-station-crown-reliquary.model.json",
         "assets/earth/underworld-station-crown-reliquary.icon.png"
       ],
-      "generator_sha256": "896ed848abe62e9584b8c53a41f72790e10562dd32e47e1a82f82dc13788fdb3",
       "output_sha256": {
         "assets/models/source/underworld-station-mycelial-bench.blend": null,
         "assets/models/glb/underworld-station-mycelial-bench.glb": null,
@@ -922,11 +936,19 @@
         "assets/models/runtime/underworld-station-crown-reliquary.model.json": null,
         "assets/earth/underworld-station-crown-reliquary.icon.png": null
       },
-      "hash": "generator-only"
+      "hash": "generator-only",
+      "inputs": [
+        "tools/rebuild-underworld-stations.ps1",
+        "tools/render-underworld-station-icons.py",
+        "tools/export-model-assets.py",
+        "tools/model_surface_authoring.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py"
+      ]
     },
     {
       "id": "underworld-tool-models",
-      "generator": "tools/rebuild-underworld-tools.ps1",
+      "generator": "tools/author-underworld-tools.py",
       "command": [
         "pwsh",
         "-NoProfile",
@@ -985,11 +1007,19 @@
         "assets/models/runtime/underworld-tool-defiant-censer.model.json": null,
         "assets/earth/underworld-tool-defiant-censer.icon.png": null
       },
-      "hash": "generator-only"
+      "hash": "generator-only",
+      "inputs": [
+        "tools/rebuild-underworld-tools.ps1",
+        "tools/render-underworld-tool-icons.py",
+        "tools/export-model-assets.py",
+        "tools/model_surface_authoring.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py"
+      ]
     },
     {
       "id": "underworld-armour-models",
-      "generator": "tools/rebuild-underworld-armour.ps1",
+      "generator": "tools/author-underworld-armour.py",
       "command": [
         "pwsh",
         "-NoProfile",
@@ -1192,7 +1222,59 @@
         "assets/models/runtime/underworld-armor-defiant-cape.model.json": null,
         "assets/earth/underworld-armor-defiant-cape.icon.png": null
       },
-      "hash": "generator-only"
+      "hash": "generator-only",
+      "inputs": [
+        "tools/rebuild-underworld-armour.ps1",
+        "tools/render-underworld-armour-icons.py",
+        "tools/export-model-assets.py",
+        "tools/model_surface_authoring.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py",
+        "tools/verify-underworld-armour.py"
+      ]
+    },
+    {
+      "id": "underworld-material-library",
+      "generator": "tools/generate-underworld-material-textures.py",
+      "command": [
+        "python",
+        "tools/generate-underworld-material-textures.py"
+      ],
+      "outputs": [
+        "assets/material-source/underworld/*.png"
+      ],
+      "output_sha256": {}
+    },
+    {
+      "id": "underworld-weapon-models",
+      "generator": "tools/author-underworld-weapons.py",
+      "command": [
+        "pwsh",
+        "-NoProfile",
+        "-File",
+        "tools/rebuild-underworld-weapons.ps1"
+      ],
+      "outputs": [
+        "assets/models/source/underworld-weapon-worldroot-club.blend",
+        "assets/models/glb/underworld-weapon-worldroot-club.glb",
+        "assets/models/runtime/underworld-weapon-worldroot-club.model.json",
+        "assets/earth/underworld-weapon-worldroot-club.icon.png",
+        "assets/models/source/underworld-weapon-worldroot-bow.blend",
+        "assets/models/glb/underworld-weapon-worldroot-bow.glb",
+        "assets/models/runtime/underworld-weapon-worldroot-bow.model.json",
+        "assets/earth/underworld-weapon-worldroot-bow.icon.png"
+      ],
+      "output_sha256": {},
+      "hash": "generator-only",
+      "inputs": [
+        "tools/rebuild-underworld-weapons.ps1",
+        "tools/export-model-assets.py",
+        "tools/render-weapon-icons.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py",
+        "tools/author-crystal-weapons.py",
+        "tools/magenheim_blender_kit.py"
+      ]
     }
   ]
 }
