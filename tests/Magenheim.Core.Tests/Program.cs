@@ -22,6 +22,7 @@ internal static class Program
         _assertions += UnderworldWeatherGameplayTests.Run();
         _assertions += UnderworldDungeonCatalogTests.Run();
         _assertions += UnderworldBiomeDungeonPlannerTests.Run();
+        _assertions += UnderworldFungalRootwarrenCatalogTests.Run();
         RefinementAndAreaBoundaries();
         WorldgenCompatibilityBoundaries();
         _assertions += DefinitionCompatibilityTests.Run();
