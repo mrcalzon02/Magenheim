@@ -12,7 +12,7 @@ His combat identity is Authority, Precision, Spatial Control, and Relentless Pre
 
 The King wears ancient extremely dark iron ceremonial plate with damaged old-gold ornament. Sections are not broken but absent, revealing impossible empty space. His crown is a tall, narrow, damaged black royal crown whose fragments float slightly above the helmet. His ragged mantle has deliberately uncanny delayed motion.
 
-His two-handed royal sword is **The Last Argument**, approximately 2.8–3.1 meters long. Missing portions of the blade do not interrupt its cutting edge. Physical impacts sound enormously heavy; spatial cuts suppress ambient sound before a pressure-like crack.
+The King's royal armament is the paired **Last Argument**: two approximately 2.8–3.1 meter swords built as mirrored but unmistakably different weapons. **Firmament** is the galaxy blade: a black royal hilt around a blade that appears to contain depth, stars and slow nebular colour rather than ordinary metal. **Null Gate** is the void blade: a dark framed aperture whose center reads as absence, edged by a restrained violet event-horizon glow. The pair share grip/guard ancestry and scale so they read as one royal set, but they must never be implemented as recolors of one mesh. Physical impacts sound enormously heavy. Firmament cuts carry a thin crystalline/astral report; Null Gate suppresses nearby ambience immediately before a pressure-like crack. **The Last Argument** names the pair collectively rather than one two-handed sword.
 
 ## The Dark Throne
 
@@ -76,39 +76,41 @@ The attack director owns phase eligibility, tactical intent, cooldowns, target w
 
 Durable state machine:
 
-`Dormant -> Engaged -> PhaseOne -> TransitionOne -> PhaseTwo -> TransitionTwo -> PhaseThree -> FinalState -> Disengaged -> Defeated`
+`Dormant -> Engaged -> PhaseOne -> TransitionOne -> PhaseTwo -> TransitionTwo -> PhaseThree -> Disengaged -> Defeated`
 
 `Disengaged` returns to the pre-engagement baseline and can re-enter `Engaged` when a player validly enters/activates the arena. `Defeated` is terminal for boss reconstruction and enables the unique reward-completion state.
 
-Health boundaries are 70%, 35%, and 10%.
+The fight has exactly three combat phases. Health boundaries are 70% and 35%. Low-health aggression inside Phase Three may increase without creating a hidden fourth phase.
 
 ## Phase One — The King Remains — 100% to 70%
 
-Phase One establishes the melee language.
+Phase One is a disciplined **twin-sword duel**. The King does not expose his gravity kit yet. Firmament and Null Gate must be visible in separate hands and the hit language must correspond to the weapon motion rather than abstract damage calls.
 
-**Royal Combination:** broad horizontal slash, reverse diagonal cut, optional telegraphed third thrust. Blocking with true endgame equipment is viable; parrying is possible but demanding.
+**Royal Combination:** Firmament opens with a broad horizontal cut, Null Gate answers with a reverse diagonal, and the optional third beat is a clearly telegraphed crossing thrust. Blocking with true endgame equipment is viable; parrying is possible but demanding.
 
-**Crown Breaker:** vertical execution strike with enormous direct damage/stagger and a shorter-range seismic rupture that deals less damage but heavy stagger. The rupture discourages stacking without becoming an unavoidable radial explosion.
+**Crown Breaker:** the King raises both blades and brings them down in a crossed execution strike with enormous direct damage/stagger. Its short-range stone rupture is physical impact from the paired swords, not a gravity spell.
 
-**King's Reach:** approximately 220-degree enormous horizontal swing after a visible blade drag. Unexpected reach, but a relatively safe rear-quarter repositioning route rewards reading the attack rather than simply retreating.
+**King's Reach:** a wide scissoring sweep in which the two blades cover different timing windows. The rear quarter remains the intended positional answer.
 
-**Royal Advance:** anti-kiting authority. If the selected player remains beyond melee distance too long, the King walks toward them and gradually accelerates. Continued retreat eventually causes a powerful lunge. Do not replace this with projectile spam or arbitrary teleportation. Royal Advance remains clamped to the Dark Throne arena and terminates rather than carrying the King beyond the dais.
+**Royal Advance:** anti-kiting authority. If the selected player remains beyond melee distance too long, the King walks toward them and gradually accelerates, finishing with a two-blade lunge. It remains clamped to the Dark Throne arena and terminates rather than carrying the King beyond the dais.
 
-At 70%, the King plants The Last Argument, three candles extinguish, lighting dims, a spatial distortion crosses the arena, and he demonstrates displacement for the first time.
+At 70%, the King crosses Firmament and Null Gate in front of his body. Three candles extinguish, loose debris begins orbiting upward, and the first visible gravity distortion passes across the arena. From this point onward the swords remain present, but gravity rather than swordsmanship becomes the primary attack language.
 
-## Phase Two — Nowhere Opens — 70% to 35%
+## Phase Two — The Weight of Nowhere — 70% to 35%
 
-The melee kit remains intact. Spatial actions are inserted between it.
+Phase Two is the dedicated **gravity-control phase**. The King stops trying to win a conventional duel and uses the arena's mass, trajectories and player positioning as weapons. Sword strikes become recovery/spacing actions rather than the core rotation.
 
-**Step Between:** 8–12 meter short spatial displacement. A thin destination distortion telegraphs arrival roughly half a second before relocation. Avoid routine untelegraphed behind-player teleports. Every destination must validate inside the Dark Throne arena.
+**Gravity Inversion — The World Falls Upward:** signature formation breaker. The King crosses the paired Last Argument and charges for approximately 2–2.5 seconds. Violet energy crawls upward, dust and debris lift, the mantle pulls upward, and an expanding gravitational shockwave violently launches affected players. Direct damage is moderate; normal fall physics should determine the dangerous consequence wherever practical. Distance from the King controls vertical/horizontal impulse. Blocking with an ordinary shield does not negate gravity. Correct responses are leaving the radius, precisely dodging the wave, or legitimately triggering Royal Stagger before release.
 
-**Sever the World:** narrow, extremely dangerous spatial rupture extending across much of the arena. A projected line appears roughly one second before the cut. Correct response is lateral movement.
+**King's Grasp:** a telegraphed focused pull that drags a distant target toward the King with little direct damage. It is the principal response to stationary ranged play.
 
-**Empty Throne:** brief circular spatial collapses around player positions. These disrupt comfortable ground but do not become permanent arena-filling hazards.
+**Crownfall:** a marked player or circular area receives a strong downward gravity pulse after a readable delay. Players already airborne are driven toward the ground; grounded players suffer a heavy stagger/impact rather than an arbitrary unavoidable one-shot.
 
-**King's Grasp:** telegraphed distant pull that does little direct damage but drags the target toward the King, commonly setting up Crown Breaker or a melee chain. It is the principal response to stationary ranged play. It does not allow the King to leave the dais.
+**Royal Repulse:** a short-range outward gravity burst used when players crowd the King after a recovery window. It creates space without replacing melee hit detection.
 
-`NowhereKingSpatialRuntime` owns transient spatial markers/tears and their cleanup so individual attacks do not leak independent GameObject trees.
+**Event Horizon:** a temporary localized gravity well forms at a telegraphed arena point, pulling nearby players toward its center for a short duration before collapsing. It is route pressure, not permanent arena denial.
+
+`NowhereKingSpatialRuntime` owns transient gravity markers, wells and their cleanup so individual attacks do not leak independent GameObject trees. Gravity destinations, forced movement and any King repositioning remain constrained by the shared arena authority.
 
 ## Adaptive resistance — The Null Mantle
 
@@ -122,35 +124,35 @@ Server owns the rolling damage window and resistance state. Clients receive pres
 
 ## Transition at 35%
 
-The King genuinely staggers for the first time and drops to one knee. Remaining ceremonial candles extinguish one by one, leaving the final candle beside the throne. He looks toward it; it dies. His crown fractures further and fragments remain floating. The absence inside his armor spreads. His stance changes and Phase Three begins.
+The King genuinely staggers for the first time and drops to one knee. Remaining ceremonial candles extinguish one by one, leaving the final candle beside the throne. He looks toward it; it dies. His crown fractures further and fragments remain floating. The absence inside his armor spreads.
 
-## Phase Three — The Last Candle — 35% to 10%
+He then **abandons the duel**: Firmament and Null Gate are driven into the dais as visible inert/unstable anchors and cease to be his primary attack tools. The phase transition must make the rules change visually obvious before he begins moving again.
 
-Recovery windows shorten and previously learned attacks begin chaining. The phase tests interaction between mechanics rather than replacing the encounter with a new spell list.
+## Phase Three — The Last Candle — 35% to death
 
-**Broken Crown:** a limited number of crown fragments can be launched as slow readable projectiles that create temporary spatial tears and reshape routes.
+Phase Three is a **body-impact phase** built around leaps, ground pounds and readable catastrophic landings. Gravity magic is no longer cast as a standing spell rotation; its residue explains the impossible mass and hang-time of the King's movement, but the player is now reading his body rather than purple floor effects.
 
-**King's Judgment:** target line telegraph followed after roughly 1.5 seconds by Step Between and a powerful thrust along that line. A correct dodge produces a substantial retaliation window.
+**King's Descent:** the King crouches, visibly commits to a target, launches high, and crashes onto the predicted landing point. The telegraph is long enough that a player who keeps moving can escape. The center hit is extremely dangerous; damage and stagger fall sharply with radius.
 
-**Gravity Inversion — The World Falls Upward:** defining late-phase formation breaker. The King raises The Last Argument and charges for approximately 2–2.5 seconds. Violet energy crawls upward, dust and debris lift, the mantle pulls upward, and the strike produces an expanding purple gravitational shockwave. The wave causes moderate direct damage but violently launches affected players upward. Normal movement/fall physics should determine the resulting fall wherever technically practical. Distance from impact controls vertical/horizontal impulse; nearer targets rise higher and slightly outward, outer-edge targets receive a weaker impulse. Blocking with an ordinary shield does not negate gravity. Correct responses are leaving the wave radius, precisely dodging through the wave, or triggering a legitimate Royal Stagger before impact. After launch the King provides enough recovery time for players to land and regain agency.
+**Thronebreaker:** a deliberate stationary ground pound. The King raises both arms/body, pauses at the apex of the tell, and slams the dais, producing a radial stone shockwave. The attack is slow and punishing rather than fast and cheap.
 
-**No Kingdom Remains:** The Last Argument twists into the floor and expanding spatial fractures create temporary readable safe/unsafe routes. Correct response is reading the floor, not merely running outward. Completion produces a vulnerability window.
+**Ruinous Pursuit:** a sequence of two or three shorter jumps used to chase a retreating target. Each hop has lower damage than King's Descent and a visible landing marker. The sequence stops if continuing would cross the arena leash.
 
-## Final state — Nothing Left to Rule — 10% to death
+**No Kingdom Remains:** the desperation signature. The King performs a short chain of increasingly heavy ground pounds while advancing toward the current target, with distinct expanding shock fronts and recovery after the final impact. It is a movement/spacing examination, not a gravity-wave re-skin.
 
-No cinematic interruption and no new mechanics. Walking speed rises, cooldowns shorten, Step Between becomes more frequent, the mantle/crown/armor visually deteriorate, and the King uses the learned kit more aggressively. Gravity Inversion retains a major cooldown and must not become spam.
+At very low health Phase Three may shorten recovery windows and increase willingness to chain the existing leap/slam attacks, but it gains no fourth-phase mechanics and does not return to the Phase Two standing gravity rotation.
 
 ## Royal Stagger
 
 The King is not permanently staggerable and not immune to Valheim's combat language. Successful difficult parries and qualifying coordinated heavy melee damage build hidden **Royal Stagger**. Reaching threshold causes a brief genuine stagger/opening, then grants temporary stagger resistance to prevent multiplayer stun-locking.
 
-Gravity Inversion cannot be parried. Its charge may be interrupted only if players legitimately reach the Royal Stagger threshold before impact.
+Gravity Inversion cannot be parried. Its Phase Two charge may be interrupted only if players legitimately reach the Royal Stagger threshold before impact. Phase Three leap/ground-pound commitments use their own recovery windows and cannot be canceled by ordinary light stagger once airborne.
 
 Server owns the stagger meter and resistance window.
 
 ## Multiplayer behavior
 
-Scale primarily through behavior, not absurd health/damage multiplication. With more players the King changes targets more often; Empty Throne may create additional marks; Sever the World may add a delayed secondary rupture; King's Grasp increasingly favors players who remain outside melee range; Gravity Inversion naturally disrupts clustered formations. Damage scaling remains modest and health scaling conservative.
+Scale primarily through behavior, not absurd health/damage multiplication. With more players the King changes targets more often; Event Horizon may admit an additional well only when the arena remains readable; King's Grasp increasingly favors players who remain outside melee range; Gravity Inversion naturally disrupts clustered formations; Phase Three leap targeting rotates among participants instead of repeatedly deleting one player. Damage scaling remains modest and health scaling conservative.
 
 The server/authoritative owner controls boss AI, attack selection, phase transitions, Null Mantle calculations, Royal Stagger, spawner suspension, Gravity Inversion hit determination, persistent encounter state, disengagement/reset, dais-leash correction, death, and rewards. Clients own presentation such as particles, audio suppression, distortion, candle visuals, floating debris, and crown presentation.
 
@@ -179,7 +181,7 @@ The King remains visually disciplined: roughly 1.8–2.0x player height and subs
 
 ## Death sequence
 
-The King does not explode. He stops. The Last Argument falls and strikes stone. Crown fragments remain suspended while sections of armor simply cease to exist. The crown eventually falls. When it hits the ground, all extinguished ceremonial candles relight and remaining suspended debris falls. Several seconds of silence precede victory/reward presentation.
+The King does not explode. He stops. Firmament and Null Gate go dark where they were abandoned or fall inert if displaced by the final exchange. Crown fragments remain suspended while sections of armor simply cease to exist. The crown eventually falls. When it hits the ground, all extinguished ceremonial candles relight and remaining suspended debris falls. Several seconds of silence precede victory/reward presentation.
 
 ## Rewards — authoritative replacement for Fragment of Nowhere
 
@@ -234,14 +236,15 @@ The Nowhere King requires a dedicated **boss stone** as part of his finished Val
 1. Reconcile current Mistlands location registration, creature registry, combat hooks, elemental authority, ZDO patterns, and existing model/prefab factories.
 2. Implement Dark Throne definition, additive placement, arena prefab, basalt architecture, throne, candles, and consumption of the shared Dark Throne crystal-spawner profile.
 3. Implement **Dark Throne durable lifecycle authority, non-despawn/reconstruction safeguards, encounter participation/disengagement reset, and the shared dais boundary/leash** before registering the combat-ready King.
-4. Implement Nowhere King model/prefab, Last Argument, networking components, animation controller, and durable encounter identity against that lifecycle authority.
-5. Implement encounter persistence and server-authoritative state machine before complex combat.
-6. Implement Phase One and validate readable melee/anti-kite behavior plus leash compliance for Royal Advance/lunges.
-7. Implement shared spatial runtime and Phase Two, with every displacement destination validated against the arena boundary.
-8. Implement `AdaptiveResistanceRuntime` and boss Null Mantle behavior using existing Magenheim elemental identities.
-9. Implement Royal Stagger.
-10. Implement Phase Three, shared Gravity Inversion runtime/profiles, and No Kingdom Remains.
-11. Implement final-state behavior and multiplayer behavioral scaling.
+4. Author and export the paired Last Argument assets first: `nowhere-king-sword-firmament` and `nowhere-king-sword-null-gate`. They share royal hilt ancestry but have distinct galaxy-versus-void silhouettes/material construction; neither may be a recolor of the other.
+5. Implement Nowhere King model/prefab, twin-sword hand binding, networking components, animation controller, and durable encounter identity against that lifecycle authority.
+6. Implement encounter persistence and server-authoritative three-phase state machine before complex combat.
+7. Implement Phase One and validate readable twin-sword melee/anti-kite behavior plus leash compliance for Royal Advance/lunges.
+8. Implement shared spatial/gravity runtime and Phase Two, including Gravity Inversion, King's Grasp, Crownfall, Royal Repulse and Event Horizon.
+9. Implement `AdaptiveResistanceRuntime` and boss Null Mantle behavior using existing Magenheim elemental identities.
+10. Implement Royal Stagger.
+11. Implement Phase Three leap/ground-pound combat, including King's Descent, Thronebreaker, Ruinous Pursuit and No Kingdom Remains.
+12. Implement low-health Phase Three aggression and multiplayer behavioral scaling without creating a fourth phase.
 12. Implement death transaction and unique reward guard.
 13. Implement `Magenheim_NullMantle` using the shared adaptive-resistance authority plus reversible `NullMantlePresentationRuntime` for Nowhere black fog, dark player rendering, glowing red eyes, and crown-driven succession appearance.
 14. Implement `Magenheim_TrophyNowhereKing`, trophy knowledge unlock, and cosmetic placed behavior.
