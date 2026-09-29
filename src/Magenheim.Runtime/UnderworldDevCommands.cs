@@ -139,7 +139,7 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
         var spacing = radius / steps;
         var origin = player.transform.position;
         var byBiome = new Dictionary<UnderworldTerrainBiome, List<double>>();
-        var monumentSamples = 0;
+        var rareMassifSamples = 0;
         var admitted = 0;
         for (var iz = -steps; iz <= steps; iz++)
         for (var ix = -steps; ix <= steps; ix++)
@@ -152,11 +152,15 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
             if (!byBiome.TryGetValue(sample.Biome, out var heights))
                 byBiome.Add(sample.Biome, heights = new List<double>());
             heights.Add(sample.Height);
-            if (UnderworldMonumentalLandforms.HeightAt(services.TerrainDomain, identity.DerivedSeed32, x, z) > 0d)
-                monumentSamples++;
+            if (UnderworldTerrainLifecycle.RareCellMassifLiftAt(
+                    services.TerrainDomain,
+                    identity.DerivedSeed32,
+                    x,
+                    z) > 1d)
+                rareMassifSamples++;
         }
 
-        Say($"SURVEY terrain: center=({origin.x:0},{origin.z:0}) radius={radius:0}m grid={(steps * 2 + 1)}x{(steps * 2 + 1)} admitted={admitted} monumental-samples={monumentSamples}.");
+        Say($"SURVEY terrain: center=({origin.x:0},{origin.z:0}) radius={radius:0}m grid={(steps * 2 + 1)}x{(steps * 2 + 1)} admitted={admitted} rare-cell-massif-samples={rareMassifSamples}.");
         foreach (var pair in byBiome.OrderBy(p => p.Key.ToString(), StringComparer.Ordinal))
         {
             pair.Value.Sort();
