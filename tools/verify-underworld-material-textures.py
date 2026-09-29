@@ -3,7 +3,7 @@
 from pathlib import Path
 from statistics import mean,pstdev
 from PIL import Image
-import importlib.util,sys
+import ast
 
 ROOT=Path(__file__).resolve().parents[1]
 def flat(im):
@@ -24,10 +24,19 @@ def edge_continuity(image):
     internal_h/=max(1,len(range(0,w,17))*len(range(1,h,17)))
     return vertical/max(internal_v,0.5),horizontal/max(internal_h,0.5)
 DIR=ROOT/"assets"/"material-source"/"underworld"
-spec=importlib.util.spec_from_file_location("gen",ROOT/"tools"/"generate-underworld-material-textures.py")
-# Do not import generator (it would regenerate); read keys from helper's mapping expectations via filenames.
+generator_tree=ast.parse((ROOT/"tools"/"generate-underworld-material-textures.py").read_text())
+specs=None
+for node in generator_tree.body:
+    if isinstance(node,ast.Assign) and any(isinstance(target,ast.Name) and target.id=="SPECS" for target in node.targets):
+        specs=ast.literal_eval(node.value)
+        break
+if not isinstance(specs,dict) or not specs:
+    raise SystemExit("Unable to read Underworld material SPECS without executing the generator")
 albedos=sorted(DIR.glob("*-albedo.png"))
-if len(albedos)!=25: raise SystemExit(f"Expected 25 Underworld material families, found {len(albedos)}")
+actual_keys={path.name[:-11] for path in albedos}
+expected_keys=set(specs)
+if actual_keys!=expected_keys:
+    raise SystemExit("Material family mismatch: expected "+repr(sorted(expected_keys))+", got "+repr(sorted(actual_keys)))
 for alb in albedos:
     key=alb.name[:-11]
     maps={suffix:DIR/f"{key}-{suffix}.png" for suffix in ("albedo","roughness","normal","metallic-smoothness")}
@@ -56,7 +65,7 @@ for alb in albedos:
     mg=Image.open(maps["metallic-smoothness"]).convert("RGBA").resize((64,64),Image.Resampling.LANCZOS)
     smooth=[p[3] for p in flat(mg)]
     if pstdev(smooth)<2.5: raise SystemExit(f"{key}: metallic/smoothness map loses gloss variation at gameplay scale")
-expected_emission={"glowcap","blackwater-pearl","sulfur-crust","ember-heat","clear-ice","fracture-crystal","decay-spore","carrion-amber"}
+expected_emission={key for key,spec in specs.items() if spec[5] is not None}
 actual_emission={p.name[:-13] for p in DIR.glob("*-emission.png")}
 if actual_emission!=expected_emission:
     raise SystemExit("Emission family mismatch: expected "+repr(sorted(expected_emission))+", got "+repr(sorted(actual_emission)))
@@ -64,4 +73,4 @@ for em in DIR.glob("*-emission.png"):
     im=Image.open(em).convert("L").resize((64,64),Image.Resampling.LANCZOS);v=flat(im)
     coverage=sum(x>10 for x in v)/len(v)
     if not .005<=coverage<=.45: raise SystemExit(f"{em.name}: emission coverage {coverage:.1%} is not localized")
-print(f"VERIFIED Underworld material source library: {len(albedos)} 512px albedo/roughness/normal families with 64px readability and localized emission.")
+print(f"VERIFIED Underworld material source library: {len(albedos)} 512px albedo/roughness/normal families with 64px readability and {len(expected_emission)} localized-emission families.")

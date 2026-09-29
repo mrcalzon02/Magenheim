@@ -13,7 +13,7 @@ biome stations, six progression tools and twenty-four rigged armour sources. The
    downloaded or any asset run is spent.
 3. Download Blender 5.0.0 from the official Blender host and verify it against the official
    SHA-256 list.
-4. Generate and quantitatively gate 25 shared 512px Underworld material families.
+4. Generate and quantitatively gate 26 shared 512px Underworld material families.
 5. Author the fourteen previously missing raw-resource inventory models plus all eighteen refined
    material models, export them with shared PBR maps, and regenerate icons for all forty raw/refined material identities.
 6. Regenerate Crystal weapons first so derivative weapons inherit the current authoritative
