@@ -104,7 +104,7 @@ def worldroot_bow(a,b,c):
  for i,(s,e) in enumerate([
   ((-.02,.018,.17),(-.045,.02,.48)),((-.045,.02,.48),(-.025,.012,.76)),
   ((.02,-.018,-.17),(.045,-.02,-.48)),((.045,-.02,-.48),(.025,-.012,-.76))]):tube("worldroot/limb-rib-"+str(i),s,e,.009,a)
- sphere("worldroot/spore-upper",(-.04,.02,.30),.021,b);sphere("worldroot/spore-lower",(.04,-.02,-.30),.021,b)
+ sphere("worldroot/spore-upper",(-.04,.02,.30),.021,b);sphere("worldroot/spore-lower",(.015,-.02,-.30),.020,b)
 
 def flowstone_maul(a,b,c):
  rings("flowstone/socket",(.25,.34),.043,a)
