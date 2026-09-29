@@ -112,7 +112,9 @@ internal static class UnderworldWorldCenterRegistrar
                 new Vector3(Mathf.Cos(angle) * radius, binding.WorldScale.y * .46f, Mathf.Sin(angle) * radius),
                 Quaternion.Euler(i % 2 == 0 ? -3f : 4f, -angle * Mathf.Rad2Deg + 90f, i % 3 - 1),
                 parent.gameObject.layer);
-            stone.AddComponent<UnderworldDeepstoneRuntime>().Bind(binding.DeepstoneId);
+            var progression = stone.AddComponent<UnderworldDeepstoneRuntime>();
+            progression.Bind(binding.DeepstoneId);
+            stone.AddComponent<UnderworldDeepstonePresentationRuntime>().Bind(progression);
         }
 
         AddMesh(root.transform, DescentMonolithName, monolith, new Vector3(0f, 3.9f, 0f), Quaternion.identity, new Vector3(2.8f, 8.2f, 2.8f), monolithMaterial, parent.gameObject.layer);
