@@ -34,12 +34,12 @@ public sealed record UnderworldWeaponUpgradeDefinition(
 /// </summary>
 public static class UnderworldWeaponUpgradeCatalog
 {
-    public const string MycelialBenchPrefab = UnderworldArchitectureValidator.MycelialBenchStationPrefab;
-    public const string TidalBasinPrefab = "Magenheim_Underworld_Station_TidalBasin";
-    public const string FurnaceHeartForgePrefab = "Magenheim_Underworld_Station_FurnaceHeartForge";
-    public const string SilenceTablePrefab = "Magenheim_Underworld_Station_SilenceTable";
-    public const string AnchorForgePrefab = "Magenheim_Underworld_Station_AnchorForge";
-    public const string CrownReliquaryPrefab = "Magenheim_Underworld_Station_CrownReliquary";
+    public const string MycelialBenchPrefab = UnderworldStationCatalog.MycelialBenchPrefab;
+    public const string TidalBasinPrefab = UnderworldStationCatalog.TidalBasinPrefab;
+    public const string FurnaceHeartForgePrefab = UnderworldStationCatalog.FurnaceHeartForgePrefab;
+    public const string SilenceTablePrefab = UnderworldStationCatalog.SilenceTablePrefab;
+    public const string AnchorForgePrefab = UnderworldStationCatalog.AnchorForgePrefab;
+    public const string CrownReliquaryPrefab = UnderworldStationCatalog.CrownReliquaryPrefab;
 
     public static IReadOnlyList<UnderworldWeaponUpgradeDefinition> All { get; } = Array.AsReadOnly(new[]
     {
