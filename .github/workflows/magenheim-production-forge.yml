@@ -47,6 +47,7 @@ jobs:
             'tools/rebuild-rootforged-assets.ps1','tools/rebuild-underworld-geothermal-vents.ps1',
             'tools/rebuild-underworld-stations.ps1',
             'tools/rebuild-underworld-tools.ps1','tools/rebuild-underworld-armour.ps1',
+            'tools/rebuild-rootwarren-dungeon.ps1',
             'tools/rebuild-staff-production-assets.ps1'
           )
           foreach ($script in $parseScripts) {
@@ -131,6 +132,16 @@ jobs:
           ./tools/rebuild-underworld-production.ps1
           if ($LASTEXITCODE -ne 0) { throw 'Magenheim production forge failed.' }
 
+      - name: Post-forge Rootwarren admission gates
+        shell: pwsh
+        run: |
+          python tools/verify-rootwarren-production-contract.py
+          if ($LASTEXITCODE -ne 0) { throw 'Rootwarren post-promotion contract failed.' }
+          dotnet run --project tests/Magenheim.Core.Tests -c Release
+          if ($LASTEXITCODE -ne 0) { throw 'Core tests failed after Rootwarren promotion.' }
+          dotnet build src/Magenheim.Runtime -c Release "-p:ValheimManagedPath=$env:MAGENHEIM_VALHEIM_MANAGED" "-p:BepInExPath=$env:MAGENHEIM_BEPINEX"
+          if ($LASTEXITCODE -ne 0) { throw 'Runtime compile failed after Rootwarren promotion.' }
+
       - name: Record production provenance and source drift
         id: provenance
         shell: pwsh
@@ -213,8 +224,9 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git checkout -b $branch
           git add -A assets
-          if (git diff --cached --quiet) { throw 'No generated asset changes were staged.' }
-          git commit -m "Generate gated Magenheim production assets ($env:GITHUB_RUN_ID)"
+          git add src/Magenheim.Core/Underworld/UnderworldDungeonCatalog.cs
+          if (git diff --cached --quiet) { throw 'No generated asset/admission changes were staged.' }
+          git commit -m "Generate and admit gated Magenheim production assets ($env:GITHUB_RUN_ID)"
           git push origin "HEAD:refs/heads/$branch"
           "branch=$branch" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           "### Generated branch: $branch" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
