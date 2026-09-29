@@ -29,7 +29,14 @@ internal static class UnderworldBiomeDungeonSpatialPlannerTests
 
         Assert(first.Rooms.SequenceEqual(second.Rooms),
             "Same topology must embed identically.");
-        Assert(first.Connections.SequenceEqual(second.Connections),
+        Assert(
+            first.Connections.Count == second.Connections.Count &&
+            first.Connections.Zip(second.Connections, (left, right) =>
+                string.Equals(left.FromInstanceId, right.FromInstanceId, StringComparison.Ordinal) &&
+                string.Equals(left.ToInstanceId, right.ToInstanceId, StringComparison.Ordinal) &&
+                left.IsLoop == right.IsLoop &&
+                left.Waypoints.SequenceEqual(right.Waypoints))
+                .All(equal => equal),
             "Same topology must route identical physical corridors.");
         Assert(first.CellSizeMeters >= 80d,
             "Large Rootwarren rooms need a conservative physical spacing envelope.");
