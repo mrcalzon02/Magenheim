@@ -45,40 +45,37 @@ public static class UnderworldEquipmentCatalog
         WearableTool("DivingBellHood", "Diving Bell Hood", "underworld-tool-diving-bell-hood",
             UnderworldTerrainBiome.BlackwaterDeep, UnderworldStationCatalog.TidalBasinPrefab,
             "Traversal hood that extends underwater operating time in Blackwater Deep.",
-            Cost("Magenheim_Underworld_Resource_BlackwaterFlowstone", 8),
-            Cost("Magenheim_Underworld_Resource_BlackwaterPearl", 4),
-            Cost("Magenheim_Underworld_Resource_PaleFibre", 10),
-            Cost("Magenheim_Underworld_Resource_DeepSalt", 2)),
+            Cost(UnderworldBiomeRefinementCatalog.FlowstonePlate, 4),
+            Cost(UnderworldBiomeRefinementCatalog.BrinedPearl, 2),
+            Cost(UnderworldBiomeRefinementCatalog.PaleCord, 5)),
 
         Tool("SlagPick", "Slag Pick", "underworld-tool-slag-pick",
             UnderworldTerrainBiome.SulfurousWastes, UnderworldStationCatalog.FurnaceHeartForgePrefab,
             "Heat-cured mining tool intended to open Fracture Zone seams rather than merely mine faster.",
-            Cost("Magenheim_Underworld_Resource_Emberiron", 14),
-            Cost("Magenheim_Underworld_Resource_Slagstone", 8),
-            Cost("Magenheim_Underworld_Resource_CharredTimber", 4),
-            Cost("Magenheim_Underworld_Resource_Sulfur", 2)),
+            Cost(UnderworldBiomeRefinementCatalog.EmberironBar, 7),
+            Cost(UnderworldBiomeRefinementCatalog.TemperedSlag, 4),
+            Cost(UnderworldBiomeRefinementCatalog.CharredRootGrip, 2)),
 
         Tool("RimeChisel", "Rime Chisel", "underworld-tool-rime-chisel",
             UnderworldTerrainBiome.FrozenCaverns, UnderworldStationCatalog.SilenceTablePrefab,
             "Precision harvesting tool intended to cut Clear Ice without shattering the deposit.",
-            Cost("Magenheim_Underworld_Resource_Rimesilver", 8),
-            Cost("Magenheim_Underworld_Resource_ClearIce", 6),
-            Cost("Magenheim_Underworld_Resource_Rimewood", 4)),
+            Cost(UnderworldBiomeRefinementCatalog.RimesilverBar, 4),
+            Cost(UnderworldBiomeRefinementCatalog.IceglassLens, 3),
+            Cost(UnderworldBiomeRefinementCatalog.RimewoodLaminate, 2)),
 
         Tool("AnchorSpike", "Anchor Spike", "underworld-tool-anchor-spike",
             UnderworldTerrainBiome.FractureZones, UnderworldStationCatalog.AnchorForgePrefab,
             "Heavy deployable anchor intended to stabilize a local patch of tremor-prone ground.",
-            Cost("Magenheim_Underworld_Resource_Titanbone", 8),
-            Cost("Magenheim_Underworld_Resource_Shardstone", 12),
-            Cost("Magenheim_Underworld_Resource_FractureCrystal", 6)),
+            Cost(UnderworldBiomeRefinementCatalog.TitanbonePlate, 4),
+            Cost(UnderworldBiomeRefinementCatalog.ShardstoneBlock, 6),
+            Cost(UnderworldBiomeRefinementCatalog.FracturePrism, 3)),
 
         Tool("DefiantCenser", "Defiant Censer", "underworld-tool-defiant-censer",
             UnderworldTerrainBiome.GreatDecay, UnderworldStationCatalog.CrownReliquaryPrefab,
             "Carried reliquary intended to suppress contamination locally and make Great Decay habitation possible.",
-            Cost("Magenheim_Underworld_Resource_CarrionAmber", 8),
-            Cost("Magenheim_Underworld_Resource_Rotwood", 6),
-            Cost("Magenheim_Underworld_Resource_DecaySpore", 4),
-            Cost("Magenheim_Underworld_Resource_BoneGravel", 4)),
+            Cost(UnderworldBiomeRefinementCatalog.CarrionAmberSeal, 4),
+            Cost(UnderworldBiomeRefinementCatalog.RotwoodLaminate, 3),
+            Cost(UnderworldBiomeRefinementCatalog.OssuaryComposite, 2)),
     });
 
     public static IReadOnlyList<UnderworldEquipmentDefinition> Armour { get; } = Array.AsReadOnly(new[]
@@ -101,38 +98,30 @@ public static class UnderworldEquipmentCatalog
             "Spore-shedding mantle completing the light Fungal Forest set.",
             Cost(UnderworldFungalRefinementCatalog.SpireCord, 12), Cost(UnderworldFungalRefinementCatalog.CuredGlowcap, 4)),
 
-        ArmourPieceRaw("Palewater", "Palewater", "palewater", UnderworldTerrainBiome.BlackwaterDeep,
-            UnderworldStationCatalog.TidalBasinPrefab, UnderworldEquipmentSlot.Helmet,
-            "Sealed hood; planned breath and wet-resistance contribution.", 4, 8, 4, 2),
-        ArmourPieceRaw("Palewater", "Palewater", "palewater", UnderworldTerrainBiome.BlackwaterDeep,
-            UnderworldStationCatalog.TidalBasinPrefab, UnderworldEquipmentSlot.Chest,
-            "Flowstone-weighted diving coat; planned breath, wet-resistance and swim contribution.", 8, 18, 6, 3),
-        ArmourPieceRaw("Palewater", "Palewater", "palewater", UnderworldTerrainBiome.BlackwaterDeep,
-            UnderworldStationCatalog.TidalBasinPrefab, UnderworldEquipmentSlot.Legs,
-            "Pale-fibre diving leggings; planned swim contribution.", 6, 16, 4, 2),
-        ArmourPieceRaw("Palewater", "Palewater", "palewater", UnderworldTerrainBiome.BlackwaterDeep,
-            UnderworldStationCatalog.TidalBasinPrefab, UnderworldEquipmentSlot.Cape,
-            "Water-shedding mantle completing the Blackwater set.", 4, 14, 5, 2),
+        BlackwaterArmour(UnderworldEquipmentSlot.Helmet, 2, 4, 2),
+        BlackwaterArmour(UnderworldEquipmentSlot.Chest, 4, 9, 3),
+        BlackwaterArmour(UnderworldEquipmentSlot.Legs, 3, 8, 2),
+        BlackwaterArmour(UnderworldEquipmentSlot.Cape, 2, 7, 3),
 
-        SulfurArmour(UnderworldEquipmentSlot.Helmet, 8, 5, 2),
-        SulfurArmour(UnderworldEquipmentSlot.Chest, 16, 10, 4),
-        SulfurArmour(UnderworldEquipmentSlot.Legs, 14, 8, 3),
-        SulfurArmour(UnderworldEquipmentSlot.Cape, 10, 6, 3),
+        SulfurArmour(UnderworldEquipmentSlot.Helmet, 4, 3, 1),
+        SulfurArmour(UnderworldEquipmentSlot.Chest, 8, 5, 2),
+        SulfurArmour(UnderworldEquipmentSlot.Legs, 7, 4, 2),
+        SulfurArmour(UnderworldEquipmentSlot.Cape, 5, 3, 2),
 
-        FrozenArmour(UnderworldEquipmentSlot.Helmet, 8, 6, 4),
-        FrozenArmour(UnderworldEquipmentSlot.Chest, 16, 12, 8),
-        FrozenArmour(UnderworldEquipmentSlot.Legs, 14, 10, 7),
-        FrozenArmour(UnderworldEquipmentSlot.Cape, 10, 12, 5),
+        FrozenArmour(UnderworldEquipmentSlot.Helmet, 4, 3, 2),
+        FrozenArmour(UnderworldEquipmentSlot.Chest, 8, 6, 4),
+        FrozenArmour(UnderworldEquipmentSlot.Legs, 7, 5, 4),
+        FrozenArmour(UnderworldEquipmentSlot.Cape, 5, 6, 3),
 
-        FractureArmour(UnderworldEquipmentSlot.Helmet, 8, 5, 5),
-        FractureArmour(UnderworldEquipmentSlot.Chest, 16, 10, 8),
-        FractureArmour(UnderworldEquipmentSlot.Legs, 14, 8, 7),
-        FractureArmour(UnderworldEquipmentSlot.Cape, 10, 7, 6),
+        FractureArmour(UnderworldEquipmentSlot.Helmet, 4, 3, 2),
+        FractureArmour(UnderworldEquipmentSlot.Chest, 8, 5, 4),
+        FractureArmour(UnderworldEquipmentSlot.Legs, 7, 4, 4),
+        FractureArmour(UnderworldEquipmentSlot.Cape, 5, 4, 3),
 
-        DecayArmour(UnderworldEquipmentSlot.Helmet, 8, 5, 4, 3),
-        DecayArmour(UnderworldEquipmentSlot.Chest, 16, 10, 8, 5),
-        DecayArmour(UnderworldEquipmentSlot.Legs, 14, 8, 7, 4),
-        DecayArmour(UnderworldEquipmentSlot.Cape, 12, 8, 6, 4),
+        DecayArmour(UnderworldEquipmentSlot.Helmet, 4, 3, 2),
+        DecayArmour(UnderworldEquipmentSlot.Chest, 8, 5, 4),
+        DecayArmour(UnderworldEquipmentSlot.Legs, 7, 4, 4),
+        DecayArmour(UnderworldEquipmentSlot.Cape, 6, 4, 3),
     });
 
     public static IReadOnlyList<UnderworldEquipmentDefinition> All { get; } =
@@ -181,47 +170,49 @@ public static class UnderworldEquipmentCatalog
             "underworld-armor-" + modelSet + "-" + ModelSlot(slot),
             biome, slot, station, role, Array.AsReadOnly(costs));
 
-    private static UnderworldEquipmentDefinition ArmourPieceRaw(
-        string prefabSet, string displaySet, string modelSet, UnderworldTerrainBiome biome, string station,
-        UnderworldEquipmentSlot slot, string role, int flowstone, int fibre, int pearl, int salt) =>
-        ArmourPiece(prefabSet, displaySet, modelSet, biome, station, slot, role,
-            Cost("Magenheim_Underworld_Resource_BlackwaterFlowstone", flowstone),
-            Cost("Magenheim_Underworld_Resource_PaleFibre", fibre),
-            Cost("Magenheim_Underworld_Resource_BlackwaterPearl", pearl),
-            Cost("Magenheim_Underworld_Resource_DeepSalt", salt));
+    private static UnderworldEquipmentDefinition BlackwaterArmour(
+        UnderworldEquipmentSlot slot, int plate, int cord, int pearl) =>
+        ArmourPiece("Palewater", "Palewater", "palewater", UnderworldTerrainBiome.BlackwaterDeep,
+            UnderworldStationCatalog.TidalBasinPrefab, slot,
+            slot == UnderworldEquipmentSlot.Helmet ? "Sealed hood; planned breath and wet-resistance contribution." :
+            slot == UnderworldEquipmentSlot.Chest ? "Flowstone-weighted diving coat; planned breath, wet-resistance and swim contribution." :
+            slot == UnderworldEquipmentSlot.Legs ? "Pale-fibre diving leggings; planned swim contribution." :
+            "Water-shedding mantle completing the Blackwater set.",
+            Cost(UnderworldBiomeRefinementCatalog.FlowstonePlate, plate),
+            Cost(UnderworldBiomeRefinementCatalog.PaleCord, cord),
+            Cost(UnderworldBiomeRefinementCatalog.BrinedPearl, pearl));
 
-    private static UnderworldEquipmentDefinition SulfurArmour(UnderworldEquipmentSlot slot, int iron, int slag, int sulfur) =>
+    private static UnderworldEquipmentDefinition SulfurArmour(UnderworldEquipmentSlot slot, int iron, int slag, int grip) =>
         ArmourPiece("Emberiron", "Emberiron", "emberiron", UnderworldTerrainBiome.SulfurousWastes,
             UnderworldStationCatalog.FurnaceHeartForgePrefab, slot,
             "Heavy heat-resistant armour; planned to stack with Furnace Blood.",
-            Cost("Magenheim_Underworld_Resource_Emberiron", iron),
-            Cost("Magenheim_Underworld_Resource_Slagstone", slag),
-            Cost("Magenheim_Underworld_Resource_Sulfur", sulfur));
+            Cost(UnderworldBiomeRefinementCatalog.EmberironBar, iron),
+            Cost(UnderworldBiomeRefinementCatalog.TemperedSlag, slag),
+            Cost(UnderworldBiomeRefinementCatalog.CharredRootGrip, grip));
 
     private static UnderworldEquipmentDefinition FrozenArmour(UnderworldEquipmentSlot slot, int silver, int ice, int wood) =>
         ArmourPiece("Rimeward", "Rimeward", "rimeward", UnderworldTerrainBiome.FrozenCaverns,
             UnderworldStationCatalog.SilenceTablePrefab, slot,
             "Cold-resistant precision armour; planned Rimebound stacking and quieter movement.",
-            Cost("Magenheim_Underworld_Resource_Rimesilver", silver),
-            Cost("Magenheim_Underworld_Resource_ClearIce", ice),
-            Cost("Magenheim_Underworld_Resource_Rimewood", wood));
+            Cost(UnderworldBiomeRefinementCatalog.RimesilverBar, silver),
+            Cost(UnderworldBiomeRefinementCatalog.IceglassLens, ice),
+            Cost(UnderworldBiomeRefinementCatalog.RimewoodLaminate, wood));
 
     private static UnderworldEquipmentDefinition FractureArmour(UnderworldEquipmentSlot slot, int titanbone, int shardstone, int crystal) =>
         ArmourPiece("Stoneanchor", "Stoneanchor", "stoneanchor", UnderworldTerrainBiome.FractureZones,
             UnderworldStationCatalog.AnchorForgePrefab, slot,
             "Heavy anchored armour; planned tremor immunity and knockback resistance.",
-            Cost("Magenheim_Underworld_Resource_Titanbone", titanbone),
-            Cost("Magenheim_Underworld_Resource_Shardstone", shardstone),
-            Cost("Magenheim_Underworld_Resource_FractureCrystal", crystal));
+            Cost(UnderworldBiomeRefinementCatalog.TitanbonePlate, titanbone),
+            Cost(UnderworldBiomeRefinementCatalog.ShardstoneBlock, shardstone),
+            Cost(UnderworldBiomeRefinementCatalog.FracturePrism, crystal));
 
-    private static UnderworldEquipmentDefinition DecayArmour(UnderworldEquipmentSlot slot, int amber, int rotwood, int spore, int bone) =>
+    private static UnderworldEquipmentDefinition DecayArmour(UnderworldEquipmentSlot slot, int amber, int rotwood, int bone) =>
         ArmourPiece("Defiant", "Defiant", "defiant", UnderworldTerrainBiome.GreatDecay,
             UnderworldStationCatalog.CrownReliquaryPrefab, slot,
             "Endgame contamination-resistant armour for sustained Great Decay habitation.",
-            Cost("Magenheim_Underworld_Resource_CarrionAmber", amber),
-            Cost("Magenheim_Underworld_Resource_Rotwood", rotwood),
-            Cost("Magenheim_Underworld_Resource_DecaySpore", spore),
-            Cost("Magenheim_Underworld_Resource_BoneGravel", bone));
+            Cost(UnderworldBiomeRefinementCatalog.CarrionAmberSeal, amber),
+            Cost(UnderworldBiomeRefinementCatalog.RotwoodLaminate, rotwood),
+            Cost(UnderworldBiomeRefinementCatalog.OssuaryComposite, bone));
 
     private static UnderworldEquipmentCost Cost(string prefab, int amount) => new(prefab, amount);
 
