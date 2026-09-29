@@ -12,6 +12,8 @@ internal static class DrownedVaultRoomVisuals
     internal const string PassagePrefabName = "Magenheim_DrownedVaults_Passage";
     internal const string PassageModelId = "underworld-dungeon-blackwater-drowned-vaults-passage";
     internal const float PassageLengthMeters = 16f;
+    internal const float PassageWidthMeters = 14f;
+    internal const float PassageDepthMeters = 16f;
 
     internal static string RoomPrefabName(UnderworldDrownedVaultRoomDefinition definition)
     {
@@ -50,7 +52,12 @@ internal static class DrownedVaultRoomVisuals
 
     internal static GameObject CreatePassagePrefab()
     {
-        var root = CreateRoomRoot(PassagePrefabName, new Vector3Int(14, 14, 16));
+        var root = CreateRoomRoot(
+            PassagePrefabName,
+            new Vector3Int(
+                Mathf.CeilToInt(PassageWidthMeters),
+                14,
+                Mathf.CeilToInt(PassageDepthMeters)));
         ModelAssets.Load(root, PassageModelId, hideOriginal: false);
         return root;
     }

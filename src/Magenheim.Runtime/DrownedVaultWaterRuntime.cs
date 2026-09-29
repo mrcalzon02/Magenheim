@@ -37,6 +37,44 @@ internal static class DrownedVaultWaterRuntime
             return null;
         }
 
+        return AttachNativeWater(
+            room,
+            definition.Room.Id,
+            definition.RouteMode,
+            CheckedFloat(definition.Room.WidthMeters * HorizontalInsetFactor, nameof(definition.Room.WidthMeters)),
+            CheckedFloat(definition.Room.DepthMeters * HorizontalInsetFactor, nameof(definition.Room.DepthMeters)),
+            CheckedFloat(definition.WaterDepthMeters, nameof(definition.WaterDepthMeters)));
+    }
+
+    internal static DrownedVaultWaterBinding? AttachPassage(
+        GameObject passage,
+        string connectionIdentity,
+        UnderworldDrownedVaultPassageState state)
+    {
+        if (passage is null) throw new ArgumentNullException(nameof(passage));
+        if (string.IsNullOrWhiteSpace(connectionIdentity))
+            throw new ArgumentException("Drowned Vault passage identity is required.", nameof(connectionIdentity));
+        if (state is null) throw new ArgumentNullException(nameof(state));
+        state.Validate();
+        if (!state.HasWater) return null;
+
+        return AttachNativeWater(
+            passage,
+            connectionIdentity,
+            state.RouteMode,
+            DrownedVaultRoomVisuals.PassageWidthMeters * HorizontalInsetFactor,
+            DrownedVaultRoomVisuals.PassageDepthMeters * HorizontalInsetFactor,
+            CheckedFloat(state.WaterDepthMeters, nameof(state.WaterDepthMeters)));
+    }
+
+    private static DrownedVaultWaterBinding AttachNativeWater(
+        GameObject host,
+        string identity,
+        UnderworldDrownedVaultRouteMode routeMode,
+        float targetWidth,
+        float targetDepth,
+        float waterDepth)
+    {
         var donor = PrefabManager.Instance.GetPrefab(DonorPrefab)
             ?? throw new InvalidOperationException(
                 $"Drowned Vault water donor '{DonorPrefab}' is unavailable.");
@@ -49,9 +87,11 @@ internal static class DrownedVaultWaterRuntime
         var waterRoot = UnityEngine.Object.Instantiate(donorVolume.gameObject);
         waterRoot.name = "Magenheim_DrownedVault_WaterVolume";
         waterRoot.SetActive(false);
-        waterRoot.transform.SetParent(room.transform, worldPositionStays: false);
-        waterRoot.transform.localPosition = Vector3.zero;
-        waterRoot.transform.localRotation = Quaternion.identity;
+        waterRoot.transform.SetParent(host.transform, worldPositionStays: false);
+        // Dungeon passages may pitch between spatial cells. Water may yaw with the corridor, but its
+        // surface must remain level in world space or Valheim's swim threshold becomes a ramp.
+        waterRoot.transform.position = host.transform.position;
+        waterRoot.transform.rotation = Quaternion.Euler(0f, host.transform.eulerAngles.y, 0f);
         waterRoot.transform.localScale = Vector3.one;
 
         StripHotSpringGameplay(waterRoot);
@@ -72,18 +112,6 @@ internal static class DrownedVaultWaterRuntime
             throw new InvalidOperationException(
                 "Native Drowned Vault water surface has no mesh.");
 
-        var targetWidth = CheckedFloat(
-            definition.Room.WidthMeters * HorizontalInsetFactor,
-            nameof(definition.Room.WidthMeters));
-        var targetDepth = CheckedFloat(
-            definition.Room.DepthMeters * HorizontalInsetFactor,
-            nameof(definition.Room.DepthMeters));
-        var waterDepth = CheckedFloat(
-            definition.WaterDepthMeters,
-            nameof(definition.WaterDepthMeters));
-
-        // The trigger extends slightly above the visible waterline so Character/Floating queries
-        // cannot flicker at wave crests. Its bottom is the authored flooded-floor depth.
         collider.isTrigger = true;
         collider.center = new Vector3(
             0f,
@@ -94,8 +122,6 @@ internal static class DrownedVaultWaterRuntime
             waterDepth + PlayerCheckAboveSurfaceMeters,
             targetDepth);
 
-        // The native surface is kept at the room's Y=0 datum. Resize only the horizontal surface;
-        // the WaterVolume itself owns wave/material behavior and remains the swimming authority.
         var meshSize = filter.sharedMesh.bounds.size;
         if (meshSize.x <= .001f || meshSize.z <= .001f)
             throw new InvalidOperationException(
@@ -109,9 +135,6 @@ internal static class DrownedVaultWaterRuntime
             surfaceTransform.localScale.y,
             targetDepth / meshSize.z);
 
-        // Interior pools are locally bounded and should not query overworld terrain heightmaps or
-        // use outdoor wind amplitude. The donor still supplies the actual Valheim water material,
-        // trigger integration and WaterVolume implementation.
         volume.m_heightmap = null;
         volume.m_forceDepth = Mathf.Clamp01(waterDepth / 10f);
         volume.m_surfaceOffset = 0f;
@@ -119,8 +142,9 @@ internal static class DrownedVaultWaterRuntime
 
         SetLayerRecursively(waterRoot, donorVolume.gameObject.layer);
         var marker = waterRoot.AddComponent<DrownedVaultWaterBinding>();
-        marker.Bind(definition.Room.Id, definition.RouteMode, waterDepth, volume, collider);
+        marker.Bind(identity, routeMode, waterDepth, volume, collider);
         waterRoot.SetActive(true);
+        marker.Validate();
         return marker;
     }
 
