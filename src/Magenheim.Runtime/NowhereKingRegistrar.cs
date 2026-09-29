@@ -57,6 +57,7 @@ internal sealed class NowhereKingRegistrar : IDisposable
             foreach (var ai in prefab.GetComponents<BaseAI>()) ai.enabled = false;
 
             NowhereKingVisuals.Apply(prefab);
+            prefab.AddComponent<NowhereKingRoyalArms>();
             prefab.AddComponent<NowhereKingArenaLeash>();
             PrefabManager.Instance.AddPrefab(new CustomPrefab(prefab, true));
             _registered = true;
