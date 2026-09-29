@@ -5,7 +5,9 @@ snap/collider ownership remain unchanged; this file only raises the authored vis
 prototype geometry to deliberate late-game construction.
 """
 import bpy,bmesh,math,json,random
+import sys
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from underworld_material_library import bind_underworld_material
 from mathutils import Vector
 R=Path(__file__).resolve().parents[1]

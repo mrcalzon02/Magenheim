@@ -39,6 +39,17 @@ jobs:
         run: |
           python tools/verify-underworld-production-readiness.py
           if ($LASTEXITCODE -ne 0) { throw 'Production preflight failed before Blender provisioning.' }
+          $parseScripts = @(
+            'tools/blender.ps1','tools/rebuild-underworld-production.ps1',
+            'tools/rebuild-crystal-weapons.ps1','tools/rebuild-underworld-weapons.ps1',
+            'tools/rebuild-rootforged-assets.ps1','tools/rebuild-underworld-stations.ps1',
+            'tools/rebuild-underworld-tools.ps1','tools/rebuild-underworld-armour.ps1'
+          )
+          foreach ($script in $parseScripts) {
+            $tokens = $null; $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $script), [ref]$tokens, [ref]$errors) | Out-Null
+            if ($errors.Count -gt 0) { throw "$script PowerShell syntax error: $($errors[0].Message)" }
+          }
           dotnet run --project tests/Magenheim.Core.Tests -c Release
           if ($LASTEXITCODE -ne 0) { throw 'Core authority tests failed before Blender provisioning.' }
 

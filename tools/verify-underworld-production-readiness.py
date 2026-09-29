@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Cheap preflight for the one-run Magenheim Blender production forge."""
 import json
+import py_compile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 scope=json.loads((ROOT/"tools"/"underworld-production-scope.json").read_text())
@@ -26,12 +27,26 @@ for path in (
 ):
     require((ROOT/path).is_file(),"missing production file: "+path)
 
+python_sources=(
+ "tools/generate-underworld-material-textures.py","tools/underworld_material_library.py",
+ "tools/verify-underworld-material-textures.py","tools/author-rootforged-placeables.py",
+ "tools/author-underworld-stations.py","tools/author-underworld-tools.py",
+ "tools/author-underworld-armour.py","tools/verify-underworld-armour.py",
+ "tools/author-underworld-weapons.py","tools/author-crystal-weapons.py",
+ "tools/render-underworld-production-review.py","tools/build-underworld-production-review-sheets.py",
+ "tools/verify-underworld-production-review.py","tools/verify-generated-freshness.py",
+)
+for source in python_sources:
+    try: py_compile.compile(str(ROOT/source),doraise=True)
+    except py_compile.PyCompileError as error: fail.append(source+" syntax error: "+str(error))
+
 for path in (
  "tools/author-rootforged-placeables.py","tools/author-underworld-stations.py",
  "tools/author-underworld-tools.py","tools/author-underworld-armour.py","tools/author-underworld-weapons.py",
 ):
     text=(ROOT/path).read_text()
     require("bind_underworld_material" in text,path+" is not bound to the shared material library")
+    require("sys.path.insert(0, str(Path(__file__).resolve().parent))" in text,path+" does not expose tools/ to Blender Python imports")
     require("bpy.ops.uv.smart_project" not in text,path+" uses forbidden smart_project UV generation")
 
 crystal=(ROOT/"tools"/"author-crystal-weapons.py").read_text()
