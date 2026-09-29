@@ -20,7 +20,7 @@ tools and twenty-four rigged armour sources. The thirty-two elemental staff Blen
 7. Run global topology, winding/surface continuity, scale, held orientation/grip, icon, texture,
    authored-surface and attach_skin source-rig gates.
 8. Render every admitted production model twice: neutral studio and approximate biome-context
-   lighting. Build family contact sheets for human acceptance.
+   lighting. Render all 24 rigged armour pieces again under an exaggerated articulation stress pose, then build family/contact sheets for human acceptance.
 9. Push generated assets to a dedicated production/blender-<run id> branch. The workflow never
    auto-merges generated binaries to main.
 

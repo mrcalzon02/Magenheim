@@ -31,6 +31,7 @@ for path in (
  "tools/author-underworld-armour.py","tools/verify-underworld-armour.py",
  "tools/author-underworld-weapons.py","tools/author-crystal-weapons.py",
  "tools/rebuild-staff-production-assets.ps1","tools/rebuild-underworld-production.ps1","tools/render-underworld-production-review.py",
+ "tools/render-underworld-armour-articulation-review.py",
  "tools/build-underworld-production-review-sheets.py","tools/verify-underworld-production-review.py",
  "tools/verify-underworld-production-assets.py",
  ".github/workflows/magenheim-production-forge.yml",
@@ -43,7 +44,7 @@ python_sources=(
  "tools/author-underworld-stations.py","tools/author-underworld-tools.py",
  "tools/author-underworld-armour.py","tools/verify-underworld-armour.py",
  "tools/author-underworld-weapons.py","tools/author-crystal-weapons.py",
- "tools/render-underworld-production-review.py","tools/build-underworld-production-review-sheets.py",
+ "tools/render-underworld-production-review.py","tools/render-underworld-armour-articulation-review.py","tools/build-underworld-production-review-sheets.py",
  "tools/verify-underworld-production-review.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
 )
 for source in python_sources:

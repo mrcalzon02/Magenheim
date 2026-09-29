@@ -23,3 +23,19 @@ for group,ids in sorted(groups.items()):
         draw.text((x+6,y+thumb+8),label,fill=(225,232,240),font=font)
     out=SHEETS/f"{group}.png";sheet.save(out);print("BUILT",out.name,flush=True)
 print("BUILT",len(groups),"production review contact sheets",flush=True)
+
+articulation=BASE/"armour-articulation"
+articulation_ids=[e["id"] for e in index if e["id"].startswith("underworld-armor-")]
+if len(articulation_ids)!=24:
+    raise RuntimeError(f"Expected 24 armour entries for articulation sheet, found {len(articulation_ids)}")
+cols=4;rows=math.ceil(len(articulation_ids)/cols)
+sheet=Image.new("RGB",(cols*thumb,rows*(thumb+label_h)),(24,27,32));draw=ImageDraw.Draw(sheet)
+for n,mid in enumerate(sorted(articulation_ids)):
+    path=articulation/(mid+".png")
+    if not path.is_file(): raise RuntimeError("Missing articulation review "+str(path))
+    im=Image.open(path).convert("RGB");im.thumbnail((thumb,thumb),Image.Resampling.LANCZOS)
+    x=(n%cols)*thumb;y=(n//cols)*(thumb+label_h)
+    sheet.paste(im,(x+(thumb-im.width)//2,y+(thumb-im.height)//2))
+    label=mid.replace("underworld-armor-","")
+    draw.text((x+6,y+thumb+8),label,fill=(225,232,240),font=font)
+out=SHEETS/"armour-articulation.png";sheet.save(out);print("BUILT",out.name,flush=True)

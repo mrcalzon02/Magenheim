@@ -22,6 +22,16 @@ groups={e["group"] for e in index}
 for g in groups:
     if not (SHEETS/f"{g}.png").is_file():fail.append("missing contact sheet "+g)
 if len(index)!=97:fail.append(f"review index expected 97 production models, found {len(index)}")
+articulation_ids=sorted(e["id"] for e in index if e["id"].startswith("underworld-armor-"))
+if len(articulation_ids)!=24:fail.append(f"expected 24 armour articulation subjects, found {len(articulation_ids)}")
+for model_id in articulation_ids:
+    p=BASE/"armour-articulation"/(model_id+".png")
+    if not p.is_file():fail.append("missing articulation "+p.name);continue
+    im=Image.open(p).convert("L")
+    if im.size!=(320,320):fail.append(p.name+" articulation wrong dimensions");continue
+    vals=flat(im.resize((64,64)))
+    if max(vals)-min(vals)<22 or pstdev(vals)<5:fail.append(p.name+" articulation visually flat/blank")
+if not (SHEETS/"armour-articulation.png").is_file():fail.append("missing armour articulation contact sheet")
 if fail:
     print("FAIL production review gate")
     for x in fail[:30]:print(" - "+x)

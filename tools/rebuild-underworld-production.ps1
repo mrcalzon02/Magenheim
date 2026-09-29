@@ -43,6 +43,8 @@ if(!$SkipReview){
     if(Test-Path -LiteralPath $review){Remove-Item -LiteralPath $review -Recurse -Force}
     & "$PSScriptRoot/blender.ps1" render-underworld-production-review
     if($LASTEXITCODE -ne 0){throw 'Production review render failed.'}
+    & "$PSScriptRoot/blender.ps1" render-underworld-armour-articulation-review
+    if($LASTEXITCODE -ne 0){throw 'Underworld armour articulation review failed.'}
     & python "$PSScriptRoot/build-underworld-production-review-sheets.py"
     if($LASTEXITCODE -ne 0){throw 'Production review sheet assembly failed.'}
     & python "$PSScriptRoot/verify-underworld-production-review.py"
