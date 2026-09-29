@@ -47,29 +47,63 @@ internal static class UnderworldTerrainLifecycleTests
                 break;
             }
         }
-        Assert(foundDifferentBiome, "Derived seed must rotate outer biome provinces.");
+        Assert(foundDifferentBiome, "Derived seed must rearrange the organic outer biome field.");
 
         var wet = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
             new UnderworldTerrainSample(0d, 0d, 0d, 0d, 10d, 0.4d), 1);
         Assert(wet.WaterDepth == 0d, "Ground generated above the water line must report no water depth.");
 
-        var transitionRadius = instanceDomain.RadiusMeters *
-            ((UnderworldTerrainLifecycle.CentralFungalRadiusFraction + UnderworldTerrainLifecycle.FungalTransitionRadiusFraction) * 0.5d);
-        var transitionSample = new UnderworldTerrainSample(transitionRadius, 0d, 0d, 30d, 18d, 0.9d);
-        var transition = UnderworldTerrainLifecycle.Evaluate(instanceDomain, transitionSample, 777);
-        Assert(transition.Admitted && transition.Biome != UnderworldTerrainBiome.FungalForest,
-            "Transition-band samples must retain their outer province identity.");
-        Assert(transition.Hazard01 >= 0d && transition.Hazard01 < 0.8d,
-            "Transition band must attenuate hostile biome hazard near the protected center.");
+        var guaranteedRadius = instanceDomain.RadiusMeters *
+            UnderworldTerrainLifecycle.GuaranteedFungalRadiusFraction;
+        for (var angleStep = 0; angleStep < 24; angleStep++)
+        {
+            var angle = angleStep * Math.PI * 2d / 24d;
+            var guaranteed = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
+                new UnderworldTerrainSample(
+                    guaranteedRadius * .98d * Math.Cos(angle),
+                    0d,
+                    guaranteedRadius * .98d * Math.Sin(angle),
+                    30d,
+                    12d,
+                    .5d),
+                777);
+            Assert(guaranteed.Biome == UnderworldTerrainBiome.FungalForest,
+                "The guaranteed arrival core must remain Fungal Forest in every direction.");
+        }
 
-        var innerEdge = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
-            transitionSample with { X = instanceDomain.RadiusMeters * (UnderworldTerrainLifecycle.CentralFungalRadiusFraction + 0.0001d) }, 777);
-        var forestEdge = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
-            transitionSample with { X = instanceDomain.RadiusMeters * (UnderworldTerrainLifecycle.CentralFungalRadiusFraction - 0.0001d) }, 777);
-        Assert(Math.Abs(innerEdge.Height - forestEdge.Height) < 4d,
-            "Crossing the central biome edge must blend heights continuously.");
-        Assert(innerEdge.Hazard01 < transition.Hazard01 + 0.0001d,
-            "Hazard must ramp outward rather than spike at the central biome boundary.");
+        var transitionRadius = instanceDomain.RadiusMeters *
+            ((UnderworldTerrainLifecycle.GuaranteedFungalRadiusFraction +
+              UnderworldTerrainLifecycle.FungalTransitionRadiusFraction) * 0.5d);
+        var foundHostileTransition = false;
+        UnderworldTerrainResult transition = default;
+        for (var angleStep = 0; angleStep < 72; angleStep++)
+        {
+            var angle = angleStep * Math.PI * 2d / 72d;
+            var candidate = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
+                new UnderworldTerrainSample(
+                    transitionRadius * Math.Cos(angle),
+                    0d,
+                    transitionRadius * Math.Sin(angle),
+                    30d,
+                    18d,
+                    .9d),
+                777);
+            if (candidate.Biome == UnderworldTerrainBiome.FungalForest) continue;
+            transition = candidate;
+            foundHostileTransition = true;
+            break;
+        }
+        Assert(foundHostileTransition,
+            "The organic Fungal shoulder must eventually give way to an outer biome rather than forming a perfect ring.");
+        Assert(transition.Hazard01 >= 0d && transition.Hazard01 < 0.8d,
+            "The arrival shoulder must attenuate hostile-biome hazard while its edge meanders.");
+
+        var safeInside = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
+            new UnderworldTerrainSample(guaranteedRadius - 1d, 0d, 0d, 30d, 12d, .5d), 777);
+        var safeOutside = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
+            new UnderworldTerrainSample(guaranteedRadius + 1d, 0d, 0d, 30d, 12d, .5d), 777);
+        Assert(Math.Abs(safeInside.Height - safeOutside.Height) < 4d,
+            "Leaving the guaranteed core must not create a radial terrain step.");
 
         const int precisionSeed = 1675883973;
         var nearOrigin = UnderworldTerrainNoise.Fractal01(precisionSeed, 0d, 0d);
@@ -158,16 +192,63 @@ internal static class UnderworldTerrainLifecycleTests
                     "The protected approach preserves its original fine relief.");
                 Assert(gate.WaterDepth == 0, "The protected approach stays dry.");
             }
-            var rotation = UnderworldTerrainNoise.Mix(unchecked((uint)seed)) / ((double)uint.MaxValue + 1) * Math.PI * 2;
-            for (var sector = 0; sector < 5; sector++)
+            var ringBiomes = new UnderworldTerrainBiome[360];
+            var ringSeen = new bool[6];
+            var arcStarts = new int[6];
+            var transitions = 0;
+            for (var degree = 0; degree < ringBiomes.Length; degree++)
             {
-                var angle = sector * Math.PI * 2 / 5 - rotation;
-                double BorderHeight(double offset) => UnderworldTerrainLifecycle.Evaluate(instanceDomain,
-                    new(6000 * Math.Cos(angle + offset), 0, 6000 * Math.Sin(angle + offset), 30, 0, .5), seed).Height;
-                Assert(Math.Abs(BorderHeight(-1e-7) - BorderHeight(1e-7)) < .1,
-                    "Province borders, including the angular wrap, have no height step.");
+                var angle = degree * Math.PI / 180d;
+                var ring = UnderworldTerrainLifecycle.Evaluate(instanceDomain,
+                    new UnderworldTerrainSample(
+                        6000d * Math.Cos(angle),
+                        0d,
+                        6000d * Math.Sin(angle),
+                        30d,
+                        0d,
+                        .5d),
+                    seed);
+                ringBiomes[degree] = ring.Biome;
+                ringSeen[(int)ring.Biome] = true;
+                if (degree > 0 && ringBiomes[degree - 1] != ring.Biome)
+                {
+                    transitions++;
+                    arcStarts[(int)ring.Biome]++;
+                }
             }
+            if (ringBiomes[ringBiomes.Length - 1] != ringBiomes[0])
+            {
+                transitions++;
+                arcStarts[(int)ringBiomes[0]]++;
+            }
+            var unique = 0;
+            var repeatedArcBiome = false;
+            for (var biome = 0; biome < ringSeen.Length; biome++)
+            {
+                if (ringSeen[biome]) unique++;
+                if (arcStarts[biome] >= 2) repeatedArcBiome = true;
+            }
+            Assert(unique >= 4,
+                "A 6km ring must encounter at least four biome identities; worldgen cannot collapse to fixed slices.");
+            Assert(transitions >= 10,
+                "A 6km ring must cross many organic biome boundaries rather than exactly five province spokes.");
+            Assert(repeatedArcBiome,
+                "At least one biome must reappear in disconnected arcs on the same ring.");
         }
+        var compared = 0;
+        var changed = 0;
+        for (var z = -7000; z <= 7000; z += 400)
+        for (var x = -7000; x <= 7000; x += 400)
+        {
+            if (x * x + z * z > 7000 * 7000) continue;
+            compared++;
+            var a = UnderworldTerrainLifecycle.Evaluate(instanceDomain, new(x, 0, z, 30, 0, .5), 12345);
+            var b = UnderworldTerrainLifecycle.Evaluate(instanceDomain, new(x, 0, z, 30, 0, .5), 777);
+            if (a.Biome != b.Biome) changed++;
+        }
+        Assert(compared > 500 && changed > compared * .35,
+            "Changing the derived seed must materially rearrange biome geography, not merely rotate one fixed layout.");
+
         Assert(UnderworldMonumentalLandforms.ApplyToTerrain(instanceDomain, 12345, 0, 0, -200) == -200,
             "An absent monument cannot flatten negative terrain to zero.");
         return assertions;
