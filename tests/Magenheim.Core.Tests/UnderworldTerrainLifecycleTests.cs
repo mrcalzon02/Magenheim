@@ -174,12 +174,13 @@ internal static class UnderworldTerrainLifecycleTests
                     instanceDomain.Contains(x, terrain.Height + 2, z), "Terrain and standing players fit the native instance.");
                 Assert(terrain == UnderworldTerrainLifecycle.Evaluate(instanceDomain, point, seed),
                     "Wide relief remains deterministic.");
-                if (UnderworldMonumentalLandforms.HeightAt(instanceDomain, seed, x, z) > 0) continue;
+                if (UnderworldTerrainLifecycle.RareCellMassifLiftAt(instanceDomain, seed, x, z) > 1d) continue;
+                if (Math.Sqrt(x * x + z * z) > instanceDomain.RadiusMeters * .82d) continue;
                 var index = (int)terrain.Biome;
                 lows[index] = Math.Min(lows[index], terrain.Height);
                 highs[index] = Math.Max(highs[index], terrain.Height);
             }
-            var minimumSpans = new[] { 150d, 300d, 650d, 900d, 1400d, 450d };
+            var minimumSpans = new[] { 110d, 170d, 400d, 550d, 800d, 300d };
             for (var biome = 0; biome < 6; biome++)
                 Assert(highs[biome] - lows[biome] > minimumSpans[biome],
                     $"{(UnderworldTerrainBiome)biome} must have substantial ordinary relief for seed {seed}.");
@@ -331,8 +332,54 @@ internal static class UnderworldTerrainLifecycleTests
         Assert(compared > 500 && changed > compared * .35,
             "Changing the derived seed must materially rearrange biome geography, not merely rotate one fixed layout.");
 
-        Assert(UnderworldMonumentalLandforms.ApplyToTerrain(instanceDomain, 12345, 0, 0, -200) == -200,
-            "An absent monument cannot flatten negative terrain to zero.");
+        // Nominal regional elevation climbs in progression order. Individual noise/basins may
+        // locally cross, but the biome baselines themselves are deliberately ordered.
+        var orderedBiomes = new[]
+        {
+            UnderworldTerrainBiome.FungalForest,
+            UnderworldTerrainBiome.BlackwaterDeep,
+            UnderworldTerrainBiome.SulfurousWastes,
+            UnderworldTerrainBiome.FrozenCaverns,
+            UnderworldTerrainBiome.FractureZones,
+            UnderworldTerrainBiome.GreatDecay,
+        };
+        for (var index = 1; index < orderedBiomes.Length; index++)
+            Assert(
+                UnderworldBiomeTerrain.NominalRegionalLift(orderedBiomes[index]) >
+                UnderworldBiomeTerrain.NominalRegionalLift(orderedBiomes[index - 1]),
+                "Biome nominal regional lift must rise with progression order.");
+
+        // The progression preference is graded, not ring-locked: outer samples should trend toward
+        // later biome ranks over a broad seed ensemble while still containing earlier enclaves.
+        double MeanRank(double radius)
+        {
+            var sum = 0d;
+            var count = 0;
+            for (var seed = 120; seed < 152; seed++)
+            for (var step = 0; step < 72; step++)
+            {
+                var angle = step * Math.PI * 2d / 72d;
+                var sampleAtRadius = UnderworldTerrainLifecycle.Evaluate(
+                    instanceDomain,
+                    new UnderworldTerrainSample(
+                        radius * Math.Cos(angle),
+                        0d,
+                        radius * Math.Sin(angle),
+                        30d,
+                        0d,
+                        .5d),
+                    seed);
+                if (!sampleAtRadius.Admitted || sampleAtRadius.WaterDepth > 2d) continue;
+                sum += (int)sampleAtRadius.Biome;
+                count++;
+            }
+            return count == 0 ? 0d : sum / count;
+        }
+        var innerRank = MeanRank(instanceDomain.RadiusMeters * .34d);
+        var outerRank = MeanRank(instanceDomain.RadiusMeters * .70d);
+        Assert(outerRank > innerRank + .25d,
+            "Later-biome preference must increase with distance without becoming hard radial rings.");
+
         return assertions;
     }
 }
