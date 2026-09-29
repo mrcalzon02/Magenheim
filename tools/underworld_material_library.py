@@ -16,11 +16,11 @@ EXACT={
 RULES=(
 ("spore-crystal","glowcap"),("worldroot-heartwood","worldroot-heartwood"),("worldroot","worldroot-bark"),
 ("understone","understone"),("glowcap","glowcap"),("flowstone","flowstone"),("pale-fibre","pale-fibre"),
-("pearl-metal","pearl-metal"),("pearl","blackwater-pearl"),("slagstone","slagstone"),("charred","charred-root"),
+("pearl-metal","pearl-metal"),("pearl","blackwater-pearl"),("slagstone","slagstone"),("sulfur","sulfur-crust"),("charred","charred-root"),
 ("emberiron","emberiron"),("furnace.heart","ember-heat"),("tool.slag.heat","ember-heat"),
 ("rimewood","rimewood"),("rimesilver","rimesilver"),("clear-ice","clear-ice"),("focus-ice","clear-ice"),
 ("shardstone","shardstone"),("titanbone","titanbone"),("fracture","fracture-crystal"),
-("rotwood","rotwood"),("bone-gravel","bone"),(".bone","bone"),("carrion-amber","carrion-amber"),
+("rotwood","rotwood"),("decay-spore","decay-spore"),("bone-gravel","bone"),(".bone","bone"),("carrion-amber","carrion-amber"),
 (".amber","carrion-amber"),("dark-iron","forged-iron"),("forged-iron","forged-iron"),
 ("forged-brace","forged-iron"),("dark-metal","forged-iron"),("dark-binding","forged-iron"),
 (".binding","forged-iron"),(".iron","forged-iron"),

@@ -68,7 +68,7 @@ material_specs=None
 for node in generator_tree.body:
     if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id=="SPECS" for t in node.targets):
         material_specs=ast.literal_eval(node.value);break
-require(isinstance(material_specs,dict) and len(material_specs)==23,"Underworld material generator must own exactly 23 families")
+require(isinstance(material_specs,dict) and len(material_specs)==25,"Underworld material generator must own exactly 25 families")
 literal_names=[]
 for source in (
  "tools/author-underworld-geothermal-vents.py","tools/author-rootforged-placeables.py",
