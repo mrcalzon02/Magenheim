@@ -63,6 +63,7 @@ internal sealed class RootwarrenLocationRegistrar : IDisposable
                 ?? throw new InvalidOperationException(
                     $"Jotunn could not create Rootwarren location '{definition.PrefabName}'.");
 
+            RootwarrenEntranceVisuals.Build(container);
             var interior = _binder.AttachInterior(container);
             interior.Validate();
 
