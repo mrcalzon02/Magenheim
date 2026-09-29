@@ -1,3 +1,25 @@
+# Current source candidate - 0.0.154 (2026-09-29)
+
+Underworld weather/VFX/effects/gameplay coupling is source-complete. All eight deterministic
+biome-owned weather events have Magenheim-owned procedural VFX. Host gameplay authority now applies
+the intended event pressure: Ashfall/Thermal Surge fire, Whiteout frost, intermittent Stone Rain
+blunt/stagger, and Black Bloom contamination plus temporary creature-perception escalation.
+Thermal Surge also amplifies the existing geothermal hazard path.
+
+Matching Deep Boons and equipped biome armour now feed atmosphere resistance. The Defiant Censer
+is a real Crown Reliquary-crafted held item and creates a 16m Great Decay suppression radius for
+nearby players. Crystal Resonance pulses nearby crystal/geode/shard renderer emission and restores
+the prior MaterialPropertyBlocks afterward.
+
+Source authority: README/CHANGELOG/TESTING and
+docs/validation/2026-09-29-underworld-bespoke-weather-closure.md. The 2026-09-28 weather coupling
+backlog item is closed; a separate 0.0.154 live-acceptance/tuning gate remains open.
+
+No build/install/live-world claim is attached to this candidate from the current environment:
+there is no local .NET SDK and ordinary container networking cannot resolve GitHub. Pull current
+`main`, run the normal local closeout/build path, then execute the 0.0.154 weather acceptance
+matrix before promoting it to an installed/live-accepted release.
+
 # Current release - 0.0.104 (2026-09-23)
 
 Sunless lava/fungal roof with localized emission, dim native-clock lighting, overhead haze at
