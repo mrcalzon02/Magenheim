@@ -9,9 +9,9 @@ Valheim's dimmed directional and ambient environment lights illuminate the world
 existing day fraction. This is an artistic lighting approximation, not light transport from
 individual roof pixels. No specular trick, extra clock or per-star lights are used.
 
-Borrowed native cloud geometry forms overhead haze at native height 4800m. Occasional sheer
-spires and plateau crowns end at or below 5100m, just above that haze. These are visual height
-targets, not a physical sky collider or flight/build ceiling. Surface sky/cloud state is restored
+Borrowed native cloud geometry forms overhead haze at native height 4800m. Rare biome-owned
+massif cells can rise several kilometres into that haze while preserving their biome surface
+language. These are visual height targets, not a physical sky collider or flight/build ceiling. Surface sky/cloud state is restored
 on exit. In-game brightness, haze opacity, shadows and restoration still require acceptance.
 
 The Underworld uses one obscuration mechanic with six biome interpretations rather than six independent fog implementations.
