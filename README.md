@@ -2,7 +2,20 @@
 
 **Magic begins as geology.**
 
-## 0.0.149 testing candidate
+## 0.0.150 testing candidate
+
+The Underworld biome map is no longer a central disk surrounded by five fixed angular provinces.
+Only the inner 10% radius is guaranteed Fungal Forest. Beyond it, six independently seeded
+kilometre-scale fields compete through warped coordinates and biome affinities, producing broad
+organic regions, fingers, enclaves and repeated biome pockets. A soft Fungal arrival shoulder keeps
+the gate progression-safe without drawing a perfect circular border. Near-tied biome fields blend
+terrain profiles while ecological identity stays discrete.
+
+The layout algorithm is now part of the Underworld authority fingerprint, so peers with the old
+pizza-wheel generator fail closed instead of silently generating different terrain.
+
+### Earlier fixes in 0.0.149
+
 
 The developer console now has `magenheim_underworld survey [radius]`: an in-engine environment
 sampling path that reports deterministic terrain height/biome variation, monumental-landform hits,
@@ -97,7 +110,7 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.149.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.150.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
 Launch **Modded**. Confirm `Loading [Magenheim 0.0.145]` in the BepInEx log.
