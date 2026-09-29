@@ -1,6 +1,6 @@
 # Underworld Biome Dungeon Program
 
-**Status:** ACTIVE STRUCTURE PROGRAM — Deep Fracture admitted; Rootwarren, Drowned Vaults, Cinderworks and Rime Sepulcher source/runtime architecture complete but asset-gated; Carrion Catacombs remains.
+**Status:** ACTIVE STRUCTURE PROGRAM — Deep Fracture admitted; all five ordinary biome dungeons now have source/runtime architecture complete behind asset gates.
 
 The Underworld is a world-scale realm, not a chain of dungeons. Dungeons therefore function as
 major local destinations inside its biomes rather than replacing biome exploration.
@@ -105,14 +105,28 @@ room/passage payloads are absent.
 
 ## Great Decay — working dungeon program: Carrion Catacombs
 
-**Runtime status: PLANNED; no entrance may spawn yet.**
+**Runtime status: PLANNED; source/runtime architecture complete, forge pending.**
 
-An ancient underground complex being biologically consumed: root ingress, collapsed burial spaces,
-amber growth, bone deposits and contaminated chambers. The dungeon should visibly transition from
-recognizable construction into living/rotting occupation deeper in the run.
+Carrion Catacombs owns sixteen stable room families plus an adaptive passage. Its route states are
+Sanctuary, PreservedRuin, TaintedRuin, RootIngress and BlackBloom. The authored visual program
+starts with legible funerary stone/ossuary construction and progressively yields to rotwood, bone,
+Decay Spore and Carrion Amber occupation as pressure increases.
 
-Defiant Flesh, Defiant armour and the Defiant Censer should create route and safe-work-area
-advantages rather than merely reducing a number in the HUD.
+Room and passage contamination reuse the existing Great Decay atmosphere. Preserved/Sanctuary
+routes retain readable navigation and work areas; RootIngress and BlackBloom routes raise the
+ordinary hazard floor and reuse the canonical Black Bloom event. Defiant Flesh and Defiant armour
+therefore reduce exposure through the normal resistance path, while the already-admitted Defiant
+Censer supplies the existing 16m local suppression radius. The dungeon does not add a second
+contamination meter or special-case immunity.
+
+Encounter dressing is role-aware: Rotlings, Marrow Creepers, Spore Husks, Carrion Blooms, Decay
+Hounds, Graft Wardens and the Corpse Orchard appear in authored pressure/encounter spaces rather
+than every room. Resource chambers use Rotwood, Decay Spore, Carrion Amber and Bone Gravel with
+server-owned harvest persistence.
+
+The reduced Ossuary Gate exterior, buried same-instance interior, physical passage assembly and
+Great Decay-only location registrar are implemented, but registration remains fail-closed until all
+seventeen room/passage payloads exist.
 
 ## Admission sequence
 
@@ -121,7 +135,7 @@ advantages rather than merely reducing a number in the HUD.
 3. Blackwater Drowned Vaults 16-room + adaptive-passage forge/admission.
 4. Sulfur Cinderworks 16-room + adaptive-passage forge/admission.
 5. Frozen Rime Sepulcher forge/admission.
-6. Great Decay Carrion Catacombs after contamination/Censer live tuning.
+6. Great Decay Carrion Catacombs forge/admission and live contamination/Censer tuning.
 
 Each promotion from PLANNED to RuntimeReady must include:
 
