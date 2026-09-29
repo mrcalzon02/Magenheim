@@ -500,3 +500,13 @@ This is expansion scope and remains subordinate to broken intended behavior and 
 ## Closeout follow-through
 
 Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the current TESTING.md matrix before enabling later world-generation scope or adding model-only gameplay. Historical unchecked runtime gates above remain open.
+
+
+## Deferred Underworld environment closure — logged 2026-09-28
+
+- [ ] **Finished bespoke Underworld weather VFX/effects/gameplay coupling remains OPEN.**
+  The biome-owned weather/atmosphere authority is bound, but final spores, sulfur/ash, fracture
+  dust, decay aerosol, Crystal Resonance world reactions, event gameplay coupling, mitigation
+  binding and live visual acceptance are not complete. Preserve this as later environment closure;
+  do not mark weather DONE merely because the deterministic EnvSetup/fog framework is active.
+  Canonical detail remains in `docs/UNDERWORLD_ATMOSPHERE_VFX_CLOSURE.md`.
