@@ -17,6 +17,8 @@ internal static class UnderworldDeepstoneRuntimeAuthority
 
     internal static bool IsConfigured => _definitions is not null;
 
+    internal static IReadOnlyList<UnderworldBossDefinition> Bosses => RequireDefinitions().Bosses;
+
     internal static void Configure(UnderworldDefinitionSet definitions)
     {
         _definitions = definitions ?? throw new ArgumentNullException(nameof(definitions));
