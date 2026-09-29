@@ -16,7 +16,10 @@ internal static class UnderworldWorldCenterRegistrar
     internal const string StandingStonesName = "Magenheim_UnderworldStandingStones";
     internal const string DescentMonolithName = "Magenheim_DescentMonolith";
     internal const string GeneratedObjectKind = "deepstone-conclave";
-    internal static readonly Vector3 ReturnGateOffset = new(36f, 0f, 0f);
+    internal static readonly Vector3 ReturnGateOffset = new(
+        (float)UnderworldTerrainLifecycle.GateFoundationCenterXMeters,
+        0f,
+        (float)UnderworldTerrainLifecycle.GateFoundationCenterZMeters);
     internal static readonly Vector3 LogicalCenter = Vector3.zero;
     private static Transform? _returnGate;
     private static float _gateApproachDistance = 15f;
@@ -48,7 +51,7 @@ internal static class UnderworldWorldCenterRegistrar
             ?? throw new InvalidOperationException("Deep Gate must be registered before the Underworld world center is composed.");
         var gate = UnityEngine.Object.Instantiate(gatePrefab, root.transform, false);
         gate.name = UnderworldDeepGateRegistrar.PrefabName;
-        gate.transform.position = ResolveGroundedCenterPosition(ReturnGateOffset);
+        gate.transform.position = ResolveTerrainPosition(ReturnGateOffset, -0.08f);
         gate.transform.localRotation = Quaternion.Euler(0f, -90f, 0f);
         _returnGate = gate.transform;
         _gateApproachDistance = 3f;
@@ -79,17 +82,24 @@ internal static class UnderworldWorldCenterRegistrar
         var point = _returnGate.TransformPoint(new Vector3(0f, 0f, _gateApproachDistance));
         var logical = point;
         logical.y = 0f;
-        return ResolveGroundedCenterPosition(logical);
+        return ResolveTerrainPosition(logical, 0.08f);
     }
-    internal static Quaternion ArrivalRotation => _returnGate
-        ? Quaternion.LookRotation(_returnGate.forward) : Quaternion.identity;
 
-    private static Vector3 ResolveGroundedCenterPosition(Vector3 logical)
+    // Entry resolves on the front side of the gate, so face the player back toward the arch rather
+    // than pointing them farther into the approach corridor.
+    internal static Quaternion ArrivalRotation => _returnGate
+        ? Quaternion.LookRotation(-_returnGate.forward, Vector3.up)
+        : Quaternion.identity;
+
+    private static Vector3 ResolveGroundedCenterPosition(Vector3 logical) =>
+        ResolveTerrainPosition(logical, 1.25f);
+
+    private static Vector3 ResolveTerrainPosition(Vector3 logical, float verticalOffset)
     {
         var terrain = UnderworldTerrainRuntime.SampleInstanceTerrain(logical.x, logical.y, logical.z);
         if (!terrain.Admitted)
-            throw new InvalidOperationException("Native Underworld terrain authority did not admit the logical world center.");
-        return new Vector3((float)logical.x, (float)terrain.Height + 1.25f, (float)logical.z);
+            throw new InvalidOperationException("Native Underworld terrain authority did not admit the requested world-center coordinate.");
+        return new Vector3((float)logical.x, (float)terrain.Height + verticalOffset, (float)logical.z);
     }
 
     private static void BuildStandingStones(Transform parent)
