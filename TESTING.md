@@ -958,3 +958,59 @@ confirm server-owned persistence and the RimeSepulcher Pickable.RPC_Pick patch.
 Check collision, Whiteout readability, Rimebound/Rimeward route advantage, host/client agreement,
 save/reload, return pairing and Surface/Underworld isolation in a real Valheim session. Successful
 source compilation, Blender review or contract scripts alone do not establish live acceptance.
+
+
+## Carrion Catacombs live acceptance
+
+Do not run this section until verify-carrion-catacombs-production-contract.py reports RuntimeReady
+with a complete 17/17/17 source/GLB/runtime family. While GreatDecay remains Planned, no Carrion
+Catacombs entrance may seed into a world.
+
+### Placement, topology and architectural progression
+
+Use fresh Underworld seeds and verify Magenheim_Underworld_Dungeon_GreatDecay appears only in Great
+Decay at the catalog quantity/spacing. Inspect the reduced Ossuary Gate on uneven terrain; it must
+read as a buried funerary entrance rather than a freestanding full-size interior room.
+
+Enter several instances. Ossuary Gate must remain the deterministic first room. All sixteen room
+families must participate two or three times with branching and loops. Walk every adaptive passage,
+including vertical routes, and reject exposed void, unrelated-room intersections, abrupt collision
+lips or any teleport-chain substitution.
+
+The dungeon must visibly progress from readable stone/ossuary architecture through tainted ruins
+into root ingress and near-total biological occupation. BlackBloom rooms must look more consumed
+than PreservedRuin/Sanctuary rooms without becoming visual-noise sludge.
+
+### Contamination, Defiant progression and Censer workspaces
+
+Walk Sanctuary, PreservedRuin, TaintedRuin, RootIngress and BlackBloom routes with no matching
+progression, with Defiant Flesh/Defiant armour, and with an active Defiant Censer. Pressure routes
+must reuse the existing Great Decay atmosphere and Black Bloom event; there must be no independent
+dungeon-only contamination meter or immunity.
+
+Defiant Flesh/armour should materially reduce exposure while preserving the biome's visual identity.
+A held Censer must create the existing 16m suppression radius inside the dungeon. In Censer Court
+and Defiant Work Chapel, verify that radius creates a useful local work/recovery area rather than
+merely changing a HUD number. Leaving the radius must restore the authored route pressure.
+
+### Encounters, resources and persistence
+
+Verify Rotling Warrens, Spore Husk Cloister, Graft Warden Hall, Miasma Nave, Carrion Sluice and
+Corpse Orchard Antechamber use deliberate Great Decay fauna while preserved halls and Sanctuaries
+are not carpeted with random mobs. Host and peer must agree on encounter state. Kill a deterministic
+dungeon creature, save/reload, and verify its identity remains cleared.
+
+Harvest Rotwood, Decay Spore, Carrion Amber and Bone Gravel from resource rooms. Save/reload and
+verify harvested identities remain harvested while untouched deterministic nodes remain. Repeat a
+kill and a harvest from a peer to verify server-owned persistence and the Carrion Catacombs
+Pickable.RPC_Pick patch.
+
+### Return and live evidence boundary
+
+The return portal must reach the exact owning Great Decay entrance in the same Underworld instance.
+Repeat after save/reload and from a peer. Carrion interior objects must not leak into ordinary Great
+Decay chunks or Surface generation.
+
+Do not call Carrion Catacombs live-accepted from source review, Core tests, Blender output or
+production contract scripts alone. Collision, atmosphere readability, Censer radius, multiplayer
+persistence, save/reload and return pairing require a real Valheim session.
