@@ -88,16 +88,16 @@ def render(entry, out_path):
 
 def main():
     catalog = json.loads((MODELS / 'catalog.json').read_text())
-    resources = [e for e in catalog if e['id'].startswith('underworld-resource-')]
+    resources = [e for e in catalog if e['id'].startswith(('underworld-resource-', 'underworld-refined-'))]
     if not resources:
-        raise SystemExit('No authored Underworld resource models in the catalog.')
+        raise SystemExit('No authored Underworld raw/refined material models in the catalog.')
     requested = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
     if requested:
         resources = [e for e in resources if e['id'] in requested]
     for entry in sorted(resources, key=lambda e: e['id']):
         render(entry, OUT / f"{entry['id']}.icon.png")
         print('RENDERED', entry['id'], flush=True)
-    print(f'Rendered {len(resources)} Underworld resource icons at {SIZE}px into {OUT}', flush=True)
+    print(f'Rendered {len(resources)} Underworld raw/refined material icons at {SIZE}px into {OUT}', flush=True)
 
 
 main()
