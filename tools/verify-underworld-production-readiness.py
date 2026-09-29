@@ -26,7 +26,8 @@ for gid in scope["regenerate"]+scope["verify_only"]:
     require(gid in entries,"manifest missing production authority: "+gid)
 for path in (
  "tools/generate-underworld-material-textures.py","tools/underworld_material_library.py",
- "tools/verify-underworld-material-textures.py","tools/author-rootforged-placeables.py",
+ "tools/verify-underworld-material-textures.py","tools/author-underworld-geothermal-vents.py",
+ "tools/rebuild-underworld-geothermal-vents.ps1","tools/author-rootforged-placeables.py",
  "tools/author-underworld-stations.py","tools/author-underworld-tools.py",
  "tools/author-underworld-armour.py","tools/verify-underworld-armour.py",
  "tools/author-underworld-weapons.py","tools/author-crystal-weapons.py",
@@ -40,7 +41,8 @@ for path in (
 
 python_sources=(
  "tools/generate-underworld-material-textures.py","tools/underworld_material_library.py",
- "tools/verify-underworld-material-textures.py","tools/author-rootforged-placeables.py",
+ "tools/verify-underworld-material-textures.py","tools/author-underworld-geothermal-vents.py",
+ "tools/author-rootforged-placeables.py",
  "tools/author-underworld-stations.py","tools/author-underworld-tools.py",
  "tools/author-underworld-armour.py","tools/verify-underworld-armour.py",
  "tools/author-underworld-weapons.py","tools/author-crystal-weapons.py",
@@ -69,7 +71,8 @@ for node in generator_tree.body:
 require(isinstance(material_specs,dict) and len(material_specs)==23,"Underworld material generator must own exactly 23 families")
 literal_names=[]
 for source in (
- "tools/author-rootforged-placeables.py","tools/author-underworld-stations.py","tools/author-underworld-tools.py"
+ "tools/author-underworld-geothermal-vents.py","tools/author-rootforged-placeables.py",
+ "tools/author-underworld-stations.py","tools/author-underworld-tools.py"
 ):
     literal_names += re.findall(r'(?:material|mat)\(\s*["\']([^"\']+)["\']',(ROOT/source).read_text())
 literal_names += [

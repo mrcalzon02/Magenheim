@@ -19,6 +19,7 @@ staff_ids=sorted(x for x in runtime_ids if x.startswith("staff-") or x.startswit
 expected={
     "crystal weapons":(ids_with("crystal-weapon-"),10),
     "Underworld weapons":(ids_with("underworld-weapon-"),2),
+    "geothermal vents":(ids_with("underworld-geothermal-vent-"),3),
     "Rootforged":(ids_with("rootforged-"),17),
     "Underworld stations":(ids_with("underworld-station-"),6),
     "Underworld tools":(ids_with("underworld-tool-"),6),
@@ -30,15 +31,15 @@ for label,(ids,count) in expected.items():
         raise SystemExit(f"{label}: expected {count} production models, found {len(ids)}")
 
 production_ids=sorted(set().union(*(set(ids) for ids,_ in expected.values())))
-if len(production_ids)!=97:
-    raise SystemExit(f"Production review universe must contain 97 unique models, found {len(production_ids)}")
+if len(production_ids)!=100:
+    raise SystemExit(f"Production review universe must contain 100 unique models, found {len(production_ids)}")
 
 for model_id in production_ids:
     for path in (SOURCE/(model_id+".blend"),GLB/(model_id+".glb"),RUNTIME/(model_id+".model.json")):
         if not path.is_file():
             raise SystemExit(f"{model_id}: missing production representation {path.relative_to(ROOT)}")
 
-pbr_prefixes=("rootforged-","underworld-station-","underworld-tool-","underworld-armor-")
+pbr_prefixes=("underworld-geothermal-vent-","rootforged-","underworld-station-","underworld-tool-","underworld-armor-")
 pbr_models=[x for x in production_ids if x.startswith(pbr_prefixes)]
 for model_id in pbr_models:
     doc=json.loads((RUNTIME/(model_id+".model.json")).read_text())
@@ -78,9 +79,9 @@ for model_id in ids_with("underworld-weapon-"):
             if not name or not (TEXTURES/name).is_file():
                 raise SystemExit(f"{model_id}: biome accent missing runtime {field}")
 
-if len(runtime_ids)<404:
-    raise SystemExit(f"Full model library must be at least 404 models after the 38-model Underworld production admission; found {len(runtime_ids)}")
+if len(runtime_ids)<407:
+    raise SystemExit(f"Full model library must be at least 407 models after the 41-model Underworld production admission; found {len(runtime_ids)}")
 
-print("VERIFIED production asset admission: 97 reviewed weapon/build/equipment models; "
-      "10 Crystal weapons, 2 Underworld derivatives, 32 staves, 17 Rootforged, "
+print("VERIFIED production asset admission: 100 reviewed weapon/build/equipment/environment models; "
+      "10 Crystal weapons, 2 Underworld derivatives, 32 staves, 3 geothermal vents, 17 Rootforged, "
       "6 stations, 6 tools and 24 armour pieces with required PBR runtime maps.")

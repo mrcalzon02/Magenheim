@@ -17,6 +17,7 @@ def group(model_id):
     if model_id.startswith("crystal-weapon-"): return "crystal-weapons"
     if model_id.startswith("underworld-weapon-"): return "underworld-weapons"
     if model_id.startswith("rootforged-"): return "rootforged"
+    if model_id.startswith("underworld-geothermal-vent-"): return "geothermal-vents"
     if model_id.startswith("underworld-station-"): return "stations"
     if model_id.startswith("underworld-tool-"): return "tools"
     if model_id.startswith("underworld-armor-"): return "armour-"+model_id.split("-")[2]
@@ -84,7 +85,7 @@ def render(entry,condition):
     print("RENDERED",entry["id"],condition,flush=True)
 
 selected=sorted((e for e in catalog if admitted(e["id"])),key=lambda e:e["id"])
-if len(selected)!=97: raise RuntimeError(f"Production review scope must contain exactly 97 admitted models, found {len(selected)}")
+if len(selected)!=100: raise RuntimeError(f"Production review scope must contain exactly 100 admitted models, found {len(selected)}")
 index=[]
 for entry in selected:
     for condition in ("neutral","context"): render(entry,condition)

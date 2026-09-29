@@ -43,7 +43,8 @@ jobs:
           $parseScripts = @(
             'tools/blender.ps1','tools/rebuild-underworld-production.ps1',
             'tools/rebuild-crystal-weapons.ps1','tools/rebuild-underworld-weapons.ps1',
-            'tools/rebuild-rootforged-assets.ps1','tools/rebuild-underworld-stations.ps1',
+            'tools/rebuild-rootforged-assets.ps1','tools/rebuild-underworld-geothermal-vents.ps1',
+            'tools/rebuild-underworld-stations.ps1',
             'tools/rebuild-underworld-tools.ps1','tools/rebuild-underworld-armour.ps1',
             'tools/rebuild-staff-production-assets.ps1'
           )

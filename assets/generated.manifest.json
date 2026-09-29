@@ -1423,6 +1423,36 @@
         "assets/models/source/staff-venom-master.blend",
         "assets/models/source/staff-venom-simple.blend"
       ]
+    },
+    {
+      "id": "underworld-geothermal-vent-models",
+      "generator": "tools/author-underworld-geothermal-vents.py",
+      "command": [
+        "pwsh",
+        "-NoProfile",
+        "-File",
+        "tools/rebuild-underworld-geothermal-vents.ps1"
+      ],
+      "outputs": [
+        "assets/models/source/underworld-geothermal-vent-crown.blend",
+        "assets/models/glb/underworld-geothermal-vent-crown.glb",
+        "assets/models/runtime/underworld-geothermal-vent-crown.model.json",
+        "assets/models/source/underworld-geothermal-vent-split.blend",
+        "assets/models/glb/underworld-geothermal-vent-split.glb",
+        "assets/models/runtime/underworld-geothermal-vent-split.model.json",
+        "assets/models/source/underworld-geothermal-vent-rootbound.blend",
+        "assets/models/glb/underworld-geothermal-vent-rootbound.glb",
+        "assets/models/runtime/underworld-geothermal-vent-rootbound.model.json"
+      ],
+      "output_sha256": {},
+      "hash": "generator-only",
+      "inputs": [
+        "tools/rebuild-underworld-geothermal-vents.ps1",
+        "tools/export-model-assets.py",
+        "tools/model_surface_authoring.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py"
+      ]
     }
   ]
 }
