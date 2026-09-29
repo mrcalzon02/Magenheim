@@ -23,6 +23,7 @@ internal static class Program
         _assertions += UnderworldDungeonCatalogTests.Run();
         _assertions += UnderworldBiomeDungeonPlannerTests.Run();
         _assertions += UnderworldFungalRootwarrenCatalogTests.Run();
+        _assertions += UnderworldBiomeDungeonSpatialPlannerTests.Run();
         RefinementAndAreaBoundaries();
         WorldgenCompatibilityBoundaries();
         _assertions += DefinitionCompatibilityTests.Run();
