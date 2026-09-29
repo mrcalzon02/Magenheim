@@ -52,7 +52,7 @@ internal static class UnderworldStationPlacementRuntime
             samples.Min(value=>value.WaterDepth),samples.Max(value=>value.WaterDepth),
             maxHeight-minHeight,samples.Max(value=>value.Hazard01),
             UnderworldGeothermalHazardVolume.IsNearLiveVent(ghost.transform.position,Mathf.Max(halfX,halfZ)*.35f),
-            UnderworldAnchorStabilizer.IsNear(ghost.transform.position,Mathf.Max(halfX,halfZ)*.35f),
+            UnderworldAnchorStabilizer.IsNear(ghost.transform.position,ghost.scene.handle,Mathf.Max(halfX,halfZ)*.35f),
             DecayDeepstoneAttuned());
         return UnderworldStationPlacement.Evaluate(station,site);
     }
