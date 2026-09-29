@@ -37,7 +37,7 @@ internal sealed class UnderworldSurtlingRegistrar : IDisposable
                 _log.LogWarning($"Underworld Surtling {entry.Prefab} unavailable: {exception.Message}");
             }
         }
-        _log.LogInfo($"Registered {registered}/{UnderworldSurtlings.All.Length} elemental Surtlings. Fire, Water, Earth and Wind variants have native spawns in their canonical roster homes; Radiance and Umbral remain site/console-only. Donor combat, AI and loot are unchanged.");
+        _log.LogInfo($"Registered {registered}/{UnderworldSurtlings.All.Length} elemental Surtlings. Fire, Water, Earth and Wind variants have native spawns in their canonical roster homes; Radiance and Umbral remain site/console-only. Donor rigs/animations/loot remain intact; health, movement, attack recovery and outgoing damage use the shared Underworld role-balance policy.");
         Dispose();
     }
 
@@ -56,6 +56,7 @@ internal sealed class UnderworldSurtlingRegistrar : IDisposable
             var character = clone.GetComponent<Character>();
             character.m_name = entry.DisplayName;
             clone.transform.localScale *= entry.Scale;
+            var combat = UnderworldCreatureCombatBalance.ApplySurtling(clone, entry);
             var stripped = StripArmour(clone.GetComponent<Humanoid>());
             var arrange = HumanoidSegmentBinder.Arranger(clone, rig, entry.Girth, out var report);
             ModelAssets.Load(clone, entry.ModelId, arrange: arrange);
@@ -89,7 +90,7 @@ internal sealed class UnderworldSurtlingRegistrar : IDisposable
             }
             if (!CreatureManager.Instance.AddCreature(new CustomCreature(clone, true, creatureConfig)))
                 throw new InvalidOperationException($"Jotunn refused Surtling creature registration for '{entry.Prefab}'.");
-            _log.LogInfo($"Underworld Surtling {entry.Prefab} on {entry.Donor}: {report()}; {ragdolls} death ragdoll(s) re-bodied; {stripped} donor armour visual(s) removed. Home: {entry.Home}.");
+            _log.LogInfo($"Underworld Surtling {entry.Prefab} on {entry.Donor}: {report()}; {combat}; {ragdolls} death ragdoll(s) re-bodied; {stripped} donor armour visual(s) removed. Home: {entry.Home}.");
         }
         catch
         {
