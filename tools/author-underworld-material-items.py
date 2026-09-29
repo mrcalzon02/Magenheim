@@ -118,7 +118,8 @@ def build(form,a,b):
         poses=((-0.055,-.025,.035),(0.055,-.025,.035),(0,.035,.07),(0,-.01,.105))
         for i,p in enumerate(poses):cube("bar-"+str(i),p,(.065,.035,.022),a,.009,(0,0,.05*(i-1)))
         for i,x in enumerate((-.04,.04)):cube("stamp-"+str(i),(x,-.052,.107),(.014,.008,.010),b,.003)
-        torus("bundle-band",(0,0,.07),.105,.009,b)
+        torus("bundle-band-low",(0,0,.055),.105,.009,b)
+        torus("bundle-band-high",(0,0,.090),.098,.008,b)
     elif form=="grip":
         cyl("grip-core",(0,0,.15),.045,.30,a,vertices=14)
         for i,z in enumerate((.035,.085,.135,.185,.235,.285)):torus("grip-wrap-"+str(i),(0,0,z),.05,.009,b)
