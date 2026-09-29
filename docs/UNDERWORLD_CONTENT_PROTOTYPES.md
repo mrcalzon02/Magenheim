@@ -62,8 +62,10 @@ registration.
   selected and landed. This preserves donor attack prefabs, clips, sockets and AI while adding
   biome identity: poison for Fungal/Decay, frost for Blackwater/Frozen, fire for Sulfurous, and
   lightning for Fracture. Vanilla donor attack prefabs are never mutated.
-- Physical donor resistances, factions, loot, animation controllers, attack definitions, hitboxes
-  and networking remain inherited unless a later creature-specific design explicitly replaces them.
+- Physical donor resistances, factions, animation controllers, attack definitions, hitboxes and
+  networking remain inherited unless a later creature-specific design explicitly replaces them.
+  Donor loot is explicitly *not* inherited: Magenheim replaces it with biome-progression resources
+  and a species trophy.
 
 This is intentionally the middle ground between a palette swap and forty-two bespoke creatures:
 reuse the expensive native machinery, then spend Magenheim-owned work on the parts the player
