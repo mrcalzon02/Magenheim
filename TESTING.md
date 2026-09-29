@@ -151,6 +151,29 @@ unoccupied terrain. Do not use console-spawned creatures as proof of natural eco
 7. Verify donor animation, attack sockets, hitboxes, ragdolls where applicable, faction and loot
    remain intact, and verify the corresponding vanilla donor elsewhere still uses its untouched
    original material.
+8. Verify each biome's presentation layer in motion: Fungal spore drift, Blackwater bioluminescent
+   motes, Sulfurous smoke/ember glow, Frozen rime mist, Fracture sparks and Great Decay motes.
+   Selected luminous creatures should cast a restrained local glow without washing out the whole
+   cavern or producing obvious point-light popping.
+9. Compare temperament against the donor. Apex hunters (including Deep Hunter, Cinder Hound,
+   Glacier Stalker, Chasm Stalker, Decay Hound and Graft Warden) should acquire and pressure a
+   player earlier and spend less time circling/idling. Ambient forms such as Lantern Moth, Cave Ray
+   and Rime Moth must remain much closer to donor pressure and must not become map-wide pursuers.
+10. Confirm the eight explicit apex `HuntPlayer` species can pursue naturally spawned players, while
+    ordinary fauna do not inherit that spawn flag.
+11. Exercise elemental tolerances with controlled hits. Sulfurous creatures must strongly resist
+    fire and be vulnerable to frost; Frozen creatures must strongly resist frost and be vulnerable
+    to fire; Blackwater creatures must tolerate water but be vulnerable to lightning; Fungal/Decay
+    creatures must resist poison; Fracture creatures must resist lightning. Confirm named immunity
+    overrides on Furnace Golem (fire), Cryolith Guardian (frost), Fume Wraith/Corpse Orchard/Spore
+    Husk (poison) and the stronger Fracture Wisp lightning resistance.
+12. Land the same donor attack from a vanilla creature and its Underworld derivative against an
+    identical target. The Underworld hit should preserve the donor attack animation/timing while
+    adding only its biome rider: poison (Fungal/Decay), frost (Blackwater/Frozen), fire
+    (Sulfurous), or lightning (Fracture). The vanilla donor must not gain that extra elemental
+    component.
+13. Repeat VFX, aggression and elemental-hit checks with a second peer. Presentation may be local,
+    but combat results and target behavior must agree with the authoritative simulation.
 
 ## Candidate acceptance matrix
 
