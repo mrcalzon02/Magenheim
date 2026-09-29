@@ -74,8 +74,9 @@ public sealed record UnderworldDungeonDefinition(
 
 public static class UnderworldDungeonCatalog
 {
-    // Working identities for the five new biome dungeon programs. Their names may be refined with
-    // the authored room kits; ids/prefabs are the stable code-facing identities.
+    // Stable identities for the five ordinary biome dungeons. Their runtime architecture is now
+    // expanded vanilla reuse (see UnderworldVanillaDungeonReuseCatalog), not bespoke room kits.
+    // Deep Fracture remains the separate Magenheim-authored architecture program.
     public static UnderworldDungeonDefinition FungalForest { get; } = Planned(
         "fungal_forest", "Rootwarren",
         UnderworldTerrainBiome.FungalForest, quantity: 8, spacing: 900d);
@@ -137,7 +138,9 @@ public static class UnderworldDungeonCatalog
             throw new InvalidOperationException("Underworld dungeon catalog must cover all six canonical biomes exactly once.");
         if (DeepFracture.Status != UnderworldDungeonStatus.RuntimeReady)
             throw new InvalidOperationException(
-                "Deep Fracture must remain runtime-ready; ordinary biome dungeons may advance independently once their own asset/interior gates are satisfied.");
+                "Deep Fracture must remain runtime-ready; ordinary biome dungeons may advance independently once their vanilla-reuse runtime gates are satisfied.");
+
+        UnderworldVanillaDungeonReuseCatalog.Validate();
     }
 
     private static UnderworldDungeonDefinition Planned(
@@ -185,6 +188,8 @@ public static class UnderworldDungeonCatalog
             ExteriorRadiusMeters: 18d,
             MinDistanceFromSimilarMeters: spacing,
             MaxTerrainDeltaMeters: 36d,
+            // Legacy fields are retained for serialization/source compatibility only. Ordinary
+            // Underworld runtime generation is governed by the vanilla donor profile instead.
             TargetRoomFamilyMinimum: 15,
             TargetRoomFamilyMaximum: 20,
             MinimumRoomFamilyUses: 2,
