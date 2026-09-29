@@ -1,0 +1,108 @@
+name: Deepstone Blender Forge
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/deepstones.run'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deepstone-blender-forge
+  cancel-in-progress: false
+
+jobs:
+  forge:
+    runs-on: windows-2025
+    timeout-minutes: 45
+    steps:
+      - name: Checkout authoritative main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12.10'
+
+      - name: Preflight only the Deepstone source toolchain
+        shell: pwsh
+        run: |
+          python -m py_compile tools/materialize-underworld-deepstone-sources.py
+          if ($LASTEXITCODE -ne 0) { throw 'Deepstone Python preflight failed.' }
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path 'tools/blender.ps1'), [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) { throw "tools/blender.ps1 PowerShell syntax error: $($errors[0].Message)" }
+
+      - name: Provision pinned Blender 5.0.0
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP 'blender'
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          $file = 'blender-5.0.0-windows-x64.zip'
+          $base = 'https://download.blender.org/release/Blender5.0'
+          Invoke-WebRequest "$base/$file" -OutFile "$dir/$file"
+          Invoke-WebRequest "$base/blender-5.0.0.sha256" -OutFile "$dir/blender.sha256"
+          $line = Get-Content "$dir/blender.sha256" | Where-Object { $_ -match [regex]::Escape($file) } | Select-Object -First 1
+          if (!$line) { throw 'Official Blender checksum file does not contain the pinned archive.' }
+          $expected = ($line -split '\s+')[0].ToLowerInvariant()
+          $actual = (Get-FileHash "$dir/$file" -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne $expected) { throw "Blender checksum mismatch: $actual != $expected" }
+          Expand-Archive "$dir/$file" -DestinationPath $dir -Force
+          $exe = Join-Path $dir 'blender-5.0.0-windows-x64/blender.exe'
+          if (!(Test-Path $exe)) { throw 'Pinned Blender executable missing after extraction.' }
+          "MAGENHEIM_BLENDER=$exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Materialize six Deepstone Blender sources
+        shell: pwsh
+        run: |
+          ./tools/blender.ps1 materialize-underworld-deepstone-sources
+          if ($LASTEXITCODE -ne 0) { throw 'Deepstone Blender materialization failed.' }
+
+      - name: Enforce surgical output scope
+        shell: pwsh
+        run: |
+          $changed = @(git status --porcelain | ForEach-Object { $_.Substring(3) })
+          if ($changed.Count -ne 6) { throw "Expected exactly six generated Deepstone .blend files; got $($changed.Count): $($changed -join ', ')" }
+          $allowed = '^assets/models/source/underworld-deepstone-(bloom|tide|cinder|rime|fracture|decay)\.blend$'
+          $unexpected = @($changed | Where-Object { $_ -notmatch $allowed })
+          if ($unexpected.Count -gt 0) { throw "Deepstone forge escaped allowlist: $($unexpected -join ', ')" }
+          foreach ($path in $changed) {
+            $size = (Get-Item -LiteralPath $path).Length
+            if ($size -lt 50000) { throw "Generated Blender file is suspiciously small: $path ($size bytes)" }
+          }
+
+      - name: Commit generated Deepstones to review branch
+        shell: pwsh
+        run: |
+          $source = (git rev-parse HEAD).Trim()
+          $short = $source.Substring(0,12)
+          $branch = "production/deepstones-$short-$env:GITHUB_RUN_ID"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -b $branch
+          git add -- assets/models/source/underworld-deepstone-bloom.blend
+          git add -- assets/models/source/underworld-deepstone-tide.blend
+          git add -- assets/models/source/underworld-deepstone-cinder.blend
+          git add -- assets/models/source/underworld-deepstone-rime.blend
+          git add -- assets/models/source/underworld-deepstone-fracture.blend
+          git add -- assets/models/source/underworld-deepstone-decay.blend
+          if (git diff --cached --quiet) { throw 'No Deepstone Blender sources were staged.' }
+          git commit -m "Generate Deepstone Blender sources ($env:GITHUB_RUN_ID)"
+          git push origin "HEAD:refs/heads/$branch"
+          "Generated branch: $branch" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+
+      - name: Upload Blender logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: deepstone-blender-${{ github.run_id }}
+          path: ${{ runner.temp }}/magenheim-blender/**
+          if-no-files-found: warn
+          retention-days: 2
