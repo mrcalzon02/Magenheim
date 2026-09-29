@@ -5,9 +5,9 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Binds the surface fracture entrance to DF-01 and installs a deterministic return node inside
-/// the expedition. Both destinations are derived from the spawned location hierarchy, so travel
-/// survives save/load without client-local mutable routing state.
+/// Binds a Deep Fracture entrance to DF-01 and installs a deterministic return node inside the
+/// expedition. The entrance may live on the Surface or inside the Underworld; destinations are
+/// derived from the spawned location hierarchy, so travel never changes world layer implicitly.
 /// </summary>
 internal static class DeepFractureSurfaceTravel
 {
@@ -54,7 +54,11 @@ internal static class DeepFractureSurfaceTravel
         var surfaceFacing = anchor.rotation;
 
         surfacePortal.Configure(interiorArrival, interiorFacing, "Deep Fracture");
-        returnPortal.Configure(surfaceArrival, surfaceFacing, "Surface Fracture");
+        var origin = anchor.GetComponentInParent<DeepFractureEntranceOrigin>();
+        var returnLabel = origin is null || string.IsNullOrWhiteSpace(origin.ReturnLabel)
+            ? "Fracture Entrance"
+            : origin.ReturnLabel;
+        returnPortal.Configure(surfaceArrival, surfaceFacing, returnLabel);
     }
 
     private static DeepFractureTraversalPortal GetOrCreateReturnPortal(Transform descentDistrict)
@@ -69,5 +73,23 @@ internal static class DeepFractureSurfaceTravel
         portalObject.transform.localPosition = new Vector3(0f, 1f, 34f);
         portalObject.transform.localRotation = Quaternion.identity;
         return portalObject.AddComponent<DeepFractureTraversalPortal>();
+    }
+}
+
+
+/// <summary>
+/// Serialized-on-prefab entrance context. It affects only the return label; travel remains anchored
+/// to this spawned location and therefore preserves whichever world layer owns the entrance.
+/// </summary>
+internal sealed class DeepFractureEntranceOrigin : MonoBehaviour
+{
+    [SerializeField] private string _returnLabel = "Fracture Entrance";
+    internal string ReturnLabel => _returnLabel;
+
+    internal void Bind(string returnLabel)
+    {
+        if (string.IsNullOrWhiteSpace(returnLabel))
+            throw new ArgumentException("Deep Fracture return label is required.", nameof(returnLabel));
+        _returnLabel = returnLabel;
     }
 }
