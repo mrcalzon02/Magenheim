@@ -65,6 +65,7 @@ public static class UnderworldArchitectureValidator
     public const string UnderstoneResourceId = "magenheim.underworld.resource.understone";
     public const string WorldrootTimberResourceId = "magenheim.underworld.resource.worldroot_timber";
     public const string IronResourceId = "Iron";
+    public const string MycelialBenchStationPrefab = "Magenheim_Underworld_Station_MycelialBench";
 
     public static UnderworldArchitectureDefinitionSet ValidateAndFreeze(
         int schemaVersion,
@@ -223,7 +224,7 @@ public static class UnderworldArchitectureCatalog
                     UnderworldBuildPieceKind.Foundation,
                     UnderworldBuildTier.Rootstone,
                     2, 1, 2,
-                    "piece_stonecutter",
+                    UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost(UnderworldArchitectureValidator.UnderstoneResourceId, 6)),
                 Piece(
                     "great_column_plinth",
@@ -232,7 +233,7 @@ public static class UnderworldArchitectureCatalog
                     UnderworldBuildPieceKind.Plinth,
                     UnderworldBuildTier.Rootstone,
                     4, 2, 4,
-                    "piece_stonecutter",
+                    UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost(UnderworldArchitectureValidator.UnderstoneResourceId, 16)),
                 Piece(
                     "worldroot_beam_2m",
@@ -241,7 +242,7 @@ public static class UnderworldArchitectureCatalog
                     UnderworldBuildPieceKind.Beam,
                     UnderworldBuildTier.Rootstone,
                     2, 1, 1,
-                    "piece_workbench",
+                    UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 2)),
                 Piece(
                     "worldroot_beam_4m",
@@ -250,7 +251,7 @@ public static class UnderworldArchitectureCatalog
                     UnderworldBuildPieceKind.Beam,
                     UnderworldBuildTier.Rootstone,
                     4, 1, 1,
-                    "piece_workbench",
+                    UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 4)),
                 Piece(
                     "worldroot_beam_8m",
@@ -259,7 +260,7 @@ public static class UnderworldArchitectureCatalog
                     UnderworldBuildPieceKind.Beam,
                     UnderworldBuildTier.Rootstone,
                     8, 1, 1,
-                    "piece_workbench",
+                    UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 8)),
                 Piece(
                     "worldroot_pillar_2m",
@@ -268,7 +269,7 @@ public static class UnderworldArchitectureCatalog
                     UnderworldBuildPieceKind.Pillar,
                     UnderworldBuildTier.Rootstone,
                     1, 2, 1,
-                    "piece_workbench",
+                    UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 2)),
                 Piece(
                     "worldroot_pillar_4m",
@@ -277,7 +278,7 @@ public static class UnderworldArchitectureCatalog
                     UnderworldBuildPieceKind.Pillar,
                     UnderworldBuildTier.Rootstone,
                     1, 4, 1,
-                    "piece_workbench",
+                    UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 4)),
                 Piece(
                     "worldroot_pillar_8m",
@@ -286,7 +287,7 @@ public static class UnderworldArchitectureCatalog
                     UnderworldBuildPieceKind.Pillar,
                     UnderworldBuildTier.Rootstone,
                     1, 8, 1,
-                    "piece_workbench",
+                    UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 8)),
                 Piece(
                     "iron_banded_worldroot_beam_4m",
@@ -295,7 +296,7 @@ public static class UnderworldArchitectureCatalog
                     UnderworldBuildPieceKind.ReinforcedBeam,
                     UnderworldBuildTier.RootforgedIron,
                     4, 1, 1,
-                    "piece_stonecutter",
+                    UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 4),
                     Cost(UnderworldArchitectureValidator.IronResourceId, 2)),
                 Piece(
@@ -305,7 +306,7 @@ public static class UnderworldArchitectureCatalog
                     UnderworldBuildPieceKind.ArchRib,
                     UnderworldBuildTier.RootforgedIron,
                     4, 4, 1,
-                    "piece_stonecutter",
+                    UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 6),
                     Cost(UnderworldArchitectureValidator.IronResourceId, 4)),
                 Piece(
@@ -315,35 +316,35 @@ public static class UnderworldArchitectureCatalog
                     UnderworldBuildPieceKind.ArchRib,
                     UnderworldBuildTier.RootforgedIron,
                     8, 8, 1,
-                    "piece_stonecutter",
+                    UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 12),
                     Cost(UnderworldArchitectureValidator.IronResourceId, 8)),
                 Piece(
                     "worldroot_y_brace_4m", "WorldrootYBrace_4m", "Worldroot Y Brace 4m",
                     UnderworldBuildPieceKind.YBrace, UnderworldBuildTier.Rootstone,
-                    4, 4, 1, "piece_workbench",
+                    4, 4, 1, UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 6)),
                 Piece(
                     "worldroot_t_brace_4m", "WorldrootTBrace_4m", "Worldroot T Brace 4m",
                     UnderworldBuildPieceKind.TBrace, UnderworldBuildTier.Rootstone,
-                    4, 2, 1, "piece_workbench",
+                    4, 2, 1, UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 4)),
                 Piece(
                     "worldroot_forked_column_8m", "WorldrootForkedColumn_8m", "Worldroot Forked Column 8m",
                     UnderworldBuildPieceKind.ForkedColumn, UnderworldBuildTier.Rootstone,
-                    4, 8, 1, "piece_workbench",
+                    4, 8, 1, UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost(UnderworldArchitectureValidator.WorldrootTimberResourceId, 12)),
                 Piece("worldroot_floor_4m", "WorldrootFloor_4m", "Worldroot Floor 4m",
                     UnderworldBuildPieceKind.Floor, UnderworldBuildTier.Rootstone,
-                    4, 1, 4, "piece_workbench",
+                    4, 1, 4, UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost("magenheim.underworld.resource.worldroot_timber", 8)),
                 Piece("understone_stairs", "UnderstoneStairs", "Understone Stairs",
                     UnderworldBuildPieceKind.Stairs, UnderworldBuildTier.Rootstone,
-                    2, 2, 4, "piece_stonecutter",
+                    2, 2, 4, UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost("magenheim.underworld.resource.understone", 12)),
                 Piece("iron_banded_worldroot_beam_8m", "IronBandedWorldrootBeam_8m", "Iron-Banded Worldroot Beam 8m",
                     UnderworldBuildPieceKind.ReinforcedBeam, UnderworldBuildTier.RootforgedIron,
-                    8, 1, 1, "piece_stonecutter",
+                    8, 1, 1, UnderworldArchitectureValidator.MycelialBenchStationPrefab,
                     Cost("magenheim.underworld.resource.worldroot_timber", 8), Cost("Iron", 4)),
             });
 

@@ -34,7 +34,7 @@ public sealed record UnderworldWeaponUpgradeDefinition(
 /// </summary>
 public static class UnderworldWeaponUpgradeCatalog
 {
-    public const string MycelialBenchPrefab = "Magenheim_Underworld_Station_MycelialBench";
+    public const string MycelialBenchPrefab = UnderworldArchitectureValidator.MycelialBenchStationPrefab;
     public const string TidalBasinPrefab = "Magenheim_Underworld_Station_TidalBasin";
     public const string FurnaceHeartForgePrefab = "Magenheim_Underworld_Station_FurnaceHeartForge";
     public const string SilenceTablePrefab = "Magenheim_Underworld_Station_SilenceTable";

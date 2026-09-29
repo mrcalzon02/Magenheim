@@ -37,7 +37,7 @@ internal sealed class RootforgedPlaceableRegistrar : IDisposable
                 try { RegisterPiece(definition); count++; }
                 catch (Exception exception) { _log.LogError($"Rootforged piece {definition.PrefabName} failed: {exception}"); }
             }
-            _log.LogInfo($"Registered {count}/{_definitions.Pieces.Count} Rootforged pieces in Hammer > Rootforged using live Worldroot Timber, Understone and iron requirements.");
+            _log.LogInfo($"Registered {count}/{_definitions.Pieces.Count} Rootforged pieces in Hammer > Rootforged using live Worldroot Timber/Understone requirements and the Mycelial Bench station gate.");
         }
         finally { Dispose(); }
     }

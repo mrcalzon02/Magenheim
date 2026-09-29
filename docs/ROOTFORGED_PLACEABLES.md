@@ -16,7 +16,12 @@ Seventeen player-buildable pieces under **Hammer > Rootforged**, consuming the e
 | Understone foundation, 2 x 2 x 1 m | 6 stone | Stonecutter |
 | Great column plinth, 4 x 4 x 2 m | 16 stone | Stonecutter |
 
-Worldroot Timber maps explicitly to native core wood (`RoundLog`), Understone to `Stone`, and iron to `Iron`. These are interim construction materials: no new harvesting sources or fictional runtime resource items are claimed. Catalog identities and quantities remain authoritative. Native station proximity, resource consumption and refunds apply.
+The original 0.0.95 donor-resource bridge has now been retired. Worldroot Timber and Understone
+resolve to their registered Underworld resource prefabs; iron remains native `Iron`. All seventeen
+pieces are gated by the Mycelial Bench rather than the surface Workbench/Stonecutter, so entering the
+Underworld, gathering its ecology, and establishing its first station is a real prerequisite for the
+building vocabulary. Catalog identities and quantities remain authoritative. Native station
+proximity, resource consumption and refunds still apply.
 
 The seventeen editable Blender models carry braided trunk masses, finer raised roots, dark iron collars on reinforced pieces and stepped stone seating. UVs follow the roots longitudinally. Packed bark, heartwood, stone and iron textures export through the existing importer. Each 256px Hammer icon is rendered from its corresponding source model.
 

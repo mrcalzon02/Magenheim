@@ -67,3 +67,18 @@ gather -> establish station -> refine -> upgrade prior weapon.
 Rootforged construction deliberately continues to consume raw Worldroot Timber/Understone and
 fungal food deliberately continues to consume raw Glowcap Flesh, so the ecology has multiple sinks
 instead of every pickup existing only as weapon currency.
+
+
+## Rootforged station gate closed
+
+The first-tier construction set was still carrying one surface-world bypass after its material
+bindings were repaired: the architecture authority named Workbench or Stonecutter as the station on
+all seventeen pieces. That contradicted the Fungal parity rule that the Mycelial Bench is the
+Underworld's first station and gates the tier.
+
+The Core architecture catalog and shipped `foundation.json` now name
+`Magenheim_Underworld_Station_MycelialBench` on every Rootforged/Understone piece. The station
+identity is shared by the architecture and weapon catalogs instead of duplicated. Runtime bootstrap
+subscription order is resources -> Mycelial Bench -> later Rootforged registration, so the custom
+station exists before Jotunn resolves piece requirements. Architecture tests now reject any
+first-tier piece that falls back to a surface station.

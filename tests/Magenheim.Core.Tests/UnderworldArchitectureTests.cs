@@ -40,10 +40,13 @@ internal static class UnderworldArchitectureTests
         var junctions = catalog.Pieces.Where(value => value.Kind == UnderworldBuildPieceKind.YBrace
             || value.Kind == UnderworldBuildPieceKind.TBrace || value.Kind == UnderworldBuildPieceKind.ForkedColumn).ToArray();
         Assert(junctions.Length == 3, "Y/T braces and forked columns must all be available.");
-        Assert(junctions.All(value => value.CraftingStationPrefabName == "piece_workbench"
+        Assert(junctions.All(value => value.CraftingStationPrefabName == UnderworldArchitectureValidator.MycelialBenchStationPrefab
             && value.Tier == UnderworldBuildTier.Rootstone && value.Costs.Count == 1
             && value.Costs[0].ResourceId == UnderworldArchitectureValidator.WorldrootTimberResourceId),
-            "Unreinforced junctions must remain available through the existing timber/workbench recipe.");
+            "Unreinforced junctions must consume Worldroot Timber and require the Mycelial Bench.");
+        Assert(catalog.Pieces.All(value =>
+                value.CraftingStationPrefabName == UnderworldArchitectureValidator.MycelialBenchStationPrefab),
+            "The complete first Rootforged/Understone vocabulary must be gated by the Mycelial Bench rather than surface stations.");
 
         var floor = catalog.Pieces.Single(value => value.Kind == UnderworldBuildPieceKind.Floor);
         Assert(floor.Dimensions == new UnderworldBuildDimensions(4, 1, 4), "Floor must meet the four-meter hall grid.");
