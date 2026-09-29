@@ -36,10 +36,10 @@ internal sealed class RadianceStaffRegistrar : IDisposable
                 throw new InvalidOperationException("Geologist's Workstation must exist before Radiance staff recipes are registered.");
 
             var flash = StaffEffectPayloads.CreateField(
-                "Magenheim_Radiance_Flash", new HitData.DamageTypes { m_spirit = 2f },
+                "Magenheim_Radiance_Flash", new HitData.DamageTypes { m_spirit = 3f },
                 2.2f, .20f, .20f, 28f, new Color(1f, .93f, .52f, 1f), 1.65f);
             var sanctuary = StaffEffectPayloads.CreateField(
-                "Magenheim_Radiance_Sanctuary", new HitData.DamageTypes { m_spirit = 6f },
+                "Magenheim_Radiance_Sanctuary", new HitData.DamageTypes { m_spirit = 9f },
                 5.5f, 10f, 1f, 0f, new Color(1f, .98f, .78f, 1f), 1.85f);
 
             var payloads = new PayloadSet(
@@ -142,11 +142,11 @@ internal sealed class RadianceStaffRegistrar : IDisposable
             new Requirement("ElderBark",10), new Requirement("Silver",3), new Requirement("Magenheim_Crystal_Radiance_Crystal",1)),
         new Definition("Magenheim_Staff_Radiance_Advanced", "staff-radiance-advanced", "Advanced Staff of Radiance",
             "Corona Flash: fractures one cast into seven rays. Each impact blooms into a brief radiant flash, adding local Spirit pressure and violent interruption around clustered targets.",
-            3, 30f, 4f, 8f, .55f, .55f, 1.35f, 48f, 9f, 7, 1, 0f, PayloadKind.Flash, new Color(1f,.95f,.68f,1f),
+            3, 30f, 6f, 12f, .55f, .55f, 1.35f, 48f, 9f, 7, 1, 0f, PayloadKind.Flash, new Color(1f,.95f,.68f,1f),
             new Requirement("YggdrasilWood",10), new Requirement("Silver",4), new Requirement("BlackMetal",2), new Requirement("Magenheim_Crystal_Radiance_Advanced",1)),
         new Definition("Magenheim_Staff_Radiance_Master", "staff-radiance-master", "Master Staff of Radiance",
             "Daybreak Sanctuary: drives one sun-bright lance into the target point and leaves a wide sanctified field for ten seconds. The field deals pure Spirit damage, making corrupted ground lethal to spirit-vulnerable enemies rather than becoming another artillery barrage.",
-            4, 50f, 18f, 38f, 1f, 1.0f, 1.80f, 66f, .12f, 1, 1, 0f, PayloadKind.Sanctuary, new Color(1f,.99f,.84f,1f),
+            4, 50f, 27f, 57f, 1f, 1.0f, 1.80f, 66f, .12f, 1, 1, 0f, PayloadKind.Sanctuary, new Color(1f,.99f,.84f,1f),
             new Requirement("YggdrasilWood",15), new Requirement("BlackMetal",4), new Requirement("Magenheim_Crystal_Radiance_Master",1)),
     };
 
