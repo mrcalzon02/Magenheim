@@ -136,7 +136,12 @@ require(material_item_manifest.get("generator")=="tools/author-underworld-materi
 require("underworld-resource-icons" in scope["regenerate"],
         "Owned raw/refined material icons must be regenerated in the one-run forge")
 for primary,secondary,form in material_item_specs.values():
-    literal_names += ["magenheim.material-item.preview."+primary,"magenheim.material-item.preview."+secondary]
+    for semantic in (primary,secondary):
+        try:
+            key=material_key(semantic)
+            require(key in material_specs,semantic+" resolves to undeclared material family "+key)
+        except Exception as error:
+            fail.append(semantic+" material mapping failed: "+str(error))
 
 for semantic in literal_names:
     try:
