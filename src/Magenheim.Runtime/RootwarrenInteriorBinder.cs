@@ -40,7 +40,6 @@ internal sealed class RootwarrenInteriorBinding
 
 internal sealed class RootwarrenInteriorBinder
 {
-    internal const string InteriorAnchorName = "Magenheim_Rootwarren_InteriorAnchor";
     internal const string InteriorRootName = "Magenheim_Rootwarren_InteriorRoot";
     internal const string InteriorEnvironment = "Crypt";
     internal const float ConservativeInteriorRadius = 1800f;
@@ -50,21 +49,27 @@ internal sealed class RootwarrenInteriorBinder
         if (locationContainer is null)
             throw new ArgumentNullException(nameof(locationContainer));
 
-        var existing = locationContainer
+        var anchor = locationContainer
             .GetComponentsInChildren<Transform>(includeInactive: true)
-            .FirstOrDefault(value =>
+            .SingleOrDefault(value =>
+                string.Equals(
+                    value.name,
+                    RootwarrenEntranceVisuals.InteriorAnchorName,
+                    StringComparison.Ordinal))
+            ?? throw new InvalidOperationException(
+                $"Rootwarren location '{locationContainer.name}' has no authoritative entrance anchor '{RootwarrenEntranceVisuals.InteriorAnchorName}'.");
+
+        var existing = anchor.Cast<Transform>()
+            .SingleOrDefault(value =>
                 string.Equals(value.name, InteriorRootName, StringComparison.Ordinal));
         if (existing is not null)
             throw new InvalidOperationException(
                 "Rootwarren interior authority is already attached.");
 
-        var anchorObject = new GameObject(InteriorAnchorName);
-        anchorObject.transform.SetParent(locationContainer.transform, false);
-        anchorObject.transform.localPosition = Vector3.zero;
-        anchorObject.transform.localRotation = Quaternion.identity;
+        RootwarrenTravel.AttachEntrancePortal(anchor);
 
         var root = new GameObject(InteriorRootName);
-        root.transform.SetParent(anchorObject.transform, false);
+        root.transform.SetParent(anchor, false);
         root.transform.localPosition = Vector3.zero;
         root.transform.localRotation = Quaternion.identity;
         root.AddComponent<ZNetView>();
@@ -95,7 +100,8 @@ internal sealed class RootwarrenInteriorRuntime : MonoBehaviour
         var topology = UnderworldBiomeDungeonPlanner.Build(
             UnderworldDungeonCatalog.FungalForest,
             seed,
-            UnderworldFungalRootwarrenCatalog.RoomFamilyIds());
+            UnderworldFungalRootwarrenCatalog.RoomFamilyIds(),
+            UnderworldFungalRootwarrenCatalog.EntranceRoomId);
         var spatial = UnderworldBiomeDungeonSpatialPlanner.Build(
             topology,
             UnderworldFungalRootwarrenCatalog.Rooms);
@@ -107,6 +113,7 @@ internal sealed class RootwarrenInteriorRuntime : MonoBehaviour
             value => value.Id,
             StringComparer.Ordinal);
 
+        GameObject? entranceRoom = null;
         foreach (var placement in topology.Rooms)
         {
             if (!spatialById.TryGetValue(placement.InstanceId, out var position))
@@ -137,9 +144,19 @@ internal sealed class RootwarrenInteriorRuntime : MonoBehaviour
                 definition,
                 authority,
                 seed);
+
+            if (string.Equals(
+                    placement.InstanceId,
+                    topology.Rooms[0].InstanceId,
+                    StringComparison.Ordinal))
+                entranceRoom = instance;
         }
 
         RootwarrenPassageAssembler.Assemble(transform, topology, spatial);
+        if (entranceRoom is null)
+            throw new InvalidOperationException(
+                "Rootwarren did not instantiate its authored entrance room.");
+        RootwarrenTravel.Bind(transform, entranceRoom);
         _built = true;
     }
 
