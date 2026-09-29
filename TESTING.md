@@ -349,3 +349,23 @@ separate observations.
   or collage dividers. While the presenter is visible, panels should rotate every eight seconds.
 - Collect a one-shot stone resource, save and reload: it must stay depleted through native persistence.
 - Game startup, rendered loading screens and collection persistence still require live validation.
+
+
+## Loading-screen / worldgen fidelity acceptance
+
+Loading artwork is now a player-facing worldgen contract. For each replacement backdrop, record the
+biome/scene, a seed and an in-game location that reproduces its major visual ingredients. Exact
+camera composition is not required, but the scene must be recognizably attainable without noclip,
+console-spawned scenery or developer-only terrain mutation.
+
+For the Blackwater Worldroot Span, explore newly generated Blackwater Deep zones until the native
+location system places the landmark. Confirm the span is a genuinely large navigational silhouette,
+its feet meet the terrain/water rather than floating, the opening remains traversable, collision
+matches the visible root mass, distant haze does not erase it at ordinary navigation distance, and
+the same location survives unload/reload and agrees for a second peer. Check frame time while the
+landmark streams in. The checked-in 7,932-triangle authored root model is deliberately reused at
+monumental scale rather than replacing it with a high-density special-case mesh.
+
+A backdrop fails fidelity acceptance when a major shape in the picture has no runtime analogue. In
+that case either implement that analogue through the existing terrain/location pipeline or redraw
+the backdrop within the current generator envelope. Do not waive the mismatch as "concept art".

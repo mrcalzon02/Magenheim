@@ -1,9 +1,38 @@
 # Loading backdrops
 
-Ten individual, lossless crops of the user's supplied `ChatGPT Image Sep 27, 2026, 12_59_31 PM.png` (1672 x 941). Divider lines are excluded. No repainting, stretching or upscaling is applied.
+The Underworld loading artwork is an **environment promise**, not detached concept art. A backdrop
+may stylize composition, atmosphere and the player's viewpoint, but the geography, landmark
+families and environmental motifs it depicts must be achievable by the shipped Underworld
+generator. If a scene cannot be encountered in play, either world generation must be advanced
+until it can or the artwork must be reduced to the implemented visual envelope.
 
-Reading order, left to right then top to bottom: root caverns, burning roots, sulfurous wastes, frozen caverns, fungal forest, great decay, ancient ruins, fracture zones, blackwater deep, titanbone arches. Names describe the artwork; they do not add new gameplay biomes.
+The current ten scene identities are: root caverns, burning roots, sulfurous wastes, frozen
+caverns, fungal forest, great decay, ancient ruins, fracture zones, blackwater deep and titanbone
+arches. These are scene names, not additional gameplay biomes. Their biome/worldgen mappings and
+acceptance boundaries are defined in
+`docs/UNDERWORLD_LOADING_SCREEN_WORLDGEN_CONTRACT.md`.
 
-Each PNG is shipped separately under `Magenheim/assets/loading/underworld`, the directory used by the remote Underworld loading presenter. It rotates panels every eight seconds while shown. Aspect ratio is preserved, so the panoramic artwork is letterboxed on narrower displays. Live rendering remains to be confirmed in game.
+Artwork rules:
 
-To reproduce the exact crops, run `tools/split-loading-backdrops.ps1 -Source <original image path>`.
+- Match vanilla Valheim's restrained loading-art language: a painted vignette that falls into black,
+  not a full-screen wallpaper.
+- Do not bake the Valheim/Magenheim logo, loading text, tips, spinner, progress bar or other UI into
+  the PNG. Runtime owns UI.
+- Keep the desaturated charcoal / blue-grey value structure with only restrained local colour.
+- Keep at least one Viking as a readable dark foreground or midground silhouette when the scene
+  composition permits it.
+- Prefer broad painted masses and low-frequency texture. Do not prompt for "ultra detailed",
+  "high-detail" or similar microtexture language that produces crinkled/noisy surfaces.
+- Do not depict unsupported volumetric terrain. Heightfield ground may form basins, cliffs, ridges,
+  plateaus and spires; free-standing bridges, roots, arches, ceilings and overhangs require actual
+  landmark/prop geometry in the runtime.
+- A loading scene is not accepted merely because the PNG exists. Its required terrain and landmark
+  ingredients need source implementation and then live visual confirmation.
+
+Each PNG is shipped separately under `Magenheim/assets/loading/underworld`, the directory used by
+the Underworld loading presenter. It rotates panels every eight seconds while shown and preserves
+image aspect ratio.
+
+The original crop workflow remains available for archival/source recovery through
+`tools/split-loading-backdrops.ps1 -Source <original image path>`, but those crops are no longer
+the visual authority for future replacements.
