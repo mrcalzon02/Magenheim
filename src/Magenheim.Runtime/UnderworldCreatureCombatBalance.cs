@@ -148,6 +148,7 @@ internal static class UnderworldCreatureCombatBalance
             case "Magma Leaper":
             case "Iceblind":
             case "Rimewing":
+            case "Glacier Stalker":
             case "Chasm Stalker":
             case "Spore Husk":
             case "Decay Hound":
@@ -156,18 +157,17 @@ internal static class UnderworldCreatureCombatBalance
             case "Puffback":
             case "Blackwater Lamprey":
             case "Basalt Crawler":
-            case "Graft Warden":
                 return Role.Bruiser;
 
             case "Abyss Shellback":
             case "Stonebound":
+            case "Graft Warden":
             case "Corpse Orchard":
                 return Role.Heavy;
 
             case "Crowncap Brute":
             case "Deep Hunter":
             case "Furnace Golem":
-            case "Glacier Stalker":
             case "Cryolith Guardian":
             case "Rift Colossus":
                 return Role.Apex;
