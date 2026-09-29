@@ -38,6 +38,37 @@ Current direction: content expansion using Valheim-owned animation, AI, combat, 
 
 Natural spawning now uses the same registered identities. For direct review, spawn with `spawn Magenheim_Underworld_Prototype_<NameWithoutSpaces> 1` after enabling the normal Valheim developer console. Donor availability and animation controller are checked during registration; the log reports the actual registered count. Exact bone paths are deliberately not guessed: the whole native hierarchy remains intact.
 
+
+## 2026-09-28 identity, temperament and physiology pass
+
+The reused chassis are now deliberately separated in behavior as well as surface art. Registration runs
+`UnderworldCreatureIdentityPass` after the owned skin material pass and before Jötunn creature
+registration.
+
+- Every creature receives a low-budget biome VFX layer: Fungal spore drift, Blackwater
+  bioluminescent motes, Sulfurous smoke, Frozen rime mist, Fracture rift sparks, or Great Decay
+  motes. Selected identity creatures also carry local point-light glow; large/spectral forms receive
+  stronger but still capped effects.
+- The original `MonsterAI` remains authoritative. Magenheim tunes its alert/view/hearing ranges,
+  target-circling cadence and roaming pressure instead of replacing it. Predators and apex forms are
+  substantially more assertive than ambient fauna, and eight apex identities opt into Jötunn's
+  `HuntPlayer` spawn behavior.
+- Home-biome physiology is applied through Valheim's native `HitData.DamageModifiers` plus
+  `Character` environmental-tolerance flags. Sulfurous fauna resist fire and tolerate smoke/fire;
+  Frozen fauna heavily resist frost but are vulnerable to fire; Blackwater fauna tolerate water but
+  are vulnerable to lightning; Fungal and Great Decay fauna resist poison while retaining
+  appropriate fire/spirit weaknesses; Fracture fauna resist lightning/spirit pressure.
+- A small elemental damage rider is attached at `Character.Damage` after a real donor attack has
+  selected and landed. This preserves donor attack prefabs, clips, sockets and AI while adding
+  biome identity: poison for Fungal/Decay, frost for Blackwater/Frozen, fire for Sulfurous, and
+  lightning for Fracture. Vanilla donor attack prefabs are never mutated.
+- Physical donor resistances, factions, loot, animation controllers, attack definitions, hitboxes
+  and networking remain inherited unless a later creature-specific design explicitly replaces them.
+
+This is intentionally the middle ground between a palette swap and forty-two bespoke creatures:
+reuse the expensive native machinery, then spend Magenheim-owned work on the parts the player
+actually reads as species identity.
+
 | Biome | Creature | Donor skeleton/controller | Uniform scale | Prototype limitation |
 |---|---|---|---:|---|
 | Fungal Forest | Lantern Moth | Bat | 0.65 | Winged hover/bite stand-in; ambient temperament and four-wing art pending |
