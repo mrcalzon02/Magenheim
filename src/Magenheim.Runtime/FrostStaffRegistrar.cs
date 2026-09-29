@@ -54,10 +54,10 @@ internal sealed class FrostStaffRegistrar : IDisposable
                 "Magenheim_Frost_LanceShatter", new HitData.DamageTypes { m_frost = 2f },
                 .85f, .15f, .15f, 2f, new Color(.56f, .86f, 1f, 1f), 1.50f, brittle);
             var rimePatch = StaffEffectPayloads.CreateField(
-                "Magenheim_Frost_RimePatch", new HitData.DamageTypes { m_frost = 2.5f },
+                "Magenheim_Frost_RimePatch", new HitData.DamageTypes { m_frost = 3.75f },
                 2.2f, 2.5f, .75f, 0f, new Color(.68f, .92f, 1f, 1f), 1.60f, deepRime);
             var torrentPatch = StaffEffectPayloads.CreateField(
-                "Magenheim_Frost_TorrentRime", new HitData.DamageTypes { m_frost = 2f },
+                "Magenheim_Frost_TorrentRime", new HitData.DamageTypes { m_frost = 3f },
                 1.8f, 1.8f, .60f, 0f, new Color(.82f, .98f, 1f, 1f), 1.85f, deepRime);
 
             var payloads = new PayloadSet(
@@ -201,12 +201,12 @@ internal sealed class FrostStaffRegistrar : IDisposable
         new FrostStaffDefinition(
             "Magenheim_Staff_Frost_Advanced", "staff-frost-advanced", "Advanced Staff of Frost",
             "Ice Volley: throws five lighter shards across a fan. Each impact leaves a short Rime patch that deals Frost damage and applies Deep Rime, reducing movement by twenty percent.",
-            3, 28f, 8f, .85f, .80f, .80f, 36f, 12f, 5, 1, 0f, PayloadKind.Volley,
+            3, 28f, 12f, .85f, .80f, .80f, 36f, 12f, 5, 1, 0f, PayloadKind.Volley,
             new StaffRequirement("YggdrasilWood", 10), new StaffRequirement("Silver", 4), new StaffRequirement("FreezeGland", 4), new StaffRequirement("Magenheim_Crystal_Frost_Advanced", 1)),
         new FrostStaffDefinition(
             "Magenheim_Staff_Frost_Master", "staff-frost-master", "Master Staff of Frost",
             "Rime Torrent: releases twelve shards in one wide volley. Every impact leaves a compact Rime field that deals Frost damage and applies Deep Rime, reducing movement by twenty percent. The intended six-pulse cadence is not active yet.",
-            4, 44f, 5f, .75f, .65f, .70f, 40f, 7f, 2, 6, .09f, PayloadKind.Torrent,
+            4, 44f, 7.5f, .75f, .65f, .70f, 40f, 7f, 2, 6, .09f, PayloadKind.Torrent,
             new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("BlackMetal", 4), new StaffRequirement("FreezeGland", 6), new StaffRequirement("Magenheim_Crystal_Frost_Master", 1)),
     };
 
