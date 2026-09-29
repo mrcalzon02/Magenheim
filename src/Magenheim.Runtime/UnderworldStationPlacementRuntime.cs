@@ -102,4 +102,16 @@ internal static class UnderworldStationTryPlacePatch
             __instance.Message(MessageHud.MessageType.Center,decision.Diagnostic);
         return false;
     }
+
+    [HarmonyPostfix]
+    private static void Postfix(Player __instance,bool __result)
+    {
+        if(!__result||__instance is null||__instance.m_buildPieces is null)return;
+        var selected=__instance.m_buildPieces.GetSelectedPiece();
+        if(selected is null||!string.Equals(Utils.GetPrefabName(selected.gameObject),UnderworldToolPlaceables.AnchorPlacedPrefab,StringComparison.Ordinal))return;
+        var tool=__instance.GetCurrentWeapon();
+        if(tool?.m_dropPrefab is null||!string.Equals(tool.m_dropPrefab.name,UnderworldToolRegistrar.AnchorSpikePrefab,StringComparison.Ordinal))return;
+        var inventory=__instance.GetInventory();
+        if(inventory.ContainsItem(tool))inventory.RemoveItem(tool,1);
+    }
 }
