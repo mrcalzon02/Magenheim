@@ -87,6 +87,10 @@ for suffix in expected:
     if model_id not in author:
         raise SystemExit("FAIL Rootwarren contract: author lost model id " + model_id)
 
+if 'REVISION = "rootwarren-dungeon-r2"' not in author:
+    raise SystemExit("FAIL Rootwarren contract: authored dungeon must remain on enclosed-cave revision r2")
+if "cave_shell(" not in author or '"cavern-shell"' not in author or '"passage-shell"' not in author:
+    raise SystemExit("FAIL Rootwarren contract: authored chamber/passage cave envelopes are missing")
 if f'PassageModelId = "{PREFIX}{PASSAGE}"' not in visuals:
     raise SystemExit("FAIL Rootwarren contract: runtime passage model identity drifted")
 
@@ -121,7 +125,17 @@ runtime_contracts = {
         "RootwarrenEntranceVisuals.Build" in location and
         "RootwarrenTravel.AttachEntrancePortal" in interior and
         "RootwarrenTravel.Bind" in interior and
-        "EntranceRoomId" in interior
+        "EntranceRoomId" in interior and
+        "EntrancePortalAnchorName" in entrance and
+        "InteriorAnchorName" in entrance and
+        "EntrancePortalAnchorName" in travel and
+        "InteriorAnchorName" in travel and
+        "EntrancePortalAnchorName" in interior and
+        "InteriorAnchorName" in interior
+    ),
+    "buried interior separation": (
+        "new Vector3(0f, -28f, -26f)" in entrance and
+        "new Vector3(0f, 1.05f, -4.5f)" in entrance
     ),
     "same-instance return portal": (
         "RootwarrenTravelPortal" in travel and
@@ -144,6 +158,10 @@ runtime_contracts = {
     "plugin location lifecycle": (
         "_rootwarrenLocationRegistrar=new RootwarrenLocationRegistrar" in plugin and
         "_rootwarrenLocationRegistrar?.Dispose()" in plugin
+    ),
+    "asset-gated promotion": (
+        "promote-rootwarren-runtime.py" in (ROOT / "tools/rebuild-underworld-production.ps1").read_text(encoding="utf-8") and
+        "Ready(" in dungeons
     ),
 }
 bad_runtime = [name for name, ok in runtime_contracts.items() if not ok]
