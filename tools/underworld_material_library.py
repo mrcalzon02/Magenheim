@@ -14,7 +14,7 @@ EXACT={
 "underworld.geothermal-vent.heat":"ember-heat",
 }
 RULES=(
-("spore-crystal","glowcap"),("worldroot-heartwood","worldroot-heartwood"),("worldroot","worldroot-bark"),
+("spore-crystal","glowcap"),("sporeweave-fibre","sporeweave-fibre"),("worldroot-heartwood","worldroot-heartwood"),("worldroot","worldroot-bark"),
 ("understone","understone"),("glowcap","glowcap"),("flowstone","flowstone"),("pale-fibre","pale-fibre"),
 ("pearl-metal","pearl-metal"),("pearl","blackwater-pearl"),("slagstone","slagstone"),("sulfur","sulfur-crust"),("charred","charred-root"),
 ("emberiron","emberiron"),("furnace.heart","ember-heat"),("tool.slag.heat","ember-heat"),
