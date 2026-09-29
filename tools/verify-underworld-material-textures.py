@@ -27,7 +27,7 @@ DIR=ROOT/"assets"/"material-source"/"underworld"
 spec=importlib.util.spec_from_file_location("gen",ROOT/"tools"/"generate-underworld-material-textures.py")
 # Do not import generator (it would regenerate); read keys from helper's mapping expectations via filenames.
 albedos=sorted(DIR.glob("*-albedo.png"))
-if len(albedos)!=23: raise SystemExit(f"Expected 23 Underworld material families, found {len(albedos)}")
+if len(albedos)!=25: raise SystemExit(f"Expected 25 Underworld material families, found {len(albedos)}")
 for alb in albedos:
     key=alb.name[:-11]
     maps={suffix:DIR/f"{key}-{suffix}.png" for suffix in ("albedo","roughness","normal","metallic-smoothness")}
@@ -56,7 +56,7 @@ for alb in albedos:
     mg=Image.open(maps["metallic-smoothness"]).convert("RGBA").resize((64,64),Image.Resampling.LANCZOS)
     smooth=[p[3] for p in flat(mg)]
     if pstdev(smooth)<2.5: raise SystemExit(f"{key}: metallic/smoothness map loses gloss variation at gameplay scale")
-expected_emission={"glowcap","blackwater-pearl","ember-heat","clear-ice","fracture-crystal","carrion-amber"}
+expected_emission={"glowcap","blackwater-pearl","sulfur-crust","ember-heat","clear-ice","fracture-crystal","decay-spore","carrion-amber"}
 actual_emission={p.name[:-13] for p in DIR.glob("*-emission.png")}
 if actual_emission!=expected_emission:
     raise SystemExit("Emission family mismatch: expected "+repr(sorted(expected_emission))+", got "+repr(sorted(actual_emission)))
