@@ -423,9 +423,11 @@ population should remain sparse enough that the biome still reads as an ecosyste
 continuous combat event. Confirm no Fire Surtling world spawns occur on the Surface or in another
 Underworld biome, then repeat on a second peer and after save/reload.
 
-The 42 ordinary donor creature prototypes remain review-only and are not accepted final biome
-inhabitants. In particular, Lantern Moth still uses the Bat donor body until its custom
-HOST-INSECT-FLY art is generated, exported and runtime-bound.
+The 42 ordinary donor-chassis creatures now participate in native Underworld biome spawning and
+use owned biome/creature skin materials. They are accepted as the current reusable-chassis fauna
+layer, not as finished bespoke silhouettes. Full re-body work remains necessary only where the
+concept materially contradicts its donor anatomy; Lantern Moth is still the first explicit example
+because a four-wing moth cannot be sold convincingly by a Bat silhouette alone.
 
 
 ## 0.0.148 canonical Surtling population acceptance
