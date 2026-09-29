@@ -30,6 +30,7 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
     {
         _registry = registry ?? throw new ArgumentNullException(nameof(registry));
         _log = log ?? throw new ArgumentNullException(nameof(log));
+        UnderworldDungeonPlacementRuntime.Configure(_log);
     }
 
     internal bool TryCreate(UnderworldWorldIdentity identity, out string diagnostic)
@@ -460,6 +461,7 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
         SceneManager.MoveGameObjectToScene(_zoneRoot, scene);
         var clone = _zoneRoot.AddComponent<ZoneSystem>();
         _zoneRoot.AddComponent<UnderworldScenePresentationIsolation>();
+        _zoneRoot.AddComponent<UnderworldDungeonPlacementRuntime>();
         CopyZoneConfiguration(source, clone);
 
         // Surface has already assembled the native/Jotunn catalog before instance 1 is admitted.
