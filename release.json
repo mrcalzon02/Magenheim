@@ -1,4 +1,4 @@
 {
-  "version": "0.0.150",
-  "description": "0.0.150: Replaces the Underworld's five-slice biome wheel with a seeded warped multi-field layout that produces organic regions, repeated biome pockets, irregular Fungal arrival edges, and genuinely different biome maps between seeds."
+  "version": "0.0.151",
+  "description": "0.0.151: Replaces smooth-only biome regions with a 50%-jittered hex/Voronoi cellular layout, plasma-warped boundaries, and Blackwater ocean-depth river seams carved along the cellular grid."
 }
