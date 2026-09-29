@@ -1,5 +1,10 @@
 # Monumental terrain closeout — 2026-09-23
 
+> **SUPERSEDED 2026-09-29:** the independent 3,072m spire/plateau grid described below is retained
+> as historical validation only. Current terrain authority uses rare biome-owned Voronoi-cell
+> massifs; see `2026-09-29-biome-cell-massif-progression.md`.
+
+
 Pulled and fast-forwarded main through `998098d`, retaining the new unique location and Deep
 Sigil residency/discovery registrations. Added a terrain development checkpoint in 0.0.103.
 The user's subsequent cloud-line height clarification and lava/fungal sunless skybox request
