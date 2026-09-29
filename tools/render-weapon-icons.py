@@ -104,7 +104,9 @@ def frame_and_render(entry, out_path: Path) -> None:
 def main() -> None:
     catalog = json.loads((MODELS / 'catalog.json').read_text())
     weapons = [e for e in catalog
-               if e['id'].startswith('crystal-weapon-') or e['id'].startswith('underworld-weapon-')]
+               if e['id'].startswith('crystal-weapon-')
+               or e['id'].startswith('underworld-weapon-')
+               or e['id'].startswith('nowhere-king-sword-')]
     if len([e for e in weapons if e['id'].startswith('crystal-weapon-')]) != 10:
         raise SystemExit('The ten base crystal weapon models must remain present in the catalog.')
 
