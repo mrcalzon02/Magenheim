@@ -19,81 +19,11 @@ foreach($id in $scope.regenerate){
     }
 }
 
-# Rootwarren is a large dungeon family rather than an ordinary equipment/material generator.
-# Forge it explicitly after the normal production authorities so its 17 authored Blender sources,
-# GLBs and runtime payloads exist before the shared model gates inspect the repository.
-& "$PSScriptRoot/rebuild-rootwarren-dungeon.ps1"
-if($LASTEXITCODE -ne 0){throw 'Rootwarren dungeon production forge failed.'}
-& python "$PSScriptRoot/verify-rootwarren-production-contract.py"
-if($LASTEXITCODE -ne 0){throw 'Rootwarren source/asset contract failed after forge.'}
-& python "$PSScriptRoot/record-rootwarren-generated-assets.py"
-if($LASTEXITCODE -ne 0){throw 'Rootwarren generated-asset provenance recording failed.'}
-& python "$PSScriptRoot/verify-generated-freshness.py" rootwarren-dungeon-models
-if($LASTEXITCODE -ne 0){throw 'Rootwarren generated assets are stale immediately after forge.'}
-& python "$PSScriptRoot/promote-rootwarren-runtime.py"
-if($LASTEXITCODE -ne 0){throw 'Rootwarren runtime promotion failed after complete asset forge.'}
-& python "$PSScriptRoot/verify-rootwarren-production-contract.py"
-if($LASTEXITCODE -ne 0){throw 'Rootwarren RuntimeReady contract failed after promotion.'}
-
-# Drowned Vaults use the same asset-earned admission rule as Rootwarren. Their 16 room
-# families plus adaptive passage remain catalog-Planned until this forge proves the whole set.
-& "$PSScriptRoot/rebuild-drowned-vaults-dungeon.ps1"
-if($LASTEXITCODE -ne 0){throw 'Drowned Vault dungeon production forge failed.'}
-& python "$PSScriptRoot/verify-drowned-vaults-production-contract.py"
-if($LASTEXITCODE -ne 0){throw 'Drowned Vault source/asset contract failed after forge.'}
-& python "$PSScriptRoot/record-drowned-vaults-generated-assets.py"
-if($LASTEXITCODE -ne 0){throw 'Drowned Vault generated-asset provenance recording failed.'}
-& python "$PSScriptRoot/verify-generated-freshness.py" drowned-vaults-dungeon-models
-if($LASTEXITCODE -ne 0){throw 'Drowned Vault generated assets are stale immediately after forge.'}
-& python "$PSScriptRoot/promote-drowned-vaults-runtime.py"
-if($LASTEXITCODE -ne 0){throw 'Drowned Vault runtime promotion failed after complete asset forge.'}
-& python "$PSScriptRoot/verify-drowned-vaults-production-contract.py"
-if($LASTEXITCODE -ne 0){throw 'Drowned Vault RuntimeReady contract failed after promotion.'}
-
-# Cinderworks remains catalog-Planned until its 16 rooms plus adaptive passage are forged,
-# verified, provenance-recorded and reviewed. Heat gameplay already binds to canonical geothermal state.
-& "$PSScriptRoot/rebuild-cinderworks-dungeon.ps1"
-if($LASTEXITCODE -ne 0){throw 'Cinderworks dungeon production forge failed.'}
-& python "$PSScriptRoot/verify-cinderworks-production-contract.py"
-if($LASTEXITCODE -ne 0){throw 'Cinderworks source/asset contract failed after forge.'}
-& python "$PSScriptRoot/record-cinderworks-generated-assets.py"
-if($LASTEXITCODE -ne 0){throw 'Cinderworks generated-asset provenance recording failed.'}
-& python "$PSScriptRoot/verify-generated-freshness.py" cinderworks-dungeon-models
-if($LASTEXITCODE -ne 0){throw 'Cinderworks generated assets are stale immediately after forge.'}
-& python "$PSScriptRoot/promote-cinderworks-runtime.py"
-if($LASTEXITCODE -ne 0){throw 'Cinderworks runtime promotion failed after complete asset forge.'}
-& python "$PSScriptRoot/verify-cinderworks-production-contract.py"
-if($LASTEXITCODE -ne 0){throw 'Cinderworks RuntimeReady contract failed after promotion.'}
-
-# Rime Sepulcher uses the same asset-earned admission rule. Frozen weather pressure remains
-# canonical runtime atmosphere authority; the forge only produces geometry and runtime model payloads.
-& "$PSScriptRoot/rebuild-rime-sepulcher-dungeon.ps1"
-if($LASTEXITCODE -ne 0){throw 'Rime Sepulcher dungeon production forge failed.'}
-& python "$PSScriptRoot/verify-rime-sepulcher-production-contract.py"
-if($LASTEXITCODE -ne 0){throw 'Rime Sepulcher source/asset contract failed after forge.'}
-& python "$PSScriptRoot/record-rime-sepulcher-generated-assets.py"
-if($LASTEXITCODE -ne 0){throw 'Rime Sepulcher generated-asset provenance recording failed.'}
-& python "$PSScriptRoot/verify-generated-freshness.py" rime-sepulcher-dungeon-models
-if($LASTEXITCODE -ne 0){throw 'Rime Sepulcher generated assets are stale immediately after forge.'}
-& python "$PSScriptRoot/promote-rime-sepulcher-runtime.py"
-if($LASTEXITCODE -ne 0){throw 'Rime Sepulcher runtime promotion failed after complete asset forge.'}
-& python "$PSScriptRoot/verify-rime-sepulcher-production-contract.py"
-if($LASTEXITCODE -ne 0){throw 'Rime Sepulcher RuntimeReady contract failed after promotion.'}
-
-# Carrion Catacombs close the ordinary-biome dungeon set. Great Decay contamination stays bound
-# to the canonical atmosphere/mitigation runtime; Blender owns only the authored spatial payloads.
-& "$PSScriptRoot/rebuild-carrion-catacombs-dungeon.ps1"
-if($LASTEXITCODE -ne 0){throw 'Carrion Catacombs dungeon production forge failed.'}
-& python "$PSScriptRoot/verify-carrion-catacombs-production-contract.py"
-if($LASTEXITCODE -ne 0){throw 'Carrion Catacombs source/asset contract failed after forge.'}
-& python "$PSScriptRoot/record-carrion-catacombs-generated-assets.py"
-if($LASTEXITCODE -ne 0){throw 'Carrion Catacombs generated-asset provenance recording failed.'}
-& python "$PSScriptRoot/verify-generated-freshness.py" carrion-catacombs-dungeon-models
-if($LASTEXITCODE -ne 0){throw 'Carrion Catacombs generated assets are stale immediately after forge.'}
-& python "$PSScriptRoot/promote-carrion-catacombs-runtime.py"
-if($LASTEXITCODE -ne 0){throw 'Carrion Catacombs runtime promotion failed after complete asset forge.'}
-& python "$PSScriptRoot/verify-carrion-catacombs-production-contract.py"
-if($LASTEXITCODE -ne 0){throw 'Carrion Catacombs RuntimeReady contract failed after promotion.'}
+# Ordinary Underworld dungeons intentionally reuse vanilla entrance/room/generator families.
+# Do NOT forge/promote the legacy Rootwarren/Drowned Vault/Cinderworks/Rime Sepulcher/Carrion
+# bespoke room kits here. Their source assets remain preserved for reference/reuse, while Deep
+# Fracture remains the Magenheim-authored dungeon architecture lane. Ordinary dungeon runtime
+# admission is governed by UnderworldVanillaDungeonReuseCatalog and live donor cloning instead.
 
 foreach($gate in @(
  'verify-model-assets','verify-model-geometry','verify-model-surface-continuity','verify-model-scale',
