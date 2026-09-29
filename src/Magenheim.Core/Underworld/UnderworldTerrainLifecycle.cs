@@ -36,6 +36,7 @@ public readonly record struct UnderworldTerrainResult(
 public static class UnderworldTerrainLifecycle
 {
     public const string BiomeLayoutAlgorithmId = "biome-layout-v2-hex50-voronoi-plasma-rivers";
+    public const string EdgeOceanAlgorithmId = "edge-ocean-v1-plasma-shore";
     public const double ArrivalProtectionRadiusMeters = 80d;
     public const double FullRegionalReliefRadiusMeters = 320d;
     public const double BaseElevationMeters = 45d;
@@ -62,6 +63,17 @@ public static class UnderworldTerrainLifecycle
     public const double HexRiverBiomeThreshold = 0.62d;
     public const double HexRiverFullActivationRadiusFraction = 0.18d;
 
+    // The terrain plate does not terminate at walkable ground. A broad, plasma-warped shoreline
+    // begins inside the native radius and fades toward a guaranteed deep Blackwater ring before
+    // the hard fail-closed edge. This mirrors Valheim's "world surrounded by ocean" readability
+    // without exposing the logical instance boundary as a cliff.
+    public const double EdgeOceanStartRadiusFraction = 0.84d;
+    public const double EdgeOceanFullDepthRadiusFraction = 0.965d;
+    public const double EdgeOceanShoreWarpMeters = 260d;
+    public const double EdgeOceanWarpFeatureMeters = 1800d;
+    public const double EdgeOceanDepthMeters = 140d;
+    public const double EdgeOceanBiomeThreshold = 0.18d;
+
     public static UnderworldTerrainResult Evaluate(
         UnderworldInstanceTerrainDomain domain,
         UnderworldTerrainSample sample,
@@ -76,6 +88,12 @@ public static class UnderworldTerrainLifecycle
         var slope = Clamp(sample.SlopeDegrees, 0d, MaximumSlopeDegrees);
         var noise = Clamp(sample.Noise01, 0d, 1d);
         var distance = Math.Sqrt(sample.X * sample.X + sample.Z * sample.Z);
+        var edgeOcean = EdgeOcean01(
+            derivedSeed32,
+            sample.X,
+            sample.Z,
+            distance,
+            domain.RadiusMeters);
         var selection = SelectBiome(sample.X, sample.Z, distance, domain.RadiusMeters, derivedSeed32);
         var biome = selection.Primary;
         var regionalWeight = RegionalReliefWeight(distance, domain.RadiusMeters);
@@ -101,6 +119,13 @@ public static class UnderworldTerrainLifecycle
         // A missing monument must not impose a zero-height floor on basins. Blend an actual
         // footprint from its local terrain base to its absolute summit without clipping either.
         height = UnderworldMonumentalLandforms.ApplyToTerrain(domain, derivedSeed32, sample.X, sample.Z, height);
+
+        // Edge-ocean fade is deliberately last. Otherwise a monumental spire could punch through
+        // the world barrier and turn the outer ocean back into walkable land.
+        height = ApplyEdgeOceanCarve(height, sample.WaterLevel, edgeOcean);
+        if (edgeOcean >= EdgeOceanBiomeThreshold)
+            biome = UnderworldTerrainBiome.BlackwaterDeep;
+
         var water = Math.Max(0d, sample.WaterLevel - height);
         var cover = Cover(biome, noise, slope, water);
         var hazard = Hazard(biome, noise, water);
@@ -284,6 +309,40 @@ public static class UnderworldTerrainLifecycle
         if (distance <= inner) return 0d;
         if (distance >= outer) return 1d;
         return Smooth01((distance - inner) / (outer - inner));
+    }
+
+    private static double EdgeOcean01(
+        int seed,
+        double x,
+        double z,
+        double distance,
+        double radius)
+    {
+        var shoreWarp = SignedField(seed, 0x7f4a7c15u, x, z, 4, EdgeOceanWarpFeatureMeters) *
+                        EdgeOceanShoreWarpMeters;
+        var start = radius * EdgeOceanStartRadiusFraction + shoreWarp;
+        var full = radius * EdgeOceanFullDepthRadiusFraction;
+        if (distance <= start) return 0d;
+        if (distance >= full) return 1d;
+        return Smooth01((distance - start) / Math.Max(100d, full - start));
+    }
+
+    private static double ApplyEdgeOceanCarve(double height, double waterLevel, double edgeOcean01)
+    {
+        if (edgeOcean01 <= 0d) return height;
+
+        var fade = Smooth01(edgeOcean01);
+        var targetDepth = 5d + (EdgeOceanDepthMeters - 5d) * Math.Pow(fade, 1.15d);
+        var oceanBed = waterLevel - targetDepth;
+        if (oceanBed < height)
+            height = Lerp(height, oceanBed, fade);
+
+        // Once the outer band is effectively ocean, guarantee that local positive terrain noise
+        // cannot leave shallow islands immediately in front of the hard world boundary.
+        if (edgeOcean01 >= .85d)
+            height = Math.Min(height, oceanBed);
+
+        return height;
     }
 
     private static double ApplyHexRiverCarve(double height, double waterLevel, double channel01)
