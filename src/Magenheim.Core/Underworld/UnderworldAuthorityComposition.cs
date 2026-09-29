@@ -19,7 +19,7 @@ public sealed record UnderworldAuthoritySnapshot(
 
 public static class UnderworldAuthorityComposer
 {
-    public const int CurrentSchemaVersion = 9;
+    public const int CurrentSchemaVersion = 10;
 
     public static UnderworldAuthoritySnapshot Compose(
         UnderworldDefinitionSet content,
