@@ -104,3 +104,14 @@ closed when an owned representation is missing.
 
 These thirty-two new Blender outputs and their icons are not claimed generated until the manual
 production forge is run and its review branch is accepted.
+
+
+## Legacy raw-material PBR closure
+
+The eight earlier Fungal Forest and Blackwater raw-resource models retain their existing authored
+geometry and UV layouts, but their resource-only surfaces are rebound after atlas baking to the same
+shared PBR library used by the thirty-two newly authored material-item models. Deep Salt is its own
+twenty-sixth material family rather than an ice/stone alias. The production order is therefore:
+shared PBR library -> Fungal/Blackwater resource regeneration -> new material-item models -> all
+forty material icons. Post-forge admission requires albedo, normal and metallic/smoothness runtime
+maps for every one of the twenty-two raw and eighteen refined material models.

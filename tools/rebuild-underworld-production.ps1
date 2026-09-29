@@ -144,4 +144,4 @@ if(!$SkipReview){
     & python "$PSScriptRoot/verify-cinderworks-review.py"
     if($LASTEXITCODE -ne 0){throw 'Cinderworks visual review completeness gate failed.'}
 }
-Write-Host 'PRODUCTION READY: 25 PBR families, 40 raw/refined material items, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools, armour, and the 17-model Rootwarren, Drowned Vault, Cinderworks, Rime Sepulcher and Carrion Catacombs dungeon families regenerated and gated.'
+Write-Host 'PRODUCTION READY: 26 PBR families, 40 raw/refined material items, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools, armour, and the 17-model Rootwarren, Drowned Vault, Cinderworks, Rime Sepulcher and Carrion Catacombs dungeon families regenerated and gated.'

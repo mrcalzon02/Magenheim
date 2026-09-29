@@ -690,12 +690,11 @@
       "id": "underworld-resource-icons",
       "generator": "tools/render-underworld-resource-icons.py",
       "command": [
-        "powershell",
-        "-ExecutionPolicy",
-        "Bypass",
+        "pwsh",
         "-NoProfile",
-        "-Command",
-        "& './tools/blender.ps1' render-underworld-resource-icons"
+        "-File",
+        "tools/blender.ps1",
+        "render-underworld-resource-icons"
       ],
       "outputs": [
         "assets/earth/underworld-resource-*.icon.png",
