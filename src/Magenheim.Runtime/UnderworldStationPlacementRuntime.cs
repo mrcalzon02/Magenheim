@@ -77,7 +77,7 @@ internal static class UnderworldStationPlacementRuntime
     }
 }
 
-[HarmonyPatch(typeof(Player),nameof(Player.UpdatePlacementGhost))]
+[HarmonyPatch(typeof(Player), "UpdatePlacementGhost", typeof(bool))]
 internal static class UnderworldStationPlacementGhostPatch
 {
     [HarmonyPostfix]
