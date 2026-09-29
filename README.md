@@ -16,12 +16,14 @@ contract is 15-20 large themed room families reused 2-3 times per run. The new d
 dungeon planner produces a connected branching topology with cross-links rather than a straight
 corridor chain.
 
-Rootwarren, Drowned Vaults, Cinderworks and Rime Sepulcher now have source/runtime interior
-architectures behind that admission gate. Rime Sepulcher contributes sixteen Frozen room families
-plus one adaptive physical passage, endpoint-derived Whiteout/cold exposure, persistent Frozen
-encounters/resources and same-instance return travel. It remains Planned because its seventeen
-Blender/GLB/runtime payloads have not been forged in this execution; missing or partial families
-cannot seed a location.
+All five ordinary biome dungeons now have source/runtime interior architectures behind that
+admission gate. Rime Sepulcher contributes sixteen Frozen room families plus adaptive physical
+passage and endpoint-derived Whiteout/cold exposure. Carrion Catacombs adds sixteen Great Decay
+families whose architecture is progressively consumed by root, bone, spores and amber, with
+endpoint-derived contamination/Black Bloom pressure, Defiant resistance/Censer relevance,
+persistent Great Decay encounters/resources and same-instance return travel. Both remain Planned
+because their seventeen Blender/GLB/runtime payload families were not forged in this execution;
+missing or partial families cannot seed a location.
 
 ### Earlier fixes in 0.0.154
 
