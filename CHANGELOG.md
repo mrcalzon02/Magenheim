@@ -1,3 +1,21 @@
+## 0.0.155 - Underworld dungeon program and Deep Fracture admission
+
+- Admits the existing Deep Fracture expedition as a sparse Fracture Zones dungeon inside the
+  Underworld: six entrances with 1.4 km minimum similar-site spacing.
+- Reuses the established exact-plan 20-district expedition, encounter authority, passage assembly,
+  traversal links and return path instead of duplicating or simplifying the dungeon.
+- Makes Deep Fracture return labels entrance-context aware, preserving the owning world layer.
+- Adds a six-biome Underworld dungeon catalog. Deep Fracture is runtime-ready; the other five
+  entries remain planned and cannot seed dead entrances.
+- Adds deterministic generic topology authority for the five ordinary biome dungeon programs:
+  15-20 large room families, each used 2-3 times, connected through branching routes and bounded
+  cross-links rather than one corridor chain.
+- Extends Underworld startup validation so every runtime-ready dungeon must survive detached
+  ZoneSystem catalog partitioning.
+- Adds docs/UNDERWORLD_DUNGEON_PROGRAM.md with the production sequence for Rootwarren, Drowned
+  Vaults, Cinderworks, Rime Sepulcher and Carrion Catacombs.
+- Source candidate only; build and live Underworld placement/return acceptance remain required.
+
 ## 0.0.154 - Bespoke Underworld weather closure
 
 - Added Magenheim-owned procedural VFX for Sporefall, Deep Fog, Ashfall, Thermal Surge, Whiteout,
