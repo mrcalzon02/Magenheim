@@ -565,6 +565,9 @@ Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the cur
   Shelter/ClearGallery/FrostField/WhiteoutChoke/IceShear route authority, canonical Frozen weather
   exposure, deterministic physical topology, persistent room-role encounters/resources, and
   asset-gated same-instance location/return travel. Production forge admission and live acceptance remain.
-- [ ] **Author Great Decay Carrion Catacombs dungeon kit.**
-  Build contamination-driven routes with Defiant Flesh/armour/Censer relevance and progressively
-  consumed ancient architecture.
+- [ ] **Forge and live-accept Great Decay Carrion Catacombs.**
+  Source/runtime architecture is complete: 16 room families plus adaptive passage,
+  Sanctuary/PreservedRuin/TaintedRuin/RootIngress/BlackBloom route authority, canonical Great Decay
+  contamination, Defiant Flesh/armour resistance and Censer suppression relevance, persistent
+  room-role encounters/resources, and asset-gated same-instance location/return travel.
+  Production forge admission and live acceptance remain.
