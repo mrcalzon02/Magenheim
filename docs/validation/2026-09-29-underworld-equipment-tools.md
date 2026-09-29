@@ -15,8 +15,10 @@ stable, but recipe admission remains future work.
 
 `tools/author-underworld-tools.py` creates six independent owned tool models. It does not open or
 recolour vanilla tools. Each source has explicit ToolUV data and an 18-part minimum detail gate.
-The Diving Bell Hood source is currently the owned inventory/display shell only; its worn form must
-use the same attach_skin discipline as armour rather than pretending a static mesh is a wearable.
+The Diving Bell Hood is no longer treated as a fake held Tool-slot item. Its catalog slot is Helmet,
+and the existing owned shell is now authored on the same canonical 53-bone Valheim player rig as
+the armour family. Head geometry is rigidly weighted to Head, the neck seal/harness to Neck, and
+production admission requires a normalized attach_skin stream for the model before registration.
 
 `tools/rebuild-underworld-tools.ps1` is the local production path: author -> export -> model gate ->
 icon render -> icon gate.

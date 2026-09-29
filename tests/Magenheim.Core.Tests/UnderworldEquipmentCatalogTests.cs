@@ -28,6 +28,11 @@ internal static class UnderworldEquipmentCatalogTests
             "Equipment model identities must be unique.");
         Assert(tools.Select(value => value.Biome).Distinct().Count() == 6,
             "Tools must cover all six Underworld biomes.");
+        Assert(tools.Single(value => value.Prefab == "Magenheim_Underworld_Tool_DivingBellHood").Slot == UnderworldEquipmentSlot.Helmet,
+            "The Diving Bell Hood is a wearable helmet utility, not a fake held Tool-slot item.");
+        Assert(tools.Where(value => value.Prefab != "Magenheim_Underworld_Tool_DivingBellHood")
+            .All(value => value.Slot == UnderworldEquipmentSlot.Tool),
+            "The other five biome tools remain held/deployable Tool-slot equipment.");
 
         foreach (var station in UnderworldStationCatalog.All)
         {

@@ -17,6 +17,19 @@ from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/"assets"/"models"/"source"
 DETAIL_FLOOR=18
+BONE_ORDER=[
+"Hips","Spine","Spine1","Spine2","Neck","Head","Jaw",
+"LeftShoulder","LeftArm","LeftForeArm","LeftHand",
+"LeftHandThumb1","LeftHandThumb2","LeftHandThumb3","LeftHandIndex1","LeftHandIndex2","LeftHandIndex3",
+"LeftHandMiddle1","LeftHandMiddle2","LeftHandMiddle3","LeftHandRing1","LeftHandRing2","LeftHandRing3",
+"LeftHandPinky1","LeftHandPinky2","LeftHandPinky3",
+"RightShoulder","RightArm","RightForeArm","RightHand",
+"RightHandThumb1","RightHandThumb2","RightHandThumb3","RightHandIndex1","RightHandIndex2","RightHandIndex3",
+"RightHandMiddle1","RightHandMiddle2","RightHandMiddle3","RightHandRing1","RightHandRing2","RightHandRing3",
+"RightHandPinky1","RightHandPinky2","RightHandPinky3",
+"LeftUpLeg","LeftLeg","LeftFoot","LeftToeBase","RightUpLeg","RightLeg","RightFoot","RightToeBase",
+]
+ACTIVE_SKIN_ARMATURE=None
 
 SPECS={
  "underworld-tool-sporelight-lantern":"sporelight",
@@ -39,6 +52,35 @@ def mat(name,color,metal=0.0,rough=.65,emission=None):
  bind_underworld_material(bpy,m,name)
  return m
 
+def add_bone(eb,name,head,tail,parent=None):
+ b=eb.new(name);b.head=head;b.tail=tail;b.parent=parent;return b
+
+def build_player_rig():
+ bpy.ops.object.armature_add(enter_editmode=True,location=(0,0,0))
+ arm=bpy.context.object;arm.name="RIG_ValheimPlayer_AttachSkin";eb=arm.data.edit_bones
+ root=eb[0];root.name="Hips";root.head=(0,0,.90);root.tail=(0,0,1.05);bones={"Hips":root}
+ def B(name,h,t,parent):bones[name]=add_bone(eb,name,h,t,bones[parent]);return bones[name]
+ B("Spine",(0,0,1.03),(0,0,1.24),"Hips");B("Spine1",(0,0,1.22),(0,0,1.43),"Spine")
+ B("Spine2",(0,0,1.41),(0,0,1.62),"Spine1");B("Neck",(0,0,1.60),(0,0,1.76),"Spine2")
+ B("Head",(0,0,1.74),(0,0,2.02),"Neck");B("Jaw",(0,-.03,1.83),(0,-.10,1.73),"Head")
+ for side in ("Left","Right"):
+  s=-1 if side=="Left" else 1
+  B(side+"Shoulder",(0,0,1.57),(s*.22,0,1.57),"Spine2");B(side+"Arm",(s*.20,0,1.57),(s*.60,0,1.50),side+"Shoulder")
+  B(side+"ForeArm",(s*.58,0,1.50),(s*.91,0,1.40),side+"Arm");B(side+"Hand",(s*.89,0,1.40),(s*1.08,0,1.37),side+"ForeArm")
+  for fi,finger in enumerate(("Thumb","Index","Middle","Ring","Pinky")):
+   parent=side+"Hand";base_y=-.045+fi*.022
+   for seg in range(1,4):
+    start=s*(1.04+.055*(seg-1));end=s*(1.04+.055*seg)
+    B(side+"Hand"+finger+str(seg),(start,base_y,1.36),(end,base_y,1.35),parent);parent=side+"Hand"+finger+str(seg)
+ for side in ("Left","Right"):
+  s=-1 if side=="Left" else 1
+  B(side+"UpLeg",(s*.14,0,.94),(s*.18,0,.55),"Hips");B(side+"Leg",(s*.18,0,.56),(s*.17,.01,.13),side+"UpLeg")
+  B(side+"Foot",(s*.17,.01,.14),(s*.17,-.17,.055),side+"Leg");B(side+"ToeBase",(s*.17,-.16,.055),(s*.17,-.30,.045),side+"Foot")
+ bpy.ops.object.mode_set(mode="OBJECT");arm.show_in_front=True
+ if [b.name for b in arm.data.bones]!=BONE_ORDER:raise RuntimeError("Valheim player bone creation order drift")
+ arm["magenheim_host_rig"]="VALHEIM-PLAYER-ATTACH-SKIN";arm["magenheim_bone_order"]=json.dumps(BONE_ORDER,separators=(",",":"))
+ return arm
+
 def finish(o,name,material):
  o.name=name;o["game_node_path"]=name;o["game_collision"]=False;o["game_crystal"]=json.dumps(None)
  o.data.materials.clear();o.data.materials.append(material)
@@ -46,6 +88,10 @@ def finish(o,name,material):
  bpy.context.view_layer.objects.active=o;o.select_set(True);bpy.ops.object.mode_set(mode="EDIT")
  bpy.ops.mesh.select_all(action="SELECT");bpy.ops.uv.cube_project(cube_size=.28)
  bpy.ops.object.mode_set(mode="OBJECT");o.select_set(False)
+ if ACTIVE_SKIN_ARMATURE is not None:
+  bone="Neck" if ("neck" in name or "harness" in name) else "Head"
+  vg=o.vertex_groups.new(name=bone);vg.add(range(len(o.data.vertices)),1.0,"REPLACE")
+  mod=o.modifiers.new("ValheimAttachSkin","ARMATURE");mod.object=ACTIVE_SKIN_ARMATURE;o.parent=ACTIVE_SKIN_ARMATURE
  return o
 
 def cube(name,loc,scale,m,bevel=.025,rot=(0,0,0)):
@@ -164,15 +210,26 @@ def censer(a,b,c):
 BUILD={"sporelight":sporelight,"diving-bell":diving,"slag-pick":slag_pick,"rime-chisel":rime_chisel,"anchor-spike":anchor_spike,"defiant-censer":censer}
 
 def author(model_id):
- kind=SPECS[model_id];bpy.ops.wm.read_factory_settings(use_empty=True);m=palette(kind);BUILD[kind](*m)
+ global ACTIVE_SKIN_ARMATURE
+ kind=SPECS[model_id];bpy.ops.wm.read_factory_settings(use_empty=True)
+ ACTIVE_SKIN_ARMATURE=build_player_rig() if kind=="diving-bell" else None
+ m=palette(kind);BUILD[kind](*m)
  meshes=[o for o in bpy.context.scene.objects if o.type=="MESH"]
  if len(meshes)<DETAIL_FLOOR:raise RuntimeError(f"{model_id}: tool detail regression {len(meshes)} < {DETAIL_FLOOR}")
  if any(not o.data.uv_layers.get("ToolUV") for o in meshes):raise RuntimeError(model_id+": missing ToolUV")
+ if ACTIVE_SKIN_ARMATURE is not None:
+  for o in meshes:
+   if not o.modifiers.get("ValheimAttachSkin"):raise RuntimeError(model_id+"/"+o.name+": armature modifier missing")
+   weighted={g.name for g in o.vertex_groups if any(vg.group==g.index and vg.weight>0 for v in o.data.vertices for vg in v.groups)}
+   if not weighted or not weighted.issubset(set(BONE_ORDER)):raise RuntimeError(model_id+"/"+o.name+": invalid player bone weights")
  sc=bpy.context.scene;sc["model_id"]=model_id;sc["magenheim_family"]="underworld_biome_tool";sc["magenheim_tool_kind"]=kind
  sc["magenheim_fidelity"]="endgame-tool-r1";sc["magenheim_detail_parts"]=len(meshes);sc["runtime_lights"]="[]"
+ if ACTIVE_SKIN_ARMATURE is not None:
+  sc["magenheim_skinning"]="valheim-player-attach-skin";sc["magenheim_bone_order"]=json.dumps(BONE_ORDER,separators=(",",":"))
  bpy.context.preferences.filepaths.save_version=0
  out=SOURCE/(model_id+".blend");bpy.ops.wm.save_as_mainfile(filepath=str(out),compress=True)
- print("AUTHORED",model_id,kind,len(meshes),"parts",flush=True)
+ print("AUTHORED",model_id,kind,len(meshes),"parts",("/ 53 bones" if ACTIVE_SKIN_ARMATURE is not None else ""),flush=True)
+ ACTIVE_SKIN_ARMATURE=None
 
 requested=sys.argv[sys.argv.index("--")+1:] if "--" in sys.argv else list(SPECS)
 unknown=[x for x in requested if x not in SPECS]

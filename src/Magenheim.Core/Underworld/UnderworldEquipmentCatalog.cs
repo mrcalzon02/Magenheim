@@ -42,7 +42,7 @@ public static class UnderworldEquipmentCatalog
             Cost(UnderworldFungalRefinementCatalog.CuredGlowcap, 2),
             Cost("Magenheim_Underworld_Resource_Understone", 2)),
 
-        Tool("DivingBellHood", "Diving Bell Hood", "underworld-tool-diving-bell-hood",
+        WearableTool("DivingBellHood", "Diving Bell Hood", "underworld-tool-diving-bell-hood",
             UnderworldTerrainBiome.BlackwaterDeep, UnderworldStationCatalog.TidalBasinPrefab,
             "Traversal hood that extends underwater operating time in Blackwater Deep.",
             Cost("Magenheim_Underworld_Resource_BlackwaterFlowstone", 8),
@@ -165,6 +165,12 @@ public static class UnderworldEquipmentCatalog
         string suffix, string name, string modelId, UnderworldTerrainBiome biome, string station,
         string role, params UnderworldEquipmentCost[] costs) =>
         new("Magenheim_Underworld_Tool_" + suffix, name, modelId, biome, UnderworldEquipmentSlot.Tool,
+            station, role, Array.AsReadOnly(costs));
+
+    private static UnderworldEquipmentDefinition WearableTool(
+        string suffix, string name, string modelId, UnderworldTerrainBiome biome, string station,
+        string role, params UnderworldEquipmentCost[] costs) =>
+        new("Magenheim_Underworld_Tool_" + suffix, name, modelId, biome, UnderworldEquipmentSlot.Helmet,
             station, role, Array.AsReadOnly(costs));
 
     private static UnderworldEquipmentDefinition ArmourPiece(
