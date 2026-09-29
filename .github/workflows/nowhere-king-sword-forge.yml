@@ -84,8 +84,12 @@ jobs:
           New-Item -ItemType Directory -Force -Path $steam,$game,$bep | Out-Null
           Invoke-WebRequest 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip' -OutFile "$steam/steamcmd.zip"
           Expand-Archive "$steam/steamcmd.zip" -DestinationPath $steam -Force
+          # A brand-new SteamCMD install may consume its first invocation updating itself and then
+          # exit before processing +app_update ("Missing configuration"). Bootstrap it once, then
+          # run the actual dedicated-server install with the updated client.
+          & "$steam/steamcmd.exe" +quit
           & "$steam/steamcmd.exe" +force_install_dir $game +login anonymous +app_update 896660 validate +quit
-          if ($LASTEXITCODE -ne 0) { throw 'Valheim Dedicated Server reference install failed.' }
+          if ($LASTEXITCODE -ne 0) { throw 'Valheim Dedicated Server reference install failed after SteamCMD bootstrap.' }
           Invoke-WebRequest 'https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.2351/' -OutFile "$bep/bepinex.zip"
           Expand-Archive "$bep/bepinex.zip" -DestinationPath $bep -Force
           $assembly = Get-ChildItem -LiteralPath $game -Filter assembly_valheim.dll -File -Recurse | Select-Object -First 1
