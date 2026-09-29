@@ -4,12 +4,12 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.153 by Local** and start its description with
+show **Magenheim v0.0.154 by Local** and start its description with
 **0.0.153: Retires arbitrary terrain spires in favor of rare biome-owned massif cells**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.153]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.154]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
@@ -641,3 +641,68 @@ the final edge-ocean carve still defeats high terrain near the 8 km boundary.
 
 Run `magenheim_underworld survey 1200` from ordinary cells, river banks and a massif crown and
 capture the output/screenshots for comparison against the loading-screen worldgen contract.
+
+
+## 0.0.154 Underworld weather closure acceptance
+
+Use a fresh current 0.0.154 package on host and peer. Enter each Underworld biome and remain long
+enough to observe both calm and every biome-native four-minute event. Host and peer must agree on
+the active event for the same biome/world time while presentation remains local and gameplay
+consequences remain server-authoritative.
+
+### Fungal Forest
+
+Observe Sporefall and Crystal Resonance. Sporefall must read as luminous healthy falling spores,
+not rain, poison gas or generic dust, and must not deal damage. Crystal Resonance must produce the
+resonance particle/light pulse and visibly brighten nearby crystal/geode/shard renderers. When the
+event ends, those renderers must recover their prior property blocks/material appearance exactly.
+
+### Blackwater Deep
+
+Observe calm mist and Deep Fog. Deep Fog must materially reduce navigation distance and strengthen
+the cold moisture field without directly damaging the player. Check low ground, shoreline and open
+water separately. The effect must not inherit Surface thunder/rain presentation.
+
+### Sulfurous Wastes
+
+Observe Ashfall and Thermal Surge. Ashfall should carry dense falling hot particulate and modest
+fire pressure. Thermal Surge must be visually distinct, deal stronger heat pressure and multiply
+existing geothermal vent/lava exposure. Compare without mitigation, with Furnace Blood, and with
+equipped matching Emberiron armour. The mitigated player should take materially less atmospheric
+pressure while the event remains visibly present.
+
+### Frozen Caverns
+
+Observe Deep Fog and Whiteout. Whiteout must become a fast wind-driven snow/ice field, add frost
+pressure and strongly reduce visibility without remaining permanently unnavigable. Compare with
+Rimebound and matching Rimeward armour. Deep Fog must remain the weaker navigation event.
+
+### Fracture Zones
+
+Observe Stone Rain and Crystal Resonance. Stone Rain must show falling mineral debris/dust and
+produce intermittent deterministic blunt/stagger hits rather than continuous ticking damage.
+Host/client must not double-apply the same impact. Crystal Resonance must remain non-hostile.
+
+### Great Decay
+
+Observe calm contamination and Black Bloom. Black Bloom must intensify biological aerosol, apply
+poison/contamination pressure and temporarily increase nearby Magenheim Underworld creature
+perception/aggression. When the event ends, the affected creatures must restore their authored
+alert/view/hearing values.
+
+Craft/equip the Defiant Censer at the Crown Reliquary. While one player actively holds it, verify a
+roughly 16m local clearing area: carrier and nearby peer should receive lower contamination/fog and
+lower bespoke particle density; a player outside the radius should not. The Censer must not suppress
+other biomes and must not work merely by sitting in inventory. Compare with Defiant Flesh and
+matching Defiant armour.
+
+### Boundary and restoration
+
+Cross biome boundaries during active events and verify the owning biome immediately controls the
+new weather family without carrying illegal effects across the border. Exit the Underworld during
+an event and verify all Magenheim particles/lights stop, Crystal Resonance renderers are restored,
+forced Underworld environment is cleared, and Surface sky/fog/weather returns correctly.
+
+Reload during or near a weather transition and repeat with a second peer. Capture logs/screenshots
+for every event plus one host/client damage comparison. Source completion alone does not satisfy
+this gate.
