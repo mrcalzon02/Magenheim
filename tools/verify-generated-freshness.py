@@ -111,11 +111,14 @@ def repo_path(value: str) -> Path:
 
 
 def declared_outputs(entry: dict) -> list[str]:
-    """Resolve an entry's output set from disk, sorted, as repo-relative forward-slash paths."""
+    """Resolve every declared output pattern and reject a generator that produced only a subset."""
     matches: set[Path] = set()
     for pattern in entry['outputs']:
-        matches.update(ROOT.glob(pattern))
-    return sorted(p.relative_to(ROOT).as_posix() for p in matches if p.is_file())
+        resolved = [p for p in ROOT.glob(pattern) if p.is_file()]
+        if not resolved:
+            raise SystemExit(f"{entry['id']}: declared output {pattern!r} matched no files")
+        matches.update(resolved)
+    return sorted(p.relative_to(ROOT).as_posix() for p in matches)
 
 
 def regenerate(entry: dict) -> None:

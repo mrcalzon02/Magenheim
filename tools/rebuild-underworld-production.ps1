@@ -26,6 +26,9 @@ foreach($gate in @(
     if($LASTEXITCODE -ne 0){throw "Production asset gate failed: $gate"}
 }
 
+& python "$PSScriptRoot/verify-underworld-production-assets.py"
+if($LASTEXITCODE -ne 0){throw 'Underworld production family/PBR admission gate failed.'}
+
 & "$PSScriptRoot/blender.ps1" verify-underworld-armour
 if($LASTEXITCODE -ne 0){throw 'Underworld armour attach_skin source gate failed.'}
 & "$PSScriptRoot/blender.ps1" verify-object-texture-bindings

@@ -31,6 +31,7 @@ for path in (
  "tools/author-underworld-weapons.py","tools/author-crystal-weapons.py",
  "tools/rebuild-staff-production-assets.ps1","tools/rebuild-underworld-production.ps1","tools/render-underworld-production-review.py",
  "tools/build-underworld-production-review-sheets.py","tools/verify-underworld-production-review.py",
+ "tools/verify-underworld-production-assets.py",
  ".github/workflows/magenheim-production-forge.yml",
 ):
     require((ROOT/path).is_file(),"missing production file: "+path)
@@ -42,7 +43,7 @@ python_sources=(
  "tools/author-underworld-armour.py","tools/verify-underworld-armour.py",
  "tools/author-underworld-weapons.py","tools/author-crystal-weapons.py",
  "tools/render-underworld-production-review.py","tools/build-underworld-production-review-sheets.py",
- "tools/verify-underworld-production-review.py","tools/verify-generated-freshness.py",
+ "tools/verify-underworld-production-review.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
 )
 for source in python_sources:
     try: py_compile.compile(str(ROOT/source),doraise=True)
