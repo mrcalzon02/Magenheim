@@ -43,7 +43,7 @@ internal static class UnderworldCreatureBiomeVisuals
         if (!root) throw new ArgumentNullException(nameof(root));
         if (entry is null) throw new ArgumentNullException(nameof(entry));
 
-        var palette = PaletteFor(entry.Biome);
+        var palette = PaletteFor(entry);
         var family = SurfaceFor(entry);
         var replaced = 0;
 
@@ -116,10 +116,16 @@ internal static class UnderworldCreatureBiomeVisuals
 
                 var biomeMask = BiomeMask(entry.Biome, u, v, macro, fine, seed);
                 var surfaceMask = SurfaceMask(family, u, v, creature, seed);
-                var body = Mathf.Clamp01(0.15f + macro * 0.5f + surfaceMask * 0.35f);
+                var signature = SignatureMask(entry.Name, family, u, v, macro, creature, seed);
+                var body = Mathf.Clamp01(0.08f + macro * 0.34f + surfaceMask * 0.28f + signature * 0.30f);
                 var color = Color.Lerp(palette.Base, palette.Secondary, body);
 
-                var accent = Mathf.Clamp01((biomeMask - 0.63f) * 2.7f);
+                // Biome language and creature-specific markings are both intentionally strong. Two
+                // Wolf-derived creatures should read as different animals before the player notices
+                // that their locomotion chassis is shared.
+                var biomeAccent = Mathf.Clamp01((biomeMask - 0.46f) * 2.15f);
+                var signatureAccent = Mathf.Clamp01((signature - 0.56f) * 2.30f);
+                var accent = Mathf.Max(biomeAccent, signatureAccent);
                 if (accent > 0f)
                     color = Color.Lerp(color, palette.Accent, accent);
 
@@ -195,6 +201,50 @@ internal static class UnderworldCreatureBiomeVisuals
         throw new InvalidOperationException($"No Underworld creature palette exists for biome '{biome}'.");
     }
 
+    private static float SignatureMask(
+        string creatureName,
+        SurfaceFamily family,
+        float u,
+        float v,
+        float macro,
+        float noise,
+        uint seed)
+    {
+        var signatureSeed = StableHash(creatureName) ^ seed;
+        var mode = (int)(signatureSeed % 6u);
+        var scale = 4f + (signatureSeed % 5u);
+
+        switch (mode)
+        {
+            case 0: // broad broken bands
+                return 0.5f + 0.5f * Mathf.Sin((v * scale + macro * 1.8f + u * 1.7f) * Mathf.PI);
+            case 1: // blotches / rosettes
+            {
+                var a = 0.5f + 0.5f * Mathf.Sin((u * scale + noise * 1.6f) * Mathf.PI * 2f);
+                var b = 0.5f + 0.5f * Mathf.Sin((v * (scale - 1f) - macro * 1.4f) * Mathf.PI * 2f);
+                return Mathf.Clamp01(a * b * 1.35f);
+            }
+            case 2: // long vein network
+            {
+                var veins = Mathf.Abs(Mathf.Sin((u * scale * 1.4f - v * 2.7f + macro * 2.2f) * Mathf.PI));
+                return 1f - Mathf.Clamp01(veins * 2.4f);
+            }
+            case 3: // large asymmetric saddle patches
+                return Mathf.Clamp01(ValueNoise((int)(u * 5f), (int)(v * 4f), signatureSeed) * 1.55f - 0.30f);
+            case 4: // cross-grain fracture / rime pattern
+            {
+                var x = 1f - Mathf.Abs(Mathf.Sin((u * scale + macro) * Mathf.PI));
+                var y = 1f - Mathf.Abs(Mathf.Sin((v * (scale + 2f) - noise) * Mathf.PI));
+                return Mathf.Max(x, y) * 0.92f;
+            }
+            default: // mottled field with sparse high-contrast islands
+            {
+                var coarse = ValueNoise((int)(u * 9f), (int)(v * 9f), signatureSeed ^ 0xC0FFEEu);
+                return coarse > 0.70f ? Mathf.Clamp01((coarse - 0.70f) * 3.34f) : coarse * 0.38f;
+            }
+        }
+    }
+
     private static float SurfaceMask(SurfaceFamily family, float u, float v, float noise, uint seed)
     {
         switch (family)
@@ -241,8 +291,38 @@ internal static class UnderworldCreatureBiomeVisuals
         }
     }
 
-    private static Palette PaletteFor(string biome)
+    private static Palette PaletteFor(UnderworldCreaturePrototypes.Entry entry)
     {
+        // Shared rigs receive deliberately different material identities where the donor would be
+        // especially obvious. These are not subtle hue shifts: base value, contrast and accent
+        // placement diverge while remaining inside the owning biome's art language.
+        switch (entry.Name)
+        {
+            case "Mycelial Stalker":
+                return new Palette(new Color(0.035f, 0.055f, 0.045f), new Color(0.40f, 0.52f, 0.34f), new Color(0.82f, 0.96f, 0.68f), 0.20f);
+            case "Cinder Hound":
+                return new Palette(new Color(0.020f, 0.018f, 0.017f), new Color(0.38f, 0.105f, 0.035f), new Color(1.00f, 0.55f, 0.08f), 0.14f);
+            case "Iceblind":
+                return new Palette(new Color(0.48f, 0.60f, 0.64f), new Color(0.11f, 0.22f, 0.31f), new Color(0.89f, 0.98f, 1.00f), 0.58f);
+            case "Glacier Stalker":
+                return new Palette(new Color(0.025f, 0.080f, 0.14f), new Color(0.30f, 0.58f, 0.76f), new Color(0.90f, 0.98f, 1.00f), 0.76f);
+            case "Decay Hound":
+                return new Palette(new Color(0.12f, 0.075f, 0.055f), new Color(0.34f, 0.40f, 0.12f), new Color(0.80f, 0.74f, 0.48f), 0.17f);
+            case "Lantern Moth":
+                return new Palette(new Color(0.045f, 0.065f, 0.060f), new Color(0.22f, 0.46f, 0.33f), new Color(0.78f, 1.00f, 0.70f), 0.36f);
+            case "Rime Moth":
+                return new Palette(new Color(0.035f, 0.085f, 0.12f), new Color(0.45f, 0.74f, 0.88f), new Color(0.94f, 1.00f, 1.00f), 0.78f);
+            case "Furnace Golem":
+                return new Palette(new Color(0.025f, 0.022f, 0.020f), new Color(0.24f, 0.095f, 0.035f), new Color(1.00f, 0.62f, 0.10f), 0.10f);
+            case "Cryolith Guardian":
+                return new Palette(new Color(0.06f, 0.12f, 0.17f), new Color(0.40f, 0.68f, 0.82f), new Color(0.90f, 0.99f, 1.00f), 0.74f);
+            case "Stonebound":
+                return new Palette(new Color(0.065f, 0.055f, 0.085f), new Color(0.30f, 0.23f, 0.40f), new Color(0.78f, 0.60f, 1.00f), 0.32f);
+            case "Rift Colossus":
+                return new Palette(new Color(0.025f, 0.020f, 0.038f), new Color(0.22f, 0.15f, 0.34f), new Color(0.92f, 0.70f, 1.00f), 0.40f);
+        }
+
+        var biome = entry.Biome;
         switch (biome)
         {
             case "Fungal Forest":
