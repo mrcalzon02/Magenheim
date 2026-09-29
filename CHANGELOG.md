@@ -11,7 +11,12 @@
   15-20 large room families, each used 2-3 times, connected through branching routes and bounded
   cross-links rather than one corridor chain.
 - Extends Underworld startup validation so every runtime-ready dungeon must survive detached
-  ZoneSystem catalog partitioning.
+  ZoneSystem catalog partitioning with exactly one exact owning-biome row.
+- Adds a native Underworld dungeon placement reconciler over Valheim's real m_locationInstances
+  table: generated positions must reach catalog quantity, sample to the owning biome and preserve
+  same-family spacing. Existing Underworld saves get one server-authoritative native
+  GenerateLocationsTimeSliced recovery pass for newly admitted dungeon families.
+- Adds `magenheim_underworld dungeons` for live expected/found, biome and spacing evidence.
 - Adds docs/UNDERWORLD_DUNGEON_PROGRAM.md with the production sequence for Rootwarren, Drowned
   Vaults, Cinderworks, Rime Sepulcher and Carrion Catacombs.
 - Adds a sixteen-room Fungal Rootwarren production manifest with stable model identities,
