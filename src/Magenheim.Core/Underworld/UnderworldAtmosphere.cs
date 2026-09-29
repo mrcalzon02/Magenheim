@@ -50,7 +50,7 @@ public readonly record struct UnderworldAtmosphereState(
 /// Pure shared authority for Underworld obscuration. Biomes reuse one mechanic with different
 /// profiles: spores, water mist, sulfur miasma, ice fog, fracture dust and decay aerosol.
 /// Resistance reduces gameplay pressure without deleting the visual atmosphere. Suppression is the
-/// separate local-clearing verb used by future objects such as the Censer.
+/// separate local-clearing verb used by the runtime Defiant Censer and equivalent clearing sources.
 /// </summary>
 public static class UnderworldAtmosphere
 {
