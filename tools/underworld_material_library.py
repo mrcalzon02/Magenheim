@@ -11,6 +11,7 @@ EXACT={
 "armour.stoneanchor.base":"titanbone","armour.stoneanchor.structure":"shardstone","armour.stoneanchor.accent":"fracture-crystal",
 "armour.defiant.base":"rotwood","armour.defiant.structure":"bone","armour.defiant.accent":"carrion-amber",
 "tool.sporelight.root":"worldroot-bark",
+"underworld.geothermal-vent.heat":"ember-heat",
 }
 RULES=(
 ("spore-crystal","glowcap"),("worldroot-heartwood","worldroot-heartwood"),("worldroot","worldroot-bark"),
