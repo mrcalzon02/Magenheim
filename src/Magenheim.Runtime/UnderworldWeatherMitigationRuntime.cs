@@ -6,8 +6,8 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Resolves already-owned progression into the two atmosphere mitigation verbs. Deep Boons and
-/// admitted biome armour contribute resistance; the Defiant Censer path contributes suppression
-/// once the tool itself becomes runtime-equippable. No progression unlock logic lives here.
+/// admitted biome armour contribute resistance; the runtime-admitted Defiant Censer contributes
+/// Great Decay suppression while held. No progression unlock logic lives here.
 /// </summary>
 internal static class UnderworldWeatherMitigationRuntime
 {
@@ -40,10 +40,8 @@ internal static class UnderworldWeatherMitigationRuntime
 
         resistance += armourPieces * ArmourResistancePerPiece;
 
-        // The Censer is already an authored/catalogued progression item but has not yet been
-        // admitted by a runtime tool registrar. Keeping this exact equipped-item hook dormant is
-        // preferable to fabricating a second suppression mechanic; it activates automatically once
-        // that canonical item can actually be equipped.
+        // Suppression is deliberately tied to the exact canonical held item. The Censer does not
+        // grant global resistance merely for existing in inventory.
         var suppression = 0d;
         var current = player.GetCurrentWeapon();
         if (current?.m_dropPrefab is not null &&
