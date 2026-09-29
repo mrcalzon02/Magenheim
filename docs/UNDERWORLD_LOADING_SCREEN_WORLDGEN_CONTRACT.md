@@ -19,6 +19,8 @@ For every scene, separate the picture into four implementation layers:
    encounter locations.
 4. **Atmosphere** — shared cavern roof presentation, fog, darkness, emissive light, weather and
    distance occlusion.
+5. **Inhabitants** — at least one biome-appropriate creature, enemy or ambient life form whose
+   silhouette is grounded in a runtime creature the player can actually encounter.
 
 Artwork may combine those systems dramatically. It may not invent a fifth system that exists only
 inside the PNG.
@@ -29,22 +31,28 @@ The PNG is art only. Runtime supplies logos, tips, loading indicators and captio
 painterly forms, heavily drained charcoal/blue-grey colour, strong value silhouettes, organic fade
 to black around the vignette and at least one dark Viking silhouette where composition allows.
 Avoid microtexture prompting such as "ultra detailed" or "high detail"; that language produces
-wrinkled/crinkled surface noise and is contrary to the target.
+wrinkled/crinkled surface noise and is contrary to the target. The Viking remains the viewer-scale
+anchor; biome inhabitants should read as stalking shapes, distant fliers, shoreline forms,
+foreground threats or ambient silhouettes rather than isolated character-sheet poses.
+
+Creature fidelity follows the same promise rule as terrain fidelity. If runtime still presents a
+creature as a donor prototype, the final painting must not quietly substitute a substantially
+different finished monster. Advance the creature art/runtime binding or simplify the vignette.
 
 ## Scene contracts
 
-| Scene | Runtime home | Required attainable ingredients | Current boundary |
-| --- | --- | --- | --- |
-| Root Caverns | Blackwater / Fungal transition language | deep basin, kilometre-scale wall relief, giant free-standing Worldroot span, mist/water, Viking silhouette | Worldroot span source now exists; live placement/scale remains unaccepted |
-| Burning Roots | Sulfurous Wastes | sulfur ridge terrain, charred/root masses, geothermal glow, vents/lava light | three-lavafalls landmark exists; do not paint continuous overhead root highways until runtime supplies them |
-| Sulfurous Wastes | Sulfurous Wastes | broad ridges, sparse scorched ecology, three-lavafalls navigation silhouette, haze | terrain + landmark family implemented; live visual acceptance pending |
-| Frozen Caverns | Frozen Caverns | high frozen ridges, Frozen Wall silhouette, shard fans, fog/ice light | terrain + Frozen Wall + shard family implemented; no unsupported continuous ice ceiling |
-| Fungal Forest | Fungal Forest | rolling/basin terrain, dense authored canopy, Split Pillar/Motherbloom-scale landmarks, bioluminescent pockets | keep giant forms sparse enough to match runtime density |
-| Great Decay | Great Decay | sunken terrain, root corridors, swallowed road, dense decay masses and obscuring haze | Vanishing Road/root corridor implemented; massive spanning roots require dedicated landmark geometry |
-| Ancient Ruins | primarily Fracture / mixed civilization layer | real ruin/road/bridge silhouettes seated on generated terrain | use existing monastery/road/bridge language; do not imply a continuous megacity until Lost Cities exists |
-| Fracture Zones | Fracture Zones | faulted extreme relief, broken great bridges, suspended/anchor structures, crystal/mineral accents | terrain + bridge/structure families implemented |
-| Blackwater Deep | Blackwater Deep | flooded basins, distant cliff masses, sparse drowned ecology, giant Worldroot span | span implementation added specifically to close the largest loading-art gap |
-| Titanbone Arches | late Fracture / Great Decay language | enormous bone-like arch landmarks grounded in reachable terrain | **not yet implemented**; replacement art must stay conservative until an actual Titanbone landmark family exists |
+| Scene | Runtime home | Required attainable ingredients | Inhabitant / threat target | Current boundary |
+| --- | --- | --- | --- | --- |
+| Root Caverns | Blackwater / Fungal transition language | deep basin, kilometre-scale wall relief, giant free-standing Worldroot span, mist/water, Viking silhouette | Cave Ray, Shoreclaw or a Fungal transition creature | Worldroot span source now exists; live placement/scale remains unaccepted |
+| Burning Roots | Sulfurous Wastes | sulfur ridge terrain, charred/root masses, geothermal glow, vents/lava light | Cinder Hound, Ashmite or Fire Surtling | three-lavafalls landmark exists; no continuous overhead root highways until runtime supplies them |
+| Sulfurous Wastes | Sulfurous Wastes | broad ridges, scorched ecology, three-lavafalls navigation silhouette, haze | Cinder Hound / Basalt Crawler pressure, Ashmites around vents | terrain + landmark family implemented; bespoke non-Surtling creature art is not yet runtime-bound |
+| Frozen Caverns | Frozen Caverns | high frozen ridges, Frozen Wall silhouette, shard fans, fog/ice light | Rime Moth, Iceblind or Rimewing | terrain + Frozen Wall + shard family implemented; no unsupported continuous ice ceiling |
+| Fungal Forest | Fungal Forest | rolling/basin terrain, dense authored canopy, Split Pillar/Motherbloom-scale landmarks, bioluminescent pockets | Lantern Moth, Sporeling or Capcrawler | runtime prototypes still use donor bodies; finished vignette waits on creature re-bodying |
+| Great Decay | Great Decay | sunken terrain, root corridors, swallowed road, dense decay masses and obscuring haze | Rotling, Marrow Creeper or Decay Hound | Vanishing Road/root corridor implemented; massive spanning roots need dedicated landmark geometry |
+| Ancient Ruins | primarily Fracture / mixed civilization layer | real ruin/road/bridge silhouettes seated on generated terrain | Stonebound, Rift Skitter or another Fracture inhabitant | use existing monastery/road/bridge language; no continuous megacity until Lost Cities exists |
+| Fracture Zones | Fracture Zones | faulted extreme relief, broken great bridges, suspended/anchor structures, crystal/mineral accents | Shardwing, Stonebound or Rift Colossus | terrain + bridge/structure families implemented |
+| Blackwater Deep | Blackwater Deep | flooded basins, distant cliff masses, sparse drowned ecology, giant Worldroot span | Gloomfin, Lantern Angler or Deep Hunter silhouette | Worldroot span is implemented; creature final art remains separate acceptance |
+| Titanbone Arches | late Fracture / Great Decay language | enormous bone-like arch landmarks grounded in reachable terrain | Rift Colossus / Graft Warden-scale threat only after matching runtime art exists | **not yet implemented**; keep art conservative until Titanbone landmarks exist |
 
 ## Worldroot Span implementation
 

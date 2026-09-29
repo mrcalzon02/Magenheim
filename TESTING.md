@@ -4,12 +4,12 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.138 by Local** and start its description with
-**0.0.138: Fixes the empty Underworld location catalog**.
+show **Magenheim v0.0.146 by Local** and start its description with
+**0.0.146: Keeps Magenheim loading art scoped to Underworld construction and local Deep Gate transfers**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.138]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.146]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
@@ -369,3 +369,20 @@ monumental scale rather than replacing it with a high-density special-case mesh.
 A backdrop fails fidelity acceptance when a major shape in the picture has no runtime analogue. In
 that case either implement that analogue through the existing terrain/location pipeline or redraw
 the backdrop within the current generator envelope. Do not waive the mismatch as "concept art".
+
+
+## 0.0.146 loading-screen scope acceptance
+
+The Magenheim loading presenter must appear only for Magenheim-owned Underworld work: initial
+construction/admission of the native Underworld instance and local Deep Gate or developer transit
+between Surface and Underworld. Ordinary Valheim menu/world loading that does not execute those
+paths retains Valheim's own presentation.
+
+Enter and return through the Deep Gate. Confirm artwork remains visible across rendered frames
+instead of flashing inside one synchronous call stack, then disappears after transfer. A host
+moving a remote player must not show that remote player's transition overlay on the host.
+Dedicated servers must never create the UI.
+
+For each final loading image, verify both promises: the depicted geography/landmarks are attainable,
+and at least one depicted inhabitant has the recognizable body plan of its runtime counterpart.
+A tinted/scaled donor prototype does not validate substantially different finished monster art.

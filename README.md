@@ -2,7 +2,16 @@
 
 **Magic begins as geology.**
 
-## 0.0.145 testing candidate
+## 0.0.146 testing candidate
+
+Magenheim's custom loading presentation is now explicitly scoped to mod-owned Underworld work:
+native instance construction plus local Deep Gate transfers. Successful synchronous transfers keep
+the overlay alive for rendered frames so it can actually be seen; it does not replace Valheim's
+ordinary global loading presentation. Loading-art acceptance also requires a real biome inhabitant
+or enemy silhouette grounded in runtime creature art.
+
+### Earlier fixes in 0.0.145
+
 
 Stops the map-tab performance collapse caused by repeated 8 MiB Surface/Underworld map payload
 swaps, and idles detached Underworld physics and pathfinding until a player enters. Placeable
@@ -62,7 +71,7 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.145.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.146.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
 Launch **Modded**. Confirm `Loading [Magenheim 0.0.145]` in the BepInEx log.

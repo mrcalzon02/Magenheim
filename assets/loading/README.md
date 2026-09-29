@@ -21,6 +21,10 @@ Artwork rules:
 - Keep the desaturated charcoal / blue-grey value structure with only restrained local colour.
 - Keep at least one Viking as a readable dark foreground or midground silhouette when the scene
   composition permits it.
+- Every biome-focused vignette must also show at least one inhabitant or enemy actually associated
+  with that environment. It may be distant, obscured or silhouetted, but its body plan must match
+  a runtime creature the player can encounter. Do not advertise a finished bespoke monster while
+  the game still presents only a tinted/scaled donor body.
 - Prefer broad painted masses and low-frequency texture. Do not prompt for "ultra detailed",
   "high-detail" or similar microtexture language that produces crinkled/noisy surfaces.
 - Do not depict unsupported volumetric terrain. Heightfield ground may form basins, cliffs, ridges,
@@ -31,7 +35,9 @@ Artwork rules:
 
 Each PNG is shipped separately under `Magenheim/assets/loading/underworld`, the directory used by
 the Underworld loading presenter. It rotates panels every eight seconds while shown and preserves
-image aspect ratio.
+image aspect ratio. The presenter is Magenheim-owned UI used while the mod constructs its native
+Underworld instance and during local Deep Gate transfers; it does not replace Valheim's ordinary
+global loading screens.
 
 The original crop workflow remains available for archival/source recovery through
 `tools/split-loading-backdrops.ps1 -Source <original image path>`, but those crops are no longer
