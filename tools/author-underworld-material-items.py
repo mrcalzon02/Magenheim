@@ -17,7 +17,9 @@ def mat(model,semantic,index):
     name="magenheim.material-item."+model+"."+index+"."+semantic
     m=bpy.data.materials.new(name);m.use_nodes=True;m.use_backface_culling=True
     bs=m.node_tree.nodes.get("Principled BSDF");bs.inputs["Base Color"].default_value=(1,1,1,1)
-    bind_underworld_material(bpy,m,name);return m
+    bind_underworld_material(bpy,m,semantic)
+    m["magenheim_material_name"]=name
+    return m
 
 def finish(o,path,m):
     o.name=path;o["game_node_path"]=path;o["game_collision"]=False;o["game_crystal"]=json.dumps(None)
