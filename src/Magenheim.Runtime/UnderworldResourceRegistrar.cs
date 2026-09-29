@@ -47,7 +47,7 @@ internal sealed class UnderworldResourceRegistrar : IDisposable
                 var item = new CustomItem(entry.Prefab, entry.ItemDonor);
                 var shared = item.ItemDrop.m_itemData.m_shared;
                 shared.m_name = entry.Name;
-                shared.m_description = entry.Biome + " raw material. Vanilla appearance placeholder; natural harvesting and recipes pending.";
+                shared.m_description = entry.Biome + " raw material used by the Underworld refining and crafting economy.";
                 shared.m_itemType = ItemDrop.ItemData.ItemType.Material;
                 shared.m_maxStackSize = 50;
                 shared.m_weight = 1f;
@@ -56,19 +56,16 @@ internal sealed class UnderworldResourceRegistrar : IDisposable
                 shared.m_food = 0f; shared.m_foodStamina = 0f; shared.m_foodEitr = 0f;
                 shared.m_foodBurnTime = 0f; shared.m_foodRegen = 0f;
                 shared.m_consumeStatusEffect = null;
-                var model = UnderworldResourceVisuals.ModelFor(entry.Prefab);
-                if (model is not null)
-                {
-                    shared.m_description = entry.Biome + " raw material. Natural harvesting and recipes pending.";
-                    shared.m_icons = new[] { EarthAssets.Icon(model) };
-                    UnderworldResourceVisuals.Apply(item.ItemPrefab, model);
-                }
+                var model = UnderworldResourceVisuals.ModelFor(entry.Prefab)
+                    ?? throw new InvalidOperationException("Missing authored Underworld raw-resource visual mapping: " + entry.Prefab);
+                shared.m_icons = new[] { EarthAssets.Icon(model) };
+                UnderworldResourceVisuals.Apply(item.ItemPrefab, model);
                 if (!ItemManager.Instance.AddItem(item)) throw new InvalidOperationException("Item registration refused: " + entry.Prefab);
                 items++;
                 var clone = PrefabManager.Instance.CreateClonedPrefab(entry.PickupPrefab, source);
                 var pickable = clone.GetComponent<Pickable>();
                 pickable.m_itemPrefab = item.ItemPrefab;
-                pickable.m_overrideName = entry.Name + " (resource prototype)";
+                pickable.m_overrideName = entry.Name;
                 pickable.m_amount = 1;
                 pickable.m_minAmountScaled = 1;
                 pickable.m_dontScale = true;
@@ -80,7 +77,7 @@ internal sealed class UnderworldResourceRegistrar : IDisposable
                 pickable.m_defaultEnabled = true;
                 pickable.m_maxLevelBonusChance = 0f;
                 pickable.m_bonusYieldAmount = 0;
-                if (model is not null) pickable.m_hideWhenPicked = UnderworldResourceVisuals.Apply(clone, model);
+                pickable.m_hideWhenPicked = UnderworldResourceVisuals.Apply(clone, model);
                 // Keep both native Pickable lifecycles: authored visuals retain the picked ZDO;
                 // one-shot donors without a hide target are removed by native ZNetView.Destroy.
                 // ZoneSystem owns generated-zone persistence, so neither needs a custom respawn loop.
