@@ -37,7 +37,7 @@ internal sealed class UnderworldSurtlingRegistrar : IDisposable
                 _log.LogWarning($"Underworld Surtling {entry.Prefab} unavailable: {exception.Message}");
             }
         }
-        _log.LogInfo($"Registered {registered}/{UnderworldSurtlings.All.Length} elemental Surtlings. Fire, Water, Earth and Wind variants have native spawns in their canonical roster homes; Radiance and Umbral remain site/console-only. Donor rigs/animations/loot remain intact; health, movement, attack recovery and outgoing damage use the shared Underworld role-balance policy.");
+        _log.LogInfo($"Registered {registered}/{UnderworldSurtlings.All.Length} elemental Surtlings. Fire, Water, Earth and Wind variants have native spawns in their canonical roster homes; Radiance and Umbral remain site/console-only. Donor rigs/animations remain intact; donor loot is replaced by home-biome progression resources plus one trophy per element.");
         Dispose();
     }
 
@@ -62,6 +62,8 @@ internal sealed class UnderworldSurtlingRegistrar : IDisposable
             ModelAssets.Load(clone, entry.ModelId, arrange: arrange);
             var ragdolls = BindRagdolls(entry, character, donor, rig);
             var creatureConfig = new CreatureConfig { Name = entry.DisplayName };
+            foreach (var drop in UnderworldCreatureLootRuntime.SurtlingDrops(entry))
+                creatureConfig.AddDropConfig(drop);
             if (TryHomeBiome(entry.Home, out var homeBiome))
             {
                 var shoreline = homeBiome == UnderworldTerrainRuntime.BlackwaterDeepBiome;
