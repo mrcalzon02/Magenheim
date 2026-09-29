@@ -1,7 +1,7 @@
 # One-run Underworld production forge contract
 
 The remote production run is intentionally broader than the six new stations. It regenerates the
-shared Underworld material library, all ten physical Crystal weapon chassis and their icons, all
+shared Underworld material library, all forty raw/refined material item identities and their icons, all ten physical Crystal weapon chassis and their icons, all
 twelve biome-specific Crystal/staff-chassis Underworld derivatives, Rootforged construction, six
 biome stations, six progression tools and twenty-four rigged armour sources. The thirty-two elemental staff Blender sources are treated as authoritative manual source art: the forge re-exports all 32 runtime/GLB representations and regenerates all 32 staff icons without inventing a replacement geometry generator. Crystal-tier icons remain verification-only because they are not part of the weapon/placeable rebuild.
 
@@ -13,15 +13,17 @@ biome stations, six progression tools and twenty-four rigged armour sources. The
    downloaded or any asset run is spent.
 3. Download Blender 5.0.0 from the official Blender host and verify it against the official
    SHA-256 list.
-4. Generate and quantitatively gate 23 shared 512px Underworld material families.
-5. Regenerate Crystal weapons first so derivative weapons inherit the current authoritative
+4. Generate and quantitatively gate 25 shared 512px Underworld material families.
+5. Author the fourteen previously missing raw-resource inventory models plus all eighteen refined
+   material models, export them with shared PBR maps, and regenerate icons for all forty raw/refined material identities.
+6. Regenerate Crystal weapons first so derivative weapons inherit the current authoritative
    chassis, UVs and painted 512px atlases; re-export all 32 elemental staves from their existing authoritative Blender sources.
-6. Regenerate all twelve Underworld weapon derivatives, Rootforged, stations, tools and armour in dependency order, then regenerate staff icons against the final model catalog.
-7. Run global topology, winding/surface continuity, scale, held orientation/grip, icon, texture,
+7. Regenerate all twelve Underworld weapon derivatives, Rootforged, stations, tools and armour in dependency order, then regenerate staff icons against the final model catalog.
+8. Run global topology, winding/surface continuity, scale, held orientation/grip, icon, texture,
    authored-surface and attach_skin source-rig gates.
-8. Render every admitted production model twice: neutral studio and approximate biome-context
+9. Render every admitted production model twice: neutral studio and approximate biome-context
    lighting. Render all 24 rigged armour pieces again under an exaggerated articulation stress pose, then build family/contact sheets for human acceptance.
-9. Push generated assets to a dedicated production/blender-<run id> branch. The workflow never
+10. Push generated assets to a dedicated production/blender-<run id> branch. The workflow never
    auto-merges generated binaries to main.
 
 ## Texture/material standard
@@ -81,9 +83,24 @@ loaded vent feature rather than treating the entire Sulfur biome as a free heat 
 
 ## Expanded visual admission
 
-The production review universe is now 110 models: 10 Crystal weapons, 12 Underworld weapon
-derivatives, 32 elemental staves, 3 geothermal vents, 17 Rootforged pieces, 6 stations, 6 tools and
-24 armour pieces. Rootforged requires joinery revision 4 and the station family requires endgame
+The production review universe is now 150 models: 22 raw material items, 18 refined material items,
+10 Crystal weapons, 12 Underworld weapon derivatives, 32 elemental staves, 3 geothermal vents,
+17 Rootforged pieces, 6 stations, 6 tools and 24 armour pieces. Rootforged requires joinery revision 4 and the station family requires endgame
 detail revision 2 before Blender provisioning. The twelve derivative weapon sources must preserve
 their Crystal/staff ancestry and are bounded against their parent chassis before save, so biome
 hardware cannot silently change the already-validated held envelope.
+
+
+## Material-item admission
+
+The eight previously authored Fungal/Blackwater raw material models remain authoritative. A new
+32-model material-item author fills the fourteen missing Sulfur/Frozen/Fracture/Decay raw materials
+and all eighteen refinement outputs. Processing state is visible in geometry—ore clusters become
+bars, loose fibre becomes coils, timber becomes keyed laminates, ice becomes framed lenses,
+fracture crystal becomes prisms, and amber/bone become sealed/composite components—rather than
+being represented by donor recolours. The new models use shared PBR maps and carry an eight-part
+minimum inventory-detail floor. Runtime mappings cover all 22 raw and 18 refined prefabs and fail
+closed when an owned representation is missing.
+
+These thirty-two new Blender outputs and their icons are not claimed generated until the manual
+production forge is run and its review branch is accepted.

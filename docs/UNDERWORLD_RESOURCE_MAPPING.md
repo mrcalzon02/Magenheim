@@ -1,6 +1,6 @@
 # Underworld resource and drop mapping — 0.0.97
 
-Raw resource names follow the existing flora/terrain plan. All 22 now have unique item identities backed by vanilla models/icons and native Pickable nodes. They are materials, including Glowcap Flesh: raw-food effects are not yet balanced or enabled. All six Underworld biomes now use deterministic native-instance natural pickup population in source through one shared materializer; no smelting recipes or new stations are implied.
+Raw resource names follow the existing flora/terrain plan. All 22 have unique item identities and native Pickable nodes. Runtime visual authority now maps every raw material to an owned Magenheim model/icon identity. Eight Fungal/Blackwater raw models are already committed; the fourteen later-biome raw models are authored by the pending one-run production source and are not claimed generated until that forge output is accepted. Donors supply behavior, not final appearance.
 
 | Biome | Resource | Item model/icon donor | Pickup donor | Intended source (not populated yet) |
 |---|---|---|---|---|
@@ -39,14 +39,15 @@ The 72 scenery variants remain stripped visuals and cannot be harvested. Do not 
 
 Pending: live creature-drop/trophy acceptance, remaining native mining/tree conversion work, and multiplayer/save/reload acceptance.
 
-## Custom appearances — 2026-09-22
+## Custom appearances — expanded 2026-09-29
 
-The four Fungal Forest resources (Worldroot Timber, Glowcap Flesh, Spire Fibre, Understone) now
-carry authored models, icons rendered from those models, and a collider fitted to the model, on both
-the item and its pickup. The donors in the table above still supply item behaviour (stacking,
-physics, pickup interaction); only their appearance is replaced. The other eighteen resources keep
-their vanilla appearance until their biome's custom pass. See
-`docs/validation/2026-09-22-fungal-forest-custom-pass.md`.
+The four Fungal Forest and four Blackwater raw resources already carry committed authored models,
+model-derived icons and fitted colliders. Source authority now extends the same rule to all remaining
+raw resources and all eighteen refined materials. The fourteen missing raw plus eighteen refined
+models are queued in `underworld-material-item-models`; `underworld-resource-icons` owns icons for
+the complete 40-item material family. The production gate requires source/GLB/runtime/icon coverage
+for all forty and shared PBR normal/metallic maps for all thirty-two newly authored models. Those
+thirty-two outputs remain pending until the manual Blender forge runs and its generated branch is accepted.
 
 ## Closeout
 
@@ -62,8 +63,7 @@ from Worldroot Timber, Understone and Spire Fibre, and the first two planned Fun
 are admitted there as upgrades of existing crystal weapons: Worldroot Club consumes a Crystal Mace
 and Worldroot Bow consumes a Crystal Bow. Their runtime visuals inherit the existing crystal chassis
 and receive a Fungal/Worldroot material accent; authored derivative geometry remains a separate asset
-pass. Later biome weapon ancestry is catalogued but not runtime-admitted until the matching station
-and refining loop exists.
+pass. All six biome weapon tiers are now runtime-admitted at their matching stations. Post-Fungal weapon and equipment recipes consume processed station outputs rather than raw pickup stacks.
 
 
 ### Fungal Forest refining rung — 2026-09-29
@@ -75,3 +75,14 @@ addition to consuming their Crystal Mace / Crystal Bow chassis. Rootforged remai
 raw Worldroot Timber and Understone as building stock; food remains allowed to consume raw Glowcap
 Flesh. This creates separate raw-building, raw-food and refined-equipment sinks instead of making
 every material perform the same job.
+
+
+### Complete station refining ladder — 2026-09-29
+
+The five post-Fungal stations now add fifteen processed materials, three per biome, alongside the
+three existing Mycelial refinements. Blackwater produces Flowstone Plate, Pale Cord and Brined Pearl;
+Sulfur produces Emberiron Bar, Tempered Slag and Charred Root Grip; Frozen produces Rimesilver Bar,
+Iceglass Lens and Rimewood Laminate; Fracture produces Titanbone Plate, Shardstone Block and Fracture
+Prism; Great Decay produces Carrion Amber Seal, Ossuary Composite and Rotwood Laminate. Every one of
+the fifteen later refinements has at least one admitted equipment or weapon consumer, and Core tests
+reject dead refinement identities or raw-resource bypasses in post-Fungal gear.

@@ -58,7 +58,7 @@ for source in python_sources:
     except py_compile.PyCompileError as error: fail.append(source+" syntax error: "+str(error))
 
 for path in (
- "tools/author-rootforged-placeables.py","tools/author-underworld-stations.py",
+ "tools/author-underworld-material-items.py","tools/author-rootforged-placeables.py","tools/author-underworld-stations.py",
  "tools/author-underworld-tools.py","tools/author-underworld-armour.py","tools/author-underworld-weapons.py",
 ):
     text=(ROOT/path).read_text()
@@ -106,6 +106,15 @@ literal_names += [
 ]
 material_item_specs=json.loads((ROOT/"tools"/"underworld-material-item-specs.json").read_text())
 require(len(material_item_specs)==32,"Underworld material-item catalog must own exactly 32 newly-authored models")
+require(sum(1 for model_id in material_item_specs if model_id.startswith("underworld-resource-"))==14,
+        "Material-item author must own exactly the fourteen previously missing raw resource models")
+require(sum(1 for model_id in material_item_specs if model_id.startswith("underworld-refined-"))==18,
+        "Material-item author must own all eighteen refinement models")
+visuals=(ROOT/"src"/"Magenheim.Runtime"/"UnderworldResourceVisuals.cs").read_text()
+raw_visuals=re.findall(r'\["Magenheim_Underworld_Resource_[^"]+"\]\s*=\s*"underworld-resource-[^"]+"',visuals)
+refined_visuals=re.findall(r'\["Magenheim_Underworld_Refined_[^"]+"\]\s*=\s*"underworld-refined-[^"]+"',visuals)
+require(len(raw_visuals)==22,"Runtime visual map must cover all 22 raw Underworld materials")
+require(len(refined_visuals)==18,"Runtime visual map must cover all 18 refined Underworld materials")
 material_item_manifest=entries.get("underworld-material-item-models",{})
 require(material_item_manifest.get("generator")=="tools/author-underworld-material-items.py",
         "Underworld material-item generator authority is missing")
