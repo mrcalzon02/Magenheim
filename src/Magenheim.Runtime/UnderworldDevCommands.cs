@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Developer console access to the Underworld: <c>magenheim_underworld enter|return|status|audit|survey</c>.
+/// Developer console access to the Underworld: <c>magenheim_underworld enter|return|status|audit|survey|dungeons</c>.
 /// </summary>
 /// <remarks>
 /// A cheat command, so Valheim's own <c>devcommands</c> gate applies. It is not a second transit
@@ -37,9 +37,9 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
     }
 
     public override string Name => "magenheim_underworld";
-    public override string Help => "enter | return | status | audit | survey -- Deep Gate transit/status, admission audit, or live terrain/structure/ecology sample (devcommands)";
+    public override string Help => "enter | return | status | audit | survey | dungeons -- transit/status, admission audit, live terrain survey, or actual dungeon placement audit (devcommands)";
     public override bool IsCheat => true;
-    public override List<string> CommandOptionList() => new() { "enter", "return", "status", "audit", "survey" };
+    public override List<string> CommandOptionList() => new() { "enter", "return", "status", "audit", "survey", "dungeons" };
 
     public override void Run(string[] args)
     {
@@ -82,8 +82,11 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
             case "survey":
                 RunSurvey(player, args);
                 break;
+            case "dungeons":
+                RunDungeonAudit();
+                break;
             default:
-                Say($"Unknown option '{verb}'. Use: {Name} enter | return | status | audit | survey");
+                Say($"Unknown option '{verb}'. Use: {Name} enter | return | status | audit | survey | dungeons");
                 break;
         }
     }
@@ -113,6 +116,25 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
         {
             _log?.LogError("magenheim_underworld audit failed: " + exception);
             Say("AUDIT FAIL: " + exception.Message);
+        }
+    }
+
+    private static void RunDungeonAudit()
+    {
+        Say(
+            "DUNGEONS state=" + UnderworldDungeonPlacementRuntime.State +
+            " -- " + UnderworldDungeonPlacementRuntime.Diagnostic);
+
+        foreach (var report in UnderworldDungeonPlacementRuntime.LastReport)
+        {
+            var spacing = double.IsPositiveInfinity(report.MinimumObservedSpacingMeters)
+                ? "n/a"
+                : report.MinimumObservedSpacingMeters.ToString(
+                    "0",
+                    System.Globalization.CultureInfo.InvariantCulture) + "m";
+            Say(
+                $"DUNGEONS {report.PrefabName}: {report.Found}/{report.Expected} " +
+                $"biome={report.Biome} min-spacing={spacing}");
         }
     }
 
