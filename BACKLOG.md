@@ -534,8 +534,10 @@ Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the cur
   Verify fresh-world Fracture Zones placement, no Surface leakage of the Underworld-only location,
   full interior build, encounters, host/client agreement, save/reload, return to the owning
   Fracture Zones entrance, and no collision with ordinary Fracture structures or boss locations.
-- [ ] **Author Fungal Rootwarren dungeon kit.**
-  Build 15-20 large authored room families, entrance/interior binder, fungal encounter/resource
+- [ ] **Author Fungal Rootwarren dungeon assets and runtime binder.**
+  The 16-room Core production manifest is now fixed (entrance, main route, junction, vertical,
+  hazard, resource, encounter and landmark roles with target dimensions). Remaining work is the
+  actual Blender/runtime room payloads, entrance/interior binder, fungal encounter/resource
   population and native Fungal Forest location admission. No placeholder/dead entrances.
 - [ ] **Author Blackwater Drowned Vaults dungeon kit.**
   Build the flooded/dry route kit with water as structural gameplay and Deep Current progression
