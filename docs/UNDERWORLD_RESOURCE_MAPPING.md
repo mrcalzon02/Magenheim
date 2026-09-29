@@ -31,9 +31,13 @@ Raw resource names follow the existing flora/terrain plan. All 22 now have uniqu
 
 Each registered pickup produces one matching custom material through native Pickable behavior. It has no extra donor loot or respawn timer. Resident native Underworld chunks now deterministically materialize only that biome's registered pickups through the server-owned chunk-streaming authority and native Valheim ZDO/ZNetView persistence; picked state is not tied to disposable ecology scenery or a local-player preview. All pickup prefabs remain console-spawnable for review. Registration now requires `m_hideWhenPicked`; with zero respawn time this is the native Valheim condition that preserves the picked flag in the pickup ZDO instead of destroying that ZDO. Spawn IDs are `Magenheim_Underworld_ResourcePickup_<NameWithoutSpaces>`; loose item IDs are `Magenheim_Underworld_Resource_<NameWithoutSpaces>`.
 
-The 42 creature review prototypes still retain vanilla donor loot. No per-creature custom resource drops are claimed. The 72 scenery variants are stripped visuals and cannot be harvested. Rootforged still consumes core wood/stone/iron; fungal provisions still use their original vanilla ingredients. Those recipes stay playable until natural resource acquisition is admitted.
+The 42 ordinary Underworld fauna no longer retain donor loot. Their CharacterDrop tables are replaced by Magenheim-owned biome-resource drops plus one species trophy. The twelve elemental Surtlings likewise replace donor loot with home-biome resources plus one trophy per element, shared across masculine/feminine bodies. The thirteen Deep Fracture chassis now drop Fracture-tier resources plus one trophy per chassis, shared across elemental alignments.
 
-Pending: native mining/tree donor conversion, creature-specific loot balance, food/refining recipes, and compile/runtime multiplayer/save/reload/item-pickup acceptance. Do not add resource drops to disposable local scenery: its rebuild would replenish the same ground repeatedly.
+Creature loot supplements rather than replaces harvesting. Common fauna mostly return common biological/mineral inputs; rarer heavy/apex creatures provide an alternate source for progression bottlenecks such as Blackwater Pearl, Emberiron, Rimesilver, Titanbone and Carrion Amber. Static source coverage verifies that all 22 canonical raw resources have at least one creature source and at least one existing station/equipment/weapon/refining consumer.
+
+The 72 scenery variants remain stripped visuals and cannot be harvested. Do not add resource drops to disposable local scenery: its rebuild would replenish the same ground repeatedly.
+
+Pending: live creature-drop/trophy acceptance, remaining native mining/tree conversion work, and multiplayer/save/reload acceptance.
 
 ## Custom appearances — 2026-09-22
 
