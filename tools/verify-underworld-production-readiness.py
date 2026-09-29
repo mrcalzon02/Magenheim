@@ -99,8 +99,11 @@ uw=(ROOT/"tools"/"author-underworld-weapons.py").read_text()
 require("bpy.ops.wm.open_mainfile" in uw and "derived_from" in uw,
         "Underworld weapon derivatives no longer preserve Crystal weapon source ancestry")
 root=(ROOT/"tools"/"author-rootforged-placeables.py").read_text()
-require("DETAIL_REVISION=3" in root and "DETAIL_FLOORS=" in root,
-        "Rootforged endgame detail regression floor is absent")
+require("DETAIL_REVISION=4" in root and "endgame-placeable-r4" in root and "DETAIL_FLOORS=" in root,
+        "Rootforged endgame joinery revision 4 regression floor is absent")
+stations=(ROOT/"tools"/"author-underworld-stations.py").read_text()
+require("DETAIL_REVISION = 2" in stations and "endgame-station-r2" in stations and "DETAIL_FLOORS =" in stations,
+        "Underworld station endgame detail revision 2 regression floor is absent")
 arm=(ROOT/"tools"/"author-underworld-armour.py").read_text()
 require("valheim-player-attach-skin" in arm and "BONE_ORDER=[" in arm,
         "Underworld armour source rig contract is absent")
