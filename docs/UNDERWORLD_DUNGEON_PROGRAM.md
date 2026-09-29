@@ -1,152 +1,150 @@
 # Underworld Biome Dungeon Program
 
-**Status:** ACTIVE STRUCTURE PROGRAM — Deep Fracture admitted; all five ordinary biome dungeons now have source/runtime architecture complete behind asset gates.
+**Status:** ACTIVE — Deep Fracture remains bespoke; the five ordinary biome dungeons are now an expanded-vanilla reuse program.
 
-The Underworld is a world-scale realm, not a chain of dungeons. Dungeons therefore function as
-major local destinations inside its biomes rather than replacing biome exploration.
+The Underworld is a world-scale realm. Its ordinary dungeons should feel familiar enough that a
+Valheim player recognizes the construction grammar immediately, but large and content-rich enough
+that entering one is a worthwhile expedition rather than a recolored copy of a Surface dungeon.
 
-## Shared production rule
+## Governing architecture rule
 
-Every ordinary biome dungeon is authored from **15–20 large themed room families**. A generated run
-uses each family **2–3 times**, producing roughly 30–60 large room placements before optional
-transitions, shafts, connectors and special chambers. Reuse must alter orientation, branch context,
-damage state, dressing, enemies/resources and approach so repeated geometry does not read as the
-same room pasted down a corridor.
+There are now two deliberately separate dungeon lanes.
 
-UnderworldBiomeDungeonPlanner owns deterministic topology for these ordinary biome dungeons.
-It produces a connected branching tree plus bounded cross-links/loops. It deliberately does not own
-geometry, encounters, loot or persistence.
+### Deep Fracture
 
-A dungeon entrance is never admitted merely because exterior art exists. Runtime registration
-requires a real interior binder. Dead decorative cave mouths are prohibited.
+Deep Fracture remains Magenheim-owned architecture: its bespoke twenty-district expedition, custom
+rooms, exact-plan traversal, encounter authority, passage assembly, return portal and persistence
+remain intact. None of the vanilla-reuse rules below replace or dilute it.
 
-## Fracture Zones — Deep Fracture
+### Five ordinary Underworld dungeons
 
-**Runtime status: ADMITTED.**
+The other five biome dungeons reuse vanilla Valheim architecture directly:
 
-The established Deep Fracture remains its bespoke megadungeon rather than being converted to the
-generic reusable-kit algorithm. It keeps the existing exact-plan 20-district expedition, encounter
-planner, passage assembler, traversal links, return portal and persistence authority.
+| Underworld biome | Vanilla donor family | Generator | Entrance family |
+|---|---|---|---|
+| Fungal Forest | Burial Chambers | `DG_ForestCrypt` | `Crypt2`, `Crypt3`, `Crypt4` |
+| Blackwater Deep | Sunken Crypts | `DG_SunkenCrypt` | `SunkenCrypt4` |
+| Sulfurous Wastes | Infested Mines | `DG_DvergrTown` | `Mistlands_DvergrTownEntrance1/2` |
+| Frozen Caverns | Frost Caves | `DG_Cave` | `MountainCave02` |
+| Great Decay | Winding Tunnels | `DG_Hole` | `TheHole01` |
 
-Two entrance contexts now use that same expedition:
+The intended player read is:
 
-- the existing Surface geological fractures;
-- six sparse Underworld Fracture Zones entrances, minimum 1.4 km similar-site spacing.
+> This is recognizably the vanilla dungeon I know — but the spaces are bigger, it keeps going,
+> and everything living or worth harvesting inside belongs to the Underworld.
 
-The Underworld entrance does not change world layer. Its return portal resolves back to the
-Fracture Zones entrance that owns that expedition.
+These dungeons do **not** inject Rootwarren/Drowned Vault/Cinderworks/Rime Sepulcher/Carrion
+Catacombs bespoke room geometry into the donor tilesets. The previously authored room-kit source is
+preserved in the repository for reference or future reuse, but it is no longer ordinary-dungeon
+runtime authority and is no longer a production-forge requirement.
 
-## Fungal Forest — Rootwarren
+## Scale and exploration floor
 
-**Runtime status: PREFORGE SOURCE COMPLETE; catalog remains PLANNED until the full asset family is forged and reviewed.**
+`UnderworldVanillaDungeonReuseCatalog` owns two hard minimums:
 
-Rootwarren is a living geological fracture swallowed by fungal/root growth. Its source authority is
-now concrete: sixteen large room families plus one reusable passage, each with stable model identity,
-role and dimensions. The generic planner uses every room family two or three times, pins Fracture
-Mouth as room zero, creates branching/looping topology, embeds rooms on a non-overlapping spatial
-grid, and routes physical corridors around unrelated occupied room cells.
+- **1.5x linear room scale.** Every cloned donor room is enlarged to at least 150% of vanilla size.
+  The room transform, connection spacing and `Room.m_size` placement bounds must agree so the
+  generator sees the true larger footprint rather than allowing visually enlarged rooms to overlap.
+- **3.5x donor room-count target.** The cloned donor generator derives its minimum and maximum room
+  counts from the live vanilla `DungeonGenerator.m_minRooms/m_maxRooms` values and expands both by
+  at least 3.5x. Counts are not permanently hard-coded because Valheim may rebalance its donors.
 
-The runtime side is also present before admission: authored room/theme registration, a reduced
-Fracture Mouth exterior, buried same-instance interior anchor, Fungal environment selection,
-walkable routed passages, deterministic server-owned Fungal encounters, one-shot native resource
-pickups with harvest persistence, and an exact entrance-room return path. Normal worldgen remains
-disabled because the catalog status is still Planned.
+The cloned generator must also enlarge its legal dungeon zone enough to contain the combination of
+more rooms and larger footprints. Expansion is derived from the donor zone rather than moving the
+interior to arbitrary world coordinates.
 
-The r2 Blender production author builds collidable cavern shells for all sixteen chambers and a
-collidable passage shell, with dedicated source verification, render/contact-sheet review, generated
-asset provenance recording and a narrow promotion script. Promotion is fail-closed until exactly
-17 source, 17 GLB and 17 runtime payloads exist.
+This is a floor, not an instruction that every seed be exactly identical in length. Vanilla
+branching, dead ends, required rooms, loops, doors and donor-specific generation behavior should
+continue to produce run-to-run variation.
 
-Gameplay language remains visibility, spores, living cover, vertical root paths, fungal resources
-and ambush fauna. It must read as a fungal cave ecology, not another stone crypt painted green.
+## What is retained from vanilla
 
-## Blackwater Deep — working dungeon program: Drowned Vaults
+Ordinary Underworld dungeons deliberately keep the donor's expensive, proven infrastructure:
 
-**Runtime status: SOURCE COMPLETE / ASSET-GATED; catalog remains PLANNED until the production forge admits all 17 payloads.**
+- entrance silhouette and interaction grammar;
+- room/tile vocabulary;
+- `RoomConnection` layout and connection types;
+- `DungeonGenerator` algorithm;
+- doors, gates, barricades and structural route mechanics where compatible;
+- collision, pathing and ordinary room construction behavior;
+- donor-specific verticality and branching character.
 
-A partially flooded ruin/cavern network with dry shelves, submerged passages, air pockets,
-collapsed docks and deep chambers. Water level is structural gameplay, not decoration.
+Vanilla assets are never mutated. Magenheim clones the location, room and any required door
+prefabs into owned identities before applying scale or population changes.
 
-The kit needs both walkable and flooded route alternatives so the Deep Current boon/equipment tier
-has real dungeon value. Entrances should read as flooded sinkholes or fractured shore vaults.
+## What is replaced
 
-## Sulfurous Wastes — working dungeon program: Cinderworks
+The dungeon may look structurally familiar, but its ecology and rewards are Underworld-owned.
 
-**Runtime status: SOURCE COMPLETE / ASSET-GATED; catalog remains PLANNED until the production forge admits all 17 payloads.**
+- vanilla creature spawners are rebound to the owning biome's Magenheim creatures;
+- vanilla spawn-area creature tables are replaced by the same biome roster;
+- vanilla treasure/resource drop tables are replaced with canonical Underworld resources;
+- ordinary pickables are rebound to biome resources where the donor position is suitable;
+- vanilla quest/boss/lore content that would imply the Surface dungeon's original story is removed
+  or disabled on the clone;
+- the Surface donor remains completely untouched elsewhere in the world.
 
-A geothermal ruin/industrial-sacral complex built around vents, slag channels and failed furnace
-infrastructure. Rooms should use height, heat exposure and vent timing rather than generic lava
-floors.
+The five biome rosters and resource catalogs already own the creature/material identities. Dungeon
+population therefore consumes those authorities instead of inventing a parallel dungeon-only set.
 
-The Furnace Blood/Emberiron tier must materially change how aggressively players can route through
-hot chambers.
+Rare materials should appear deeper or behind stronger encounter pressure; common materials may be
+present earlier. A 3.5x dungeon must reward exploration rather than multiplying empty hallways.
 
-## Frozen Caverns — working dungeon program: Rime Sepulcher
+## Biome-specific gameplay identity
 
-**Runtime status: PLANNED; source/runtime architecture complete, forge pending.**
+### Fungal Forest — expanded Burial Chambers
 
-The sixteen-family kit now owns Shelter, ClearGallery, FrostField, WhiteoutChoke and IceShear route
-states. Rooms use real authored dimensions and the generic topology/spatial planners; adaptive
-passage modules physically connect the embedded layout rather than substituting teleports.
+The stone crypt grammar remains obvious, but the enlarged chambers are inhabited by Fungal fauna
+and supply Worldroot Timber, Glowcap Flesh, Spire Fibre and Understone. Existing crypt turns,
+stairs, burial niches and door logic provide the recognizable skeleton; fungal ecology provides the
+new reason to explore it.
 
-Room and passage exposure reuse the existing Frozen Caverns atmosphere authority. Shelter and clear
-routes can suppress local obscuration, while FrostField/IceShear/Whiteout routes raise the ordinary
-hazard floor and reuse Deep Fog or Whiteout. Rimebound/Rimeward therefore changes route pressure
-without creating a second dungeon-only cold meter.
+### Blackwater Deep — expanded Sunken Crypts
 
-Encounter dressing is role-aware: Frost Tick, Rime Moth, Iceblind, Pale Burrower, Rimewing,
-Glacier Stalker and Cryolith Guardian are used only in pressure/encounter/final spaces that call for
-them. Resource rooms use the canonical Rimewood, Clear Ice and Rimesilver pickup vocabulary with
-server-owned harvest persistence.
+Sunken Crypt architecture is retained because flooded masonry, gated rooms and blocked routes
+already fit Blackwater. Vanilla Draugr/Blob loot is removed. Blackwater creatures and Flowstone,
+Pale Fibre, Deep Salt and Blackwater Pearl become the reward language.
 
-The buried interior, physical passage assembly, exact same-instance return path and Frozen-only
-location registrar are implemented, but registration stays fail-closed while the 17 authored
-room/passage payloads are absent.
+### Sulfurous Wastes — expanded Infested Mines
 
-## Great Decay — working dungeon program: Carrion Catacombs
+The large masonry/vertical grammar of Infested Mines becomes a much longer Sulfurous expedition.
+Seekers/Dvergr and Mistlands loot are removed from the clone and replaced by Sulfurous fauna,
+Slagstone, Sulfur, Charred Timber and Emberiron.
 
-**Runtime status: PLANNED; source/runtime architecture complete, forge pending.**
+### Frozen Caverns — expanded Frost Caves
 
-Carrion Catacombs owns sixteen stable room families plus an adaptive passage. Its route states are
-Sanctuary, PreservedRuin, TaintedRuin, RootIngress and BlackBloom. The authored visual program
-starts with legible funerary stone/ossuary construction and progressively yields to rotwood, bone,
-Decay Spore and Carrion Amber occupation as pressure increases.
+This is intentionally the least visually alien donor. The player should recognize Frost Cave
+construction immediately, but at 1.5x room scale and at least 3.5x room count it becomes a major
+Frozen Caverns destination. Cultists/bats and Mountain loot are replaced by the Frozen roster,
+Rimewood, Clear Ice and Rimesilver.
 
-Room and passage contamination reuse the existing Great Decay atmosphere. Preserved/Sanctuary
-routes retain readable navigation and work areas; RootIngress and BlackBloom routes raise the
-ordinary hazard floor and reuse the canonical Black Bloom event. Defiant Flesh and Defiant armour
-therefore reduce exposure through the normal resistance path, while the already-admitted Defiant
-Censer supplies the existing 16m local suppression radius. The dungeon does not add a second
-contamination meter or special-case immunity.
+### Great Decay — expanded Winding Tunnels
 
-Encounter dressing is role-aware: Rotlings, Marrow Creepers, Spore Husks, Carrion Blooms, Decay
-Hounds, Graft Wardens and the Corpse Orchard appear in authored pressure/encounter spaces rather
-than every room. Resource chambers use Rotwood, Decay Spore, Carrion Amber and Bone Gravel with
-server-owned harvest persistence.
+The Hole/Winding Tunnel tileset supplies a long subterranean donor grammar without importing a
+second bespoke architecture family. It is populated by Great Decay fauna and Rotwood, Decay Spore,
+Carrion Amber and Bone Gravel.
 
-The reduced Ossuary Gate exterior, buried same-instance interior, physical passage assembly and
-Great Decay-only location registrar are implemented, but registration remains fail-closed until all
-seventeen room/passage payloads exist.
+## Admission and safety
 
-## Admission sequence
+The five ordinary catalog entries remain `Planned` until the generic vanilla-reuse runtime path has
+all of the following:
 
-1. Deep Fracture Underworld placement and live acceptance.
-2. Fungal Rootwarren 15–20 room-family kit + entrance/interior binder.
-3. Blackwater Drowned Vaults 16-room + adaptive-passage forge/admission.
-4. Sulfur Cinderworks 16-room + adaptive-passage forge/admission.
-5. Frozen Rime Sepulcher forge/admission.
-6. Great Decay Carrion Catacombs forge/admission and live contamination/Censer tuning.
+1. read the live donor generator/room data without mutating vanilla assets;
+2. clone the donor location and room family into Magenheim-owned identities;
+3. enlarge room geometry and placement bounds coherently to at least 1.5x;
+4. expand live donor min/max room counts by at least 3.5x and enlarge the legal generation zone;
+5. replace vanilla creature/resource/loot population with the owning Underworld biome;
+6. register only in the matching native Underworld biome;
+7. preserve entrance/exit behavior, save/reload and generated-room persistence;
+8. compile against current Valheim/Jötunn and pass host/client runtime acceptance.
 
-Each promotion from PLANNED to RuntimeReady must include:
+A planned dungeon must seed **no entrance**. This remains fail-closed.
 
-- authored room models and collision;
-- deterministic room-family catalog;
-- entrance model integrated with terrain;
-- interior binder and return path;
-- encounter/resource population authority;
-- native location registration in only its owning Underworld biome;
-- startup catalog validation;
-- host/client, save/reload and return-path acceptance.
+## Production pipeline effect
 
-The catalog status itself is a safety gate: planned dungeons exist as production authority but are
-not allowed to seed empty entrances into worlds.
+The expensive Underworld Blender production forge no longer rebuilds, promotes or reviews the five
+legacy bespoke ordinary room families. That work is preserved but is not required to ship ordinary
+Underworld dungeons.
+
+Deep Fracture remains the bespoke custom-dungeon lane and continues to use Magenheim-authored
+geometry where its design requires it.
