@@ -63,7 +63,8 @@ for path in (
 ):
     text=(ROOT/path).read_text()
     require("bind_underworld_material" in text,path+" is not bound to the shared material library")
-    require("sys.path.insert(0, str(Path(__file__).resolve().parent))" in text,path+" does not expose tools/ to Blender Python imports")
+    require(re.search(r"sys\.path\.insert\(\s*0\s*,\s*str\(Path\(__file__\)\.resolve\(\)\.parent\)\s*\)", text) is not None,
+            path+" does not expose tools/ to Blender Python imports")
     require("bpy.ops.uv.smart_project" not in text,path+" uses forbidden smart_project UV generation")
 
 generator_tree=ast.parse((ROOT/"tools"/"generate-underworld-material-textures.py").read_text())
