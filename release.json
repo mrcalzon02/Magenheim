@@ -1,4 +1,4 @@
 {
-  "version": "0.0.149",
-  "description": "0.0.149: Adds a live Underworld terrain/structure/inhabitant survey command, canonical-home elemental Surtling spawning, dense burnt Sulfurous Wastes scenery, and scoped Underworld loading art."
+  "version": "0.0.150",
+  "description": "0.0.150: Replaces the Underworld's five-slice biome wheel with a seeded warped multi-field layout that produces organic regions, repeated biome pockets, irregular Fungal arrival edges, and genuinely different biome maps between seeds."
 }
