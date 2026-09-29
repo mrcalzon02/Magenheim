@@ -584,7 +584,7 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
         _registeredManager = null;
     }
 
-    private static string EnvironmentName(
+    internal static string EnvironmentName(
         UnderworldTerrainBiome biome,
         UnderworldAtmosphereEvent atmosphereEvent) =>
         EnvironmentPrefix + biome + "_" +
