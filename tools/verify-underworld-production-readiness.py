@@ -201,6 +201,10 @@ for legacy_source in ("tools/author-underworld-fungal-forest.py","tools/author-u
             legacy_source+" lost its targeted raw-material shared-PBR migration")
 require(material_key("deep-salt")=="deep-salt" and "deep-salt" in material_specs,
         "Deep Salt must remain a first-class shared PBR material family")
+for legacy_id in ("underworld-fungal-forest-models","underworld-blackwater-deep-models"):
+    legacy_inputs=set(entries[legacy_id].get("inputs",[]))
+    require({"tools/underworld_material_library.py","tools/generate-underworld-material-textures.py"}.issubset(legacy_inputs),
+            legacy_id+" must declare the shared PBR binder/generator as freshness inputs")
 for primary,secondary,form in material_item_specs.values():
     for semantic in (primary,secondary):
         try:

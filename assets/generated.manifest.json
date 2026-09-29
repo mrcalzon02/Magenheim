@@ -569,7 +569,9 @@
       "generator": "tools/author-underworld-fungal-forest.py",
       "inputs": [
         "tools/magenheim_blender_kit.py",
-        "tools/magenheim_flora_kit.py"
+        "tools/magenheim_flora_kit.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py"
       ],
       "command": [
         "powershell",
@@ -683,8 +685,7 @@
         "assets/models/source/underworld-resource-spire-fibre.blend": null,
         "assets/models/source/underworld-resource-understone.blend": null,
         "assets/models/source/underworld-resource-worldroot-timber.blend": null
-      },
-      "inputs_sha256": "4c2297f64573f2e949de897eb4f7f5cb5b5c3baea30ba3067c19bb1280356e1a"
+      }
     },
     {
       "id": "underworld-resource-icons",
@@ -724,7 +725,9 @@
       "generator": "tools/author-underworld-blackwater-deep.py",
       "inputs": [
         "tools/magenheim_blender_kit.py",
-        "tools/magenheim_flora_kit.py"
+        "tools/magenheim_flora_kit.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py"
       ],
       "command": [
         "powershell",
@@ -835,8 +838,7 @@
         "assets/models/source/underworld-resource-blackwater-pearl.blend": null,
         "assets/models/source/underworld-resource-deep-salt.blend": null,
         "assets/models/source/underworld-resource-pale-fibre.blend": null
-      },
-      "inputs_sha256": "4c2297f64573f2e949de897eb4f7f5cb5b5c3baea30ba3067c19bb1280356e1a"
+      }
     },
     {
       "id": "underworld-sky-emission",
