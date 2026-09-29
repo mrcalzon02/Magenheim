@@ -245,11 +245,11 @@ The Nowhere King requires a dedicated **boss stone** as part of his finished Val
 10. Implement Royal Stagger.
 11. Implement Phase Three leap/ground-pound combat, including King's Descent, Thronebreaker, Ruinous Pursuit and No Kingdom Remains.
 12. Implement low-health Phase Three aggression and multiplayer behavioral scaling without creating a fourth phase.
-12. Implement death transaction and unique reward guard.
-13. Implement `Magenheim_NullMantle` using the shared adaptive-resistance authority plus reversible `NullMantlePresentationRuntime` for Nowhere black fog, dark player rendering, glowing red eyes, and crown-driven succession appearance.
-14. Implement `Magenheim_TrophyNowhereKing`, trophy knowledge unlock, and cosmetic placed behavior.
-15. Implement `Magenheim_ScepterOfInversion` using the shared Gravity Inversion authority.
-16. Complete audio/VFX/crown/mantle polish only after mechanics are authoritative and multiplayer-safe.
+13. Implement death transaction and unique reward guard.
+14. Implement `Magenheim_NullMantle` using the shared adaptive-resistance authority plus reversible `NullMantlePresentationRuntime` for Nowhere black fog, dark player rendering, glowing red eyes, and crown-driven succession appearance.
+15. Implement `Magenheim_TrophyNowhereKing`, trophy knowledge unlock, and cosmetic placed behavior.
+16. Implement `Magenheim_ScepterOfInversion` using the shared Gravity Inversion authority.
+17. Complete audio/VFX/crown/mantle polish only after mechanics are authoritative and multiplayer-safe.
 
 ## Acceptance criteria
 
