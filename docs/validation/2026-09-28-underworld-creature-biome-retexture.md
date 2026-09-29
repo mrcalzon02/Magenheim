@@ -64,3 +64,36 @@ Seeker, Tick or StoneGolem are useful comparisons) and verify:
 
 The source path is complete; these six observations are still required before claiming live visual
 acceptance.
+
+
+## Natural spawning enabled
+
+The same 42 identities are no longer console-only. `UnderworldCreaturePrototypeRegistrar` now
+registers them through Jötunn `CreatureManager` with one native `SpawnConfig` per creature,
+restricted to the creature's canonical reserved Underworld biome flag.
+
+Spawn tuning is intentionally ecological rather than uniform:
+
+- small fauna use shorter intervals, larger local caps and small groups;
+- ordinary predators/skirmishers use medium intervals and one-to-two-creature groups;
+- aquatic Serpent/Leech derivatives are constrained to submerged/near-water altitude bands;
+- Blackwater Neck derivatives are constrained to the shoreline band;
+- hero/heavy forms use long intervals, low chances and a local cap of one.
+
+Surface WorldGenerator never returns the reserved 1024-32768 Underworld biome flags, so these rows
+do not match Surface terrain. The existing instance-scoped SpawnSystem bridge remains responsible
+for evaluating spawning against the active Underworld WorldGenerator/ZoneSystem context.
+
+## Static source verification
+
+Remote read-back after implementation reports:
+
+- 42 roster creature entries;
+- six explicit canonical biome mappings;
+- `CreatureManager.Instance.AddCreature` registration with a natural spawn config;
+- creature-specific signature masks layered over chassis-aware surface families;
+- explicit high-contrast material identities for the shared Wolf and StoneGolem chassis families.
+
+This is source verification, not live gameplay acceptance. The live matrix in `TESTING.md` still
+must be completed in the installed game before claiming that all 42 natural spawns and material
+reads are visually accepted.
