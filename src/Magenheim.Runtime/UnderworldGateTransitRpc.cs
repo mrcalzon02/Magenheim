@@ -46,7 +46,14 @@ internal static class UnderworldGateTransitRpc
         }
 
         if (net.IsServer())
+        {
+            if (!UnderworldGateEndpoint.IsMatchingGateWithinRange(player, role))
+            {
+                diagnostic = "No matching Deep Gate is within interaction range.";
+                return false;
+            }
             return UnderworldGateTransitRuntime.TryTransit(role, player, out diagnostic);
+        }
 
         var serverPeer = net.GetServerPeer();
         if (serverPeer?.m_rpc is null || !serverPeer.IsReady())
@@ -109,6 +116,18 @@ internal static class UnderworldGateTransitRpc
         }
 
         var role = (UnderworldGateRole)roleValue;
+        if (!UnderworldGateEndpoint.IsMatchingGateWithinRange(player, role))
+        {
+            SendResponse(
+                rpc,
+                false,
+                "No matching Deep Gate is within interaction range.",
+                UnderworldWorldInstanceId.Surface,
+                player.transform.position,
+                player.transform.rotation);
+            return;
+        }
+
         var applied = UnderworldGateTransitRuntime.TryTransit(role, player, out diagnostic);
         var instanceId = UnderworldWorldInstanceId.Surface;
         if (_services is not null)
