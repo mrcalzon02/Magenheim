@@ -347,6 +347,20 @@ if workflow_path.is_file():
     require("actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065" in workflow,"setup-python action is not commit-pinned")
     require("actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9" in workflow,"setup-dotnet action is not commit-pinned")
     require("actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02" in workflow,"upload-artifact action is not commit-pinned")
+    for wrapper_name in (
+        "rebuild-rootwarren-dungeon.ps1","rebuild-drowned-vaults-dungeon.ps1",
+        "rebuild-cinderworks-dungeon.ps1","rebuild-rime-sepulcher-dungeon.ps1",
+        "rebuild-carrion-catacombs-dungeon.ps1",
+    ):
+        require(wrapper_name in workflow,"workflow cheap parser no longer covers "+wrapper_name)
+    for contract_name in (
+        "verify-rootwarren-production-contract.py","verify-drowned-vaults-production-contract.py",
+        "verify-cinderworks-production-contract.py","verify-rime-sepulcher-production-contract.py",
+        "verify-carrion-catacombs-production-contract.py",
+    ):
+        require(contract_name in workflow,"workflow post-forge admission no longer covers "+contract_name)
+    require("Post-forge dungeon admission gates" in workflow,
+            "workflow post-forge step must represent all five promoted dungeon families")
 
 patterns={}
 for gid in scope["regenerate"]:

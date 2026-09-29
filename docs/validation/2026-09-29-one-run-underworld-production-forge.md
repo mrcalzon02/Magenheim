@@ -115,3 +115,18 @@ twenty-sixth material family rather than an ice/stone alias. The production orde
 shared PBR library -> Fungal/Blackwater resource regeneration -> new material-item models -> all
 forty material icons. Post-forge admission requires albedo, normal and metallic/smoothness runtime
 maps for every one of the twenty-two raw and eighteen refined material models.
+
+
+## Five dungeon families: forge and review parity
+
+The one-run forge now treats all five authored biome dungeon families as equal production citizens:
+Fungal Rootwarren, Blackwater Drowned Vaults, Sulfur Cinderworks, Frozen Rime Sepulcher and Great
+Decay Carrion Catacombs. Each family is rebuilt, contract-verified, provenance-recorded, promoted
+only after a complete 17/17/17 source/GLB/runtime family exists, and then contract-verified again.
+
+Each family also owns dedicated visual acceptance plates. Rime Sepulcher and Carrion Catacombs now
+match the earlier dungeon pattern: seventeen models, context plus top-down views (34 renders), three
+contact sheets and minimum-file-size completeness gates. The Actions cheap parser covers all five
+dungeon rebuild wrappers, and the post-forge step re-runs all five production contracts before the
+final Core tests and Valheim runtime compilation. A future dungeon added to the production script
+without matching workflow coverage now fails the cheap readiness gate.
