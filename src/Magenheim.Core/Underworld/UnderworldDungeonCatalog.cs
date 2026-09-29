@@ -135,10 +135,9 @@ public static class UnderworldDungeonCatalog
             throw new InvalidOperationException("Underworld dungeon prefab identities must be unique.");
         if (All.Select(value => value.Biome).Distinct().Count() != 6)
             throw new InvalidOperationException("Underworld dungeon catalog must cover all six canonical biomes exactly once.");
-        if (All.Count(value => value.Status == UnderworldDungeonStatus.RuntimeReady) != 1 ||
-            DeepFracture.Status != UnderworldDungeonStatus.RuntimeReady)
+        if (DeepFracture.Status != UnderworldDungeonStatus.RuntimeReady)
             throw new InvalidOperationException(
-                "Deep Fracture must remain the sole runtime-ready dungeon until another real interior binder is admitted.");
+                "Deep Fracture must remain runtime-ready; ordinary biome dungeons may advance independently once their own asset/interior gates are satisfied.");
     }
 
     private static UnderworldDungeonDefinition Planned(
