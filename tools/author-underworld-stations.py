@@ -17,7 +17,15 @@ from mathutils import Vector
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "assets" / "models" / "source"
-DETAIL_FLOOR = 30
+DETAIL_FLOORS = {
+    "mycelial": 52,
+    "tidal": 54,
+    "furnace": 58,
+    "silence": 52,
+    "anchor": 58,
+    "crown": 56,
+}
+DETAIL_REVISION = 2
 
 SPECS = {
     "underworld-station-mycelial-bench": "mycelial",
@@ -104,6 +112,139 @@ def tube(path, start, end, radius, mat, vertices=10):
     obj.rotation_mode = "QUATERNION"
     obj.rotation_quaternion = Vector((0, 0, 1)).rotation_difference(direction.normalized())
     return finish(obj, path, mat)
+
+
+def worked_rivet(path, location, mat, radius=.045):
+    sphere(path, location, radius, mat, 10, 6)
+
+
+def clamp_band(path, center, half_width, half_depth, z, mat):
+    cube(path + "-front", (center, -half_depth, z), (half_width, .035, .035), mat, .015)
+    cube(path + "-back", (center, half_depth, z), (half_width, .035, .035), mat, .015)
+    cube(path + "-left", (center-half_width, 0, z), (.035, half_depth, .035), mat, .015)
+    cube(path + "-right", (center+half_width, 0, z), (.035, half_depth, .035), mat, .015)
+
+
+def hanging_chain(path, start, count, spacing, mat):
+    x, y, z = start
+    for i in range(count):
+        torus(f"{path}-{i}", (x, y, z-i*spacing), .055, .014, mat, (math.pi/2 if i%2 else 0, 0, 0))
+
+
+def drawer_handle(path, location, width, mat):
+    x,y,z=location
+    tube(path+"-left",(x-width*.5,y,z),(x-width*.5,y-.08,z),.018,mat,7)
+    tube(path+"-right",(x+width*.5,y,z),(x+width*.5,y-.08,z),.018,mat,7)
+    tube(path+"-grip",(x-width*.5,y-.08,z),(x+width*.5,y-.08,z),.018,mat,7)
+
+
+def add_station_finish(kind, m):
+    if kind == "mycelial":
+        # Carved understone sockets, pegged joinery, tool drawers and consumable spools.
+        for side in (-1,1):
+            for face in (-1,1):
+                cube(f"stone-socket-{side}-{face}",(side*1.15,face*.48,.34),(.26,.08,.10),m["stone"],.025)
+                worked_rivet(f"stone-pin-{side}-{face}",(side*1.15,face*.57,.34),m["metal"])
+        for x in (-.86,-.43,0,.43,.86):
+            cube(f"bench-drawer-{x}",(x,-.77,1.08),(.17,.09,.12),m["body"],.018)
+            drawer_handle(f"bench-drawer-handle-{x}",(x,-.87,1.08),.14,m["metal"])
+        for i,x in enumerate((-.78,-.26,.26,.78)):
+            cyl(f"fibre-spool-{i}",(x,.66,1.52),.10,.20,m["body"],12,(math.pi/2,0,0))
+            torus(f"spool-band-{i}",(x,.66,1.52),.105,.018,m["metal"],(math.pi/2,0,0))
+        clamp_band("worktop-collar",0,1.38,.90,1.22,m["metal"])
+
+    elif kind == "tidal":
+        # Drainage and measuring hardware make the basin read as a curing machine, not a fountain.
+        for i in range(10):
+            a=i*math.tau/10
+            tube(f"drain-channel-{i}",(math.cos(a)*.78,math.sin(a)*.78,.84),
+                 (math.cos(a)*1.28,math.sin(a)*1.28,.46),.025,m["metal"],7)
+        for i,a in enumerate((0,math.pi/2,math.pi,math.pi*1.5)):
+            x,y=math.cos(a)*1.42,math.sin(a)*1.42
+            torus(f"pearl-caliper-{i}",(x,y,1.64),.18,.025,m["metal"],(math.pi/2,a,0))
+            tube(f"caliper-pointer-{i}",(x,y,1.64),(x+math.cos(a)*.24,y+math.sin(a)*.24,1.64),.018,m["metal"],7)
+        for i in range(6):
+            cube(f"salt-drawer-{i}",(-1.05+i*.42,-1.18,.56),(.16,.08,.10),m["stone"],.015)
+            drawer_handle(f"salt-drawer-handle-{i}",(-1.05+i*.42,-1.27,.56),.12,m["metal"])
+        for i in range(8):
+            a=i*math.tau/8
+            worked_rivet(f"basin-rivet-{i}",(math.cos(a)*1.48,math.sin(a)*1.48,.62),m["metal"],.05)
+
+    elif kind == "furnace":
+        # Bellows, quench trough, tuyere pipework and service hardware explain how the forge works.
+        cube("quench-trough",(1.24,1.12,.58),(.45,.52,.28),m["stone"],.055)
+        cube("quench-lip",(1.24,1.12,.88),(.50,.57,.04),m["metal"],.018)
+        for side in (-1,1):
+            cube(f"bellows-body-{side}",(side*.78,1.02,1.26),(.42,.42,.22),m["body"],.045)
+            tube(f"bellows-nozzle-{side}",(side*.62,.78,1.16),(side*.34,.35,.94),.055,m["metal"],10)
+            tube(f"bellows-lever-{side}",(side*.90,1.26,1.32),(side*1.15,1.52,1.70),.035,m["metal"],8)
+        for i,x in enumerate((-.58,-.20,.20,.58)):
+            hanging_chain(f"tool-chain-{i}",(x,-1.19,1.58),4,.10,m["metal"])
+            tube(f"forge-tool-{i}",(x,-1.19,1.18),(x+(.12 if i%2 else -.12),-1.19,.72),.022,m["metal"],7)
+        for i,x in enumerate((-.80,0,.80)):
+            torus(f"pressure-gauge-{i}",(x,.92,1.72),.13,.025,m["metal"],(math.pi/2,0,0))
+            tube(f"gauge-needle-{i}",(x,.80,1.72),(x+.07,.80,1.78),.012,m["accent"],6)
+        for i in range(8):
+            worked_rivet(f"anvil-rivet-{i}",(-.70+i*.20,1.51,1.03),m["metal"],.04)
+
+    elif kind == "silence":
+        # Damped precision work: isolation feet, vice jaws, indexed micrometer and tuning forks.
+        for side in (-1,1):
+            for depth in (-1,1):
+                cyl(f"damping-foot-{side}-{depth}",(side*1.18,depth*.52,.10),.14,.10,m["body"],14)
+                torus(f"damping-collar-{side}-{depth}",(side*1.18,depth*.52,.17),.15,.025,m["metal"])
+        cube("ice-vice-left",(-.34,-.40,1.42),(.18,.18,.12),m["metal"],.025)
+        cube("ice-vice-right",(.34,-.40,1.42),(.18,.18,.12),m["metal"],.025)
+        tube("vice-screw",(-.18,-.40,1.42),(.18,-.40,1.42),.035,m["metal"],10)
+        torus("micrometer-dial",(0,.48,1.62),.19,.028,m["metal"],(math.pi/2,0,0))
+        for i in range(12):
+            a=i*math.tau/12
+            tube(f"dial-index-{i}",(math.cos(a)*.17,.47,1.62+math.sin(a)*.17),
+                 (math.cos(a)*.22,.47,1.62+math.sin(a)*.22),.010,m["accent"],6)
+        for i,x in enumerate((-.78,-.39,0,.39,.78)):
+            tube(f"tuning-fork-left-{i}",(x,.74,1.42),(x-.04,.74,1.82),.017,m["metal"],7)
+            tube(f"tuning-fork-right-{i}",(x+.08,.74,1.42),(x+.12,.74,1.82),.017,m["metal"],7)
+            tube(f"tuning-fork-bridge-{i}",(x-.04,.74,1.82),(x+.12,.74,1.82),.017,m["metal"],7)
+        for i,x in enumerate((-.92,-.46,0,.46,.92)):
+            drawer_handle(f"tool-drawer-handle-{i}",(x,-.87,.88),.14,m["metal"])
+
+    elif kind == "anchor":
+        # Mechanical load path: bearing plates, chain hoist, brace locks, force gauges and pawls.
+        for side in (-1,1):
+            cube(f"gantry-bearing-{side}",(side*1.35,.62,2.72),(.18,.18,.14),m["metal"],.03)
+            for r in range(4):
+                worked_rivet(f"gantry-bearing-rivet-{side}-{r}",
+                             (side*1.35+(-.10 if r<2 else .10),.49+(r%2)*.26,2.72),m["metal"],.035)
+        hanging_chain("hammer-hoist",(0,.62,2.58),7,.11,m["metal"])
+        torus("hoist-wheel",(0,.62,2.82),.24,.04,m["metal"],(math.pi/2,0,0))
+        for side in (-1,1):
+            for depth in (-1,1):
+                cube(f"brace-lock-{side}-{depth}",(side*1.22,depth*.72,1.18),(.18,.18,.14),m["metal"],.03)
+                torus(f"brace-lock-ring-{side}-{depth}",(side*1.22,depth*.84,1.18),.11,.025,m["accent"],(math.pi/2,0,0))
+        for i,x in enumerate((-.75,-.25,.25,.75)):
+            torus(f"force-gauge-{i}",(x,-.88,1.96),.12,.024,m["metal"],(math.pi/2,0,0))
+            tube(f"force-needle-{i}",(x,-.90,1.96),(x+.06,-.90,2.01),.012,m["accent"],6)
+        for i in range(6):
+            cube(f"anvil-tooth-{i}",(-.75+i*.30,0,1.84),(.10,.20,.05),m["metal"],.015)
+
+    elif kind == "crown":
+        # Reliquary hardware: sealed drawers, ritual clamps, hanging seals and carved crown ribs.
+        for i,x in enumerate((-1.15,-.69,-.23,.23,.69,1.15)):
+            drawer_handle(f"reliquary-handle-{i}",(x,-1.05,.78),.13,m["metal"])
+        for i,a in enumerate((0,math.pi/2,math.pi,math.pi*1.5)):
+            x,y=math.cos(a)*.58,math.sin(a)*.58
+            cube(f"amber-clamp-{i}",(x,y,1.86),(.14,.10,.10),m["metal"],.025,(0,0,a))
+            hanging_chain(f"amber-seal-chain-{i}",(x,y,1.54),3,.09,m["metal"])
+            sphere(f"amber-seal-{i}",(x,y,1.22),.07,m["accent"],10,7)
+        for i in range(9):
+            a=i*math.tau/9
+            tube(f"crown-rib-{i}",(math.cos(a)*.52,0,2.92+math.sin(a)*.52),
+                 (math.cos(a)*.74,0,2.92+math.sin(a)*.74),.022,m["body"],7)
+            worked_rivet(f"crown-rivet-{i}",(math.cos(a)*.72,-.04,2.92+math.sin(a)*.72),m["metal"],.035)
+        for side in (-1,1):
+            cube(f"ritual-tool-rack-{side}",(side*1.30,.62,1.36),(.08,.42,.38),m["body"],.025)
+            for j in range(3):
+                tube(f"ritual-tool-{side}-{j}",(side*1.30,.40+j*.16,1.62),(side*1.30,.40+j*.16,1.08),.018,m["metal"],7)
 
 
 def palette(kind):
@@ -301,10 +442,12 @@ def author(model_id):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     mats = palette(kind)
     BUILDERS[kind](mats)
+    add_station_finish(kind, mats)
 
     meshes = [obj for obj in bpy.context.scene.objects if obj.type == "MESH"]
-    if len(meshes) < DETAIL_FLOOR:
-        raise RuntimeError(f"{model_id}: station detail regression: {len(meshes)} parts < {DETAIL_FLOOR}")
+    floor = DETAIL_FLOORS[kind]
+    if len(meshes) < floor:
+        raise RuntimeError(f"{model_id}: station detail regression: {len(meshes)} parts < {floor}")
     for obj in meshes:
         uv = obj.data.uv_layers.get("StationUV")
         if uv is None or not uv.data:
@@ -314,8 +457,10 @@ def author(model_id):
     scene["model_id"] = model_id
     scene["magenheim_family"] = "underworld_biome_station"
     scene["magenheim_biome_station_kind"] = kind
-    scene["magenheim_fidelity"] = "endgame-station-r1"
+    scene["magenheim_fidelity"] = "endgame-station-r2"
+    scene["magenheim_detail_revision"] = DETAIL_REVISION
     scene["magenheim_detail_parts"] = len(meshes)
+    scene["magenheim_craft_language"] = "functional-joinery+service-hardware+biome-tooling"
     scene["runtime_lights"] = "[]"
     bpy.context.preferences.filepaths.save_version = 0
     target = SOURCE / (model_id + ".blend")
