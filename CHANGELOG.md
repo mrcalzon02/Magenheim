@@ -14,6 +14,9 @@
   ZoneSystem catalog partitioning.
 - Adds docs/UNDERWORLD_DUNGEON_PROGRAM.md with the production sequence for Rootwarren, Drowned
   Vaults, Cinderworks, Rime Sepulcher and Carrion Catacombs.
+- Adds a sixteen-room Fungal Rootwarren production manifest with stable model identities,
+  gameplay roles and large target dimensions, consumed by the generic topology planner but not yet
+  runtime-admitted.
 - Source candidate only; build and live Underworld placement/return acceptance remain required.
 
 ## 0.0.154 - Bespoke Underworld weather closure
