@@ -28,6 +28,10 @@ if($LASTEXITCODE -ne 0){throw 'Rootwarren source/asset contract failed after for
 if($LASTEXITCODE -ne 0){throw 'Rootwarren generated-asset provenance recording failed.'}
 & python "$PSScriptRoot/verify-generated-freshness.py" rootwarren-dungeon-models
 if($LASTEXITCODE -ne 0){throw 'Rootwarren generated assets are stale immediately after forge.'}
+& python "$PSScriptRoot/promote-rootwarren-runtime.py"
+if($LASTEXITCODE -ne 0){throw 'Rootwarren runtime promotion failed after complete asset forge.'}
+& python "$PSScriptRoot/verify-rootwarren-production-contract.py"
+if($LASTEXITCODE -ne 0){throw 'Rootwarren RuntimeReady contract failed after promotion.'}
 
 foreach($gate in @(
  'verify-model-assets','verify-model-geometry','verify-model-surface-continuity','verify-model-scale',
