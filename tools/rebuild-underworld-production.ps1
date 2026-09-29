@@ -17,6 +17,18 @@ foreach($id in $scope.regenerate){
     }
 }
 
+# Rootwarren is a large dungeon family rather than an ordinary equipment/material generator.
+# Forge it explicitly after the normal production authorities so its 17 authored Blender sources,
+# GLBs and runtime payloads exist before the shared model gates inspect the repository.
+& "$PSScriptRoot/rebuild-rootwarren-dungeon.ps1"
+if($LASTEXITCODE -ne 0){throw 'Rootwarren dungeon production forge failed.'}
+& python "$PSScriptRoot/verify-rootwarren-production-contract.py"
+if($LASTEXITCODE -ne 0){throw 'Rootwarren source/asset contract failed after forge.'}
+& python "$PSScriptRoot/record-rootwarren-generated-assets.py"
+if($LASTEXITCODE -ne 0){throw 'Rootwarren generated-asset provenance recording failed.'}
+& python "$PSScriptRoot/verify-generated-freshness.py" rootwarren-dungeon-models
+if($LASTEXITCODE -ne 0){throw 'Rootwarren generated assets are stale immediately after forge.'}
+
 foreach($gate in @(
  'verify-model-assets','verify-model-geometry','verify-model-surface-continuity','verify-model-scale',
  'verify-weapon-materials','verify-held-model-orientation','verify-held-model-grip-direction',
@@ -50,4 +62,4 @@ if(!$SkipReview){
     & python "$PSScriptRoot/verify-underworld-production-review.py"
     if($LASTEXITCODE -ne 0){throw 'Production review completeness gate failed.'}
 }
-Write-Host 'PRODUCTION READY: 25 PBR families, 40 raw/refined material items, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools and armour regenerated and gated.'
+Write-Host 'PRODUCTION READY: 25 PBR families, 40 raw/refined material items, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools, armour, and the 17-model Rootwarren dungeon family regenerated and gated.'
