@@ -44,7 +44,8 @@ internal static class UnderworldWeatherMitigationRuntime
         // grant global resistance merely for existing in inventory.
         var suppression = 0d;
         var current = player.GetCurrentWeapon();
-        if (current?.m_dropPrefab is not null &&
+        if (biome == UnderworldTerrainBiome.GreatDecay &&
+            current?.m_dropPrefab is not null &&
             string.Equals(current.m_dropPrefab.name, DefiantCenserPrefab, StringComparison.Ordinal))
             suppression = DefiantCenserSuppression;
 
