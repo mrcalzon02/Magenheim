@@ -120,9 +120,9 @@ internal sealed class UnderworldMycelialBenchRegistrar : IDisposable
 
         var colliderObject = new GameObject("Magenheim_Underworld_Station_Collider");
         colliderObject.transform.SetParent(prefab.transform, false);
-        var collider = colliderObject.AddComponent<BoxCollider>();
-        collider.center = new Vector3(0f, dimensions.HeightMeters * 0.5f, 0f);
-        collider.size = new Vector3(dimensions.WidthMeters, dimensions.HeightMeters, dimensions.DepthMeters);
+        var boxCollider = colliderObject.AddComponent<BoxCollider>();
+        boxCollider.center = new Vector3(0f, dimensions.HeightMeters * 0.5f, 0f);
+        boxCollider.size = new Vector3(dimensions.WidthMeters, dimensions.HeightMeters, dimensions.DepthMeters);
     }
 
     private static void ApplyBiomeFallbackAccent(GameObject prefab, UnderworldTerrainBiome biome)
