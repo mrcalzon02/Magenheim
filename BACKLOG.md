@@ -516,3 +516,33 @@ Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the cur
   Source completion is not visual/runtime acceptance. Verify host/client event agreement, damage,
   VFX readability, mitigation, Censer radius, Crystal Resonance restoration, Surface weather
   restoration, save/reload and balance in a fresh current build.
+
+
+## Underworld deep-structure program — active 2026-09-29
+
+- [x] **Admit Deep Fracture into the Underworld — SOURCE COMPLETE 0.0.155.**
+  Six sparse Fracture Zones entrances reuse the established exact-plan 20-district expedition,
+  encounter authority, passage/traversal system and deterministic return path. The location uses
+  the reserved Fracture Zones biome bit, is partitioned out of Surface generation, and is required
+  by Underworld startup catalog validation.
+- [x] **Establish generic biome-dungeon production authority — SOURCE COMPLETE 0.0.155.**
+  One dungeon program exists per canonical biome. Ordinary biome dungeons require 15-20 large
+  authored room families reused 2-3 times per run; deterministic topology is branching with bounded
+  loops/cross-links. Deep Fracture remains a bespoke exception and cannot be routed through the
+  generic planner.
+- [ ] **Live-accept Underworld Deep Fracture placement and return.**
+  Verify fresh-world Fracture Zones placement, no Surface leakage of the Underworld-only location,
+  full interior build, encounters, host/client agreement, save/reload, return to the owning
+  Fracture Zones entrance, and no collision with ordinary Fracture structures or boss locations.
+- [ ] **Author Fungal Rootwarren dungeon kit.**
+  Build 15-20 large authored room families, entrance/interior binder, fungal encounter/resource
+  population and native Fungal Forest location admission. No placeholder/dead entrances.
+- [ ] **Author Blackwater Drowned Vaults dungeon kit.**
+  Build the flooded/dry route kit with water as structural gameplay and Deep Current progression
+  relevance.
+- [ ] **Author Sulfur Cinderworks and Frozen Rime Sepulcher dungeon kits.**
+  Bind geothermal/heat and cold/whiteout progression to actual route choices rather than generic
+  damage-floor rooms.
+- [ ] **Author Great Decay Carrion Catacombs dungeon kit.**
+  Build contamination-driven routes with Defiant Flesh/armour/Censer relevance and progressively
+  consumed ancient architecture.
