@@ -53,7 +53,7 @@ internal sealed class FireStaffRegistrar : IDisposable
                 emission: 1.55f);
             var scorchPatch = StaffEffectPayloads.CreateField(
                 "Magenheim_Fire_ScorchPatch",
-                new HitData.DamageTypes { m_fire = 3f },
+                new HitData.DamageTypes { m_fire = 4.5f },
                 radius: 2.4f,
                 ttl: 3f,
                 hitInterval: 1f,
@@ -62,7 +62,7 @@ internal sealed class FireStaffRegistrar : IDisposable
                 emission: 1.70f);
             var meteorBurn = StaffEffectPayloads.CreateField(
                 "Magenheim_Fire_MeteorBurn",
-                new HitData.DamageTypes { m_fire = 4f },
+                new HitData.DamageTypes { m_fire = 6f },
                 radius: 3.0f,
                 ttl: 4.5f,
                 hitInterval: .75f,
@@ -177,12 +177,12 @@ internal sealed class FireStaffRegistrar : IDisposable
         new FireStaffDefinition(
             "Magenheim_Staff_Fire_Advanced", "staff-fire-advanced", "Advanced Staff of Fire",
             "Flameburst: throws three unstable bolts across a fan. Every impact leaves three seconds of burning ground, so the spell pressures movement rather than ending at the initial hit.",
-            3, 32f, 14f, .78f, 31f, 7f, 3, 1, 0f, PayloadKind.Flameburst,
+            3, 32f, 21f, .78f, 31f, 7f, 3, 1, 0f, PayloadKind.Flameburst,
             new StaffRequirement("FineWood", 12), new StaffRequirement("Silver", 3), new StaffRequirement("BlackMetal", 2), new StaffRequirement("Magenheim_Crystal_Fire_Advanced", 1)),
         new FireStaffDefinition(
             "Magenheim_Staff_Fire_Master", "staff-fire-master", "Master Staff of Fire",
             "Meteorfall: releases three waves of three meteoric bolts. Every impact leaves a wide four-and-a-half-second burn zone, turning the barrage into persistent incendiary terrain instead of nine disconnected fireballs.",
-            4, 48f, 9f, .70f, 34f, 9f, 3, 3, .18f, PayloadKind.Meteor,
+            4, 48f, 13.5f, .70f, 34f, 9f, 3, 3, .18f, PayloadKind.Meteor,
             new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("BlackMetal", 4), new StaffRequirement("Magenheim_Crystal_Fire_Master", 1)),
     };
 
