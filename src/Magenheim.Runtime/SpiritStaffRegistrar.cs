@@ -75,7 +75,7 @@ internal sealed class SpiritStaffRegistrar : IDisposable
                 haunted);
             var chorusEcho = StaffEffectPayloads.CreateField(
                 "Magenheim_Spirit_ChorusEcho",
-                new HitData.DamageTypes { m_spirit = 2f },
+                new HitData.DamageTypes { m_spirit = 3f },
                 1.8f,
                 1.4f,
                 .40f,
@@ -85,7 +85,7 @@ internal sealed class SpiritStaffRegistrar : IDisposable
                 dissonance);
             var reliquaryEcho = StaffEffectPayloads.CreateField(
                 "Magenheim_Spirit_ReliquaryEcho",
-                new HitData.DamageTypes { m_spirit = 3.5f },
+                new HitData.DamageTypes { m_spirit = 5.25f },
                 2.8f,
                 2.2f,
                 .45f,
@@ -228,12 +228,12 @@ internal sealed class SpiritStaffRegistrar : IDisposable
         new Definition(
             "Magenheim_Staff_Spirit_Advanced", "staff-spirit-advanced", "Advanced Staff of Spirit",
             "Soul Chorus: four spectral voices answer the cast twice. Their overlapping echo fields inflict Spirit Dissonance, cutting outgoing attack damage by twenty percent while the chorus continues to haunt a clustered group.",
-            3, 28f, 14f, .45f, .28f, .42f, 42f, 7.5f, 4, 2, .17f, PayloadKind.Chorus,
+            3, 28f, 21f, .45f, .28f, .42f, 42f, 7.5f, 4, 2, .17f, PayloadKind.Chorus,
             new Requirement("YggdrasilWood", 10), new Requirement("BlackCore", 2), new Requirement("Magenheim_Crystal_Spirit_Advanced", 1)),
         new Definition(
             "Magenheim_Staff_Spirit_Master", "staff-spirit-master", "Master Staff of Spirit",
             "Reliquary of Echoes: releases four spectral lines through three successive responses. Each impact opens a larger echo field that inflicts Soul Suppression, reducing outgoing attack damage by thirty percent for five seconds after exposure.",
-            4, 52f, 16f, .40f, .32f, .50f, 44f, 10f, 4, 3, .13f, PayloadKind.Reliquary,
+            4, 52f, 24f, .40f, .32f, .50f, 44f, 10f, 4, 3, .13f, PayloadKind.Reliquary,
             new Requirement("YggdrasilWood", 15), new Requirement("BlackCore", 4), new Requirement("Magenheim_Crystal_Spirit_Master", 1)),
     };
 
