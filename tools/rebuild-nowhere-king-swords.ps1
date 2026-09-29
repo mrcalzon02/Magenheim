@@ -10,6 +10,9 @@ if ($LASTEXITCODE -ne 0) { throw 'Nowhere King sword source verification failed.
 & "$PSScriptRoot/blender.ps1" export-model-assets @ids
 if ($LASTEXITCODE -ne 0) { throw 'Nowhere King sword export failed.' }
 
+python "$PSScriptRoot/refresh-nowhere-king-catalog.py"
+if ($LASTEXITCODE -ne 0) { throw 'Nowhere King sword catalog refresh failed.' }
+
 & "$PSScriptRoot/blender.ps1" render-weapon-icons @ids
 if ($LASTEXITCODE -ne 0) { throw 'Nowhere King sword icon rendering failed.' }
 
