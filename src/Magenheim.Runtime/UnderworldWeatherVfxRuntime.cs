@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BepInEx.Logging;
 using Magenheim.Core.Underworld;
 using UnityEngine;
@@ -20,6 +21,10 @@ internal sealed class UnderworldWeatherVfxRuntime : MonoBehaviour
     private UnderworldAtmosphereEvent _event = UnderworldAtmosphereEvent.None;
     private UnderworldTerrainBiome _biome;
     private float _intensity;
+    private float _suppression;
+    private float _nextResonanceScanAt;
+    private Player? _player;
+    private readonly Dictionary<Renderer, MaterialPropertyBlock> _resonanceOriginals = new();
     private bool _active;
 
     internal void Configure(ManualLogSource log) =>
@@ -29,7 +34,8 @@ internal sealed class UnderworldWeatherVfxRuntime : MonoBehaviour
         Player player,
         UnderworldTerrainBiome biome,
         UnderworldAtmosphereEvent atmosphereEvent,
-        double intensity01)
+        double intensity01,
+        double suppression01)
     {
         if (player is null)
         {
@@ -38,6 +44,7 @@ internal sealed class UnderworldWeatherVfxRuntime : MonoBehaviour
         }
 
         var intensity = Mathf.Clamp01((float)intensity01);
+        var suppression = Mathf.Clamp01((float)suppression01);
         if (atmosphereEvent == UnderworldAtmosphereEvent.None || intensity <= .001f)
         {
             Clear();
@@ -55,10 +62,13 @@ internal sealed class UnderworldWeatherVfxRuntime : MonoBehaviour
             _log?.LogDebug($"Underworld bespoke weather VFX -> {biome} / {atmosphereEvent}.");
         }
 
+        _player = player;
         _intensity = intensity;
+        _suppression = suppression;
         _root.SetActive(true);
-        SetEmission(_primary, PrimaryRate(atmosphereEvent) * intensity);
-        SetEmission(_secondary, SecondaryRate(atmosphereEvent) * intensity);
+        var particleScale = 1f - suppression * .65f;
+        SetEmission(_primary, PrimaryRate(atmosphereEvent) * intensity * particleScale);
+        SetEmission(_secondary, SecondaryRate(atmosphereEvent) * intensity * particleScale);
 
         if (!_primary.isPlaying) _primary.Play();
         if (!_secondary.isPlaying) _secondary.Play();
@@ -76,10 +86,12 @@ internal sealed class UnderworldWeatherVfxRuntime : MonoBehaviour
                 _resonanceLight.enabled = true;
                 _resonanceLight.intensity = Mathf.Lerp(.25f, 2.4f, wave) * _intensity;
                 _resonanceLight.range = Mathf.Lerp(8f, 22f, wave);
+                RefreshCrystalResonance(wave);
             }
             else
             {
                 _resonanceLight.enabled = false;
+                RestoreCrystalResonance();
             }
         }
     }
@@ -91,9 +103,12 @@ internal sealed class UnderworldWeatherVfxRuntime : MonoBehaviour
         if (_secondary is not null && _secondary.isPlaying)
             _secondary.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         if (_resonanceLight is not null) _resonanceLight.enabled = false;
+        RestoreCrystalResonance();
         if (_root is not null) _root.SetActive(false);
         _event = UnderworldAtmosphereEvent.None;
         _intensity = 0f;
+        _suppression = 0f;
+        _player = null;
         _active = false;
     }
 
@@ -199,6 +214,79 @@ internal sealed class UnderworldWeatherVfxRuntime : MonoBehaviour
         var rotation = particles.rotationOverLifetime;
         rotation.enabled = profile.Rotation != 0f;
         rotation.z = profile.Rotation;
+    }
+
+    private void RefreshCrystalResonance(float wave)
+    {
+        var player = _player;
+        if (player is null) return;
+
+        if (Time.unscaledTime >= _nextResonanceScanAt)
+        {
+            _nextResonanceScanAt = Time.unscaledTime + 1f;
+            var scene = player.gameObject.scene.handle;
+            var origin = player.transform.position;
+            var captured = 0;
+            foreach (var renderer in Resources.FindObjectsOfTypeAll<Renderer>())
+            {
+                if (!renderer || !renderer.gameObject.activeInHierarchy ||
+                    renderer.gameObject.scene.handle != scene ||
+                    (renderer.transform.position - origin).sqrMagnitude > 55f * 55f ||
+                    !LooksCrystalline(renderer))
+                    continue;
+
+                if (!_resonanceOriginals.ContainsKey(renderer))
+                {
+                    var original = new MaterialPropertyBlock();
+                    renderer.GetPropertyBlock(original);
+                    _resonanceOriginals.Add(renderer, original);
+                }
+
+                captured++;
+                if (captured >= 40) break;
+            }
+        }
+
+        var color = Color.Lerp(
+            new Color(.10f, .28f, .42f),
+            new Color(.62f, .82f, 1f),
+            wave) * (_intensity * (1f - _suppression * .45f));
+        foreach (var pair in _resonanceOriginals)
+        {
+            var renderer = pair.Key;
+            if (!renderer) continue;
+            var block = new MaterialPropertyBlock();
+            renderer.GetPropertyBlock(block);
+            block.SetColor("_EmissionColor", color);
+            renderer.SetPropertyBlock(block);
+        }
+    }
+
+    private static bool LooksCrystalline(Renderer renderer)
+    {
+        var objectName = renderer.name ?? string.Empty;
+        if (ContainsCrystalToken(objectName)) return true;
+        foreach (var material in renderer.sharedMaterials)
+        {
+            if (!material) continue;
+            var materialName = material.name ?? string.Empty;
+            if (ContainsCrystalToken(materialName) && material.HasProperty("_EmissionColor"))
+                return true;
+        }
+        return false;
+    }
+
+    private static bool ContainsCrystalToken(string value) =>
+        value.IndexOf("crystal", StringComparison.OrdinalIgnoreCase) >= 0 ||
+        value.IndexOf("geode", StringComparison.OrdinalIgnoreCase) >= 0 ||
+        value.IndexOf("shard", StringComparison.OrdinalIgnoreCase) >= 0;
+
+    private void RestoreCrystalResonance()
+    {
+        foreach (var pair in _resonanceOriginals)
+            if (pair.Key) pair.Key.SetPropertyBlock(pair.Value);
+        _resonanceOriginals.Clear();
+        _nextResonanceScanAt = 0f;
     }
 
     private static void SetEmission(ParticleSystem particles, float rate)
