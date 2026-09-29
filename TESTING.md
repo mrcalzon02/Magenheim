@@ -112,6 +112,66 @@ the workstation. Crystal Shaping must appear at level 0 if untrained, with its
 custom icon. Reopen the panel and reload the character: no duplicate entry or free
 XP should appear. Previously earned Crystal Shaping level/XP must stay unchanged.
 
+## Deep Gate placement and round-trip acceptance
+
+Use a fresh disposable world after the 2026-09-29 gate-foundation change; the Underworld terrain
+authority fingerprint intentionally changed.
+
+### Surface placement
+
+1. Discover all six `Magenheim_DeepGateSite` locations over the test world. Each Aesir gate must
+   stand upright with its visible foot embedded only slightly into terrain. No corner of the
+   approximately 35.8 × 20.1m gate footprint may visibly float or disappear into a hillside.
+2. Verify the site itself is dry and at least 8m above sea level. The location must not snap to
+   water, lean with terrain, or retain trees/vegetation through the monument footprint.
+3. Inspect terrain beneath each site. Worldgen now admits only a 22m-radius placement area with at
+   most 0.75m total terrain delta. Reject any site that still reads as a gate draped over a slope.
+4. Reload and revisit every generated site. Position, Y rotation, collision and map pin must remain
+   stable; no duplicate gate should be generated at the same location.
+
+### Surface -> Underworld
+
+5. Before the Nowhere King unlock, interact with a real Surface gate and confirm transit is refused.
+   The developer `magenheim_underworld enter` command is the deliberate testing bypass and must not
+   be used as proof of progression gating.
+6. After the unlock, stand within normal interaction distance of the physical gate and use it.
+   The server must require a matching active `EnterUnderworld` endpoint in the same Unity scene
+   within 6m of the gate's collider/renderer envelope.
+7. Confirm the player transfers to Underworld instance 1 through native scene/ZDO routing and
+   `Player.TeleportTo`, rather than appearing at a distant Surface coordinate. Inventory, skills,
+   health/status state and equipment must survive the transfer.
+8. Arrival must be on the approach side of the Conclave return gate, approximately 3m beyond the
+   actual rendered gate footprint, with safe standing clearance and the player facing back toward
+   the arch rather than away from it.
+
+### Underworld foundation and return
+
+9. Walk the entire base of the Underworld return gate. The measured Aesir footprint is contained
+   inside a deterministic 22m flat terrain foundation centered at native (36, 0), with a smooth
+   transition back into ordinary Fungal terrain from 22m to 34m. No gate corner may float or bury.
+10. Use the Underworld `ReturnToSurface` gate. It must restore the exact persisted Surface entry
+    anchor plus a small vertical clearance, restore the saved facing rotation, move world-instance
+    membership back to Surface and clear the return anchor only after success.
+11. Enter again, quit/reload while below, then return. The Surface anchor stored on the player's ZDO
+    must survive the process-local cache rebuild and still return the player to the originating
+    gate. If no anchor exists, only the developer command may use bed/home fallback; the real gate
+    must fail closed rather than invent a destination.
+
+### Multiplayer / authority
+
+12. With host and client in the same Surface world, send only one player through a Deep Gate.
+    Surface player must remain in Surface instance 0 while the traveler is in Underworld instance 1.
+    Repeat in the opposite direction and confirm no server-wide world swap occurs.
+13. From a modified/debug client, attempt the transit RPC while farther than 6m from any matching
+    physical gate and with the wrong gate role. The server must refuse both requests.
+14. Disconnect/reconnect a traveler in the Underworld, then exercise the return path. Confirm ZDO
+    ownership, scene residency, instance membership and return anchor agree on server and client.
+15. On any failed transfer, verify rollback restores the prior Unity scene, player-instance registry
+    and ZDO/peer routing; the player must not be left half-admitted between worlds.
+
+Do not mark the Deep Gate runtime acceptance closed from Core/source checks alone. A complete live
+Surface -> Underworld -> Surface round trip plus relog and two-peer cases is the closure evidence.
+
 ## Developer console — Underworld access and spawn IDs
 
 Launch with `-console`, press F5, and run `devcommands` first; every command below is gated by it.
