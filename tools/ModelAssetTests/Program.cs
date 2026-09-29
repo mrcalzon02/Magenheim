@@ -63,7 +63,10 @@ foreach(var file in Directory.GetFiles(Path.Combine(AppContext.BaseDirectory,"as
   foreach(var keyword in new[]{"_NORMALMAP","_METALLICGLOSSMAP","_EMISSION"})
    if(!material.Keywords.Contains(keyword))throw new Exception("Runtime PBR keyword missing: "+keyword);
   if(!material.Floats.TryGetValue("_BumpScale",out var bump) || MathF.Abs(bump-.42f)>.001f)throw new Exception("Runtime normal scale drift.");
-  Console.WriteLine("PASS: explicit runtime PBR maps survive donor cleanup with linear normal/metal maps and sRGB emission.");
+  if(!material.Floats.TryGetValue("_Metallic",out var metallicScale) || MathF.Abs(metallicScale-1f)>.001f)throw new Exception("Packed metallic map is being multiplied by a non-neutral scalar.");
+  if(!material.Floats.TryGetValue("_GlossMapScale",out var glossScale) || MathF.Abs(glossScale-1f)>.001f)throw new Exception("Packed smoothness alpha is being multiplied by donor gloss scale.");
+  if(!material.Floats.TryGetValue("_SmoothnessTextureChannel",out var smoothChannel) || MathF.Abs(smoothChannel)>.001f)throw new Exception("Smoothness must come from metallic-map alpha.");
+  Console.WriteLine("PASS: explicit runtime PBR maps survive donor cleanup with linear normal/metal maps, authoritative metallic/smoothness scaling, and sRGB emission.");
  }
  finally { if(File.Exists(pbrPath))File.Delete(pbrPath); }
 }

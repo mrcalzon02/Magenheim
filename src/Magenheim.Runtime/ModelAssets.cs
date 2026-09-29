@@ -411,6 +411,12 @@ internal static class ModelAssets
         if (!string.IsNullOrEmpty(metallicGlossName) && material.HasProperty("_MetallicGlossMap"))
         {
             material.SetTexture("_MetallicGlossMap", LoadModelTexture(metallicGlossName!, linear: true));
+            // The packed map already contains absolute metallic in R and smoothness in A.
+            // Unity Standard multiplies those channels by material scalars, so donor/authored scalar
+            // state must be neutral here or metallic/smoothness is attenuated a second time.
+            if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", 1f);
+            if (material.HasProperty("_GlossMapScale")) material.SetFloat("_GlossMapScale", 1f);
+            if (material.HasProperty("_SmoothnessTextureChannel")) material.SetFloat("_SmoothnessTextureChannel", 0f);
             material.EnableKeyword("_METALLICGLOSSMAP");
         }
 
