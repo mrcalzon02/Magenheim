@@ -21,6 +21,7 @@ internal static class Program
         _assertions += UnderworldWeatherTests.Run();
         _assertions += UnderworldWeatherGameplayTests.Run();
         _assertions += UnderworldDungeonCatalogTests.Run();
+        _assertions += UnderworldVanillaDungeonReuseCatalogTests.Run();
         _assertions += UnderworldBiomeDungeonPlannerTests.Run();
         _assertions += UnderworldFungalRootwarrenCatalogTests.Run();
         _assertions += UnderworldBlackwaterDrownedVaultsCatalogTests.Run();
