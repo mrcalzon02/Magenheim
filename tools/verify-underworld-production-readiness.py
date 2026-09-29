@@ -404,8 +404,10 @@ if workflow_path.is_file():
     expected_wrappers={"blender.ps1","rebuild-underworld-production.ps1"}
     for gid in scope["regenerate"]:
         for token in entries[gid].get("command",[]):
-            if isinstance(token,str) and token.lower().endswith(".ps1"):
-                expected_wrappers.add(Path(token).name)
+            if not isinstance(token,str):
+                continue
+            for wrapper_name in re.findall(r'([A-Za-z0-9._-]+\.ps1)',token,re.IGNORECASE):
+                expected_wrappers.add(wrapper_name)
     expected_wrappers.update(re.findall(r'\$PSScriptRoot/([^"\']+\.ps1)',production_rebuild))
     for wrapper_name in sorted(expected_wrappers):
         require(("tools/"+wrapper_name) in parser_block,
