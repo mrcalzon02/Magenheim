@@ -54,3 +54,17 @@ All source/generator/manifest dependencies are checked before Blender. The outpu
 review branch and review plates are retained as a short-lived artifact, so rejecting or accepting
 the visual result does not require regenerating it. A merge is a Git operation, not a second Blender
 run.
+
+
+## Wearable armour admission
+
+The production exporter now emits true runtime skin streams for all twenty-four Underworld armour
+pieces. Each source retains the canonical Valheim player bone order, individual mesh origins are not
+migrated after skin authoring, and every exported vertex carries one to four normalized influences.
+ModelAssets reconstructs those streams as SkinnedMeshRenderers under a cloned vanilla attach_skin
+donor, while Jotunn BoneReorder performs the final VisEquipment remap when equipped.
+
+The cheap pre-Blender ModelAssetTests include a synthetic attach_skin regression. The post-generation
+admission gate requires the full 53-bone contract and weight-stream/vertex-count equality. Final
+male/female animation, clipping, multiplayer and save/reload acceptance still require local Valheim
+runtime verification and are not inferred from Blender output.

@@ -21,11 +21,17 @@ use the same attach_skin discipline as armour rather than pretending a static me
 `tools/rebuild-underworld-tools.ps1` is the local production path: author -> export -> model gate ->
 icon render -> icon gate.
 
-Armour is intentionally not runtime-admitted in this slice. Valheim wearable chest/leg/cape assets
-must be correctly skinned to the character hierarchy. The next armour slice must establish one
-verified host attach_skin armature, male/female fit checks and bone-reorder acceptance before the
-twenty-four owned wearable meshes are bound. A recoloured vanilla armour donor is not accepted as
-completion.
+Armour now has a runtime skin path rather than stopping at Blender/GLB. The exporter preserves the
+common bind space and serializes normalized canonical player-bone weights for each exported vertex.
+ModelAssets rebuilds those streams as SkinnedMeshRenderers under a cloned vanilla donor's native
+attach_skin hierarchy, and plugin bootstrap enables Jotunn's BoneReorder equipment hook. The slot
+donors are HelmetCarapace, ArmorCarapaceChest, ArmorCarapaceLegs and CapeFeather; their equipped
+renderers are disabled while their native item/equipment/network semantics are retained.
 
-Local Blender export, runtime compile and in-game acceptance remain unclaimed from this remote
-source-authoring session.
+UnderworldArmourRegistrar registers all twenty-four armour identities, owned icons and recipes at
+their canonical Underworld stations. Production admission now requires the 53-bone contract and a
+normalized weight row matching every exported armour vertex.
+
+Male/female live fit, clipping through the full animation set, actual Valheim shader appearance,
+multiplayer equip propagation and save/reload acceptance remain runtime gates; source/serialization
+support is no longer the blocker.

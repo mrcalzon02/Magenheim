@@ -46,6 +46,7 @@ python_sources=(
  "tools/author-underworld-weapons.py","tools/author-crystal-weapons.py",
  "tools/render-underworld-production-review.py","tools/render-underworld-armour-articulation-review.py","tools/build-underworld-production-review-sheets.py",
  "tools/verify-underworld-production-review.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
+ "tools/export-model-assets.py",
 )
 for source in python_sources:
     try: py_compile.compile(str(ROOT/source),doraise=True)
