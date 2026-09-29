@@ -68,6 +68,7 @@ public static class UnderworldAuthorityComposer
             .Append("content=").Append(contentFingerprint).Append('\n')
             .Append("architecture=").Append(architectureFingerprint).Append('\n')
             .Append("rare-cell-elevation=").Append(UnderworldTerrainLifecycle.RareCellElevationAlgorithmId).Append('\n')
+            .Append("gate-foundation=").Append(UnderworldTerrainLifecycle.GateFoundationAlgorithmId).Append('\n')
             .Append("biome-layout=").Append(UnderworldTerrainLifecycle.BiomeLayoutAlgorithmId).Append('\n')
             .Append("edge-ocean=").Append(UnderworldTerrainLifecycle.EdgeOceanAlgorithmId).Append('\n')
             .Append("biome-relief=").Append(UnderworldBiomeTerrain.AlgorithmId).Append('\n')
