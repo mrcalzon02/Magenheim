@@ -1,3 +1,19 @@
+## 0.0.154 - Bespoke Underworld weather closure
+
+- Added Magenheim-owned procedural VFX for Sporefall, Deep Fog, Ashfall, Thermal Surge, Whiteout,
+  Stone Rain, Crystal Resonance and Black Bloom.
+- Added server-authoritative weather gameplay pressure: fire/frost/poison/blunt event effects,
+  intermittent Stone Rain impacts and Black Bloom creature-perception escalation.
+- Thermal Surge now multiplies the existing geothermal vent/lava exposure path instead of creating
+  a disconnected duplicate hazard.
+- Matching Deep Boons and Underworld armour now feed atmospheric resistance.
+- Registered the Defiant Censer as a real Crown Reliquary-crafted held item; active Censers create
+  a 16m Great Decay suppression radius for nearby players.
+- Crystal Resonance now pulses nearby crystal/geode/shard renderers and restores their prior
+  MaterialPropertyBlocks when the event ends.
+- Bespoke particle density now responds to local suppression as well as shared fog/exposure.
+- Source-side coupling is complete; live Valheim visual/runtime acceptance remains required.
+
 ## 0.0.153 - Biome-cell massifs and progression geography
 
 - Removes the independent 3,072m random spire/plateau terrain grid. Rare height extremes are now
