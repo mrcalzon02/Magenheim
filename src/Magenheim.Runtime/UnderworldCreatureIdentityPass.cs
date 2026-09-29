@@ -17,11 +17,12 @@ internal static class UnderworldCreatureIdentityPass
             ?? throw new InvalidOperationException($"{entry.Name} lost Character authority before identity tuning.");
 
         ApplyEnvironmentalPhysiology(character, entry);
+        var combat = UnderworldCreatureCombatBalance.Apply(prefab, entry);
         var aggression = ApplyTemperament(prefab, entry);
         var elemental = AttachElementalAttack(prefab, entry);
         var effects = AddPresentation(prefab, entry);
 
-        return $"aggression x{aggression:0.00}, {elemental}, {effects}";
+        return $"{combat}, aggression x{aggression:0.00}, {elemental}, {effects}";
     }
 
     internal static bool HuntsPlayer(UnderworldCreaturePrototypes.Entry entry)
@@ -136,15 +137,8 @@ internal static class UnderworldCreatureIdentityPass
                 ai.m_randomMoveInterval = Mathf.Clamp(ai.m_randomMoveInterval / Mathf.Lerp(1f, aggression, .55f), 1.2f, 12f);
         }
 
-        var character = prefab.GetComponent<Character>();
-        if (character && !IsMovementConstrainedDonor(entry.Donor))
-        {
-            var mobility = 1f + Mathf.Max(0f, aggression - 1f) * .18f;
-            character.m_runSpeed *= mobility;
-            character.m_acceleration *= 1f + Mathf.Max(0f, aggression - 1f) * .12f;
-            character.m_turnSpeed *= 1f + Mathf.Max(0f, aggression - 1f) * .08f;
-        }
-
+        // Perception may become more aggressive, but movement speed is owned by the combat profile.
+        // This prevents the old failure mode where harder-hitting creatures also became faster.
         return aggression;
     }
 
@@ -475,11 +469,21 @@ internal sealed class UnderworldCreatureElementalAttack : MonoBehaviour
 [HarmonyPatch(typeof(Character), nameof(Character.Damage))]
 internal static class UnderworldCreatureElementalAttackPatch
 {
-    private static void Prefix(Character __instance, HitData hit)
+    private static void Prefix(Character __instance, ref HitData hit)
     {
         if (__instance == null || hit == null) return;
         var attacker = hit.GetAttacker();
         if (!attacker || ReferenceEquals(attacker, __instance)) return;
-        attacker.GetComponent<UnderworldCreatureElementalAttack>()?.Augment(hit);
+
+        var scaling = attacker.GetComponent<MagenheimCreatureCombatScaling>();
+        var elemental = attacker.GetComponent<UnderworldCreatureElementalAttack>();
+        if (scaling == null && elemental == null) return;
+
+        // Some area attacks may reuse their source HitData across targets. Clone before Magenheim
+        // modifies it so damage scaling/riders are per victim and cannot compound target-to-target.
+        hit = hit.Clone();
+        scaling?.ScaleOutgoing(hit);
+        elemental?.Augment(hit);
+        scaling?.CapOutgoing(hit);
     }
 }
