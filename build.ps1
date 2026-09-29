@@ -80,6 +80,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Underworld instance architecture validation failed.' }
     & python "$PSScriptRoot/tools/verify-generated-freshness.py"
     if ($LASTEXITCODE -ne 0) { throw 'Generated assets are out of date with the generators that own them.' }
+    & python "$PSScriptRoot/tools/verify-rootwarren-production-contract.py"
+    if ($LASTEXITCODE -ne 0) { throw 'Rootwarren source/asset admission contract failed.' }
     # Compile both runtime and its Core dependency before the expensive Blender gates.
     # A terminal that ran the old in-process reflection gate may already own these files; diagnose
     # that immediately instead of waiting through MSBuild's ten futile copy retries.
