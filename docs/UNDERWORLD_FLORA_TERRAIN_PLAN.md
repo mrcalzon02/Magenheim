@@ -377,6 +377,14 @@ This is section 2's parity principle made concrete. Each biome is a full tier.
 
 ### 7.7 Cross-biome design notes
 
+**Weapon inheritance rule.** Every Underworld weapon family is a development of the existing
+Magenheim Crystal weapon/staff family, not a replacement ladder beside it. The matching Crystal
+weapon is consumed as a recipe component and its authored model is the visual chassis: biome
+materials plate, bind, grow around, freeze onto, brace or inlay that recognizable ancestor. A new
+Underworld weapon may change silhouette and function substantially, but it must preserve a legible
+lineage to what the player already built before entering the Underworld. This applies to all six
+tiers and is enforced by the Core upgrade catalog.
+
 - Every biome introduces **one metal or metal-analogue** (Emberiron, Rimesilver, Titanbone,
   Carrion Amber), so the smithing ladder has the same shape the overworld's does.
 - Every biome introduces **one station**, and each station gates the next biome's crafting.

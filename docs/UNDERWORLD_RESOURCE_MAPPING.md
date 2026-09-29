@@ -60,3 +60,14 @@ and Worldroot Bow consumes a Crystal Bow. Their runtime visuals inherit the exis
 and receive a Fungal/Worldroot material accent; authored derivative geometry remains a separate asset
 pass. Later biome weapon ancestry is catalogued but not runtime-admitted until the matching station
 and refining loop exists.
+
+
+### Fungal Forest refining rung — 2026-09-29
+
+The first parity tier no longer jumps directly from loose pickups to finished gear. The Mycelial
+Bench refines Worldroot Timber into Worldroot Planks, Spire Fibre into Spire Cord, and Glowcap Flesh
+into Cured Glowcap. Worldroot Club and Worldroot Bow now require those refined identities in
+addition to consuming their Crystal Mace / Crystal Bow chassis. Rootforged remains allowed to use
+raw Worldroot Timber and Understone as building stock; food remains allowed to consume raw Glowcap
+Flesh. This creates separate raw-building, raw-food and refined-equipment sinks instead of making
+every material perform the same job.

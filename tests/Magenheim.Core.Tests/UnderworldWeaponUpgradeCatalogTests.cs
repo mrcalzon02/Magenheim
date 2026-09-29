@@ -34,14 +34,21 @@ internal static class UnderworldWeaponUpgradeCatalogTests
         Assert(all.All(value => value.Ingredients.Count >= 3),
             "Every Underworld weapon must add a real biome-material package to its crystal chassis.");
         Assert(all.SelectMany(value => value.Ingredients)
-                .All(cost => UnderworldResourceCatalog.All.Any(resource =>
-                    string.Equals(resource.Prefab, cost.Prefab, StringComparison.Ordinal))),
-            "Every Underworld weapon material dependency must resolve to the canonical Underworld resource catalog.");
+                .All(cost =>
+                    UnderworldResourceCatalog.All.Any(resource =>
+                        string.Equals(resource.Prefab, cost.Prefab, StringComparison.Ordinal)) ||
+                    UnderworldFungalRefinementCatalog.All.Any(refined =>
+                        string.Equals(refined.Prefab, cost.Prefab, StringComparison.Ordinal))),
+            "Every Underworld weapon material dependency must resolve to a canonical raw or refined Underworld material.");
 
         var fungal = UnderworldWeaponUpgradeCatalog.FungalForestSlice;
         Assert(fungal.Count == 2, "The first playable Fungal Forest slice is Worldroot Club plus Worldroot Bow.");
         Assert(fungal.All(value => value.StationPrefab == UnderworldWeaponUpgradeCatalog.MycelialBenchPrefab),
             "Both first-tier weapons must be gated by the Mycelial Bench.");
+        Assert(fungal.All(value => value.Ingredients.Any(cost =>
+                UnderworldFungalRefinementCatalog.All.Any(refined =>
+                    string.Equals(refined.Prefab, cost.Prefab, StringComparison.Ordinal)))),
+            "Both Fungal Forest weapons must consume a Mycelial Bench refined material rather than skipping the refining rung.");
         Assert(fungal.Single(value => value.Name == "Worldroot Club").BasePrefab == "Magenheim_Weapon_CrystalMace",
             "Worldroot Club must visibly and mechanically descend from the Crystal Mace chassis.");
         Assert(fungal.Single(value => value.Name == "Worldroot Bow").BasePrefab == "Magenheim_Weapon_CrystalBow",

@@ -66,6 +66,7 @@ internal static class DefinitionAuthorityTests
         assertions += UnderworldDeepstoneRequestLedgerTests.Run();
         assertions += UnderworldDeepstoneTransactionExecutorTests.Run();
         assertions += UnderworldFungalProvisionCatalogTests.Run();
+        assertions += UnderworldFungalRefinementCatalogTests.Run();
         assertions += UnderworldWeaponUpgradeCatalogTests.Run();
         assertions += UnderworldVesselCatalogTests.Run();
         assertions += UnderworldThermalExposureTests.Run();

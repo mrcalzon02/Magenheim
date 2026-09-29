@@ -53,3 +53,17 @@ crystal. The suffix gate distinguishes those families correctly.
 
 The author/export command itself still requires the project's local Blender environment; no
 generated .blend/GLB/runtime JSON/icon is claimed by this connector-only commit.
+
+
+## First refining rung
+
+The Fungal Forest dependency tree now includes its planned intermediate materials rather than
+jumping from pickups straight to equipment. The Mycelial Bench produces Worldroot Planks (from
+Worldroot Timber), Spire Cord (from Spire Fibre), and Cured Glowcap (from Glowcap Flesh plus Spire
+Fibre). Worldroot Club and Worldroot Bow consume these refinements as well as their Crystal chassis.
+That makes the first equipment loop structurally equivalent to the parity target:
+gather -> establish station -> refine -> upgrade prior weapon.
+
+Rootforged construction deliberately continues to consume raw Worldroot Timber/Understone and
+fungal food deliberately continues to consume raw Glowcap Flesh, so the ecology has multiple sinks
+instead of every pickup existing only as weapon currency.
