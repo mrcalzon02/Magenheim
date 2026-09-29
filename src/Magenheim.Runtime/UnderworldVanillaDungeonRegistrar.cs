@@ -348,6 +348,15 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             pickables[index].m_overrideName = resource.Name;
         }
 
+        // Donor mineables/destructibles must not smuggle Surface progression drops back in after
+        // the obvious chests/pickables have been replaced.
+        foreach (var mine in room.GetComponentsInChildren<MineRock>(true))
+            mine.m_dropItems = ResourceTable(resources, roomIndex + 11);
+        foreach (var mine in room.GetComponentsInChildren<MineRock5>(true))
+            mine.m_dropItems = ResourceTable(resources, roomIndex + 17);
+        foreach (var destroyed in room.GetComponentsInChildren<DropOnDestroyed>(true))
+            destroyed.m_dropWhenDestroyed = ResourceTable(resources, roomIndex + 23);
+
         // Keep the donor stonework/props, but remove Surface progression/lore interactions.
         foreach (var vegvisir in room.GetComponentsInChildren<Vegvisir>(true))
             UnityEngine.Object.DestroyImmediate(vegvisir);
