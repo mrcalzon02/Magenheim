@@ -11,10 +11,19 @@ source authority. The five new biome dungeon programs require 15-20 large author
 used 2-3 times per run with branching topology and bounded loops. They remain non-spawning until
 their real interior binders exist. Deep Fracture is explicitly excluded from the generic planner.
 
-The first ordinary kit is defined at the production-authority level: Fungal Rootwarren currently
-owns 16 stable room/model identities spanning entrance, route, junction, vertical, hazard,
-resource, encounter and landmark roles. Those are asset briefs only; no Rootwarren entrance is
-runtime-admitted until the authored room payloads and binder exist.
+The first ordinary kit, Fungal Rootwarren, is now source-complete through the pre-forge boundary.
+It owns 16 stable room/model identities plus one passage model; deterministic 2-3-use branching
+topology; non-overlapping grid embedding with routed corridor detours; an authored reduced Fracture
+Mouth exterior; a buried same-instance interior and exact return path; persistent server-owned
+creature encounters and one-shot resource pickups; Fungal environment binding; room/location
+registrars; and fail-closed startup/catalog integration. The Blender r2 author builds collidable
+cavern shells and a collidable passage shell, with source verification, visual review sheets,
+generated-asset provenance recording and a narrow promotion script.
+
+Rootwarren intentionally remains Planned today because the 17 source/GLB/runtime payloads have not
+been forged and visually accepted in this execution. The manual production forge must generate the
+complete family, pass review/gates and only then promote Fungal Forest to RuntimeReady; partial
+asset families and early promotion are build failures.
 
 Underworld startup validation now requires every RuntimeReady dungeon row to survive native
 ZoneSystem catalog partitioning. Validation record:
