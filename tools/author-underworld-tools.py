@@ -223,7 +223,9 @@ def author(model_id):
    weighted={g.name for g in o.vertex_groups if any(vg.group==g.index and vg.weight>0 for v in o.data.vertices for vg in v.groups)}
    if not weighted or not weighted.issubset(set(BONE_ORDER)):raise RuntimeError(model_id+"/"+o.name+": invalid player bone weights")
  sc=bpy.context.scene;sc["model_id"]=model_id;sc["magenheim_family"]="underworld_biome_tool";sc["magenheim_tool_kind"]=kind
- sc["magenheim_fidelity"]="endgame-tool-r1";sc["magenheim_detail_parts"]=len(meshes);sc["runtime_lights"]="[]"
+ sc["magenheim_fidelity"]="endgame-tool-r1";sc["magenheim_detail_parts"]=len(meshes)
+ lights=[] if kind!="sporelight" else [{"path":"sporelight-core","position":[0,.62,0],"color":[.34,1.0,.48],"range":7.5,"intensity":2.4}]
+ sc["runtime_lights"]=json.dumps(lights,separators=(",",":"))
  if ACTIVE_SKIN_ARMATURE is not None:
   sc["magenheim_skinning"]="valheim-player-attach-skin";sc["magenheim_bone_order"]=json.dumps(BONE_ORDER,separators=(",",":"))
  bpy.context.preferences.filepaths.save_version=0
