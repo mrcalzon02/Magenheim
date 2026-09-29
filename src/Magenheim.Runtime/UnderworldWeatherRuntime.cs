@@ -19,6 +19,7 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
 
     private UnderworldRuntimeServices? _services;
     private UnderworldAtmosphereRuntime? _atmosphere;
+    private UnderworldWeatherVfxRuntime? _vfx;
     private ManualLogSource? _log;
     private EnvMan? _registeredManager;
     private readonly List<string> _registeredNames = new();
@@ -31,10 +32,12 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
     internal void Configure(
         UnderworldRuntimeServices services,
         UnderworldAtmosphereRuntime atmosphere,
+        UnderworldWeatherVfxRuntime vfx,
         ManualLogSource log)
     {
         _services = services ?? throw new ArgumentNullException(nameof(services));
         _atmosphere = atmosphere ?? throw new ArgumentNullException(nameof(atmosphere));
+        _vfx = vfx ?? throw new ArgumentNullException(nameof(vfx));
         _log = log ?? throw new ArgumentNullException(nameof(log));
     }
 
@@ -75,7 +78,10 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
             _forcedEnvironment = environmentName;
         }
 
+        var mitigation = UnderworldWeatherMitigationRuntime.Resolve(player, terrain.Biome);
         _atmosphere?.ApplySynchronizedEvent(weather.Event, weather.Intensity01);
+        _atmosphere?.ApplyMitigation(mitigation.Resistance01, mitigation.Suppression01);
+        _vfx?.Apply(player, terrain.Biome, weather.Event, weather.Intensity01);
 
         if (!_hasWeather || _lastBiome != terrain.Biome || _lastWeather != weather)
         {
@@ -551,6 +557,8 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
         _lastBiome = null;
         _hasWeather = false;
         _atmosphere?.ApplySynchronizedEvent(UnderworldAtmosphereEvent.None, 0d);
+        _atmosphere?.ApplyMitigation(0d, 0d);
+        _vfx?.Clear();
     }
 
     private void OnDisable() => Deactivate();
