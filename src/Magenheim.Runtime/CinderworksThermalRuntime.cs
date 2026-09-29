@@ -16,13 +16,12 @@ internal sealed class CinderworksThermalHazardRuntime : MonoBehaviour
     private int _phaseSeed;
 
     internal void Bind(
-        UnderworldCinderworksRoomDefinition definition,
+        UnderworldCinderworksThermalRouteState state,
         Collider trigger,
         UnderworldGeothermalHazardVolume hazard,
         int phaseSeed)
     {
-        if (definition is null) throw new ArgumentNullException(nameof(definition));
-        _state = UnderworldCinderworksThermalRoutePolicy.Resolve(definition);
+        _state = state ?? throw new ArgumentNullException(nameof(state));
         if (!_state.HasHazard)
             throw new InvalidOperationException("Safe Cinderworks rooms cannot bind a thermal hazard.");
         _trigger = trigger ?? throw new ArgumentNullException(nameof(trigger));
@@ -85,10 +84,35 @@ internal static class CinderworksThermalRuntime
         var hazard = root.AddComponent<UnderworldGeothermalHazardVolume>();
         var runtime = root.AddComponent<CinderworksThermalHazardRuntime>();
         runtime.Bind(
-            definition,
+            state,
             collider,
             hazard,
             StablePhaseSeed(definition.Room.Id));
+    }
+
+    internal static void AttachPassage(
+        GameObject passage,
+        UnderworldCinderworksThermalRouteState state,
+        string identity)
+    {
+        if (passage is null) throw new ArgumentNullException(nameof(passage));
+        if (state is null) throw new ArgumentNullException(nameof(state));
+        state.Validate();
+        if (!state.HasHazard) return;
+
+        var root = new GameObject("Magenheim_Cinderworks_PassageThermalLane")
+        {
+            layer = passage.layer,
+        };
+        root.transform.SetParent(passage.transform, false);
+        var collider = root.AddComponent<BoxCollider>();
+        collider.isTrigger = true;
+        collider.center = new Vector3(0f, 1.15f, 0f);
+        collider.size = new Vector3(5.0f, 3.2f, 12.5f);
+
+        var hazard = root.AddComponent<UnderworldGeothermalHazardVolume>();
+        var runtime = root.AddComponent<CinderworksThermalHazardRuntime>();
+        runtime.Bind(state, collider, hazard, StablePhaseSeed(identity));
     }
 
     private static int StablePhaseSeed(string identity)

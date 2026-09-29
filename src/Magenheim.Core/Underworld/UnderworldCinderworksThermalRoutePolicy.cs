@@ -92,6 +92,53 @@ public static class UnderworldCinderworksThermalRoutePolicy
         return state;
     }
 
+    public static UnderworldCinderworksThermalRouteState ResolvePassage(
+        UnderworldCinderworksRoomDefinition from,
+        UnderworldCinderworksRoomDefinition to)
+    {
+        if (from is null) throw new ArgumentNullException(nameof(from));
+        if (to is null) throw new ArgumentNullException(nameof(to));
+        from.Validate();
+        to.Validate();
+
+        if (from.HeatRoute == UnderworldCinderworksHeatRoute.Safe &&
+            to.HeatRoute == UnderworldCinderworksHeatRoute.Safe)
+            return Neutral();
+
+        var pressure = (float)Math.Max(from.ThermalPressure01, to.ThermalPressure01);
+        if (from.HeatRoute == UnderworldCinderworksHeatRoute.SlagChannel ||
+            to.HeatRoute == UnderworldCinderworksHeatRoute.SlagChannel)
+        {
+            var state = Continuous(
+                UnderworldGeothermalHazard.LavaChannel,
+                .50f + pressure * .78f);
+            state.Validate();
+            return state;
+        }
+
+        if (from.HeatRoute == UnderworldCinderworksHeatRoute.VentCycle ||
+            to.HeatRoute == UnderworldCinderworksHeatRoute.VentCycle)
+        {
+            var state = new UnderworldCinderworksThermalRouteState(
+                true,
+                UnderworldGeothermalHazard.VentField,
+                Clamp(.68f + pressure * .92f, .1f, 1.75f),
+                ActiveSeconds: 3.0d + pressure * 2.25d,
+                PeriodSeconds: 9d);
+            state.Validate();
+            return state;
+        }
+
+        var anyHot =
+            from.HeatRoute == UnderworldCinderworksHeatRoute.Hot ||
+            to.HeatRoute == UnderworldCinderworksHeatRoute.Hot;
+        var continuous = Continuous(
+            UnderworldGeothermalHazard.VentField,
+            (anyHot ? .42f : .24f) + pressure * (anyHot ? .82f : .55f));
+        continuous.Validate();
+        return continuous;
+    }
+
     public static bool IsActive(
         UnderworldCinderworksThermalRouteState state,
         double worldSeconds,
@@ -111,6 +158,9 @@ public static class UnderworldCinderworksThermalRoutePolicy
         var time = PositiveModulo(worldSeconds + phase, period);
         return time < state.ActiveSeconds;
     }
+
+    private static UnderworldCinderworksThermalRouteState Neutral() =>
+        new(false, null, 0f, 0d, 0d);
 
     private static UnderworldCinderworksThermalRouteState Continuous(
         string hazard,

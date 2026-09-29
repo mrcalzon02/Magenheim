@@ -42,11 +42,27 @@ internal static class UnderworldCinderworksThermalRoutePolicyTests
         Check(activeSamples>0&&activeSamples<180,
             "Vent-cycle schedule must alternate active/inactive states.");
 
-        var safe=UnderworldCinderworksThermalRoutePolicy.Resolve(
-            UnderworldSulfurCinderworksCatalog.Rooms.First(x=>
-                x.HeatRoute==UnderworldCinderworksHeatRoute.Safe));
+        var safeRoom=UnderworldSulfurCinderworksCatalog.Rooms.First(x=>
+            x.HeatRoute==UnderworldCinderworksHeatRoute.Safe);
+        var safe=UnderworldCinderworksThermalRoutePolicy.Resolve(safeRoom);
         Check(!UnderworldCinderworksThermalRoutePolicy.IsActive(safe,50d,12),
             "Hazard-free rooms can never activate.");
+
+        var safePassage=UnderworldCinderworksThermalRoutePolicy.ResolvePassage(safeRoom,safeRoom);
+        Check(!safePassage.HasHazard,
+            "Safe-to-safe passage must preserve the recovery route.");
+
+        var slagRoom=UnderworldSulfurCinderworksCatalog.Rooms.First(x=>
+            x.HeatRoute==UnderworldCinderworksHeatRoute.SlagChannel);
+        var slagPassage=UnderworldCinderworksThermalRoutePolicy.ResolvePassage(safeRoom,slagRoom);
+        Check(slagPassage.HazardId==UnderworldGeothermalHazard.LavaChannel,
+            "Any passage entering a slag route must use lava-channel pressure.");
+
+        var ventRoom=UnderworldSulfurCinderworksCatalog.Rooms.First(x=>
+            x.HeatRoute==UnderworldCinderworksHeatRoute.VentCycle);
+        var ventPassage=UnderworldCinderworksThermalRoutePolicy.ResolvePassage(safeRoom,ventRoom);
+        Check(ventPassage.Cycles,
+            "Passage connected to a vent-cycle room must preserve timing gameplay.");
 
         return assertions;
     }
