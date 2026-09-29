@@ -20,6 +20,10 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
     private readonly ManualLogSource _log;
     private readonly Dictionary<string, Dictionary<string, string>> _roomNames =
         new(StringComparer.Ordinal);
+    private readonly Dictionary<string, DungeonGenerator> _generators =
+        new(StringComparer.Ordinal);
+    private readonly Dictionary<string, string[]> _donorRequiredRooms =
+        new(StringComparer.Ordinal);
     private readonly List<string> _registeredRooms = new();
     private readonly List<string> _registeredLocations = new();
     private readonly List<string> _registeredDoorPrefabs = new();
@@ -149,6 +153,8 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         }
 
         _roomNames[profile.DungeonId] = names;
+        if (_generators.TryGetValue(profile.DungeonId, out var existingGenerator))
+            RemapRequiredRooms(profile, existingGenerator);
         _log.LogInfo(
             $"Registered {names.Count} private {profile.DonorDisplayName} room clones for {profile.Biome} at {profile.LinearRoomScale:0.##}x linear scale.");
     }
@@ -178,9 +184,6 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
     private void RegisterLocation(UnderworldVanillaDungeonReuseDefinition profile)
     {
         var definition = Definition(profile);
-        if (!_roomNames.TryGetValue(profile.DungeonId, out var roomNames) || roomNames.Count == 0)
-            throw new InvalidOperationException(
-                $"{definition.DisplayName} cannot register before its private donor-room family exists.");
         if (ZoneManager.Instance.GetZoneLocation(definition.PrefabName) is not null ||
             CustomLocation.IsCustomLocation(definition.PrefabName))
             throw new InvalidOperationException(
@@ -227,15 +230,10 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         generator.m_zoneSize *= zoneScale;
         generator.m_tileWidth *= (float)profile.LinearRoomScale;
 
-        if (generator.m_requiredRooms is not null && generator.m_requiredRooms.Count > 0)
-        {
-            var mapped = new List<string>();
-            foreach (var required in generator.m_requiredRooms)
-                if (roomNames.TryGetValue(required, out var replacement))
-                    mapped.Add(replacement);
-            generator.m_requiredRooms = mapped;
-            generator.m_minRequiredRooms = Math.Min(generator.m_minRequiredRooms, mapped.Count);
-        }
+        _generators[profile.DungeonId] = generator;
+        _donorRequiredRooms[profile.DungeonId] =
+            generator.m_requiredRooms?.ToArray() ?? Array.Empty<string>();
+        RemapRequiredRooms(profile, generator);
 
         CloneAndScaleDoors(generator, profile);
 
@@ -255,6 +253,29 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             $"Registered {definition.DisplayName} from vanilla {profile.DonorDisplayName}: " +
             $"{vanillaMin}-{vanillaMax} donor rooms -> {generator.m_minRooms}-{generator.m_maxRooms}, " +
             $"{profile.LinearRoomScale:0.##}x room scale, {zoneScale:0.##}x legal generator span.");
+    }
+
+    private void RemapRequiredRooms(
+        UnderworldVanillaDungeonReuseDefinition profile,
+        DungeonGenerator generator)
+    {
+        if (!_donorRequiredRooms.TryGetValue(profile.DungeonId, out var donorRequired))
+            donorRequired = generator.m_requiredRooms?.ToArray() ?? Array.Empty<string>();
+        if (!_roomNames.TryGetValue(profile.DungeonId, out var roomNames))
+        {
+            // Location and DungeonDB callbacks are independent. Preserve donor names until the
+            // room-clone callback arrives, then remap them atomically to private room identities.
+            generator.m_requiredRooms = donorRequired.ToList();
+            return;
+        }
+
+        var mapped = new List<string>();
+        foreach (var required in donorRequired)
+            if (roomNames.TryGetValue(required, out var replacement))
+                mapped.Add(replacement);
+
+        generator.m_requiredRooms = mapped;
+        generator.m_minRequiredRooms = Math.Min(generator.m_minRequiredRooms, mapped.Count);
     }
 
     private void CloneAndScaleDoors(
@@ -462,5 +483,7 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         // Door clones are lifetime-scoped to the plugin session and use unique Magenheim identities.
         _registeredDoorPrefabs.Clear();
         _roomNames.Clear();
+        _generators.Clear();
+        _donorRequiredRooms.Clear();
     }
 }
