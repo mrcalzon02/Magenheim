@@ -510,3 +510,26 @@ terrain height should remain continuous while minimap/weather/ecology switches t
 This change intentionally invalidates the old biome-layout authority fingerprint. Host and peer
 must use the identical 0.0.150 package; a mismatched old generator must fail admission rather than
 produce divergent world truth.
+
+
+## 0.0.151 hex/Voronoi river-grid acceptance
+
+Use a newly generated disposable Underworld. The outer biome map should show broad cellular regions
+whose spacing still faintly reflects a hex-derived structure, but the cells must be visibly
+deformed by 50% site jitter and plasma edge warp rather than reading as a clean board-game grid.
+
+The cell boundaries are physical hydrology. Follow several long boundaries and confirm the strong
+seams become continuous Blackwater/ocean-depth corridors with actual submerged terrain, Blackwater
+terrain material/biome identity, Blackwater atmosphere/ecology, and irregular plasma-shaped banks.
+The deepest seam should reach roughly 30m below the shared water level, while weaker edge shoulders
+form shallows and banks.
+
+The river grid must be distributed through every world quadrant, but must fade out inside the
+protected Fungal arrival core. The Deep Gate approach must remain dry and traversable rather than
+being surrounded by a circular moat. Monumental rocks/landforms may bridge or locally obstruct a
+channel; they must not erase the overall network.
+
+Repeat on a second seed. Both the cellular ownership pattern and the river lattice deformation must
+change materially with the derived seed. Run `magenheim_underworld survey 1200` from several
+banks/overlooks and preserve screenshots so the loading-screen/worldgen contract can use the river
+network as a real attainable feature.
