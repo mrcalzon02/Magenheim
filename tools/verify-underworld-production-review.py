@@ -5,6 +5,9 @@ from pathlib import Path
 from statistics import pstdev
 from PIL import Image
 ROOT=Path(__file__).resolve().parents[1]
+def flat(im):
+    reader=getattr(im,"get_flattened_data",None)
+    return list(reader() if reader else im.getdata())
 BASE=ROOT/"dist"/"underworld-production-review";REND=BASE/"renders";SHEETS=BASE/"sheets"
 index=json.loads((BASE/"index.json").read_text());fail=[]
 for e in index:
@@ -13,7 +16,7 @@ for e in index:
         if not p.is_file():fail.append("missing "+p.name);continue
         im=Image.open(p).convert("L")
         if im.size!=(320,320):fail.append(p.name+" wrong dimensions");continue
-        vals=list(im.resize((64,64)).getdata())
+        vals=flat(im.resize((64,64)))
         if max(vals)-min(vals)<22 or pstdev(vals)<5:fail.append(p.name+" visually flat/blank")
 groups={e["group"] for e in index}
 for g in groups:
