@@ -35,13 +35,15 @@ SPECS={
  "underworld-weapon-crown-sceptre":("crystal-weapon-mace","crown-sceptre"),
 }
 
-def material(name,colour,metallic=0.0,roughness=.72,emission=None):
+def material(name,colour,metallic=0.0,roughness=.72,emission=None,semantic=None):
  m=bpy.data.materials.new(name);m.use_nodes=True;m.use_backface_culling=True
  bs=m.node_tree.nodes.get("Principled BSDF")
  bs.inputs["Base Color"].default_value=(*colour,1);bs.inputs["Metallic"].default_value=metallic;bs.inputs["Roughness"].default_value=roughness
  if emission is not None and "Emission Color" in bs.inputs:
   bs.inputs["Emission Color"].default_value=(*emission,1);bs.inputs["Emission Strength"].default_value=.28
- bind_underworld_material(bpy,m,name);return m
+ bind_underworld_material(bpy,m,semantic or name)
+ m["magenheim_material_name"]=name
+ return m
 
 def finish(obj,path,mat):
  obj.name=path;obj["game_node_path"]=path;obj["game_collision"]=False;obj["game_crystal"]=json.dumps(None)
@@ -76,18 +78,18 @@ def bounds():
 def palette(model_id,kind):
  p="magenheim.underworld-weapon."+model_id+"."
  if kind.startswith("worldroot"):
-  return material(p+"worldroot.timber",(.30,.38,.20),0,.78),material(p+"spore-crystal.crystal",(.46,.82,.52),0,.28,(.12,.34,.16)),None
+  return material(p+"worldroot.timber",(.30,.38,.20),0,.78,semantic="worldroot"),material(p+"spore-crystal.crystal",(.46,.82,.52),0,.28,(.12,.34,.16),semantic="spore-crystal"),None
  if kind.startswith("flowstone") or kind=="blackwater-harpoon":
-  return material(p+"flowstone",(.28,.38,.40),0,.78),material(p+"blackwater-pearl",(.56,.80,.84),.08,.22,(.08,.22,.26)),material(p+"pale-fibre",(.54,.57,.51),0,.72)
+  return material(p+"flowstone",(.28,.38,.40),0,.78,semantic="flowstone"),material(p+"blackwater-pearl",(.56,.80,.84),.08,.22,(.08,.22,.26),semantic="blackwater-pearl"),material(p+"pale-fibre",(.54,.57,.51),0,.72,semantic="pale-fibre")
  if kind.startswith("emberiron"):
-  return material(p+"emberiron",(.27,.15,.09),.82,.30),material(p+"furnace.heart",(.92,.28,.045),.02,.18,(.76,.12,.02)),material(p+"charred-root",(.15,.07,.035),0,.86)
+  return material(p+"emberiron",(.27,.15,.09),.82,.30,semantic="emberiron"),material(p+"furnace.heart",(.92,.28,.045),.02,.18,(.76,.12,.02),semantic="furnace.heart"),material(p+"charred-root",(.15,.07,.035),0,.86,semantic="charred-root")
  if kind.startswith("rime") or kind=="icebind-staff":
-  return material(p+"rimesilver",(.69,.76,.79),.88,.20),material(p+"clear-ice",(.68,.89,.96),0,.15,(.12,.34,.44)),material(p+"rimewood",(.33,.41,.43),0,.78)
+  return material(p+"rimesilver",(.69,.76,.79),.88,.20,semantic="rimesilver"),material(p+"clear-ice",(.68,.89,.96),0,.15,(.12,.34,.44),semantic="clear-ice"),material(p+"rimewood",(.33,.41,.43),0,.78,semantic="rimewood")
  if kind.startswith("titanbone"):
-  return material(p+"titanbone",(.53,.49,.39),0,.78),material(p+"fracture-crystal",(.60,.42,.80),0,.18,(.24,.10,.38)),material(p+"forged-brace",(.15,.14,.16),.78,.34)
+  return material(p+"titanbone",(.53,.49,.39),0,.78,semantic="titanbone"),material(p+"fracture-crystal",(.60,.42,.80),0,.18,(.24,.10,.38),semantic="fracture-crystal"),material(p+"forged-brace",(.15,.14,.16),.78,.34,semantic="forged-brace")
  if kind.startswith("shardstone"):
-  return material(p+"shardstone",(.25,.22,.28),0,.82),material(p+"fracture-crystal",(.60,.42,.80),0,.18,(.24,.10,.38)),material(p+"titanbone",(.53,.49,.39),0,.78)
- return material(p+"rotwood",(.20,.12,.055),0,.84),material(p+"carrion-amber",(.76,.45,.11),.03,.18,(.36,.13,.02)),material(p+"bone",(.39,.34,.26),0,.78)
+  return material(p+"shardstone",(.25,.22,.28),0,.82,semantic="shardstone"),material(p+"fracture-crystal",(.60,.42,.80),0,.18,(.24,.10,.38),semantic="fracture-crystal"),material(p+"titanbone",(.53,.49,.39),0,.78,semantic="titanbone")
+ return material(p+"rotwood",(.20,.12,.055),0,.84,semantic="rotwood"),material(p+"carrion-amber",(.76,.45,.11),.03,.18,(.36,.13,.02),semantic="carrion-amber"),material(p+"bone",(.39,.34,.26),0,.78,semantic="bone")
 
 def rings(prefix,zs,r,mat):
  for i,z in enumerate(zs):torus(prefix+"-"+str(i),z,r,.006,mat)
