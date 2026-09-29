@@ -143,5 +143,17 @@ if(!$SkipReview){
     if($LASTEXITCODE -ne 0){throw 'Cinderworks review sheet assembly failed.'}
     & python "$PSScriptRoot/verify-cinderworks-review.py"
     if($LASTEXITCODE -ne 0){throw 'Cinderworks visual review completeness gate failed.'}
+    & "$PSScriptRoot/blender.ps1" render-rime-sepulcher-review
+    if($LASTEXITCODE -ne 0){throw 'Rime Sepulcher dungeon review render failed.'}
+    & python "$PSScriptRoot/build-rime-sepulcher-review-sheets.py"
+    if($LASTEXITCODE -ne 0){throw 'Rime Sepulcher review sheet assembly failed.'}
+    & python "$PSScriptRoot/verify-rime-sepulcher-review.py"
+    if($LASTEXITCODE -ne 0){throw 'Rime Sepulcher visual review completeness gate failed.'}
+    & "$PSScriptRoot/blender.ps1" render-carrion-catacombs-review
+    if($LASTEXITCODE -ne 0){throw 'Carrion Catacombs dungeon review render failed.'}
+    & python "$PSScriptRoot/build-carrion-catacombs-review-sheets.py"
+    if($LASTEXITCODE -ne 0){throw 'Carrion Catacombs review sheet assembly failed.'}
+    & python "$PSScriptRoot/verify-carrion-catacombs-review.py"
+    if($LASTEXITCODE -ne 0){throw 'Carrion Catacombs visual review completeness gate failed.'}
 }
 Write-Host 'PRODUCTION READY: 26 PBR families, 40 raw/refined material items, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools, armour, and the 17-model Rootwarren, Drowned Vault, Cinderworks, Rime Sepulcher and Carrion Catacombs dungeon families regenerated and gated.'
