@@ -109,6 +109,14 @@ internal static class UnderworldWorldgenContentBridge
             throw new InvalidOperationException(
                 $"Underworld resource worldgen catalog incomplete: {UnderworldResourceCatalog.All.Count - missingResources.Count}/{UnderworldResourceCatalog.All.Count} required pickup spawners present. Missing: {string.Join(", ", missingResources)}");
 
+        var missingVents = new List<string>();
+        foreach (var vent in UnderworldGeothermalVentRegistrar.Vents)
+            if (FindVegetation(underworld, vent.Prefab, UnderworldTerrainRuntime.ToNativeBiome(UnderworldTerrainBiome.SulfurousWastes)) is null)
+                missingVents.Add(vent.Prefab);
+        if (missingVents.Count != 0)
+            throw new InvalidOperationException(
+                $"Underworld geothermal catalog incomplete: {UnderworldGeothermalVentRegistrar.Vents.Length - missingVents.Count}/{UnderworldGeothermalVentRegistrar.Vents.Length} live-vent spawners present. Missing: {string.Join(", ", missingVents)}");
+
         var missingGeodes = new List<string>();
         foreach (var prefabName in AdmittedGeodePrefabs)
         {
@@ -131,7 +139,7 @@ internal static class UnderworldWorldgenContentBridge
                 string.Join(", ", missingGeodes));
 
         _log?.LogInfo(
-            $"Verified Underworld worldgen resources: {UnderworldResourceCatalog.All.Count}/{UnderworldResourceCatalog.All.Count} resource pickup spawners and {AdmittedGeodePrefabs.Count} geode spawners are instance-local and generation-ready.");
+            $"Verified Underworld worldgen resources: {UnderworldResourceCatalog.All.Count}/{UnderworldResourceCatalog.All.Count} resource pickup spawners, {UnderworldGeothermalVentRegistrar.Vents.Length} geothermal vent spawners and {AdmittedGeodePrefabs.Count} geode spawners are instance-local and generation-ready.");
     }
 
     private static ZoneSystem.ZoneVegetation? FindVegetation(

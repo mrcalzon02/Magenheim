@@ -68,3 +68,11 @@ The cheap pre-Blender ModelAssetTests include a synthetic attach_skin regression
 admission gate requires the full 53-bone contract and weight-stream/vertex-count equality. Final
 male/female animation, clipping, multiplayer and save/reload acceptance still require local Valheim
 runtime verification and are not inferred from Blender output.
+
+
+## Geothermal station dependency
+
+The one-run scope includes three owned Sulfurous-Wastes geothermal vent models. They are reviewed as
+production environment assets, registered as sparse native Underworld vegetation, and carry real
+geothermal trigger/placement volumes. The Furnace Heart Forge placement rule therefore binds to a
+loaded vent feature rather than treating the entire Sulfur biome as a free heat source.

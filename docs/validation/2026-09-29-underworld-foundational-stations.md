@@ -67,3 +67,15 @@ checks with distance guesses.
 
 Local Blender export, Runtime compilation, in-game placement, station interaction, multiplayer and
 save/reload acceptance remain required before production admission.
+
+
+## Runtime siting enforcement
+
+The environmental siting semantics are now executable Core authority and are enforced by Hammer
+placement without bypassing vanilla placement rules. Every station first requires its canonical
+Underworld biome. The Tidal Basin samples its full footprint for simultaneous dry bank and Blackwater;
+the Furnace Heart Forge requires proximity to one of three persistent owned geothermal-vent
+vegetation prefabs; the Silence Table and Anchor Forge use deterministic low-hazard/low-relief
+terrain pockets rather than transient weather; and the Crown Reliquary requires the completed Decay
+Deepstone, whose prerequisite graph implies the full preceding Conclave chain. The same decision is
+rechecked in TryPlacePiece so a stale ghost cannot bypass the frame-time placement check.

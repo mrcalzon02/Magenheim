@@ -12,7 +12,7 @@ namespace Magenheim.Runtime;
 /// <summary>Registers three persistent owned geothermal vent variants in Sulfurous Wastes.</summary>
 internal sealed class UnderworldGeothermalVentRegistrar : IDisposable
 {
-    private static readonly (string Prefab,string Model)[] Vents={
+    internal static readonly (string Prefab,string Model)[] Vents={
         ("Magenheim_Underworld_GeothermalVent_Crown","underworld-geothermal-vent-crown"),
         ("Magenheim_Underworld_GeothermalVent_Split","underworld-geothermal-vent-split"),
         ("Magenheim_Underworld_GeothermalVent_Rootbound","underworld-geothermal-vent-rootbound"),
