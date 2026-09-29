@@ -843,3 +843,74 @@ The five future biome dungeon programs remain non-spawning. Their Core planner m
 production rule of 15-20 unique large room families, each used 2-3 times, with a connected branching
 topology and at least one bounded cross-link/loop in a normal large plan. Deep Fracture must remain
 rejected by that generic planner because it retains its bespoke expedition authority.
+
+## Rootwarren live acceptance
+
+Do not run this section until the Rootwarren production contract reports RuntimeReady with a
+complete 17/17/17 source/GLB/runtime family and the visual-review sheets have been inspected.
+
+### Location placement
+
+Use at least two fresh Underworld seeds. Survey Fungal Forest broadly enough to encounter multiple
+Rootwarren locations. The target catalog is eight Fungal Forest locations with 900m minimum
+same-family spacing. No Rootwarren location may generate in Blackwater Deep, Sulfurous Wastes,
+Frozen Caverns, Fracture Zones or Great Decay, and no Magenheim_Underworld_Dungeon_FungalForest
+location may leak into Surface generation.
+
+Inspect every discovered entrance from all sides and on sloped terrain. The reduced Fracture Mouth
+must look embedded into the generated cave terrain rather than sitting as a freestanding prop,
+floating, clipping deeply below ground or exposing the buried full-size entrance chamber.
+
+### Interior geometry and topology
+
+Enter several Rootwarrens generated from different location seeds. Each run should contain 32-48
+major authored room placements because every one of the sixteen room families is used two or three
+times. The first room must always be the Fracture Mouth family. Runs must visibly branch and contain
+loops/cross-links; a generated dungeon that reads as one linear hallway is a regression.
+
+Inspect Mycelial Gallery, Glowcap Vault, Spore Basin, Root Bridge, Sunken Nursery, Tangle Junction,
+Shelf Drop, Amber Grotto, Worldroot Hollow, Capcrawler Nest, Mycelial Stalker Den, Puffback Graze,
+Buried Archway, Root Squeeze and Heartcap Sanctum. Reused families should differ by route context,
+orientation, population and surrounding branches enough that reuse reads as a cave system rather
+than copy/paste repetition.
+
+Every major chamber must have an authored collidable cavern shell, readable ceiling/side boundaries,
+and open approach gaps where routed passages enter. The reusable passage must have its own
+collidable shell and floor. Walk every transition, especially vertical routes and multi-leg detours,
+looking for gaps, overlapping collision, abrupt floor lips, impassable pitch, exposed void, or a
+passage tunneling through an unrelated room.
+
+### Encounters and resources
+
+Verify encounter rooms use Fungal Forest inhabitants rather than generic dungeon enemies:
+Capcrawlers and Sporelings in crawler/hazard spaces, Mycelial Stalkers/Shelf Lurkers in the den,
+Puffback in the graze, and Crowncap Brute pressure in Heartcap Sanctum. Host and peer must agree on
+the same living encounter state.
+
+Kill a persistent dungeon creature, save/reload, and revisit the same room. That deterministic
+spawn identity must remain cleared. Do the same after a peer lands the killing blow.
+
+In Sunken Nursery and Amber Grotto, harvest several native Fungal resource pickups. Save/reload and
+revisit. Harvested nodes must remain harvested; untouched deterministic nodes must remain present.
+Repeat one harvest from a peer. This specifically verifies the Rootwarren Pickable.RPC_Pick
+persistence patch is active and prevents reload farming.
+
+### Environment and return
+
+The interior must use the Fungal Forest Underworld environment family rather than a Surface crypt
+weather/sky. Fungal haze and lighting should remain readable without Surface sun/rain intrusion.
+
+Use the return portal in the entrance room. It must return to the exact owning Fungal Forest mouth
+inside the same Underworld instance, not to the Surface, Conclave, Deep Gate, or a different
+Rootwarren. Repeat after save/reload and from a second peer.
+
+### Persistence and isolation
+
+Save/reload with one player deep inside a Rootwarren and another outside in Fungal Forest. Verify
+the exterior location, generated room graph, encounter-clear state, harvested-resource state and
+return pairing remain coherent. Rootwarren interior objects must not appear in neighboring normal
+Fungal chunks, and ordinary Fungal scenery/native creature spawning must not populate the buried
+interior independently of the dungeon's own encounter authority.
+
+Do not call Rootwarren live-accepted from Blender review plates, Core tests, or successful runtime
+compilation alone. This full worldgen/interior/persistence pass is the closure gate.
