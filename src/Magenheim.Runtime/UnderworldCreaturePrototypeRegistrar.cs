@@ -34,10 +34,10 @@ internal sealed class UnderworldCreaturePrototypeRegistrar : IDisposable
                 clone.GetComponent<Character>().m_name = entry.Name + " (prototype)";
                 // Uniform scale keeps the donor's bone hierarchy and attack sockets together.
                 clone.transform.localScale *= entry.Scale;
-                Tint(clone, entry.Color);
+                var materialCount = UnderworldCreatureBiomeVisuals.Apply(clone, entry);
                 PrefabManager.Instance.AddPrefab(new CustomPrefab(clone, true));
                 registered++;
-                _log.LogDebug($"Underworld prototype {entry.Prefab}: intact {entry.Donor} skeleton/controller; {entry.Limit}");
+                _log.LogDebug($"Underworld prototype {entry.Prefab}: intact {entry.Donor} skeleton/controller; {materialCount} renderer material(s) retextured for {entry.Biome}; {entry.Limit}");
             }
             catch (Exception exception)
             {
