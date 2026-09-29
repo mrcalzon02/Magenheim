@@ -80,6 +80,33 @@ try {
     $targetIndex.Remove(0) | Out-Null
     if (!$sourceIndex.ContainsKey(0)) { throw 'Location catalog mutation leaked into Surface.' }
     Write-Output 'Verified actual native ZoneSystem copier: 260 catalog entries retained, readonly target preserved, stale entries removed, Surface mutation isolated.'
+
+    # The dungeon placement reconciler depends on Valheim's persisted native location-generation
+    # table and the current GenerateLocationsTimeSliced coroutine signature. Force its static
+    # constructor now so a game update cannot silently defer a broken spawn contract to runtime.
+    $placementRuntime = $runtime.GetType('Magenheim.Runtime.UnderworldDungeonPlacementRuntime', $true)
+    [Runtime.CompilerServices.RuntimeHelpers]::RunClassConstructor($placementRuntime.TypeHandle)
+    $generatedField = $zoneType.GetField('m_locationsGenerated', $instanceFlags)
+    $instancesField = $zoneType.GetField('m_locationInstances', $instanceFlags)
+    if ($generatedField -eq $null -or $generatedField.FieldType -ne [bool]) {
+        throw 'ZoneSystem.m_locationsGenerated contract changed; Underworld dungeon placement reconciliation is unsafe.'
+    }
+    if ($instancesField -eq $null -or -not $instancesField.FieldType.IsGenericType) {
+        throw 'ZoneSystem.m_locationInstances contract changed; Underworld dungeon placement audit is unavailable.'
+    }
+    $generationMethods = @($zoneType.GetMethods($instanceFlags) | Where-Object {
+        $_.Name -ceq 'GenerateLocationsTimeSliced' -and $_.GetParameters().Length -eq 3
+    })
+    if ($generationMethods.Count -ne 1) {
+        throw "Expected exactly one 3-argument ZoneSystem.GenerateLocationsTimeSliced method; found $($generationMethods.Count)."
+    }
+    $generationParams = $generationMethods[0].GetParameters()
+    if ($generationParams[1].ParameterType.FullName -cne 'System.Diagnostics.Stopwatch' -or
+        $generationParams[2].ParameterType.Name -cne 'ZPackage') {
+        throw 'ZoneSystem.GenerateLocationsTimeSliced signature changed; Underworld missing-dungeon recovery is unsafe.'
+    }
+    Write-Output 'Verified native dungeon placement contracts: m_locationsGenerated, m_locationInstances, and GenerateLocationsTimeSliced.'
+
     $flags = [Reflection.BindingFlags]'Static,Public,NonPublic'
     $dynamic = 0
     $resolvedCount = 0
