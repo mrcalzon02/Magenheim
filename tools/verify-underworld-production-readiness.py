@@ -84,6 +84,22 @@ literal_names += [
  "armour.defiant.base","armour.defiant.structure","armour.defiant.accent",
  "magenheim.underworld-weapon.preview.worldroot.timber",
  "magenheim.underworld-weapon.preview.spore-crystal.crystal",
+ "magenheim.underworld-weapon.preview.flowstone",
+ "magenheim.underworld-weapon.preview.blackwater-pearl",
+ "magenheim.underworld-weapon.preview.pale-fibre",
+ "magenheim.underworld-weapon.preview.emberiron",
+ "magenheim.underworld-weapon.preview.furnace.heart",
+ "magenheim.underworld-weapon.preview.charred-root",
+ "magenheim.underworld-weapon.preview.rimesilver",
+ "magenheim.underworld-weapon.preview.clear-ice",
+ "magenheim.underworld-weapon.preview.rimewood",
+ "magenheim.underworld-weapon.preview.titanbone",
+ "magenheim.underworld-weapon.preview.forged-brace",
+ "magenheim.underworld-weapon.preview.fracture-crystal",
+ "magenheim.underworld-weapon.preview.shardstone",
+ "magenheim.underworld-weapon.preview.rotwood",
+ "magenheim.underworld-weapon.preview.bone",
+ "magenheim.underworld-weapon.preview.carrion-amber",
 ]
 for semantic in literal_names:
     try:
@@ -95,9 +111,24 @@ for semantic in literal_names:
 crystal=(ROOT/"tools"/"author-crystal-weapons.py").read_text()
 require("bake_atlas(" in crystal and "unwrap(" in crystal,
         "crystal weapon authority lost purpose-authored unwrap/baked atlas pipeline")
-uw=(ROOT/"tools"/"author-underworld-weapons.py").read_text()
+uw_path=ROOT/"tools"/"author-underworld-weapons.py"
+uw=uw_path.read_text()
 require("bpy.ops.wm.open_mainfile" in uw and "derived_from" in uw,
         "Underworld weapon derivatives no longer preserve Crystal weapon source ancestry")
+uw_tree=ast.parse(uw)
+uw_specs=None
+for node in uw_tree.body:
+    if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id=="SPECS" for t in node.targets):
+        uw_specs=ast.literal_eval(node.value);break
+require(isinstance(uw_specs,dict) and len(uw_specs)==12,
+        "Underworld derivative author must own exactly 12 crystal-chassis weapon models")
+uw_manifest=entries.get("underworld-weapon-models",{})
+uw_outputs=uw_manifest.get("outputs",[])
+require(sum(1 for out in uw_outputs if out.endswith(".model.json"))==12,
+        "Underworld weapon manifest must own exactly 12 runtime derivative outputs")
+require(all(any(("/"+model_id+".model.json")==out[-len(model_id)-12:] for out in uw_outputs)
+            for model_id in (uw_specs or {})),
+        "Every Underworld weapon SPECS identity must have a manifest runtime output")
 root=(ROOT/"tools"/"author-rootforged-placeables.py").read_text()
 require("DETAIL_REVISION=4" in root and "endgame-placeable-r4" in root and "DETAIL_FLOORS=" in root,
         "Rootforged endgame joinery revision 4 regression floor is absent")

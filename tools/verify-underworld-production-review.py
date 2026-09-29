@@ -21,7 +21,7 @@ for e in index:
 groups={e["group"] for e in index}
 for g in groups:
     if not (SHEETS/f"{g}.png").is_file():fail.append("missing contact sheet "+g)
-if len(index)!=100:fail.append(f"review index expected 100 production models, found {len(index)}")
+if len(index)!=110:fail.append(f"review index expected 110 production models, found {len(index)}")
 articulation_ids=sorted(e["id"] for e in index if e["id"].startswith("underworld-armor-"))
 if len(articulation_ids)!=24:fail.append(f"expected 24 armour articulation subjects, found {len(articulation_ids)}")
 for model_id in articulation_ids:

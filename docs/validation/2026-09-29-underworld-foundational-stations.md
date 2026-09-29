@@ -48,8 +48,12 @@ fallback. That fallback is not final art and is not a completion claim.
 - Anchor Forge: Shardstone anvil mass, Titanbone braces, fracture anchors and heavy suspended tooling.
 - Crown Reliquary: Rotwood/bone altar, Carrion-Amber reliquary cage and elevated crown assembly.
 
-Each builder carries a 30-part minimum regression floor so a later rewrite cannot silently collapse
-the station family back into primitive placeholders.
+The station family is now `endgame-station-r2` with per-station regression floors of roughly
+52–58 mesh parts. The added geometry is functional rather than indiscriminate ornament: joinery,
+drawers, spools and sockets on the Mycelial Bench; drains/calipers on the Tidal Basin; bellows,
+tuyeres, gauges and quench hardware on the Furnace Heart; damping feet, vice and micrometer hardware
+on the Silence Table; bearings, hoist, brace locks and force gauges on the Anchor Forge; and sealed
+drawers, amber clamps, ritual fittings and crown ribs on the Crown Reliquary.
 
 ## Local production path
 
@@ -57,17 +61,6 @@ the station family back into primitive placeholders.
 
 The command authors the six Blender sources, exports GLB/runtime payloads, rebuild-verifies the model
 catalog, renders matching Hammer icons and runs the icon gate.
-
-## Still open
-
-The environmental siting semantics are now durable data but are not yet enforced by Hammer placement:
-shoreline detection, live geothermal-vent adjacency, silence/quiet evaluation, tremor-stability and
-Deepstone attunement each require their correct world-system hook. This commit does not fake those
-checks with distance guesses.
-
-Local Blender export, Runtime compilation, in-game placement, station interaction, multiplayer and
-save/reload acceptance remain required before production admission.
-
 
 ## Runtime siting enforcement
 
@@ -78,4 +71,8 @@ the Furnace Heart Forge requires proximity to one of three persistent owned geot
 vegetation prefabs; the Silence Table and Anchor Forge use deterministic low-hazard/low-relief
 terrain pockets rather than transient weather; and the Crown Reliquary requires the completed Decay
 Deepstone, whose prerequisite graph implies the full preceding Conclave chain. The same decision is
-rechecked in TryPlacePiece so a stale ghost cannot bypass the frame-time placement check.
+rechecked in TryPlacePiece so a stale ghost cannot bypass the frame-time placement check. A deployed
+Anchor Spike can satisfy Fracture stability, but cannot waive the Anchor Forge's level-ground rule.
+
+The revised r2 Blender sources, actual Valheim rendering, station interaction, multiplayer and
+save/reload still require the ordinary production/live acceptance pass.

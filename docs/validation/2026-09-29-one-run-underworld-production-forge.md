@@ -1,22 +1,22 @@
 # One-run Underworld production forge contract
 
 The remote production run is intentionally broader than the six new stations. It regenerates the
-shared Underworld material library, all ten physical Crystal weapon chassis and their icons, the
-Worldroot Crystal-derived weapons, Rootforged construction, six biome stations, six progression
-tools and twenty-four rigged armour sources. The thirty-two elemental staff Blender sources are treated as authoritative manual source art: the forge re-exports all 32 runtime/GLB representations and regenerates all 32 staff icons without inventing a replacement geometry generator. Crystal-tier icons remain verification-only because they are not part of the weapon/placeable rebuild.
+shared Underworld material library, all ten physical Crystal weapon chassis and their icons, all
+twelve biome-specific Crystal/staff-chassis Underworld derivatives, Rootforged construction, six
+biome stations, six progression tools and twenty-four rigged armour sources. The thirty-two elemental staff Blender sources are treated as authoritative manual source art: the forge re-exports all 32 runtime/GLB representations and regenerates all 32 staff icons without inventing a replacement geometry generator. Crystal-tier icons remain verification-only because they are not part of the weapon/placeable rebuild.
 
 ## Admission order
 
 1. Pure-Python readiness checks and Core tests.
 2. Provision the current free Valheim Dedicated Server managed assemblies plus pinned BepInEx
-   5.4.2350 and compile Magenheim.Runtime. A C# API error therefore stops before Blender is
+   5.4.2351 and compile Magenheim.Runtime. A C# API error therefore stops before Blender is
    downloaded or any asset run is spent.
 3. Download Blender 5.0.0 from the official Blender host and verify it against the official
    SHA-256 list.
 4. Generate and quantitatively gate 23 shared 512px Underworld material families.
 5. Regenerate Crystal weapons first so derivative weapons inherit the current authoritative
    chassis, UVs and painted 512px atlases; re-export all 32 elemental staves from their existing authoritative Blender sources.
-6. Regenerate Worldroot derivatives, Rootforged, stations, tools and armour in dependency order, then regenerate staff icons against the final model catalog.
+6. Regenerate all twelve Underworld weapon derivatives, Rootforged, stations, tools and armour in dependency order, then regenerate staff icons against the final model catalog.
 7. Run global topology, winding/surface continuity, scale, held orientation/grip, icon, texture,
    authored-surface and attach_skin source-rig gates.
 8. Render every admitted production model twice: neutral studio and approximate biome-context
@@ -30,10 +30,11 @@ Shared Underworld materials own deterministic, tile-safe 512px albedo, roughness
 Luminous families also own localized emission maps. Repeat continuity is machine-gated so projected/repeated
 surfaces cannot hide a hard source-map seam, and long Rootforged members keep world-scale UV density instead
 of stretching one map across their full 4m/8m length. Blender review/GLB sees the complete material;
-the current lightweight runtime model payload retains the authored albedo plus metallic/roughness/
-emission scalar data, because ModelAssets intentionally does not yet carry normal/roughness texture
-slots. The source maps are kept outside the packaged runtime texture directory; export packs them
-and content-hashes the runtime copies, preserving the repository's anti-overwrite invariant.
+the runtime payload now carries owned albedo, normal and packed metallic/gloss references (plus
+localized emission where authored). ModelAssets explicitly clears every donor auxiliary map before
+applying those exported maps, preventing donor UVs from contaminating the owned mesh. The source
+maps remain generator-owned and export content-hashes the runtime copies, preserving the repository's
+anti-overwrite invariant.
 
 Crystal weapons remain on their stronger purpose-authored atlas path. Their authored UV unwrap,
 occlusion, edge wear, timber/leather/hammered-metal/clouded-crystal painting is not replaced by the
@@ -76,3 +77,13 @@ The one-run scope includes three owned Sulfurous-Wastes geothermal vent models. 
 production environment assets, registered as sparse native Underworld vegetation, and carry real
 geothermal trigger/placement volumes. The Furnace Heart Forge placement rule therefore binds to a
 loaded vent feature rather than treating the entire Sulfur biome as a free heat source.
+
+
+## Expanded visual admission
+
+The production review universe is now 110 models: 10 Crystal weapons, 12 Underworld weapon
+derivatives, 32 elemental staves, 3 geothermal vents, 17 Rootforged pieces, 6 stations, 6 tools and
+24 armour pieces. Rootforged requires joinery revision 4 and the station family requires endgame
+detail revision 2 before Blender provisioning. The twelve derivative weapon sources must preserve
+their Crystal/staff ancestry and are bounded against their parent chassis before save, so biome
+hardware cannot silently change the already-validated held envelope.

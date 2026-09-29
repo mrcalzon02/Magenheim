@@ -85,7 +85,7 @@ def render(entry,condition):
     print("RENDERED",entry["id"],condition,flush=True)
 
 selected=sorted((e for e in catalog if admitted(e["id"])),key=lambda e:e["id"])
-if len(selected)!=100: raise RuntimeError(f"Production review scope must contain exactly 100 admitted models, found {len(selected)}")
+if len(selected)!=110: raise RuntimeError(f"Production review scope must contain exactly 110 admitted models, found {len(selected)}")
 index=[]
 for entry in selected:
     for condition in ("neutral","context"): render(entry,condition)

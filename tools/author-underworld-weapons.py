@@ -86,7 +86,7 @@ def palette(model_id,kind):
   return material(p+"titanbone",(.53,.49,.39),0,.78),material(p+"fracture-crystal",(.60,.42,.80),0,.18,(.24,.10,.38)),material(p+"forged-brace",(.15,.14,.16),.78,.34)
  if kind.startswith("shardstone"):
   return material(p+"shardstone",(.25,.22,.28),0,.82),material(p+"fracture-crystal",(.60,.42,.80),0,.18,(.24,.10,.38)),material(p+"titanbone",(.53,.49,.39),0,.78)
- return material(p+"rotwood",(.20,.12,.055),0,.84),material(p+"carrion-amber",(.76,.45,.11),.03,.18,(.36,.13,.02)),material(p+".bone",(.39,.34,.26),0,.78)
+ return material(p+"rotwood",(.20,.12,.055),0,.84),material(p+"carrion-amber",(.76,.45,.11),.03,.18,(.36,.13,.02)),material(p+"bone",(.39,.34,.26),0,.78)
 
 def rings(prefix,zs,r,mat):
  for i,z in enumerate(zs):torus(prefix+"-"+str(i),z,r,.006,mat)

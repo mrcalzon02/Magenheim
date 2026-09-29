@@ -8,10 +8,11 @@ The six tool identities are Sporelight Lantern, Diving Bell Hood, Slag Pick, Rim
 Spike and Defiant Censer. Their station dependencies follow the station ladder exactly. The armour
 families are Sporeweave, Palewater, Emberiron, Rimeward, Stoneanchor and Defiant.
 
-The Fungal Forest five-item equipment slice deliberately consumes the existing Mycelial Bench
-refinements. Later tiers currently consume their canonical raw biome resources until their
-corresponding refinement catalogs exist; their station identity and material ancestry are already
-stable, but recipe admission remains future work.
+The Fungal Forest five-item equipment slice consumes the existing Mycelial Bench refinements.
+The other five biomes now own fifteen additional processed materials—three per station—and every
+post-Fungal tool and armour recipe consumes those processed outputs rather than skipping directly
+from raw pickups to end-game equipment. Station construction remains raw-resource based so the
+player can establish the workshop before using it to manufacture refined stock.
 
 `tools/author-underworld-tools.py` creates six independent owned tool models. It does not open or
 recolour vanilla tools. Each source has explicit ToolUV data and an 18-part minimum detail gate.
@@ -37,3 +38,18 @@ normalized weight row matching every exported armour vertex.
 Male/female live fit, clipping through the full animation set, actual Valheim shader appearance,
 multiplayer equip propagation and save/reload acceptance remain runtime gates; source/serialization
 support is no longer the blocker.
+
+
+## Runtime tool mechanics
+
+All six biome tools are now admitted rather than existing only as art/catalog authority. Sporelight
+is a fuel-free carried/placed light whose output follows the resolved Fungal atmosphere density.
+The Diving Bell Hood is a true skinned helmet and reduces Blackwater swimming stamina use by 35%.
+Slag Pick gates Fracture Crystal seams. Rime Chisel adds one Clear Ice through the network-owner
+Pickable RPC bonus path. Anchor Spike is a one-use private build tool whose deployed networked spike
+can stabilize an Anchor Forge site without waiving level-ground requirements. Defiant Censer remains
+under the synchronized Great-Decay weather/mitigation authority.
+
+All twenty-four armour recipes and all six tool recipes are registered at their canonical stations.
+Live male/female fit, full-animation clipping, multiplayer propagation, placed-piece refund behavior
+and save/reload acceptance remain runtime acceptance gates; they are not inferred from source code.

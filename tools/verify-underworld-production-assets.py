@@ -18,7 +18,7 @@ def ids_with(prefix):
 staff_ids=sorted(x for x in runtime_ids if x.startswith("staff-") or x.startswith("Magenheim_Staff_"))
 expected={
     "crystal weapons":(ids_with("crystal-weapon-"),10),
-    "Underworld weapons":(ids_with("underworld-weapon-"),2),
+    "Underworld weapons":(ids_with("underworld-weapon-"),12),
     "geothermal vents":(ids_with("underworld-geothermal-vent-"),3),
     "Rootforged":(ids_with("rootforged-"),17),
     "Underworld stations":(ids_with("underworld-station-"),6),
@@ -31,8 +31,8 @@ for label,(ids,count) in expected.items():
         raise SystemExit(f"{label}: expected {count} production models, found {len(ids)}")
 
 production_ids=sorted(set().union(*(set(ids) for ids,_ in expected.values())))
-if len(production_ids)!=100:
-    raise SystemExit(f"Production review universe must contain 100 unique models, found {len(production_ids)}")
+if len(production_ids)!=110:
+    raise SystemExit(f"Production review universe must contain 110 unique models, found {len(production_ids)}")
 
 for model_id in production_ids:
     for path in (SOURCE/(model_id+".blend"),GLB/(model_id+".glb"),RUNTIME/(model_id+".model.json")):
@@ -80,9 +80,9 @@ for model_id in ids_with("underworld-weapon-"):
             if not name or not (TEXTURES/name).is_file():
                 raise SystemExit(f"{model_id}: biome accent missing runtime {field}")
 
-if len(runtime_ids)<407:
-    raise SystemExit(f"Full model library must be at least 407 models after the 41-model Underworld production admission; found {len(runtime_ids)}")
+if len(runtime_ids)<417:
+    raise SystemExit(f"Full model library must be at least 417 models after the expanded Underworld derivative admission; found {len(runtime_ids)}")
 
-print("VERIFIED production asset admission: 100 reviewed weapon/build/equipment/environment models; "
-      "10 Crystal weapons, 2 Underworld derivatives, 32 staves, 3 geothermal vents, 17 Rootforged, "
+print("VERIFIED production asset admission: 110 reviewed weapon/build/equipment/environment models; "
+      "10 Crystal weapons, 12 Underworld derivatives, 32 staves, 3 geothermal vents, 17 Rootforged, "
       "6 stations, 6 tools and 24 armour pieces with required PBR runtime maps.")
