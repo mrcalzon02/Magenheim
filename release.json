@@ -1,4 +1,4 @@
 {
-  "version": "0.0.146",
-  "description": "0.0.146: Keeps Magenheim loading art scoped to Underworld construction and local Deep Gate transfers, with rendered-frame transition visibility instead of replacing Valheim's global loading presentation."
+  "version": "0.0.147",
+  "description": "0.0.147: Populates Sulfurous Wastes with stripped burnt-tree, branch, stump and cinder-bush scenery, gives custom Fire Surtlings native biome spawns, and keeps Magenheim loading art scoped to Underworld construction/transit."
 }

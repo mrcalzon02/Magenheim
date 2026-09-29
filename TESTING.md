@@ -4,12 +4,12 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.146 by Local** and start its description with
-**0.0.146: Keeps Magenheim loading art scoped to Underworld construction and local Deep Gate transfers**.
+show **Magenheim v0.0.147 by Local** and start its description with
+**0.0.147: Populates Sulfurous Wastes with stripped burnt-tree, branch, stump and cinder-bush scenery**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.146]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.147]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
@@ -386,3 +386,21 @@ Dedicated servers must never create the UI.
 For each final loading image, verify both promises: the depicted geography/landmarks are attainable,
 and at least one depicted inhabitant has the recognizable body plan of its runtime counterpart.
 A tinted/scaled donor prototype does not validate substantially different finished monster art.
+
+
+## 0.0.147 Sulfurous Wastes population acceptance
+
+Use a newly generated Sulfurous Wastes area. Confirm native vegetation now mixes scorched tree
+silhouettes, fallen/charred branches, burnt stumps and cinder bushes with the sulfur drifts, rock
+chains, vents and three-lavafalls landmark. These are stripped visual vegetation: chopping or
+interacting with them must not expose Ashlands TreeBase/Destructible behavior or donor drops.
+
+Observe natural Fire Surtling population over several spawn intervals. Both authored body variants
+may appear in Sulfurous Wastes, using their existing donor combat/AI/loot, but the combined
+population should remain sparse enough that the biome still reads as an ecosystem rather than a
+continuous combat event. Confirm no Fire Surtling world spawns occur on the Surface or in another
+Underworld biome, then repeat on a second peer and after save/reload.
+
+The 42 ordinary donor creature prototypes remain review-only and are not accepted final biome
+inhabitants. In particular, Lantern Moth still uses the Bat donor body until its custom
+HOST-INSECT-FLY art is generated, exported and runtime-bound.

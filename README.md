@@ -2,7 +2,16 @@
 
 **Magic begins as geology.**
 
-## 0.0.146 testing candidate
+## 0.0.147 testing candidate
+
+Sulfurous Wastes now receives a much denser burnt ecology layer through Magenheim-owned native
+vegetation: multiple scorched tree silhouettes, charred fallen branches, burnt stumps and cinder
+bushes. These are stripped scenery copies, so Valheim's Ashlands harvest/drop behavior is not
+imported. The two authored Fire Surtling bodies now also have native Sulfurous Wastes spawn rows,
+providing a genuine custom inhabitant while the larger donor-creature re-body campaign continues.
+
+### Earlier fixes in 0.0.146
+
 
 Magenheim's custom loading presentation is now explicitly scoped to mod-owned Underworld work:
 native instance construction plus local Deep Gate transfers. Successful synchronous transfers keep
@@ -71,7 +80,7 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.146.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.147.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
 Launch **Modded**. Confirm `Loading [Magenheim 0.0.145]` in the BepInEx log.

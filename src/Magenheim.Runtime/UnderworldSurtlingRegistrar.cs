@@ -73,7 +73,7 @@ internal sealed class UnderworldSurtlingRegistrar : IDisposable
                     SpawnDistance = 22f,
                     MinSpawnRadius = 35f,
                     MaxSpawnRadius = 78f,
-                    MaxSpawned = 4,
+                    MaxSpawned = 2,
                     MinGroupSize = 1,
                     MaxGroupSize = 2,
                     GroupRadius = 5f,
