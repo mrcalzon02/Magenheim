@@ -21,13 +21,12 @@ internal sealed class UnderworldWeatherGameplayRuntime : MonoBehaviour
 
     private readonly Dictionary<long, long> _lastPulseByPlayer = new();
     private UnderworldRuntimeServices? _services;
-    private ManualLogSource? _log;
     private float _nextPollAt;
 
     internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
         _services = services ?? throw new ArgumentNullException(nameof(services));
-        _log = log ?? throw new ArgumentNullException(nameof(log));
+        _ = log ?? throw new ArgumentNullException(nameof(log));
         _sharedServices = services;
     }
 
