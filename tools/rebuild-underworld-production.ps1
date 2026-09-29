@@ -61,9 +61,15 @@ if(!$SkipReview){
     if($LASTEXITCODE -ne 0){throw 'Production review render failed.'}
     & "$PSScriptRoot/blender.ps1" render-underworld-armour-articulation-review
     if($LASTEXITCODE -ne 0){throw 'Underworld armour articulation review failed.'}
+    & "$PSScriptRoot/blender.ps1" render-rootwarren-review
+    if($LASTEXITCODE -ne 0){throw 'Rootwarren dungeon review render failed.'}
     & python "$PSScriptRoot/build-underworld-production-review-sheets.py"
     if($LASTEXITCODE -ne 0){throw 'Production review sheet assembly failed.'}
+    & python "$PSScriptRoot/build-rootwarren-review-sheets.py"
+    if($LASTEXITCODE -ne 0){throw 'Rootwarren review sheet assembly failed.'}
     & python "$PSScriptRoot/verify-underworld-production-review.py"
     if($LASTEXITCODE -ne 0){throw 'Production review completeness gate failed.'}
+    & python "$PSScriptRoot/verify-rootwarren-review.py"
+    if($LASTEXITCODE -ne 0){throw 'Rootwarren visual review completeness gate failed.'}
 }
 Write-Host 'PRODUCTION READY: 25 PBR families, 40 raw/refined material items, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools, armour, and the 17-model Rootwarren dungeon family regenerated and gated.'
