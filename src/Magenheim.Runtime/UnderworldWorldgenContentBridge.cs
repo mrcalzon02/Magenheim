@@ -117,6 +117,31 @@ internal static class UnderworldWorldgenContentBridge
             throw new InvalidOperationException(
                 $"Underworld geothermal catalog incomplete: {UnderworldGeothermalVentRegistrar.Vents.Length - missingVents.Count}/{UnderworldGeothermalVentRegistrar.Vents.Length} live-vent spawners present. Missing: {string.Join(", ", missingVents)}");
 
+        var missingDungeons = new List<string>();
+        foreach (var dungeon in UnderworldDungeonCatalog.All)
+        {
+            if (dungeon.Status != UnderworldDungeonStatus.RuntimeReady) continue;
+            var expectedBiome = UnderworldTerrainRuntime.ToNativeBiome(dungeon.Biome);
+            var found = false;
+            foreach (var location in underworld.m_locations)
+            {
+                if (location is null) continue;
+                var name = location.m_prefab.Name ?? string.Empty;
+                if (!string.Equals(name, dungeon.PrefabName, StringComparison.Ordinal)) continue;
+                if ((location.m_biome & expectedBiome) == Heightmap.Biome.None &&
+                    location.m_biome != expectedBiome)
+                    continue;
+                found = true;
+                break;
+            }
+            if (!found) missingDungeons.Add(dungeon.PrefabName + "@" + dungeon.Biome);
+        }
+
+        if (missingDungeons.Count != 0)
+            throw new InvalidOperationException(
+                "Underworld runtime-ready dungeon catalog incomplete: " +
+                string.Join(", ", missingDungeons));
+
         var missingGeodes = new List<string>();
         foreach (var prefabName in AdmittedGeodePrefabs)
         {
@@ -139,7 +164,16 @@ internal static class UnderworldWorldgenContentBridge
                 string.Join(", ", missingGeodes));
 
         _log?.LogInfo(
-            $"Verified Underworld worldgen resources: {UnderworldResourceCatalog.All.Count}/{UnderworldResourceCatalog.All.Count} resource pickup spawners, {UnderworldGeothermalVentRegistrar.Vents.Length} geothermal vent spawners and {AdmittedGeodePrefabs.Count} geode spawners are instance-local and generation-ready.");
+            $"Verified Underworld worldgen resources: {UnderworldResourceCatalog.All.Count}/{UnderworldResourceCatalog.All.Count} resource pickup spawners, {UnderworldGeothermalVentRegistrar.Vents.Length} geothermal vent spawners, {AdmittedGeodePrefabs.Count} geode spawners and {RuntimeReadyDungeonCount()} runtime-ready dungeon family/families are instance-local and generation-ready.");
+    }
+
+    private static int RuntimeReadyDungeonCount()
+    {
+        var count = 0;
+        foreach (var dungeon in UnderworldDungeonCatalog.All)
+            if (dungeon.Status == UnderworldDungeonStatus.RuntimeReady)
+                count++;
+        return count;
     }
 
     private static ZoneSystem.ZoneVegetation? FindVegetation(
