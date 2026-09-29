@@ -534,11 +534,24 @@ Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the cur
   Verify fresh-world Fracture Zones placement, no Surface leakage of the Underworld-only location,
   full interior build, encounters, host/client agreement, save/reload, return to the owning
   Fracture Zones entrance, and no collision with ordinary Fracture structures or boss locations.
-- [ ] **Author Fungal Rootwarren dungeon assets and runtime binder.**
-  The 16-room Core production manifest is now fixed (entrance, main route, junction, vertical,
-  hazard, resource, encounter and landmark roles with target dimensions). Remaining work is the
-  actual Blender/runtime room payloads, entrance/interior binder, fungal encounter/resource
-  population and native Fungal Forest location admission. No placeholder/dead entrances.
+- [x] **Implement Fungal Rootwarren dungeon runtime and production pipeline — SOURCE COMPLETE, PREFORGE.**
+  The 16-room Core manifest, deterministic 2-3-use topology, collision-safe spatial routing,
+  authored passage graph, reduced exterior Fracture Mouth, buried interior anchor, same-instance
+  return travel, persistent server-owned encounters/resources, Fungal environment binding, native
+  Fungal Forest location registrar, startup validation path, Blender r2 cave-shell author, source
+  verifier, visual review sheets, generated-asset provenance recorder and fail-closed promotion
+  script are all in source. Rootwarren remains Planned until the complete forged payload family
+  exists; no placeholder/dead entrance is admitted.
+- [ ] **Forge/review/promote the 17 Rootwarren model payloads.**
+  Run the prepared manual production forge to generate 16 enclosed room families plus the authored
+  passage source/GLB/runtime payload, inspect the dedicated Rootwarren contact sheets, record
+  generated freshness/provenance, and only then allow the narrow promotion gate to change Fungal
+  Rootwarren from Planned to RuntimeReady. Partial 1-16/17 families or RuntimeReady without the full
+  source/GLB/runtime set are explicit release failures.
+- [ ] **Live-accept Rootwarren worldgen/interior/persistence.**
+  Verify Fungal-only placement and grounding, no Surface leakage, 32-48 major room placements,
+  branch/loop readability, passage seams/slopes, encounter and one-shot resource persistence,
+  host/client agreement, save/reload, and exact Fungal Forest return from the entrance room.
 - [ ] **Author Blackwater Drowned Vaults dungeon kit.**
   Build the flooded/dry route kit with water as structural gameplay and Deep Current progression
   relevance.
