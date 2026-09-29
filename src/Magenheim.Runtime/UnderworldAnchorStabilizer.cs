@@ -21,12 +21,14 @@ internal sealed class UnderworldAnchorStabilizer : MonoBehaviour
     private void OnDisable() => Active.Remove(this);
     private void OnDestroy() => Active.Remove(this);
 
-    internal static bool IsNear(Vector3 position, float extraRadius = 0f)
+    internal static bool IsNear(Vector3 position, int sceneHandle, float extraRadius = 0f)
     {
         if (float.IsNaN(extraRadius) || float.IsInfinity(extraRadius) || extraRadius < 0f) return false;
         foreach (var anchor in Active)
         {
-            if (!anchor || !anchor.isActiveAndEnabled) continue;
+            if (!anchor || !anchor.isActiveAndEnabled || anchor.gameObject.scene.handle != sceneHandle) continue;
+            var view = anchor.GetComponent<ZNetView>();
+            if (view is null || !view.IsValid()) continue;
             var radius = anchor._radius + extraRadius;
             if ((anchor.transform.position - position).sqrMagnitude <= radius * radius) return true;
         }
