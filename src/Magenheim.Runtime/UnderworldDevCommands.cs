@@ -162,7 +162,7 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
             pair.Value.Sort();
             var values = pair.Value;
             var median = values[values.Count / 2];
-            Say($"SURVEY biome {pair.Key}: n={values.Count} y={values[0]:0.0}..{values[^1]:0.0}m median={median:0.0}m.");
+            Say($"SURVEY biome {pair.Key}: n={values.Count} y={values[0]:0.0}..{values[values.Count - 1]:0.0}m median={median:0.0}m.");
         }
 
         var scene = player.gameObject.scene.handle;
