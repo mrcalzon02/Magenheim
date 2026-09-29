@@ -56,6 +56,13 @@ Ordinary biome dungeon production contract:
 `UnderworldBiomeDungeonPlanner` implements that deterministic topology and explicitly rejects Deep
 Fracture so the established megadungeon cannot be silently replaced by the generic planner.
 
+## First ordinary room kit
+
+`UnderworldFungalRootwarrenCatalog` now fixes sixteen Fungal Rootwarren room/model identities with
+explicit entrance, main-route, junction, vertical, hazard, resource, encounter and landmark roles
+and large target dimensions. The generic planner consumes that manifest in source tests. This is
+an asset-production contract only; Rootwarren remains Planned and cannot register an entrance until
+the authored Blender/runtime payloads and interior binder exist.
 ## Current production sequence
 
 1. Live-accept Underworld Deep Fracture.
