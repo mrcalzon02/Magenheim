@@ -36,7 +36,7 @@ for path in (
  "tools/rebuild-staff-production-assets.ps1","tools/rebuild-underworld-production.ps1",
  "tools/author-rootwarren-dungeon.py","tools/verify-rootwarren-dungeon.py",
  "tools/verify-rootwarren-production-contract.py","tools/record-rootwarren-generated-assets.py",
- "tools/rebuild-rootwarren-dungeon.ps1","tools/render-underworld-production-review.py",
+ "tools/promote-rootwarren-runtime.py","tools/rebuild-rootwarren-dungeon.ps1","tools/render-underworld-production-review.py",
  "tools/render-underworld-armour-articulation-review.py",
  "tools/build-underworld-production-review-sheets.py","tools/verify-underworld-production-review.py",
  "tools/verify-underworld-production-assets.py",
@@ -54,7 +54,7 @@ python_sources=(
  "tools/author-underworld-weapons.py","tools/author-crystal-weapons.py",
  "tools/author-rootwarren-dungeon.py","tools/verify-rootwarren-dungeon.py",
  "tools/verify-rootwarren-production-contract.py","tools/record-rootwarren-generated-assets.py",
- "tools/render-underworld-production-review.py","tools/render-underworld-armour-articulation-review.py","tools/build-underworld-production-review-sheets.py",
+ "tools/promote-rootwarren-runtime.py","tools/render-underworld-production-review.py","tools/render-underworld-armour-articulation-review.py","tools/build-underworld-production-review-sheets.py",
  "tools/verify-underworld-production-review.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
  "tools/export-model-assets.py",
 )
