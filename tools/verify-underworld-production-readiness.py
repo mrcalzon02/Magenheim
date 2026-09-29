@@ -57,7 +57,7 @@ for path in (
  "tools/promote-carrion-catacombs-runtime.py","tools/rebuild-carrion-catacombs-dungeon.ps1",
  "tools/render-rime-sepulcher-review.py","tools/build-rime-sepulcher-review-sheets.py","tools/verify-rime-sepulcher-review.py",
  "tools/render-carrion-catacombs-review.py","tools/build-carrion-catacombs-review-sheets.py","tools/verify-carrion-catacombs-review.py",
- "tools/verify-underworld-production-assets.py",
+ "tools/verify-underworld-dungeon-worldgen.py","tools/verify-underworld-production-assets.py",
  ".github/workflows/magenheim-production-forge.yml",
 ):
     require((ROOT/path).is_file(),"missing production file: "+path)
@@ -85,7 +85,7 @@ python_sources=(
  "tools/verify-carrion-catacombs-production-contract.py","tools/record-carrion-catacombs-generated-assets.py",
  "tools/promote-carrion-catacombs-runtime.py","tools/render-rime-sepulcher-review.py","tools/build-rime-sepulcher-review-sheets.py",
  "tools/verify-rime-sepulcher-review.py","tools/render-carrion-catacombs-review.py","tools/build-carrion-catacombs-review-sheets.py",
- "tools/verify-carrion-catacombs-review.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
+ "tools/verify-carrion-catacombs-review.py","tools/verify-underworld-dungeon-worldgen.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
  "tools/export-model-assets.py",
 )
 for source in python_sources:
@@ -333,6 +333,8 @@ require("render-carrion-catacombs-review" in production_rebuild and
         "build-carrion-catacombs-review-sheets.py" in production_rebuild and
         "verify-carrion-catacombs-review.py" in production_rebuild,
         "Carrion Catacombs production forge no longer emits/validates dedicated visual acceptance plates")
+require("verify-underworld-dungeon-worldgen.py" in production_rebuild,
+        "One-run Underworld production forge no longer validates native dungeon spawn routing before Blender")
 
 def literal_assignment(path,name):
     tree=ast.parse((ROOT/path).read_text())
