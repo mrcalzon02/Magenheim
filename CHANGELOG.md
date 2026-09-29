@@ -24,6 +24,15 @@
   same-instance entrance/return travel.
 - Adds the Blender author/verifier plus fail-closed 17/17/17 production, provenance and promotion
   gate. Frozen Caverns remains Planned until those real payloads are forged and verified.
+- Adds the sixteen-family Great Decay Carrion Catacombs authority with Sanctuary, PreservedRuin,
+  TaintedRuin, RootIngress and BlackBloom routes that reuse the existing Great Decay atmosphere,
+  Defiant resistance and Defiant Censer suppression systems.
+- Adds Carrion room/passage registration, deterministic physical interior assembly, role-aware Great
+  Decay encounters/resources, server-owned clear/harvest persistence and exact same-instance return.
+- Adds the Carrion Blender author/verifier plus fail-closed 17/17/17 production/provenance/promotion
+  gate. Great Decay remains Planned until those payloads are physically forged and verified.
+- Reactivates the Cinderworks and Rime Sepulcher Core suites in the executable test harness and adds
+  Carrion catalog/contamination tests.
 - Source candidate only; build and live Underworld placement/return acceptance remain required.
 
 ## 0.0.154 - Bespoke Underworld weather closure
