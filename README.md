@@ -2,7 +2,26 @@
 
 **Magic begins as geology.**
 
-## 0.0.153 testing candidate
+## 0.0.154 testing candidate
+
+The Underworld weather program is now source-complete rather than fog-only. All eight biome-owned
+events have Magenheim-owned procedural VFX; hostile events have server-authoritative gameplay
+pressure; Thermal Surge amplifies the existing geothermal hazard; Black Bloom temporarily increases
+nearby Underworld creature perception; and Crystal Resonance pulses nearby crystal/geode/shard
+renderers before restoring their original material property blocks.
+
+Deep Boons and matching Underworld armour now reduce atmospheric gameplay pressure without deleting
+the visual weather. The Defiant Censer is admitted as a real Crown Reliquary-crafted held item and
+creates a 16m Great Decay suppression radius for nearby players, reducing contamination, fog and
+bespoke particle density. Sporefall, Deep Fog and Crystal Resonance remain deliberately non-damaging
+where their design is visual/navigation rather than arbitrary DOT pressure.
+
+This is source completion, not live acceptance. 0.0.154 still requires a current Valheim build/test
+for particle readability, damage/balance, host/client agreement, Censer radius, crystal restoration
+and correct Surface weather restoration.
+
+### Earlier fixes in 0.0.153
+
 
 The old independent 3,072m monument grid is retired. Terrain height extremes now belong to the
 same jittered Voronoi cells that own biome geography: roughly 5.5% of eligible non-Blackwater land
@@ -155,10 +174,10 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.153.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.154.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
-Launch **Modded**. Confirm `Loading [Magenheim 0.0.153]` in the BepInEx log.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.154]` in the BepInEx log.
 Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
 See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.
