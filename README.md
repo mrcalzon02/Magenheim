@@ -2,7 +2,21 @@
 
 **Magic begins as geology.**
 
-## 0.0.150 testing candidate
+## 0.0.151 testing candidate
+
+Underworld biome geography now uses a hybrid cellular generator instead of smooth noise alone:
+an ideal hex lattice supplies macro spacing, each cell seed may move by up to 50% of the nominal
+hex radius, Voronoi ownership chooses the regional cell, and plasma/domain noise bends and bulges
+the cell edges.
+
+Those Voronoi seams are also the hydrology authority. Strong edge bands are carved below the shared
+water plane and become Blackwater Deep, producing a connected warped river/ocean-depth grid through
+the other biome territories. The river network fades in outside the protected Fungal arrival core
+so the Deep Gate is not surrounded by a synthetic moat. The deepest seams reach roughly 30m below
+water level before rare monumental landforms are applied.
+
+### Earlier fixes in 0.0.150
+
 
 The Underworld biome map is no longer a central disk surrounded by five fixed angular provinces.
 Only the inner 10% radius is guaranteed Fungal Forest. Beyond it, six independently seeded
@@ -110,7 +124,7 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.150.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.151.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
 Launch **Modded**. Confirm `Loading [Magenheim 0.0.145]` in the BepInEx log.
