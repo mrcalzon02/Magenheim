@@ -23,12 +23,12 @@ internal static class UnderworldWorldCenterRegistrar
 
     private static readonly DeepstoneBinding[] Deepstones =
     {
-        new("StoneOfBloom", "magenheim.underworld.deepstone.bloom"),
-        new("StoneOfDeepTide", "magenheim.underworld.deepstone.tide"),
-        new("StoneOfCinder", "magenheim.underworld.deepstone.cinder"),
-        new("StoneOfRime", "magenheim.underworld.deepstone.rime"),
-        new("StoneOfFracture", "magenheim.underworld.deepstone.fracture"),
-        new("StoneOfDecay", "magenheim.underworld.deepstone.decay"),
+        new("StoneOfBloom", "magenheim.underworld.deepstone.bloom", "underworld-deepstone-bloom", new Vector3(2.35f, 7.7f, 1.55f)),
+        new("StoneOfDeepTide", "magenheim.underworld.deepstone.tide", "underworld-deepstone-tide", new Vector3(2.45f, 7.9f, 1.65f)),
+        new("StoneOfCinder", "magenheim.underworld.deepstone.cinder", "underworld-deepstone-cinder", new Vector3(2.55f, 8.1f, 1.65f)),
+        new("StoneOfRime", "magenheim.underworld.deepstone.rime", "underworld-deepstone-rime", new Vector3(2.45f, 8.0f, 1.70f)),
+        new("StoneOfFracture", "magenheim.underworld.deepstone.fracture", "underworld-deepstone-fracture", new Vector3(2.70f, 8.3f, 1.85f)),
+        new("StoneOfDecay", "magenheim.underworld.deepstone.decay", "underworld-deepstone-decay", new Vector3(2.65f, 8.2f, 1.80f)),
     };
 
     internal static GameObject Create(UnderworldWorldIdentity identity, ManualLogSource log)
@@ -96,9 +96,9 @@ internal static class UnderworldWorldCenterRegistrar
     {
         var root = new GameObject(StandingStonesName);
         root.transform.SetParent(parent, false);
-        var box = ModelAssets.LoadSingleMesh("underworld-standing-stone");
+        var monolith = ModelAssets.LoadSingleMesh("underworld-descent-monolith");
         var dais = ModelAssets.LoadSingleMesh("underworld-dais");
-        var stoneMaterial = ModelAssets.LoadSingleMaterial("underworld-standing-stone");
+        var monolithMaterial = ModelAssets.LoadSingleMaterial("underworld-descent-monolith");
         var daisMaterial = ModelAssets.LoadSingleMaterial("underworld-dais");
         const float radius = 12f;
 
@@ -106,20 +106,43 @@ internal static class UnderworldWorldCenterRegistrar
         {
             var binding = Deepstones[i];
             var angle = i * Mathf.PI * 2f / Deepstones.Length;
-            var stone = AddMesh(
+            var stone = AddAuthoredDeepstone(
                 root.transform,
-                binding.ObjectName,
-                box,
-                new Vector3(Mathf.Cos(angle) * radius, 2.8f, Mathf.Sin(angle) * radius),
+                binding,
+                new Vector3(Mathf.Cos(angle) * radius, binding.WorldScale.y * .46f, Mathf.Sin(angle) * radius),
                 Quaternion.Euler(i % 2 == 0 ? -3f : 4f, -angle * Mathf.Rad2Deg + 90f, i % 3 - 1),
-                new Vector3(2.1f, 7.4f + (i % 3) * 0.7f, 1.25f),
-                stoneMaterial,
                 parent.gameObject.layer);
             stone.AddComponent<UnderworldDeepstoneRuntime>().Bind(binding.DeepstoneId);
         }
 
-        AddMesh(root.transform, DescentMonolithName, box, new Vector3(0f, 3.9f, 0f), Quaternion.identity, new Vector3(2.8f, 8.2f, 2.8f), stoneMaterial, parent.gameObject.layer);
+        AddMesh(root.transform, DescentMonolithName, monolith, new Vector3(0f, 3.9f, 0f), Quaternion.identity, new Vector3(2.8f, 8.2f, 2.8f), monolithMaterial, parent.gameObject.layer);
         AddMesh(root.transform, "CenterDais", dais, new Vector3(0f, 0.45f, 0f), Quaternion.identity, new Vector3(17f, 0.9f, 17f), daisMaterial, parent.gameObject.layer);
+    }
+
+    private static GameObject AddAuthoredDeepstone(
+        Transform parent,
+        DeepstoneBinding binding,
+        Vector3 position,
+        Quaternion rotation,
+        int layer)
+    {
+        var node = new GameObject(binding.ObjectName) { layer = layer };
+        node.transform.SetParent(parent, false);
+        node.transform.localPosition = position;
+        node.transform.localRotation = rotation;
+        node.transform.localScale = binding.WorldScale;
+
+        // Deepstones are no longer six instances of one slab. Each canonical stone owns a
+        // multi-part UV-authored model with its own material families, emission and local light.
+        // The model's primary stone part carries the MeshCollider; decorative roots/crystals/bone
+        // remain visual so added silhouette detail does not create snaggy navigation collision.
+        ModelAssets.Load(
+            node,
+            binding.ModelId,
+            hideOriginal: false,
+            parent: node.transform,
+            materialSource: new Material(ModelAssets.ResolveSurfaceShader()));
+        return node;
     }
 
     private static GameObject AddMesh(Transform parent, string name, Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale, Material material, int layer)
@@ -135,5 +158,5 @@ internal static class UnderworldWorldCenterRegistrar
         return node;
     }
 
-    private sealed record DeepstoneBinding(string ObjectName, string DeepstoneId);
+    private sealed record DeepstoneBinding(string ObjectName, string DeepstoneId, string ModelId, Vector3 WorldScale);
 }
