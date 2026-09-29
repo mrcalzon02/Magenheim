@@ -63,6 +63,21 @@ if($LASTEXITCODE -ne 0){throw 'Cinderworks runtime promotion failed after comple
 & python "$PSScriptRoot/verify-cinderworks-production-contract.py"
 if($LASTEXITCODE -ne 0){throw 'Cinderworks RuntimeReady contract failed after promotion.'}
 
+# Rime Sepulcher uses the same asset-earned admission rule. Frozen weather pressure remains
+# canonical runtime atmosphere authority; the forge only produces geometry and runtime model payloads.
+& "$PSScriptRoot/rebuild-rime-sepulcher-dungeon.ps1"
+if($LASTEXITCODE -ne 0){throw 'Rime Sepulcher dungeon production forge failed.'}
+& python "$PSScriptRoot/verify-rime-sepulcher-production-contract.py"
+if($LASTEXITCODE -ne 0){throw 'Rime Sepulcher source/asset contract failed after forge.'}
+& python "$PSScriptRoot/record-rime-sepulcher-generated-assets.py"
+if($LASTEXITCODE -ne 0){throw 'Rime Sepulcher generated-asset provenance recording failed.'}
+& python "$PSScriptRoot/verify-generated-freshness.py" rime-sepulcher-dungeon-models
+if($LASTEXITCODE -ne 0){throw 'Rime Sepulcher generated assets are stale immediately after forge.'}
+& python "$PSScriptRoot/promote-rime-sepulcher-runtime.py"
+if($LASTEXITCODE -ne 0){throw 'Rime Sepulcher runtime promotion failed after complete asset forge.'}
+& python "$PSScriptRoot/verify-rime-sepulcher-production-contract.py"
+if($LASTEXITCODE -ne 0){throw 'Rime Sepulcher RuntimeReady contract failed after promotion.'}
+
 foreach($gate in @(
  'verify-model-assets','verify-model-geometry','verify-model-surface-continuity','verify-model-scale',
  'verify-weapon-materials','verify-held-model-orientation','verify-held-model-grip-direction',
@@ -114,4 +129,4 @@ if(!$SkipReview){
     & python "$PSScriptRoot/verify-cinderworks-review.py"
     if($LASTEXITCODE -ne 0){throw 'Cinderworks visual review completeness gate failed.'}
 }
-Write-Host 'PRODUCTION READY: 25 PBR families, 40 raw/refined material items, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools, armour, and the 17-model Rootwarren, Drowned Vault and Cinderworks dungeon families regenerated and gated.'
+Write-Host 'PRODUCTION READY: 25 PBR families, 40 raw/refined material items, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools, armour, and the 17-model Rootwarren, Drowned Vault, Cinderworks and Rime Sepulcher dungeon families regenerated and gated.'
