@@ -914,3 +914,47 @@ interior independently of the dungeon's own encounter authority.
 
 Do not call Rootwarren live-accepted from Blender review plates, Core tests, or successful runtime
 compilation alone. This full worldgen/interior/persistence pass is the closure gate.
+
+
+## Rime Sepulcher live acceptance
+
+Do not run this section until verify-rime-sepulcher-production-contract.py reports RuntimeReady with
+a complete 17/17/17 source/GLB/runtime family. A Planned Rime Sepulcher must produce no Frozen
+dungeon entrance at all.
+
+### Placement, topology and return
+
+Use fresh Underworld seeds and confirm Magenheim_Underworld_Dungeon_FrozenCaverns appears only in
+Frozen Caverns at the catalog quantity/spacing. Inspect the reduced Rime Mouth on uneven terrain;
+it must read as a geological/ruined entrance rather than a freestanding full dungeon room.
+
+Enter several instances. Rime Mouth must be the deterministic first room, all sixteen room families
+must participate two or three times, the embedded layout must branch and loop, and authored passage
+modules must physically connect rooms without exposed void, unrelated-room intersections or
+teleport-chain substitution. The return portal must reach the exact owning Frozen Caverns entrance
+inside the same Underworld instance.
+
+### Atmosphere and route readability
+
+Walk Shelter, ClearGallery, FrostField, WhiteoutChoke and IceShear routes under both ordinary
+Frozen weather and active Whiteout. Shelter/clear routes must remain readable recovery/navigation
+spaces. Pressure routes must reuse the existing Frozen atmosphere and Rimebound/Rimeward mitigation;
+they must not apply a separate dungeon-only cold damage loop. Passage transitions must inherit a
+sensible exposure state from their endpoint rooms rather than dropping weather state arbitrarily.
+
+### Encounters, resources and persistence
+
+Verify Frost Tick Niche, Iceblind Hunt, Cryolith Guard, White Silence Antechamber and hazard routes
+use Frozen Caverns fauna deliberately while ordinary galleries/shelters are not carpeted with random
+mobs. Host and peer must agree on encounter state. Kill a deterministic dungeon creature, save and
+reload, and verify its identity remains cleared.
+
+Harvest Rimewood, Clear Ice and Rimesilver nodes from resource rooms. Save/reload and verify harvested
+identities remain harvested while untouched nodes remain. Repeat a kill and a harvest from a peer to
+confirm server-owned persistence and the RimeSepulcher Pickable.RPC_Pick patch.
+
+### Live evidence boundary
+
+Check collision, Whiteout readability, Rimebound/Rimeward route advantage, host/client agreement,
+save/reload, return pairing and Surface/Underworld isolation in a real Valheim session. Successful
+source compilation, Blender review or contract scripts alone do not establish live acceptance.
