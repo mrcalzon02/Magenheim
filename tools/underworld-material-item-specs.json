@@ -1,0 +1,162 @@
+{
+  "underworld-resource-slagstone": [
+    "slagstone",
+    "emberiron",
+    "rubble"
+  ],
+  "underworld-resource-sulfur": [
+    "sulfur",
+    "slagstone",
+    "crystal"
+  ],
+  "underworld-resource-charred-timber": [
+    "charred-root",
+    "emberiron",
+    "bundle"
+  ],
+  "underworld-resource-emberiron": [
+    "emberiron",
+    "slagstone",
+    "ore"
+  ],
+  "underworld-resource-rimewood": [
+    "rimewood",
+    "clear-ice",
+    "bundle"
+  ],
+  "underworld-resource-clear-ice": [
+    "clear-ice",
+    "rimesilver",
+    "crystal"
+  ],
+  "underworld-resource-rimesilver": [
+    "rimesilver",
+    "rimewood",
+    "ore"
+  ],
+  "underworld-resource-fracture-crystal": [
+    "fracture-crystal",
+    "shardstone",
+    "crystal"
+  ],
+  "underworld-resource-shardstone": [
+    "shardstone",
+    "fracture-crystal",
+    "rubble"
+  ],
+  "underworld-resource-titanbone": [
+    "titanbone",
+    "shardstone",
+    "bone"
+  ],
+  "underworld-resource-rotwood": [
+    "rotwood",
+    "carrion-amber",
+    "bundle"
+  ],
+  "underworld-resource-decay-spore": [
+    "decay-spore",
+    "rotwood",
+    "spores"
+  ],
+  "underworld-resource-carrion-amber": [
+    "carrion-amber",
+    "bone",
+    "crystal"
+  ],
+  "underworld-resource-bone-gravel": [
+    "bone-gravel",
+    "rotwood",
+    "rubble"
+  ],
+  "underworld-refined-worldroot-plank": [
+    "worldroot-heartwood",
+    "worldroot",
+    "planks"
+  ],
+  "underworld-refined-spire-cord": [
+    "sporeweave-fibre",
+    "worldroot",
+    "cord"
+  ],
+  "underworld-refined-cured-glowcap": [
+    "glowcap",
+    "sporeweave-fibre",
+    "caps"
+  ],
+  "underworld-refined-flowstone-plate": [
+    "flowstone",
+    "pearl-metal",
+    "plates"
+  ],
+  "underworld-refined-pale-cord": [
+    "pale-fibre",
+    "pearl-metal",
+    "cord"
+  ],
+  "underworld-refined-brined-pearl": [
+    "blackwater-pearl",
+    "flowstone",
+    "pearls"
+  ],
+  "underworld-refined-emberiron-bar": [
+    "emberiron",
+    "charred-root",
+    "ingots"
+  ],
+  "underworld-refined-tempered-slag": [
+    "slagstone",
+    "emberiron",
+    "plates"
+  ],
+  "underworld-refined-charred-root-grip": [
+    "charred-root",
+    "emberiron",
+    "grip"
+  ],
+  "underworld-refined-rimesilver-bar": [
+    "rimesilver",
+    "rimewood",
+    "ingots"
+  ],
+  "underworld-refined-iceglass-lens": [
+    "clear-ice",
+    "rimesilver",
+    "lens"
+  ],
+  "underworld-refined-rimewood-laminate": [
+    "rimewood",
+    "rimesilver",
+    "planks"
+  ],
+  "underworld-refined-titanbone-plate": [
+    "titanbone",
+    "forged-brace",
+    "plates"
+  ],
+  "underworld-refined-shardstone-block": [
+    "shardstone",
+    "fracture-crystal",
+    "block"
+  ],
+  "underworld-refined-fracture-prism": [
+    "fracture-crystal",
+    "titanbone",
+    "prism"
+  ],
+  "underworld-refined-carrion-amber-seal": [
+    "carrion-amber",
+    "bone",
+    "seal"
+  ],
+  "underworld-refined-ossuary-composite": [
+    "bone",
+    "carrion-amber",
+    "block"
+  ],
+  "underworld-refined-rotwood-laminate": [
+    "rotwood",
+    "carrion-amber",
+    "planks"
+  ]
+}
