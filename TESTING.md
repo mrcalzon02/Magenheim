@@ -844,176 +844,87 @@ production rule of 15-20 unique large room families, each used 2-3 times, with a
 topology and at least one bounded cross-link/loop in a normal large plan. Deep Fracture must remain
 rejected by that generic planner because it retains its bespoke expedition authority.
 
-## Rootwarren live acceptance
+## Expanded vanilla Underworld dungeon acceptance
 
-Do not run this section until the Rootwarren production contract reports RuntimeReady with a
-complete 17/17/17 source/GLB/runtime family and the visual-review sheets have been inspected.
+The five ordinary Underworld dungeons deliberately reuse vanilla architecture. Deep Fracture is
+excluded from this section and must retain its bespoke Magenheim expedition.
 
-### Location placement
+Do not run this as an acceptance pass until the relevant ordinary dungeon definitions are promoted
+from Planned to RuntimeReady. Planned entries must seed no entrance.
 
-Use at least two fresh Underworld seeds. Survey Fungal Forest broadly enough to encounter multiple
-Rootwarren locations. The target catalog is eight Fungal Forest locations with 900m minimum
-same-family spacing. No Rootwarren location may generate in Blackwater Deep, Sulfurous Wastes,
-Frozen Caverns, Fracture Zones or Great Decay, and no Magenheim_Underworld_Dungeon_FungalForest
-location may leak into Surface generation.
+### Donor identity and isolation
 
-Inspect every discovered entrance from all sides and on sloped terrain. The reduced Fracture Mouth
-must look embedded into the generated cave terrain rather than sitting as a freestanding prop,
-floating, clipping deeply below ground or exposing the buried full-size entrance chamber.
+Test all five mappings:
 
-### Interior geometry and topology
+- Fungal Forest -> Burial Chambers (`DG_ForestCrypt`);
+- Blackwater Deep -> Sunken Crypts (`DG_SunkenCrypt`);
+- Sulfurous Wastes -> Infested Mines (`DG_DvergrTown`);
+- Frozen Caverns -> Frost Caves (`DG_Cave`);
+- Great Decay -> Winding Tunnels (`DG_Hole`).
 
-Enter several Rootwarrens generated from different location seeds. Each run should contain 32-48
-major authored room placements because every one of the sixteen room families is used two or three
-times. The first room must always be the Fracture Mouth family. Runs must visibly branch and contain
-loops/cross-links; a generated dungeon that reads as one linear hallway is a regression.
+1. The entrance, room shapes, connection grammar, doors and general construction must be
+   recognizably derived from the named vanilla dungeon. A player familiar with Valheim should
+   recognize the donor before reading a label.
+2. Verify the matching Surface vanilla dungeon remains completely unchanged: normal room scale,
+   normal room count, normal creatures, normal loot and normal entrance behavior.
+3. Verify no Magenheim bespoke Rootwarren/Drowned Vault/Cinderworks/Rime Sepulcher/Carrion
+   Catacombs room model appears in these five ordinary donor dungeons. Deep Fracture remains the
+   separate custom-architecture lane.
 
-Inspect Mycelial Gallery, Glowcap Vault, Spore Basin, Root Bridge, Sunken Nursery, Tangle Junction,
-Shelf Drop, Amber Grotto, Worldroot Hollow, Capcrawler Nest, Mycelial Stalker Den, Puffback Graze,
-Buried Archway, Root Squeeze and Heartcap Sanctum. Reused families should differ by route context,
-orientation, population and surrounding branches enough that reuse reads as a cave system rather
-than copy/paste repetition.
+### 1.5x physical scale
 
-Every major chamber must have an authored collidable cavern shell, readable ceiling/side boundaries,
-and open approach gaps where routed passages enter. The reusable passage must have its own
-collidable shell and floor. Walk every transition, especially vertical routes and multi-leg detours,
-looking for gaps, overlapping collision, abrupt floor lips, impassable pitch, exposed void, or a
-passage tunneling through an unrelated room.
+4. Measure representative straight corridors, large rooms, vertical rooms and connection spacing.
+   The private donor-room clones must be at least 1.5x the donor linear dimensions.
+5. Inspect room-to-room joins and door openings. Enlarged geometry, `Room.m_size` collision bounds,
+   connection transforms and cloned donor doors must agree: no overlapping rooms, undersized
+   collision boxes, 1.0x doors floating in 1.5x openings, gaps or blocked joins.
+6. Exercise stairs, ladders, drops, ledges and narrow turns. Scaling may make the spaces grander but
+   must not make vanilla navigation mechanics unreachable or break AI pathing.
 
-### Encounters and resources
+### 3.5x exploration scope
 
-Verify encounter rooms use Fungal Forest inhabitants rather than generic dungeon enemies:
-Capcrawlers and Sporelings in crawler/hazard spaces, Mycelial Stalkers/Shelf Lurkers in the den,
-Puffback in the graze, and Crowncap Brute pressure in Heartcap Sanctum. Host and peer must agree on
-the same living encounter state.
+7. For each donor, record the live donor generator's `m_minRooms` and `m_maxRooms`, then inspect
+   the Magenheim clone. Its min/max values must be at least ceil(vanilla * 3.5); do not compare
+   against permanently hard-coded historical room counts.
+8. Generate several seeds per biome. The result should feel like the vanilla donor extended into a
+   major expedition rather than the same dungeon with more empty repetitions. Branches, dead ends,
+   required rooms and donor-specific construction behavior should still vary naturally.
+9. Confirm the legal generator zone has expanded enough for the larger room count and 1.5x room
+   footprint. Reject repeated placement failures, generation truncation or large empty boundary
+   regions caused by the old vanilla zone size.
 
-Kill a persistent dungeon creature, save/reload, and revisit the same room. That deterministic
-spawn identity must remain cleared. Do the same after a peer lands the killing blow.
+### Magenheim ecology and resources
 
-In Sunken Nursery and Amber Grotto, harvest several native Fungal resource pickups. Save/reload and
-revisit. Harvested nodes must remain harvested; untouched deterministic nodes must remain present.
-Repeat one harvest from a peer. This specifically verifies the Rootwarren Pickable.RPC_Pick
-persistence patch is active and prevents reload farming.
+10. No vanilla dungeon creature may spawn from a reused room. Existing donor `CreatureSpawner`
+    and `SpawnArea` sockets should produce only creatures from the owning Underworld biome roster.
+11. Vanilla dungeon treasure and resource progression must be absent. Chests, pickables, mineables
+    and destroyable resource fixtures must resolve to the owning biome's canonical Underworld raw
+    resources rather than Skeleton/Draugr/Cultist/Mistlands/Ashlands reward tables.
+12. Verify common resources occur often enough to reward exploration while rare progression
+    materials remain meaningfully scarce. A 3.5x dungeon must not simply multiply rare resources
+    3.5x until overworld/biome gathering becomes irrelevant.
+13. Kill/clear enemies, loot containers and harvest resources, then save/reload. Confirm ordinary
+    Valheim dungeon persistence remains coherent and no duplicate reward population appears.
+14. Repeat representative combat/resource rooms with a second peer. Host and client must observe
+    the same generated dungeon, creatures, opened containers and harvested state.
 
-### Environment and return
+### Biome confinement and return
 
-The interior must use the Fungal Forest Underworld environment family rather than a Surface crypt
-weather/sky. Fungal haze and lighting should remain readable without Surface sun/rain intrusion.
+15. Each reused dungeon location may generate only in its owning native Underworld biome and must
+    never leak to Surface worldgen.
+16. Entrance/exit behavior must remain the donor's proven dungeon travel mechanism but return to
+    the exact owning Underworld entrance, never the Surface, Conclave, Deep Gate or another dungeon.
+17. Save/reload while one player is inside and another remains in the Underworld exterior. Both
+    players must retain coherent native-instance membership and dungeon ownership/return pairing.
 
-Use the return portal in the entrance room. It must return to the exact owning Fungal Forest mouth
-inside the same Underworld instance, not to the Surface, Conclave, Deep Gate, or a different
-Rootwarren. Repeat after save/reload and from a second peer.
+### Deep Fracture separation
 
-### Persistence and isolation
+18. Re-run one Deep Fracture expedition after enabling an ordinary donor dungeon. Its custom
+    twenty-district architecture, custom room set, encounters, traversal and return path must be
+    unchanged. Generic donor-room reuse must never absorb or replace Deep Fracture.
 
-Save/reload with one player deep inside a Rootwarren and another outside in Fungal Forest. Verify
-the exterior location, generated room graph, encounter-clear state, harvested-resource state and
-return pairing remain coherent. Rootwarren interior objects must not appear in neighboring normal
-Fungal chunks, and ordinary Fungal scenery/native creature spawning must not populate the buried
-interior independently of the dungeon's own encounter authority.
-
-Do not call Rootwarren live-accepted from Blender review plates, Core tests, or successful runtime
-compilation alone. This full worldgen/interior/persistence pass is the closure gate.
-
-
-## Rime Sepulcher live acceptance
-
-Do not run this section until verify-rime-sepulcher-production-contract.py reports RuntimeReady with
-a complete 17/17/17 source/GLB/runtime family. A Planned Rime Sepulcher must produce no Frozen
-dungeon entrance at all.
-
-### Placement, topology and return
-
-Use fresh Underworld seeds and confirm Magenheim_Underworld_Dungeon_FrozenCaverns appears only in
-Frozen Caverns at the catalog quantity/spacing. Inspect the reduced Rime Mouth on uneven terrain;
-it must read as a geological/ruined entrance rather than a freestanding full dungeon room.
-
-Enter several instances. Rime Mouth must be the deterministic first room, all sixteen room families
-must participate two or three times, the embedded layout must branch and loop, and authored passage
-modules must physically connect rooms without exposed void, unrelated-room intersections or
-teleport-chain substitution. The return portal must reach the exact owning Frozen Caverns entrance
-inside the same Underworld instance.
-
-### Atmosphere and route readability
-
-Walk Shelter, ClearGallery, FrostField, WhiteoutChoke and IceShear routes under both ordinary
-Frozen weather and active Whiteout. Shelter/clear routes must remain readable recovery/navigation
-spaces. Pressure routes must reuse the existing Frozen atmosphere and Rimebound/Rimeward mitigation;
-they must not apply a separate dungeon-only cold damage loop. Passage transitions must inherit a
-sensible exposure state from their endpoint rooms rather than dropping weather state arbitrarily.
-
-### Encounters, resources and persistence
-
-Verify Frost Tick Niche, Iceblind Hunt, Cryolith Guard, White Silence Antechamber and hazard routes
-use Frozen Caverns fauna deliberately while ordinary galleries/shelters are not carpeted with random
-mobs. Host and peer must agree on encounter state. Kill a deterministic dungeon creature, save and
-reload, and verify its identity remains cleared.
-
-Harvest Rimewood, Clear Ice and Rimesilver nodes from resource rooms. Save/reload and verify harvested
-identities remain harvested while untouched nodes remain. Repeat a kill and a harvest from a peer to
-confirm server-owned persistence and the RimeSepulcher Pickable.RPC_Pick patch.
-
-### Live evidence boundary
-
-Check collision, Whiteout readability, Rimebound/Rimeward route advantage, host/client agreement,
-save/reload, return pairing and Surface/Underworld isolation in a real Valheim session. Successful
-source compilation, Blender review or contract scripts alone do not establish live acceptance.
-
-
-## Carrion Catacombs live acceptance
-
-Do not run this section until verify-carrion-catacombs-production-contract.py reports RuntimeReady
-with a complete 17/17/17 source/GLB/runtime family. While GreatDecay remains Planned, no Carrion
-Catacombs entrance may seed into a world.
-
-### Placement, topology and architectural progression
-
-Use fresh Underworld seeds and verify Magenheim_Underworld_Dungeon_GreatDecay appears only in Great
-Decay at the catalog quantity/spacing. Inspect the reduced Ossuary Gate on uneven terrain; it must
-read as a buried funerary entrance rather than a freestanding full-size interior room.
-
-Enter several instances. Ossuary Gate must remain the deterministic first room. All sixteen room
-families must participate two or three times with branching and loops. Walk every adaptive passage,
-including vertical routes, and reject exposed void, unrelated-room intersections, abrupt collision
-lips or any teleport-chain substitution.
-
-The dungeon must visibly progress from readable stone/ossuary architecture through tainted ruins
-into root ingress and near-total biological occupation. BlackBloom rooms must look more consumed
-than PreservedRuin/Sanctuary rooms without becoming visual-noise sludge.
-
-### Contamination, Defiant progression and Censer workspaces
-
-Walk Sanctuary, PreservedRuin, TaintedRuin, RootIngress and BlackBloom routes with no matching
-progression, with Defiant Flesh/Defiant armour, and with an active Defiant Censer. Pressure routes
-must reuse the existing Great Decay atmosphere and Black Bloom event; there must be no independent
-dungeon-only contamination meter or immunity.
-
-Defiant Flesh/armour should materially reduce exposure while preserving the biome's visual identity.
-A held Censer must create the existing 16m suppression radius inside the dungeon. In Censer Court
-and Defiant Work Chapel, verify that radius creates a useful local work/recovery area rather than
-merely changing a HUD number. Leaving the radius must restore the authored route pressure.
-
-### Encounters, resources and persistence
-
-Verify Rotling Warrens, Spore Husk Cloister, Graft Warden Hall, Miasma Nave, Carrion Sluice and
-Corpse Orchard Antechamber use deliberate Great Decay fauna while preserved halls and Sanctuaries
-are not carpeted with random mobs. Host and peer must agree on encounter state. Kill a deterministic
-dungeon creature, save/reload, and verify its identity remains cleared.
-
-Harvest Rotwood, Decay Spore, Carrion Amber and Bone Gravel from resource rooms. Save/reload and
-verify harvested identities remain harvested while untouched deterministic nodes remain. Repeat a
-kill and a harvest from a peer to verify server-owned persistence and the Carrion Catacombs
-Pickable.RPC_Pick patch.
-
-### Return and live evidence boundary
-
-The return portal must reach the exact owning Great Decay entrance in the same Underworld instance.
-Repeat after save/reload and from a peer. Carrion interior objects must not leak into ordinary Great
-Decay chunks or Surface generation.
-
-Do not call Carrion Catacombs live-accepted from source review, Core tests, Blender output or
-production contract scripts alone. Collision, atmosphere readability, Censer radius, multiplayer
-persistence, save/reload and return pairing require a real Valheim session.
+Do not call this system live-accepted from Core tests or source inspection alone. Closure requires
+actual generated donor dungeons at 1.5x room scale and >=3.5x donor room count in installed Valheim.
 
 
 ## Underworld dungeon native placement audit
