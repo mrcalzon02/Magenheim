@@ -60,7 +60,7 @@ def motif_value(motif,x,y,phase):
     if motif=="heat": return .70*sin((nx+ny)*2*pi*8+phase)+.22*cos(nx*2*pi*31)
     if motif=="ice": return .50*sin((nx-ny)*2*pi*16)+.35*cos((nx+ny)*2*pi*11+phase)
     if motif=="bone": return .58*sin(ny*2*pi*14+sin(nx*2*pi*5))+.22*cos(nx*2*pi*32)
-    if motif=="crystal": return .52*sin((nx+ny)*2*pi*14)+.35*cos((nx*1.7-ny)*2*pi*9+phase)
+    if motif=="crystal": return .52*sin((nx+ny)*2*pi*14)+.35*cos((nx*17-ny*9)*2*pi+phase)
     if motif=="amber": return .56*cos((nx+ny)*2*pi*9+phase)+.30*sin(ny*2*pi*19)
     return sin(nx*2*pi*15+phase)*cos(ny*2*pi*13)
 
