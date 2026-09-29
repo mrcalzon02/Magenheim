@@ -330,6 +330,39 @@ require("render-carrion-catacombs-review" in production_rebuild and
         "verify-carrion-catacombs-review.py" in production_rebuild,
         "Carrion Catacombs production forge no longer emits/validates dedicated visual acceptance plates")
 
+def literal_assignment(path,name):
+    tree=ast.parse((ROOT/path).read_text())
+    for node in tree.body:
+        if isinstance(node,(ast.Assign,ast.AnnAssign)):
+            targets=node.targets if isinstance(node,ast.Assign) else [node.target]
+            if any(isinstance(target,ast.Name) and target.id==name for target in targets):
+                return ast.literal_eval(node.value)
+    raise ValueError(path+" missing literal "+name)
+
+review_families=(
+    ("tools/author-rootwarren-dungeon.py","tools/render-rootwarren-review.py",
+     "tools/build-rootwarren-review-sheets.py","tools/verify-rootwarren-review.py"),
+    ("tools/author-drowned-vaults-dungeon.py","tools/render-drowned-vaults-review.py",
+     "tools/build-drowned-vaults-review-sheets.py","tools/verify-drowned-vaults-review.py"),
+    ("tools/author-cinderworks-dungeon.py","tools/render-cinderworks-review.py",
+     "tools/build-cinderworks-review-sheets.py","tools/verify-cinderworks-review.py"),
+    ("tools/author-rime-sepulcher-dungeon.py","tools/render-rime-sepulcher-review.py",
+     "tools/build-rime-sepulcher-review-sheets.py","tools/verify-rime-sepulcher-review.py"),
+    ("tools/author-carrion-catacombs-dungeon.py","tools/render-carrion-catacombs-review.py",
+     "tools/build-carrion-catacombs-review-sheets.py","tools/verify-carrion-catacombs-review.py"),
+)
+for author_path,render_path,sheet_path,verify_path in review_families:
+    try:
+        spec_keys=set(literal_assignment(author_path,"SPECS"))
+        for review_path in (render_path,sheet_path,verify_path):
+            review_suffixes=literal_assignment(review_path,"SUFFIXES")
+            require(len(review_suffixes)==len(set(review_suffixes)),
+                    review_path+" contains duplicate review suffixes")
+            require(set(review_suffixes)==spec_keys,
+                    review_path+" no longer covers exactly the authoritative dungeon SPECS")
+    except (ValueError,SyntaxError) as error:
+        fail.append(str(error))
+
 wrapper=(ROOT/"tools"/"blender.ps1").read_text()
 require("MAGENHEIM_BLENDER" in wrapper,"Blender wrapper cannot accept the Actions executable through environment")
 workflow_path=ROOT/".github/workflows/magenheim-production-forge.yml"
@@ -361,6 +394,26 @@ if workflow_path.is_file():
         require(contract_name in workflow,"workflow post-forge admission no longer covers "+contract_name)
     require("Post-forge dungeon admission gates" in workflow,
             "workflow post-forge step must represent all five promoted dungeon families")
+    parser_match=re.search(r'\$parseScripts\s*=\s*@\((.*?)\n\s*\)',workflow,re.DOTALL)
+    require(parser_match is not None,"workflow cheap PowerShell parser block is missing")
+    parser_block=parser_match.group(1) if parser_match else ""
+    expected_wrappers={"blender.ps1","rebuild-underworld-production.ps1"}
+    for gid in scope["regenerate"]:
+        for token in entries[gid].get("command",[]):
+            if isinstance(token,str) and token.lower().endswith(".ps1"):
+                expected_wrappers.add(Path(token).name)
+    expected_wrappers.update(re.findall(r'\$PSScriptRoot/([^"\']+\.ps1)',production_rebuild))
+    for wrapper_name in sorted(expected_wrappers):
+        require(("tools/"+wrapper_name) in parser_block,
+                "workflow cheap parser no longer covers active production wrapper "+wrapper_name)
+
+    post_match=re.search(r'- name: Post-forge dungeon admission gates\s+shell: pwsh\s+run: \|(.*?)(?=\n\s*- name:)',workflow,re.DOTALL)
+    require(post_match is not None,"workflow post-forge dungeon gate block is missing")
+    post_block=post_match.group(1) if post_match else ""
+    promoted_contracts=sorted(set(re.findall(r'(verify-[a-z0-9-]+-production-contract\.py)',production_rebuild)))
+    for contract_name in promoted_contracts:
+        require(contract_name in post_block,
+                "workflow post-forge admission no longer re-verifies promoted contract "+contract_name)
 
 patterns={}
 for gid in scope["regenerate"]:
