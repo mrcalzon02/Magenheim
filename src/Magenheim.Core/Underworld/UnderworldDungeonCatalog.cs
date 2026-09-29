@@ -77,19 +77,19 @@ public static class UnderworldDungeonCatalog
     // Working identities for the five new biome dungeon programs. Their names may be refined with
     // the authored room kits; ids/prefabs are the stable code-facing identities.
     public static UnderworldDungeonDefinition FungalForest { get; } = Planned(
-        "fungal_forest", "Fungal Forest Dungeon",
+        "fungal_forest", "Rootwarren",
         UnderworldTerrainBiome.FungalForest, quantity: 8, spacing: 900d);
 
     public static UnderworldDungeonDefinition BlackwaterDeep { get; } = Planned(
-        "blackwater_deep", "Blackwater Deep Dungeon",
+        "blackwater_deep", "Drowned Vaults",
         UnderworldTerrainBiome.BlackwaterDeep, quantity: 7, spacing: 1050d);
 
     public static UnderworldDungeonDefinition SulfurousWastes { get; } = Planned(
-        "sulfurous_wastes", "Sulfurous Wastes Dungeon",
+        "sulfurous_wastes", "Cinderworks",
         UnderworldTerrainBiome.SulfurousWastes, quantity: 7, spacing: 1050d);
 
     public static UnderworldDungeonDefinition FrozenCaverns { get; } = Planned(
-        "frozen_caverns", "Frozen Caverns Dungeon",
+        "frozen_caverns", "Rime Sepulcher",
         UnderworldTerrainBiome.FrozenCaverns, quantity: 7, spacing: 1100d);
 
     /// <summary>
@@ -112,7 +112,7 @@ public static class UnderworldDungeonCatalog
         MaximumRoomFamilyUses: 1);
 
     public static UnderworldDungeonDefinition GreatDecay { get; } = Planned(
-        "great_decay", "Great Decay Dungeon",
+        "great_decay", "Carrion Catacombs",
         UnderworldTerrainBiome.GreatDecay, quantity: 6, spacing: 1200d);
 
     public static IReadOnlyList<UnderworldDungeonDefinition> All { get; } =
