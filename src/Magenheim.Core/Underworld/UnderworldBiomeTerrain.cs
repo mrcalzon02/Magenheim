@@ -5,7 +5,7 @@ namespace Magenheim.Core.Underworld;
 /// <summary>Metre-scale geography per biome. Amplitudes bound the noise naturally; heights are never clipped.</summary>
 public static class UnderworldBiomeTerrain
 {
-    public const string AlgorithmId = "biome-relief-v2-unclipped-provinces";
+    public const string AlgorithmId = "biome-relief-v3-unclipped-organic-fields";
     private enum Form { Rolling, Ridges, Faults, Basins }
     private sealed record Profile(double Offset, double RegionalLift, Form Form,
         double[] Wavelengths, double[] Amplitudes);
