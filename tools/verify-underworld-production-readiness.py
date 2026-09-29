@@ -227,6 +227,31 @@ for donor in ("DG_ForestCrypt","DG_SunkenCrypt","DG_DvergrTown","DG_Cave","DG_Ho
             "ordinary Underworld vanilla-reuse authority lost donor "+donor)
 require("AllowMagenheimAuthoredRoomInjection: false" in reuse_authority,
         "ordinary Underworld dungeon authority must forbid bespoke room injection")
+
+plugin=(ROOT/"src"/"Magenheim.Runtime"/"MagenheimPlugin.cs").read_text()
+reuse_runtime=(ROOT/"src"/"Magenheim.Runtime"/"UnderworldVanillaDungeonRegistrar.cs").read_text()
+require("_underworldVanillaDungeonRegistrar=new UnderworldVanillaDungeonRegistrar" in plugin,
+        "ordinary Underworld dungeons are not bound to the vanilla-reuse runtime registrar")
+for retired_registrar in (
+    "new RootwarrenRoomRegistrar","new RootwarrenLocationRegistrar",
+    "new DrownedVaultRoomRegistrar","new DrownedVaultLocationRegistrar",
+    "new CinderworksRoomRegistrar","new CinderworksLocationRegistrar",
+    "new RimeSepulcherRoomRegistrar","new RimeSepulcherLocationRegistrar",
+    "new CarrionCatacombsRoomRegistrar","new CarrionCatacombsLocationRegistrar",
+):
+    require(retired_registrar not in plugin,
+            "legacy bespoke ordinary dungeon registrar re-entered plugin startup: "+retired_registrar)
+for token in (
+    "clone.transform.localScale *= scale",
+    "room.m_size = new Vector3Int",
+    "generator.m_minRooms = profile.ExpandedMinimumRooms(vanillaMin)",
+    "generator.m_maxRooms = profile.ExpandedMaximumRooms(vanillaMax)",
+    "generator.m_tileWidth *= (float)profile.LinearRoomScale",
+    "CloneAndScaleDoors(generator, profile)",
+    "RebindPopulation(clone, profile, index)",
+):
+    require(token in reuse_runtime,
+            "vanilla-reuse runtime lost required scale/expansion/ecology behavior: "+token)
 for retired in (
     "rebuild-rootwarren-dungeon.ps1","rebuild-drowned-vaults-dungeon.ps1",
     "rebuild-cinderworks-dungeon.ps1","rebuild-rime-sepulcher-dungeon.ps1",
