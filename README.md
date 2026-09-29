@@ -2,7 +2,22 @@
 
 **Magic begins as geology.**
 
-## 0.0.154 testing candidate
+## 0.0.155 testing candidate
+
+Deep structure work is now active. The existing Deep Fracture expedition is admitted as a sparse
+Fracture Zones dungeon inside the Underworld: six entrances per world, at least 1.4 km apart, using
+the same authored 20-district expedition, encounters, passages, traversal links and return path as
+Surface Deep Fractures. The return portal is entrance-context aware, so an Underworld fracture
+returns to its Fracture Zones entrance instead of implying a Surface transition.
+
+A durable six-biome dungeon catalog now exists. Deep Fracture is the only runtime-ready entry; the
+other five remain deliberately non-spawning until real interiors exist. Their shared production
+contract is 15-20 large themed room families reused 2-3 times per run. The new deterministic biome
+dungeon planner produces a connected branching topology with cross-links rather than a straight
+corridor chain.
+
+### Earlier fixes in 0.0.154
+
 
 The Underworld weather program is now source-complete rather than fog-only. All eight biome-owned
 events have Magenheim-owned procedural VFX; hostile events have server-authoritative gameplay
@@ -174,10 +189,10 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.154.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.155.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
-Launch **Modded**. Confirm `Loading [Magenheim 0.0.154]` in the BepInEx log.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.155]` in the BepInEx log.
 Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
 See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.
