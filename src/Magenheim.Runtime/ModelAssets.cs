@@ -254,13 +254,16 @@ internal static class ModelAssets
         var originals = attachSkin.gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true);
         if (originals.Length == 0) throw new InvalidOperationException("Equipment donor attach_skin has no skinned renderer: " + prefab.name);
         var available = originals.SelectMany(renderer => (renderer.bones ?? Array.Empty<Transform>())
-            .Concat(renderer.rootBone ? new[] { renderer.rootBone } : Array.Empty<Transform>()))
+            .Concat(renderer.rootBone ? new[] { renderer.rootBone! } : Array.Empty<Transform>()))
             .Where(value => value).GroupBy(value => value.gameObject.name, StringComparer.Ordinal)
             .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
         var bones = new Transform[names.Length];
         for (var i = 0; i < names.Length; i++)
-            if (!available.TryGetValue(names[i], out bones[i]!))
+        {
+            if (!available.TryGetValue(names[i], out var resolved))
                 throw new InvalidOperationException($"Equipment donor {prefab.name} lacks attach_skin bone '{names[i]}' for {id}.");
+            bones[i] = resolved;
+        }
         var rootName = (string?)skinRig["root"] ?? "Hips";
         if (!available.TryGetValue(rootName, out var rootBone))
             throw new InvalidOperationException($"Equipment donor {prefab.name} lacks skin root '{rootName}' for {id}.");
