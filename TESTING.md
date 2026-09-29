@@ -4,12 +4,12 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.152 by Local** and start its description with
-**0.0.152: Adds a plasma-warped edge-ocean fade around the Underworld terrain plate**.
+show **Magenheim v0.0.153 by Local** and start its description with
+**0.0.153: Retires arbitrary terrain spires in favor of rare biome-owned massif cells**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.152]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.153]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
@@ -35,10 +35,10 @@ Check the dry, gentle first 80 metres around the gate, then increasing hills to 
 Explore all six biomes: fungal hills, flooded Blackwater basins, sulfur ridges, frozen ranges,
 faulted Fracture Zones and sunken decay. Cross both central and outer biome borders and confirm
 continuous ground, terrain collision, water placement and scenery grounding on steep slopes.
-Check tall monument summits, gate return, reload and two peers viewing the same terrain.
+Check rare massif-cell crowns and walls, gate return, reload and two peers viewing the same terrain.
 These live appearance, traversal, persistence and multiplayer checks remain pending.
 
-## Monumental terrain acceptance — 0.0.108
+## Rare-cell massif terrain acceptance — 0.0.153
 
 ### Fungal canopy variety acceptance — 0.0.108
 
@@ -54,18 +54,22 @@ Offline authoring and import tests do not establish these in-game results.
 ### Terrain regression checks
 
 Use a disposable world. Enter the paired Underworld and allow roughly 30 seconds for the
-budgeted distant terrain presentation to fill. Inspect from the basin, at a cliff base and from
-a plateau crown: occasional needle spires and broad plateaus must rise kilometres above the
-floor with sharp edges. Ordinary hills should remain between them; the arrival basin stays
-walkable. Move across several 64m chunk boundaries and look for cracks or overlapping surfaces,
-including along 1024m distant-tile boundaries. Inspect cliff textures for vertical smearing.
+budgeted distant terrain presentation to fill. Find at least one rare massif cell with
+`magenheim_underworld survey 1200`, then inspect it from the surrounding Blackwater seam, at the
+cell wall and from the crown. Most of the cell interior should rise dramatically while retaining
+its own biome ridges/basins/faults; it must not converge to an isolated needle spire. Ordinary
+cells must remain common and the protected arrival basin must stay walkable.
 
-Observe clear-air silhouettes, dense biome mist and weather separately. Return to the Surface
-and confirm camera distance and fog restore. Check frame time during first horizon construction
-and while crossing chunk boundaries. At plateau height, verify standing collision, map/layer
+Move across several 64m chunk boundaries and along the widened Voronoi/Blackwater walls. Look for
+cracks, overlapping surfaces, vertical-smear artifacts and abrupt one-sample height discontinuities.
+The nominal river band is now wider (440m before plasma variation), so the channels should read as
+substantial subterranean cuts rather than hairline cracks.
+
+Observe clear-air silhouettes, dense biome mist and weather separately. Return to the Surface and
+confirm camera distance and fog restore. At massif height, verify standing collision, map/layer
 identity and return travel. Recheck Motherbed, Drowned Ring, Furnace Heart and Sigil placement
-against the changed terrain, then multiplayer agreement and save/reload. None of these live
-checks are established by the offline geometry renders or Core tests.
+against the changed terrain, then multiplayer agreement and save/reload. None of these live checks
+are established by offline sampling or Core tests.
 
 ## Sunless sky and haze acceptance - 0.0.108
 
@@ -486,8 +490,9 @@ occurs, and host/client observe the same creatures.
 
 After entering the Underworld, run `magenheim_underworld survey` in each biome, then repeat with
 `survey 1200` from at least one high overlook. Preserve the console output with a screenshot of
-the same view. The terrain rows must agree with the visible biome and relief, monumental-samples
-must correspond to actual giant landform footprints when present, and every reported structure
+the same view. The terrain rows must agree with the visible biome and relief,
+rare-cell-massif-samples must correspond to actual lifted biome-cell interiors when present, and
+every reported structure
 must be an actually loaded Magenheim native location in the current Underworld scene.
 
 The inhabitant section is observational only: it reports living characters already present within
@@ -552,3 +557,29 @@ band: edge-ocean carving is intentionally applied after monumental terrain. Veri
 Blackwater weather/ecology, water rendering, swimming/boat traversal, terrain streaming, save/reload
 and a second peer agree at the same coordinates. The actual hard domain edge should only be
 encountered beyond the deep-water barrier.
+
+
+## 0.0.153 progression-height and massif acceptance
+
+Use a fresh disposable Underworld because biome ownership and height authority changed again.
+Across a broad route from centre toward the outer ocean, the *nominal* terrain should trend upward
+with progression: Fungal country lowest, then Blackwater land cells, Sulfur, Frozen, Fracture and
+Great Decay progressively higher. Local ridges, basins and rivers may cross those baselines; the
+rule is a statistical/landscape tendency, not six concentric terraces.
+
+Biome occurrence should also trend with distance without becoming radial rings. Earlier biomes
+should be common inward, later biomes increasingly common outward, but long routes should still
+find enclaves and returns produced by the fractal/cellular field. Compare at least two fresh seeds.
+
+Find multiple rare massif cells. They should be sparse, absent from the protected arrival shoulder
+and edge-ocean band, and occupy broad portions of their owning Voronoi cell. They should rise
+roughly 1.5–3.3 km above the same biome's ordinary relief while retaining the biome's surface
+character. No independent needle-spire/plateau generator should appear.
+
+Follow widened Blackwater seams around ordinary and massif cells. The nominal cellular edge width
+is 440m with ±130m plasma width variation; the resulting channels/walls should be visibly thicker
+than 0.0.151 while remaining irregular. Confirm rivers still cut down after massif uplift and that
+the final edge-ocean carve still defeats high terrain near the 8 km boundary.
+
+Run `magenheim_underworld survey 1200` from ordinary cells, river banks and a massif crown and
+capture the output/screenshots for comparison against the loading-screen worldgen contract.
