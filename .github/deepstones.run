@@ -1,0 +1,4 @@
+trigger=underworld-deepstone-blender-source-generation
+scope=bloom,tide,cinder,rime,fracture,decay
+requested=2026-09-29
+purpose=materialize-runtime-models-to-editable-blender-sources
