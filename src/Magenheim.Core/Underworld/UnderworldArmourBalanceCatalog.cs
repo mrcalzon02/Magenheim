@@ -71,13 +71,13 @@ public static class UnderworldArmourBalanceCatalog
 
     public static double PalewaterSwimmingReduction(int pieces)
     {
-        pieces=Math.Clamp(pieces,0,4);
+        pieces=Math.Max(0,Math.Min(4,pieces));
         return Math.Min(.20d,pieces*.04d+(pieces==4?.04d:0d));
     }
 
     public static double StoneanchorKnockbackReduction(int pieces)
     {
-        pieces=Math.Clamp(pieces,0,4);
+        pieces=Math.Max(0,Math.Min(4,pieces));
         return Math.Min(.40d,pieces*.08d+(pieces==4?.08d:0d));
     }
 
