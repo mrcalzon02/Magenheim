@@ -159,6 +159,10 @@ runtime_contracts = {
         "_rootwarrenLocationRegistrar=new RootwarrenLocationRegistrar" in plugin and
         "_rootwarrenLocationRegistrar?.Dispose()" in plugin
     ),
+    "resource persistence Harmony binding": (
+        "RootwarrenPickablePersistencePatch" in encounters and
+        "_harmony.PatchAll(typeof(RootwarrenPickablePersistencePatch))" in plugin
+    ),
     "asset-gated promotion": (
         "promote-rootwarren-runtime.py" in (ROOT / "tools/rebuild-underworld-production.ps1").read_text(encoding="utf-8") and
         "Ready(" in dungeons
