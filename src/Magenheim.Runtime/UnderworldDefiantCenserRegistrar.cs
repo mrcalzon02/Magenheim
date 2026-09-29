@@ -8,9 +8,9 @@ using Magenheim.Core.Underworld;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Admits the one Underworld tool whose gameplay is already consumed by another completed system:
-/// the Defiant Censer. The remaining five authored tool identities stay catalog-only until their
-/// distinct traversal/harvest/light mechanics are implemented.
+/// Admits the Defiant Censer through the weather-owned mitigation path. The other five biome tools
+/// are registered by UnderworldToolRegistrar because their traversal/harvest/light/deployment
+/// mechanics now have their own runtime authority.
 /// </summary>
 internal sealed class UnderworldDefiantCenserRegistrar : IDisposable
 {

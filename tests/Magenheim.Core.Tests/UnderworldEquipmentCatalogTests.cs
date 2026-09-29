@@ -52,8 +52,13 @@ internal static class UnderworldEquipmentCatalogTests
 
         var raw = new HashSet<string>(UnderworldResourceCatalog.All.Select(value => value.Prefab), StringComparer.Ordinal);
         var fungalRefined = new HashSet<string>(UnderworldFungalRefinementCatalog.All.Select(value => value.Prefab), StringComparer.Ordinal);
-        Assert(all.SelectMany(value => value.Costs).All(value => raw.Contains(value.Prefab) || fungalRefined.Contains(value.Prefab)),
-            "Every admitted equipment dependency must resolve to a canonical raw or currently implemented refined material.");
+        var biomeRefined = new HashSet<string>(UnderworldBiomeRefinementCatalog.All.Select(value => value.Prefab), StringComparer.Ordinal);
+        Assert(all.SelectMany(value => value.Costs).All(value =>
+                raw.Contains(value.Prefab) || fungalRefined.Contains(value.Prefab) || biomeRefined.Contains(value.Prefab)),
+            "Every admitted equipment dependency must resolve to a canonical raw or implemented refined material.");
+        Assert(all.Where(value => value.Biome != UnderworldTerrainBiome.FungalForest)
+            .SelectMany(value => value.Costs).All(value => biomeRefined.Contains(value.Prefab)),
+            "Every post-Fungal equipment recipe must consume processed station output rather than raw biome pickups.");
 
         Assert(UnderworldEquipmentCatalog.FungalForestSlice.Count == 5,
             "Fungal Forest first playable equipment slice must be one tool plus four armour pieces.");
