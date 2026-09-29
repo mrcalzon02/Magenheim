@@ -38,10 +38,15 @@ internal static class UnderworldDungeonCatalogTests
                fracture.MaximumRoomFamilyUses == 1,
             "The established exact-plan Deep Fracture must not be silently converted into the generic reusable-kit generator.");
 
-        var planned = all.Where(value => value.Status == UnderworldDungeonStatus.Planned).ToArray();
-        Assert(planned.Length >= 0 && planned.Length <= 5,
-            "Zero to five ordinary biome dungeon programs may remain planned as their real interiors are admitted.");
-        foreach (var dungeon in planned)
+        var ordinary = all
+            .Where(value => !string.Equals(
+                value.Id,
+                fracture.Id,
+                StringComparison.Ordinal))
+            .ToArray();
+        Assert(ordinary.Length == 5,
+            "Five ordinary biome dungeon programs must exist alongside Deep Fracture.");
+        foreach (var dungeon in ordinary)
         {
             Assert(dungeon.TargetRoomFamilyMinimum == 15 &&
                    dungeon.TargetRoomFamilyMaximum == 20,
@@ -50,6 +55,9 @@ internal static class UnderworldDungeonCatalogTests
                    dungeon.MaximumRoomFamilyUses == 3,
                 dungeon.DisplayName + " must retain the 2-3 uses-per-family run target.");
         }
+
+        Assert(all.Count(value => value.Status == UnderworldDungeonStatus.RuntimeReady) >= 1,
+            "At least Deep Fracture must remain runtime-ready while ordinary dungeons are promoted independently.");
 
         return assertions;
     }
