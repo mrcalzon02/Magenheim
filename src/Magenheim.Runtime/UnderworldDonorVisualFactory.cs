@@ -45,6 +45,32 @@ internal static class UnderworldDonorVisualFactory
         throw new InvalidOperationException($"No usable Valheim donor prefab is available for Underworld biome {biome}.", last);
     }
 
+    internal static GameObject CreateSpecific(
+        UnderworldTerrainBiome biome,
+        string prefabName,
+        int variant,
+        string name)
+    {
+        var donor = UnderworldVanillaDonorCatalog.SelectNamed(biome, prefabName);
+        var model = UnderworldVanillaDonorCatalog.IsModel(donor);
+        var source = model ? null : Resolve(donor.PrefabName);
+        if (!model && source is null)
+            throw new InvalidOperationException($"Underworld donor '{prefabName}' is unavailable.");
+
+        var root = model ? BuildModelVisual(donor) : BuildVisualClone(source!, donor);
+        root.name = name;
+        root.transform.localPosition = Vector3.up * donor.GroundOffset;
+        root.transform.localRotation = Quaternion.Euler(
+            Mathf.Abs(variant % 7) - 3f,
+            Mathf.Abs(variant * 37 % 360),
+            Mathf.Abs(variant % 9) - 4f);
+        var scale = UnderworldVanillaDonorCatalog.Scale(donor, variant);
+        root.transform.localScale = scale;
+        var lightScale = Mathf.Clamp(Mathf.Max(scale.x, Mathf.Max(scale.y, scale.z)), 1f, 12f);
+        foreach (var light in root.GetComponentsInChildren<Light>(true)) light.range *= lightScale;
+        return root;
+    }
+
     internal static GameObject? CreateCover(UnderworldTerrainBiome biome, int variant, string name,
         double heightAboveWater, double slopeDegrees, Vector3 groundNormal, bool groundFeaturesOnly = false)
     {

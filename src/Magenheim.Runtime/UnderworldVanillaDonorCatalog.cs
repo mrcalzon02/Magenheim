@@ -57,8 +57,23 @@ internal static class UnderworldVanillaDonorCatalog
         {
             new("Ashlands_rock1", 1.2f, 2.3f, new(1.15f, 1.25f, 1.15f), -.35f, true), new("Ashlands_rock1", .9f, 1.65f, new(1.7f, .7f, 1.3f), -.4f, true),
             new("Ashlands_rock2", 1.1f, 2.1f, new(1.3f, 1.1f, 1.3f), -.35f, true), new("Ashlands_rock2", 1f, 1.8f, new(.75f, 1.85f, .75f), -.35f, true),
-            new("cliff_ashlands1", 1f, 1.7f, new(1f, 1.55f, 1f), -.55f, true), new("AshlandsTree6_big", .75f, 1.2f, new(.85f, 1.25f, .85f), -.15f, true),
-            new("AshlandsTree6_big", .65f, 1f, new(.58f, 1.75f, .58f), -.15f, true), new("AshlandsBush1", 1.4f, 2.8f, new(1.1f, .8f, 1.1f), -.05f),
+            new("cliff_ashlands1", 1f, 1.7f, new(1f, 1.55f, 1f), -.55f, true),
+            // Burnt-biome silhouette stock. These remain stripped Valheim visuals: Magenheim owns
+            // placement while the donor's TreeBase/Destructible/drop behavior is never copied.
+            new("AshlandsTree1", .62f, 1.05f, new(.88f, 1.2f, .88f), -.12f, true),
+            new("AshlandsTree3", .60f, 1.02f, new(.78f, 1.35f, .78f), -.12f, true),
+            new("AshlandsTree4", .58f, .98f, new(1.05f, 1.05f, .92f), -.12f, true),
+            new("AshlandsTree5", .60f, 1.05f, new(.82f, 1.25f, .82f), -.12f, true),
+            new("AshlandsTree6_big", .75f, 1.2f, new(.85f, 1.25f, .85f), -.15f, true),
+            new("AshlandsTree6_big", .65f, 1f, new(.58f, 1.75f, .58f), -.15f, true),
+            new("AshlandsBranch1", .55f, 1.1f, new(1.25f, .7f, 1f), -.06f, true),
+            new("AshlandsBranch2", .65f, 1.25f, new(1.4f, .55f, 1.1f), -.05f, true),
+            new("AshlandsBranch3", .55f, 1.1f, new(1.15f, .65f, 1.35f), -.06f, true),
+            new("AshlandsTreeStump1", .55f, 1.05f, new(1.25f, .7f, 1.2f), -.08f, true),
+            new("AshlandsTreeStump2", .55f, 1.05f, new(1.15f, .8f, 1.3f), -.08f, true),
+            new("AshlandsTreeStump3", .55f, 1.05f, new(1.35f, .68f, 1.1f), -.08f, true),
+            new("AshlandsBush1", .9f, 1.8f, new(1.15f, .8f, 1.15f), -.04f),
+            new("AshlandsBush2", .85f, 1.7f, new(1.25f, .75f, 1.05f), -.04f),
         },
         [UnderworldTerrainBiome.FrozenCaverns] = new Donor[]
         {
@@ -206,6 +221,16 @@ internal static class UnderworldVanillaDonorCatalog
     {
         if (!Donors.TryGetValue(biome, out var donors) || donors.Length == 0) throw new InvalidOperationException($"No vanilla donor palette exists for {biome}.");
         return donors[(variant & int.MaxValue) % donors.Length];
+    }
+
+    internal static Donor SelectNamed(UnderworldTerrainBiome biome, string prefabName)
+    {
+        if (!Donors.TryGetValue(biome, out var donors) || donors.Length == 0)
+            throw new InvalidOperationException($"No vanilla donor palette exists for {biome}.");
+        foreach (var donor in donors)
+            if (string.Equals(donor.PrefabName, prefabName, StringComparison.Ordinal))
+                return donor;
+        throw new InvalidOperationException($"Underworld biome {biome} does not admit donor '{prefabName}'.");
     }
 
     internal static Vector3 Scale(Donor donor, int variant)

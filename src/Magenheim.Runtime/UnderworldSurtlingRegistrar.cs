@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using BepInEx.Logging;
+using Jotunn.Configs;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using UnityEngine;
@@ -36,7 +37,7 @@ internal sealed class UnderworldSurtlingRegistrar : IDisposable
                 _log.LogWarning($"Underworld Surtling {entry.Prefab} unavailable: {exception.Message}");
             }
         }
-        _log.LogInfo($"Registered {registered}/{UnderworldSurtlings.All.Length} elemental Surtlings. Console spawn only; donor combat, AI and loot are unchanged.");
+        _log.LogInfo($"Registered {registered}/{UnderworldSurtlings.All.Length} elemental Surtlings. Fire Surtlings have native Sulfurous Wastes world spawns; other variants remain console-only. Donor combat, AI and loot are unchanged.");
         Dispose();
     }
 
@@ -59,7 +60,33 @@ internal sealed class UnderworldSurtlingRegistrar : IDisposable
             var arrange = HumanoidSegmentBinder.Arranger(clone, rig, entry.Girth, out var report);
             ModelAssets.Load(clone, entry.ModelId, arrange: arrange);
             var ragdolls = BindRagdolls(entry, character, donor, rig);
-            PrefabManager.Instance.AddPrefab(new CustomPrefab(clone, true));
+            var creatureConfig = new CreatureConfig { Name = entry.DisplayName };
+            if (string.Equals(entry.Element, "Fire", StringComparison.Ordinal))
+            {
+                creatureConfig.AddSpawnConfig(new SpawnConfig
+                {
+                    Name = entry.Prefab + "_SulfurousWastes",
+                    Biome = UnderworldTerrainRuntime.SulfurousWastesBiome,
+                    BiomeArea = Heightmap.BiomeArea.Everything,
+                    SpawnChance = 24f,
+                    SpawnInterval = 45f,
+                    SpawnDistance = 22f,
+                    MinSpawnRadius = 35f,
+                    MaxSpawnRadius = 78f,
+                    MaxSpawned = 4,
+                    MinGroupSize = 1,
+                    MaxGroupSize = 2,
+                    GroupRadius = 5f,
+                    MinAltitude = 1f,
+                    MaxAltitude = 1000f,
+                    MinTilt = 0f,
+                    MaxTilt = 38f,
+                    SpawnAtDay = true,
+                    SpawnAtNight = true,
+                    HuntPlayer = false,
+                });
+            }
+            CreatureManager.Instance.AddCreature(new CustomCreature(clone, true, creatureConfig));
             _log.LogInfo($"Underworld Surtling {entry.Prefab} on {entry.Donor}: {report()}; {ragdolls} death ragdoll(s) re-bodied; {stripped} donor armour visual(s) removed. Home: {entry.Home}.");
         }
         catch
