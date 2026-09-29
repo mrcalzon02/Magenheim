@@ -14,6 +14,7 @@ internal static class UnderworldWeatherMitigationRuntime
     private const double ArmourResistancePerPiece = 0.09d;
     private const double MatchingDeepBoonResistance = 0.36d;
     private const double DefiantCenserSuppression = 0.62d;
+    private const float DefiantCenserRadiusMeters = 16f;
     private const string DefiantCenserPrefab = "Magenheim_Underworld_Tool_DefiantCenser";
 
     internal readonly record struct Result(double Resistance01, double Suppression01);
@@ -40,18 +41,34 @@ internal static class UnderworldWeatherMitigationRuntime
 
         resistance += armourPieces * ArmourResistancePerPiece;
 
-        // Suppression is deliberately tied to the exact canonical held item. The Censer does not
-        // grant global resistance merely for existing in inventory.
-        var suppression = 0d;
-        var current = player.GetCurrentWeapon();
-        if (biome == UnderworldTerrainBiome.GreatDecay &&
-            current?.m_dropPrefab is not null &&
-            string.Equals(current.m_dropPrefab.name, DefiantCenserPrefab, StringComparison.Ordinal))
-            suppression = DefiantCenserSuppression;
+        // The Censer is a carried local-clearing source, not a passive inventory bonus. Any
+        // player standing inside an active Censer's radius receives the Great Decay suppression;
+        // this makes it useful for a small worksite/base rather than only the carrier.
+        var suppression = biome == UnderworldTerrainBiome.GreatDecay && HasActiveCenserNearby(player)
+            ? DefiantCenserSuppression
+            : 0d;
 
         return new Result(
             Math.Min(.78d, Math.Max(0d, resistance)),
             Math.Min(.80d, Math.Max(0d, suppression)));
+    }
+
+    private static bool HasActiveCenserNearby(Player player)
+    {
+        var radiusSq = DefiantCenserRadiusMeters * DefiantCenserRadiusMeters;
+        foreach (var candidate in Player.GetAllPlayers())
+        {
+            if (candidate is null || candidate.IsDead() ||
+                candidate.gameObject.scene.handle != player.gameObject.scene.handle ||
+                (candidate.transform.position - player.transform.position).sqrMagnitude > radiusSq)
+                continue;
+
+            var held = candidate.GetCurrentWeapon();
+            if (held?.m_dropPrefab is not null &&
+                string.Equals(held.m_dropPrefab.name, DefiantCenserPrefab, StringComparison.Ordinal))
+                return true;
+        }
+        return false;
     }
 
     private static bool MatchingDeepBoon(Player player, UnderworldTerrainBiome biome)
