@@ -13,6 +13,7 @@ internal sealed class NowhereKingRewardRegistrar : IDisposable
     internal const string TrophyPrefabName = "Magenheim_TrophyNowhereKing";
     internal const string FirmamentPrefabName = "Magenheim_LastArgument_Firmament";
     internal const string NullGatePrefabName = "Magenheim_LastArgument_NullGate";
+    internal const string PairedLastArgumentPrefabName = "Magenheim_LastArgument_Paired";
     internal const string FirmamentModelId = "nowhere-king-sword-firmament";
     internal const string NullGateModelId = "nowhere-king-sword-null-gate";
     internal const string VanillaCrownPrefabName = "HelmetCrownofValheim";
@@ -47,11 +48,12 @@ internal sealed class NowhereKingRewardRegistrar : IDisposable
                 NullGateModelId,
                 "Null Gate",
                 "One half of the Last Argument. The framed blade is less a surface than an aperture into nowhere.");
+            RegisterPairedLastArgument();
 
             _registered = true;
             _log.LogInfo(
                 $"Registered Nowhere King rewards '{NullMantlePrefabName}', '{TrophyPrefabName}', " +
-                $"'{FirmamentPrefabName}' and '{NullGatePrefabName}'.");
+                $"'{FirmamentPrefabName}', '{NullGatePrefabName}', and craftable paired weapon '{PairedLastArgumentPrefabName}'.");
         }
         catch (Exception exception)
         {
@@ -121,6 +123,53 @@ internal sealed class NowhereKingRewardRegistrar : IDisposable
 
         if (!ItemManager.Instance.AddItem(item))
             throw new InvalidOperationException($"Jotunn refused royal sword reward '{prefabName}'.");
+    }
+
+    private static void RegisterPairedLastArgument()
+    {
+        if (PrefabManager.Instance.GetPrefab(PairedLastArgumentPrefabName) != null ||
+            CustomItem.IsCustomItem(PairedLastArgumentPrefabName))
+            throw new InvalidOperationException($"Weapon identity '{PairedLastArgumentPrefabName}' is occupied.");
+
+        var knifeDonor = PrefabManager.Instance.GetPrefab("KnifeBlackMetal")
+            ?? PrefabManager.Instance.GetPrefab("KnifeSilver")
+            ?? PrefabManager.Instance.GetPrefab("KnifeChitin")
+            ?? throw new InvalidOperationException("The Last Argument requires a vanilla knife donor.");
+        var donorName = knifeDonor.name;
+        var item = new CustomItem(PairedLastArgumentPrefabName, donorName);
+        var shared = item.ItemDrop.m_itemData.m_shared;
+
+        // Keep a knife's compact reach/handling, but occupy both hands. If Flesh Rippers are
+        // available, borrow their native alternating-hand attack choreography while retaining
+        // Knives skill progression and this item's own damage/durability authority.
+        var rippers = PrefabManager.Instance.GetPrefab("FistFenrirClaw")?.GetComponent<ItemDrop>()?.m_itemData?.m_shared;
+        if (rippers is not null)
+        {
+            shared.m_attack = rippers.m_attack;
+            shared.m_secondaryAttack = rippers.m_secondaryAttack;
+        }
+
+        shared.m_name = "The Last Argument";
+        shared.m_description =
+            "Firmament and Null Gate rebound for mortal hands. The King's enormous paired swords are " +
+            "carried as two compact void-edged knives: Firmament in the right hand, Null Gate in the left.";
+        shared.m_itemType = ItemDrop.ItemData.ItemType.TwoHandedWeapon;
+        shared.m_skillType = Skills.SkillType.Knives;
+        shared.m_maxStackSize = 1;
+        shared.m_weight = 1.6f;
+        shared.m_value = 0;
+        shared.m_maxQuality = 4;
+        shared.m_useDurability = true;
+        shared.m_maxDurability = 2400f;
+        shared.m_durabilityPerLevel = 325f;
+        shared.m_icons = new[] { EarthAssets.Icon(FirmamentModelId) };
+
+        // The boss assets are ~1.57m at player scale because the King enlarges them to ~2.8m.
+        // 0.43 produces ~0.68m blades: large knives rather than player-scale boss swords.
+        ModelAssets.Load(item.ItemPrefab, FirmamentModelId, item: true, scale: LastArgumentPlayerVisualRuntime.PlayerBladeScale);
+
+        if (!ItemManager.Instance.AddItem(item))
+            throw new InvalidOperationException($"Jotunn refused paired weapon '{PairedLastArgumentPrefabName}'.");
     }
 
     private static void Darken(GameObject prefab, Color tint, string materialPrefix)
