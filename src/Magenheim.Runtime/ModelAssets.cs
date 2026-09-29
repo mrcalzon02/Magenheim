@@ -39,7 +39,7 @@ internal static class ModelAssets
     };
 
     /// <summary>
-    /// Shaders that generate their own surface from world position and ignore the mesh's UVs.
+    /// Donor shaders whose vertex/surface programs are unsafe for an arbitrary authored mesh.
     /// </summary>
     /// <remarks>
     /// Valheim's piece shader projects its texture from where the piece stands in the world. On a
@@ -47,16 +47,20 @@ internal static class ModelAssets
     /// without any UV work. On a Magenheim mesh it means the UVs the exporter carefully writes are
     /// never sampled at all, and the model renders as a smeared lattice sliding across its own
     /// faces: geometry, UVs and texture can all be perfect and it still looks wrong, which is
-    /// exactly how it kept being reported from the field.
+    /// exactly how it kept being reported from the field. The vegetation shader is more destructive:
+    /// it treats mesh vertex data as wind-animation input. The Crystal Beds and Ice Box clone the
+    /// beehive and inherited that shader; their correctly baked parts were consequently displaced
+    /// into the exploded assemblies seen in game. Material scalar changes cannot disable that vertex
+    /// program, so both donor shaders must be replaced before the authored material is populated.
     /// </remarks>
-    private static readonly string[] WorldProjectedShaderNames = { "Custom/Piece" };
+    private static readonly string[] UnsafeAuthoredMeshShaderNames = { "Custom/Piece", "Custom/Vegetation" };
 
     /// <summary>Surface shaders that do sample mesh UVs, in preference order.</summary>
     /// <remarks>
     /// Deliberately not <see cref="SurfaceShaderNames"/>: that list contains Custom/Piece as a
     /// fallback, so searching it to escape Custom/Piece could return Custom/Piece.
     /// </remarks>
-    private static readonly string[] UvSurfaceShaderNames = { "Custom/StaticRock", "Custom/Vegetation", "Standard" };
+    private static readonly string[] UvSurfaceShaderNames = { "Custom/StaticRock", "Standard" };
 
     /// <summary>Finds a usable opaque surface shader from the running game, or null if none is loaded.</summary>
     internal static Shader? FindSurfaceShader() => FindShader(SurfaceShaderNames);
@@ -114,12 +118,12 @@ internal static class ModelAssets
 
     private static Material? Uncouple(Material? source, string id)
     {
-        if (!source || !source.shader || Array.IndexOf(WorldProjectedShaderNames, source.shader.name) < 0)
+        if (!source || !source.shader || Array.IndexOf(UnsafeAuthoredMeshShaderNames, source.shader.name) < 0)
             return source;
         var replacement = FindShader(UvSurfaceShaderNames);
         if (!replacement) return source;
-        Log?.Invoke($"Model '{id}' inherited the world-projecting '{source.shader.name}' from its donor; " +
-                    $"surfacing it with '{replacement.name}' so its own UVs are sampled.");
+        Log?.Invoke($"Model '{id}' inherited authored-mesh-unsafe shader '{source.shader.name}' from its donor; " +
+                    $"surfacing it with '{replacement.name}' so its vertices and UVs remain authored.");
         return new Material(replacement);
     }
 
@@ -135,6 +139,15 @@ internal static class ModelAssets
         var document = JObject.Parse(File.ReadAllText(Path.Combine(DirectoryPath, "runtime", id + ".model.json")));
         if (!(document["parts"] is JArray parts) || parts.Count != 1) throw new InvalidDataException("Single mesh asset required: " + id);
         return LoadMesh(id + "/0", parts[0]);
+    }
+
+    internal static Material LoadSingleMaterial(string id)
+    {
+        if (string.IsNullOrEmpty(id) || Path.GetFileName(id) != id) throw new ArgumentException("Invalid model identity.", nameof(id));
+        var document = Document(id);
+        if (!(document["parts"] is JArray parts) || parts.Count != 1) throw new InvalidDataException("Single material asset required: " + id);
+        var source = new Material(ResolveSurfaceShader());
+        return LoadMaterial(id + "/0", parts[0]["material"]!, source);
     }
 
     /// <summary>A model payload, parsed once and cached. Mesh arrays are dropped after first load.</summary>
@@ -279,6 +292,11 @@ internal static class ModelAssets
         // shader and our own colour/texture should survive.
         foreach (var map in DonorMapsToClear)
             if (material.HasProperty(map)) material.SetTexture(map, null);
+        // Custom/StaticRock carries a non-zero parallax scalar independently of its map. Leaving
+        // that donor value behind made UV-authored furniture read as offset, torn triangles even
+        // after the donor texture was cleared. Owned meshes do not author displacement data.
+        foreach (var scalar in new[] { "_Parallax", "_Displacement", "_DisplacementStrength", "_HeightScale", "_Tessellation" })
+            if (material.HasProperty(scalar)) material.SetFloat(scalar, 0f);
         foreach (var keyword in new[] { "_NORMALMAP", "_METALLICGLOSSMAP", "_DETAIL_MULX2", "_PARALLAXMAP", "_EMISSION" })
             material.DisableKeyword(keyword);
         // Moss is blend-driven on Valheim piece shaders, so nulling its texture is not enough.

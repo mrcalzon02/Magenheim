@@ -2,7 +2,12 @@
 
 **Magic begins as geology.**
 
-## 0.0.142 testing candidate
+## 0.0.145 testing candidate
+
+Stops the map-tab performance collapse caused by repeated 8 MiB Surface/Underworld map payload
+swaps, and idles detached Underworld physics and pathfinding until a player enters. Placeable
+materials now explicitly disable inherited parallax/displacement, the Crystal Hearth fire is
+contained to its basin, and the Crystal Sentinel faces its target direction.
 
 The Crystal Bench, Geode Table, Chair and Pedestal now use the same 37 per-part
 UV textures in editable Blender sources, GLB previews and runtime. Material tints
@@ -57,10 +62,10 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.142.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.145.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
-Launch **Modded**. Confirm `Loading [Magenheim 0.0.142]` in the BepInEx log.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.145]` in the BepInEx log.
 Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
 See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.

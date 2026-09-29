@@ -262,7 +262,7 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
 
             if (value is Array array)
             {
-                SetField(field, clone, Array.CreateInstance(array.GetType().GetElementType()!, ArrayLengths(array)));
+                SetField(field, clone, CloneArrayState(array));
                 continue;
             }
 
@@ -316,6 +316,27 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
         var lengths = new int[array.Rank];
         for (var i = 0; i < lengths.Length; i++) lengths[i] = array.GetLength(i);
         return lengths;
+    }
+
+    private static Array CloneArrayState(Array source)
+    {
+        var elementType = source.GetType().GetElementType()
+            ?? throw new InvalidOperationException("ZDOMan array has no element type.");
+        var clone = Array.CreateInstance(elementType, ArrayLengths(source));
+        if (elementType.IsValueType) return clone;
+        if (source.Rank != 1)
+            throw new InvalidOperationException($"Cannot detach rank-{source.Rank} ZDOMan reference array.");
+
+        for (var index = 0; index < source.Length; index++)
+        {
+            var element = source.GetValue(index);
+            if (element is null) continue;
+            if (!TryCreateEmptyCollection(element.GetType(), out var detached))
+                throw new InvalidOperationException(
+                    $"Cannot detach ZDOMan array element {element.GetType().FullName}.");
+            clone.SetValue(detached, index);
+        }
+        return clone;
     }
 
     private static object CloneNestedScratchList(object source)
@@ -438,6 +459,7 @@ internal sealed class UnderworldNativeWorldHost : IDisposable
         _zoneRoot.SetActive(false);
         SceneManager.MoveGameObjectToScene(_zoneRoot, scene);
         var clone = _zoneRoot.AddComponent<ZoneSystem>();
+        _zoneRoot.AddComponent<UnderworldScenePresentationIsolation>();
         CopyZoneConfiguration(source, clone);
 
         // Surface has already assembled the native/Jotunn catalog before instance 1 is admitted.

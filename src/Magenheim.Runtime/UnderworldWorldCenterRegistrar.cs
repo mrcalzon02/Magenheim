@@ -96,9 +96,10 @@ internal static class UnderworldWorldCenterRegistrar
     {
         var root = new GameObject(StandingStonesName);
         root.transform.SetParent(parent, false);
-        var material = CreateStoneMaterial();
         var box = ModelAssets.LoadSingleMesh("underworld-standing-stone");
         var dais = ModelAssets.LoadSingleMesh("underworld-dais");
+        var stoneMaterial = ModelAssets.LoadSingleMaterial("underworld-standing-stone");
+        var daisMaterial = ModelAssets.LoadSingleMaterial("underworld-dais");
         const float radius = 12f;
 
         for (var i = 0; i < Deepstones.Length; i++)
@@ -112,22 +113,13 @@ internal static class UnderworldWorldCenterRegistrar
                 new Vector3(Mathf.Cos(angle) * radius, 2.8f, Mathf.Sin(angle) * radius),
                 Quaternion.Euler(i % 2 == 0 ? -3f : 4f, -angle * Mathf.Rad2Deg + 90f, i % 3 - 1),
                 new Vector3(2.1f, 7.4f + (i % 3) * 0.7f, 1.25f),
-                material,
+                stoneMaterial,
                 parent.gameObject.layer);
             stone.AddComponent<UnderworldDeepstoneRuntime>().Bind(binding.DeepstoneId);
         }
 
-        AddMesh(root.transform, DescentMonolithName, box, new Vector3(0f, 3.9f, 0f), Quaternion.identity, new Vector3(2.8f, 8.2f, 2.8f), material, parent.gameObject.layer);
-        AddMesh(root.transform, "CenterDais", dais, new Vector3(0f, 0.45f, 0f), Quaternion.identity, new Vector3(17f, 0.9f, 17f), material, parent.gameObject.layer);
-    }
-
-    private static Material CreateStoneMaterial()
-    {
-        var shader = ModelAssets.ResolveSurfaceShader();
-        var material = new Material(shader) { name = "Magenheim_UnderworldStandingStone_Material", color = new Color(0.075f, 0.082f, 0.095f, 1f) };
-        material.SetFloat("_Metallic", 0.12f);
-        material.SetFloat("_Glossiness", 0.24f);
-        return material;
+        AddMesh(root.transform, DescentMonolithName, box, new Vector3(0f, 3.9f, 0f), Quaternion.identity, new Vector3(2.8f, 8.2f, 2.8f), stoneMaterial, parent.gameObject.layer);
+        AddMesh(root.transform, "CenterDais", dais, new Vector3(0f, 0.45f, 0f), Quaternion.identity, new Vector3(17f, 0.9f, 17f), daisMaterial, parent.gameObject.layer);
     }
 
     private static GameObject AddMesh(Transform parent, string name, Mesh mesh, Vector3 position, Quaternion rotation, Vector3 scale, Material material, int layer)

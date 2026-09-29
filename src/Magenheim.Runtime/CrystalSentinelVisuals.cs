@@ -12,7 +12,10 @@ internal static class CrystalSentinelVisuals
     /// <summary>The model id, which is also the icon's asset name.</summary>
     internal const string ModelId = "crystal-sentinel";
 
-    internal static GameObject Apply(GameObject prefab) => ModelAssets.Load(prefab, ModelId);
+    internal static GameObject Apply(GameObject prefab) => ModelAssets.Load(
+        prefab,
+        ModelId,
+        arrange: (_, part) => part.localRotation = Quaternion.Euler(0f, 180f, 0f));
 
     internal static GameObject CreateAmmoVisual(Turret turret, Material source)
     {

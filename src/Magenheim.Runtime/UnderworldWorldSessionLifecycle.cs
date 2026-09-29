@@ -24,6 +24,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     private float _nextBoonReconcileAt;
     private bool _physicsSimulationFaulted;
     private bool _admissionFailed;
+    private bool _worldCenterAdmissionFailed;
 
     internal void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -41,7 +42,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (_physicsSimulationFaulted || _services is null) return;
+        if (_physicsSimulationFaulted || _services is null || !HasUnderworldPlayers()) return;
         if (!_services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out var context) ||
             context is null || !context.PhysicsScene.IsValid())
             return;
@@ -81,8 +82,11 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             _observedWorldUid = currentWorldUid;
             TryAdmitInstanceAuthority(znet);
             TryAdmitWorldCenter();
-            TickUnderworldPathfinding();
-            UnderworldZdoPeerRouter.TickUnderworld(Time.deltaTime);
+            if (HasUnderworldPlayers())
+            {
+                TickUnderworldPathfinding();
+                UnderworldZdoPeerRouter.TickUnderworld(Time.deltaTime);
+            }
             TryReconcileDeepBoons();
             return;
         }
@@ -97,9 +101,25 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
 
         TryAdmitInstanceAuthority(znet);
         TryAdmitWorldCenter();
-        TickUnderworldPathfinding();
-        UnderworldZdoPeerRouter.TickUnderworld(Time.deltaTime);
+        if (HasUnderworldPlayers())
+        {
+            TickUnderworldPathfinding();
+            UnderworldZdoPeerRouter.TickUnderworld(Time.deltaTime);
+        }
         TryReconcileDeepBoons();
+    }
+
+    private bool HasUnderworldPlayers()
+    {
+        if (_services is null) return false;
+        foreach (var player in Player.GetAllPlayers())
+        {
+            if (!player) continue;
+            if (_services.WorldInstances.TryGetPlayerInstance(player.GetPlayerID(), out var instance) &&
+                instance.IsUnderworld)
+                return true;
+        }
+        return false;
     }
 
     private void TryAdmitInstanceAuthority(ZNet znet)
@@ -147,6 +167,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
     private void TryAdmitWorldCenter()
     {
         if (_services is null || _log is null) return;
+        if (_worldCenterAdmissionFailed) return;
         if (_services.InstanceLifecycle.Phase != UnderworldInstancePhase.Active ||
             _services.InstanceLifecycle.Identity is not { } identity ||
             !_services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out var context) ||
@@ -170,9 +191,10 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         {
             using (ValheimWorldInstanceExecution.Enter(context))
             {
-                if (!SceneManager.SetActiveScene(context.Scene))
-                    throw new InvalidOperationException("Unable to activate the Underworld Unity scene for world-center composition.");
                 candidate = UnderworldWorldCenterRegistrar.Create(identity, _log);
+                if (candidate.scene.handle != context.Scene.handle)
+                    SceneManager.MoveGameObjectToScene(candidate, context.Scene);
+                context.ZoneSystem.GetComponent<UnderworldScenePresentationIsolation>()?.RefreshNow();
             }
 
             _worldCenter = candidate;
@@ -186,7 +208,9 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             if (candidate) Destroy(candidate);
             _worldCenter = null;
             _worldCenterInstanceKey = null;
-            _log.LogError($"Underworld native world-center admission failed: {exception}");
+            _worldCenterAdmissionFailed = true;
+            UnderworldLoadingScreenRuntime.Hide();
+            _log.LogError($"Underworld native world-center admission failed; retry is disabled until the world session resets: {exception}");
         }
         finally
         {
@@ -240,6 +264,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
         _nextBoonReconcileAt = 0f;
         _physicsSimulationFaulted = false;
         _admissionFailed = false;
+        _worldCenterAdmissionFailed = false;
         _nativeWorldHost?.Dispose();
         _nativeWorldHost = _services is null || _log is null ? null : new UnderworldNativeWorldHost(_services.WorldInstances, _log);
         UnderworldInstancePersistence.Reset();

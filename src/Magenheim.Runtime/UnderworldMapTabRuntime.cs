@@ -94,6 +94,17 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
         return new MapBindingScope(runtime, restore);
     }
 
+    internal static bool AllowPhysicalExploration(Minimap map)
+    {
+        var runtime = _instance;
+        if (runtime is null || runtime._map != map) return true;
+        // UpdateExplore calls Explore and runs several times per second. Temporarily rebinding the
+        // other layer here serializes and deserializes two 8 MiB vanilla map payloads for every
+        // call. Defer exploration while the player is deliberately viewing the other layer; the
+        // next ordinary tick after returning to the physical layer resumes Valheim's reveal path.
+        return runtime._boundLayer == runtime.ResolvePhysicalLayer();
+    }
+
     internal static bool BeginSurfaceProfileSave(
         Minimap map,
         out MapBindingScope? scope)
@@ -734,23 +745,15 @@ internal static class UnderworldMinimapPlayerSavePatch
 [HarmonyPatch(typeof(Minimap), "UpdateExplore", new[] { typeof(float), typeof(Player) })]
 internal static class UnderworldMinimapUpdateExplorePatch
 {
-    [HarmonyPriority(Priority.First)]
-    private static void Prefix(Minimap __instance, out UnderworldMapTabRuntime.MapBindingScope? __state) =>
-        __state = UnderworldMapTabRuntime.BeginPhysicalMapOperation(__instance);
-
-    [HarmonyPriority(Priority.Last)]
-    private static void Postfix(UnderworldMapTabRuntime.MapBindingScope? __state) => __state?.Dispose();
+    private static bool Prefix(Minimap __instance) =>
+        UnderworldMapTabRuntime.AllowPhysicalExploration(__instance);
 }
 
 [HarmonyPatch(typeof(Minimap), "Explore", new[] { typeof(Vector3), typeof(float) })]
 internal static class UnderworldMinimapExplorePatch
 {
-    [HarmonyPriority(Priority.First)]
-    private static void Prefix(Minimap __instance, out UnderworldMapTabRuntime.MapBindingScope? __state) =>
-        __state = UnderworldMapTabRuntime.BeginPhysicalMapOperation(__instance);
-
-    [HarmonyPriority(Priority.Last)]
-    private static void Postfix(UnderworldMapTabRuntime.MapBindingScope? __state) => __state?.Dispose();
+    private static bool Prefix(Minimap __instance) =>
+        UnderworldMapTabRuntime.AllowPhysicalExploration(__instance);
 }
 
 [HarmonyPatch(typeof(Minimap), nameof(Minimap.GetSharedMapData), new[] { typeof(byte[]) })]

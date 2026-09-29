@@ -1,6 +1,16 @@
 using UnityEngine;
 using Magenheim.Runtime;
 using Newtonsoft.Json.Linq;
+// A beehive is the persistent producer donor for Crystal Beds and the Ice Box. Its vegetation
+// shader interprets arbitrary vertex data as wind input and visibly pulls the otherwise-correct
+// model parts apart. Verify this before the shared material cache is populated by the library pass.
+{
+ var host=HostForUnsafeShader("Custom/Vegetation");
+ var loaded=ModelAssets.Load(host,"crystal-bed-frost");
+ var shaders=loaded.GetComponentsInChildren<MeshRenderer>(true).Select(r=>r.sharedMaterial?.shader?.name).Distinct().ToArray();
+ if(shaders.Length!=1 || shaders[0]!="Custom/StaticRock")throw new Exception("Vegetation donor shader reached authored bed meshes.");
+ Console.WriteLine("PASS: vegetation donor shader replaced before authored bed rendering.");
+}
 var count=0;
 foreach(var file in Directory.GetFiles(Path.Combine(AppContext.BaseDirectory,"assets/models/runtime"),"*.model.json")) {
  var id=Path.GetFileName(file).Replace(".model.json","");
@@ -26,6 +36,15 @@ foreach(var id in new[]{"underworld-standing-stone","underworld-dais"})
 try{ModelAssets.LoadSingleMesh("../outside");throw new Exception("Standalone traversal accepted");}catch(ArgumentException){}
 try{ModelAssets.LoadSingleMesh("crystal-weapon-bow");throw new Exception("Multipart mesh silently truncated");}catch(InvalidDataException){}
 Console.WriteLine($"PASS: {count} model assets imported twice; complete parts/UVs, shared meshes, missing-file and path guards.");
+
+GameObject HostForUnsafeShader(string shaderName)
+{
+ var host=new GameObject("unsafe-shader-host");
+ host.AddComponent<Character>();host.AddComponent<ZNetView>();
+ host.AddComponent<MeshRenderer>().sharedMaterial=new Material(Shader.Find(shaderName));
+ var body=new GameObject("body");body.transform.SetParent(host.transform);host.AddComponent<Turret>().m_turretBody=body;
+ return host;
+}
 
 // HeldModelAlignment regression test. Donor bounds are hardcoded from LogOutput.log (0.0.77, in
 // attach space) because the vanilla donor meshes only exist inside the game process -- this shim

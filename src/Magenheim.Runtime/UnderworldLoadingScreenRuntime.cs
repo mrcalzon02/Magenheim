@@ -38,7 +38,7 @@ internal static class UnderworldLoadingScreenRuntime
 
     internal static void Hide()
     {
-        if (_root is not null) _root.SetActive(false);
+        if (_root) _root.SetActive(false);
     }
 
     internal static void Reset()

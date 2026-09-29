@@ -76,7 +76,9 @@ internal static class CrystalArchitectureVisuals
         // Height is the axis the flame reads on. Clamp so a pathological donor cannot invert the
         // fire into a spark or blow it up further than it already was.
         var ratio = Mathf.Clamp(piece.size.y / donor.size.y, 0.2f, 1f);
-        if (ratio > 0.98f) return;
+        // The donor fireplace's renderer height understates its large particle envelope. Even at
+        // a 1:1 mesh ratio the retained fire overwhelms this low hearth, so cap the effect itself.
+        ratio = Mathf.Min(ratio, 0.32f);
         foreach (var system in prefab.GetComponentsInChildren<ParticleSystem>(true))
         {
             var transform = system.transform;
@@ -89,6 +91,8 @@ internal static class CrystalArchitectureVisuals
             // inherit whichever one the donor happened to ship.
             var main = system.main;
             main.scalingMode = ParticleSystemScalingMode.Hierarchy;
+            main.startSizeMultiplier *= ratio;
+            main.startSpeedMultiplier *= Mathf.Sqrt(ratio);
             transform.localScale *= ratio;
         }
     }
@@ -163,7 +167,8 @@ private static void TintVanillaFlame(GameObject prefab)
         for (var i = 0; i < lights.Length; i++)
         {
             lights[i].color = lightColors[i % lightColors.Length];
-            lights[i].intensity = Mathf.Max(lights[i].intensity, 1.35f);
+            lights[i].intensity = Mathf.Min(lights[i].intensity, 1f);
+            lights[i].range = Mathf.Min(lights[i].range, 3.5f);
         }
         if (tinted == 0) throw new InvalidOperationException("Crystal Hearth source contains no non-smoke flame particle system to recolor.");
     }

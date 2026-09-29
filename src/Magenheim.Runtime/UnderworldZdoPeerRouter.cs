@@ -28,6 +28,8 @@ internal static class UnderworldZdoPeerRouter
         ?? throw new MissingMethodException(typeof(ZDOMan).FullName, "RemovePeer(ZNetPeer)");
     private static readonly MethodInfo AddToSector = ResolveSectorMethod("AddToSector");
     private static readonly MethodInfo RemoveFromSector = ResolveSectorMethod("RemoveFromSector");
+    private static readonly MethodInfo SectorToIndex = AccessTools.Method(typeof(ZoneSystem), "SectorToIndex", new[] { typeof(Vector2s) })
+        ?? throw new MissingMethodException(typeof(ZoneSystem).FullName, "SectorToIndex(Vector2s)");
     private static readonly FieldInfo? ZNetZdoMan = AccessTools.Field(typeof(ZNet), "m_zdoMan");
 
     private static UnderworldRuntimeServices? _services;
@@ -215,8 +217,10 @@ internal static class UnderworldZdoPeerRouter
         var targetObjects = ObjectsById.GetValue(target) as IDictionary
             ?? throw new InvalidOperationException("Target ZDOMan object index is unavailable.");
 
-        var sector = GetSector.Invoke(zdo, Array.Empty<object>())
+        var legacySector = GetSector.Invoke(zdo, Array.Empty<object>())
             ?? throw new InvalidOperationException("Character ZDO returned no sector.");
+        var sector = SectorToIndex.Invoke(null, new[] { legacySector })
+            ?? throw new InvalidOperationException("Valheim did not convert the character ZDO sector to its native sector index.");
 
         RemoveFromSector.Invoke(source, new[] { (object)zdo, sector });
         sourceObjects.Remove(zdo.m_uid);

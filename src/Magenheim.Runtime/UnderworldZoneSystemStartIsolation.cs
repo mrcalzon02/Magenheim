@@ -23,8 +23,10 @@ internal static class UnderworldZoneSystemStartIsolationPatch
         AccessTools.Field(typeof(ZoneSystem), "m_lastFixedTime")
         ?? throw new MissingFieldException(typeof(ZoneSystem).FullName, "m_lastFixedTime");
 
-    private static bool Prefix(ZoneSystem __instance)
+    [HarmonyPriority(Priority.First)]
+    private static bool Prefix(ZoneSystem __instance, out IDisposable? __state)
     {
+        __state = null;
         if (!__instance ||
             !ValheimWorldInstanceExecution.TryGetContextForScene(
                 __instance.gameObject.scene.handle,
@@ -38,6 +40,7 @@ internal static class UnderworldZoneSystemStartIsolationPatch
         {
             if (!ReferenceEquals(ValheimWorldInstanceExecution.Active, context))
                 scope = ValheimWorldInstanceExecution.Enter(context);
+            __state = scope;
 
             // The host cloned Surface's already-populated native location/vegetation catalog.
             // Do NOT run SetupLocations again: it would duplicate the catalog and append the same
@@ -59,9 +62,21 @@ internal static class UnderworldZoneSystemStartIsolationPatch
             // coherent without duplicate RPC authority.
             return false;
         }
-        finally
+        catch
         {
             scope?.Dispose();
+            __state = null;
+            throw;
         }
+    }
+
+    [HarmonyPriority(Priority.Last)]
+    private static void Postfix(IDisposable? __state) => __state?.Dispose();
+
+    [HarmonyPriority(Priority.Last)]
+    private static Exception? Finalizer(Exception? __exception, IDisposable? __state)
+    {
+        __state?.Dispose();
+        return __exception;
     }
 }

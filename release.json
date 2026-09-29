@@ -1,4 +1,4 @@
 {
-  "version": "0.0.142",
-  "description": "0.0.142: Adds Underworld geodes/resource audits, repairs dual-map patch wiring and async display, and logs the exact runtime assembly path for deployment proof."
+  "version": "0.0.145",
+  "description": "0.0.145: Stops cross-layer map serialization stalls, idles empty Underworld simulation, repairs displaced placeable materials, shrinks the Crystal Hearth effect, and corrects Crystal Sentinel facing."
 }
