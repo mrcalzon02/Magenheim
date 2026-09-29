@@ -16,6 +16,13 @@ contract is 15-20 large themed room families reused 2-3 times per run. The new d
 dungeon planner produces a connected branching topology with cross-links rather than a straight
 corridor chain.
 
+Rootwarren, Drowned Vaults, Cinderworks and Rime Sepulcher now have source/runtime interior
+architectures behind that admission gate. Rime Sepulcher contributes sixteen Frozen room families
+plus one adaptive physical passage, endpoint-derived Whiteout/cold exposure, persistent Frozen
+encounters/resources and same-instance return travel. It remains Planned because its seventeen
+Blender/GLB/runtime payloads have not been forged in this execution; missing or partial families
+cannot seed a location.
+
 ### Earlier fixes in 0.0.154
 
 
