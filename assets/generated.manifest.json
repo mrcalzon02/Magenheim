@@ -859,6 +859,70 @@
         "assets/models/source/underworld-ground-sulfur-drift-crescent.blend": null,
         "assets/models/source/underworld-ground-sulfur-drift-rippled.blend": null
       }
+    },
+    {
+      "id": "underworld-station-models",
+      "generator": "tools/rebuild-underworld-stations.ps1",
+      "command": [
+        "pwsh",
+        "-NoProfile",
+        "-File",
+        "tools/rebuild-underworld-stations.ps1"
+      ],
+      "outputs": [
+        "assets/models/source/underworld-station-mycelial-bench.blend",
+        "assets/models/glb/underworld-station-mycelial-bench.glb",
+        "assets/models/runtime/underworld-station-mycelial-bench.model.json",
+        "assets/earth/underworld-station-mycelial-bench.icon.png",
+        "assets/models/source/underworld-station-tidal-basin.blend",
+        "assets/models/glb/underworld-station-tidal-basin.glb",
+        "assets/models/runtime/underworld-station-tidal-basin.model.json",
+        "assets/earth/underworld-station-tidal-basin.icon.png",
+        "assets/models/source/underworld-station-furnace-heart-forge.blend",
+        "assets/models/glb/underworld-station-furnace-heart-forge.glb",
+        "assets/models/runtime/underworld-station-furnace-heart-forge.model.json",
+        "assets/earth/underworld-station-furnace-heart-forge.icon.png",
+        "assets/models/source/underworld-station-silence-table.blend",
+        "assets/models/glb/underworld-station-silence-table.glb",
+        "assets/models/runtime/underworld-station-silence-table.model.json",
+        "assets/earth/underworld-station-silence-table.icon.png",
+        "assets/models/source/underworld-station-anchor-forge.blend",
+        "assets/models/glb/underworld-station-anchor-forge.glb",
+        "assets/models/runtime/underworld-station-anchor-forge.model.json",
+        "assets/earth/underworld-station-anchor-forge.icon.png",
+        "assets/models/source/underworld-station-crown-reliquary.blend",
+        "assets/models/glb/underworld-station-crown-reliquary.glb",
+        "assets/models/runtime/underworld-station-crown-reliquary.model.json",
+        "assets/earth/underworld-station-crown-reliquary.icon.png"
+      ],
+      "generator_sha256": "896ed848abe62e9584b8c53a41f72790e10562dd32e47e1a82f82dc13788fdb3",
+      "output_sha256": {
+        "assets/models/source/underworld-station-mycelial-bench.blend": null,
+        "assets/models/glb/underworld-station-mycelial-bench.glb": null,
+        "assets/models/runtime/underworld-station-mycelial-bench.model.json": null,
+        "assets/earth/underworld-station-mycelial-bench.icon.png": null,
+        "assets/models/source/underworld-station-tidal-basin.blend": null,
+        "assets/models/glb/underworld-station-tidal-basin.glb": null,
+        "assets/models/runtime/underworld-station-tidal-basin.model.json": null,
+        "assets/earth/underworld-station-tidal-basin.icon.png": null,
+        "assets/models/source/underworld-station-furnace-heart-forge.blend": null,
+        "assets/models/glb/underworld-station-furnace-heart-forge.glb": null,
+        "assets/models/runtime/underworld-station-furnace-heart-forge.model.json": null,
+        "assets/earth/underworld-station-furnace-heart-forge.icon.png": null,
+        "assets/models/source/underworld-station-silence-table.blend": null,
+        "assets/models/glb/underworld-station-silence-table.glb": null,
+        "assets/models/runtime/underworld-station-silence-table.model.json": null,
+        "assets/earth/underworld-station-silence-table.icon.png": null,
+        "assets/models/source/underworld-station-anchor-forge.blend": null,
+        "assets/models/glb/underworld-station-anchor-forge.glb": null,
+        "assets/models/runtime/underworld-station-anchor-forge.model.json": null,
+        "assets/earth/underworld-station-anchor-forge.icon.png": null,
+        "assets/models/source/underworld-station-crown-reliquary.blend": null,
+        "assets/models/glb/underworld-station-crown-reliquary.glb": null,
+        "assets/models/runtime/underworld-station-crown-reliquary.model.json": null,
+        "assets/earth/underworld-station-crown-reliquary.icon.png": null
+      },
+      "hash": "generator-only"
     }
   ]
 }
