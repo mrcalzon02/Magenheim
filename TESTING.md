@@ -4,12 +4,12 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.154 by Local** and start its description with
-**0.0.153: Retires arbitrary terrain spires in favor of rare biome-owned massif cells**.
+show **Magenheim v0.0.155 by Local** and start its description with
+**0.0.155: Admits the existing 20-district Deep Fracture as a sparse Fracture Zones dungeon in the Underworld**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.154]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.155]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
@@ -736,3 +736,50 @@ forced Underworld environment is cleared, and Surface sky/fog/weather returns co
 Reload during or near a weather transition and repeat with a second peer. Capture logs/screenshots
 for every event plus one host/client damage comparison. Source completion alone does not satisfy
 this gate.
+
+
+## 0.0.155 Underworld Deep Fracture acceptance
+
+Use a fresh disposable Underworld with the current 0.0.155 package on host and peer. The new
+Underworld-only Deep Fracture location must exist only in Fracture Zones and must not leak into the
+Surface location catalog.
+
+### Placement
+
+Travel/survey broadly through Fracture Zones on at least two fresh seeds. Deep Fracture entrances
+should be rare destinations rather than ordinary clutter: target quantity is six for the whole
+Underworld with 1.4 km minimum similar-site spacing. Confirm ordinary Fracture fault lines,
+monasteries, road stations, anchor towers, bridges, Deep Sigil and Rift Titan boss-site placement
+still occur around them without being globally displaced.
+
+No Underworld Deep Fracture entrance may appear in Fungal Forest, Blackwater Deep, Sulfurous Wastes,
+Frozen Caverns or Great Decay. No Underworld-only Deep Fracture prefab may generate on the Surface.
+
+### Interior
+
+Enter an Underworld Deep Fracture and verify it builds the established exact-plan expedition rather
+than a reduced or generic dungeon. Confirm the 20 district-family authority, passage assembly,
+traversal shortcuts/loops, encounter population, crystal systems and DF-01 arrival district are
+present and functional.
+
+The return portal inside DF-01 must identify the outside destination as the Fracture Zones entrance
+and return the player to that exact spawned Underworld entrance. It must not transfer the player to
+the Surface or the Deep Gate.
+
+### Persistence and multiplayer
+
+With one player inside the expedition and one player remaining in the Underworld exterior, verify
+both remain in the correct world/scene context. Repeat entry/return from the peer. Save/reload with
+the entrance generated, then revisit and confirm the location/interior identity does not duplicate
+or reroll incompatibly.
+
+Confirm Underworld startup logs report the runtime-ready dungeon catalog as present after detached
+ZoneSystem partitioning. A missing runtime-ready Deep Fracture row must fail closed rather than
+silently producing a dungeonless Underworld.
+
+### Generic biome-dungeon planner source gate
+
+The five future biome dungeon programs remain non-spawning. Their Core planner must keep the
+production rule of 15-20 unique large room families, each used 2-3 times, with a connected branching
+topology and at least one bounded cross-link/loop in a normal large plan. Deep Fracture must remain
+rejected by that generic planner because it retains its bespoke expedition authority.
