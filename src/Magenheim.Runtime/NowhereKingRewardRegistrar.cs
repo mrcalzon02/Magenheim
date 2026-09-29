@@ -6,11 +6,15 @@ using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>Registers the persistent one-time rewards released by the Dark Throne encounter.</summary>
+/// <summary>Registers the Dark Throne's recoverable equipment and trophy identities.</summary>
 internal sealed class NowhereKingRewardRegistrar : IDisposable
 {
     internal const string NullMantlePrefabName = "Magenheim_NullMantle";
     internal const string TrophyPrefabName = "Magenheim_TrophyNowhereKing";
+    internal const string FirmamentPrefabName = "Magenheim_LastArgument_Firmament";
+    internal const string NullGatePrefabName = "Magenheim_LastArgument_NullGate";
+    internal const string FirmamentModelId = "nowhere-king-sword-firmament";
+    internal const string NullGateModelId = "nowhere-king-sword-null-gate";
     internal const string VanillaCrownPrefabName = "HelmetCrownofValheim";
 
     private readonly ManualLogSource _log;
@@ -33,8 +37,21 @@ internal sealed class NowhereKingRewardRegistrar : IDisposable
         {
             RegisterNullMantle();
             RegisterTrophy();
+            RegisterRoyalSword(
+                FirmamentPrefabName,
+                FirmamentModelId,
+                "Firmament",
+                "One half of the Last Argument. Its blade contains an impossible night of stars rather than ordinary steel.");
+            RegisterRoyalSword(
+                NullGatePrefabName,
+                NullGateModelId,
+                "Null Gate",
+                "One half of the Last Argument. The framed blade is less a surface than an aperture into nowhere.");
+
             _registered = true;
-            _log.LogInfo($"Registered Nowhere King rewards '{NullMantlePrefabName}' and '{TrophyPrefabName}'.");
+            _log.LogInfo(
+                $"Registered Nowhere King rewards '{NullMantlePrefabName}', '{TrophyPrefabName}', " +
+                $"'{FirmamentPrefabName}' and '{NullGatePrefabName}'.");
         }
         catch (Exception exception)
         {
@@ -51,8 +68,6 @@ internal sealed class NowhereKingRewardRegistrar : IDisposable
         if (PrefabManager.Instance.GetPrefab(VanillaCrownPrefabName) == null)
             throw new InvalidOperationException($"Null Mantle requires vanilla Crown of Valheim prefab '{VanillaCrownPrefabName}'.");
 
-        // The 1.0 Crown of Valheim is the authoritative visual/equipment donor. Do not replace it
-        // with a procedural cylinder or another hand-built approximation.
         var item = new CustomItem(NullMantlePrefabName, VanillaCrownPrefabName);
         var shared = item.ItemDrop.m_itemData.m_shared;
         shared.m_name = "Null Mantle";
@@ -61,12 +76,15 @@ internal sealed class NowhereKingRewardRegistrar : IDisposable
         shared.m_weight = 2f;
         shared.m_value = 0;
         Darken(item.ItemPrefab, new Color(.012f, .008f, .015f, 1f), "magenheim.null-mantle");
-        if (!ItemManager.Instance.AddItem(item)) throw new InvalidOperationException($"Jotunn refused reward '{NullMantlePrefabName}'.");
+        if (!ItemManager.Instance.AddItem(item))
+            throw new InvalidOperationException($"Jotunn refused reward '{NullMantlePrefabName}'.");
     }
 
     private static void RegisterTrophy()
     {
-        if (PrefabManager.Instance.GetPrefab(TrophyPrefabName) != null) throw new InvalidOperationException($"Reward identity '{TrophyPrefabName}' is occupied.");
+        if (PrefabManager.Instance.GetPrefab(TrophyPrefabName) != null)
+            throw new InvalidOperationException($"Reward identity '{TrophyPrefabName}' is occupied.");
+
         var item = new CustomItem(TrophyPrefabName, "TrophyDvergr");
         var shared = item.ItemDrop.m_itemData.m_shared;
         shared.m_name = "Trophy: The Nowhere King";
@@ -75,7 +93,34 @@ internal sealed class NowhereKingRewardRegistrar : IDisposable
         shared.m_weight = 2f;
         shared.m_value = 0;
         Darken(item.ItemPrefab, new Color(.02f, .006f, .01f, 1f), "magenheim.nowhere-king-trophy");
-        if (!ItemManager.Instance.AddItem(item)) throw new InvalidOperationException($"Jotunn refused reward '{TrophyPrefabName}'.");
+
+        if (!ItemManager.Instance.AddItem(item))
+            throw new InvalidOperationException($"Jotunn refused reward '{TrophyPrefabName}'.");
+    }
+
+    private static void RegisterRoyalSword(string prefabName, string modelId, string displayName, string description)
+    {
+        if (PrefabManager.Instance.GetPrefab(prefabName) != null || CustomItem.IsCustomItem(prefabName))
+            throw new InvalidOperationException($"Reward identity '{prefabName}' is occupied.");
+        if (PrefabManager.Instance.GetPrefab("SwordBlackmetal") == null)
+            throw new InvalidOperationException($"{displayName} requires vanilla sword donor 'SwordBlackmetal'.");
+
+        var item = new CustomItem(prefabName, "SwordBlackmetal");
+        var shared = item.ItemDrop.m_itemData.m_shared;
+        shared.m_name = displayName;
+        shared.m_description = description + " Recovered from the paired royal armament called the Last Argument.";
+        shared.m_maxStackSize = 1;
+        shared.m_weight = 2.4f;
+        shared.m_value = 0;
+        shared.m_maxQuality = 4;
+        shared.m_useDurability = true;
+        shared.m_maxDurability = 2200f;
+        shared.m_durabilityPerLevel = 300f;
+        shared.m_icons = new[] { EarthAssets.Icon(modelId) };
+        ModelAssets.Load(item.ItemPrefab, modelId, item: true);
+
+        if (!ItemManager.Instance.AddItem(item))
+            throw new InvalidOperationException($"Jotunn refused royal sword reward '{prefabName}'.");
     }
 
     private static void Darken(GameObject prefab, Color tint, string materialPrefix)
@@ -90,8 +135,6 @@ internal sealed class NowhereKingRewardRegistrar : IDisposable
             {
                 var source = originals[i];
                 if (!source) continue;
-                // Preserve Iron Gate's authored Crown texture/normal maps; only change the palette
-                // and material response needed for the Null Mantle identity.
                 var material = new Material(source) { name = $"{materialPrefix}.{renderer.name}.{i}" };
                 if (material.HasProperty("_Color")) material.SetColor("_Color", tint);
                 if (material.HasProperty("_Metallic")) material.SetFloat("_Metallic", .78f);
