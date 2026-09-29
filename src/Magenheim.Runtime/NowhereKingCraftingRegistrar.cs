@@ -52,6 +52,13 @@ internal sealed class NowhereKingCraftingRegistrar : IDisposable
                 Cost(UnderworldFungalRefinementCatalog.CuredGlowcap, 3));
 
             AddRecipe(
+                NowhereKingRewardRegistrar.PairedLastArgumentPrefabName,
+                Cost(NowhereKingRewardRegistrar.FirmamentPrefabName, 1),
+                Cost(NowhereKingRewardRegistrar.NullGatePrefabName, 1),
+                Cost(UnderworldFungalRefinementCatalog.SpireCord, 2),
+                Cost(UnderworldFungalRefinementCatalog.CuredGlowcap, 1));
+
+            AddRecipe(
                 NowhereKingRewardRegistrar.NullMantlePrefabName,
                 Cost(UnderworldFungalRefinementCatalog.WorldrootPlank, 4),
                 Cost("Magenheim_Underworld_Resource_Understone", 4),
@@ -68,7 +75,7 @@ internal sealed class NowhereKingCraftingRegistrar : IDisposable
             _registered = true;
             _log.LogInfo(
                 "Registered post-Nowhere-King Mycelial Bench recipes for Firmament, Null Gate, " +
-                "the Null Mantle and the Nowhere King trophy.");
+                "the paired Last Argument knives, the Null Mantle and the Nowhere King trophy.");
         }
         catch (Exception exception)
         {
