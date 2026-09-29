@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   forge:
-    runs-on: windows-latest
+    runs-on: windows-2025
     timeout-minutes: 360
     steps:
       - name: Checkout authoritative main
@@ -24,7 +24,7 @@ jobs:
       - name: Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
-          python-version: '3.12'
+          python-version: '3.12.10'
 
       - name: .NET
         uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
@@ -44,7 +44,8 @@ jobs:
             'tools/blender.ps1','tools/rebuild-underworld-production.ps1',
             'tools/rebuild-crystal-weapons.ps1','tools/rebuild-underworld-weapons.ps1',
             'tools/rebuild-rootforged-assets.ps1','tools/rebuild-underworld-stations.ps1',
-            'tools/rebuild-underworld-tools.ps1','tools/rebuild-underworld-armour.ps1'
+            'tools/rebuild-underworld-tools.ps1','tools/rebuild-underworld-armour.ps1',
+            'tools/rebuild-staff-production-assets.ps1'
           )
           foreach ($script in $parseScripts) {
             $tokens = $null; $errors = $null
@@ -53,8 +54,8 @@ jobs:
           }
           dotnet run --project tests/Magenheim.Core.Tests -c Release
           if ($LASTEXITCODE -ne 0) { throw 'Core authority tests failed before Blender provisioning.' }
-          python tools/verify-generated-freshness.py staff-icons crystal-tier-icons
-          if ($LASTEXITCODE -ne 0) { throw 'Verification-only staff/crystal icon families are stale before Blender provisioning.' }
+          python tools/verify-generated-freshness.py crystal-tier-icons
+          if ($LASTEXITCODE -ne 0) { throw 'Verification-only crystal-tier icons are stale before Blender provisioning.' }
           foreach ($gate in @(
             'verify-model-assets','verify-model-geometry','verify-model-surface-continuity','verify-model-scale',
             'verify-weapon-materials','verify-held-model-orientation','verify-held-model-grip-direction',
@@ -121,6 +122,60 @@ jobs:
           ./tools/rebuild-underworld-production.ps1
           if ($LASTEXITCODE -ne 0) { throw 'Magenheim production forge failed.' }
 
+      - name: Record production provenance and source drift
+        id: provenance
+        shell: pwsh
+        run: |
+          $source = (git rev-parse HEAD).Trim()
+          $short = $source.Substring(0, 12)
+          git fetch origin main --quiet
+          if ($LASTEXITCODE -ne 0) { throw 'Unable to refresh authoritative main for source-drift check.' }
+          $currentMain = (git rev-parse origin/main).Trim()
+          $drift = $source -ne $currentMain
+          $status = if ($drift) { 'stale' } else { 'current' }
+
+          $review = 'dist/underworld-production-review'
+          New-Item -ItemType Directory -Force -Path $review | Out-Null
+          $assembly = Join-Path $env:MAGENHEIM_VALHEIM_MANAGED 'assembly_valheim.dll'
+          $bepDll = Join-Path $env:MAGENHEIM_BEPINEX 'core/BepInEx.dll'
+          $blenderVersion = (& $env:MAGENHEIM_BLENDER --version | Select-Object -First 1).Trim()
+          $pythonVersion = (python --version 2>&1 | Select-Object -First 1).ToString().Trim()
+          $dotnetVersion = (dotnet --version).Trim()
+
+          $provenance = [ordered]@{
+            sourceCommit = $source
+            authoritativeMainAtCompletion = $currentMain
+            sourceState = $status
+            generatedAtUtc = (Get-Date).ToUniversalTime().ToString('o')
+            githubRunId = $env:GITHUB_RUN_ID
+            githubRunAttempt = $env:GITHUB_RUN_ATTEMPT
+            runnerOS = $env:RUNNER_OS
+            runnerArch = $env:RUNNER_ARCH
+            runnerImageOS = $env:ImageOS
+            runnerImageVersion = $env:ImageVersion
+            python = $pythonVersion
+            dotnetSdk = $dotnetVersion
+            blender = $blenderVersion
+            blenderExecutableSha256 = (Get-FileHash $env:MAGENHEIM_BLENDER -Algorithm SHA256).Hash.ToLowerInvariant()
+            valheimAssemblySha256 = (Get-FileHash $assembly -Algorithm SHA256).Hash.ToLowerInvariant()
+            bepInExSha256 = (Get-FileHash $bepDll -Algorithm SHA256).Hash.ToLowerInvariant()
+          }
+          $provenance | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath "$review/provenance.json"
+
+          "MAGENHEIM_SOURCE_SHORT=$short" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "MAGENHEIM_SOURCE_STATE=$status" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "MAGENHEIM_SOURCE_SHA=$source" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "source_sha=$source" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          "source_state=$status" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+          if ($drift) {
+            "### WARNING: main advanced during Blender production" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+            "Generated output is preserved against source $source, but is not merge-ready until reconciled with $currentMain." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          } else {
+            "### Source provenance clean" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+            "Generated output corresponds to current main commit $source." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          }
+
       - name: Preserve generated fallback before push
         shell: pwsh
         run: |
@@ -141,7 +196,7 @@ jobs:
         continue-on-error: true
         shell: pwsh
         run: |
-          $branch = "production/blender-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+          $branch = "production/blender-$env:MAGENHEIM_SOURCE_SHORT-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT-$env:MAGENHEIM_SOURCE_STATE"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git checkout -b $branch
@@ -151,13 +206,17 @@ jobs:
           git push origin "HEAD:refs/heads/$branch"
           "branch=$branch" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           "### Generated branch: $branch" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
-          "Blender 5.0.0 output passed machine gates. Review the contact sheets before merging." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          if ($env:MAGENHEIM_SOURCE_STATE -eq 'current') {
+            "Blender 5.0.0 output passed machine gates against current main. Review the contact sheets before merging." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          } else {
+            "Blender output passed machine gates against $env:MAGENHEIM_SOURCE_SHA but main advanced during the run. Reconcile before merging." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          }
 
       - name: Upload visual acceptance plates
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: magenheim-production-review-${{ github.run_id }}
+          name: magenheim-production-review-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             dist/underworld-production-review/**
             ${{ runner.temp }}/magenheim-blender/**
@@ -168,7 +227,7 @@ jobs:
         if: steps.push_generated.outcome == 'failure'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: magenheim-generated-fallback-${{ github.run_id }}
+          name: magenheim-generated-fallback-${{ github.run_id }}-${{ github.run_attempt }}
           path: dist/generated-fallback/**
           if-no-files-found: error
           retention-days: 1

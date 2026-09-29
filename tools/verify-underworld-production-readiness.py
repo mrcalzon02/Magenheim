@@ -21,6 +21,7 @@ require(len(scope["regenerate"])==len(set(scope["regenerate"])),"production gene
 require("staff-model-exports" in scope["regenerate"] and "staff-icons" in scope["regenerate"],
         "all 32 elemental staff exports and icons must participate in the production run")
 require("staff-icons" not in scope["verify_only"],"staff icons cannot remain verification-only in the weapon production run")
+require(scope["verify_only"]==["crystal-tier-icons"],"only crystal-tier icons should remain verification-only in this production scope")
 for gid in scope["regenerate"]+scope["verify_only"]:
     require(gid in entries,"manifest missing production authority: "+gid)
 for path in (
@@ -108,6 +109,8 @@ if workflow_path.is_file():
     require("ref: main" in workflow,"production forge checkout must be pinned to authoritative main")
     require("blender-5.0.0" in workflow,"workflow does not pin Blender 5.0.0")
     require("BepInExPack_Valheim/5.4.2351/" in workflow,"workflow does not pin the current BepInExPack compile reference")
+    require("runs-on: windows-2025" in workflow,"production forge must pin the Windows Server 2025 runner label")
+    require("python-version: '3.12.10'" in workflow,"production forge must pin Python 3.12.10")
     require("dotnet-version: '8.0.425'" in workflow,"workflow does not pin the approved .NET 8 SDK")
     require("actions/checkout@11d5960a326750d5838078e36cf38b85af677262" in workflow,"checkout action is not commit-pinned")
     require("actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065" in workflow,"setup-python action is not commit-pinned")
