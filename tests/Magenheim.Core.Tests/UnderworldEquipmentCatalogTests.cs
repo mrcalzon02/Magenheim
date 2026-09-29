@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Magenheim.Core.Underworld;
 
@@ -44,8 +45,8 @@ internal static class UnderworldEquipmentCatalogTests
             Assert(set.Any(value => value.Slot == UnderworldEquipmentSlot.Cape), biome + " cape missing.");
         }
 
-        var raw = UnderworldResourceCatalog.All.Select(value => value.Prefab).ToHashSet(StringComparer.Ordinal);
-        var fungalRefined = UnderworldFungalRefinementCatalog.All.Select(value => value.Prefab).ToHashSet(StringComparer.Ordinal);
+        var raw = new HashSet<string>(UnderworldResourceCatalog.All.Select(value => value.Prefab), StringComparer.Ordinal);
+        var fungalRefined = new HashSet<string>(UnderworldFungalRefinementCatalog.All.Select(value => value.Prefab), StringComparer.Ordinal);
         Assert(all.SelectMany(value => value.Costs).All(value => raw.Contains(value.Prefab) || fungalRefined.Contains(value.Prefab)),
             "Every admitted equipment dependency must resolve to a canonical raw or currently implemented refined material.");
 

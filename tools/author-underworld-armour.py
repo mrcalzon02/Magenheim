@@ -81,6 +81,8 @@ def build_rig():
    for seg in range(1,4):
     start=s*(1.04+.055*(seg-1));end=s*(1.04+.055*seg)
     B(side+"Hand"+finger+str(seg),(start,base_y,1.36),(end,base_y,1.35),parent);parent=side+"Hand"+finger+str(seg)
+ for side in ("Left","Right"):
+  s=-1 if side=="Left" else 1
   B(side+"UpLeg",(s*.14,0,.94),(s*.18,0,.55),"Hips")
   B(side+"Leg",(s*.18,0,.56),(s*.17,.01,.13),side+"UpLeg")
   B(side+"Foot",(s*.17,.01,.14),(s*.17,-.17,.055),side+"Leg")
