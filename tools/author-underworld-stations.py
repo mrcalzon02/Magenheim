@@ -9,6 +9,7 @@ import json
 import math
 import sys
 from pathlib import Path
+from underworld_material_library import bind_underworld_material
 
 import bpy
 from mathutils import Vector
@@ -37,6 +38,7 @@ def material(name, colour, metallic=0.0, roughness=0.72, emission=None, alpha=1.
     if emission is not None and "Emission Color" in bsdf.inputs:
         bsdf.inputs["Emission Color"].default_value = (*emission, 1.0)
         bsdf.inputs["Emission Strength"].default_value = 0.7
+    bind_underworld_material(bpy, mat, name)
     return mat
 
 

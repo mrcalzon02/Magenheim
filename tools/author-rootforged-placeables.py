@@ -6,6 +6,7 @@ prototype geometry to deliberate late-game construction.
 """
 import bpy,bmesh,math,json,random
 from pathlib import Path
+from underworld_material_library import bind_underworld_material
 from mathutils import Vector
 R=Path(__file__).resolve().parents[1]
 entries=json.loads((R/'default-data/foundation.json').read_text())['underworldArchitecture']['pieces']
@@ -23,6 +24,7 @@ def material(name,color,metal=0):
    if 'stone' in name:grain=.86+.09*math.sin(x*.1+y*.12)+rng.uniform(-.06,.06)
    pixels.extend([min(1,max(0,c*grain)) for c in color]+[1])
  im.pixels[:]=pixels;im.pack();tex=m.node_tree.nodes.new('ShaderNodeTexImage');tex.image=im;m.node_tree.links.new(tex.outputs['Color'],bs.inputs['Base Color'])
+ bind_underworld_material(bpy,m,name)
  return m
 
 
