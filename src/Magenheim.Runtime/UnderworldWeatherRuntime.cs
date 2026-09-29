@@ -81,7 +81,12 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
         var mitigation = UnderworldWeatherMitigationRuntime.Resolve(player, terrain.Biome);
         _atmosphere?.ApplySynchronizedEvent(weather.Event, weather.Intensity01);
         _atmosphere?.ApplyMitigation(mitigation.Resistance01, mitigation.Suppression01);
-        _vfx?.Apply(player, terrain.Biome, weather.Event, weather.Intensity01);
+        _vfx?.Apply(
+            player,
+            terrain.Biome,
+            weather.Event,
+            weather.Intensity01,
+            mitigation.Suppression01);
 
         if (!_hasWeather || _lastBiome != terrain.Biome || _lastWeather != weather)
         {
