@@ -17,8 +17,10 @@ Required repair:
    Unity scene and verify its hierarchy after all deferred `Awake`/`Start` callbacks.
 2. Prevent the Surface `ZoneSystem` or scene-routing patches from adopting or activating any
    Underworld world-center child.
-3. Give every Deepstone and center structural renderer an explicit owned UV material; do not rely
-   on a stripped runtime `Standard` shader or a donor material with no valid albedo.
+3. **Source repair implemented 2026-09-29; live acceptance pending.** Every canonical Deepstone
+   now uses its own multi-part model with explicit Magenheim-owned UV material-family textures,
+   emission and bounded local light. The Descent Monolith also uses its own model. Re-test under
+   live Underworld shaders/fog before closing this visual symptom.
 4. Add an admission assertion that the Surface scene contains zero objects from the Underworld
    world-center hierarchy before gameplay begins.
 
