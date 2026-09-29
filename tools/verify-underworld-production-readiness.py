@@ -48,6 +48,9 @@ for path in (
  "tools/verify-cinderworks-production-contract.py","tools/record-cinderworks-generated-assets.py",
  "tools/promote-cinderworks-runtime.py","tools/rebuild-cinderworks-dungeon.ps1",
  "tools/render-cinderworks-review.py","tools/build-cinderworks-review-sheets.py","tools/verify-cinderworks-review.py",
+ "tools/author-rime-sepulcher-dungeon.py","tools/verify-rime-sepulcher-dungeon.py",
+ "tools/verify-rime-sepulcher-production-contract.py","tools/record-rime-sepulcher-generated-assets.py",
+ "tools/promote-rime-sepulcher-runtime.py","tools/rebuild-rime-sepulcher-dungeon.ps1",
  "tools/verify-underworld-production-assets.py",
  ".github/workflows/magenheim-production-forge.yml",
 ):
@@ -70,7 +73,9 @@ python_sources=(
  "tools/verify-underworld-production-review.py","tools/verify-rootwarren-review.py","tools/verify-drowned-vaults-review.py","tools/author-cinderworks-dungeon.py","tools/verify-cinderworks-dungeon.py",
  "tools/verify-cinderworks-production-contract.py","tools/record-cinderworks-generated-assets.py",
  "tools/promote-cinderworks-runtime.py","tools/render-cinderworks-review.py","tools/build-cinderworks-review-sheets.py",
- "tools/verify-cinderworks-review.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
+ "tools/verify-cinderworks-review.py","tools/author-rime-sepulcher-dungeon.py","tools/verify-rime-sepulcher-dungeon.py",
+ "tools/verify-rime-sepulcher-production-contract.py","tools/record-rime-sepulcher-generated-assets.py",
+ "tools/promote-rime-sepulcher-runtime.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
  "tools/export-model-assets.py",
 )
 for source in python_sources:
@@ -276,6 +281,17 @@ require("render-cinderworks-review" in production_rebuild and
         "build-cinderworks-review-sheets.py" in production_rebuild and
         "verify-cinderworks-review.py" in production_rebuild,
         "Cinderworks production forge no longer emits/validates its dedicated visual acceptance plates")
+rime_author=(ROOT/"tools"/"author-rime-sepulcher-dungeon.py").read_text()
+rime_rebuild=(ROOT/"tools"/"rebuild-rime-sepulcher-dungeon.ps1").read_text()
+require('REVISION="rime-sepulcher-dungeon-r1"' in rime_author and
+        "none-runtime-atmosphere-authority" in rime_author,
+        "Rime Sepulcher authoring lost its r1 runtime-atmosphere source contract")
+require("verify-rime-sepulcher-dungeon" in rime_rebuild and "export-model-assets" in rime_rebuild,
+        "Rime Sepulcher rebuild no longer verifies and exports its 17-model family")
+require("rebuild-rime-sepulcher-dungeon.ps1" in production_rebuild and
+        "record-rime-sepulcher-generated-assets.py" in production_rebuild and
+        "promote-rime-sepulcher-runtime.py" in production_rebuild,
+        "One-run Underworld production forge no longer includes Rime Sepulcher provenance/promotion")
 
 wrapper=(ROOT/"tools"/"blender.ps1").read_text()
 require("MAGENHEIM_BLENDER" in wrapper,"Blender wrapper cannot accept the Actions executable through environment")
