@@ -4,6 +4,7 @@ ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/"assets"/"material-source"/"underworld"
 
 EXACT={
+"bone":"bone",
 "armour.sporeweave.base":"sporeweave-fibre","armour.sporeweave.structure":"worldroot-bark","armour.sporeweave.accent":"glowcap",
 "armour.palewater.base":"pale-fibre","armour.palewater.structure":"flowstone","armour.palewater.accent":"blackwater-pearl",
 "armour.emberiron.base":"charred-root","armour.emberiron.structure":"emberiron","armour.emberiron.accent":"ember-heat",
