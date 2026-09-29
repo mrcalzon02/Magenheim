@@ -84,7 +84,7 @@ internal sealed class UnderworldDeepGateLocationRegistrar : IDisposable
                 ExteriorRadius = 22f,
                 MinAltitude = 8f,
                 MinTerrainDelta = 0f,
-                MaxTerrainDelta = 1.5f,
+                MaxTerrainDelta = 0.75f,
                 MinDistanceFromSimilar = 3500f,
                 Group = "Magenheim_UnderworldAccess",
                 ClearArea = true,
