@@ -75,36 +75,6 @@ jobs:
           ./tools/rebuild-nowhere-king-swords.ps1
           if ($LASTEXITCODE -ne 0) { throw 'Nowhere King twin-sword rebuild failed.' }
 
-      - name: Provision current Valheim and BepInEx compile references
-        shell: pwsh
-        run: |
-          $steam = Join-Path $env:RUNNER_TEMP 'steamcmd'
-          $game = Join-Path $env:RUNNER_TEMP 'valheim-server'
-          $bep = Join-Path $env:RUNNER_TEMP 'bepinex'
-          New-Item -ItemType Directory -Force -Path $steam,$game,$bep | Out-Null
-          Invoke-WebRequest 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip' -OutFile "$steam/steamcmd.zip"
-          Expand-Archive "$steam/steamcmd.zip" -DestinationPath $steam -Force
-          # A brand-new SteamCMD install may consume its first invocation updating itself and then
-          # exit before processing +app_update ("Missing configuration"). Bootstrap it once, then
-          # run the actual dedicated-server install with the updated client.
-          & "$steam/steamcmd.exe" +quit
-          & "$steam/steamcmd.exe" +force_install_dir $game +login anonymous +app_update 896660 validate +quit
-          if ($LASTEXITCODE -ne 0) { throw 'Valheim Dedicated Server reference install failed after SteamCMD bootstrap.' }
-          Invoke-WebRequest 'https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.2351/' -OutFile "$bep/bepinex.zip"
-          Expand-Archive "$bep/bepinex.zip" -DestinationPath $bep -Force
-          $assembly = Get-ChildItem -LiteralPath $game -Filter assembly_valheim.dll -File -Recurse | Select-Object -First 1
-          $bepDll = Get-ChildItem -LiteralPath $bep -Filter BepInEx.dll -File -Recurse | Select-Object -First 1
-          if (!$assembly -or !$bepDll) { throw 'Required Valheim/BepInEx compile references were not provisioned.' }
-          "MAGENHEIM_VALHEIM_MANAGED=$($assembly.DirectoryName)" | Out-File -FilePath $env:GITHUB_ENV -Append
-          $bepCore = $bepDll.DirectoryName
-          "MAGENHEIM_BEPINEX=$(Split-Path $bepCore -Parent)" | Out-File -FilePath $env:GITHUB_ENV -Append
-
-      - name: Compile changed runtime against current Valheim
-        shell: pwsh
-        run: |
-          dotnet build src/Magenheim.Runtime -c Release "-p:ValheimManagedPath=$env:MAGENHEIM_VALHEIM_MANAGED" "-p:BepInExPath=$env:MAGENHEIM_BEPINEX"
-          if ($LASTEXITCODE -ne 0) { throw 'Nowhere King runtime compile failed.' }
-
       - name: Enforce surgical output scope
         shell: pwsh
         run: |
@@ -146,6 +116,43 @@ jobs:
           git commit -m "Generate Nowhere King twin sword assets ($env:GITHUB_RUN_ID)"
           git push origin "HEAD:refs/heads/$branch"
           "Generated branch: $branch" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+
+      - name: Provision current Valheim and BepInEx compile references
+        shell: pwsh
+        run: |
+          $depot = Join-Path $env:RUNNER_TEMP 'depotdownloader'
+          $game = Join-Path $env:RUNNER_TEMP 'valheim-server'
+          $bep = Join-Path $env:RUNNER_TEMP 'bepinex'
+          New-Item -ItemType Directory -Force -Path $depot,$game,$bep | Out-Null
+
+          # SteamCMD currently returns "Missing configuration" for anonymous app 896660
+          # on clean hosted runners even after self-update. Use the pinned SteamKit-based
+          # DepotDownloader instead and fetch only the Windows dedicated-server depot.
+          $depotZip = Join-Path $depot 'DepotDownloader-windows-x64.zip'
+          Invoke-WebRequest 'https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_3.4.0/DepotDownloader-windows-x64.zip' -OutFile $depotZip
+          Expand-Archive $depotZip -DestinationPath $depot -Force
+          $depotExe = Join-Path $depot 'DepotDownloader.exe'
+          if (!(Test-Path $depotExe)) { throw 'Pinned DepotDownloader executable missing after extraction.' }
+
+          & $depotExe -app 896660 -depot 896662 -branch public -os windows -osarch 64 -dir $game -validate
+          if ($LASTEXITCODE -ne 0) { throw 'DepotDownloader failed to provision current Valheim Windows dedicated-server depot 896662.' }
+
+          Invoke-WebRequest 'https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.2351/' -OutFile "$bep/bepinex.zip"
+          Expand-Archive "$bep/bepinex.zip" -DestinationPath $bep -Force
+
+          $assembly = Get-ChildItem -LiteralPath $game -Filter assembly_valheim.dll -File -Recurse | Select-Object -First 1
+          $bepDll = Get-ChildItem -LiteralPath $bep -Filter BepInEx.dll -File -Recurse | Select-Object -First 1
+          if (!$assembly -or !$bepDll) { throw 'Required Valheim/BepInEx compile references were not provisioned.' }
+
+          "MAGENHEIM_VALHEIM_MANAGED=$($assembly.DirectoryName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          $bepCore = $bepDll.DirectoryName
+          "MAGENHEIM_BEPINEX=$(Split-Path $bepCore -Parent)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Compile changed runtime against current Valheim
+        shell: pwsh
+        run: |
+          dotnet build src/Magenheim.Runtime -c Release "-p:ValheimManagedPath=$env:MAGENHEIM_VALHEIM_MANAGED" "-p:BepInExPath=$env:MAGENHEIM_BEPINEX"
+          if ($LASTEXITCODE -ne 0) { throw 'Nowhere King runtime compile failed.' }
 
       - name: Upload Blender logs
         if: always()
