@@ -2,6 +2,8 @@
   "blender_version": "5.0.0",
   "regenerate": [
     "underworld-material-library",
+    "underworld-material-item-models",
+    "underworld-resource-icons",
     "underworld-geothermal-vent-models",
     "crystal-weapon-models",
     "weapon-icons",
@@ -19,6 +21,8 @@
   ],
   "review_prefixes": [
     "crystal-weapon-",
+    "underworld-resource-",
+    "underworld-refined-",
     "underworld-weapon-",
     "rootforged-",
     "underworld-geothermal-vent-",

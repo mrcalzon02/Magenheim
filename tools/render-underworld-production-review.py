@@ -14,6 +14,8 @@ def admitted(model_id):
     return any(model_id.startswith(prefix) for prefix in scope["review_prefixes"])
 
 def group(model_id):
+    if model_id.startswith("underworld-resource-"): return "raw-materials"
+    if model_id.startswith("underworld-refined-"): return "refined-materials"
     if model_id.startswith("crystal-weapon-"): return "crystal-weapons"
     if model_id.startswith("underworld-weapon-"): return "underworld-weapons"
     if model_id.startswith("rootforged-"): return "rootforged"
@@ -26,12 +28,12 @@ def group(model_id):
 
 def context(model_id):
     low=model_id.lower()
-    if any(x in low for x in ("worldroot","mycelial","sporeweave","sporelight")): return ((.055,.095,.075,1),(.30,.78,.48),(.16,.46,.30))
-    if any(x in low for x in ("tidal","palewater","diving","blackwater")): return ((.035,.070,.090,1),(.38,.72,.82),(.14,.36,.48))
-    if any(x in low for x in ("furnace","ember","slag","staff-fire")): return ((.11,.045,.025,1),(.95,.38,.10),(.52,.16,.04))
+    if any(x in low for x in ("worldroot","mycelial","sporeweave","sporelight","spire","glowcap")): return ((.055,.095,.075,1),(.30,.78,.48),(.16,.46,.30))
+    if any(x in low for x in ("tidal","palewater","diving","blackwater","flowstone","pale","pearl","deep-salt")): return ((.035,.070,.090,1),(.38,.72,.82),(.14,.36,.48))
+    if any(x in low for x in ("furnace","ember","slag","sulfur","charred","staff-fire")): return ((.11,.045,.025,1),(.95,.38,.10),(.52,.16,.04))
     if any(x in low for x in ("silence","rime","ice","staff-frost")): return ((.065,.085,.11,1),(.64,.84,.96),(.26,.46,.72))
-    if any(x in low for x in ("anchor","stoneanchor","fracture")): return ((.075,.060,.09,1),(.63,.48,.88),(.30,.18,.48))
-    if any(x in low for x in ("crown","defiant","censer","decay","staff-venom")): return ((.09,.075,.035,1),(.86,.58,.16),(.38,.28,.08))
+    if any(x in low for x in ("anchor","stoneanchor","fracture","shardstone","titanbone")): return ((.075,.060,.09,1),(.63,.48,.88),(.30,.18,.48))
+    if any(x in low for x in ("crown","defiant","censer","decay","rotwood","carrion","ossuary","bone-gravel","staff-venom")): return ((.09,.075,.035,1),(.86,.58,.16),(.38,.28,.08))
     if "staff-storm" in low: return ((.055,.065,.11,1),(.45,.62,.96),(.28,.22,.62))
     if "staff-earth" in low: return ((.075,.060,.09,1),(.63,.48,.88),(.30,.18,.48))
     if "staff-radiance" in low: return ((.17,.15,.10,1),(.98,.90,.58),(.58,.48,.18))
@@ -85,7 +87,7 @@ def render(entry,condition):
     print("RENDERED",entry["id"],condition,flush=True)
 
 selected=sorted((e for e in catalog if admitted(e["id"])),key=lambda e:e["id"])
-if len(selected)!=110: raise RuntimeError(f"Production review scope must contain exactly 110 admitted models, found {len(selected)}")
+if len(selected)!=150: raise RuntimeError(f"Production review scope must contain exactly 150 admitted models, found {len(selected)}")
 index=[]
 for entry in selected:
     for condition in ("neutral","context"): render(entry,condition)

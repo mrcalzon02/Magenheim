@@ -26,7 +26,9 @@ for gid in scope["regenerate"]+scope["verify_only"]:
     require(gid in entries,"manifest missing production authority: "+gid)
 for path in (
  "tools/generate-underworld-material-textures.py","tools/underworld_material_library.py",
- "tools/verify-underworld-material-textures.py","tools/author-underworld-geothermal-vents.py",
+ "tools/verify-underworld-material-textures.py","tools/author-underworld-material-items.py",
+ "tools/underworld-material-item-specs.json","tools/rebuild-underworld-material-items.ps1",
+ "tools/render-underworld-resource-icons.py","tools/author-underworld-geothermal-vents.py",
  "tools/rebuild-underworld-geothermal-vents.ps1","tools/author-rootforged-placeables.py",
  "tools/author-underworld-stations.py","tools/author-underworld-tools.py",
  "tools/author-underworld-armour.py","tools/verify-underworld-armour.py",
@@ -41,7 +43,8 @@ for path in (
 
 python_sources=(
  "tools/generate-underworld-material-textures.py","tools/underworld_material_library.py",
- "tools/verify-underworld-material-textures.py","tools/author-underworld-geothermal-vents.py",
+ "tools/verify-underworld-material-textures.py","tools/author-underworld-material-items.py",
+ "tools/render-underworld-resource-icons.py","tools/author-underworld-geothermal-vents.py",
  "tools/author-rootforged-placeables.py",
  "tools/author-underworld-stations.py","tools/author-underworld-tools.py",
  "tools/author-underworld-armour.py","tools/verify-underworld-armour.py",
@@ -101,6 +104,16 @@ literal_names += [
  "magenheim.underworld-weapon.preview.bone",
  "magenheim.underworld-weapon.preview.carrion-amber",
 ]
+material_item_specs=json.loads((ROOT/"tools"/"underworld-material-item-specs.json").read_text())
+require(len(material_item_specs)==32,"Underworld material-item catalog must own exactly 32 newly-authored models")
+material_item_manifest=entries.get("underworld-material-item-models",{})
+require(material_item_manifest.get("generator")=="tools/author-underworld-material-items.py",
+        "Underworld material-item generator authority is missing")
+require("underworld-resource-icons" in scope["regenerate"],
+        "Owned raw/refined material icons must be regenerated in the one-run forge")
+for primary,secondary,form in material_item_specs.values():
+    literal_names += ["magenheim.material-item.preview."+primary,"magenheim.material-item.preview."+secondary]
+
 for semantic in literal_names:
     try:
         key=material_key(semantic)

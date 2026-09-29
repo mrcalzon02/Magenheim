@@ -17,6 +17,8 @@ def ids_with(prefix):
 
 staff_ids=sorted(x for x in runtime_ids if x.startswith("staff-") or x.startswith("Magenheim_Staff_"))
 expected={
+    "Underworld raw materials":(ids_with("underworld-resource-"),22),
+    "Underworld refined materials":(ids_with("underworld-refined-"),18),
     "crystal weapons":(ids_with("crystal-weapon-"),10),
     "Underworld weapons":(ids_with("underworld-weapon-"),12),
     "geothermal vents":(ids_with("underworld-geothermal-vent-"),3),
@@ -31,16 +33,25 @@ for label,(ids,count) in expected.items():
         raise SystemExit(f"{label}: expected {count} production models, found {len(ids)}")
 
 production_ids=sorted(set().union(*(set(ids) for ids,_ in expected.values())))
-if len(production_ids)!=110:
-    raise SystemExit(f"Production review universe must contain 110 unique models, found {len(production_ids)}")
+if len(production_ids)!=150:
+    raise SystemExit(f"Production review universe must contain 150 unique models, found {len(production_ids)}")
 
 for model_id in production_ids:
     for path in (SOURCE/(model_id+".blend"),GLB/(model_id+".glb"),RUNTIME/(model_id+".model.json")):
         if not path.is_file():
             raise SystemExit(f"{model_id}: missing production representation {path.relative_to(ROOT)}")
+    if model_id.startswith(("underworld-resource-","underworld-refined-")):
+        icon=ROOT/"assets"/"earth"/(model_id+".icon.png")
+        if not icon.is_file():
+            raise SystemExit(f"{model_id}: missing owned material inventory icon {icon.relative_to(ROOT)}")
 
 pbr_prefixes=("underworld-geothermal-vent-","rootforged-","underworld-station-","underworld-tool-","underworld-armor-")
 pbr_models=[x for x in production_ids if x.startswith(pbr_prefixes)]
+material_specs=json.loads((ROOT/"tools"/"underworld-material-item-specs.json").read_text())
+new_material_ids=set(material_specs)
+if len(new_material_ids)!=32:
+    raise SystemExit(f"Underworld material-item art catalog must contain 32 new models, found {len(new_material_ids)}")
+pbr_models+=sorted(new_material_ids)
 for model_id in pbr_models:
     doc=json.loads((RUNTIME/(model_id+".model.json")).read_text())
     skinned=model_id.startswith("underworld-armor-") or model_id=="underworld-tool-diving-bell-hood"
@@ -80,9 +91,9 @@ for model_id in ids_with("underworld-weapon-"):
             if not name or not (TEXTURES/name).is_file():
                 raise SystemExit(f"{model_id}: biome accent missing runtime {field}")
 
-if len(runtime_ids)<417:
-    raise SystemExit(f"Full model library must be at least 417 models after the expanded Underworld derivative admission; found {len(runtime_ids)}")
+if len(runtime_ids)<449:
+    raise SystemExit(f"Full model library must be at least 449 models after complete Underworld material-item admission; found {len(runtime_ids)}")
 
-print("VERIFIED production asset admission: 110 reviewed weapon/build/equipment/environment models; "
-      "10 Crystal weapons, 12 Underworld derivatives, 32 staves, 3 geothermal vents, 17 Rootforged, "
+print("VERIFIED production asset admission: 150 reviewed material/weapon/build/equipment/environment models; "
+      "22 raw materials, 18 refined materials, 10 Crystal weapons, 12 Underworld derivatives, 32 staves, 3 geothermal vents, 17 Rootforged, "
       "6 stations, 6 tools and 24 armour pieces with required PBR runtime maps.")

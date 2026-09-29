@@ -698,7 +698,8 @@
         "& './tools/blender.ps1' render-underworld-resource-icons"
       ],
       "outputs": [
-        "assets/earth/underworld-resource-*.icon.png"
+        "assets/earth/underworld-resource-*.icon.png",
+        "assets/earth/underworld-refined-*.icon.png"
       ],
       "hash": "generator-only",
       "generator_sha256": "5dc2d13c92eb3807fbd8fa0f52fbbb27b853cd7758017936ab877c25ae5bcaea",
@@ -711,7 +712,13 @@
         "assets/earth/underworld-resource-spire-fibre.icon.png": null,
         "assets/earth/underworld-resource-understone.icon.png": null,
         "assets/earth/underworld-resource-worldroot-timber.icon.png": null
-      }
+      },
+      "inputs": [
+        "tools/underworld-material-item-specs.json",
+        "tools/author-underworld-material-items.py",
+        "tools/author-underworld-fungal-forest.py",
+        "tools/author-underworld-blackwater-deep.py"
+      ]
     },
     {
       "id": "underworld-blackwater-deep-models",
@@ -1490,6 +1497,72 @@
         "tools/rebuild-underworld-geothermal-vents.ps1",
         "tools/export-model-assets.py",
         "tools/model_surface_authoring.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py"
+      ]
+    },
+    {
+      "id": "underworld-material-item-models",
+      "generator": "tools/author-underworld-material-items.py",
+      "command": [
+        "pwsh",
+        "-NoProfile",
+        "-File",
+        "tools/rebuild-underworld-material-items.ps1"
+      ],
+      "outputs": [
+        "assets/models/source/underworld-resource-slagstone.blend",
+        "assets/models/glb/underworld-resource-slagstone.glb",
+        "assets/models/runtime/underworld-resource-slagstone.model.json",
+        "assets/models/source/underworld-resource-sulfur.blend",
+        "assets/models/glb/underworld-resource-sulfur.glb",
+        "assets/models/runtime/underworld-resource-sulfur.model.json",
+        "assets/models/source/underworld-resource-charred-timber.blend",
+        "assets/models/glb/underworld-resource-charred-timber.glb",
+        "assets/models/runtime/underworld-resource-charred-timber.model.json",
+        "assets/models/source/underworld-resource-emberiron.blend",
+        "assets/models/glb/underworld-resource-emberiron.glb",
+        "assets/models/runtime/underworld-resource-emberiron.model.json",
+        "assets/models/source/underworld-resource-rimewood.blend",
+        "assets/models/glb/underworld-resource-rimewood.glb",
+        "assets/models/runtime/underworld-resource-rimewood.model.json",
+        "assets/models/source/underworld-resource-clear-ice.blend",
+        "assets/models/glb/underworld-resource-clear-ice.glb",
+        "assets/models/runtime/underworld-resource-clear-ice.model.json",
+        "assets/models/source/underworld-resource-rimesilver.blend",
+        "assets/models/glb/underworld-resource-rimesilver.glb",
+        "assets/models/runtime/underworld-resource-rimesilver.model.json",
+        "assets/models/source/underworld-resource-fracture-crystal.blend",
+        "assets/models/glb/underworld-resource-fracture-crystal.glb",
+        "assets/models/runtime/underworld-resource-fracture-crystal.model.json",
+        "assets/models/source/underworld-resource-shardstone.blend",
+        "assets/models/glb/underworld-resource-shardstone.glb",
+        "assets/models/runtime/underworld-resource-shardstone.model.json",
+        "assets/models/source/underworld-resource-titanbone.blend",
+        "assets/models/glb/underworld-resource-titanbone.glb",
+        "assets/models/runtime/underworld-resource-titanbone.model.json",
+        "assets/models/source/underworld-resource-rotwood.blend",
+        "assets/models/glb/underworld-resource-rotwood.glb",
+        "assets/models/runtime/underworld-resource-rotwood.model.json",
+        "assets/models/source/underworld-resource-decay-spore.blend",
+        "assets/models/glb/underworld-resource-decay-spore.glb",
+        "assets/models/runtime/underworld-resource-decay-spore.model.json",
+        "assets/models/source/underworld-resource-carrion-amber.blend",
+        "assets/models/glb/underworld-resource-carrion-amber.glb",
+        "assets/models/runtime/underworld-resource-carrion-amber.model.json",
+        "assets/models/source/underworld-resource-bone-gravel.blend",
+        "assets/models/glb/underworld-resource-bone-gravel.glb",
+        "assets/models/runtime/underworld-resource-bone-gravel.model.json",
+        "assets/models/source/underworld-refined-*.blend",
+        "assets/models/glb/underworld-refined-*.glb",
+        "assets/models/runtime/underworld-refined-*.model.json"
+      ],
+      "output_sha256": {},
+      "hash": "generator-only",
+      "inputs": [
+        "tools/underworld-material-item-specs.json",
+        "tools/rebuild-underworld-material-items.ps1",
+        "tools/export-model-assets.py",
         "tools/underworld_material_library.py",
         "tools/generate-underworld-material-textures.py"
       ]
