@@ -38,7 +38,12 @@ public static class UnderworldTerrainLifecycle
     public const string BiomeLayoutAlgorithmId = "biome-layout-v2-hex50-voronoi-plasma-rivers";
     public const string EdgeOceanAlgorithmId = "edge-ocean-v1-plasma-shore";
     public const string RareCellElevationAlgorithmId = "rare-cell-massif-v1-biome-owned";
+    public const string GateFoundationAlgorithmId = "deep-gate-foundation-v1-flat-footprint-blend";
     public const double ArrivalProtectionRadiusMeters = 80d;
+    public const double GateFoundationCenterXMeters = 36d;
+    public const double GateFoundationCenterZMeters = 0d;
+    public const double GateFoundationRadiusMeters = 22d;
+    public const double GateFoundationBlendRadiusMeters = 34d;
     public const double FullRegionalReliefRadiusMeters = 320d;
     public const double BaseElevationMeters = 45d;
     public const double MaximumSlopeDegrees = 75d;
@@ -139,6 +144,12 @@ public static class UnderworldTerrainLifecycle
         height = ApplyEdgeOceanCarve(height, sample.WaterLevel, edgeOcean);
         if (edgeOcean >= EdgeOceanBiomeThreshold)
             biome = UnderworldTerrainBiome.BlackwaterDeep;
+
+        // The Aesir Deep Gate is roughly 35.8 x 20.1m. The protected arrival country's local
+        // noise is intentionally visible, but grounding only the gate's centre allows its corners
+        // to float or bury. Give the actual gate footprint a deterministic level foundation and
+        // feather that plateau back into the existing Fungal approach before calculating water.
+        height = ApplyGateFoundation(height, derivedSeed32, sample.X, sample.Z);
 
         var water = Math.Max(0d, sample.WaterLevel - height);
         var cover = Cover(biome, noise, slope, water);
@@ -419,6 +430,28 @@ public static class UnderworldTerrainLifecycle
             height = Math.Min(height, oceanBed);
 
         return height;
+    }
+
+    private static double ApplyGateFoundation(double height, int seed, double x, double z)
+    {
+        var dx = x - GateFoundationCenterXMeters;
+        var dz = z - GateFoundationCenterZMeters;
+        var distance = Math.Sqrt(dx * dx + dz * dz);
+        if (distance >= GateFoundationBlendRadiusMeters) return height;
+
+        var foundation = BaseElevationMeters + UnderworldBiomeTerrain.HeightDelta(
+            UnderworldTerrainBiome.FungalForest,
+            seed,
+            GateFoundationCenterXMeters,
+            GateFoundationCenterZMeters,
+            0d);
+
+        if (distance <= GateFoundationRadiusMeters) return foundation;
+
+        var blend = Smooth01(
+            (distance - GateFoundationRadiusMeters) /
+            (GateFoundationBlendRadiusMeters - GateFoundationRadiusMeters));
+        return Lerp(foundation, height, blend);
     }
 
     private static double ApplyHexRiverCarve(double height, double waterLevel, double channel01)
