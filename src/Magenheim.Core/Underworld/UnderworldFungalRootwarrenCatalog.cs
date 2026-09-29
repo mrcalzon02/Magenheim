@@ -59,6 +59,7 @@ public static class UnderworldFungalRootwarrenCatalog
 {
     public const string RoomIdPrefix = "magenheim.underworld.dungeon.fungal_forest.room.";
     public const string ModelIdPrefix = "underworld-dungeon-fungal-rootwarren-";
+    public const string EntranceRoomId = RoomIdPrefix + "fracture-mouth";
 
     public static IReadOnlyList<UnderworldDungeonRoomDefinition> Rooms { get; } =
         Array.AsReadOnly(new[]
