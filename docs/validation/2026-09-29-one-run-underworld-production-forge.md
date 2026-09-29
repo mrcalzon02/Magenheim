@@ -26,8 +26,10 @@ tools and twenty-four rigged armour sources. The thirty-two elemental staff Blen
 
 ## Texture/material standard
 
-Shared Underworld materials own deterministic 512px albedo, roughness and normal source maps.
-Luminous families also own localized emission maps. Blender review/GLB sees the complete material;
+Shared Underworld materials own deterministic, tile-safe 512px albedo, roughness and normal source maps.
+Luminous families also own localized emission maps. Repeat continuity is machine-gated so projected/repeated
+surfaces cannot hide a hard source-map seam, and long Rootforged members keep world-scale UV density instead
+of stretching one map across their full 4m/8m length. Blender review/GLB sees the complete material;
 the current lightweight runtime model payload retains the authored albedo plus metallic/roughness/
 emission scalar data, because ModelAssets intentionally does not yet carry normal/roughness texture
 slots. The source maps are kept outside the packaged runtime texture directory; export packs them

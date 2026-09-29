@@ -9,6 +9,20 @@ ROOT=Path(__file__).resolve().parents[1]
 def flat(im):
     reader=getattr(im,"get_flattened_data",None)
     return list(reader() if reader else im.getdata())
+
+def edge_continuity(image):
+    """Return seam/internal neighbor ratio; ~1 means wrapping is no harsher than normal texel detail."""
+    im=image.convert("RGB")
+    w,h=im.size
+    px=im.load()
+    def delta(a,b): return sum(abs(a[i]-b[i]) for i in range(3))/3
+    vertical=sum(delta(px[0,y],px[w-1,y]) for y in range(h))/h
+    horizontal=sum(delta(px[x,0],px[x,h-1]) for x in range(w))/w
+    internal_v=sum(delta(px[x,y],px[x-1,y]) for x in range(1,w,17) for y in range(0,h,17))
+    internal_v/=max(1,len(range(1,w,17))*len(range(0,h,17)))
+    internal_h=sum(delta(px[x,y],px[x,y-1]) for x in range(0,w,17) for y in range(1,h,17))
+    internal_h/=max(1,len(range(0,w,17))*len(range(1,h,17)))
+    return vertical/max(internal_v,0.5),horizontal/max(internal_h,0.5)
 DIR=ROOT/"assets"/"material-source"/"underworld"
 spec=importlib.util.spec_from_file_location("gen",ROOT/"tools"/"generate-underworld-material-textures.py")
 # Do not import generator (it would regenerate); read keys from helper's mapping expectations via filenames.
@@ -21,6 +35,9 @@ for alb in albedos:
         if not path.is_file(): raise SystemExit(f"{key}: missing {suffix}")
         im=Image.open(path)
         if im.size!=(512,512): raise SystemExit(f"{path.name}: expected 512x512, got {im.size}")
+        wrap_x,wrap_y=edge_continuity(im)
+        if wrap_x>2.8 or wrap_y>2.8:
+            raise SystemExit(f"{path.name}: repeat seam is harsher than ordinary texel detail (x={wrap_x:.2f}x y={wrap_y:.2f}x)")
     a=Image.open(maps["albedo"]).convert("L")
     p=a.resize((64,64),Image.Resampling.LANCZOS)
     vals=flat(p)

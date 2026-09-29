@@ -75,11 +75,17 @@ def build(key,spec):
     for y in range(SIZE):
         for x in range(SIZE):
             broad=motif_value(motif,x,y,phase)
-            micro=.22*sin(x*.91+y*1.17+phase)+rng.uniform(-.14,.14)
+            nx=x/SIZE; ny=y/SIZE
+            # Integer-frequency periodic detail keeps opposite texture edges continuous. Do not
+            # use per-pixel RNG here: these maps repeat on large architecture and a random edge
+            # discontinuity becomes a visible seam at every UV tile boundary.
+            micro=(.13*sin(2*pi*(nx*83+ny*61)+phase)
+                   +.09*cos(2*pi*(nx*47-ny*89)+phase*.73))
             v=max(-1,min(1,broad*.78+micro*.22)); field[y][x]=v
             shade=1+contrast*v
             ap[x,y]=tuple(clamp(c*255*shade) for c in base)
-            rough_value=clamp(rough_mean + 28*v + rng.uniform(-5,5))
+            rough_micro=4.5*sin(2*pi*(nx*37+ny*43)+phase*.41)
+            rough_value=clamp(rough_mean + 28*v + rough_micro)
             rp[x,y]=rough_value
             metal=clamp(metallic*255)
             mp[x,y]=(metal,metal,metal,255-rough_value)
@@ -99,7 +105,8 @@ def build(key,spec):
         for y in range(SIZE):
             for x in range(SIZE):
                 gate=max(0.0,field[y][x]-.32)
-                pulse=max(0.0,sin((x+y)*.07+phase))*.35
+                nx=x/SIZE; ny=y/SIZE
+                pulse=max(0.0,sin(2*pi*(nx*29+ny*31)+phase))*.35
                 strength=min(1.0,gate*1.8+pulse*gate)
                 ep[x,y]=tuple(clamp(c*255*strength) for c in emissive)
         em.save(OUT/f"{key}-emission.png")

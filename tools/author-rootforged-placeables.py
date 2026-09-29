@@ -36,6 +36,12 @@ def mesh(name,vs,fs,uvs,mat,collision=True):
 
 def tube(name,points,radii,mat,sides=12,collision=True):
  vs=[];fs=[];uvs=[]
+ cumulative=[0.0]
+ for i in range(1,len(points)): cumulative.append(cumulative[-1]+(points[i]-points[i-1]).length)
+ path_length=max(cumulative[-1],1e-6)
+ # Keep bark/metal detail at a stable world scale. Short members use one full tile; long beams
+ # repeat rather than stretching 512px of source art across four or eight metres.
+ v_tiles=max(1.0,path_length/1.75)
  for k,p in enumerate(points):
   tangent=(points[min(k+1,len(points)-1)]-points[max(0,k-1)]).normalized()
   side=Vector((0,1,0));up=tangent.cross(side).normalized()
@@ -45,7 +51,8 @@ def tube(name,points,radii,mat,sides=12,collision=True):
  for k in range(len(points)-1):
   for j in range(sides):
    fs.append((k*sides+j,k*sides+(j+1)%sides,(k+1)*sides+(j+1)%sides,(k+1)*sides+j))
-   u=j/sides;v=k/(len(points)-1);uvs.append([(u,v),((j+1)/sides,v),((j+1)/sides,(k+1)/(len(points)-1)),(u,(k+1)/(len(points)-1))])
+   u=j/sides;v=cumulative[k]/path_length*v_tiles;v2=cumulative[k+1]/path_length*v_tiles
+   uvs.append([(u,v),((j+1)/sides,v),((j+1)/sides,v2),(u,v2)])
  for k,rev in [(0,True),(len(points)-1,False)]:
   ids=list(range(k*sides,(k+1)*sides));ids=ids[::-1] if rev else ids
   fs.append(tuple(ids));uvs.append([(.5+.45*math.cos(math.tau*(i%sides)/sides),.5+.45*math.sin(math.tau*(i%sides)/sides)) for i in ids])
