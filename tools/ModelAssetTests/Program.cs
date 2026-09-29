@@ -68,6 +68,21 @@ foreach(var file in Directory.GetFiles(Path.Combine(AppContext.BaseDirectory,"as
  finally { if(File.Exists(pbrPath))File.Delete(pbrPath); }
 }
 
+{
+ var textureName=Path.GetFileName(Directory.GetFiles(Path.Combine(AppContext.BaseDirectory,"assets/models/textures"),"*.png").First());
+ var id="__magenheim-skin-runtime-test";var path=Path.Combine(AppContext.BaseDirectory,"assets/models/runtime",id+".model.json");
+ var payload=JObject.FromObject(new {skinRig=new{kind="valheim-player-attach-skin",bones=new[]{"Hips"},root="Hips"},parts=new[]{new{name="skin",path="skin",vertices=new[]{new[]{0f,0f,0f},new[]{1f,0f,0f},new[]{0f,1f,0f}},normals=new[]{new[]{0f,0f,1f},new[]{0f,0f,1f},new[]{0f,0f,1f}},uv=new[]{new[]{0f,0f},new[]{1f,0f},new[]{0f,1f}},triangles=new[]{0,1,2},skinWeights=new object[]{new object[]{new object[]{0,1f}},new object[]{new object[]{0,1f}},new object[]{new object[]{0,1f}}},material=new{doubleSided=false,name="magenheim.test.skin",color=new[]{1f,1f,1f,1f},metallic=0f,roughness=.6f,emission=new[]{0f,0f,0f},texture=textureName,normalTexture=(string?)null,normalScale=(float?)null,metallicGlossTexture=(string?)null,emissionTexture=(string?)null},collider=false,crystal=(object?)null}},lights=Array.Empty<object>()});
+ File.WriteAllText(path,payload.ToString(Newtonsoft.Json.Formatting.None));
+ try{
+  var host=new GameObject("skin-donor");var attach=new GameObject("attach_skin");attach.transform.SetParent(host.transform);var hips=new GameObject("Hips");hips.transform.SetParent(attach.transform);
+  var donor=attach.AddComponent<SkinnedMeshRenderer>();donor.sharedMesh=new Mesh();donor.sharedMaterial=new Material(Shader.Find("Standard"));donor.bones=new[]{hips.transform};donor.rootBone=hips.transform;
+  var loaded=ModelAssets.LoadSkinnedEquipment(host,id);var renderer=loaded.GetComponentsInChildren<SkinnedMeshRenderer>(true).Single();
+  if(donor.enabled||renderer.rootBone!=hips.transform||renderer.bones.Length!=1)throw new Exception("attach_skin binding failed.");
+  if(renderer.sharedMesh!.boneWeights.Length!=3||renderer.sharedMesh.bindposes.Length!=1||renderer.sharedMesh.boneWeights.Any(w=>w.boneIndex0!=0||MathF.Abs(w.weight0-1f)>.0001f))throw new Exception("Skin weight stream failed.");
+  Console.WriteLine("PASS: wearable skin stream mapped onto donor attach_skin bones.");
+ }finally{if(File.Exists(path))File.Delete(path);}
+}
+
 var untouched=new GameObject("missing");var original=untouched.AddComponent<MeshRenderer>();original.sharedMaterial=new Material();
 try{ModelAssets.Load(untouched,"missing-asset-for-test");throw new Exception("Missing asset silently accepted");}catch(FileNotFoundException){}
 if(!original.enabled || untouched.transform.childCount!=0)throw new Exception("Failed load mutated host");

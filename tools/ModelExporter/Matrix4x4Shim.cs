@@ -24,6 +24,8 @@ public struct Vector4
 public struct Matrix4x4
 {
     private float m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33;
+    public static Matrix4x4 identity { get { var v=new Matrix4x4();v.m00=v.m11=v.m22=v.m33=1f;return v; } }
+    public static Matrix4x4 operator *(Matrix4x4 a, Matrix4x4 b) => a;
 
     public void SetColumn(int column, Vector4 value)
     {

@@ -30,12 +30,23 @@ for file in files:
   try:bpy.ops.object.mode_set(mode='OBJECT')
   except RuntimeError:pass
  scene=bpy.context.scene
+ skin_contract=None
+ if 'magenheim_skinning' in scene:
+  if scene['magenheim_skinning']!='valheim-player-attach-skin':
+   raise ValueError(file.name+': unsupported runtime skinning contract '+repr(scene['magenheim_skinning']))
+  bone_names=json.loads(scene.get('magenheim_bone_order','[]'))
+  if not bone_names or len(bone_names)!=len(set(bone_names)) or 'Hips' not in bone_names:
+   raise ValueError(file.name+': invalid canonical skin bone order')
+  skin_contract=dict(kind='valheim-player-attach-skin',bones=bone_names,root='Hips')
+  skin_bone_index={name:i for i,name in enumerate(bone_names)}
  bindings={p['path']:p for p in json.loads(scene.get('binding_metadata','[]'))}
  if 'binding_metadata' in scene:del scene['binding_metadata']
  parts=[]
  for obj in scene.objects:
   if obj.type!='MESH':continue
-  bpy.context.view_layer.objects.active=obj;obj.select_set(True);bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY',center='BOUNDS');obj.select_set(False)
+  bpy.context.view_layer.objects.active=obj;obj.select_set(True)
+  if skin_contract is None:bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY',center='BOUNDS')
+  obj.select_set(False)
   path=obj.get('game_node_path',obj.name)
   previous=bindings.get(path,{})
   if 'game_collision' not in obj:obj['game_collision']=bool(previous.get('collider',False))
@@ -94,7 +105,9 @@ for file in files:
   md=dict(doubleSided=not material.use_backface_culling,name=material.get('magenheim_material_name',material.name),color=color,metallic=bs.inputs['Metallic'].default_value,roughness=bs.inputs['Roughness'].default_value,
           emission=emission_value,texture=texture,normalTexture=normal_texture,normalScale=.42 if pbr_key else None,
           metallicGlossTexture=metallic_gloss_texture,emissionTexture=emission_texture)
-  vertices=[];normals=[];uv=[];triangles=[];normal_matrix=obj.matrix_world.to_3x3().inverted().transposed()
+  vertices=[];normals=[];uv=[];triangles=[];skin_weights=[] if skin_contract else None
+  normal_matrix=obj.matrix_world.to_3x3().inverted().transposed()
+  group_names={group.index:group.name for group in obj.vertex_groups}
   for face in mesh.loop_triangles:
    # Drop triangles with no world-space area. verify-model-assets rejects these, and they render
    # nothing, but they cannot always be removed at the source: the exporter emits the *evaluated*
@@ -108,9 +121,23 @@ for file in files:
    loops=list(face.loops)
    if obj.matrix_world.to_3x3().determinant()<0:loops.reverse()
    for li in loops:
-    loop=mesh.loops[li];v=obj.matrix_world@mesh.vertices[loop.vertex_index].co;n=(normal_matrix@mesh.corner_normals[li].vector).normalized()
+    loop=mesh.loops[li];source_vertex=mesh.vertices[loop.vertex_index]
+    v=obj.matrix_world@source_vertex.co;n=(normal_matrix@mesh.corner_normals[li].vector).normalized()
     vertices.append([v.x,v.z,-v.y]);normals.append([n.x,n.z,-n.y]);uv.append(list(mesh.uv_layers.active.data[li].uv));triangles.append(len(vertices)-1)
-  parts.append(dict(name=obj.name,path=path,vertices=vertices,normals=normals,uv=uv,triangles=triangles,material=md,collider=bool(obj['game_collision']),crystal=json.loads(obj['game_crystal'])))
+    if skin_contract:
+     influences=[]
+     for element in source_vertex.groups:
+      if element.weight<=1e-7:continue
+      bone=group_names.get(element.group)
+      if bone not in skin_bone_index:raise ValueError(f'{file.name}/{obj.name}: non-canonical weighted bone {bone!r}')
+      influences.append((skin_bone_index[bone],float(element.weight)))
+     influences=sorted(influences,key=lambda value:value[1],reverse=True)[:4]
+     total=sum(weight for _,weight in influences)
+     if total<=1e-7:raise ValueError(f'{file.name}/{obj.name}: skin vertex has no canonical bone weight')
+     skin_weights.append([[index,weight/total] for index,weight in influences])
+  part=dict(name=obj.name,path=path,vertices=vertices,normals=normals,uv=uv,triangles=triangles,material=md,collider=bool(obj['game_collision']),crystal=json.loads(obj['game_crystal']))
+  if skin_contract:part['skinWeights']=skin_weights
+  parts.append(part)
   evaluated.to_mesh_clear()
  lights=json.loads(scene.get('runtime_lights','[]'))
  for obj in scene.objects:
@@ -120,6 +147,7 @@ for file in files:
  # A bone-bound model carries the canonical skeleton its parts were authored against; only models
  # that declare one change, so every other payload stays byte-identical.
  if 'runtime_rig' in scene:payload['rig']=json.loads(scene['runtime_rig'])
+ if skin_contract:payload['skinRig']=skin_contract
  if file.stem.startswith('earth-'):
   vs=[];uvs=[];indices=[]
   for part in parts:

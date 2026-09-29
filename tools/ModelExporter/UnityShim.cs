@@ -94,6 +94,8 @@ public class Transform : Component
     public Vector3 localEulerAngles { get => localRotation.eulerAngles; set => localRotation = Quaternion.Euler(value); }
     public int childCount => Children.Count;
     public Transform GetChild(int index) => Children[index];
+    public Matrix4x4 localToWorldMatrix => Matrix4x4.identity;
+    public Matrix4x4 worldToLocalMatrix => Matrix4x4.identity;
 
     public void SetParent(Transform? newParent, bool worldPositionStays = false)
     {
@@ -253,10 +255,11 @@ public struct Bounds
     }
 }
 public static class ImageConversion { public static bool LoadImage(Texture2D t,byte[] bytes,bool unreadable)=>bytes.Length>8 && bytes[0]==137 && bytes[1]==80; }
+public struct BoneWeight{public int boneIndex0,boneIndex1,boneIndex2,boneIndex3;public float weight0,weight1,weight2,weight3;}
 public class Mesh:Object
 {
     public UnityEngine.Rendering.IndexFormat indexFormat; public Bounds bounds;
-    public Vector3[] vertices=Array.Empty<Vector3>();public int[] triangles=Array.Empty<int>();public Vector3[] normals=Array.Empty<Vector3>();public Vector2[] uv=Array.Empty<Vector2>();
+    public Vector3[] vertices=Array.Empty<Vector3>();public int[] triangles=Array.Empty<int>();public Vector3[] normals=Array.Empty<Vector3>();public Vector2[] uv=Array.Empty<Vector2>();public BoneWeight[] boneWeights=Array.Empty<BoneWeight>();public Matrix4x4[] bindposes=Array.Empty<Matrix4x4>();
     public void SetVertices(List<Vector3> v){vertices=v.ToArray();}public void SetTriangles(List<int> t,int s){triangles=t.ToArray();}
     public void RecalculateNormals(){}public void RecalculateBounds(){if(vertices.Length==0)return;var min=new Vector3(vertices.Min(v=>v.x),vertices.Min(v=>v.y),vertices.Min(v=>v.z));var max=new Vector3(vertices.Max(v=>v.x),vertices.Max(v=>v.y),vertices.Max(v=>v.z));bounds=new Bounds{center=(min+max)*.5f,size=max-min};}public void RecalculateTangents(){}
 }
@@ -265,7 +268,9 @@ public class Renderer:Component
 {
     public bool enabled=true;public Material? sharedMaterial;public Material[] sharedMaterials=Array.Empty<Material>();public bool receiveShadows=true;public UnityEngine.Rendering.ShadowCastingMode shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.On;
 }
-public class MeshRenderer:Renderer{} public class ParticleSystemRenderer:Renderer{} public class LODGroup:Component{public bool enabled=true;}
+public class MeshRenderer:Renderer{}
+public class SkinnedMeshRenderer:Renderer{public Mesh? sharedMesh;public Transform[] bones=Array.Empty<Transform>();public Transform? rootBone;}
+public class ParticleSystemRenderer:Renderer{} public class LODGroup:Component{public bool enabled=true;}
 public class Light:Component{public Color color;public float intensity;public float range;}
 
 public class Material:Object

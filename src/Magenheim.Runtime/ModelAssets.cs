@@ -161,8 +161,10 @@ internal static class ModelAssets
         return document;
     }
 
-    /// <summary>The canonical skeleton a bone-bound model was authored against, if it declares one.</summary>
+    /// <summary>The canonical skeleton a rigid bone-segment model was authored against, if it declares one.</summary>
     internal static JToken? Rig(string id) => Document(id)["rig"];
+
+    internal static JToken? SkinRig(string id) => Document(id)["skinRig"];
 
     internal static GameObject Load(GameObject prefab, string id, bool item = false, float scale = 1f, bool hideOriginal = true, bool preserveParticles = false, Transform? parent = null, Material? materialSource = null, Action<string, Transform>? arrange = null)
     {
@@ -233,6 +235,86 @@ internal static class ModelAssets
             return root;
         }
         catch { UnityEngine.Object.DestroyImmediate(root); throw; }
+    }
+
+    internal static GameObject LoadSkinnedEquipment(GameObject prefab, string id, Material? materialSource = null)
+    {
+        if (!prefab) throw new ArgumentNullException(nameof(prefab));
+        if (string.IsNullOrEmpty(id) || Path.GetFileName(id) != id) throw new ArgumentException("Invalid model identity.", nameof(id));
+        var document = Document(id);
+        if (!(document["skinRig"] is JObject skinRig) || (string?)skinRig["kind"] != "valheim-player-attach-skin")
+            throw new InvalidDataException("Wearable model has no Valheim attach_skin contract: " + id);
+        var names = ((JArray?)skinRig["bones"])?.Select(value => (string?)value ?? string.Empty).ToArray()
+            ?? throw new InvalidDataException("Wearable model has no canonical bone list: " + id);
+        if (names.Length == 0 || names.Any(string.IsNullOrEmpty) || names.Distinct(StringComparer.Ordinal).Count() != names.Length)
+            throw new InvalidDataException("Wearable model has invalid canonical bones: " + id);
+        var attachSkin = prefab.GetComponentsInChildren<Transform>(true)
+            .FirstOrDefault(value => value.gameObject.name == "attach_skin")
+            ?? throw new InvalidOperationException("Equipment donor exposes no attach_skin hierarchy: " + prefab.name);
+        var originals = attachSkin.gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+        if (originals.Length == 0) throw new InvalidOperationException("Equipment donor attach_skin has no skinned renderer: " + prefab.name);
+        var available = originals.SelectMany(renderer => (renderer.bones ?? Array.Empty<Transform>())
+            .Concat(renderer.rootBone ? new[] { renderer.rootBone } : Array.Empty<Transform>()))
+            .Where(value => value).GroupBy(value => value.gameObject.name, StringComparer.Ordinal)
+            .ToDictionary(group => group.Key, group => group.First(), StringComparer.Ordinal);
+        var bones = new Transform[names.Length];
+        for (var i = 0; i < names.Length; i++)
+            if (!available.TryGetValue(names[i], out bones[i]!))
+                throw new InvalidOperationException($"Equipment donor {prefab.name} lacks attach_skin bone '{names[i]}' for {id}.");
+        var rootName = (string?)skinRig["root"] ?? "Hips";
+        if (!available.TryGetValue(rootName, out var rootBone))
+            throw new InvalidOperationException($"Equipment donor {prefab.name} lacks skin root '{rootName}' for {id}.");
+        var source = materialSource ?? originals.Select(renderer => renderer.sharedMaterial).FirstOrDefault(material => material);
+        if (!source) source = new Material(ResolveSurfaceShader());
+        source = Uncouple(source, id) ?? source;
+        var root = new GameObject("magenheim." + id + ".skin") { layer = prefab.layer };
+        root.transform.SetParent(attachSkin, false);
+        try
+        {
+            var parts = (JArray)document["parts"]!;
+            for (var i = 0; i < parts.Count; i++)
+            {
+                var data = parts[i];
+                var part = new GameObject((string?)data["name"] ?? ("skin-part-" + i)) { layer = prefab.layer };
+                part.transform.SetParent(root.transform, false);
+                var renderer = part.AddComponent<SkinnedMeshRenderer>();
+                renderer.sharedMesh = LoadSkinnedMesh(id + "/" + i, data, bones, part.transform);
+                renderer.sharedMaterial = LoadMaterial(id + "/skin/" + i, data["material"]!, source!);
+                renderer.bones = bones;
+                renderer.rootBone = rootBone;
+            }
+            foreach (var renderer in originals) renderer.enabled = false;
+            return root;
+        }
+        catch { UnityEngine.Object.DestroyImmediate(root); throw; }
+    }
+
+    private static Mesh LoadSkinnedMesh(string key, JToken part, Transform[] bones, Transform meshTransform)
+    {
+        var vertices = part["vertices"]!.Select(Vector).ToArray(); var triangles = part["triangles"]!.Select(v => (int)v).ToArray();
+        var normals = part["normals"]!.Select(Vector).ToArray(); var uv = part["uv"]!.Select(v => new Vector2((float)v[0]!, (float)v[1]!)).ToArray();
+        if (vertices.Length == 0 || triangles.Length == 0 || triangles.Length % 3 != 0 || normals.Length != vertices.Length || uv.Length != vertices.Length)
+            throw new InvalidDataException("Invalid skinned model surface: " + key);
+        if (!(part["skinWeights"] is JArray rows) || rows.Count != vertices.Length)
+            throw new InvalidDataException("Skinned weight stream mismatch: " + key);
+        var weights = new BoneWeight[vertices.Length];
+        for (var vertex = 0; vertex < rows.Count; vertex++)
+        {
+            var influences = rows[vertex] as JArray;
+            if (influences is null || influences.Count == 0 || influences.Count > 4) throw new InvalidDataException("Invalid skin influence count: " + key);
+            var indices = new int[4]; var values = new float[4]; var total = 0f;
+            for (var j = 0; j < influences.Count; j++)
+            {
+                var pair = influences[j] as JArray ?? throw new InvalidDataException("Invalid skin influence pair: " + key);
+                var index = (int)pair[0]!; var weight = (float)pair[1]!;
+                if (index < 0 || index >= bones.Length || !Finite(weight) || weight <= 0f) throw new InvalidDataException("Invalid skin influence: " + key);
+                indices[j] = index; values[j] = weight; total += weight;
+            }
+            if (Math.Abs(total - 1f) > .002f) throw new InvalidDataException("Skin influences are not normalized: " + key);
+            weights[vertex] = new BoneWeight { boneIndex0=indices[0],weight0=values[0],boneIndex1=indices[1],weight1=values[1],boneIndex2=indices[2],weight2=values[2],boneIndex3=indices[3],weight3=values[3] };
+        }
+        var mesh = new Mesh { name=key,indexFormat=vertices.Length>65535?IndexFormat.UInt32:IndexFormat.UInt16,vertices=vertices,triangles=triangles,normals=normals,uv=uv,boneWeights=weights,bindposes=bones.Select(bone=>bone.worldToLocalMatrix*meshTransform.localToWorldMatrix).ToArray() };
+        mesh.RecalculateBounds(); mesh.RecalculateTangents(); return mesh;
     }
 
     private static Mesh LoadMesh(string key, JToken part)
