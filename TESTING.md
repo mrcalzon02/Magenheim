@@ -4,12 +4,12 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.149 by Local** and start its description with
-**0.0.149: Adds a live Underworld terrain/structure/inhabitant survey command**.
+show **Magenheim v0.0.152 by Local** and start its description with
+**0.0.152: Adds a plasma-warped edge-ocean fade around the Underworld terrain plate**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.149]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.152]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
@@ -533,3 +533,22 @@ Repeat on a second seed. Both the cellular ownership pattern and the river latti
 change materially with the derived seed. Run `magenheim_underworld survey 1200` from several
 banks/overlooks and preserve screenshots so the loading-screen/worldgen contract can use the river
 network as a real attainable feature.
+
+
+## 0.0.152 edge-ocean barrier acceptance
+
+Use a fresh disposable Underworld. Travel toward the outer world limit along several bearings.
+The final landmass must not terminate at the hard 8 km domain edge. Instead, terrain should descend
+through an irregular shoreline into Blackwater and become a broad ocean ring before the actual
+boundary.
+
+The shoreline should begin roughly around 84% of world radius, but must wander rather than forming
+a mathematically perfect circle. By about 96.5% radius the terrain should be fully submerged, and
+near 98.5% radius every sampled bearing should report Blackwater Deep with more than 100 m of water
+above the seabed. The deepest intended outer bed is roughly 140 m below the shared water level.
+
+Check that monumental spires/plateaus do not survive as walkable islands inside the final deep-ocean
+band: edge-ocean carving is intentionally applied after monumental terrain. Verify the map,
+Blackwater weather/ecology, water rendering, swimming/boat traversal, terrain streaming, save/reload
+and a second peer agree at the same coordinates. The actual hard domain edge should only be
+encountered beyond the deep-water barrier.
