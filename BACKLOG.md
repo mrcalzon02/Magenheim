@@ -560,9 +560,11 @@ Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the cur
   VentCycle/SlagChannel routing, canonical geothermal heat accumulation, Furnace Blood advantage
   without immunity, deterministic timed vents, persistent Sulfur encounters/resources and
   asset-gated same-instance location/return travel. Production forge admission and live acceptance remain.
-- [ ] **Author Frozen Rime Sepulcher dungeon kit.**
-  Bind cold/whiteout progression to route visibility, shelter and recovery rather than generic
-  damage-floor rooms.
+- [ ] **Forge and live-accept Frozen Rime Sepulcher.**
+  Source/runtime architecture is complete: 16 authored room families plus adaptive passage,
+  Shelter/ClearGallery/FrostField/WhiteoutChoke/IceShear route authority, canonical Frozen weather
+  exposure, deterministic physical topology, persistent room-role encounters/resources, and
+  asset-gated same-instance location/return travel. Production forge admission and live acceptance remain.
 - [ ] **Author Great Decay Carrion Catacombs dungeon kit.**
   Build contamination-driven routes with Defiant Flesh/armour/Censer relevance and progressively
   consumed ancient architecture.
