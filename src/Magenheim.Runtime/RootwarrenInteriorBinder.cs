@@ -41,8 +41,12 @@ internal sealed class RootwarrenInteriorBinding
 internal sealed class RootwarrenInteriorBinder
 {
     internal const string InteriorRootName = "Magenheim_Rootwarren_InteriorRoot";
-    internal const string InteriorEnvironment = "Crypt";
     internal const float ConservativeInteriorRadius = 1800f;
+
+    internal static string InteriorEnvironment =>
+        UnderworldWeatherRuntime.EnvironmentName(
+            UnderworldTerrainBiome.FungalForest,
+            UnderworldAtmosphereEvent.None);
 
     internal RootwarrenInteriorBinding AttachInterior(GameObject locationContainer)
     {
