@@ -16,6 +16,13 @@ contract is 15-20 large themed room families reused 2-3 times per run. The new d
 dungeon planner produces a connected branching topology with cross-links rather than a straight
 corridor chain.
 
+RuntimeReady is now also a placement contract, not just a registration flag. The detached native
+Underworld ZoneSystem requires exactly one dungeon row bound to the owning custom biome, then audits
+Valheim's actual pregenerated location positions for requested count, sampled biome and same-family
+spacing. Existing Underworld saves can reconcile newly admitted dungeon families once through
+Valheim's native location generator. Use `magenheim_underworld dungeons` during live testing to
+inspect the resulting placement table.
+
 All five ordinary biome dungeons now have source/runtime interior architectures behind that
 admission gate. Rime Sepulcher contributes sixteen Frozen room families plus adaptive physical
 passage and endpoint-derived Whiteout/cold exposure. Carrion Catacombs adds sixteen Great Decay
