@@ -1,6 +1,6 @@
 # Underworld shared atmosphere system
 
-**Status:** updated for 0.0.105 on 2026-09-24. Deterministic Core logic and runtime compilation are verified; live visual acceptance remains separate.
+**Status:** source-updated for 0.0.154 on 2026-09-29. Deterministic atmosphere/weather authority, bespoke event VFX, gameplay coupling and mitigation are source-integrated; live visual/runtime acceptance remains separate.
 
 The shared roof is a dark basalt panorama with lava fissures and fungal stars. A separate,
 pixel-aligned emission mask is composed into an HDR texture once at load. Valheim's shipped unlit particle shader renders it on a camera-centred background shell
@@ -29,14 +29,14 @@ The Underworld uses one obscuration mechanic with six biome interpretations rath
 
 `Magenheim.Core.Underworld.UnderworldAtmosphere` owns deterministic evaluation. Inputs are biome, terrain height, water depth, existing terrain hazard, synchronized event/intensity, hazard resistance and local suppression. Outputs are normalized visual density, visibility distance, particle density, gameplay exposure, audio damping and fog colour.
 
-Resistance and suppression are intentionally different verbs. Armour/Deep Boons can lower exposure without making the biome visually disappear. A local clearing tool such as the planned Censer feeds suppression, which lowers both pressure and visual density while preserving a minimum biome identity.
+Resistance and suppression are intentionally different verbs. Matching Deep Boons and equipped Underworld armour lower exposure without making the biome visually disappear. The runtime Defiant Censer supplies a 16m Great Decay clearing radius; suppression lowers pressure, fog and bespoke particle density while preserving a minimum biome identity.
 
 `UnderworldAtmosphereRuntime` is the thin local fog/exposure renderer. `UnderworldWeatherCycle` now selects biome-legal subterranean conditions deterministically from the paired instance seed and Valheim's authoritative world clock. `UnderworldWeatherRuntime` registers namespaced clones of existing Valheim `EnvSetup` donors, forces the matching Underworld environment while the local player is below, and clears that override on exit. Surface biome weather tables are never rewritten. Default thunder/rain particles, rain clouds and storm ambient loops are explicitly filtered out of the Underworld clones.
 
-The runtime exposes two narrow future inputs:
+The runtime exposes two narrow inputs:
 
-- `ApplySynchronizedEvent(...)`: only a server-authoritative event service should call this. The renderer never rolls events locally.
-- `ApplyMitigation(...)`: equipment/Deep Boon/Censer code may feed already-resolved resistance/suppression without moving those item rules into the atmosphere system.
+- `ApplySynchronizedEvent(...)`: the deterministic weather service feeds the active event/intensity; the renderer never rolls events locally.
+- `ApplyMitigation(...)`: runtime equipment/Deep Boon/Censer resolution feeds already-resolved resistance/suppression without moving progression rules into the atmosphere authority.
 
 ## Current event vocabulary
 
@@ -61,13 +61,16 @@ Great Decay remains heavily obscured even in a calm window because that is its b
 
 The runtime clones existing Valheim environments only as donors for sky/light/wind/particle machinery. Names are Magenheim-owned. Surface rain clouds are disabled, thunder/rain/storm particle systems are rejected, and donor storm ambient loops are not inherited. Whiteout is the deliberate exception for snow particle systems: a particle object whose name contains both `snow` and `storm` is admissible only to the Frozen Caverns Whiteout clone.
 
-## Next dependency-valid slices
+## Remaining acceptance/tuning
 
-1. Connect the existing Underworld hazard/Deep Boon results to `ApplyMitigation`; do not duplicate their rules.
-2. Add/kitbash missing donor particle effects where the installed game's named particle systems do not provide spores, sulfur ash, fracture dust or decay aerosol.
-3. Live-test all six forced environment families and Surface restoration, especially transitions during a vanilla storm outside.
-4. Tune light/wind/visibility from screenshots/video only after donor scenery is present.
-5. Add custom ambient loops later; the current clones intentionally suppress inherited Surface storm audio.
+The source-side weather/VFX/gameplay closure is implemented in 0.0.154. Remaining work is observation
+and tuning rather than missing coupling:
+
+1. Live-test all six forced environment families and Surface restoration, especially transitions during a vanilla storm outside.
+2. Verify event-specific procedural particles, server damage, Black Bloom creature aggression and Crystal Resonance world response on host and peer.
+3. Verify Deep Boon/armour resistance and the Defiant Censer's 16m local suppression radius.
+4. Tune light/wind/visibility/particle rates from screenshots/video only after the current worldgen and scenery are present.
+5. Add custom ambient loops later; current clones intentionally suppress inherited Surface storm audio.
 
 Fungal Forest visibility now targets roughly 0.8km in calm conditions rather than 11km, making
 background spore haze visible. Clear rocky biomes retain long views of monumental terrain.
