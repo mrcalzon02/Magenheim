@@ -2,14 +2,21 @@
 
 ## 2026-09-28 creature visual status correction
 
-The donor prototypes are still **runtime stand-ins**, not a finished retexture/re-body pass.
-Lantern Moth is presently a 0.65-scale Bat with a tint; Sporeling and Capcrawler have committed
-custom source/texture work but still have no runtime model consumer; most later-biome creature
-authoring scripts have not yet produced committed source/runtime assets. The loading-screen
-inhabitant contract now makes this gap player-facing, so creature visual replacement is a priority
-rather than something that can remain indefinitely behind the donor prototype layer.
+The donor prototypes are still **runtime stand-ins**, not finished re-bodies, but the flat-tint
+placeholder pass has been retired. All 42 non-boss prototype prefabs now receive Magenheim-owned
+procedural albedo textures at registration. The texture seed includes biome, creature identity,
+renderer and material slot, so creatures that share a Valheim chassis do not share the same skin.
+Surface families distinguish hide, carapace, scale, stone, membrane and decayed flesh, while each
+Underworld biome supplies its own material language (mycelial/spore growth, blackwater pressure
+banding, sulfur/basalt fissures, rime striation, fracture seams, or rot lesions).
 
-Lantern Moth is the first explicit donor-replacement benchmark; see
+This is deliberately an intermediate art layer: donor skeletons and silhouettes remain visible
+until their authored bodies are bound. Lantern Moth is still the first explicit donor-replacement
+benchmark; Sporeling and Capcrawler also have committed source/texture work without a runtime model
+consumer. The loading-screen inhabitant contract therefore still requires continued re-body work,
+but the current in-game prototypes are no longer simple hue-shift duplicates.
+
+See docs/validation/2026-09-28-underworld-creature-biome-retexture.md and
 docs/validation/2026-09-28-lantern-moth-donor-replacement.md.
 
 
@@ -27,7 +34,7 @@ The preview now uses the existing six biome-specific placement compositions: fun
 
 Current direction: content expansion using Valheim-owned animation, AI, combat, networking and saving. The earlier bespoke HOST rig requirements are final-art aspirations, not prerequisites for these rough prototypes. Existing authored art is preserved.
 
-42 non-boss creatures are registered as console-spawnable donor prototypes, seven per biome. These are tinted, uniformly scaled donor bodies with their original skeleton, controller, clips, events, attack items, colliders, AI, faction and drops. They are not finished unique meshes or balanced encounters. No natural spawns are enabled by this review pass. Ambient roles are design intentions: Bat/Serpent stand-ins still use hostile donor behavior. Use a disposable review world.
+42 non-boss creatures are registered as console-spawnable donor prototypes, seven per biome. They retain the original donor skeleton, controller, clips, events, attack items, colliders, AI, faction and drops, but now replace donor surface appearance with Magenheim-owned biome/creature textures at registration. They are not finished unique meshes or balanced encounters. No natural spawns are enabled by this review pass. Ambient roles are design intentions: Bat/Serpent stand-ins still use hostile donor behavior. Use a disposable review world.
 
 Spawn with `spawn Magenheim_Underworld_Prototype_<NameWithoutSpaces> 1` after enabling the normal Valheim developer console. Donor availability and animation controller are checked during registration; the log reports the actual registered count. Exact bone paths are deliberately not guessed: the whole native hierarchy remains intact.
 
