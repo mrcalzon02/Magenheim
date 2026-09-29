@@ -56,6 +56,16 @@ internal sealed class UnderworldArmourRegistrar : IDisposable
         shared.m_value=0;
         shared.m_dlc=string.Empty;
         shared.m_icons=new[]{EarthAssets.Icon(definition.ModelId)};
+        var balance=UnderworldArmourBalanceCatalog.Require(definition.Biome,definition.Slot);
+        shared.m_armor=balance.Armor;
+        shared.m_armorPerLevel=balance.ArmorPerQuality;
+        shared.m_weight=balance.Weight;
+        shared.m_movementModifier=balance.MovementModifier;
+        shared.m_maxQuality=4;
+        shared.m_useDurability=true;
+        shared.m_maxDurability=balance.MaxDurability;
+        shared.m_durabilityPerLevel=balance.DurabilityPerQuality;
+        item.ItemDrop.m_itemData.m_durability=balance.MaxDurability;
         ModelAssets.LoadSkinnedEquipment(item.ItemPrefab,definition.ModelId);
 
         if(!ItemManager.Instance.AddItem(item))

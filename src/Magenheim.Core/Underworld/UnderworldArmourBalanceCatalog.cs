@@ -69,6 +69,18 @@ public static class UnderworldArmourBalanceCatalog
         _=>0d,
     };
 
+    public static double PalewaterSwimmingReduction(int pieces)
+    {
+        pieces=Math.Clamp(pieces,0,4);
+        return Math.Min(.20d,pieces*.04d+(pieces==4?.04d:0d));
+    }
+
+    public static double StoneanchorKnockbackReduction(int pieces)
+    {
+        pieces=Math.Clamp(pieces,0,4);
+        return Math.Min(.40d,pieces*.08d+(pieces==4?.08d:0d));
+    }
+
     private static UnderworldArmourBalance B(float armor,float per,float weight,float move,float durability,float durabilityPer)=>
         new(armor,per,weight,move,durability,durabilityPer);
 }

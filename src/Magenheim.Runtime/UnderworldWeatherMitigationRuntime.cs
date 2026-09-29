@@ -24,22 +24,10 @@ internal static class UnderworldWeatherMitigationRuntime
         if (player is null) return default;
 
         var resistance = MatchingDeepBoon(player, biome) ? MatchingDeepBoonResistance : 0d;
-        var armourPieces = 0;
-        foreach (var item in player.GetInventory().GetEquippedItems())
-        {
-            if (item is null || item.m_dropPrefab is null) continue;
-            var prefab = item.m_dropPrefab.name;
-            foreach (var definition in UnderworldEquipmentCatalog.Armour)
-            {
-                if (definition.Biome != biome ||
-                    !string.Equals(definition.Prefab, prefab, StringComparison.Ordinal))
-                    continue;
-                armourPieces++;
-                break;
-            }
-        }
-
+        var armourPieces = UnderworldArmourRuntime.CountMatchingPieces(player, biome);
         resistance += armourPieces * ArmourResistancePerPiece;
+        if (armourPieces == 4)
+            resistance += UnderworldArmourBalanceCatalog.FullSetAtmosphereBonus(biome);
 
         // The Censer is a carried local-clearing source, not a passive inventory bonus. Any
         // player standing inside an active Censer's radius receives the Great Decay suppression;

@@ -82,16 +82,16 @@ public static class UnderworldEquipmentCatalog
     {
         ArmourPiece("Sporeweave", "Sporeweave", "sporeweave", UnderworldTerrainBiome.FungalForest,
             UnderworldStationCatalog.MycelialBenchPrefab, UnderworldEquipmentSlot.Helmet,
-            "Light fungal veil; planned passive spore visibility.",
+            "Light fungal veil; contributes Fungal atmosphere clarity, with a stronger full-set bonus.",
             Cost(UnderworldFungalRefinementCatalog.SpireCord, 8), Cost(UnderworldFungalRefinementCatalog.CuredGlowcap, 2)),
         ArmourPiece("Sporeweave", "Sporeweave", "sporeweave", UnderworldTerrainBiome.FungalForest,
             UnderworldStationCatalog.MycelialBenchPrefab, UnderworldEquipmentSlot.Chest,
-            "Layered Worldroot/fungal cuirass; planned spore visibility contribution.",
+            "Layered Worldroot/fungal cuirass; contributes Fungal atmosphere clarity and light mobility.",
             Cost(UnderworldFungalRefinementCatalog.SpireCord, 16), Cost(UnderworldFungalRefinementCatalog.CuredGlowcap, 4),
             Cost(UnderworldFungalRefinementCatalog.WorldrootPlank, 4)),
         ArmourPiece("Sporeweave", "Sporeweave", "sporeweave", UnderworldTerrainBiome.FungalForest,
             UnderworldStationCatalog.MycelialBenchPrefab, UnderworldEquipmentSlot.Legs,
-            "Flexible fungal leg wraps; planned spore visibility contribution.",
+            "Flexible fungal leg wraps; contributes Fungal atmosphere clarity without heavy movement loss.",
             Cost(UnderworldFungalRefinementCatalog.SpireCord, 14), Cost(UnderworldFungalRefinementCatalog.CuredGlowcap, 3)),
         ArmourPiece("Sporeweave", "Sporeweave", "sporeweave", UnderworldTerrainBiome.FungalForest,
             UnderworldStationCatalog.MycelialBenchPrefab, UnderworldEquipmentSlot.Cape,
@@ -174,9 +174,9 @@ public static class UnderworldEquipmentCatalog
         UnderworldEquipmentSlot slot, int plate, int cord, int pearl) =>
         ArmourPiece("Palewater", "Palewater", "palewater", UnderworldTerrainBiome.BlackwaterDeep,
             UnderworldStationCatalog.TidalBasinPrefab, slot,
-            slot == UnderworldEquipmentSlot.Helmet ? "Sealed hood; planned breath and wet-resistance contribution." :
-            slot == UnderworldEquipmentSlot.Chest ? "Flowstone-weighted diving coat; planned breath, wet-resistance and swim contribution." :
-            slot == UnderworldEquipmentSlot.Legs ? "Pale-fibre diving leggings; planned swim contribution." :
+            slot == UnderworldEquipmentSlot.Helmet ? "Sealed hood; contributes Blackwater atmosphere resistance and swim-efficiency scaling." :
+            slot == UnderworldEquipmentSlot.Chest ? "Flowstone-weighted diving coat; contributes Blackwater resistance and swim-efficiency scaling." :
+            slot == UnderworldEquipmentSlot.Legs ? "Pale-fibre diving leggings; contributes Blackwater swim-efficiency scaling." :
             "Water-shedding mantle completing the Blackwater set.",
             Cost(UnderworldBiomeRefinementCatalog.FlowstonePlate, plate),
             Cost(UnderworldBiomeRefinementCatalog.PaleCord, cord),
@@ -185,7 +185,7 @@ public static class UnderworldEquipmentCatalog
     private static UnderworldEquipmentDefinition SulfurArmour(UnderworldEquipmentSlot slot, int iron, int slag, int grip) =>
         ArmourPiece("Emberiron", "Emberiron", "emberiron", UnderworldTerrainBiome.SulfurousWastes,
             UnderworldStationCatalog.FurnaceHeartForgePrefab, slot,
-            "Heavy heat-resistant armour; planned to stack with Furnace Blood.",
+            "Heavy heat-resistant armour; strongly reinforces Sulfur exposure resistance and stacks with Furnace Blood.",
             Cost(UnderworldBiomeRefinementCatalog.EmberironBar, iron),
             Cost(UnderworldBiomeRefinementCatalog.TemperedSlag, slag),
             Cost(UnderworldBiomeRefinementCatalog.CharredRootGrip, grip));
@@ -193,7 +193,7 @@ public static class UnderworldEquipmentCatalog
     private static UnderworldEquipmentDefinition FrozenArmour(UnderworldEquipmentSlot slot, int silver, int ice, int wood) =>
         ArmourPiece("Rimeward", "Rimeward", "rimeward", UnderworldTerrainBiome.FrozenCaverns,
             UnderworldStationCatalog.SilenceTablePrefab, slot,
-            "Cold-resistant precision armour; planned Rimebound stacking and quieter movement.",
+            "Cold-resistant precision armour; strongly reinforces Frozen exposure resistance and stacks with Rimebound.",
             Cost(UnderworldBiomeRefinementCatalog.RimesilverBar, silver),
             Cost(UnderworldBiomeRefinementCatalog.IceglassLens, ice),
             Cost(UnderworldBiomeRefinementCatalog.RimewoodLaminate, wood));
@@ -201,7 +201,7 @@ public static class UnderworldEquipmentCatalog
     private static UnderworldEquipmentDefinition FractureArmour(UnderworldEquipmentSlot slot, int titanbone, int shardstone, int crystal) =>
         ArmourPiece("Stoneanchor", "Stoneanchor", "stoneanchor", UnderworldTerrainBiome.FractureZones,
             UnderworldStationCatalog.AnchorForgePrefab, slot,
-            "Heavy anchored armour; planned tremor immunity and knockback resistance.",
+            "Heavy anchored armour; reinforces Fracture exposure resistance and reduces incoming knockback in Fracture Zones.",
             Cost(UnderworldBiomeRefinementCatalog.TitanbonePlate, titanbone),
             Cost(UnderworldBiomeRefinementCatalog.ShardstoneBlock, shardstone),
             Cost(UnderworldBiomeRefinementCatalog.FracturePrism, crystal));

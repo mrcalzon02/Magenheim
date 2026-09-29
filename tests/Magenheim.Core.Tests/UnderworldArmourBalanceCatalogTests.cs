@@ -36,6 +36,18 @@ internal static class UnderworldArmourBalanceCatalogTests
               "Light Fungal chest gear must remain faster than Stoneanchor.");
         Check(biomes.All(x=>UnderworldArmourBalanceCatalog.FullSetAtmosphereBonus(x)>0),
               "Every complete Underworld armour set needs a distinct atmosphere bonus.");
+        Check(Math.Abs(UnderworldArmourBalanceCatalog.PalewaterSwimmingReduction(0))<.0001,
+              "Palewater swim benefit must require equipped pieces.");
+        Check(Math.Abs(UnderworldArmourBalanceCatalog.PalewaterSwimmingReduction(4)-.20d)<.0001,
+              "Complete Palewater set must reduce Blackwater swim stamina by exactly 20%.");
+        Check(Math.Abs(UnderworldArmourBalanceCatalog.StoneanchorKnockbackReduction(4)-.40d)<.0001,
+              "Complete Stoneanchor set must reduce Fracture knockback by exactly 40%.");
+        Check(Enumerable.Range(0,4).All(i=>
+              UnderworldArmourBalanceCatalog.PalewaterSwimmingReduction(i)<=UnderworldArmourBalanceCatalog.PalewaterSwimmingReduction(i+1)),
+              "Palewater swim utility must be monotonic by piece count.");
+        Check(Enumerable.Range(0,4).All(i=>
+              UnderworldArmourBalanceCatalog.StoneanchorKnockbackReduction(i)<=UnderworldArmourBalanceCatalog.StoneanchorKnockbackReduction(i+1)),
+              "Stoneanchor knockback utility must be monotonic by piece count.");
         return assertions;
     }
 }
