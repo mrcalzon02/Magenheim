@@ -1,8 +1,8 @@
 """Author editable Rootforged construction; geometry and UVs are baked before runtime.
 
-Revision 3 is the end-game fidelity pass. Stable catalog IDs, meter envelopes, recipe authority and
-snap/collider ownership remain unchanged; this file only raises the authored visual language from
-prototype geometry to deliberate late-game construction.
+Revision 4 is the end-game joinery pass. Stable catalog IDs, meter envelopes, recipe authority and
+snap/collider ownership remain unchanged; the visual language now exposes how each member is keyed,
+pegged, socketed and (only where the recipe actually contains iron) mechanically reinforced.
 """
 import bpy,bmesh,math,json
 import sys
@@ -12,8 +12,8 @@ from underworld_material_library import bind_underworld_material
 from mathutils import Vector
 R=Path(__file__).resolve().parents[1]
 entries=json.loads((R/'default-data/foundation.json').read_text())['underworldArchitecture']['pieces']
-DETAIL_REVISION=3
-DETAIL_FLOORS={0:24,1:24,2:18,3:18,4:36,5:36,6:28,7:28,8:28,9:24,10:32}
+DETAIL_REVISION=4
+DETAIL_FLOORS={0:32,1:32,2:26,3:28,4:45,5:45,6:34,7:34,8:34,9:32,10:40}
 
 
 def material(name,color,metal=0):
@@ -233,6 +233,89 @@ def add_brace_detail(kind,w,h,wood,pale):
   anchor=Vector((0,0,.24));detail_tube('brace-foot-'+str(branch),[anchor,Vector((sx*.18,sy*.10,.12)),Vector((sx*.32,sy*.16,.03))],[.09,.065,.03],wood,8)
 
 
+def add_cultural_joinery(kind,tier,w,h,d,wood,pale,iron,stone):
+ # Shared construction grammar. Tier-0 members use grown/stone joinery; metal appears only on
+ # RootforgedIron recipes so the model never lies about what the player actually spent.
+ keymat=iron if tier==1 else pale
+ if kind in (0,1):
+  # Carved socket bosses and visible root keys on foundation/plinth faces.
+  for side in (-1,1):
+   for axis in (-1,1):
+    box(f'carved-socket-boss-{side}-{axis}',(side*w*.31,axis*d*.455,h*.62),
+        (w*.12,.055,h*.12),stone,False,.018)
+    box(f'carved-side-boss-{side}-{axis}',(side*w*.455,axis*d*.31,h*.62),
+        (.055,d*.12,h*.12),stone,False,.018)
+  for i,a in enumerate((0,math.pi*.5,math.pi,math.pi*1.5)):
+   detail_tube(f'plinth-key-{i}',
+       [Vector((math.cos(a)*w*.18,math.sin(a)*d*.18,h*.84)),
+        Vector((math.cos(a)*w*.30,math.sin(a)*d*.30,h*.93))],
+       [.055,.032],pale,8)
+
+ elif kind in (2,4):
+  # Beam ends show the keyed tenon system; reinforced beams replace heartwood keys with iron.
+  for end,sx in enumerate((-1,1)):
+   x=sx*w*.44
+   box(f'end-key-block-{end}',(x,0,.5),(.16,d*.58,.18),keymat,False,.024)
+   for row,yy in enumerate((-d*.23,d*.23)):
+    box(f'end-wedge-{end}-{row}',(x-sx*.10,yy,.5),(.18,.10,.10),keymat,False,.018)
+  for i,x in enumerate((-w*.28,0,w*.28)):
+   box(f'cross-key-{i}',(x,0,.5),(.09,d*.72,.09),keymat,False,.014)
+
+ elif kind==3:
+  # Pillars use opposed heartwood keys at regular structural lifts.
+  for ring,z in enumerate((h*.16,h*.50,h*.84)):
+   for side in (-1,1):
+    box(f'pillar-key-x-{ring}-{side}',(side*.31,0,z),(.13,.30,.11),pale,False,.018)
+    box(f'pillar-key-y-{ring}-{side}',(0,side*.31,z),(.30,.13,.11),pale,False,.018)
+  for side in (-1,1):
+   detail_tube(f'pillar-socket-root-{side}',
+       [Vector((side*.25,0,.05)),Vector((side*.34,0,.18)),Vector((side*.30,0,.36))],
+       [.07,.055,.028],wood,8)
+
+ elif kind==5:
+  # Arch ribs expose keyed crown/haunch plates; this is a Tier-1 family so iron is legitimate.
+  for i,t in enumerate((.12,.30,.50,.70,.88)):
+   p=path_axis(kind,w,h,t)
+   box(f'arch-key-plate-{i}',(p.x,p.y,p.z),(.18,.55,.13),iron,False,.024)
+   for s in (-1,1):
+    box(f'arch-key-rivet-{i}-{s}',(p.x,p.y+s*.30,p.z),(.055,.055,.055),iron,False,.012)
+  crown=path_axis(kind,w,h,.5)
+  detail_tube('arch-crown-binding',
+      [crown+Vector((-.34,0,-.08)),crown+Vector((0,0,.12)),crown+Vector((.34,0,-.08))],
+      [.05,.075,.05],iron,8)
+
+ elif kind in (6,7,8):
+  junction=h*.5 if kind==6 else h*.7 if kind==8 else h-.38
+  # Grown fork joints are visibly pinned rather than three meshes simply intersecting.
+  for axis in (-1,1):
+   box(f'junction-heartwood-key-x-{axis}',(axis*.24,0,junction),(.18,.34,.13),pale,False,.020)
+   box(f'junction-heartwood-key-y-{axis}',(0,axis*.24,junction),(.34,.18,.13),pale,False,.020)
+  for side in (-1,1):
+   detail_tube(f'brace-neck-lashing-{side}',
+      [Vector((side*.20,-.24,junction-.14)),Vector((side*.27,0,junction)),Vector((side*.20,.24,junction+.14))],
+      [.035,.052,.035],pale,8)
+
+ elif kind==9:
+  # Floor panels use corner lock wedges and a repeated edge peg rhythm.
+  for sx in (-1,1):
+   for sy in (-1,1):
+    box(f'floor-corner-key-{sx}-{sy}',(sx*w*.40,sy*d*.40,.88),(.18,.18,.10),pale,False,.020)
+  for edge,y in enumerate((-d*.45,d*.45)):
+   for i,x in enumerate((-w*.32,0,w*.32)):
+    box(f'floor-edge-peg-{edge}-{i}',(x,y,.84),(.08,.08,.12),pale,False,.014)
+
+ elif kind==10:
+  # Stairs get carved riser bosses and keyed cheek joints, not a foreign metal handrail.
+  for i in range(8):
+   y=d*.5-(i+.5)*d/8
+   z=h*(i+.5)/8
+   box(f'riser-carved-boss-{i}',(0,y-d/16+.02,z),(.36,.035,.11),stone,False,.016)
+  for side in (-1,1):
+   for i,t in enumerate((.18,.50,.82)):
+    y=d*.45-d*.90*t;z=.14+h*.82*t
+    box(f'cheek-heartwood-key-{side}-{i}',(side*(w*.5-.12),y,z),(.12,.22,.12),pale,False,.018)
+
+
 for e in entries:
  bpy.ops.wm.read_factory_settings(use_empty=True)
  wood=material('worldroot-bark',(.38,.235,.11));pale=material('worldroot-heartwood',(.52,.36,.18));iron=material('forged-iron',(.13,.15,.16),.7);stone=material('understone',(.28,.3,.28))
@@ -265,6 +348,7 @@ for e in entries:
    detail_tube('surface-root-vein-'+str(branch),pts,[.035+.025*math.sin(math.pi*i/24) for i in range(25)],pale,8)
   add_root_surface_detail(kind,w,h,wood,pale)
   if kind in (4,5):add_ironwork(kind,w,h,iron)
+ add_cultural_joinery(kind,e['Tier'],w,h,d,wood,pale,iron,stone)
  # Fit the authored envelope to catalog meters; detail remains inside stable snap planes.
  objects=[o for o in bpy.context.scene.objects if o.type=='MESH']
  floor=DETAIL_FLOORS.get(kind,12)
@@ -281,9 +365,10 @@ for e in entries:
  bpy.context.scene['model_id']=mid;bpy.context.scene['runtime_lights']='[]'
  bpy.context.scene['magenheim_family']='underworld_rootforged_placeable'
  bpy.context.scene['magenheim_detail_revision']=DETAIL_REVISION
- bpy.context.scene['magenheim_fidelity']='endgame-placeable-r3'
+ bpy.context.scene['magenheim_fidelity']='endgame-placeable-r4'
  bpy.context.scene['magenheim_detail_parts']=len(objects)
- bpy.context.scene['magenheim_material_language']='understone+worldroot+bark-heartwood+forged-iron'
+ bpy.context.scene['magenheim_material_language']='understone+worldroot+bark-heartwood+recipe-honest-forged-iron'
+ bpy.context.scene['magenheim_joinery_language']='keys+wedges+pegs+sockets+reinforced-tier-straps'
  bpy.context.preferences.filepaths.save_version=0
  bpy.ops.wm.save_as_mainfile(filepath=str(R/'assets/models/source'/f'{mid}.blend'),compress=True)
  print('AUTHORED',mid,'detail-r'+str(DETAIL_REVISION),len(objects),'parts',flush=True)
