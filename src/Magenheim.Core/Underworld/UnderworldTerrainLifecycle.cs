@@ -37,6 +37,7 @@ public static class UnderworldTerrainLifecycle
 {
     public const string BiomeLayoutAlgorithmId = "biome-layout-v2-hex50-voronoi-plasma-rivers";
     public const string EdgeOceanAlgorithmId = "edge-ocean-v1-plasma-shore";
+    public const string RareCellElevationAlgorithmId = "rare-cell-massif-v1-biome-owned";
     public const double ArrivalProtectionRadiusMeters = 80d;
     public const double FullRegionalReliefRadiusMeters = 320d;
     public const double BaseElevationMeters = 45d;
@@ -54,12 +55,12 @@ public static class UnderworldTerrainLifecycle
     public const double HexSiteJitterFraction = 0.50d;
     public const double PlasmaWarpFeatureMeters = 1250d;
     public const double PlasmaWarpAmplitudeMeters = 210d;
-    public const double BiomeBoundaryBlendMeters = 260d;
+    public const double BiomeBoundaryBlendMeters = 340d;
 
     // The Voronoi edge is also the hydrology authority. Strong edge bands become connected
     // Blackwater/ocean-depth channels, giving the Underworld a warped river grid.
-    public const double HexRiverGapWidthMeters = 320d;
-    public const double HexRiverPlasmaWidthMeters = 90d;
+    public const double HexRiverGapWidthMeters = 440d;
+    public const double HexRiverPlasmaWidthMeters = 130d;
     public const double HexRiverBiomeThreshold = 0.62d;
     public const double HexRiverFullActivationRadiusFraction = 0.18d;
 
@@ -73,6 +74,16 @@ public static class UnderworldTerrainLifecycle
     public const double EdgeOceanWarpFeatureMeters = 1800d;
     public const double EdgeOceanDepthMeters = 140d;
     public const double EdgeOceanBiomeThreshold = 0.18d;
+
+    // Rare height extremes belong to the same Voronoi cell that owns the biome. There is no
+    // second arbitrary monument grid. A selected land cell lifts most of its interior as one
+    // enormous massif, while the cellular/river edge remains a natural cliff and drainage seam.
+    public const double RareCellMassifChance = 0.055d;
+    public const double RareCellMassifMinRadiusFraction = 0.26d;
+    public const double RareCellMassifMaxRadiusFraction = 0.82d;
+    public const double RareCellMassifWallBlendMeters = 300d;
+    public const double RareCellMassifMinLiftMeters = 1500d;
+    public const double RareCellMassifMaxLiftMeters = 3300d;
 
     public static UnderworldTerrainResult Evaluate(
         UnderworldInstanceTerrainDomain domain,
@@ -111,17 +122,20 @@ public static class UnderworldTerrainLifecycle
 
         var height = BaseElevationMeters + delta;
 
-        // The same cellular edge that separates biome territories is the river skeleton. It is
-        // physically carved toward Blackwater/ocean depth before monumental landforms are applied,
-        // allowing rare natural arches/spires to cross the channels without erasing the network.
+        // Rare height extremes are biome-cell variants rather than unrelated random spires.
+        // Preserve the selected biome's own relief while lifting most of that Voronoi cell.
+        height = ApplyRareCellMassif(
+            domain,
+            height,
+            selection.RareCellInterior01,
+            selection.RareCellLiftMeters);
+
+        // The same cellular edge that separates biome territories is the river skeleton. Wider
+        // seams now cut broad Blackwater walls/channels between ordinary and massif cells.
         height = ApplyHexRiverCarve(height, sample.WaterLevel, selection.Channel01);
 
-        // A missing monument must not impose a zero-height floor on basins. Blend an actual
-        // footprint from its local terrain base to its absolute summit without clipping either.
-        height = UnderworldMonumentalLandforms.ApplyToTerrain(domain, derivedSeed32, sample.X, sample.Z, height);
-
-        // Edge-ocean fade is deliberately last. Otherwise a monumental spire could punch through
-        // the world barrier and turn the outer ocean back into walkable land.
+        // Edge-ocean fade is deliberately last so even a rare massif cannot punch through the
+        // deep Blackwater barrier at the edge of the terrain plate.
         height = ApplyEdgeOceanCarve(height, sample.WaterLevel, edgeOcean);
         if (edgeOcean >= EdgeOceanBiomeThreshold)
             biome = UnderworldTerrainBiome.BlackwaterDeep;
@@ -143,7 +157,9 @@ public static class UnderworldTerrainLifecycle
         UnderworldTerrainBiome Primary,
         UnderworldTerrainBiome Secondary,
         double TerrainBlend01,
-        double Channel01);
+        double Channel01,
+        double RareCellInterior01,
+        double RareCellLiftMeters);
 
     private readonly record struct HexSite(int Q, int R, double X, double Z);
 
@@ -161,11 +177,13 @@ public static class UnderworldTerrainLifecycle
                 UnderworldTerrainBiome.FungalForest,
                 UnderworldTerrainBiome.FungalForest,
                 0d,
+                0d,
+                0d,
                 0d);
 
         var cellular = SampleCellular(seed, x, z);
-        var primary = BiomeForSite(seed, cellular.Nearest);
-        var secondary = BiomeForSite(seed, cellular.Second);
+        var primary = BiomeForSite(seed, cellular.Nearest, radius);
+        var secondary = BiomeForSite(seed, cellular.Second, radius);
 
         // The protected Fungal country is a noisy shoulder rather than a circular ownership rule.
         // A low-frequency field decides where the shoulder protrudes or retreats.
@@ -187,6 +205,20 @@ public static class UnderworldTerrainLifecycle
         var boundaryGap = Math.Max(0d, cellular.SecondDistance - cellular.NearestDistance);
         var terrainBlend = 1d - Smooth01(boundaryGap / BiomeBoundaryBlendMeters);
 
+        var rareInterior = 0d;
+        var rareLift = 0d;
+        var normalizedRadius = distance / radius;
+        if (primary != UnderworldTerrainBiome.BlackwaterDeep &&
+            normalizedRadius >= RareCellMassifMinRadiusFraction &&
+            normalizedRadius <= RareCellMassifMaxRadiusFraction &&
+            SiteUnit(seed, cellular.Nearest.Q, cellular.Nearest.R, 0xe17a1465u) < RareCellMassifChance)
+        {
+            rareInterior = Smooth01(boundaryGap / RareCellMassifWallBlendMeters);
+            rareLift = RareCellMassifMinLiftMeters +
+                       SiteUnit(seed, cellular.Nearest.Q, cellular.Nearest.R, 0x4f1bbcdcu) *
+                       (RareCellMassifMaxLiftMeters - RareCellMassifMinLiftMeters);
+        }
+
         if (channel >= HexRiverBiomeThreshold)
         {
             var bankBiome = primary;
@@ -198,7 +230,7 @@ public static class UnderworldTerrainLifecycle
             terrainBlend = Math.Min(terrainBlend, (1d - channel) * .75d);
         }
 
-        return new BiomeSelection(primary, secondary, terrainBlend, channel);
+        return new BiomeSelection(primary, secondary, terrainBlend, channel, rareInterior, rareLift);
     }
 
     private static CellularSample SampleCellular(int seed, double x, double z)
@@ -272,24 +304,44 @@ public static class UnderworldTerrainLifecycle
             z + Math.Sin(angle) * magnitude);
     }
 
-    private static UnderworldTerrainBiome BiomeForSite(int seed, HexSite site)
+    private static UnderworldTerrainBiome BiomeForSite(int seed, HexSite site, double radius)
     {
-        // Fractal regional fields decide which biome wins each cellular seed; a smaller deterministic
-        // site term stops a single broad field from swallowing the whole map. The hex grid decides
-        // spacing, Voronoi decides ownership, and fractal noise decides the material/ecology family.
+        // Fractal regional fields still decide the exact map, but progression adds a broad radial
+        // preference instead of hard rings. Earlier biomes are more likely inward; later biomes
+        // become increasingly likely outward, while noise can still create enclaves and repeats.
         var bestBiome = UnderworldTerrainBiome.FungalForest;
         var bestScore = double.MinValue;
+        var radius01 = Clamp(Math.Sqrt(site.X * site.X + site.Z * site.Z) / radius, 0d, 1d);
         foreach (UnderworldTerrainBiome candidate in Enum.GetValues(typeof(UnderworldTerrainBiome)))
         {
             var salt = BiomeSalt(candidate);
             var regional = Field01(seed, salt, site.X, site.Z, 2, 4800d);
             var siteNoise = SiteUnit(seed, site.Q, site.R, salt ^ 0x6c8e9cf5u);
-            var score = regional * .72d + siteNoise * .28d;
+            var score = regional * .58d +
+                        siteNoise * .22d +
+                        RadialBiomePreference(candidate, radius01) * .20d;
             if (score <= bestScore) continue;
             bestScore = score;
             bestBiome = candidate;
         }
         return bestBiome;
+    }
+
+    private static double RadialBiomePreference(UnderworldTerrainBiome biome, double radius01)
+    {
+        // Preferred centres rise in progression order, but the wide falloff keeps the distribution
+        // probabilistic rather than recreating concentric biome rings.
+        var target = biome switch
+        {
+            UnderworldTerrainBiome.FungalForest => .14d,
+            UnderworldTerrainBiome.BlackwaterDeep => .27d,
+            UnderworldTerrainBiome.SulfurousWastes => .40d,
+            UnderworldTerrainBiome.FrozenCaverns => .53d,
+            UnderworldTerrainBiome.FractureZones => .66d,
+            UnderworldTerrainBiome.GreatDecay => .77d,
+            _ => .5d,
+        };
+        return 1d - Clamp(Math.Abs(radius01 - target) / .36d, 0d, 1d);
     }
 
     private static double CentralFungalBias(double distance, double radius)
@@ -309,6 +361,30 @@ public static class UnderworldTerrainLifecycle
         if (distance <= inner) return 0d;
         if (distance >= outer) return 1d;
         return Smooth01((distance - inner) / (outer - inner));
+    }
+
+    public static double RareCellMassifLiftAt(
+        UnderworldInstanceTerrainDomain domain,
+        int seed,
+        double x,
+        double z)
+    {
+        if (domain is null) throw new ArgumentNullException(nameof(domain));
+        var distance = Math.Sqrt(x * x + z * z);
+        if (distance > domain.RadiusMeters) return 0d;
+        var selection = SelectBiome(x, z, distance, domain.RadiusMeters, seed);
+        return selection.RareCellInterior01 * selection.RareCellLiftMeters;
+    }
+
+    private static double ApplyRareCellMassif(
+        UnderworldInstanceTerrainDomain domain,
+        double height,
+        double interior01,
+        double liftMeters)
+    {
+        if (interior01 <= 0d || liftMeters <= 0d) return height;
+        var lifted = height + liftMeters * interior01;
+        return Math.Min(domain.MaximumY - 128d, lifted);
     }
 
     private static double EdgeOcean01(
