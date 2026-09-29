@@ -121,7 +121,10 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
                 var room = clone.GetComponent<Room>()
                     ?? throw new InvalidOperationException(
                         $"Cloned donor room '{sourceName}' has no Room component.");
-                room.m_size *= scale;
+                room.m_size = new Vector3Int(
+                    Mathf.CeilToInt(room.m_size.x * scale),
+                    Mathf.CeilToInt(room.m_size.y * scale),
+                    Mathf.CeilToInt(room.m_size.z * scale));
 
                 RebindPopulation(clone, profile, index);
 
@@ -197,6 +200,10 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         var generator = custom.Prefab.GetComponentInChildren<DungeonGenerator>(true)
             ?? throw new InvalidOperationException(
                 $"Cloned vanilla entrance '{donorEntrance}' has no DungeonGenerator.");
+        if (!string.Equals(generator.gameObject.name, profile.DonorGeneratorPrefab, StringComparison.Ordinal))
+            throw new InvalidOperationException(
+                $"Vanilla entrance '{donorEntrance}' resolved generator '{generator.gameObject.name}', " +
+                $"expected '{profile.DonorGeneratorPrefab}'.");
 
         // A private theme is mandatory. Leaving the donor bitmask active would mix ordinary
         // vanilla-size rooms back into the 1.5x Magenheim room family.
@@ -415,7 +422,7 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         Safe(profile.Biome.ToString()) + "_" + index.ToString("000") + "_" + Safe(donorName);
 
     private static string Safe(string value) =>
-        new(value.Where(char.IsLetterOrDigit).ToArray());
+        new string(value.Where(char.IsLetterOrDigit).ToArray());
 
     public void Dispose()
     {
