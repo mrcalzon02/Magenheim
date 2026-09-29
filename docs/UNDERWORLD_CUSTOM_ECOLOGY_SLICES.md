@@ -7,7 +7,19 @@ when a slice closes. Static validation only unless a slice says "observed in wor
 
 Decisions in force: no regrowth; Motherbloom deferred to F9 (plan section 10, decisions 1 and 6).
 
-## Terrain direction — user correction 2026-09-23
+## Terrain direction — superseding correction 2026-09-29
+
+The 2026-09-23 independent monument-grid implementation below is historical and **superseded**.
+The arbitrary 3,072m spire/plateau generator has been removed from current terrain authority.
+Extreme height now belongs to rare variants of the same jittered Voronoi cells that own biome
+identity. Those cells lift most of their interior by roughly 1.5–3.3 km, preserve their biome
+surface relief, and fall into the same widened Blackwater/plasma boundaries as ordinary cells.
+
+Nominal biome elevation rises in progression order and biome scoring has a graded radial preference:
+earlier biomes are more likely inward, later biomes more likely outward, while fractal/site noise
+still creates enclaves and repeats. This correction is authoritative for current work.
+
+### Historical terrain direction — 2026-09-23
 
 Occasional cavern landforms must be **sheer cliffs, needle spires and monstrously tall plateaus
 rising for miles**, visibly distinct from rounded mountainous terrain. Keep ordinary relief in
