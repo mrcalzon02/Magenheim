@@ -837,12 +837,12 @@ Confirm Underworld startup logs report the runtime-ready dungeon catalog as pres
 ZoneSystem partitioning. A missing runtime-ready Deep Fracture row must fail closed rather than
 silently producing a dungeonless Underworld.
 
-### Generic biome-dungeon planner source gate
+### Architecture separation source gate
 
-The five future biome dungeon programs remain non-spawning. Their Core planner must keep the
-production rule of 15-20 unique large room families, each used 2-3 times, with a connected branching
-topology and at least one bounded cross-link/loop in a normal large plan. Deep Fracture must remain
-rejected by that generic planner because it retains its bespoke expedition authority.
+The five ordinary biome dungeons must remain on the expanded-vanilla reuse path. Plugin startup may
+bind only `UnderworldVanillaDungeonRegistrar` for those five families; the preserved legacy
+Rootwarren/Drowned Vault/Cinderworks/Rime Sepulcher/Carrion Catacombs room/location registrars must
+not be instantiated. Deep Fracture remains the sole bespoke custom-architecture dungeon lane.
 
 ## Expanded vanilla Underworld dungeon acceptance
 
