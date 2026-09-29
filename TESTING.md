@@ -1014,3 +1014,51 @@ Decay chunks or Surface generation.
 Do not call Carrion Catacombs live-accepted from source review, Core tests, Blender output or
 production contract scripts alone. Collision, atmosphere readability, Censer radius, multiplayer
 persistence, save/reload and return pairing require a real Valheim session.
+
+
+## Underworld dungeon native placement audit
+
+This pass verifies the **actual Valheim pregenerated location table**, not merely dungeon
+registration. Run it after any dungeon family is legitimately promoted to RuntimeReady.
+
+### Fresh Underworld
+
+1. Start a fresh parent world/Underworld with the promoted build.
+2. After the Underworld native instance finishes admission, enable devcommands and run:
+   `magenheim_underworld dungeons`
+3. The command must report `state=Healthy`.
+4. Every RuntimeReady dungeon must report exactly `found/expected` equal to its catalog Quantity.
+5. Each family must report only its canonical biome:
+   Rootwarren/FungalForest, Drowned Vaults/BlackwaterDeep, Cinderworks/SulfurousWastes,
+   Rime Sepulcher/FrozenCaverns, Deep Fracture/FractureZones, Carrion Catacombs/GreatDecay.
+6. Reported minimum same-family spacing must meet the catalog requirement.
+7. A Planned family must not appear in the detached Underworld catalog or pregenerated placement
+   table at all.
+
+Travel to at least one generated location from every RuntimeReady family and confirm that loading
+its zone instantiates the correct entrance in the same biome that the placement audit reported.
+This is the final proof that a pregenerated location position becomes an actual world entrance.
+
+### Existing Underworld save upgrade
+
+Use an Underworld save created before one of the ordinary dungeon families was promoted.
+
+1. Install a build where that family is now legitimately RuntimeReady with all 17 payloads.
+2. Load the existing save and wait for native Underworld location generation/reconciliation.
+3. Watch the log for the one-time native `GenerateLocationsTimeSliced` recovery message for the
+   missing family.
+4. Run `magenheim_underworld dungeons`.
+5. The final state must become `Healthy`, with the newly admitted family reaching its requested
+   quantity in the correct biome.
+6. Save, quit and reload. The same placements must remain present without another recovery pass.
+7. Visit one recovered position and verify the entrance/interior/return path normally.
+
+If native recovery cannot reach the requested quantity, the runtime must report
+`UnderworldDungeonPlacementRuntime.State=Failed`; do not accept the build by manually placing an
+entrance or suppressing the error.
+
+### Wrong-biome regression check
+
+A RuntimeReady dungeon catalog row whose native biome mask contains another Underworld biome bit,
+or whose generated position samples to a different canonical biome, must fail the startup/placement
+audit. Exact owning-biome identity is required; overlapping masks are no longer accepted.
