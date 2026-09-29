@@ -1,4 +1,4 @@
 {
-  "version": "0.0.152",
-  "description": "0.0.152: Adds a plasma-warped edge-ocean fade around the Underworld terrain plate, forcing the outer ring into deep Blackwater before the hard instance boundary."
+  "version": "0.0.153",
+  "description": "0.0.153: Retires arbitrary terrain spires in favor of rare biome-owned massif cells, orders nominal biome elevation with progression, adds graded inner-to-outer biome preference, and widens Blackwater cellular seams."
 }
