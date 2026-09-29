@@ -152,9 +152,10 @@ unoccupied terrain. Do not use console-spawned creatures as proof of natural eco
    must have clearly different mineral structure, contrast and accent placement.
 6. Compare Bat/membrane and Seeker/carapace derivatives across biomes. Their large-scale markings
    must remain readable in motion and under each biome's actual lighting/fog.
-7. Verify donor animation, attack sockets, hitboxes, ragdolls where applicable, faction and loot
-   remain intact, and verify the corresponding vanilla donor elsewhere still uses its untouched
-   original material.
+7. Verify donor animation, attack sockets, hitboxes, ragdolls where applicable and faction remain
+   intact, but donor loot does not. Each custom creature should drop only its Magenheim progression
+   resources plus its species trophy, while the corresponding vanilla donor elsewhere retains its
+   original material and original loot table.
 8. Verify each biome's presentation layer in motion: Fungal spore drift, Blackwater bioluminescent
    motes, Sulfurous smoke/ember glow, Frozen rime mist, Fracture sparks and Great Decay motes.
    Selected luminous creatures should cast a restrained local glow without washing out the whole
@@ -187,6 +188,29 @@ unoccupied terrain. Do not use console-spawned creatures as proof of natural eco
     should be easy to read and punish badly if its slower attack connects.
 16. Repeat VFX, aggression, balance and elemental-hit checks with a second peer. Presentation may
     be local, but combat results and target behavior must agree with the authoritative simulation.
+
+## Underworld creature loot and trophy acceptance
+
+1. Kill at least one ordinary creature in each of the six biomes and confirm its vanilla donor drops
+   are absent. Only Magenheim-owned biome resources and its species trophy may appear.
+2. Confirm all 22 canonical raw Underworld resources can be obtained from at least one creature
+   family over repeated controlled kills, while natural harvesting remains available as the broad
+   acquisition route.
+3. Specifically exercise bottleneck alternates: Blackwater Pearl (Blackwater heavy/predator fauna),
+   Emberiron (Sulfurous elite fauna), Rimesilver (Frozen elite fauna), Titanbone (Fracture
+   heavy/Deep Fracture fauna), and Carrion Amber (Great Decay heavy fauna).
+4. Verify trophy identity is species-based: the 42 ordinary fauna each have one trophy; feminine
+   and masculine Surtlings of the same element share one trophy; all eight elemental variants of a
+   Deep Fracture chassis share that chassis trophy.
+5. Verify trophy drop chance does not multiply with creature star level and that a trophy never
+   resolves to the donor creature's trophy prefab.
+6. Check inventory, ground-drop, save/reload and item-stand behavior for representative trophies
+   from every biome plus one Surtling and one Deep Fracture species.
+7. Repeat representative kills on a second peer. Server-authoritative death generation must produce
+   one coherent drop result; clients must not independently duplicate resources or trophies.
+8. The six canonical biome-boss trophy identities and the Nowhere King trophy are separate boss
+   progression contracts. Do not count ordinary-species trophies as substitutes for Deepstone boss
+   trophies.
 
 ## Underworld creature combat-balance acceptance
 
@@ -493,9 +517,10 @@ chains, vents and three-lavafalls landmark. These are stripped visual vegetation
 interacting with them must not expose Ashlands TreeBase/Destructible behavior or donor drops.
 
 Observe natural Fire Surtling population over several spawn intervals. Both authored body variants
-may appear in Sulfurous Wastes, using their existing donor combat/AI/loot, but the combined
-population should remain sparse enough that the biome still reads as an ecosystem rather than a
-continuous combat event. Confirm no Fire Surtling world spawns occur on the Surface or in another
+may appear in Sulfurous Wastes, using their existing donor combat/AI, but their donor loot must be
+absent: Fire Surtlings should drop Sulfur/rare Emberiron plus the shared Fire Surtling trophy. The
+combined population should remain sparse enough that the biome still reads as an ecosystem rather
+than a continuous combat event. Confirm no Fire Surtling world spawns occur on the Surface or in another
 Underworld biome, then repeat on a second peer and after save/reload.
 
 The 42 ordinary donor-chassis creatures now participate in native Underworld biome spawning and
@@ -514,8 +539,9 @@ spawning because their roster homes are site conditions rather than canonical te
 
 Check several spawn intervals in each biome, then cross biome boundaries. Counts should remain
 sparse: Fire allows at most two of each body variant from its row; Water/Earth/Wind allow one of
-each body variant. Verify donor combat/AI/loot still function, no Surface spawn-list pollution
-occurs, and host/client observe the same creatures.
+each body variant. Verify donor combat/AI still function, custom progression loot replaces donor
+loot, masculine/feminine variants of the same element drop the same element trophy, no Surface
+spawn-list pollution occurs, and host/client observe the same creatures.
 
 
 ## 0.0.149 live environment survey acceptance
