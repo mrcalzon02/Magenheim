@@ -25,6 +25,19 @@ been forged and visually accepted in this execution. The manual production forge
 complete family, pass review/gates and only then promote Fungal Forest to RuntimeReady; partial
 asset families and early promotion are build failures.
 
+Frozen Rime Sepulcher is also source-complete through its pre-forge runtime boundary. It now owns
+16 route-authored room families plus one adaptive passage, deterministic topology/spatial assembly,
+physical passage exposure derived from endpoint routes, Frozen atmosphere/Whiteout integration,
+room-role-aware Frozen encounters, persistent Rimewood/Clear Ice/Rimesilver pickups, a buried
+same-instance interior and exact Frozen Caverns return path. Runtime room/location registration is
+fail-closed on both catalog status and all seventeen runtime payloads.
+
+Rime Sepulcher remains Planned because this execution did not forge its 17 source/GLB/runtime
+payloads. The production contract permits only 0/0/0 or 17/17/17 generated-family states and the
+narrow promotion script refuses FrozenCaverns RuntimeReady admission before the complete family
+exists. Validation record:
+docs/validation/2026-09-29-rime-sepulcher-preforge-source-closure.md.
+
 Underworld startup validation now requires every RuntimeReady dungeon row to survive native
 ZoneSystem catalog partitioning. Validation record:
 docs/validation/2026-09-29-underworld-deep-fracture-dungeon-program.md.
