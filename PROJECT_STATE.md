@@ -57,8 +57,18 @@ Validation record:
 docs/validation/2026-09-29-carrion-catacombs-preforge-source-closure.md.
 
 Underworld startup validation now requires every RuntimeReady dungeon row to survive native
-ZoneSystem catalog partitioning. Validation record:
-docs/validation/2026-09-29-underworld-deep-fracture-dungeon-program.md.
+ZoneSystem catalog partitioning with **exactly one exact owning-biome row**. Planned dungeon rows
+are forbidden from the detached Underworld catalog. The native Underworld ZoneSystem also owns a
+post-generation dungeon placement reconciler: after Valheim sets m_locationsGenerated, it audits
+the real m_locationInstances table for requested quantity, exact sampled biome and same-family
+spacing. Existing Underworld saves missing a newly promoted dungeon family receive one
+server-authoritative GenerateLocationsTimeSliced recovery pass; failure to reach the target remains
+an explicit failed placement state. Live status is exposed through
+`magenheim_underworld dungeons`.
+
+Validation records:
+docs/validation/2026-09-29-underworld-deep-fracture-dungeon-program.md
+docs/validation/2026-09-29-underworld-dungeon-native-placement.md.
 
 No local build/install/live-world claim is attached to this candidate from the current execution
 environment. Run the normal closeout/build/install path, then execute TESTING.md 0.0.155 before
