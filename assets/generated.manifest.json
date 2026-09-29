@@ -366,7 +366,7 @@
         "assets/models/runtime/rootforged-*.model.json"
       ],
       "hash": "generator-only",
-      "generator_sha256": "ee3c4399273b990199b34f28af5ce9815c48821b8e4414728deaa288f9e22bd0",
+      "generator_sha256": "91479368aebadb2429b6b469054e06e36ab688a22cf606dc3d55a0ad2e5cf799",
       "output_sha256": {
         "assets/models/glb/rootforged-great-column-plinth.glb": null,
         "assets/models/glb/rootforged-iron-banded-worldroot-beam-4m.glb": null,
