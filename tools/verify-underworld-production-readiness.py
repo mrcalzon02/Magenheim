@@ -28,7 +28,8 @@ for path in (
  "tools/generate-underworld-material-textures.py","tools/underworld_material_library.py",
  "tools/verify-underworld-material-textures.py","tools/author-underworld-material-items.py",
  "tools/underworld-material-item-specs.json","tools/rebuild-underworld-material-items.ps1",
- "tools/render-underworld-resource-icons.py","tools/author-underworld-geothermal-vents.py",
+ "tools/render-underworld-resource-icons.py","tools/author-underworld-fungal-forest.py","tools/rebuild-underworld-fungal-forest.ps1",
+ "tools/author-underworld-blackwater-deep.py","tools/rebuild-underworld-blackwater-deep.ps1","tools/author-underworld-geothermal-vents.py",
  "tools/rebuild-underworld-geothermal-vents.ps1","tools/author-rootforged-placeables.py",
  "tools/author-underworld-stations.py","tools/author-underworld-tools.py",
  "tools/author-underworld-armour.py","tools/verify-underworld-armour.py",
@@ -62,7 +63,7 @@ for path in (
 python_sources=(
  "tools/generate-underworld-material-textures.py","tools/underworld_material_library.py",
  "tools/verify-underworld-material-textures.py","tools/author-underworld-material-items.py",
- "tools/render-underworld-resource-icons.py","tools/author-underworld-geothermal-vents.py",
+ "tools/render-underworld-resource-icons.py","tools/author-underworld-fungal-forest.py","tools/author-underworld-blackwater-deep.py","tools/author-underworld-geothermal-vents.py",
  "tools/author-rootforged-placeables.py",
  "tools/author-underworld-stations.py","tools/author-underworld-tools.py",
  "tools/author-underworld-armour.py","tools/verify-underworld-armour.py",
@@ -102,7 +103,7 @@ material_specs=None
 for node in generator_tree.body:
     if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id=="SPECS" for t in node.targets):
         material_specs=ast.literal_eval(node.value);break
-require(isinstance(material_specs,dict) and len(material_specs)==25,"Underworld material generator must own exactly 25 families")
+require(isinstance(material_specs,dict) and len(material_specs)==26,"Underworld material generator must own exactly 26 families")
 material_binder=(ROOT/"tools"/"underworld_material_library.py").read_text()
 require("metallic-smoothness" in material_binder and "ShaderNodeSeparateColor" in material_binder and 'bsdf.inputs["Metallic"]' in material_binder,
         "Shared Underworld Blender binder must apply the authored metallic channel during visual review")
@@ -188,6 +189,14 @@ require(material_item_manifest.get("generator")=="tools/author-underworld-materi
         "Underworld material-item generator authority is missing")
 require("underworld-resource-icons" in scope["regenerate"],
         "Owned raw/refined material icons must be regenerated in the one-run forge")
+require("underworld-fungal-forest-models" in scope["regenerate"] and "underworld-blackwater-deep-models" in scope["regenerate"],
+        "Legacy Fungal/Blackwater material sources must be regenerated after the shared PBR library")
+for legacy_source in ("tools/author-underworld-fungal-forest.py","tools/author-underworld-blackwater-deep.py"):
+    legacy_text=(ROOT/legacy_source).read_text()
+    require("RESOURCE_PBR = {" in legacy_text and "bind_resource_pbr(model_id, m)" in legacy_text,
+            legacy_source+" lost its targeted raw-material shared-PBR migration")
+require(material_key("deep-salt")=="deep-salt" and "deep-salt" in material_specs,
+        "Deep Salt must remain a first-class shared PBR material family")
 for primary,secondary,form in material_item_specs.values():
     for semantic in (primary,secondary):
         try:

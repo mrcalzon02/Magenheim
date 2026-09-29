@@ -51,7 +51,10 @@ material_specs=json.loads((ROOT/"tools"/"underworld-material-item-specs.json").r
 new_material_ids=set(material_specs)
 if len(new_material_ids)!=32:
     raise SystemExit(f"Underworld material-item art catalog must contain 32 new models, found {len(new_material_ids)}")
-pbr_models+=sorted(new_material_ids)
+all_material_ids=ids_with("underworld-resource-")+ids_with("underworld-refined-")
+if len(all_material_ids)!=40:
+    raise SystemExit(f"Complete Underworld material visual family must contain 40 models, found {len(all_material_ids)}")
+pbr_models+=all_material_ids
 for model_id in pbr_models:
     doc=json.loads((RUNTIME/(model_id+".model.json")).read_text())
     skinned=model_id.startswith("underworld-armor-") or model_id=="underworld-tool-diving-bell-hood"

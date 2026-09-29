@@ -2,6 +2,8 @@
   "blender_version": "5.0.0",
   "regenerate": [
     "underworld-material-library",
+    "underworld-fungal-forest-models",
+    "underworld-blackwater-deep-models",
     "underworld-material-item-models",
     "underworld-resource-icons",
     "underworld-geothermal-vent-models",
