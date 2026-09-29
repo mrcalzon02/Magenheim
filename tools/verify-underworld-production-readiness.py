@@ -55,6 +55,8 @@ for path in (
  "tools/author-carrion-catacombs-dungeon.py","tools/verify-carrion-catacombs-dungeon.py",
  "tools/verify-carrion-catacombs-production-contract.py","tools/record-carrion-catacombs-generated-assets.py",
  "tools/promote-carrion-catacombs-runtime.py","tools/rebuild-carrion-catacombs-dungeon.ps1",
+ "tools/render-rime-sepulcher-review.py","tools/build-rime-sepulcher-review-sheets.py","tools/verify-rime-sepulcher-review.py",
+ "tools/render-carrion-catacombs-review.py","tools/build-carrion-catacombs-review-sheets.py","tools/verify-carrion-catacombs-review.py",
  "tools/verify-underworld-production-assets.py",
  ".github/workflows/magenheim-production-forge.yml",
 ):
@@ -81,7 +83,9 @@ python_sources=(
  "tools/verify-rime-sepulcher-production-contract.py","tools/record-rime-sepulcher-generated-assets.py",
  "tools/promote-rime-sepulcher-runtime.py","tools/author-carrion-catacombs-dungeon.py","tools/verify-carrion-catacombs-dungeon.py",
  "tools/verify-carrion-catacombs-production-contract.py","tools/record-carrion-catacombs-generated-assets.py",
- "tools/promote-carrion-catacombs-runtime.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
+ "tools/promote-carrion-catacombs-runtime.py","tools/render-rime-sepulcher-review.py","tools/build-rime-sepulcher-review-sheets.py",
+ "tools/verify-rime-sepulcher-review.py","tools/render-carrion-catacombs-review.py","tools/build-carrion-catacombs-review-sheets.py",
+ "tools/verify-carrion-catacombs-review.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
  "tools/export-model-assets.py",
 )
 for source in python_sources:
@@ -317,6 +321,14 @@ require("rebuild-carrion-catacombs-dungeon.ps1" in production_rebuild and
         "record-carrion-catacombs-generated-assets.py" in production_rebuild and
         "promote-carrion-catacombs-runtime.py" in production_rebuild,
         "One-run Underworld production forge no longer includes Carrion Catacombs provenance/promotion")
+require("render-rime-sepulcher-review" in production_rebuild and
+        "build-rime-sepulcher-review-sheets.py" in production_rebuild and
+        "verify-rime-sepulcher-review.py" in production_rebuild,
+        "Rime Sepulcher production forge no longer emits/validates dedicated visual acceptance plates")
+require("render-carrion-catacombs-review" in production_rebuild and
+        "build-carrion-catacombs-review-sheets.py" in production_rebuild and
+        "verify-carrion-catacombs-review.py" in production_rebuild,
+        "Carrion Catacombs production forge no longer emits/validates dedicated visual acceptance plates")
 
 wrapper=(ROOT/"tools"/"blender.ps1").read_text()
 require("MAGENHEIM_BLENDER" in wrapper,"Blender wrapper cannot accept the Actions executable through environment")
