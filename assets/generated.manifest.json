@@ -923,6 +923,69 @@
         "assets/earth/underworld-station-crown-reliquary.icon.png": null
       },
       "hash": "generator-only"
+    },
+    {
+      "id": "underworld-tool-models",
+      "generator": "tools/rebuild-underworld-tools.ps1",
+      "command": [
+        "pwsh",
+        "-NoProfile",
+        "-File",
+        "tools/rebuild-underworld-tools.ps1"
+      ],
+      "outputs": [
+        "assets/models/source/underworld-tool-sporelight-lantern.blend",
+        "assets/models/glb/underworld-tool-sporelight-lantern.glb",
+        "assets/models/runtime/underworld-tool-sporelight-lantern.model.json",
+        "assets/earth/underworld-tool-sporelight-lantern.icon.png",
+        "assets/models/source/underworld-tool-diving-bell-hood.blend",
+        "assets/models/glb/underworld-tool-diving-bell-hood.glb",
+        "assets/models/runtime/underworld-tool-diving-bell-hood.model.json",
+        "assets/earth/underworld-tool-diving-bell-hood.icon.png",
+        "assets/models/source/underworld-tool-slag-pick.blend",
+        "assets/models/glb/underworld-tool-slag-pick.glb",
+        "assets/models/runtime/underworld-tool-slag-pick.model.json",
+        "assets/earth/underworld-tool-slag-pick.icon.png",
+        "assets/models/source/underworld-tool-rime-chisel.blend",
+        "assets/models/glb/underworld-tool-rime-chisel.glb",
+        "assets/models/runtime/underworld-tool-rime-chisel.model.json",
+        "assets/earth/underworld-tool-rime-chisel.icon.png",
+        "assets/models/source/underworld-tool-anchor-spike.blend",
+        "assets/models/glb/underworld-tool-anchor-spike.glb",
+        "assets/models/runtime/underworld-tool-anchor-spike.model.json",
+        "assets/earth/underworld-tool-anchor-spike.icon.png",
+        "assets/models/source/underworld-tool-defiant-censer.blend",
+        "assets/models/glb/underworld-tool-defiant-censer.glb",
+        "assets/models/runtime/underworld-tool-defiant-censer.model.json",
+        "assets/earth/underworld-tool-defiant-censer.icon.png"
+      ],
+      "output_sha256": {
+        "assets/models/source/underworld-tool-sporelight-lantern.blend": null,
+        "assets/models/glb/underworld-tool-sporelight-lantern.glb": null,
+        "assets/models/runtime/underworld-tool-sporelight-lantern.model.json": null,
+        "assets/earth/underworld-tool-sporelight-lantern.icon.png": null,
+        "assets/models/source/underworld-tool-diving-bell-hood.blend": null,
+        "assets/models/glb/underworld-tool-diving-bell-hood.glb": null,
+        "assets/models/runtime/underworld-tool-diving-bell-hood.model.json": null,
+        "assets/earth/underworld-tool-diving-bell-hood.icon.png": null,
+        "assets/models/source/underworld-tool-slag-pick.blend": null,
+        "assets/models/glb/underworld-tool-slag-pick.glb": null,
+        "assets/models/runtime/underworld-tool-slag-pick.model.json": null,
+        "assets/earth/underworld-tool-slag-pick.icon.png": null,
+        "assets/models/source/underworld-tool-rime-chisel.blend": null,
+        "assets/models/glb/underworld-tool-rime-chisel.glb": null,
+        "assets/models/runtime/underworld-tool-rime-chisel.model.json": null,
+        "assets/earth/underworld-tool-rime-chisel.icon.png": null,
+        "assets/models/source/underworld-tool-anchor-spike.blend": null,
+        "assets/models/glb/underworld-tool-anchor-spike.glb": null,
+        "assets/models/runtime/underworld-tool-anchor-spike.model.json": null,
+        "assets/earth/underworld-tool-anchor-spike.icon.png": null,
+        "assets/models/source/underworld-tool-defiant-censer.blend": null,
+        "assets/models/glb/underworld-tool-defiant-censer.glb": null,
+        "assets/models/runtime/underworld-tool-defiant-censer.model.json": null,
+        "assets/earth/underworld-tool-defiant-censer.icon.png": null
+      },
+      "hash": "generator-only"
     }
   ]
 }
