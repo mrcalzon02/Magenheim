@@ -2,13 +2,31 @@
 
 **Magic begins as geology.**
 
-## 0.0.152 testing candidate
+## 0.0.153 testing candidate
+
+The old independent 3,072m monument grid is retired. Terrain height extremes now belong to the
+same jittered Voronoi cells that own biome geography: roughly 5.5% of eligible non-Blackwater land
+cells between 26% and 82% world radius become rare massif variants, lifting most of the cell
+interior by roughly 1.5–3.3 km while preserving that biome's own ridges/basins/faults. The lift
+falls away across the cellular wall band instead of converging to a needle spire.
+
+Nominal biome elevation now rises in progression order (Fungal, Blackwater, Sulfur, Frozen,
+Fracture, Great Decay), and biome scoring gets a broad graded radial preference toward earlier
+biomes inward and later biomes outward. Noise still owns enough of the score to create enclaves,
+returns and irregular boundaries rather than concentric rings.
+
+Blackwater/Voronoi seams are wider: the nominal edge band grows from 320m to 440m with stronger
+plasma width variation, producing broader river walls and more substantial cave-like cuts between
+cells.
+
+### Earlier fixes in 0.0.152
+
 
 The Underworld terrain plate now fades into a broad Blackwater ocean ring before the hard 8 km
 instance boundary. A plasma-warped shoreline begins around 84% of world radius, varies by roughly
 260 m, and reaches guaranteed full ocean depth by about 96.5% radius. The outer band is forced to
-Blackwater Deep and carved after monumental terrain so spires and plateaus cannot punch through
-the edge barrier.
+Blackwater Deep and carved after all ordinary/rare-cell elevation so high massifs cannot punch
+through the edge barrier.
 
 The deepest outer ocean reaches roughly 140 m below the shared water level. The logical world
 boundary therefore sits beyond deep water rather than at the edge of walkable terrain.
@@ -25,7 +43,8 @@ Those Voronoi seams are also the hydrology authority. Strong edge bands are carv
 water plane and become Blackwater Deep, producing a connected warped river/ocean-depth grid through
 the other biome territories. The river network fades in outside the protected Fungal arrival core
 so the Deep Gate is not surrounded by a synthetic moat. The deepest seams reach roughly 30m below
-water level before rare monumental landforms are applied.
+water level after rare-cell uplift is applied, so the cellular drainage network remains legible
+even beside massif cells.
 
 ### Earlier fixes in 0.0.150
 
@@ -44,7 +63,7 @@ pizza-wheel generator fail closed instead of silently generating different terra
 
 
 The developer console now has `magenheim_underworld survey [radius]`: an in-engine environment
-sampling path that reports deterministic terrain height/biome variation, monumental-landform hits,
+sampling path that reports deterministic terrain height/biome variation, rare-cell massif hits,
 actual loaded Magenheim structure families and nearby inhabitants around the player's real
 Underworld position. This is the evidence path for comparing loading artwork to generated worlds.
 
@@ -121,10 +140,10 @@ cells select tall landmarks, a mixed middle canopy and younger edge growth from 
 Each model has stem collision and an editable Blender source; no per-tree lights are added.
 
 The Underworld now has a shared lava-and-fungal-star cavern sky with no visible sun and a dim
-natural day/night lighting cycle. Overhead haze sits at 4.8 km; occasional sheer plateaus and
-needle spires top out just above it at 5.1 km. The native dungeon-height classification no longer
-blocks building across the dedicated instance. Live world appearance and building acceptance
-remain pending.
+natural day/night lighting cycle. Overhead haze sits at 4.8 km; rare biome-owned massif cells can
+rise several kilometres above their surrounding country while retaining the underlying biome
+surface language. The native dungeon-height classification no longer blocks building across the
+dedicated instance. Live world appearance and building acceptance remain pending.
 
 Eight biome geodes, eight five-tier crystal families and shards, Crystal Shaping,
 workstation opening/refinement, sockets, eight four-tier staff families, crystal
@@ -136,10 +155,10 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.152.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.153.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
-Launch **Modded**. Confirm `Loading [Magenheim 0.0.145]` in the BepInEx log.
+Launch **Modded**. Confirm `Loading [Magenheim 0.0.153]` in the BepInEx log.
 Building the ZIP alone does not update a profile; use install-local.ps1 to install it.
 
 See [TESTING.md](TESTING.md) for the acceptance matrix and Earth workshop commands.
