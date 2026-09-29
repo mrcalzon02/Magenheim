@@ -93,6 +93,8 @@ internal static class HeldModelAlignment
     /// </summary>
     private static readonly Dictionary<string, string> AlignmentProfile = new(StringComparer.Ordinal)
     {
+        ["nowhere-king-sword-firmament"] = "crystal-weapon-sword",
+        ["nowhere-king-sword-null-gate"] = "crystal-weapon-sword",
         ["underworld-weapon-worldroot-club"] = "crystal-weapon-mace",
         ["underworld-weapon-worldroot-bow"] = "crystal-weapon-bow",
         ["underworld-weapon-flowstone-maul"] = "crystal-weapon-mace",
