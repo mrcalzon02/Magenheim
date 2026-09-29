@@ -37,8 +37,9 @@ for path in (
  "tools/author-rootwarren-dungeon.py","tools/verify-rootwarren-dungeon.py",
  "tools/verify-rootwarren-production-contract.py","tools/record-rootwarren-generated-assets.py",
  "tools/promote-rootwarren-runtime.py","tools/rebuild-rootwarren-dungeon.ps1","tools/render-underworld-production-review.py",
- "tools/render-underworld-armour-articulation-review.py",
- "tools/build-underworld-production-review-sheets.py","tools/verify-underworld-production-review.py",
+ "tools/render-underworld-armour-articulation-review.py","tools/render-rootwarren-review.py",
+ "tools/build-underworld-production-review-sheets.py","tools/build-rootwarren-review-sheets.py",
+ "tools/verify-underworld-production-review.py","tools/verify-rootwarren-review.py",
  "tools/verify-underworld-production-assets.py",
  ".github/workflows/magenheim-production-forge.yml",
 ):
@@ -54,8 +55,9 @@ python_sources=(
  "tools/author-underworld-weapons.py","tools/author-crystal-weapons.py",
  "tools/author-rootwarren-dungeon.py","tools/verify-rootwarren-dungeon.py",
  "tools/verify-rootwarren-production-contract.py","tools/record-rootwarren-generated-assets.py",
- "tools/promote-rootwarren-runtime.py","tools/render-underworld-production-review.py","tools/render-underworld-armour-articulation-review.py","tools/build-underworld-production-review-sheets.py",
- "tools/verify-underworld-production-review.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
+ "tools/promote-rootwarren-runtime.py","tools/render-underworld-production-review.py","tools/render-underworld-armour-articulation-review.py",
+ "tools/render-rootwarren-review.py","tools/build-underworld-production-review-sheets.py","tools/build-rootwarren-review-sheets.py",
+ "tools/verify-underworld-production-review.py","tools/verify-rootwarren-review.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
  "tools/export-model-assets.py",
 )
 for source in python_sources:
@@ -191,9 +193,18 @@ require("bpy.ops.uv.smart_project" not in rootwarren_author,
         "Rootwarren author must use the shared deterministic unwrap authority rather than inline smart_project")
 require("verify-rootwarren-dungeon" in rootwarren_rebuild and "export-model-assets" in rootwarren_rebuild,
         "Rootwarren rebuild no longer verifies and exports its authored sources")
+require('REVISION = "rootwarren-dungeon-r2"' in rootwarren_author,
+        "Rootwarren authoring must remain on enclosed-cave revision r2")
+require("cave_shell(" in rootwarren_author and '"cavern-shell"' in rootwarren_author and '"passage-shell"' in rootwarren_author,
+        "Rootwarren author lost its collidable chamber/passage cave envelopes")
 require("rebuild-rootwarren-dungeon.ps1" in production_rebuild and
-        "record-rootwarren-generated-assets.py" in production_rebuild,
-        "One-run Underworld production forge no longer includes Rootwarren or its provenance record")
+        "record-rootwarren-generated-assets.py" in production_rebuild and
+        "promote-rootwarren-runtime.py" in production_rebuild,
+        "One-run Underworld production forge no longer includes Rootwarren generation, provenance, and gated admission")
+require("render-rootwarren-review" in production_rebuild and
+        "build-rootwarren-review-sheets.py" in production_rebuild and
+        "verify-rootwarren-review.py" in production_rebuild,
+        "Rootwarren production forge no longer emits/validates its dedicated visual acceptance plates")
 
 wrapper=(ROOT/"tools"/"blender.ps1").read_text()
 require("MAGENHEIM_BLENDER" in wrapper,"Blender wrapper cannot accept the Actions executable through environment")
