@@ -431,3 +431,20 @@ must be an actually loaded Magenheim native location in the current Underworld s
 The inhabitant section is observational only: it reports living characters already present within
 the sample radius and does not create, despawn or count players as biome fauna. Use these paired
 survey outputs/screenshots as evidence when deciding whether loading artwork is attainable.
+
+
+## 0.0.150 organic biome-layout acceptance
+
+Use a fresh disposable Underworld seed. The Fungal arrival country must remain safe around the
+Deep Gate, but its outer edge must not form a perfect circle. Travel or use
+`magenheim_underworld survey` on several long transects and one broad loop approximately 5–7 km
+from centre. Biomes must appear as broad irregular regions with fingers/enclaves and may reappear
+after another biome; there must be no five-spoke angular order.
+
+Create a second fresh seed and repeat comparable transects. The second biome map must be materially
+rearranged rather than the first map rotated around the centre. At organic biome boundaries,
+terrain height should remain continuous while minimap/weather/ecology switches to the owning biome.
+
+This change intentionally invalidates the old biome-layout authority fingerprint. Host and peer
+must use the identical 0.0.150 package; a mismatched old generator must fail admission rather than
+produce divergent world truth.
