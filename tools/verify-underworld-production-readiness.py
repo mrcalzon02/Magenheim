@@ -386,20 +386,19 @@ if workflow_path.is_file():
     require("actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065" in workflow,"setup-python action is not commit-pinned")
     require("actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9" in workflow,"setup-dotnet action is not commit-pinned")
     require("actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02" in workflow,"upload-artifact action is not commit-pinned")
-    for wrapper_name in (
+    require("Post-forge authority gates" in workflow,
+            "workflow must rerun Core/runtime authority gates after production")
+    for retired in (
         "rebuild-rootwarren-dungeon.ps1","rebuild-drowned-vaults-dungeon.ps1",
         "rebuild-cinderworks-dungeon.ps1","rebuild-rime-sepulcher-dungeon.ps1",
         "rebuild-carrion-catacombs-dungeon.ps1",
-    ):
-        require(wrapper_name in workflow,"workflow cheap parser no longer covers "+wrapper_name)
-    for contract_name in (
         "verify-rootwarren-production-contract.py","verify-drowned-vaults-production-contract.py",
         "verify-cinderworks-production-contract.py","verify-rime-sepulcher-production-contract.py",
         "verify-carrion-catacombs-production-contract.py",
     ):
-        require(contract_name in workflow,"workflow post-forge admission no longer covers "+contract_name)
-    require("Post-forge dungeon admission gates" in workflow,
-            "workflow post-forge step must represent all five promoted dungeon families")
+        require(retired not in production_rebuild,
+                "ordinary vanilla-reuse dungeons must not be rebuilt/promoted by the bespoke production forge: "+retired)
+
     parser_match=re.search(r'\$parseScripts\s*=\s*@\((.*?)\n\s*\)',workflow,re.DOTALL)
     require(parser_match is not None,"workflow cheap PowerShell parser block is missing")
     parser_block=parser_match.group(1) if parser_match else ""
@@ -415,13 +414,11 @@ if workflow_path.is_file():
         require(("tools/"+wrapper_name) in parser_block,
                 "workflow cheap parser no longer covers active production wrapper "+wrapper_name)
 
-    post_match=re.search(r'- name: Post-forge dungeon admission gates\s+shell: pwsh\s+run: \|(.*?)(?=\n\s*- name:)',workflow,re.DOTALL)
-    require(post_match is not None,"workflow post-forge dungeon gate block is missing")
+    post_match=re.search(r'- name: Post-forge authority gates\s+shell: pwsh\s+run: \|(.*?)(?=\n\s*- name:)',workflow,re.DOTALL)
+    require(post_match is not None,"workflow post-forge authority gate block is missing")
     post_block=post_match.group(1) if post_match else ""
-    promoted_contracts=sorted(set(re.findall(r'(verify-[a-z0-9-]+-production-contract\.py)',production_rebuild)))
-    for contract_name in promoted_contracts:
-        require(contract_name in post_block,
-                "workflow post-forge admission no longer re-verifies promoted contract "+contract_name)
+    require("Magenheim.Core.Tests" in post_block and "dotnet build src/Magenheim.Runtime" in post_block,
+            "post-forge authority gate must rerun Core tests and runtime compilation")
 
 patterns={}
 for gid in scope["regenerate"]:
