@@ -38,6 +38,8 @@ internal static class UnderworldWeaponUpgradeCatalogTests
                     UnderworldResourceCatalog.All.Any(resource =>
                         string.Equals(resource.Prefab, cost.Prefab, StringComparison.Ordinal)) ||
                     UnderworldFungalRefinementCatalog.All.Any(refined =>
+                        string.Equals(refined.Prefab, cost.Prefab, StringComparison.Ordinal)) ||
+                    UnderworldBiomeRefinementCatalog.All.Any(refined =>
                         string.Equals(refined.Prefab, cost.Prefab, StringComparison.Ordinal))),
             "Every Underworld weapon material dependency must resolve to a canonical raw or refined Underworld material.");
 
@@ -49,6 +51,12 @@ internal static class UnderworldWeaponUpgradeCatalogTests
                 UnderworldFungalRefinementCatalog.All.Any(refined =>
                     string.Equals(refined.Prefab, cost.Prefab, StringComparison.Ordinal)))),
             "Both Fungal Forest weapons must consume a Mycelial Bench refined material rather than skipping the refining rung.");
+        var later = all.Where(value => value.Biome != UnderworldTerrainBiome.FungalForest).ToArray();
+        Assert(later.Length == 10, "Five post-Fungal biomes must expose ten weapon upgrades.");
+        Assert(later.All(value => value.Ingredients.All(cost =>
+                UnderworldBiomeRefinementCatalog.All.Any(refined =>
+                    string.Equals(refined.Prefab, cost.Prefab, StringComparison.Ordinal)))),
+            "Every post-Fungal weapon must consume processed station output instead of raw biome pickups.");
         Assert(fungal.Single(value => value.Name == "Worldroot Club").BasePrefab == "Magenheim_Weapon_CrystalMace",
             "Worldroot Club must visibly and mechanically descend from the Crystal Mace chassis.");
         Assert(fungal.Single(value => value.Name == "Worldroot Bow").BasePrefab == "Magenheim_Weapon_CrystalBow",

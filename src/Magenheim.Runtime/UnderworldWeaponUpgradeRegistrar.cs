@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Registers the first playable Underworld weapon upgrades. The source prefab is always the
+/// Registers all twelve Underworld weapon upgrades. The source prefab is always the
 /// required Magenheim crystal-grade chassis, so attack behavior, held alignment and the existing
 /// authored weapon silhouette are inherited before biome materials visibly accent that chassis.
 /// </summary>
@@ -36,7 +36,7 @@ internal sealed class UnderworldWeaponUpgradeRegistrar : IDisposable
         var registered = 0;
         try
         {
-            foreach (var definition in UnderworldWeaponUpgradeCatalog.FungalForestSlice)
+            foreach (var definition in UnderworldWeaponUpgradeCatalog.All)
             {
                 RegisterWeapon(definition);
                 registered++;
@@ -44,7 +44,7 @@ internal sealed class UnderworldWeaponUpgradeRegistrar : IDisposable
 
             _registered = true;
             _log.LogInfo("Registered " + registered +
-                " Fungal Forest crystal-chassis weapon upgrades at the Mycelial Bench.");
+                " Underworld crystal-chassis weapon upgrades across all six biome stations.");
         }
         catch (Exception exception)
         {
