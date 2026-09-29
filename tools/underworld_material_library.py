@@ -5,6 +5,7 @@ SOURCE=ROOT/"assets"/"material-source"/"underworld"
 
 EXACT={
 "bone":"bone",
+"deep-salt":"deep-salt",
 "armour.sporeweave.base":"sporeweave-fibre","armour.sporeweave.structure":"worldroot-bark","armour.sporeweave.accent":"glowcap",
 "armour.palewater.base":"pale-fibre","armour.palewater.structure":"flowstone","armour.palewater.accent":"blackwater-pearl",
 "armour.emberiron.base":"charred-root","armour.emberiron.structure":"emberiron","armour.emberiron.accent":"ember-heat",

@@ -29,6 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from magenheim_blender_kit import (  # noqa: E402
     blob, curve, lathe, merge, spec_painter, spike, transformed, unwrap, uv_overlap)
 from magenheim_flora_kit import Model, buttresses, cap, gills, small_mushrooms, tube, bake_flora_atlas  # noqa: E402
+from underworld_material_library import bind_underworld_material  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'assets/models/source'
@@ -371,6 +372,23 @@ MODELS = {
     'underworld-resource-understone': (understone, 512),
 }
 
+RESOURCE_PBR = {
+    'underworld-resource-worldroot-timber': {'worldroot': 'worldroot-bark', 'root': 'worldroot-heartwood'},
+    'underworld-resource-glowcap-flesh': {'cap-teal': 'glowcap', 'gill': 'glowcap'},
+    'underworld-resource-spire-fibre': {'stalk': 'sporeweave-fibre', 'root': 'worldroot-bark'},
+    'underworld-resource-understone': {'understone': 'understone'},
+}
+
+def bind_resource_pbr(model_id, model):
+    mapping = RESOURCE_PBR.get(model_id)
+    if mapping is None:
+        return
+    if set(mapping) != set(model.materials):
+        raise RuntimeError(f"{model_id}: resource PBR surface drift {sorted(model.materials)} != {sorted(mapping)}")
+    for surface, semantic in mapping.items():
+        bind_underworld_material(bpy, model.materials[surface], semantic)
+    bpy.context.scene['magenheim_resource_pbr'] = 'shared-underworld-library-r1'
+
 # Each family keeps its prototype and gains three authored growth forms. No runtime mesh generation.
 CANOPY_VARIANTS = {
     'glowcap-bent': partial(branching_glowcap, form='bent'),
@@ -404,6 +422,7 @@ def author(model_id):
     if overlap > 0.01:
         raise ValueError(f'{model_id}: {overlap:.1%} of the atlas is claimed by two triangles')
     bake_flora_atlas(m.parts, m.atlas, paint, size=m.atlas_size)
+    bind_resource_pbr(model_id, m)
     triangles = sum(len(o.data.loop_triangles) for o in m.parts)
     heights = [(o.matrix_world @ v.co).z for o in m.parts for v in o.data.vertices]
     bpy.context.preferences.filepaths.save_version = 0
