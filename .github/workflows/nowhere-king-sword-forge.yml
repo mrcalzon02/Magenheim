@@ -65,6 +65,8 @@ jobs:
       - name: Author, verify and export only Firmament and Null Gate
         shell: pwsh
         run: |
+          $env:TEMP = $env:RUNNER_TEMP
+          $env:TMP = $env:RUNNER_TEMP
           ./tools/rebuild-nowhere-king-swords.ps1
           if ($LASTEXITCODE -ne 0) { throw 'Nowhere King twin-sword rebuild failed.' }
 
