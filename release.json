@@ -1,4 +1,4 @@
 {
-  "version": "0.0.148",
-  "description": "0.0.148: Adds canonical-home world spawns for custom Fire, Water, Earth and Wind Surtlings, retains burnt Sulfurous Wastes scenery, and keeps loading art scoped to Underworld construction/transit."
+  "version": "0.0.149",
+  "description": "0.0.149: Adds a live Underworld terrain/structure/inhabitant survey command, canonical-home elemental Surtling spawning, dense burnt Sulfurous Wastes scenery, and scoped Underworld loading art."
 }

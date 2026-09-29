@@ -4,12 +4,12 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.148 by Local** and start its description with
-**0.0.148: Adds canonical-home world spawns for custom Fire, Water, Earth and Wind Surtlings**.
+show **Magenheim v0.0.149 by Local** and start its description with
+**0.0.149: Adds a live Underworld terrain/structure/inhabitant survey command**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.148]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.149]` before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
@@ -115,6 +115,7 @@ Launch with `-console`, press F5, and run `devcommands` first; every command bel
 | Command | Effect |
 |---|---|
 | `magenheim_underworld audit` | Re-runs the fail-closed native instance admission audit and prints the Surface/Underworld World IDs, ZDO namespaces, Unity scene, and child-save namespace. Run this first. |
+| `magenheim_underworld survey [radius]` | While physically in the Underworld, samples the real deterministic terrain around the player, reports biome height ranges and monumental hits, then lists actual loaded Magenheim location families and nearby living inhabitants. Radius defaults to 512m and clamps to 128–1600m. |
 | `magenheim_underworld status` | Reports whether the paired Underworld instance is active, whether the Deep Gate is unlocked, and whether you hold a return anchor. |
 | `magenheim_underworld enter` | Enters the Underworld through the same transit the Deep Gate uses, skipping the Nowhere King unlock. Records a return anchor where you stood. |
 | `magenheim_underworld return` | Returns to that anchor. With no anchor (for example after relogging below ground) it returns you to your bed, or your home point if you have none. |
@@ -417,3 +418,16 @@ Check several spawn intervals in each biome, then cross biome boundaries. Counts
 sparse: Fire allows at most two of each body variant from its row; Water/Earth/Wind allow one of
 each body variant. Verify donor combat/AI/loot still function, no Surface spawn-list pollution
 occurs, and host/client observe the same creatures.
+
+
+## 0.0.149 live environment survey acceptance
+
+After entering the Underworld, run `magenheim_underworld survey` in each biome, then repeat with
+`survey 1200` from at least one high overlook. Preserve the console output with a screenshot of
+the same view. The terrain rows must agree with the visible biome and relief, monumental-samples
+must correspond to actual giant landform footprints when present, and every reported structure
+must be an actually loaded Magenheim native location in the current Underworld scene.
+
+The inhabitant section is observational only: it reports living characters already present within
+the sample radius and does not create, despawn or count players as biome fauna. Use these paired
+survey outputs/screenshots as evidence when deciding whether loading artwork is attainable.

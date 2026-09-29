@@ -37,6 +37,9 @@ internal sealed class UnderworldNativeStructureLocationRuntime : MonoBehaviour
         Families[family.Kind] = family;
     }
 
+    internal string FamilyKind => _familyKind;
+    internal bool IsComposed => _composed;
+
     internal void Bind(string familyKind)
     {
         if (string.IsNullOrWhiteSpace(familyKind))

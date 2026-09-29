@@ -96,6 +96,9 @@ internal static class UnderworldTerrainRuntime
         }
     }
 
+    internal static UnderworldTerrainResult SampleForDiagnostics(double x, double z) =>
+        SampleInstanceTerrain(x, 0d, z);
+
     internal static bool TrySampleUnderworldHeightmap(Heightmap heightmap, Vector3 point, out UnderworldTerrainResult terrain)
     {
         terrain = default;

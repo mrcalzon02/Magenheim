@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Magenheim.Core.Underworld;
 using BepInEx.Logging;
 using Jotunn.Entities;
 using Jotunn.Managers;
@@ -8,7 +10,7 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Developer console access to the Underworld: <c>magenheim_underworld enter|return|status|audit</c>.
+/// Developer console access to the Underworld: <c>magenheim_underworld enter|return|status|audit|survey</c>.
 /// </summary>
 /// <remarks>
 /// A cheat command, so Valheim's own <c>devcommands</c> gate applies. It is not a second transit
@@ -35,9 +37,9 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
     }
 
     public override string Name => "magenheim_underworld";
-    public override string Help => "enter | return | status | audit -- Deep Gate transit/status plus fail-closed native instance admission audit (devcommands)";
+    public override string Help => "enter | return | status | audit | survey -- Deep Gate transit/status, admission audit, or live terrain/structure/ecology sample (devcommands)";
     public override bool IsCheat => true;
-    public override List<string> CommandOptionList() => new() { "enter", "return", "status", "audit" };
+    public override List<string> CommandOptionList() => new() { "enter", "return", "status", "audit", "survey" };
 
     public override void Run(string[] args)
     {
@@ -77,8 +79,11 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
             case "audit":
                 RunAudit();
                 break;
+            case "survey":
+                RunSurvey(player, args);
+                break;
             default:
-                Say($"Unknown option '{verb}'. Use: {Name} enter | return | status | audit");
+                Say($"Unknown option '{verb}'. Use: {Name} enter | return | status | audit | survey");
                 break;
         }
     }
@@ -109,6 +114,93 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
             _log?.LogError("magenheim_underworld audit failed: " + exception);
             Say("AUDIT FAIL: " + exception.Message);
         }
+    }
+
+    private static void RunSurvey(Player player, string[] args)
+    {
+        var services = _services;
+        if (services is null || services.InstanceLifecycle.Identity is not { } identity)
+        {
+            Say("SURVEY FAIL: Underworld instance authority is unavailable.");
+            return;
+        }
+        if (!services.WorldInstances.TryGetPlayerInstance(player.GetPlayerID(), out var instance) ||
+            !instance.IsUnderworld)
+        {
+            Say("SURVEY REFUSED: enter the Underworld first so the sample uses actual instance-local coordinates.");
+            return;
+        }
+
+        var radius = 512f;
+        if (args.Length > 1 && float.TryParse(args[1], System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture, out var requested))
+            radius = Mathf.Clamp(requested, 128f, 1600f);
+        const int steps = 8;
+        var spacing = radius / steps;
+        var origin = player.transform.position;
+        var byBiome = new Dictionary<UnderworldTerrainBiome, List<double>>();
+        var monumentSamples = 0;
+        var admitted = 0;
+        for (var iz = -steps; iz <= steps; iz++)
+        for (var ix = -steps; ix <= steps; ix++)
+        {
+            var x = origin.x + ix * spacing;
+            var z = origin.z + iz * spacing;
+            var sample = UnderworldTerrainRuntime.SampleForDiagnostics(x, z);
+            if (!sample.Admitted) continue;
+            admitted++;
+            if (!byBiome.TryGetValue(sample.Biome, out var heights))
+                byBiome.Add(sample.Biome, heights = new List<double>());
+            heights.Add(sample.Height);
+            if (UnderworldMonumentalLandforms.HeightAt(services.TerrainDomain, identity.DerivedSeed32, x, z) > 0d)
+                monumentSamples++;
+        }
+
+        Say($"SURVEY terrain: center=({origin.x:0},{origin.z:0}) radius={radius:0}m grid={(steps * 2 + 1)}x{(steps * 2 + 1)} admitted={admitted} monumental-samples={monumentSamples}.");
+        foreach (var pair in byBiome.OrderBy(p => p.Key.ToString(), StringComparer.Ordinal))
+        {
+            pair.Value.Sort();
+            var values = pair.Value;
+            var median = values[values.Count / 2];
+            Say($"SURVEY biome {pair.Key}: n={values.Count} y={values[0]:0.0}..{values[^1]:0.0}m median={median:0.0}m.");
+        }
+
+        var scene = player.gameObject.scene.handle;
+        var structures = Resources.FindObjectsOfTypeAll<UnderworldNativeStructureLocationRuntime>()
+            .Where(value => value && value.gameObject.scene.handle == scene)
+            .Select(value => new
+            {
+                Runtime = value,
+                Distance = Vector2.Distance(
+                    new Vector2(origin.x, origin.z),
+                    new Vector2(value.transform.position.x, value.transform.position.z))
+            })
+            .Where(value => value.Distance <= radius)
+            .OrderBy(value => value.Distance)
+            .ToArray();
+        Say($"SURVEY structures: {structures.Length} loaded native Magenheim locations within {radius:0}m.");
+        foreach (var entry in structures.Take(16))
+            Say($"SURVEY structure {entry.Runtime.FamilyKind} distance={entry.Distance:0}m composed={entry.Runtime.IsComposed} at ({entry.Runtime.transform.position.x:0},{entry.Runtime.transform.position.z:0}).");
+        if (structures.Length > 16) Say($"SURVEY structures: {structures.Length - 16} additional locations omitted from console detail.");
+
+        var inhabitants = Character.GetAllCharacters()
+            .Where(character => character != null && character != player && !character.IsDead() &&
+                                character.gameObject.scene.handle == scene)
+            .Select(character => new
+            {
+                Character = character,
+                Distance = Vector2.Distance(
+                    new Vector2(origin.x, origin.z),
+                    new Vector2(character.transform.position.x, character.transform.position.z))
+            })
+            .Where(value => value.Distance <= Mathf.Min(radius, 500f))
+            .GroupBy(value => value.Character.m_name ?? value.Character.name)
+            .Select(group => new { Name = group.Key, Count = group.Count(), Nearest = group.Min(value => value.Distance) })
+            .OrderBy(value => value.Nearest)
+            .ToArray();
+        Say($"SURVEY inhabitants: {inhabitants.Sum(value => value.Count)} living non-player characters within {Mathf.Min(radius, 500f):0}m across {inhabitants.Length} types.");
+        foreach (var entry in inhabitants.Take(16))
+            Say($"SURVEY inhabitant {entry.Name}: count={entry.Count}, nearest={entry.Nearest:0}m.");
     }
 
     private static void Report(bool ok, string success, string diagnostic) => Say(ok ? success : "Refused: " + diagnostic);

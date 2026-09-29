@@ -2,7 +2,15 @@
 
 **Magic begins as geology.**
 
-## 0.0.148 testing candidate
+## 0.0.149 testing candidate
+
+The developer console now has `magenheim_underworld survey [radius]`: an in-engine environment
+sampling path that reports deterministic terrain height/biome variation, monumental-landform hits,
+actual loaded Magenheim structure families and nearby inhabitants around the player's real
+Underworld position. This is the evidence path for comparing loading artwork to generated worlds.
+
+### Earlier fixes in 0.0.148
+
 
 The authored elemental Surtlings now provide genuine non-donor-silhouette inhabitants in every
 canonical home already declared by their roster: Fire in Sulfurous Wastes, Water in Blackwater
@@ -89,7 +97,7 @@ do not establish multiplayer, persistence, balance or visual acceptance.
 
 ## Install and test
 
-Import `dist/Local-Magenheim-0.0.148.zip` as a local mod in a disposable r2modman
+Import `dist/Local-Magenheim-0.0.149.zip` as a local mod in a disposable r2modman
 profile with Jotunn 2.30.0 and JsonDotNET 13.0.4 and their loader dependencies.
 Use the identical package on host and clients: patch versions must match.
 Launch **Modded**. Confirm `Loading [Magenheim 0.0.145]` in the BepInEx log.
