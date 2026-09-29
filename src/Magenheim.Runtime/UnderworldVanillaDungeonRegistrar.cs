@@ -120,6 +120,11 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
                 var clone = UnityEngine.Object.Instantiate(source);
                 var sourceName = data.m_prefab.Name;
                 clone.name = RoomPrefabName(profile, sourceName, index);
+
+                // The recognizable vanilla tile itself is enlarged, not replaced. Because the
+                // RoomConnection transforms live beneath this root, their world-space separation
+                // scales with the room geometry; Room.m_size below is expanded to the same linear
+                // factor so vanilla packing/collision authority sees the true larger footprint.
                 clone.transform.localScale *= scale;
 
                 var room = clone.GetComponent<Room>()
