@@ -5,13 +5,13 @@
     "crystal-weapon-models",
     "weapon-icons",
     "staff-model-exports",
-    "staff-icons",
     "underworld-weapon-models",
     "rootforged-models",
     "rootforged-icons",
     "underworld-station-models",
     "underworld-tool-models",
-    "underworld-armour-models"
+    "underworld-armour-models",
+    "staff-icons"
   ],
   "verify_only": [
     "crystal-tier-icons"

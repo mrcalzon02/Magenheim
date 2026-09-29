@@ -48,4 +48,4 @@ if(!$SkipReview){
     & python "$PSScriptRoot/verify-underworld-production-review.py"
     if($LASTEXITCODE -ne 0){throw 'Production review completeness gate failed.'}
 }
-Write-Host 'PRODUCTION READY: materials, crystal weapons, Underworld derivatives, Rootforged, stations, tools and armour regenerated and gated.'
+Write-Host 'PRODUCTION READY: materials, Crystal weapons, 32 elemental staves, Underworld derivatives, Rootforged, stations, tools and armour regenerated and gated.'

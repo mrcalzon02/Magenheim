@@ -21,7 +21,7 @@ for e in index:
 groups={e["group"] for e in index}
 for g in groups:
     if not (SHEETS/f"{g}.png").is_file():fail.append("missing contact sheet "+g)
-if len(index)<60:fail.append("review index lost expected production families")
+if len(index)!=97:fail.append(f"review index expected 97 production models, found {len(index)}")
 if fail:
     print("FAIL production review gate")
     for x in fail[:30]:print(" - "+x)

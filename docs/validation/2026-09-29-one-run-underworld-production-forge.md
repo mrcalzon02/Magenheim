@@ -3,10 +3,7 @@
 The remote production run is intentionally broader than the six new stations. It regenerates the
 shared Underworld material library, all ten physical Crystal weapon chassis and their icons, the
 Worldroot Crystal-derived weapons, Rootforged construction, six biome stations, six progression
-tools and twenty-four rigged armour sources. Existing elemental staff and crystal-tier icon families
-remain verification-only because their model sources do not currently have an equivalent dedicated
-manifest regeneration authority; they are included in visual review and global model/icon gates
-rather than silently reassigned to this workflow.
+tools and twenty-four rigged armour sources. The thirty-two elemental staff Blender sources are treated as authoritative manual source art: the forge re-exports all 32 runtime/GLB representations and regenerates all 32 staff icons without inventing a replacement geometry generator. Crystal-tier icons remain verification-only because they are not part of the weapon/placeable rebuild.
 
 ## Admission order
 
@@ -18,8 +15,8 @@ rather than silently reassigned to this workflow.
    SHA-256 list.
 4. Generate and quantitatively gate 23 shared 512px Underworld material families.
 5. Regenerate Crystal weapons first so derivative weapons inherit the current authoritative
-   chassis, UVs and painted 512px atlases.
-6. Regenerate Worldroot derivatives, Rootforged, stations, tools and armour in dependency order.
+   chassis, UVs and painted 512px atlases; re-export all 32 elemental staves from their existing authoritative Blender sources.
+6. Regenerate Worldroot derivatives, Rootforged, stations, tools and armour in dependency order, then regenerate staff icons against the final model catalog.
 7. Run global topology, winding/surface continuity, scale, held orientation/grip, icon, texture,
    authored-surface and attach_skin source-rig gates.
 8. Render every admitted production model twice: neutral studio and approximate biome-context

@@ -54,6 +54,8 @@ jobs:
           }
           dotnet run --project tests/Magenheim.Core.Tests -c Release
           if ($LASTEXITCODE -ne 0) { throw 'Core authority tests failed before Blender provisioning.' }
+          dotnet run --project tools/ModelAssetTests -c Release
+          if ($LASTEXITCODE -ne 0) { throw 'Model/runtime material importer tests failed before Blender provisioning.' }
           python tools/verify-generated-freshness.py crystal-tier-icons
           if ($LASTEXITCODE -ne 0) { throw 'Verification-only crystal-tier icons are stale before Blender provisioning.' }
           foreach ($gate in @(
@@ -74,11 +76,15 @@ jobs:
           New-Item -ItemType Directory -Force -Path $steam,$game,$bep | Out-Null
           Invoke-WebRequest 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip' -OutFile "$steam/steamcmd.zip"
           Expand-Archive "$steam/steamcmd.zip" -DestinationPath $steam -Force
+          $steamHash = (Get-FileHash "$steam/steamcmd.zip" -Algorithm SHA256).Hash.ToLowerInvariant()
+          "MAGENHEIM_STEAMCMD_PACKAGE_SHA256=$steamHash" | Out-File -FilePath $env:GITHUB_ENV -Append
           & "$steam/steamcmd.exe" +force_install_dir $game +login anonymous +app_update 896660 validate +quit
           if ($LASTEXITCODE -ne 0) { throw 'Valheim Dedicated Server reference install failed.' }
 
           Invoke-WebRequest 'https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.2351/' -OutFile "$bep/bepinex.zip"
           Expand-Archive "$bep/bepinex.zip" -DestinationPath $bep -Force
+          $bepPackageHash = (Get-FileHash "$bep/bepinex.zip" -Algorithm SHA256).Hash.ToLowerInvariant()
+          "MAGENHEIM_BEPINEX_PACKAGE_SHA256=$bepPackageHash" | Out-File -FilePath $env:GITHUB_ENV -Append
 
           $assembly = Get-ChildItem -LiteralPath $game -Filter assembly_valheim.dll -File -Recurse | Select-Object -First 1
           if (!$assembly) { throw 'Dedicated Server did not supply assembly_valheim.dll.' }
@@ -111,6 +117,7 @@ jobs:
           $expected = ($line -split '\s+')[0].ToLowerInvariant()
           $actual = (Get-FileHash "$dir/$file" -Algorithm SHA256).Hash.ToLowerInvariant()
           if ($actual -ne $expected) { throw "Blender checksum mismatch: $actual != $expected" }
+          "MAGENHEIM_BLENDER_ARCHIVE_SHA256=$actual" | Out-File -FilePath $env:GITHUB_ENV -Append
           Expand-Archive "$dir/$file" -DestinationPath $dir -Force
           $exe = Join-Path $dir 'blender-5.0.0-windows-x64/blender.exe'
           if (!(Test-Path $exe)) { throw 'Pinned Blender executable missing after extraction.' }
@@ -156,8 +163,11 @@ jobs:
             python = $pythonVersion
             dotnetSdk = $dotnetVersion
             blender = $blenderVersion
+            blenderArchiveSha256 = $env:MAGENHEIM_BLENDER_ARCHIVE_SHA256
             blenderExecutableSha256 = (Get-FileHash $env:MAGENHEIM_BLENDER -Algorithm SHA256).Hash.ToLowerInvariant()
+            steamCmdPackageSha256 = $env:MAGENHEIM_STEAMCMD_PACKAGE_SHA256
             valheimAssemblySha256 = (Get-FileHash $assembly -Algorithm SHA256).Hash.ToLowerInvariant()
+            bepInExPackageSha256 = $env:MAGENHEIM_BEPINEX_PACKAGE_SHA256
             bepInExSha256 = (Get-FileHash $bepDll -Algorithm SHA256).Hash.ToLowerInvariant()
           }
           $provenance | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath "$review/provenance.json"

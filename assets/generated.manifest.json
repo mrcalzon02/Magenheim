@@ -82,7 +82,6 @@
       },
       "hash": "generator-only",
       "inputs": [
-        "assets/models/catalog.json",
         "assets/models/source/Magenheim_Staff_Earth_Advanced.blend",
         "assets/models/source/Magenheim_Staff_Earth_Crystal.blend",
         "assets/models/source/Magenheim_Staff_Earth_Master.blend",
