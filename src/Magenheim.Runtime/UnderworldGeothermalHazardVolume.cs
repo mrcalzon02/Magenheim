@@ -80,7 +80,11 @@ internal sealed class UnderworldGeothermalHazardVolume : MonoBehaviour
         if (zdo == null) return 0f;
 
         var current = Mathf.Clamp(zdo.GetFloat(ThermalStateKey, 0f), 0f, MaximumHeat);
-        var exposure = UnderworldGeothermalHazard.Exposure(hazardId, intensity, deltaSeconds);
+        var weatherMultiplier = UnderworldWeatherGameplayRuntime.GeothermalIntensityMultiplier(player);
+        var exposure = UnderworldGeothermalHazard.Exposure(
+            hazardId,
+            intensity * weatherMultiplier,
+            deltaSeconds);
         if (exposure <= 0f) return current;
 
         var next = FurnaceBloodRuntime.ApplyThermalBuildup(player, current, exposure, MaximumHeat);
