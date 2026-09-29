@@ -83,7 +83,7 @@ internal sealed class VenomStaffRegistrar : IDisposable
                 statusEffect: corrosion);
             var miasmaField = StaffEffectPayloads.CreateField(
                 "Magenheim_Venom_MiasmaField",
-                new HitData.DamageTypes { m_poison = 3.5f },
+                new HitData.DamageTypes { m_poison = 5.25f },
                 radius: 3.4f,
                 ttl: 8f,
                 hitInterval: .8f,
@@ -93,7 +93,7 @@ internal sealed class VenomStaffRegistrar : IDisposable
                 statusEffect: corrosion);
             var plagueField = StaffEffectPayloads.CreateField(
                 "Magenheim_Venom_PlagueField",
-                new HitData.DamageTypes { m_poison = 3f },
+                new HitData.DamageTypes { m_poison = 4.5f },
                 radius: 3.8f,
                 ttl: 10f,
                 hitInterval: .75f,
@@ -249,13 +249,13 @@ internal sealed class VenomStaffRegistrar : IDisposable
         new VenomStaffDefinition(
             "Magenheim_Staff_Venom_Advanced", "staff-venom-advanced", "Advanced Staff of Venom",
             "Miasma Bloom: throws three contamination globes across a broad fan. Every field repeatedly reapplies poison and Corrosion, creating overlapping attrition zones rather than chasing burst damage.",
-            3, 30f, 10f, .48f, .08f, .12f, 24f, 11f, 3, 1, 0f, PayloadKind.Miasma,
+            3, 30f, 15f, .48f, .08f, .12f, 24f, 11f, 3, 1, 0f, PayloadKind.Miasma,
             new StaffRequirement("YggdrasilWood", 10), new StaffRequirement("Guck", 6), new StaffRequirement("Bilebag", 2), new StaffRequirement("Magenheim_Crystal_Venom_Advanced", 1)),
 
         new VenomStaffDefinition(
             "Magenheim_Staff_Venom_Master", "staff-venom-master", "Master Staff of Venom",
             "Plaguefield: releases three waves of three globes. Nine ten-second fields saturate the front with poison while Deep Corrosion persists for six seconds after exposure, making retreat necessary but not immediately sufficient.",
-            4, 42f, 8f, .35f, .05f, .10f, 26f, 16f, 3, 3, .22f, PayloadKind.Plague,
+            4, 42f, 12f, .35f, .05f, .10f, 26f, 16f, 3, 3, .22f, PayloadKind.Plague,
             new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("Guck", 10), new StaffRequirement("Bilebag", 4), new StaffRequirement("Magenheim_Crystal_Venom_Master", 1)),
     };
 
