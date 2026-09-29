@@ -120,6 +120,8 @@ internal sealed class DeepFractureLocationRegistrar : IDisposable
             ?? throw new InvalidOperationException($"Jotunn could not create location container '{definition.PrefabName}'.");
 
         DeepFractureEntranceVisuals.Build(locationContainer);
+        var origin = locationContainer.AddComponent<DeepFractureEntranceOrigin>();
+        origin.Bind("Surface Fracture");
 
         var anchor = FindInteriorAnchor(locationContainer)
             ?? throw new InvalidOperationException(
