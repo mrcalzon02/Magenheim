@@ -27,10 +27,15 @@ def context(model_id):
     low=model_id.lower()
     if any(x in low for x in ("worldroot","mycelial","sporeweave","sporelight")): return ((.055,.095,.075,1),(.30,.78,.48),(.16,.46,.30))
     if any(x in low for x in ("tidal","palewater","diving","blackwater")): return ((.035,.070,.090,1),(.38,.72,.82),(.14,.36,.48))
-    if any(x in low for x in ("furnace","ember","slag")): return ((.11,.045,.025,1),(.95,.38,.10),(.52,.16,.04))
-    if any(x in low for x in ("silence","rime","ice")): return ((.065,.085,.11,1),(.64,.84,.96),(.26,.46,.72))
+    if any(x in low for x in ("furnace","ember","slag","staff-fire")): return ((.11,.045,.025,1),(.95,.38,.10),(.52,.16,.04))
+    if any(x in low for x in ("silence","rime","ice","staff-frost")): return ((.065,.085,.11,1),(.64,.84,.96),(.26,.46,.72))
     if any(x in low for x in ("anchor","stoneanchor","fracture")): return ((.075,.060,.09,1),(.63,.48,.88),(.30,.18,.48))
-    if any(x in low for x in ("crown","defiant","censer","decay")): return ((.09,.075,.035,1),(.86,.58,.16),(.38,.28,.08))
+    if any(x in low for x in ("crown","defiant","censer","decay","staff-venom")): return ((.09,.075,.035,1),(.86,.58,.16),(.38,.28,.08))
+    if "staff-storm" in low: return ((.055,.065,.11,1),(.45,.62,.96),(.28,.22,.62))
+    if "staff-earth" in low: return ((.075,.060,.09,1),(.63,.48,.88),(.30,.18,.48))
+    if "staff-radiance" in low: return ((.17,.15,.10,1),(.98,.90,.58),(.58,.48,.18))
+    if "staff-seidr" in low: return ((.10,.045,.11,1),(.88,.48,.92),(.46,.18,.54))
+    if "staff-spirit" in low: return ((.08,.11,.12,1),(.70,.92,.96),(.30,.56,.62))
     return ((.12,.14,.17,1),(.82,.86,.92),(.34,.42,.54))
 
 def render(entry,condition):
@@ -59,14 +64,14 @@ def render(entry,condition):
     if not meshes: raise RuntimeError(entry["id"]+": no meshes for review")
     bpy.context.view_layer.update()
     rot=Matrix.Rotation(math.radians(-28),4,"Z")@Matrix.Rotation(math.radians(-58),4,"X")@Matrix.Rotation(math.radians(8),4,"Y")
-    for o in meshes:o.matrix_world=rot@o.matrix_world
+    for o in all_objects:o.matrix_world=rot@o.matrix_world
     bpy.context.view_layer.update()
     pts=[o.matrix_world@Vector(c) for o in meshes for c in o.bound_box]
     lo=Vector([min(p[i] for p in pts) for i in range(3)])
     hi=Vector([max(p[i] for p in pts) for i in range(3)])
     center=(lo+hi)/2;extent=max((hi-lo).x,(hi-lo).y)
     scale=1.82/max(extent,.001);place=Matrix.Scale(scale,4)@Matrix.Translation(-center)
-    for o in meshes:o.matrix_world=place@o.matrix_world
+    for o in all_objects:o.matrix_world=place@o.matrix_world
     cd=bpy.data.cameras.new("Camera");cd.type="ORTHO";cd.ortho_scale=2.2
     cam=bpy.data.objects.new("Camera",cd);sc.collection.objects.link(cam);cam.location=(0,0,12);sc.camera=cam
     for name,pos,power,size,color in (

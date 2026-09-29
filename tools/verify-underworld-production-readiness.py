@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 """Cheap preflight for the one-run Magenheim Blender production forge."""
+import ast
 import json
 import py_compile
+import re
 from pathlib import Path
+import sys
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT/"tools"))
+from underworld_material_library import material_key
 scope=json.loads((ROOT/"tools"/"underworld-production-scope.json").read_text())
 manifest=json.loads((ROOT/"assets"/"generated.manifest.json").read_text())
 entries={e["id"]:e for e in manifest["generators"]}
@@ -48,6 +53,34 @@ for path in (
     require("bind_underworld_material" in text,path+" is not bound to the shared material library")
     require("sys.path.insert(0, str(Path(__file__).resolve().parent))" in text,path+" does not expose tools/ to Blender Python imports")
     require("bpy.ops.uv.smart_project" not in text,path+" uses forbidden smart_project UV generation")
+
+generator_tree=ast.parse((ROOT/"tools"/"generate-underworld-material-textures.py").read_text())
+material_specs=None
+for node in generator_tree.body:
+    if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id=="SPECS" for t in node.targets):
+        material_specs=ast.literal_eval(node.value);break
+require(isinstance(material_specs,dict) and len(material_specs)==23,"Underworld material generator must own exactly 23 families")
+literal_names=[]
+for source in (
+ "tools/author-rootforged-placeables.py","tools/author-underworld-stations.py","tools/author-underworld-tools.py"
+):
+    literal_names += re.findall(r'(?:material|mat)\(\s*["\']([^"\']+)["\']',(ROOT/source).read_text())
+literal_names += [
+ "armour.sporeweave.base","armour.sporeweave.structure","armour.sporeweave.accent",
+ "armour.palewater.base","armour.palewater.structure","armour.palewater.accent",
+ "armour.emberiron.base","armour.emberiron.structure","armour.emberiron.accent",
+ "armour.rimeward.base","armour.rimeward.structure","armour.rimeward.accent",
+ "armour.stoneanchor.base","armour.stoneanchor.structure","armour.stoneanchor.accent",
+ "armour.defiant.base","armour.defiant.structure","armour.defiant.accent",
+ "magenheim.underworld-weapon.preview.worldroot.timber",
+ "magenheim.underworld-weapon.preview.spore-crystal.crystal",
+]
+for semantic in literal_names:
+    try:
+        key=material_key(semantic)
+        require(key in material_specs,semantic+" resolves to undeclared material family "+key)
+    except Exception as error:
+        fail.append(semantic+" material mapping failed: "+str(error))
 
 crystal=(ROOT/"tools"/"author-crystal-weapons.py").read_text()
 require("bake_atlas(" in crystal and "unwrap(" in crystal,

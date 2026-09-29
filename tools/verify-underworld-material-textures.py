@@ -33,6 +33,10 @@ for alb in albedos:
     nv=flat(n)
     if mean(v[2] for v in nv)<150 or mean(abs(v[0]-128)+abs(v[1]-128) for v in nv)<1.8:
         raise SystemExit(f"{key}: normal relief is invalid or disappears at gameplay scale")
+expected_emission={"glowcap","blackwater-pearl","ember-heat","clear-ice","fracture-crystal","carrion-amber"}
+actual_emission={p.name[:-13] for p in DIR.glob("*-emission.png")}
+if actual_emission!=expected_emission:
+    raise SystemExit("Emission family mismatch: expected "+repr(sorted(expected_emission))+", got "+repr(sorted(actual_emission)))
 for em in DIR.glob("*-emission.png"):
     im=Image.open(em).convert("L").resize((64,64),Image.Resampling.LANCZOS);v=flat(im)
     coverage=sum(x>10 for x in v)/len(v)

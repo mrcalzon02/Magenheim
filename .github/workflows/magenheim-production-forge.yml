@@ -52,6 +52,16 @@ jobs:
           }
           dotnet run --project tests/Magenheim.Core.Tests -c Release
           if ($LASTEXITCODE -ne 0) { throw 'Core authority tests failed before Blender provisioning.' }
+          python tools/verify-generated-freshness.py staff-icons crystal-tier-icons
+          if ($LASTEXITCODE -ne 0) { throw 'Verification-only staff/crystal icon families are stale before Blender provisioning.' }
+          foreach ($gate in @(
+            'verify-model-assets','verify-model-geometry','verify-model-surface-continuity','verify-model-scale',
+            'verify-weapon-materials','verify-held-model-orientation','verify-held-model-grip-direction',
+            'verify-icon-assets','verify-authored-surface-coverage'
+          )) {
+            python "tools/$gate.py"
+            if ($LASTEXITCODE -ne 0) { throw "Baseline asset gate failed before Blender provisioning: $gate" }
+          }
 
       - name: Provision Valheim compile references
         shell: pwsh

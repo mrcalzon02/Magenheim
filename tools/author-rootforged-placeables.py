@@ -4,7 +4,7 @@ Revision 3 is the end-game fidelity pass. Stable catalog IDs, meter envelopes, r
 snap/collider ownership remain unchanged; this file only raises the authored visual language from
 prototype geometry to deliberate late-game construction.
 """
-import bpy,bmesh,math,json,random
+import bpy,bmesh,math,json
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -18,14 +18,8 @@ DETAIL_FLOORS={0:24,1:24,2:18,3:18,4:36,5:36,6:28,7:28,8:28,9:24,10:32}
 
 def material(name,color,metal=0):
  m=bpy.data.materials.new(name);m.use_nodes=True;m.use_backface_culling=True
- bs=m.node_tree.nodes.get('Principled BSDF');bs.inputs['Base Color'].default_value=(1,1,1,1);bs.inputs['Metallic'].default_value=metal;bs.inputs['Roughness'].default_value=.8 if not metal else .45
- im=bpy.data.images.new(name+'-grain',256,256);pixels=[];rng=random.Random(47)
- for y in range(256):
-  for x in range(256):
-   grain=.87+.07*math.sin(x*.36+1.8*math.sin(y*.035))+.035*math.sin(x*1.37+y*.025)+rng.uniform(-.045,.045)
-   if 'stone' in name:grain=.86+.09*math.sin(x*.1+y*.12)+rng.uniform(-.06,.06)
-   pixels.extend([min(1,max(0,c*grain)) for c in color]+[1])
- im.pixels[:]=pixels;im.pack();tex=m.node_tree.nodes.new('ShaderNodeTexImage');tex.image=im;m.node_tree.links.new(tex.outputs['Color'],bs.inputs['Base Color'])
+ bs=m.node_tree.nodes.get('Principled BSDF')
+ bs.inputs['Base Color'].default_value=(*color,1);bs.inputs['Metallic'].default_value=metal;bs.inputs['Roughness'].default_value=.8 if not metal else .45
  bind_underworld_material(bpy,m,name)
  return m
 
