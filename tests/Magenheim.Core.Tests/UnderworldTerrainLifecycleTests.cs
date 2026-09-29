@@ -261,6 +261,62 @@ internal static class UnderworldTerrainLifecycleTests
         Assert(riverQuadrants[0] && riverQuadrants[1] && riverQuadrants[2] && riverQuadrants[3],
             "Deep Blackwater corridors must cross all four world quadrants rather than pooling in one province.");
 
+        // The physical terrain plate must dissolve into a deep Blackwater ring before the hard
+        // domain boundary. The outer ring is deterministic ocean in every direction, while the
+        // inner shoreline is allowed to wander through the plasma edge warp.
+        foreach (var seed in new[] { 12345, 777 })
+        {
+            var outerDepthLow = double.MaxValue;
+            var outerDepthHigh = double.MinValue;
+            for (var angleStep = 0; angleStep < 72; angleStep++)
+            {
+                var angle = angleStep * Math.PI * 2d / 72d;
+                var radius = instanceDomain.RadiusMeters * .985d;
+                var edge = UnderworldTerrainLifecycle.Evaluate(
+                    instanceDomain,
+                    new UnderworldTerrainSample(
+                        radius * Math.Cos(angle),
+                        0d,
+                        radius * Math.Sin(angle),
+                        30d,
+                        0d,
+                        .5d),
+                    seed);
+                Assert(edge.Admitted, "The edge-ocean ring must still lie inside the native terrain domain.");
+                Assert(edge.Biome == UnderworldTerrainBiome.BlackwaterDeep,
+                    "The outer edge ring must be Blackwater rather than exposed land.");
+                Assert(edge.WaterDepth > 100d,
+                    "The outer edge ring must be genuinely deep water before the hard world boundary.");
+                outerDepthLow = Math.Min(outerDepthLow, edge.WaterDepth);
+                outerDepthHigh = Math.Max(outerDepthHigh, edge.WaterDepth);
+            }
+            Assert(outerDepthLow > 100d && outerDepthHigh <= 150d,
+                "The edge-ocean depth must remain inside the intended deep-water envelope.");
+
+            var shorelineDepthLow = double.MaxValue;
+            var shorelineDepthHigh = double.MinValue;
+            for (var angleStep = 0; angleStep < 72; angleStep++)
+            {
+                var angle = angleStep * Math.PI * 2d / 72d;
+                var radius = instanceDomain.RadiusMeters * .89d;
+                var shore = UnderworldTerrainLifecycle.Evaluate(
+                    instanceDomain,
+                    new UnderworldTerrainSample(
+                        radius * Math.Cos(angle),
+                        0d,
+                        radius * Math.Sin(angle),
+                        30d,
+                        0d,
+                        .5d),
+                    seed);
+                if (!shore.Admitted) continue;
+                shorelineDepthLow = Math.Min(shorelineDepthLow, shore.WaterDepth);
+                shorelineDepthHigh = Math.Max(shorelineDepthHigh, shore.WaterDepth);
+            }
+            Assert(shorelineDepthHigh - shorelineDepthLow > 12d,
+                "Plasma shoreline warp must keep the edge-ocean transition from becoming a perfect circular bathtub.");
+        }
+
         var compared = 0;
         var changed = 0;
         for (var z = -7000; z <= 7000; z += 400)
