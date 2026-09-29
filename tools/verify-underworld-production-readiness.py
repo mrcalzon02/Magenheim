@@ -250,124 +250,30 @@ require("DETAIL_REVISION = 2" in stations and "endgame-station-r2" in stations a
 arm=(ROOT/"tools"/"author-underworld-armour.py").read_text()
 require("valheim-player-attach-skin" in arm and "BONE_ORDER=[" in arm,
         "Underworld armour source rig contract is absent")
-rootwarren_author=(ROOT/"tools"/"author-rootwarren-dungeon.py").read_text()
-rootwarren_rebuild=(ROOT/"tools"/"rebuild-rootwarren-dungeon.ps1").read_text()
 production_rebuild=(ROOT/"tools"/"rebuild-underworld-production.ps1").read_text()
-require("SPECS = {" in rootwarren_author and rootwarren_author.count('underworld-dungeon-fungal-rootwarren-') >= 1,
-        "Rootwarren authoring authority is absent")
-require("bake_flora_atlas" in rootwarren_author and "unwrap(" in rootwarren_author,
-        "Rootwarren author lost authored UV/atlas production")
-require("bpy.ops.uv.smart_project" not in rootwarren_author,
-        "Rootwarren author must use the shared deterministic unwrap authority rather than inline smart_project")
-require("verify-rootwarren-dungeon" in rootwarren_rebuild and "export-model-assets" in rootwarren_rebuild,
-        "Rootwarren rebuild no longer verifies and exports its authored sources")
-require('REVISION = "rootwarren-dungeon-r2"' in rootwarren_author,
-        "Rootwarren authoring must remain on enclosed-cave revision r2")
-require("cave_shell(" in rootwarren_author and '"cavern-shell"' in rootwarren_author and '"passage-shell"' in rootwarren_author,
-        "Rootwarren author lost its collidable chamber/passage cave envelopes")
-require("rebuild-rootwarren-dungeon.ps1" in production_rebuild and
-        "record-rootwarren-generated-assets.py" in production_rebuild and
-        "promote-rootwarren-runtime.py" in production_rebuild,
-        "One-run Underworld production forge no longer includes Rootwarren generation, provenance, and gated admission")
-require("render-rootwarren-review" in production_rebuild and
-        "build-rootwarren-review-sheets.py" in production_rebuild and
-        "verify-rootwarren-review.py" in production_rebuild,
-        "Rootwarren production forge no longer emits/validates its dedicated visual acceptance plates")
-drowned_author=(ROOT/"tools"/"author-drowned-vaults-dungeon.py").read_text()
-drowned_rebuild=(ROOT/"tools"/"rebuild-drowned-vaults-dungeon.ps1").read_text()
-require('REVISION="drowned-vaults-dungeon-r1"' in drowned_author and
-        "runtime-WaterVolume-only" in drowned_author,
-        "Drowned Vault authoring lost its r1 native-water source contract")
-require("verify-drowned-vaults-dungeon" in drowned_rebuild and "export-model-assets" in drowned_rebuild,
-        "Drowned Vault rebuild no longer verifies and exports its 17-model family")
-require("rebuild-drowned-vaults-dungeon.ps1" in production_rebuild and
-        "record-drowned-vaults-generated-assets.py" in production_rebuild and
-        "promote-drowned-vaults-runtime.py" in production_rebuild,
-        "One-run Underworld production forge no longer includes Drowned Vault provenance/promotion")
-require("render-drowned-vaults-review" in production_rebuild and
-        "build-drowned-vaults-review-sheets.py" in production_rebuild and
-        "verify-drowned-vaults-review.py" in production_rebuild,
-        "Drowned Vault production forge no longer emits/validates its dedicated visual acceptance plates")
-cinder_author=(ROOT/"tools"/"author-cinderworks-dungeon.py").read_text()
-cinder_rebuild=(ROOT/"tools"/"rebuild-cinderworks-dungeon.ps1").read_text()
-require('REVISION="cinderworks-dungeon-r1"' in cinder_author and
-        "none-runtime-thermal-authority" in cinder_author,
-        "Cinderworks authoring lost its r1 runtime-thermal source contract")
-require("verify-cinderworks-dungeon" in cinder_rebuild and "export-model-assets" in cinder_rebuild,
-        "Cinderworks rebuild no longer verifies and exports its 17-model family")
-require("rebuild-cinderworks-dungeon.ps1" in production_rebuild and
-        "record-cinderworks-generated-assets.py" in production_rebuild and
-        "promote-cinderworks-runtime.py" in production_rebuild,
-        "One-run Underworld production forge no longer includes Cinderworks provenance/promotion")
-require("render-cinderworks-review" in production_rebuild and
-        "build-cinderworks-review-sheets.py" in production_rebuild and
-        "verify-cinderworks-review.py" in production_rebuild,
-        "Cinderworks production forge no longer emits/validates its dedicated visual acceptance plates")
-rime_author=(ROOT/"tools"/"author-rime-sepulcher-dungeon.py").read_text()
-rime_rebuild=(ROOT/"tools"/"rebuild-rime-sepulcher-dungeon.ps1").read_text()
-require('REVISION="rime-sepulcher-dungeon-r1"' in rime_author and
-        "none-runtime-atmosphere-authority" in rime_author,
-        "Rime Sepulcher authoring lost its r1 runtime-atmosphere source contract")
-require("verify-rime-sepulcher-dungeon" in rime_rebuild and "export-model-assets" in rime_rebuild,
-        "Rime Sepulcher rebuild no longer verifies and exports its 17-model family")
-require("rebuild-rime-sepulcher-dungeon.ps1" in production_rebuild and
-        "record-rime-sepulcher-generated-assets.py" in production_rebuild and
-        "promote-rime-sepulcher-runtime.py" in production_rebuild,
-        "One-run Underworld production forge no longer includes Rime Sepulcher provenance/promotion")
-carrion_author=(ROOT/"tools"/"author-carrion-catacombs-dungeon.py").read_text()
-carrion_rebuild=(ROOT/"tools"/"rebuild-carrion-catacombs-dungeon.ps1").read_text()
-require('REVISION="carrion-catacombs-dungeon-r1"' in carrion_author and
-        "none-runtime-atmosphere-authority" in carrion_author,
-        "Carrion Catacombs authoring lost its r1 runtime-atmosphere source contract")
-require("verify-carrion-catacombs-dungeon" in carrion_rebuild and "export-model-assets" in carrion_rebuild,
-        "Carrion Catacombs rebuild no longer verifies and exports its 17-model family")
-require("rebuild-carrion-catacombs-dungeon.ps1" in production_rebuild and
-        "record-carrion-catacombs-generated-assets.py" in production_rebuild and
-        "promote-carrion-catacombs-runtime.py" in production_rebuild,
-        "One-run Underworld production forge no longer includes Carrion Catacombs provenance/promotion")
-require("render-rime-sepulcher-review" in production_rebuild and
-        "build-rime-sepulcher-review-sheets.py" in production_rebuild and
-        "verify-rime-sepulcher-review.py" in production_rebuild,
-        "Rime Sepulcher production forge no longer emits/validates dedicated visual acceptance plates")
-require("render-carrion-catacombs-review" in production_rebuild and
-        "build-carrion-catacombs-review-sheets.py" in production_rebuild and
-        "verify-carrion-catacombs-review.py" in production_rebuild,
-        "Carrion Catacombs production forge no longer emits/validates dedicated visual acceptance plates")
+reuse_authority=(ROOT/"src"/"Magenheim.Core"/"Underworld"/"UnderworldVanillaDungeonReuseCatalog.cs").read_text()
+require("MinimumLinearRoomScale = 1.5d" in reuse_authority,
+        "ordinary Underworld vanilla-room scale floor is not 1.5x")
+require("MinimumRoomCountMultiplier = 3.5d" in reuse_authority,
+        "ordinary Underworld vanilla dungeon room-count floor is not 3.5x")
+for donor in ("DG_ForestCrypt","DG_SunkenCrypt","DG_DvergrTown","DG_Cave","DG_Hole"):
+    require(donor in reuse_authority,
+            "ordinary Underworld vanilla-reuse authority lost donor "+donor)
+require("AllowMagenheimAuthoredRoomInjection: false" in reuse_authority,
+        "ordinary Underworld dungeon authority must forbid bespoke room injection")
+for retired in (
+    "rebuild-rootwarren-dungeon.ps1","rebuild-drowned-vaults-dungeon.ps1",
+    "rebuild-cinderworks-dungeon.ps1","rebuild-rime-sepulcher-dungeon.ps1",
+    "rebuild-carrion-catacombs-dungeon.ps1",
+    "promote-rootwarren-runtime.py","promote-drowned-vaults-runtime.py",
+    "promote-cinderworks-runtime.py","promote-rime-sepulcher-runtime.py",
+    "promote-carrion-catacombs-runtime.py",
+):
+    require(retired not in production_rebuild,
+            "legacy bespoke ordinary dungeon production path is still active: "+retired)
+
 require("verify-underworld-dungeon-worldgen.py" in production_rebuild,
         "One-run Underworld production forge no longer validates native dungeon spawn routing before Blender")
-
-def literal_assignment(path,name):
-    tree=ast.parse((ROOT/path).read_text())
-    for node in tree.body:
-        if isinstance(node,(ast.Assign,ast.AnnAssign)):
-            targets=node.targets if isinstance(node,ast.Assign) else [node.target]
-            if any(isinstance(target,ast.Name) and target.id==name for target in targets):
-                return ast.literal_eval(node.value)
-    raise ValueError(path+" missing literal "+name)
-
-review_families=(
-    ("tools/author-rootwarren-dungeon.py","tools/render-rootwarren-review.py",
-     "tools/build-rootwarren-review-sheets.py","tools/verify-rootwarren-review.py"),
-    ("tools/author-drowned-vaults-dungeon.py","tools/render-drowned-vaults-review.py",
-     "tools/build-drowned-vaults-review-sheets.py","tools/verify-drowned-vaults-review.py"),
-    ("tools/author-cinderworks-dungeon.py","tools/render-cinderworks-review.py",
-     "tools/build-cinderworks-review-sheets.py","tools/verify-cinderworks-review.py"),
-    ("tools/author-rime-sepulcher-dungeon.py","tools/render-rime-sepulcher-review.py",
-     "tools/build-rime-sepulcher-review-sheets.py","tools/verify-rime-sepulcher-review.py"),
-    ("tools/author-carrion-catacombs-dungeon.py","tools/render-carrion-catacombs-review.py",
-     "tools/build-carrion-catacombs-review-sheets.py","tools/verify-carrion-catacombs-review.py"),
-)
-for author_path,render_path,sheet_path,verify_path in review_families:
-    try:
-        spec_keys=set(literal_assignment(author_path,"SPECS"))
-        for review_path in (render_path,sheet_path,verify_path):
-            review_suffixes=literal_assignment(review_path,"SUFFIXES")
-            require(len(review_suffixes)==len(set(review_suffixes)),
-                    review_path+" contains duplicate review suffixes")
-            require(set(review_suffixes)==spec_keys,
-                    review_path+" no longer covers exactly the authoritative dungeon SPECS")
-    except (ValueError,SyntaxError) as error:
-        fail.append(str(error))
 
 wrapper=(ROOT/"tools"/"blender.ps1").read_text()
 require("MAGENHEIM_BLENDER" in wrapper,"Blender wrapper cannot accept the Actions executable through environment")
