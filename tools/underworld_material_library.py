@@ -10,6 +10,7 @@ EXACT={
 "armour.rimeward.base":"rimewood","armour.rimeward.structure":"rimesilver","armour.rimeward.accent":"clear-ice",
 "armour.stoneanchor.base":"titanbone","armour.stoneanchor.structure":"shardstone","armour.stoneanchor.accent":"fracture-crystal",
 "armour.defiant.base":"rotwood","armour.defiant.structure":"bone","armour.defiant.accent":"carrion-amber",
+"tool.sporelight.root":"worldroot-bark",
 }
 RULES=(
 ("spore-crystal","glowcap"),("worldroot-heartwood","worldroot-heartwood"),("worldroot","worldroot-bark"),
