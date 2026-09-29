@@ -23,6 +23,15 @@ internal static class UnderworldBiomeDungeonPlannerTests
         var second = UnderworldBiomeDungeonPlanner.Build(definition, 12345, families);
         Assert(first.Rooms.SequenceEqual(second.Rooms),
             "Same seed and room kit must produce identical room placement order.");
+        var rooted = UnderworldBiomeDungeonPlanner.Build(
+            definition,
+            12345,
+            families,
+            families[7]);
+        Assert(rooted.Rooms[0].RoomFamilyId == families[7] &&
+               rooted.Rooms[0].FamilyUseIndex == 1,
+            "An authored entrance family must be pinned to the dungeon root without changing its reuse contract.");
+
         Assert(first.Connections.SequenceEqual(second.Connections),
             "Same seed and room kit must produce identical topology.");
 
