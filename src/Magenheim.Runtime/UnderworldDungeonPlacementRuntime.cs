@@ -271,8 +271,6 @@ internal sealed class UnderworldDungeonPlacementRuntime : MonoBehaviour
     private static string PrefabName(ZoneSystem.ZoneLocation location)
     {
         if (location is null) return string.Empty;
-        if (!string.IsNullOrWhiteSpace(location.m_prefabName))
-            return location.m_prefabName;
         return location.m_prefab.Name ?? string.Empty;
     }
 
