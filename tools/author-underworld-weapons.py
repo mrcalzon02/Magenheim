@@ -141,11 +141,15 @@ def rimesilver_spear(a,b,c):
  rings("rime/grip-laminate",(-.40,-.18),.025,c)
 
 def icebind_staff(a,b,c):
- rings("icebind/crown-collar",(.56,.72),.052,a)
- sphere("icebind/focus",(0,0,.88),.065,b)
+ # Elemental staff sources are Y-long rather than Z-long like physical Crystal weapons.
+ # Keep all biome hardware inside the inherited X/Z crown profile and bind along Y.
+ for i,y in enumerate((.56,.72)):
+  torus("icebind/crown-collar-"+str(i),0,.052,.006,a,y=y,rotation=(math.pi/2,0,0))
+ sphere("icebind/focus",(0,.88,0),.065,b)
  for side in (-1,1):
-  tube("icebind/focus-brace-"+str(side),(side*.045,0,.65),(side*.075,0,.84),.010,a)
- rings("icebind/rimewood-grip",(-.42,-.18),.032,c)
+  tube("icebind/focus-brace-"+str(side),(side*.045,.65,0),(side*.075,.84,0),.010,a)
+ for i,y in enumerate((-.42,-.18)):
+  torus("icebind/rimewood-grip-"+str(i),0,.032,.006,c,y=y,rotation=(math.pi/2,0,0))
 
 def titanbone_atgeir(a,b,c):
  rings("titanbone/socket",(.56,.66),.031,c)
@@ -196,11 +200,13 @@ def author(model_id):
  final_bounds=bounds()
  # Preserve the confirmed longitudinal envelope exactly; small transverse growth is permitted only
  # inside a tight absolute/relative tolerance so HeldModelAlignment cannot silently change axis rank.
+ spans=[max(hi-lo,.001) for lo,hi in base_bounds]
+ longitudinal=max(range(3),key=lambda axis:spans[axis])
  for axis in range(3):
-  blo,bhi=base_bounds[axis];flo,fhi=final_bounds[axis];span=max(bhi-blo,.001)
-  allowance=.006 if axis==2 else max(.012,span*.08)
+  blo,bhi=base_bounds[axis];flo,fhi=final_bounds[axis];span=spans[axis]
+  allowance=.006 if axis==longitudinal else max(.012,span*.08)
   if flo<blo-allowance or fhi>bhi+allowance:
-   raise RuntimeError(f"{model_id}: biome accent expanded axis {axis} from {blo:.4f}..{bhi:.4f} to {flo:.4f}..{fhi:.4f} (allowance {allowance:.4f})")
+   raise RuntimeError(f"{model_id}: biome accent expanded axis {axis} from {blo:.4f}..{bhi:.4f} to {flo:.4f}..{fhi:.4f} (allowance {allowance:.4f}; longitudinal={longitudinal})")
  scene["runtime_lights"]=scene.get("runtime_lights","[]")
  bpy.context.preferences.filepaths.save_version=0
  bpy.ops.wm.save_as_mainfile(filepath=str(SOURCE/(model_id+".blend")),compress=True)
