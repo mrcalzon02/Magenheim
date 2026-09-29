@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using BepInEx.Logging;
 using Jotunn.Configs;
@@ -34,11 +35,13 @@ internal sealed class UnderworldMycelialBenchRegistrar : IDisposable
     {
         if (_registered) return;
         var registered = 0;
+        var admittedStations = new HashSet<string>(StringComparer.Ordinal);
         try
         {
             foreach (var definition in UnderworldStationCatalog.All)
             {
-                RegisterStation(definition);
+                RegisterStation(definition, admittedStations);
+                admittedStations.Add(definition.Prefab);
                 registered++;
             }
 
@@ -56,11 +59,15 @@ internal sealed class UnderworldMycelialBenchRegistrar : IDisposable
         }
     }
 
-    private void RegisterStation(UnderworldStationDefinition definition)
+    private void RegisterStation(UnderworldStationDefinition definition, ISet<string> admittedStations)
     {
         RequirePrefab(definition.DonorPrefab);
         foreach (var cost in definition.Costs) RequirePrefab(cost.ResourcePrefab);
-        if (!string.IsNullOrEmpty(definition.BuildStationPrefab)) RequirePrefab(definition.BuildStationPrefab);
+        if (!string.IsNullOrEmpty(definition.BuildStationPrefab) &&
+            !admittedStations.Contains(definition.BuildStationPrefab))
+            throw new InvalidOperationException(
+                definition.Name + " cannot register before its prerequisite station " +
+                definition.BuildStationPrefab + ".");
 
         if (PrefabManager.Instance.GetPrefab(definition.Prefab))
             throw new InvalidOperationException("Occupied Underworld station identity: " + definition.Prefab);
