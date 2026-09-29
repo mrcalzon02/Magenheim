@@ -56,11 +56,15 @@ Golem trophy.
 
 ## Boss boundary
 
-This pass does **not** claim the six canonical Underworld biome bosses are finished creature
-encounters or that their definition-owned trophies currently drop from finished boss deaths.
-Their trophy prefab names remain progression-critical Deepstone authority and must be bound by the
-boss encounter/reward implementation. Nowhere King remains outside this six-biome boss set and
-already owns `Magenheim_TrophyNowhereKing`.
+The six canonical Underworld biome-boss trophy identities are now also registered as real custom
+items directly from the validated Deepstone boss authority: First Bloom, Blackwater Maw, Furnace
+Heart, White Silence, Rift Titan and Carrion Crown. Their names are no longer definition-only
+strings, so Deepstone inventory resolution has concrete prefabs to consume.
+
+This still does **not** claim the six boss encounters are finished or that those trophy items
+currently drop from finished boss deaths. Death/reward binding remains part of each boss encounter
+implementation. Nowhere King remains outside this six-biome boss set and already owns
+`Magenheim_TrophyNowhereKing`.
 
 ## Static verification
 
@@ -72,6 +76,7 @@ Remote source coverage confirms:
 - 22/22 canonical raw Underworld resources appear in creature loot;
 - 22/22 canonical raw resources also appear in at least one progression consumer;
 - expected non-boss species trophy count is 61;
+- all six canonical biome-boss trophy prefabs are runtime-registered from Deepstone authority;
 - ordinary and Surtling CreatureConfig tables replace donor CharacterDrop data;
 - Deep Fracture registration replaces its CharacterDrop directly.
 
