@@ -82,13 +82,13 @@ internal sealed class EarthStaffRegistrar : IDisposable
                 fracturedArmor);
             var seismicRing = StaffEffectPayloads.CreateField(
                 "Magenheim_Earth_SeismicRing",
-                new HitData.DamageTypes { m_blunt = 10f },
+                new HitData.DamageTypes { m_blunt = 15f },
                 3.4f, .28f, .14f, 50f,
                 new Color(.68f,.50f,.27f,1f), 1.0f,
                 tremor);
             var worldshaker = StaffEffectPayloads.CreateField(
                 "Magenheim_Earth_Worldshaker",
-                new HitData.DamageTypes { m_blunt = 20f },
+                new HitData.DamageTypes { m_blunt = 30f },
                 4.1f, .34f, .17f, 60f,
                 new Color(.92f,.66f,.30f,1f), 1.2f,
                 shatteredArmor);
@@ -243,12 +243,12 @@ internal sealed class EarthStaffRegistrar : IDisposable
         new EarthStaffDefinition(
             "Magenheim_Staff_Earth_Advanced", "staff-earth-advanced", "Advanced Staff of Earth",
             "Seismic Ring: creates a wider rupture with violent radial displacement. Survivors remain slowed by Tremor while the ground settles.",
-            3, 38f, 10f, .58f, 2.80f, 2.10f, 24f, 2.5f, PayloadKind.SeismicRing,
+            3, 38f, 15f, .58f, 2.80f, 2.10f, 24f, 2.5f, PayloadKind.SeismicRing,
             new StaffRequirement("YggdrasilWood", 10), new StaffRequirement("BlackMarble", 8), new StaffRequirement("Iron", 4), new StaffRequirement("Magenheim_Crystal_Earth_Advanced", 1)),
         new EarthStaffDefinition(
             "Magenheim_Staff_Earth_Master", "staff-earth-master", "Master Staff of Earth",
             "Worldshaker: detonates a broad seismic rupture that crushes footing, hurls enemies outward, and leaves their armor shattered for the follow-up.",
-            4, 52f, 20f, .92f, 3.40f, 2.85f, 26f, 3f, PayloadKind.Worldshaker,
+            4, 52f, 30f, .92f, 3.40f, 2.85f, 26f, 3f, PayloadKind.Worldshaker,
             new StaffRequirement("YggdrasilWood", 15), new StaffRequirement("BlackMarble", 12), new StaffRequirement("BlackMetal", 5), new StaffRequirement("Magenheim_Crystal_Earth_Master", 1)),
     };
 
