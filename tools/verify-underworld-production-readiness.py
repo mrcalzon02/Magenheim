@@ -104,6 +104,11 @@ if workflow_path.is_file():
     require("ref: main" in workflow,"production forge checkout must be pinned to authoritative main")
     require("blender-5.0.0" in workflow,"workflow does not pin Blender 5.0.0")
     require("BepInExPack_Valheim/5.4.2351/" in workflow,"workflow does not pin the current BepInExPack compile reference")
+    require("dotnet-version: '8.0.425'" in workflow,"workflow does not pin the approved .NET 8 SDK")
+    require("actions/checkout@11d5960a326750d5838078e36cf38b85af677262" in workflow,"checkout action is not commit-pinned")
+    require("actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065" in workflow,"setup-python action is not commit-pinned")
+    require("actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9" in workflow,"setup-dotnet action is not commit-pinned")
+    require("actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02" in workflow,"upload-artifact action is not commit-pinned")
 
 patterns={}
 for gid in scope["regenerate"]:
