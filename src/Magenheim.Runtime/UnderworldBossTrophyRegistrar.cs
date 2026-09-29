@@ -45,7 +45,8 @@ internal static class UnderworldBossTrophyRegistrar
 
     private static void RegisterOne(UnderworldBossDefinition boss)
     {
-        if (PrefabManager.Instance.GetPrefab(boss.TrophyPrefabName)) return;
+        if (PrefabManager.Instance.GetPrefab(boss.TrophyPrefabName))
+            throw new InvalidOperationException($"Canonical boss trophy identity '{boss.TrophyPrefabName}' is already occupied.");
         var spec = SpecFor(boss.TrophyPrefabName);
         var donor = PrefabManager.Instance.GetPrefab(spec.Donor) ? spec.Donor : "TrophyDeer";
         if (!PrefabManager.Instance.GetPrefab(donor))
