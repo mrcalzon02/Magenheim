@@ -9,8 +9,8 @@ internal static class UnderworldStationPlacementTests
         var assertions=0;
         void Check(bool value,string message){assertions++;if(!value)throw new InvalidOperationException("Underworld station placement assertion "+assertions+" failed: "+message);}
         UnderworldStationDefinition Station(UnderworldTerrainBiome biome)=>UnderworldStationCatalog.All.Single(x=>x.Biome==biome);
-        UnderworldStationPlacementSite Site(UnderworldTerrainBiome biome,double centerWater=0,double minWater=0,double maxWater=0,double span=.3,double hazard=.2,bool vent=false,bool attuned=false,bool underworld=true)=>
-            new(underworld,biome,centerWater,minWater,maxWater,span,hazard,vent,attuned);
+        UnderworldStationPlacementSite Site(UnderworldTerrainBiome biome,double centerWater=0,double minWater=0,double maxWater=0,double span=.3,double hazard=.2,bool vent=false,bool anchorSpike=false,bool attuned=false,bool underworld=true)=>
+            new(underworld,biome,centerWater,minWater,maxWater,span,hazard,vent,anchorSpike,attuned);
 
         foreach(var station in UnderworldStationCatalog.All)
         {
@@ -41,8 +41,9 @@ internal static class UnderworldStationPlacementTests
 
         var anchor=Station(UnderworldTerrainBiome.FractureZones);
         Check(UnderworldStationPlacement.Evaluate(anchor,Site(anchor.Biome,span:.5,hazard:.34)).Allowed,"Anchor Forge admits stable low-hazard Fracture ground.");
-        Check(!UnderworldStationPlacement.Evaluate(anchor,Site(anchor.Biome,span:.5,hazard:.36)).Allowed,"Anchor Forge rejects tremor-prone hazard.");
-        Check(!UnderworldStationPlacement.Evaluate(anchor,Site(anchor.Biome,span:.8,hazard:.25)).Allowed,"Anchor Forge rejects excessive local relief.");
+        Check(!UnderworldStationPlacement.Evaluate(anchor,Site(anchor.Biome,span:.5,hazard:.36)).Allowed,"Anchor Forge rejects unreinforced tremor-prone hazard.");
+        Check(UnderworldStationPlacement.Evaluate(anchor,Site(anchor.Biome,span:.5,hazard:.80,anchorSpike:true)).Allowed,"A deployed Anchor Spike stabilizes otherwise tremor-prone Fracture ground.");
+        Check(!UnderworldStationPlacement.Evaluate(anchor,Site(anchor.Biome,span:.8,hazard:.25,anchorSpike:true)).Allowed,"Anchor Spike does not flatten excessive local relief.");
 
         var crown=Station(UnderworldTerrainBiome.GreatDecay);
         Check(UnderworldStationPlacement.Evaluate(crown,Site(crown.Biome,attuned:true)).Allowed,"Crown Reliquary admits an attuned endgame site.");

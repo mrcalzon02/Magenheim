@@ -44,7 +44,7 @@ internal static class UnderworldStationPlacementRuntime
             var point=ghost.transform.TransformPoint(local[i]);
             samples[i]=UnderworldTerrainRuntime.SampleInstanceTerrain(point.x,point.y,point.z);
             if(!samples[i].Admitted)
-                return UnderworldStationPlacement.Evaluate(station,new UnderworldStationPlacementSite(false,default,0,0,0,0,0,false,false));
+                return UnderworldStationPlacement.Evaluate(station,new UnderworldStationPlacementSite(false,default,0,0,0,0,0,false,false,false));
         }
         var minHeight=samples.Min(value=>value.Height);var maxHeight=samples.Max(value=>value.Height);
         var site=new UnderworldStationPlacementSite(
@@ -52,6 +52,7 @@ internal static class UnderworldStationPlacementRuntime
             samples.Min(value=>value.WaterDepth),samples.Max(value=>value.WaterDepth),
             maxHeight-minHeight,samples.Max(value=>value.Hazard01),
             UnderworldGeothermalHazardVolume.IsNearLiveVent(ghost.transform.position,Mathf.Max(halfX,halfZ)*.35f),
+            UnderworldAnchorStabilizer.IsNear(ghost.transform.position,Mathf.Max(halfX,halfZ)*.35f),
             DecayDeepstoneAttuned());
         return UnderworldStationPlacement.Evaluate(station,site);
     }

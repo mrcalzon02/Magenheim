@@ -11,6 +11,7 @@ public readonly record struct UnderworldStationPlacementSite(
     double HeightSpanMeters,
     double MaximumHazard01,
     bool GeothermalVentNearby,
+    bool AnchorStabilizerNearby,
     bool DeepstoneAttuned);
 
 public readonly record struct UnderworldStationPlacementDecision(bool Allowed, string Diagnostic)
@@ -81,10 +82,12 @@ public static class UnderworldStationPlacement
 
             UnderworldStationPlacementRule.StableGround =>
                 site.MaximumWaterDepth <= DrySiteMaximumWaterDepthMeters &&
-                site.MaximumHazard01 <= StableMaximumHazard01 &&
+                (site.MaximumHazard01 <= StableMaximumHazard01 || site.AnchorStabilizerNearby) &&
                 site.HeightSpanMeters <= StableMaximumHeightSpanMeters
-                    ? UnderworldStationPlacementDecision.Accept(station.Name + " is anchored on stable Fracture ground.")
-                    : UnderworldStationPlacementDecision.Reject(station.Name + " needs a stable, low-hazard, level Fracture shelf."),
+                    ? UnderworldStationPlacementDecision.Accept(site.AnchorStabilizerNearby
+                        ? station.Name + " is stabilized by a deployed Anchor Spike."
+                        : station.Name + " is anchored on naturally stable Fracture ground.")
+                    : UnderworldStationPlacementDecision.Reject(station.Name + " needs a level Fracture shelf that is naturally stable or reinforced by an Anchor Spike."),
 
             UnderworldStationPlacementRule.DeepstoneAttuned =>
                 site.MaximumWaterDepth <= DrySiteMaximumWaterDepthMeters &&
