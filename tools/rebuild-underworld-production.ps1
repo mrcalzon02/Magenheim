@@ -33,6 +33,21 @@ if($LASTEXITCODE -ne 0){throw 'Rootwarren runtime promotion failed after complet
 & python "$PSScriptRoot/verify-rootwarren-production-contract.py"
 if($LASTEXITCODE -ne 0){throw 'Rootwarren RuntimeReady contract failed after promotion.'}
 
+# Drowned Vaults use the same asset-earned admission rule as Rootwarren. Their 16 room
+# families plus adaptive passage remain catalog-Planned until this forge proves the whole set.
+& "$PSScriptRoot/rebuild-drowned-vaults-dungeon.ps1"
+if($LASTEXITCODE -ne 0){throw 'Drowned Vault dungeon production forge failed.'}
+& python "$PSScriptRoot/verify-drowned-vaults-production-contract.py"
+if($LASTEXITCODE -ne 0){throw 'Drowned Vault source/asset contract failed after forge.'}
+& python "$PSScriptRoot/record-drowned-vaults-generated-assets.py"
+if($LASTEXITCODE -ne 0){throw 'Drowned Vault generated-asset provenance recording failed.'}
+& python "$PSScriptRoot/verify-generated-freshness.py" drowned-vaults-dungeon-models
+if($LASTEXITCODE -ne 0){throw 'Drowned Vault generated assets are stale immediately after forge.'}
+& python "$PSScriptRoot/promote-drowned-vaults-runtime.py"
+if($LASTEXITCODE -ne 0){throw 'Drowned Vault runtime promotion failed after complete asset forge.'}
+& python "$PSScriptRoot/verify-drowned-vaults-production-contract.py"
+if($LASTEXITCODE -ne 0){throw 'Drowned Vault RuntimeReady contract failed after promotion.'}
+
 foreach($gate in @(
  'verify-model-assets','verify-model-geometry','verify-model-surface-continuity','verify-model-scale',
  'verify-weapon-materials','verify-held-model-orientation','verify-held-model-grip-direction',
@@ -71,5 +86,11 @@ if(!$SkipReview){
     if($LASTEXITCODE -ne 0){throw 'Production review completeness gate failed.'}
     & python "$PSScriptRoot/verify-rootwarren-review.py"
     if($LASTEXITCODE -ne 0){throw 'Rootwarren visual review completeness gate failed.'}
+    & "$PSScriptRoot/blender.ps1" render-drowned-vaults-review
+    if($LASTEXITCODE -ne 0){throw 'Drowned Vault dungeon review render failed.'}
+    & python "$PSScriptRoot/build-drowned-vaults-review-sheets.py"
+    if($LASTEXITCODE -ne 0){throw 'Drowned Vault review sheet assembly failed.'}
+    & python "$PSScriptRoot/verify-drowned-vaults-review.py"
+    if($LASTEXITCODE -ne 0){throw 'Drowned Vault visual review completeness gate failed.'}
 }
-Write-Host 'PRODUCTION READY: 25 PBR families, 40 raw/refined material items, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools, armour, and the 17-model Rootwarren dungeon family regenerated and gated.'
+Write-Host 'PRODUCTION READY: 25 PBR families, 40 raw/refined material items, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools, armour, and the 17-model Rootwarren and 17-model Drowned Vault dungeon families regenerated and gated.'

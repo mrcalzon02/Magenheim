@@ -36,10 +36,14 @@ for path in (
  "tools/rebuild-staff-production-assets.ps1","tools/rebuild-underworld-production.ps1",
  "tools/author-rootwarren-dungeon.py","tools/verify-rootwarren-dungeon.py",
  "tools/verify-rootwarren-production-contract.py","tools/record-rootwarren-generated-assets.py",
- "tools/promote-rootwarren-runtime.py","tools/rebuild-rootwarren-dungeon.ps1","tools/render-underworld-production-review.py",
- "tools/render-underworld-armour-articulation-review.py","tools/render-rootwarren-review.py",
- "tools/build-underworld-production-review-sheets.py","tools/build-rootwarren-review-sheets.py",
- "tools/verify-underworld-production-review.py","tools/verify-rootwarren-review.py",
+ "tools/promote-rootwarren-runtime.py","tools/rebuild-rootwarren-dungeon.ps1",
+ "tools/author-drowned-vaults-dungeon.py","tools/verify-drowned-vaults-dungeon.py",
+ "tools/verify-drowned-vaults-production-contract.py","tools/record-drowned-vaults-generated-assets.py",
+ "tools/promote-drowned-vaults-runtime.py","tools/rebuild-drowned-vaults-dungeon.ps1",
+ "tools/render-underworld-production-review.py",
+ "tools/render-underworld-armour-articulation-review.py","tools/render-rootwarren-review.py","tools/render-drowned-vaults-review.py",
+ "tools/build-underworld-production-review-sheets.py","tools/build-rootwarren-review-sheets.py","tools/build-drowned-vaults-review-sheets.py",
+ "tools/verify-underworld-production-review.py","tools/verify-rootwarren-review.py","tools/verify-drowned-vaults-review.py",
  "tools/verify-underworld-production-assets.py",
  ".github/workflows/magenheim-production-forge.yml",
 ):
@@ -55,9 +59,11 @@ python_sources=(
  "tools/author-underworld-weapons.py","tools/author-crystal-weapons.py",
  "tools/author-rootwarren-dungeon.py","tools/verify-rootwarren-dungeon.py",
  "tools/verify-rootwarren-production-contract.py","tools/record-rootwarren-generated-assets.py",
- "tools/promote-rootwarren-runtime.py","tools/render-underworld-production-review.py","tools/render-underworld-armour-articulation-review.py",
- "tools/render-rootwarren-review.py","tools/build-underworld-production-review-sheets.py","tools/build-rootwarren-review-sheets.py",
- "tools/verify-underworld-production-review.py","tools/verify-rootwarren-review.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
+ "tools/promote-rootwarren-runtime.py","tools/author-drowned-vaults-dungeon.py","tools/verify-drowned-vaults-dungeon.py",
+ "tools/verify-drowned-vaults-production-contract.py","tools/record-drowned-vaults-generated-assets.py",
+ "tools/promote-drowned-vaults-runtime.py","tools/render-underworld-production-review.py","tools/render-underworld-armour-articulation-review.py",
+ "tools/render-rootwarren-review.py","tools/render-drowned-vaults-review.py","tools/build-underworld-production-review-sheets.py","tools/build-rootwarren-review-sheets.py","tools/build-drowned-vaults-review-sheets.py",
+ "tools/verify-underworld-production-review.py","tools/verify-rootwarren-review.py","tools/verify-drowned-vaults-review.py","tools/verify-underworld-production-assets.py","tools/verify-generated-freshness.py",
  "tools/export-model-assets.py",
 )
 for source in python_sources:
@@ -233,6 +239,21 @@ require("render-rootwarren-review" in production_rebuild and
         "build-rootwarren-review-sheets.py" in production_rebuild and
         "verify-rootwarren-review.py" in production_rebuild,
         "Rootwarren production forge no longer emits/validates its dedicated visual acceptance plates")
+drowned_author=(ROOT/"tools"/"author-drowned-vaults-dungeon.py").read_text()
+drowned_rebuild=(ROOT/"tools"/"rebuild-drowned-vaults-dungeon.ps1").read_text()
+require('REVISION="drowned-vaults-dungeon-r1"' in drowned_author and
+        "runtime-WaterVolume-only" in drowned_author,
+        "Drowned Vault authoring lost its r1 native-water source contract")
+require("verify-drowned-vaults-dungeon" in drowned_rebuild and "export-model-assets" in drowned_rebuild,
+        "Drowned Vault rebuild no longer verifies and exports its 17-model family")
+require("rebuild-drowned-vaults-dungeon.ps1" in production_rebuild and
+        "record-drowned-vaults-generated-assets.py" in production_rebuild and
+        "promote-drowned-vaults-runtime.py" in production_rebuild,
+        "One-run Underworld production forge no longer includes Drowned Vault provenance/promotion")
+require("render-drowned-vaults-review" in production_rebuild and
+        "build-drowned-vaults-review-sheets.py" in production_rebuild and
+        "verify-drowned-vaults-review.py" in production_rebuild,
+        "Drowned Vault production forge no longer emits/validates its dedicated visual acceptance plates")
 
 wrapper=(ROOT/"tools"/"blender.ps1").read_text()
 require("MAGENHEIM_BLENDER" in wrapper,"Blender wrapper cannot accept the Actions executable through environment")

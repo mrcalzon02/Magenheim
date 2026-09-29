@@ -1,6 +1,6 @@
 # Underworld Biome Dungeon Program
 
-**Status:** ACTIVE STRUCTURE PROGRAM — Deep Fracture admitted; five biome dungeon kits pending authored interiors.
+**Status:** ACTIVE STRUCTURE PROGRAM — Deep Fracture admitted; Rootwarren and Drowned Vault source/runtime architecture complete but asset-gated; three biome dungeon kits remain.
 
 The Underworld is a world-scale realm, not a chain of dungeons. Dungeons therefore function as
 major local destinations inside its biomes rather than replacing biome exploration.
@@ -62,7 +62,7 @@ and ambush fauna. It must read as a fungal cave ecology, not another stone crypt
 
 ## Blackwater Deep — working dungeon program: Drowned Vaults
 
-**Runtime status: PLANNED; no entrance may spawn yet.**
+**Runtime status: SOURCE COMPLETE / ASSET-GATED; catalog remains PLANNED until the production forge admits all 17 payloads.**
 
 A partially flooded ruin/cavern network with dry shelves, submerged passages, air pockets,
 collapsed docks and deep chambers. Water level is structural gameplay, not decoration.
@@ -107,7 +107,7 @@ advantages rather than merely reducing a number in the HUD.
 
 1. Deep Fracture Underworld placement and live acceptance.
 2. Fungal Rootwarren 15–20 room-family kit + entrance/interior binder.
-3. Blackwater Drowned Vaults kit.
+3. Blackwater Drowned Vaults 16-room + adaptive-passage forge/admission.
 4. Sulfur Cinderworks and Frozen Rime Sepulcher in parallel after their environmental interactions
    are stable.
 5. Great Decay Carrion Catacombs after contamination/Censer live tuning.

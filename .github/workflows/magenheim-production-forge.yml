@@ -47,7 +47,7 @@ jobs:
             'tools/rebuild-rootforged-assets.ps1','tools/rebuild-underworld-geothermal-vents.ps1',
             'tools/rebuild-underworld-stations.ps1',
             'tools/rebuild-underworld-tools.ps1','tools/rebuild-underworld-armour.ps1',
-            'tools/rebuild-rootwarren-dungeon.ps1',
+            'tools/rebuild-rootwarren-dungeon.ps1','tools/rebuild-drowned-vaults-dungeon.ps1',
             'tools/rebuild-staff-production-assets.ps1'
           )
           foreach ($script in $parseScripts) {
@@ -137,6 +137,8 @@ jobs:
         run: |
           python tools/verify-rootwarren-production-contract.py
           if ($LASTEXITCODE -ne 0) { throw 'Rootwarren post-promotion contract failed.' }
+          python tools/verify-drowned-vaults-production-contract.py
+          if ($LASTEXITCODE -ne 0) { throw 'Drowned Vault post-promotion contract failed.' }
           dotnet run --project tests/Magenheim.Core.Tests -c Release
           if ($LASTEXITCODE -ne 0) { throw 'Core tests failed after Rootwarren promotion.' }
           dotnet build src/Magenheim.Runtime -c Release "-p:ValheimManagedPath=$env:MAGENHEIM_VALHEIM_MANAGED" "-p:BepInExPath=$env:MAGENHEIM_BEPINEX"
