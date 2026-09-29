@@ -25,6 +25,12 @@ internal static class Program
         _assertions += UnderworldFungalRootwarrenCatalogTests.Run();
         _assertions += UnderworldBlackwaterDrownedVaultsCatalogTests.Run();
         _assertions += UnderworldDrownedVaultPassagePolicyTests.Run();
+        _assertions += UnderworldSulfurCinderworksCatalogTests.Run();
+        _assertions += UnderworldCinderworksThermalRoutePolicyTests.Run();
+        _assertions += UnderworldFrozenRimeSepulcherCatalogTests.Run();
+        _assertions += UnderworldRimeSepulcherExposurePolicyTests.Run();
+        _assertions += UnderworldGreatDecayCarrionCatacombsCatalogTests.Run();
+        _assertions += UnderworldCarrionCatacombsContaminationPolicyTests.Run();
         _assertions += UnderworldBiomeDungeonSpatialPlannerTests.Run();
         RefinementAndAreaBoundaries();
         WorldgenCompatibilityBoundaries();
