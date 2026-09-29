@@ -57,6 +57,10 @@ def bind_underworld_material(bpy,material,semantic=None):
     tree.links.new(albedo.outputs["Color"],bsdf.inputs["Base Color"]);bsdf.inputs["Base Color"].default_value=(1,1,1,1)
     rough=tree.nodes.new("ShaderNodeTexImage");rough.name="Magenheim Underworld Roughness";rough.image=_load(bpy,key,"roughness",True)
     tree.links.new(rough.outputs["Color"],bsdf.inputs["Roughness"])
+    packed=tree.nodes.new("ShaderNodeTexImage");packed.name="Magenheim Underworld MetallicSmoothness";packed.image=_load(bpy,key,"metallic-smoothness",True)
+    separate=tree.nodes.new("ShaderNodeSeparateColor");separate.name="Magenheim Underworld MetallicChannel"
+    tree.links.new(packed.outputs["Color"],separate.inputs["Color"])
+    tree.links.new(separate.outputs["Red"],bsdf.inputs["Metallic"])
     normal=tree.nodes.new("ShaderNodeTexImage");normal.name="Magenheim Underworld Normal";normal.image=_load(bpy,key,"normal",True)
     nmap=tree.nodes.new("ShaderNodeNormalMap");nmap.name="Magenheim Underworld NormalMap";nmap.inputs["Strength"].default_value=.42
     tree.links.new(normal.outputs["Color"],nmap.inputs["Color"]);tree.links.new(nmap.outputs["Normal"],bsdf.inputs["Normal"])
