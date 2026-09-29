@@ -13,9 +13,10 @@ for (var x = -8000; x <= 8000; x += 80)
     var terrain = UnderworldTerrainLifecycle.Evaluate(domain,
         new(x, 0, z, 30, 0, UnderworldTerrainNoise.Fractal01(seed, x, z)), seed);
     if (!terrain.Admitted) continue;
-    var monument = UnderworldMonumentalLandforms.HeightAt(domain, seed, x, z) > 0;
-    samples.Add(new { x, z, biome = terrain.Biome.ToString(), height = terrain.Height, monument });
-    if (!monument) heights[terrain.Biome].Add(terrain.Height);
+    var rareMassifLift = UnderworldTerrainLifecycle.RareCellMassifLiftAt(domain, seed, x, z);
+    var rareMassif = rareMassifLift > 1d;
+    samples.Add(new { x, z, biome = terrain.Biome.ToString(), height = terrain.Height, rareMassif, rareMassifLift });
+    if (!rareMassif) heights[terrain.Biome].Add(terrain.Height);
 }
 var summary = heights.Select(pair =>
 {
