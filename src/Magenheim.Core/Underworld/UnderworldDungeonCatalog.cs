@@ -146,12 +146,41 @@ public static class UnderworldDungeonCatalog
         UnderworldTerrainBiome biome,
         int quantity,
         double spacing) =>
+        Ordinary(
+            suffix,
+            displayName,
+            biome,
+            UnderworldDungeonStatus.Planned,
+            quantity,
+            spacing);
+
+    private static UnderworldDungeonDefinition Ready(
+        string suffix,
+        string displayName,
+        UnderworldTerrainBiome biome,
+        int quantity,
+        double spacing) =>
+        Ordinary(
+            suffix,
+            displayName,
+            biome,
+            UnderworldDungeonStatus.RuntimeReady,
+            quantity,
+            spacing);
+
+    private static UnderworldDungeonDefinition Ordinary(
+        string suffix,
+        string displayName,
+        UnderworldTerrainBiome biome,
+        UnderworldDungeonStatus status,
+        int quantity,
+        double spacing) =>
         new(
             Id: "magenheim.underworld.dungeon." + suffix,
             DisplayName: displayName,
             PrefabName: "Magenheim_Underworld_Dungeon_" + Pascal(suffix),
             Biome: biome,
-            Status: UnderworldDungeonStatus.Planned,
+            Status: status,
             Quantity: quantity,
             ExteriorRadiusMeters: 18d,
             MinDistanceFromSimilarMeters: spacing,
