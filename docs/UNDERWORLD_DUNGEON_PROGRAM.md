@@ -36,16 +36,29 @@ Two entrance contexts now use that same expedition:
 The Underworld entrance does not change world layer. Its return portal resolves back to the
 Fracture Zones entrance that owns that expedition.
 
-## Fungal Forest — working dungeon program: Rootwarren
+## Fungal Forest — Rootwarren
 
-**Runtime status: PLANNED; no entrance may spawn yet.**
+**Runtime status: PREFORGE SOURCE COMPLETE; catalog remains PLANNED until the full asset family is forged and reviewed.**
 
-A living geological fracture swallowed by fungal/root growth. The room kit should emphasize broad
-root-vault halls, fungal shelves, spore basins, collapsed ancient masonry and vertical root shafts.
-It should be the first new 15–20-piece kit because Fungal Forest is the first progression biome.
+Rootwarren is a living geological fracture swallowed by fungal/root growth. Its source authority is
+now concrete: sixteen large room families plus one reusable passage, each with stable model identity,
+role and dimensions. The generic planner uses every room family two or three times, pins Fracture
+Mouth as room zero, creates branching/looping topology, embeds rooms on a non-overlapping spatial
+grid, and routes physical corridors around unrelated occupied room cells.
 
-Gameplay language: visibility, spores, living cover, vertical root paths, fungal resources and
-ambush fauna. Avoid making it another stone crypt painted green.
+The runtime side is also present before admission: authored room/theme registration, a reduced
+Fracture Mouth exterior, buried same-instance interior anchor, Fungal environment selection,
+walkable routed passages, deterministic server-owned Fungal encounters, one-shot native resource
+pickups with harvest persistence, and an exact entrance-room return path. Normal worldgen remains
+disabled because the catalog status is still Planned.
+
+The r2 Blender production author builds collidable cavern shells for all sixteen chambers and a
+collidable passage shell, with dedicated source verification, render/contact-sheet review, generated
+asset provenance recording and a narrow promotion script. Promotion is fail-closed until exactly
+17 source, 17 GLB and 17 runtime payloads exist.
+
+Gameplay language remains visibility, spores, living cover, vertical root paths, fungal resources
+and ambush fauna. It must read as a fungal cave ecology, not another stone crypt painted green.
 
 ## Blackwater Deep — working dungeon program: Drowned Vaults
 
