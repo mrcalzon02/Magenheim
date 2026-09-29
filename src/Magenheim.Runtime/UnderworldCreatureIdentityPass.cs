@@ -454,10 +454,13 @@ internal sealed class UnderworldCreatureElementalAttack : MonoBehaviour
     internal void Augment(HitData hit)
     {
         if (hit == null || _element == Element.None || _fraction <= 0f) return;
-        var total = hit.GetTotalDamage();
-        if (total <= 0f || float.IsNaN(total) || float.IsInfinity(total)) return;
+        // Ride only on a direct physical donor hit. This prevents poison/fire/frost status ticks
+        // from recursively manufacturing another elemental rider on every damage pulse.
+        var physical = hit.m_damage.m_blunt + hit.m_damage.m_slash + hit.m_damage.m_pierce +
+                       hit.m_damage.m_chop + hit.m_damage.m_pickaxe;
+        if (physical <= 0f || float.IsNaN(physical) || float.IsInfinity(physical)) return;
 
-        var bonus = total * _fraction;
+        var bonus = physical * _fraction;
         switch (_element)
         {
             case Element.Fire: hit.m_damage.m_fire += bonus; break;
