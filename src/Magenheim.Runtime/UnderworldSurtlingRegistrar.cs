@@ -10,8 +10,8 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Registers the twelve elemental Surtlings as console-spawnable clones of humanoid donors, with the
-/// authored body riding the donor's skeleton. Valheim keeps animation, attacks, AI, networking,
-/// saving and loot; Magenheim supplies only the body and the name.
+/// authored body riding the donor's skeleton. Valheim keeps animation, attacks, AI, networking
+/// and saving; Magenheim owns the body, balance, progression loot and elemental species trophy.
 /// </summary>
 internal sealed class UnderworldSurtlingRegistrar : IDisposable
 {
