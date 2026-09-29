@@ -39,7 +39,7 @@ jobs:
         shell: pwsh
         run: |
           python -m pip install --disable-pip-version-check Pillow==12.3.0
-          python -m py_compile tools/author-nowhere-king-swords.py tools/verify-nowhere-king-swords.py tools/export-model-assets.py tools/render-weapon-icons.py tools/verify-nowhere-king-generated-assets.py
+          python -m py_compile tools/author-nowhere-king-swords.py tools/verify-nowhere-king-swords.py tools/export-model-assets.py tools/render-weapon-icons.py tools/refresh-nowhere-king-catalog.py tools/verify-nowhere-king-generated-assets.py
           if ($LASTEXITCODE -ne 0) { throw 'Twin-sword Python preflight failed.' }
           foreach ($script in @('tools/blender.ps1','tools/rebuild-nowhere-king-swords.ps1')) {
             $tokens = $null
