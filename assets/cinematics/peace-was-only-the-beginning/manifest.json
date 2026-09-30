@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "cinematic": "peace-was-only-the-beginning",
+  "source_commit": "2c19381f33b1809c10728cafe91e01b8ee0925c2",
+  "workflow_run": "36650801877",
+  "blender": "5.0.0",
+  "scene": "source/magenheim-peace-cinematic.blend",
+  "scene_sha256": "6e2e0204510abecefb0752c5fb8561a73fbdcd319657db2e961aa78cfc655182",
+  "shot_count": 8,
+  "fps": 24,
+  "frame_end": 672,
+  "text_baked_in": false,
+  "audio_baked_in": false,
+  "source_assets": [
+    "assets/models/source/dark-throne.blend",
+    "assets/models/source/nowhere-king-sword-firmament.blend",
+    "assets/models/source/nowhere-king-sword-null-gate.blend"
+  ]
+}
