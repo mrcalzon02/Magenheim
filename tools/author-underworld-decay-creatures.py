@@ -6,7 +6,7 @@ creature runtime exporter. The designs deliberately break from the donor silhoue
 the donor object as the invisible gameplay/network chassis.
 """
 from pathlib import Path
-from math import pi, radians, sin
+from math import pi, radians, sin, cos
 import bpy
 from mathutils import Vector
 
