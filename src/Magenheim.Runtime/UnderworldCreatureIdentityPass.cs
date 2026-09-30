@@ -96,6 +96,15 @@ internal static class UnderworldCreatureIdentityPass
 
         switch (entry.Name)
         {
+            case "Capcrawler":
+            case "Shelf Lurker":
+            case "Pale Burrower":
+            case "Marrow Creeper":
+                character.m_flying = false;
+                character.m_flySlowSpeed = 0f;
+                character.m_flyFastSpeed = 0f;
+                break;
+
             case "Furnace Golem":
                 character.m_damageModifiers.m_fire = HitData.DamageModifier.Immune;
                 break;
