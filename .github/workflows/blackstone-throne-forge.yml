@@ -73,7 +73,7 @@ jobs:
       - name: Enforce Blackstone output scope
         shell: pwsh
         run: |
-          $changed = @(git status --porcelain | ForEach-Object { $_.Substring(3) })
+          $changed = @(git status --porcelain --untracked-files=all | ForEach-Object { $_.Substring(3) })
           if ($changed.Count -eq 0) { throw 'Blackstone forge produced no changed assets.' }
           $allowed = @(
             '^assets/models/source/(blackstone-[a-z0-9-]+|dark-throne)\.blend$',
