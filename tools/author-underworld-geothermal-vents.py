@@ -28,7 +28,8 @@ def material(name,colour,metal=0.0,rough=.72,emission=None):
 def finish(o,name,mat,collision):
     o.name=name;o["game_node_path"]=name;o["game_collision"]=collision;o["game_crystal"]=json.dumps(None)
     o.data.materials.clear();o.data.materials.append(mat)
-    if not o.data.uv_layers:o.data.uv_layers.new(name="VentUV")
+    if o.data.uv_layers.get("VentUV") is None:o.data.uv_layers.new(name="VentUV")
+    o.data.uv_layers.active_index=o.data.uv_layers.find("VentUV")
     bpy.context.view_layer.objects.active=o;o.select_set(True);bpy.ops.object.mode_set(mode="EDIT");bpy.ops.mesh.select_all(action="SELECT")
     bpy.ops.uv.cube_project(cube_size=.42);bpy.ops.object.mode_set(mode="OBJECT");o.select_set(False)
     return o
