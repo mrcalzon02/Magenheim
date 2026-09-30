@@ -242,16 +242,24 @@ for retired_registrar in (
     require(retired_registrar not in plugin,
             "legacy bespoke ordinary dungeon registrar re-entered plugin startup: "+retired_registrar)
 for token in (
-    "clone.transform.localScale *= scale",
+    "ScaleRoomHierarchy(clone, room, scale, sourceName)",
+    'new GameObject("Magenheim_DDE_ScaleRoot")',
+    "scaleRoot.localScale = Vector3.one * scale",
+    "connection.transform.localPosition *= scale",
     "room.m_size = new Vector3Int",
     "generator.m_minRooms = profile.ExpandedMinimumRooms(vanillaMin)",
     "generator.m_maxRooms = profile.ExpandedMaximumRooms(vanillaMax)",
     "generator.m_tileWidth *= (float)profile.LinearRoomScale",
     "CloneAndScaleDoors(generator, profile)",
-    "RebindPopulation(clone, profile, index)",
+    "RebindPopulation(clone, profile, sourceName, index)",
+    "UnderworldVanillaDungeonMechanicsPolicy.Apply",
+    "UnderworldVanillaDungeonEcologyPolicy.Rebind",
+    "UnderworldVanillaDungeonRewardPolicy.Rebind",
 ):
     require(token in reuse_runtime,
-            "vanilla-reuse runtime lost required scale/expansion/ecology behavior: "+token)
+            "vanilla-reuse runtime lost required connection-safe scale/expansion/population behavior: "+token)
+require("clone.transform.localScale *= scale" not in reuse_runtime,
+        "vanilla-reuse runtime regressed to forbidden Room-root scaling")
 for retired in (
     "rebuild-rootwarren-dungeon.ps1","rebuild-drowned-vaults-dungeon.ps1",
     "rebuild-cinderworks-dungeon.ps1","rebuild-rime-sepulcher-dungeon.ps1",
