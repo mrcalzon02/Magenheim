@@ -263,6 +263,9 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
                 $"expected '{profile.DonorGeneratorPrefab}'.");
 
         ValidateInteriorTransport(profile, donorZone, custom.Prefab, generator);
+        var entranceDressing = UnderworldVanillaDungeonBiomeDressingPolicy.ApplyEntrance(
+            custom.Prefab,
+            profile);
 
         // A private theme is mandatory. Leaving the donor bitmask active would mix ordinary
         // vanilla-size rooms back into the 1.5x Magenheim room family.
@@ -332,7 +335,9 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             $"delta:{zone.m_minTerrainDelta:0.##}-{zone.m_maxTerrainDelta:0.##}," +
             $"altitude:{zone.m_minAltitude:0.##}-{zone.m_maxAltitude:0.##}," +
             $"slope-rotation:{zone.m_slopeRotation},snap-water:{zone.m_snapToWater} " +
-            $"candidate={UnderworldVanillaDungeonCandidatePolicy.Enabled}.");
+            $"entrance-dressing=materials:{entranceDressing.ArchitectureMaterials}," +
+            $"major:{entranceDressing.MajorProps},ground:{entranceDressing.GroundProps}," +
+            $"lights:{entranceDressing.LocalLights}.");
     }
 
     private static void ValidateInteriorTransport(
