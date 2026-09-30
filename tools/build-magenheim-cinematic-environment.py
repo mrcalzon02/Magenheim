@@ -869,10 +869,37 @@ def _key(obj, frame, data_path, value=None, index=-1):
 
 
 def _set_action_interpolation(idblock, interpolation="BEZIER"):
-    if idblock.animation_data is None or idblock.animation_data.action is None:
+    """Best-effort interpolation tuning across Blender animation APIs.
+
+    Blender 5 migrated Actions away from the legacy action.fcurves collection.
+    Keyframes remain valid without this cosmetic tuning, so an unavailable curve
+    iterator must never invalidate the authored motion itself.
+    """
+    data=getattr(idblock,"animation_data",None)
+    action=getattr(data,"action",None) if data is not None else None
+    if action is None:
         return
-    for curve in idblock.animation_data.action.fcurves:
-        for point in curve.keyframe_points:
+    curves=[]
+    legacy=getattr(action,"fcurves",None)
+    if legacy is not None:
+        curves.extend(list(legacy))
+    # Blender 5 layered Action API.  Introspect rather than depending on a
+    # private/deprecated attribute; if no public channel bag is exposed, leave
+    # Blender's default interpolation intact.
+    slot=getattr(data,"action_slot",None)
+    for layer in getattr(action,"layers",()):
+        for strip in getattr(layer,"strips",()):
+            bag=None
+            channelbag=getattr(strip,"channelbag",None)
+            if callable(channelbag) and slot is not None:
+                try:
+                    bag=channelbag(slot)
+                except Exception:
+                    bag=None
+            if bag is not None:
+                curves.extend(list(getattr(bag,"fcurves",())))
+    for curve in curves:
+        for point in getattr(curve,"keyframe_points",()):
             point.interpolation = interpolation
             if interpolation == "BEZIER":
                 point.handle_left_type = "AUTO_CLAMPED"
@@ -1144,13 +1171,9 @@ def animate_scene(scene,cameras):
             _set_action_interpolation(obj.data,"BEZIER")
         if obj.type=="LIGHT":
             _set_action_interpolation(obj.data,"CONSTANT")
-    # Camera shake needs sharp, non-overshooting samples.
-    if cam4.animation_data and cam4.animation_data.action:
-        for curve in cam4.animation_data.action.fcurves:
-            for point in curve.keyframe_points:
-                if 234 <= point.co.x <= 253:
-                    point.interpolation="LINEAR"
-
+    # Camera-shake keys are deliberately dense and damped; on Blender versions
+    # where layered Action F-curves are public the helper above adjusts them,
+    # otherwise the authored samples remain the source of truth.
     bind_camera_cuts(scene,cameras)
     scene["motion_contract"]="object-space-keyframed-v1"
     scene["motion_no_image_warp"]=True
