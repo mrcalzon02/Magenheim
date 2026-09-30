@@ -14,4 +14,6 @@ internal sealed class UnderworldVanillaDungeonRoomAuditMetadata : MonoBehaviour
     [SerializeField] internal Vector3Int DonorRoomSize;
     [SerializeField] internal Vector3[] DonorConnectionLocalPositions = System.Array.Empty<Vector3>();
     [SerializeField] internal float LinearScale;
+    [SerializeField] internal int GeneratedDepth = -1;
+    [SerializeField] internal string GeneratedRiskBand = string.Empty;
 }
