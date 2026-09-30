@@ -67,7 +67,7 @@ internal static class UnderworldBossTrophyRegistrar
 
     private static TrophySpec SpecFor(string prefab) => prefab switch
     {
-        "Magenheim_Underworld_Trophy_FirstBloom" =>
+        "Magenheim_Underworld_Trophy_FirstBloom" or "Magenheim_Underworld_Trophy_SporeBloom" =>
             new TrophySpec("The First Bloom","TrophyGreydwarfShaman",new Color(.38f,.72f,.36f)),
         "Magenheim_Underworld_Trophy_BlackwaterMaw" =>
             new TrophySpec("The Blackwater Maw","TrophySerpent",new Color(.10f,.50f,.66f)),
