@@ -15,6 +15,9 @@ namespace Magenheim.Runtime;
 internal static class UnderworldVanillaDungeonEcologyPolicy
 {
     internal readonly record struct Stats(
+        int CombatSocketRooms,
+        int ActiveEncounterRooms,
+        int QuietCombatRooms,
         int CreatureSpawnerSockets,
         int ActiveCreatureSpawners,
         int SpawnAreaSockets,
@@ -26,10 +29,13 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
         int HeavyBindings,
         int ApexBindings)
     {
-        internal static Stats Empty => new(0,0,0,0,0,0,0,0,0,0);
+        internal static Stats Empty => new(0,0,0,0,0,0,0,0,0,0,0,0,0);
 
         public static Stats operator +(Stats left, Stats right) =>
             new(
+                left.CombatSocketRooms + right.CombatSocketRooms,
+                left.ActiveEncounterRooms + right.ActiveEncounterRooms,
+                left.QuietCombatRooms + right.QuietCombatRooms,
                 left.CreatureSpawnerSockets + right.CreatureSpawnerSockets,
                 left.ActiveCreatureSpawners + right.ActiveCreatureSpawners,
                 left.SpawnAreaSockets + right.SpawnAreaSockets,
@@ -157,7 +163,11 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
                 roleCounts[(int)UnderworldCreatureCombatBalance.RoleFor(entry.Name)]++;
         }
 
+        var combatSocketRoom = spawners.Length > 0 || areas.Length > 0;
         return new Stats(
+            combatSocketRoom ? 1 : 0,
+            combatSocketRoom && encounterRoomActive ? 1 : 0,
+            combatSocketRoom && !encounterRoomActive ? 1 : 0,
             spawners.Length,
             activeSpawners,
             areas.Length,
