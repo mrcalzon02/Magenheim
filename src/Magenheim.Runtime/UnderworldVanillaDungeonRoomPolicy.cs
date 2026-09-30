@@ -56,7 +56,10 @@ internal static class UnderworldVanillaDungeonRoomPolicy
         string channel,
         int socketIndex) =>
         Unit(dungeonId, donorRoomName, donorRoomIndex, channel, socketIndex) <
-        Math.Clamp(probability, 0d, 1d);
+        Clamp01(probability);
+
+    private static double Clamp01(double value) =>
+        value < 0d ? 0d : value > 1d ? 1d : value;
 
     internal static double Unit(params object[] values)
     {
