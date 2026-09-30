@@ -3,3 +3,4 @@ requested=2026-09-29
 purpose=runtime-extract selected base Valheim cinematic donor prefabs and build transient Blender previews
 attempt=1
 attempt=2 jsondotnet-newtonsoft-fix
+attempt=3 isolated-exporter
