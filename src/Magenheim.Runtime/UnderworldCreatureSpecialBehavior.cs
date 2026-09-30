@@ -91,7 +91,8 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
             return;
 
         var owner = GetComponent<Character>();
-        if (!owner || owner.IsDead() || !HasAuthority(owner))
+        if (!owner || owner.IsDead() || !HasAuthority(owner) ||
+            ZNet.instance is null || !ZNet.instance.IsServer())
             return;
 
         if (!HasLivingPlayerNearby(owner.transform.position, owner.gameObject.scene.handle, 15f))
