@@ -108,7 +108,9 @@ def build(form,a,b):
             cyl("dried-stem-"+str(i),(x,y,.045),.011,.07,b,vertices=9);blob("dried-cap-"+str(i),(x,y,.09),.04,a,.38)
         for j,z in enumerate((.035,.075)):torus("bundle-tie-"+str(j),(0,0,z),.115,.009,b)
     elif form=="plates":
-        for i in range(3):cube("plate-"+str(i),(0,0,.025+i*.035),(.145,.095,.018),a,.010,(0,0,.025*(i-1)))
+        # Thin stacked plates cannot carry the generic 10 mm / 2-segment bevel without the evaluated mesh
+        # producing zero-area sliver triangles. Keep the edge treatment, but below half the plate thickness.
+        for i in range(3):cube("plate-"+str(i),(0,0,.025+i*.035),(.145,.095,.018),a,.006,(0,0,.025*(i-1)))
         for sx in (-1,1):
             for sy in (-1,1):cyl("rivet-"+str(sx)+"-"+str(sy),(sx*.105,sy*.060,.115),.011,.020,b,vertices=10)
         cube("maker-key",(0,-.096,.08),(.04,.012,.025),b,.005)
