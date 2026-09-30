@@ -479,9 +479,9 @@ def add_cameras(root):
         ("SHOT_05_OMEN_CAM", (-13,1,10.8), (-7,8,9.0), 76),
         # Blackstone approach is at +Y; throne/King are at -Y after the
         # Magenheim game-space -> Blender-space conversion.
-        ("SHOT_06_THRONE_REVEAL_CAM", (0,y0+37,6.8), (0,y0-20,3.6), 44),
-        ("SHOT_07_KING_AWAKENS_CAM", (-8,y0-2,5.0), (0,y0-19.5,3.8), 60),
-        ("SHOT_08_LAST_ARGUMENT_CAM", (0,y0-7.0,4.15), (0,y0-19.5,3.55), 78),
+        ("SHOT_06_THRONE_REVEAL_CAM", (0,y0+41,6.2), (0,y0-18.5,3.4), 36),
+        ("SHOT_07_KING_AWAKENS_CAM", (-7.5,y0-5.5,4.8), (0,y0-19.5,3.7), 58),
+        ("SHOT_08_LAST_ARGUMENT_CAM", (0,y0-8.5,4.0), (0,y0-19.5,3.45), 72),
     )
     created = {}
     for name, loc, tgt, lens in specs:
@@ -489,27 +489,55 @@ def add_cameras(root):
     return created
 
 def add_lighting(root, mats):
-    lights = collection("CIN_Lights", root)
+    surface_lights = collection("CIN_SurfaceLights", root)
+    throne_lights = collection("CIN_ThroneLights", root)
 
     sun_data = bpy.data.lights.new("Surface_Sun_Data", type='SUN')
     sun_data.energy = 3.0
     sun_data.color = (0.74,0.80,0.92)
     sun = bpy.data.objects.new("Surface_Sun", sun_data)
     sun.rotation_euler = (math.radians(31), math.radians(-18), math.radians(-34))
-    lights.objects.link(sun)
+    surface_lights.objects.link(sun)
 
-    # Cool top light for the distant throne; braziers remain the warm focal
-    # sources and prevent the dark set from becoming uniformly orange.
+    # Cold overhead key to expose broad Blackstone forms without flattening them.
     key_data = bpy.data.lights.new("Throne_Key_Data", type='AREA')
-    key_data.energy = 1100
+    key_data.energy = 1850
     key_data.shape = 'DISK'
-    key_data.size = 14
-    key_data.color = (0.20,0.28,0.44)
+    key_data.size = 16
+    key_data.color = (0.18,0.27,0.48)
     key = bpy.data.objects.new("Throne_Key", key_data)
-    key.location = (0,THRONE_Y-2,14)
+    key.location = (0,THRONE_Y-2,15)
     direction=Vector((0,THRONE_Y-20,3.5))-key.location
     key.rotation_euler=direction.to_track_quat('-Z','Y').to_euler()
-    lights.objects.link(key)
+    throne_lights.objects.link(key)
+
+    # Materialized equivalents of the authored runtime lights.  The Blackstone
+    # .blend intentionally stores runtime light metadata rather than Blender
+    # lamps, so the cinematic scene must instantiate those sources explicitly.
+    brazier_game = (
+        (-11,3.4,-12),(11,3.4,-12),(-19,3.4,-1),(19,3.4,-1),
+        (-15,3.6,11),(15,3.6,11),(-8,4.6,18),(8,4.6,18),
+    )
+    for i,(x,up,z) in enumerate(brazier_game,1):
+        data=bpy.data.lights.new(f"Throne_Brazier_{i}_Data",type='POINT')
+        data.color=(1.0,.19,.035)
+        data.energy=1050
+        data.shadow_soft_size=1.35
+        obj=bpy.data.objects.new(f"Throne_Brazier_{i}",data)
+        obj.location=(x,THRONE_Y-z,up)
+        throne_lights.objects.link(obj)
+
+    for i in range(8):
+        ang=i*math.tau/8
+        x=math.sin(ang)*7.4
+        game_z=22+math.cos(ang)*3.2
+        data=bpy.data.lights.new(f"Throne_Rune_{i+1}_Data",type='POINT')
+        data.color=(.34,.055,.62)
+        data.energy=240
+        data.shadow_soft_size=.55
+        obj=bpy.data.objects.new(f"Throne_Rune_{i+1}",data)
+        obj.location=(x,THRONE_Y-game_z,2.6)
+        throne_lights.objects.link(obj)
 
 def remap_and_pack_images():
     """Resolve workstation-authored texture paths back into the repository and pack them."""
@@ -592,10 +620,25 @@ def configure_scene():
     s.render.image_settings.file_format = 'PNG'
     s.render.film_transparent = False
     s.view_settings.look = 'AgX - Medium High Contrast'
+    s.view_settings.exposure = .35
     s["magenheim_cinematic_id"] = "peace-was-only-the-beginning"
     s["style_negative_space"] = "simple broad fields; detail only where story requires"
     frame_markers(s)
     return s
+
+
+def set_shot_visibility(shot_name):
+    groups={
+        "CIN_SurfaceVillage": shot_name in {"SHOT_01_RETURN","SHOT_03_PEACE","SHOT_04_RUMBLE","SHOT_05_OMEN"},
+        "CIN_GreatHallInterior": shot_name=="SHOT_02_HOMECOMING",
+        "CIN_DarkThrone": shot_name in {"SHOT_06_THRONE_REVEAL","SHOT_07_KING_AWAKENS","SHOT_08_LAST_ARGUMENT"},
+        "CIN_SurfaceLights": shot_name in {"SHOT_01_RETURN","SHOT_03_PEACE","SHOT_04_RUMBLE","SHOT_05_OMEN"},
+        "CIN_ThroneLights": shot_name in {"SHOT_06_THRONE_REVEAL","SHOT_07_KING_AWAKENS","SHOT_08_LAST_ARGUMENT"},
+    }
+    for name,visible in groups.items():
+        col=bpy.data.collections.get(name)
+        if col is not None:
+            col.hide_render=not visible
 
 
 def render_previews(scene, cameras, preview_dir: Path):
@@ -613,6 +656,7 @@ def render_previews(scene, cameras, preview_dir: Path):
     }
     scene.render.resolution_percentage = 35
     for shot, cam_name in mapping.items():
+        set_shot_visibility(shot)
         scene.camera = cameras[cam_name]
         scene.frame_set(frame_by_shot[shot])
         scene.render.filepath = str(preview_dir / f"{shot.lower()}.png")
