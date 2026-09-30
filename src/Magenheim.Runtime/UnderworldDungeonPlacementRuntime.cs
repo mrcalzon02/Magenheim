@@ -214,15 +214,6 @@ internal sealed class UnderworldDungeonPlacementRuntime : MonoBehaviour
                             string.Equals(PrefabName(x.m_location), dungeon.PrefabName, StringComparison.Ordinal))
                 .ToArray();
 
-            if (!UnderworldVanillaDungeonCandidatePolicy.IsWorldgenAdmitted(dungeon))
-            {
-                if (locations.Length != 0 || instances.Length != 0)
-                    invalid.Add(
-                        $"{dungeon.DisplayName} is Planned but detached worldgen contains " +
-                        $"{locations.Length} catalog row(s) and {instances.Length} placement(s) without candidate admission");
-                continue;
-            }
-
             if (locations.Length != 1)
             {
                 invalid.Add(
