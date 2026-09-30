@@ -94,7 +94,7 @@ jobs:
           }
 
           Install-ThunderstorePlugin 'Jotunn' 'https://thunderstore.io/package/download/ValheimModding/Jotunn/2.30.0/' 'Jotunn.dll'
-          Install-ThunderstorePlugin 'JsonDotNET' 'https://thunderstore.io/package/download/ValheimModding/JsonDotNET/13.0.4/' 'JsonDotNET.dll'
+          Install-ThunderstorePlugin 'JsonDotNET' 'https://thunderstore.io/package/download/ValheimModding/JsonDotNET/13.0.4/' 'Newtonsoft.Json.dll'
 
           $preloader = Join-Path $env:MAGENHEIM_VALHEIM_GAME 'BepInEx/core/BepInEx.Preloader.dll'
           $bepDll = Join-Path $env:MAGENHEIM_VALHEIM_GAME 'BepInEx/core/BepInEx.dll'
