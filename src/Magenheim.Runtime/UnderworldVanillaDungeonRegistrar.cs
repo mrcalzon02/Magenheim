@@ -190,6 +190,9 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             $"containers={population.Rewards.Containers} pickables={population.Rewards.Pickables} " +
             $"bottleneck-pickables={population.Rewards.BottleneckPickables} " +
             $"mineables={population.Rewards.Mineables} destructible-drops={population.Rewards.DestructibleDrops} " +
+            $"dressing=materials:{population.Dressing.ArchitectureMaterials},major:{population.Dressing.MajorProps}," +
+            $"ground:{population.Dressing.GroundProps},lights:{population.Dressing.LocalLights}," +
+            $"atmosphere:{population.Dressing.AtmosphereVolumes},thermal:{population.Dressing.ThermalVolumes} " +
             $"donor-mechanics=doors:{population.Mechanics.DoorsPreserved},teleports:{population.Mechanics.TeleportsPreserved}," +
             $"random-spawns:{population.Mechanics.RandomSpawnsPreserved},destructibles:{population.Mechanics.DestructiblesPreserved} " +
             $"lore-markers-removed={population.Mechanics.LoreMarkersRemoved}.");
@@ -550,7 +553,9 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             room, profile, donorRoomName, roomIndex);
         var rewards = UnderworldVanillaDungeonRewardPolicy.Rebind(
             room, profile, donorRoomName, roomIndex, ecology);
-        return new PopulationRebindStats(mechanics, ecology, rewards);
+        var dressing = UnderworldVanillaDungeonBiomeDressingPolicy.Apply(
+            room, profile, donorRoomName, roomIndex);
+        return new PopulationRebindStats(mechanics, ecology, rewards, dressing);
     }
 
     private static UnderworldDungeonDefinition Definition(
@@ -571,13 +576,15 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
     private readonly record struct PopulationRebindStats(
         UnderworldVanillaDungeonMechanicsPolicy.Stats Mechanics,
         UnderworldVanillaDungeonEcologyPolicy.Stats Ecology,
-        UnderworldVanillaDungeonRewardPolicy.Stats Rewards)
+        UnderworldVanillaDungeonRewardPolicy.Stats Rewards,
+        UnderworldVanillaDungeonBiomeDressingPolicy.Stats Dressing)
     {
         internal static PopulationRebindStats Empty =>
             new(
                 UnderworldVanillaDungeonMechanicsPolicy.Stats.Empty,
                 UnderworldVanillaDungeonEcologyPolicy.Stats.Empty,
-                UnderworldVanillaDungeonRewardPolicy.Stats.Empty);
+                UnderworldVanillaDungeonRewardPolicy.Stats.Empty,
+                UnderworldVanillaDungeonBiomeDressingPolicy.Stats.Empty);
 
         public static PopulationRebindStats operator +(
             PopulationRebindStats left,
@@ -585,7 +592,8 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             new(
                 left.Mechanics + right.Mechanics,
                 left.Ecology + right.Ecology,
-                left.Rewards + right.Rewards);
+                left.Rewards + right.Rewards,
+                left.Dressing + right.Dressing);
     }
 
     private static string Safe(string value) =>
