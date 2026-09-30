@@ -20,7 +20,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Underworld station model verification failed.'
 & "$PSScriptRoot/blender.ps1" render-underworld-station-icons @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld station icon rendering failed.' }
 
-python "$PSScriptRoot/verify-icon-assets.py"
+python "$PSScriptRoot/verify-icon-assets.py" @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld station icon verification failed.' }
 
 Write-Host 'REBUILT six owned Underworld crafting-station models and Hammer icons.'
