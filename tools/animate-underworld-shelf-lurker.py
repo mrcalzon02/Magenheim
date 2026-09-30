@@ -88,7 +88,7 @@ for limb in LIMBS:
 action('ShelfLurker_Death',58,{1:n,16:{'Body':(.10,0,.32),'Head':(.18,0,.24)},34:{'Body':(.16,0,.78),'Abdomen':(.10,0,.82),'Head':(.26,0,.60)},58:death})
 arm.animation_data.action=None
 sc['magenheim_fidelity']='production-creature-r2'
-sc['magenheim_authored_actions']='ShelfLurker_ClingIdle,ShelfLurker_LateralCrawl,ShelfLurker_Reposition,ShelfLurker_DropPounce,ShelfLurker_Recover,ShelfLurker_Attack,ShelfLurker_Hit,ShelfLurker_Death'
+sc['magenheim_authored_actions']='ShelfLurker_ClingIdle,ShelfLurker_LateralCrawl,ShelfLurker_Reposition,ShelfLurker_DropPounce,ShelfLurker_Recover,ShelfLurker_Attack,ShelfLurker_Hit,ShelfLurker_Death'; sc['magenheim_skinning']='rigid-segment-weighted'
 sc['magenheim_cling_contract']='six-independent-grip-chains;sequential-release-replant;drop-pounce-without-whole-mesh-rotation'
 bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(MODEL),compress=True)
