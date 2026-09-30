@@ -57,6 +57,7 @@ RUNTIME = ROOT / 'src/Magenheim.Runtime'
 CATALOG = ROOT / 'assets/models/catalog.json'
 LEGACY_ICON_FLOOR = 128
 ICON_TARGET_SIZE = max(256, int(os.environ.get('MAGENHEIM_ICON_TARGET_SIZE', '256')))
+SELECTED = set(sys.argv[1:])
 ENFORCE_ICON_TARGET = os.environ.get('MAGENHEIM_ENFORCE_ICON_TARGET', '').strip().lower() in {
     '1', 'true', 'yes', 'on'
 }
@@ -195,9 +196,15 @@ def silhouette_metrics(raw: bytes, width: int, height: int) -> tuple[float, floa
 
 
 # 1. Every shipped icon must decode completely, carry real alpha, and occupy a useful inventory silhouette.
-icon_files = sorted(ICONS.glob('*.icon.png'))
-if not icon_files:
-    failures.append(f'No icons found under {ICONS}.')
+if SELECTED:
+    icon_files = [ICONS / f'{model_id}.icon.png' for model_id in sorted(SELECTED)]
+    for path in icon_files:
+        if not path.is_file():
+            failures.append(f'{path.name}: requested icon is missing')
+else:
+    icon_files = sorted(ICONS.glob('*.icon.png'))
+    if not icon_files:
+        failures.append(f'No icons found under {ICONS}.')
 for path in icon_files:
     try:
         width, height, colour, raw = decode_png(path)
@@ -231,6 +238,24 @@ for path in icon_files:
         legacy_resolution.append(item)
         if ENFORCE_ICON_TARGET:
             failures.append(f'{item}: asset-release target enforcement is enabled')
+
+
+if SELECTED:
+    if failures:
+        print('FAIL: targeted icon asset verification', file=sys.stderr)
+        for failure in failures:
+            print('  - ' + failure, file=sys.stderr)
+        sys.exit(1)
+    if resolution_counts:
+        distribution = ', '.join(f'{size}px={count}' for size, count in sorted(resolution_counts.items()))
+        print(f'ICON RESOLUTION DISTRIBUTION: {distribution}')
+    if legacy_resolution:
+        mode = 'enforced' if ENFORCE_ICON_TARGET else 'notice-only'
+        print(f'NOTICE: {len(legacy_resolution)} selected icons remain below the {ICON_TARGET_SIZE}px readability target ({mode}):')
+        for item in legacy_resolution:
+            print('  - ' + item)
+    print(f'PASS: targeted icon verification for {len(icon_files)} icon(s): ' + ', '.join(sorted(SELECTED)))
+    sys.exit(0)
 
 
 # 2. Every staff model in the catalog must have an icon named the way the registrars ask.
