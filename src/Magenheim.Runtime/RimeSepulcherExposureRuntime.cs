@@ -69,6 +69,37 @@ internal static class RimeSepulcherExposureRuntime
             "Magenheim_DDE_FrozenExposure");
     }
 
+    internal static void RebindExpandedDonor(
+        GameObject room,
+        UnderworldRimeSepulcherExposureState state,
+        float width,
+        float depth)
+    {
+        if (room is null) throw new ArgumentNullException(nameof(room));
+        state.Validate();
+
+        var volume = room.GetComponentInChildren<RimeSepulcherExposureVolume>(true);
+        if (!volume)
+        {
+            AttachExpandedDonor(room, state, width, depth);
+            return;
+        }
+
+        volume.Bind(state);
+        var collider = volume.GetComponent<BoxCollider>();
+        if (!collider)
+            throw new InvalidOperationException("Frozen DDE exposure volume lost its BoxCollider.");
+
+        collider.isTrigger = true;
+        collider.center = new Vector3(0f, 1.4f, 0f);
+        var widthScale = state.RoomWide ? .86f : .46f;
+        var depthScale = state.RoomWide ? .86f : .72f;
+        collider.size = new Vector3(
+            Mathf.Max(4f, Mathf.Max(4f, width) * widthScale),
+            3.8f,
+            Mathf.Max(5f, Mathf.Max(5f, depth) * depthScale));
+    }
+
     internal static void AttachPassage(
         GameObject passage,
         UnderworldRimeSepulcherExposureState state)
