@@ -61,6 +61,7 @@ def rigid_creature_contract(scene,armature):
      q=pose_bone.matrix_basis.to_quaternion().normalized()
      rotations[pose_bone.name]=dict(
       rotation=game_quat(q),
+      position=game_vec(pose_bone.location),
       scale=[float(pose_bone.scale.x),float(pose_bone.scale.y),float(pose_bone.scale.z)])
     samples.append(rotations)
    actions.append(dict(name=action_name,start=start,end=end,samples=samples))
