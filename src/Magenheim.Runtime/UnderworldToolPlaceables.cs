@@ -29,13 +29,14 @@ internal static class UnderworldToolPlaceables
         var config=new PieceConfig{
             Name="Sporelight Lantern",
             Description="A fuel-free cultivated glowcap lamp. Dense Fungal spores dim its useful light.",
-            PieceTable="Hammer",Category="Furniture",Icon=EarthAssets.Icon(d.ModelId),
+            PieceTable="Hammer",Category="Furniture",
             Requirements=new[]{new RequirementConfig(d.Prefab,1,0,true)}};
+        if(EarthAssets.IconExists(d.ModelId))config.Icon=EarthAssets.Icon(d.ModelId);
         var custom=new CustomPiece(SporelightPlacedPrefab,"piece_groundtorch_wood",config);
         custom.Piece.m_dlc=string.Empty;var prefab=custom.PiecePrefab;
         foreach(var fireplace in prefab.GetComponentsInChildren<Fireplace>(true))
             UnityEngine.Object.DestroyImmediate(fireplace);
-        var root=ModelAssets.Load(prefab,d.ModelId);
+        var root=ModelAssets.Exists(d.ModelId)?ModelAssets.Load(prefab,d.ModelId):prefab;
         PreferOwnedLights(prefab,root);
         prefab.AddComponent<UnderworldSporelightOutput>();
         PlacementSnapAuthority.AlignToBase(prefab);
@@ -51,12 +52,13 @@ internal static class UnderworldToolPlaceables
         var config=new PieceConfig{
             Name="Deployed Anchor Spike",
             Description="A driven Fracture stabilizer. The one-use Anchor Spike tool is spent by deployment.",
-            PieceTable=UnderworldToolRegistrar.AnchorPieceTable,Category="Misc",Icon=EarthAssets.Icon(d.ModelId)};
+            PieceTable=UnderworldToolRegistrar.AnchorPieceTable,Category="Misc"};
+        if(EarthAssets.IconExists(d.ModelId))config.Icon=EarthAssets.Icon(d.ModelId);
         var custom=new CustomPiece(AnchorPlacedPrefab,"wood_floor",config);
         custom.Piece.m_dlc=string.Empty;
         custom.Piece.m_resources=Array.Empty<Piece.Requirement>();
         var prefab=custom.PiecePrefab;
-        ModelAssets.Load(prefab,d.ModelId);
+        if(ModelAssets.Exists(d.ModelId))ModelAssets.Load(prefab,d.ModelId);
         foreach(var collider in prefab.GetComponentsInChildren<Collider>(true))
             if(!collider.isTrigger)collider.enabled=false;
         var collision=new GameObject("magenheim.anchor.collision"){layer=prefab.layer};
