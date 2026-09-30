@@ -83,6 +83,7 @@ for name in ['DeepHunter_Cruise','DeepHunter_Sprint','DeepHunter_TailStrike']:
     if missing: raise RuntimeError(f'{name}: missing seven-stage deformation {missing}')
 arm.animation_data.action=None
 arm['production_contract']='production-creature-r2'; arm['authored_actions']=','.join(names)
+sc=bpy.context.scene; sc['magenheim_authored_actions']=arm['authored_actions']; sc['magenheim_skinning']='rigid-segment-weighted'
 arm['animation_readability_contract']='seven-stage-traveling-wave;increasing-caudal-amplitude;sprint-distinct-from-cruise;large-bank-turns;physical-jaw-bite;full-body-ram;local-deformation-breach-recovery;propagating-tail-strike;no-root-translation'
 bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(MODEL),compress=True)
