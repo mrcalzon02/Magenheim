@@ -165,7 +165,7 @@ require("CreateClonedLocation(definition.PrefabName, donorEntrance)" in registra
 require("GetComponentInChildren<DungeonGenerator>(true)" in registrar,
         "DDE-08 clone does not preserve donor DungeonGenerator mechanics")
 
-# Gate 9 — exact Underworld confinement and Planned fail-close.
+# Gate 9 — exact Underworld confinement and all-family RuntimeReady admission.
 require("zone.m_biome = UnderworldTerrainRuntime.ToNativeBiome(profile.Biome)" in registrar,
         "DDE-09 clone is not bound to exact owning Underworld biome")
 for token,label in (
@@ -179,11 +179,13 @@ for token,label in (
 ):
     require(token in registrar,"DDE-09 missing "+label)
 require("UnderworldVanillaDungeonCandidatePolicy.IsWorldgenAdmitted(dungeon)" in bridge,
-        "DDE-09 detached catalog does not use admitted-family predicate")
-require("without candidate admission" in bridge and "without candidate admission" in placement,
-        "DDE-09 non-candidate Planned rows are not rejected")
-require('"EnablePlannedCandidateWorldgen",\n            false' in candidate,
-        "DDE-09 candidate override is not disabled by default")
+        "DDE-09 detached catalog does not use RuntimeReady admission predicate")
+require("definition.Status == UnderworldDungeonStatus.RuntimeReady" in candidate,
+        "DDE-09 runtime admission predicate is not RuntimeReady-only")
+require("internal static bool Enabled => false" in candidate,
+        "DDE-09 retired one-at-a-time candidate switch can still activate")
+require("active.Length != UnderworldVanillaDungeonReuseCatalog.All.Count" in registrar,
+        "DDE-09 registrar does not require all five ordinary families together")
 
 # Gate 10 source prerequisite — preserve donor location/interior mechanics, no custom return system.
 require("CreateClonedLocation(definition.PrefabName, donorEntrance)" in registrar,
@@ -230,7 +232,8 @@ for token,label in (
     target = dev_commands if token == "UnderworldVanillaDungeonCandidateAudit.Capture" else candidate_audit
     require(token in target,"DDE live candidate audit missing "+label)
 
-# Catalog may remain Planned until live gates are complete.
+# All ordinary catalog families are intentionally RuntimeReady in source; live acceptance evidence
+# remains a separate claim boundary.
 for name in ("FungalForest","BlackwaterDeep","SulfurousWastes","FrozenCaverns","GreatDecay"):
     require(f"public static UnderworldDungeonDefinition {name}" in catalog,
             "DDE catalog lost ordinary family "+name)
