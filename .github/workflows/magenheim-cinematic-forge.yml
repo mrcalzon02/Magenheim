@@ -34,8 +34,9 @@ jobs:
       - name: Preflight cinematic authoring source
         shell: pwsh
         run: |
-          python -m py_compile tools/build-magenheim-cinematic-environment.py
-          if ($LASTEXITCODE -ne 0) { throw 'Cinematic Blender source failed Python syntax preflight.' }
+          python -m pip install --disable-pip-version-check Pillow==12.3.0 imageio-ffmpeg==0.6.0
+          python -m py_compile tools/build-magenheim-cinematic-environment.py tools/encode-cinematic-motion-preview.py
+          if ($LASTEXITCODE -ne 0) { throw 'Cinematic Blender/encoder source failed Python syntax preflight.' }
 
           $required = @(
             'assets/models/source/dark-throne.blend',
@@ -98,11 +99,15 @@ jobs:
         shell: pwsh
         run: |
           $out = 'assets/cinematics/peace-was-only-the-beginning/source/magenheim-peace-cinematic.blend'
+          $frames = 'build/motion-proof-frames'
           $motion = 'build/magenheim-motion-preview.mp4'
-          & $env:MAGENHEIM_BLENDER --background $out --python-exit-code 1 --python tools/build-magenheim-cinematic-environment.py -- --render-motion-preview $motion
-          if ($LASTEXITCODE -ne 0) { throw 'Cinematic motion-proof render failed.' }
+          & $env:MAGENHEIM_BLENDER --background $out --python-exit-code 1 --python tools/build-magenheim-cinematic-environment.py -- --render-motion-frames $frames
+          if ($LASTEXITCODE -ne 0) { throw 'Cinematic motion-frame render failed.' }
+          python tools/encode-cinematic-motion-preview.py --frames $frames --output $motion --fps 12
+          if ($LASTEXITCODE -ne 0) { throw 'Cinematic motion-proof encoding failed.' }
           if (!(Test-Path -LiteralPath $motion)) { throw 'Motion-proof MP4 was not created.' }
           if ((Get-Item -LiteralPath $motion).Length -lt 100000) { throw 'Motion-proof MP4 is suspiciously small.' }
+          Remove-Item -LiteralPath $frames -Recurse -Force
 
       - name: Write generation manifest
         shell: pwsh
