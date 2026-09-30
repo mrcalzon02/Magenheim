@@ -55,6 +55,13 @@ REQUIRED_SOURCES = (
     "nowhere-king-sword-null-gate.blend",
 )
 
+# Keep the three cinematic sets physically separated so preview cameras never see
+# geometry from another shot family.  This also makes the .blend pleasant to
+# inspect and animate by hand.
+SURFACE_Y = 0.0
+HALL_X = 110.0
+THRONE_Y = 240.0
+
 
 def args():
     raw = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
@@ -152,14 +159,105 @@ def add_house(prefix, x, y, scale, mats, target, great_hall=False):
     add_box(prefix + "_StoneFoot", (x, y, stone_h / 2), (w, d, stone_h), mats["stone"], target)
     body = add_box(prefix + "_TimberBody", (x, y, stone_h + h / 2), (w, d, h), mats["wood"], target)
     add_roof(prefix + "_Roof", (x, y, stone_h + h), w * 1.15, d * 1.08, 0.2, h * 0.62, mats["roof"], target)
-    # Quiet broad walls; detail is limited to structurally meaningful beams.
+
+    # Construction detail only: corner posts, one wall band and a ridge.  Do not
+    # turn the broad wall surfaces into decorative noise.
     beam = 0.20 * scale
     for sx in (-1, 1):
         add_box(prefix + f"_CornerBeam_{sx:+}", (x + sx * (w / 2 - beam / 2), y, stone_h + h / 2),
                 (beam, d + 0.05, h), mats["darkwood"], target)
-    add_box(prefix + "_Door", (x, y - d / 2 - 0.03, stone_h + 1.0 * scale),
-            (1.15 * scale, 0.15 * scale, 2.0 * scale), mats["darkwood"], target)
+    add_box(prefix + "_WallBand", (x, y - d / 2 - .04, stone_h + h * .67),
+            (w * .92, .16 * scale, .18 * scale), mats["darkwood"], target)
+    add_box(prefix + "_Ridge", (x, y, stone_h + h + h * .61),
+            (.18 * scale, d * 1.10, .18 * scale), mats["darkwood"], target)
+
+    front_y = y - d / 2 - 0.05
+    add_box(prefix + "_Door", (x, front_y, stone_h + 1.0 * scale),
+            (1.15 * scale, 0.14 * scale, 2.0 * scale), mats["darkwood"], target)
+    window_count = 2 if great_hall else 1
+    for wi in range(window_count):
+        wx = x + ((wi * 2 - (window_count - 1)) * 1.65 * scale)
+        if window_count == 1:
+            wx = x + 1.45 * scale
+        add_box(prefix + f"_Window_{wi}", (wx, front_y - .015, stone_h + h * .62),
+                (.72 * scale, .08 * scale, .62 * scale), mats["window"], target)
     return body
+
+def add_humanoid_proxy(name, location, scale, mats, target, material_key="hero", broad=False):
+    """Low-poly rigging proxy. It is a replaceable body, not final character art."""
+    root = bpy.data.objects.new(name + "_ROOT", None)
+    root.empty_display_type = 'ARROWS'
+    root.empty_display_size = .65 * scale
+    root.location = location
+    target.objects.link(root)
+
+    def child_box(suffix, local, dims, key=material_key):
+        obj = add_box(name + "_" + suffix,
+                      (location[0] + local[0], location[1] + local[1], location[2] + local[2]),
+                      dims, mats[key], target)
+        obj.parent = root
+        obj.matrix_parent_inverse = root.matrix_world.inverted()
+        return obj
+
+    torso_w = (.95 if broad else .72) * scale
+    child_box("Torso", (0,0,1.42*scale), (torso_w,.48*scale,1.28*scale))
+    child_box("Pelvis", (0,0,.78*scale), (.62*scale,.42*scale,.34*scale))
+    for side in (-1,1):
+        child_box(f"Leg_{side:+}", (side*.19*scale,0,.34*scale), (.24*scale,.28*scale,.82*scale))
+        child_box(f"Arm_{side:+}", (side*(torso_w*.62),0,1.40*scale), (.22*scale,.25*scale,1.05*scale))
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=.30*scale,
+                                         location=(location[0],location[1],location[2]+2.28*scale))
+    head = bpy.context.object
+    head.name = name + "_Head"
+    head.data.materials.append(mats[material_key])
+    relink(head,target)
+    head.parent = root
+    head.matrix_parent_inverse = root.matrix_world.inverted()
+    return root
+
+
+def add_raven_proxy(name, location, scale, mats, target):
+    root = bpy.data.objects.new(name + "_ROOT", None)
+    root.empty_display_type = 'ARROWS'
+    root.empty_display_size = .3 * scale
+    root.location = location
+    target.objects.link(root)
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=.34*scale, location=location)
+    body=bpy.context.object
+    body.name=name+"_Body"
+    body.scale=(1.15,.55,.55)
+    body.data.materials.append(mats["raven"])
+    relink(body,target)
+    body.parent=root
+    body.matrix_parent_inverse=root.matrix_world.inverted()
+    x,y,z=location
+    verts=[(x-.1*scale,y,z),(x-1.05*scale,y-.12*scale,z+.08*scale),(x-.3*scale,y,z-.08*scale),
+           (x+.1*scale,y,z),(x+1.05*scale,y-.12*scale,z+.08*scale),(x+.3*scale,y,z-.08*scale)]
+    mesh_obj(name+"_Wings",verts,[(0,1,2),(3,4,5)],mats["raven"],target)
+    return root
+
+
+def add_king_proxy(location, mats, target):
+    root = add_humanoid_proxy("NOWHERE_KING", location, 1.75, mats, target, "king", broad=True)
+    # Tall narrow crown and two luminous eyes are focal read markers.  The
+    # runtime King remains the Dverger-derived authored chassis; this proxy is
+    # only for camera/blocking until that rig is imported.
+    x,y,z=location
+    for i,dx in enumerate((-.24,-.12,0,.12,.24)):
+        spike=add_box(f"NOWHERE_KING_CrownSpike_{i}",(x+dx,y,z+4.57+abs(dx)*.6),
+                      (.07,.09,.62-abs(dx)*.7),mats["blackmetal"],target)
+        spike.parent=root
+        spike.matrix_parent_inverse=root.matrix_world.inverted()
+    for i,dx in enumerate((-.11,.11)):
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=6, radius=.045,
+                                            location=(x+dx,y-.27,z+4.0))
+        eye=bpy.context.object
+        eye.name=f"NOWHERE_KING_Eye_{i}"
+        eye.data.materials.append(mats["eye"])
+        relink(eye,target)
+        eye.parent=root
+        eye.matrix_parent_inverse=root.matrix_world.inverted()
+    return root
 
 
 def add_pine(name, x, y, z, scale, mats, target, foreground=False):
@@ -218,33 +316,60 @@ def add_village(mats, root):
     terrain = collection("CIN_SurfaceVillage", root)
     add_terrain(mats, terrain)
     add_mountain_backdrop(mats, terrain)
-    # One great hall and a small number of readable houses, not decorative clutter.
+
+    # A small, buildable settlement: one hall, five houses, a road and tree
+    # silhouettes.  Nothing here exists only to decorate the storyboard.
     add_house("Village_GreatHall", 7.5, 8.0, 1.0, mats, terrain, great_hall=True)
-    for idx, (x, y, s) in enumerate(((-12, 5, .86), (-18, -8, .78), (16, -6, .82), (22, 10, .72), (-3, 18, .72))):
+    for idx, (x, y, s) in enumerate(((-12, 5, .86), (-18, -8, .78), (16, -6, .82),
+                                      (22, 10, .72), (-3, 18, .72))):
         add_house(f"Village_House_{idx:02}", x, y, s, mats, terrain)
     path = add_box("Village_MainPath", (0, -5, 0.03), (6.5, 50, 0.08), mats["path"], terrain)
     path.rotation_euler[2] = math.radians(-4)
-    # Foreground trees get more shape; background trees collapse to silhouettes.
+
     pines = ((-28,-18,1.1,True),(-24,18,1.0,True),(31,-10,.95,True),
              (-38,4,.95,False),(-45,18,.9,False),(39,24,.8,False),
              (45,-24,.85,False),(-50,-24,.82,False),(34,34,.78,False))
     for i,(x,y,s,fg) in enumerate(pines):
         add_pine(f"Village_Pine_{i:02}",x,y,0,s,mats,terrain,fg)
 
-    # Blocking anchors are real scene objects, not painted-in figures.
-    for i, loc in enumerate(((-2,-26,0.2),(0,-27,0.2),(2,-26.5,0.2))):
-        e = bpy.data.objects.new(f"HERO_{chr(65+i)}_ROOT", None)
-        e.empty_display_type = 'ARROWS'
-        e.empty_display_size = 0.8
-        e.location = loc
-        terrain.objects.link(e)
-    raven = bpy.data.objects.new("RAVEN_ROOT", None)
-    raven.empty_display_type = 'SPHERE'
-    raven.empty_display_size = 0.35
-    raven.location = (-7, 8, 9)
-    terrain.objects.link(raven)
+    # Renderable rigging proxies.  These are intentionally simple and are
+    # replaced by character rigs in the animation pass.
+    add_humanoid_proxy("HERO_A",(-2.2,-26.0,.15),.92,mats,terrain,"hero",True)
+    add_humanoid_proxy("HERO_B",(0.0,-27.0,.15),.82,mats,terrain,"hero")
+    add_humanoid_proxy("HERO_C",(2.1,-26.4,.15),.88,mats,terrain,"hero")
+    add_raven_proxy("RAVEN",(-7,8,9),.75,mats,terrain)
     return terrain
 
+
+def add_hall_interior(mats, root):
+    """Separate practical great-hall interior for Shot 2."""
+    hall = collection("CIN_GreatHallInterior", root)
+    x0 = HALL_X
+    add_box("HallInterior_Floor",(x0,0,-.12),(18,30,.24),mats["hall_floor"],hall)
+    # Broad side walls stop below the rafters; posts and crossbeams explain the
+    # structure without filling every plank with trim.
+    for sx in (-1,1):
+        add_box(f"HallInterior_Wall_{sx:+}",(x0+sx*8.6,0,3.3),(.45,30,6.6),mats["wood"],hall)
+    add_box("HallInterior_RearWall",(x0,14.7,3.3),(17.6,.45,6.6),mats["wood"],hall)
+    for yi in (-11,-5,1,7,13):
+        for sx in (-1,1):
+            add_box(f"HallInterior_Post_{sx:+}_{yi:+}",(x0+sx*6.7,yi,3.3),(.38,.38,6.6),mats["darkwood"],hall)
+        add_box(f"HallInterior_Crossbeam_{yi:+}",(x0,yi,6.1),(13.8,.34,.34),mats["darkwood"],hall)
+    # Central hearth, benches and warm light.
+    add_box("HallInterior_Hearth",(x0,3,.18),(3.8,2.2,.35),mats["stone"],hall)
+    for sx in (-1,1):
+        add_box(f"HallInterior_Bench_{sx:+}",(x0+sx*4.4,1,.55),(1.0,13,.55),mats["darkwood"],hall)
+    light_data=bpy.data.lights.new("HallInterior_Fire_Data",type='POINT')
+    light_data.color=(1.0,.28,.06); light_data.energy=1300; light_data.shadow_soft_size=2.3
+    light=bpy.data.objects.new("HallInterior_Fire",light_data)
+    light.location=(x0,3,1.3); hall.objects.link(light)
+    # Hero and villager proxies give the camera real readable silhouettes.
+    add_humanoid_proxy("HALL_HERO_A",(x0-1.6,-7,.05),.92,mats,hall,"hero",True)
+    add_humanoid_proxy("HALL_HERO_B",(x0,-7.5,.05),.82,mats,hall,"hero")
+    add_humanoid_proxy("HALL_HERO_C",(x0+1.6,-7,.05),.88,mats,hall,"hero")
+    for i,(dx,dy) in enumerate(((-5,-1),(5,-1),(-5,5),(5,5),(-4,10),(4,10))):
+        add_humanoid_proxy(f"HALL_VILLAGER_{i}",(x0+dx,dy,.05),.76,mats,hall,"villager")
+    return hall
 
 def append_blend(path: Path, root_name: str, target, location=(0,0,0), scale=1.0, rotation=(0,0,0)):
     if not path.is_file():
@@ -253,25 +378,25 @@ def append_blend(path: Path, root_name: str, target, location=(0,0,0), scale=1.0
     with bpy.data.libraries.load(str(path), link=False) as (src, dst):
         dst.objects = [name for name in src.objects if not name.lower().startswith(("camera", "light"))]
     loaded = [o for o in dst.objects if o is not None and o not in before]
+
+    # Parent first at identity, then move the root.  The old version assigned
+    # the root transform before preserving child world matrices, cancelling the
+    # intended placement and leaving imported throne assets at the village.
     root = bpy.data.objects.new(root_name, None)
     target.objects.link(root)
-    root.location = location
-    root.scale = (scale, scale, scale)
-    root.rotation_euler = rotation
     for obj in loaded:
-        if not obj.users_collection:
-            target.objects.link(obj)
-        else:
-            for c in tuple(obj.users_collection):
-                c.objects.unlink(obj)
-            target.objects.link(obj)
+        for collection_ in tuple(obj.users_collection):
+            collection_.objects.unlink(obj)
+        target.objects.link(obj)
     for obj in loaded:
         if obj.parent is None:
             world = obj.matrix_world.copy()
             obj.parent = root
             obj.matrix_world = world
+    root.location = location
+    root.scale = (scale, scale, scale)
+    root.rotation_euler = rotation
     return root
-
 
 def add_banner(name, x, y, z, facing, mats, target):
     pole = add_box(name + "_Pole", (x, y, z), (.18, .18, 7.2), mats["blackmetal"], target)
@@ -305,33 +430,36 @@ def add_brazier(name, x, y, z, mats, target):
 
 def add_throne_environment(mats, root):
     hall = collection("CIN_DarkThrone", root)
-    floor = add_box("ThroneHall_Floor", (0,0,-.55), (54,64,1.0), mats["basalt"], hall)
-    # Keep the architectural envelope broad and quiet.
-    for x in (-25.0, 25.0):
-        add_box(f"ThroneHall_Wall_{x:+}", (x,3,7), (2.0,62,15), mats["basalt_dark"], hall)
-    add_box("ThroneHall_RearWall", (0,29,7), (52,2.0,15), mats["basalt_dark"], hall)
-    for i,x in enumerate((-19,-12,-5,5,12,19)):
-        add_box(f"ThroneHall_Pier_{i}", (x,16,6), (1.4,1.4,12), mats["basalt"], hall)
-    throne = append_blend(SOURCE / "dark-throne.blend", "AUTH_DarkThrone", hall, location=(0,18,0))
-    # Existing Magenheim weapon art, not storyboard inventions.
-    firm = append_blend(SOURCE / "nowhere-king-sword-firmament.blend", "AUTH_Firmament", hall,
-                        location=(-1.2,13.7,2.2), scale=.78, rotation=(math.radians(90),0,math.radians(-16)))
-    null = append_blend(SOURCE / "nowhere-king-sword-null-gate.blend", "AUTH_NullGate", hall,
-                        location=(1.2,13.7,2.2), scale=.78, rotation=(math.radians(90),0,math.radians(16)))
+    y0 = THRONE_Y
 
-    # Four banners and eight braziers correspond to the canonical throne presentation.
-    for i, x in enumerate((-18,-8,8,18)):
-        add_banner(f"Blackstone_Banner_{i}", x, 26.7, 7.0, 0, mats, hall)
-    for i, (x,y) in enumerate(((-18,-2),(-9,-3),(9,-3),(18,-2),(-18,11),(-9,10),(9,10),(18,11))):
-        add_brazier(f"Blackstone_Brazier_{i}", x,y,0,mats,hall)
+    # The committed Dark Throne source is the arena authority.  These broad
+    # envelope pieces only give cinematic negative space and vertical scale.
+    add_box("ThroneHall_Floor", (0,y0,-.70), (58,68,.5), mats["basalt"], hall)
+    for x in (-27.0,27.0):
+        add_box(f"ThroneHall_Wall_{x:+}",(x,y0+2,8),(1.6,66,16),mats["basalt_dark"],hall)
+    add_box("ThroneHall_RearWall",(0,y0+31,8),(56,1.6,16),mats["basalt_dark"],hall)
+    for i,x in enumerate((-20,-13,-6,6,13,20)):
+        add_box(f"ThroneHall_Pier_{i}",(x,y0+17,7),(1.2,1.2,14),mats["basalt"],hall)
 
-    king = bpy.data.objects.new("NOWHERE_KING_ROOT", None)
-    king.empty_display_type = 'ARROWS'
-    king.empty_display_size = 1.4
-    king.location = (0,14.0,0.25)
-    hall.objects.link(king)
+    append_blend(SOURCE/"dark-throne.blend","AUTH_DarkThrone",hall,location=(0,y0,0))
+
+    # Existing Magenheim weapon art is parked at the King's staging position.
+    # Animation will bind these to the hands and perform the actual cloak draw.
+    append_blend(SOURCE/"nowhere-king-sword-firmament.blend","AUTH_Firmament",hall,
+                 location=(-1.25,y0+14.0,2.0),scale=.78,
+                 rotation=(math.radians(90),0,math.radians(-16)))
+    append_blend(SOURCE/"nowhere-king-sword-null-gate.blend","AUTH_NullGate",hall,
+                 location=(1.25,y0+14.0,2.0),scale=.78,
+                 rotation=(math.radians(90),0,math.radians(16)))
+
+    for i,x in enumerate((-18,-8,8,18)):
+        add_banner(f"Blackstone_Banner_{i}",x,y0+28.5,7.0,0,mats,hall)
+    for i,(x,dy) in enumerate(((-18,-12),(-9,-10),(9,-10),(18,-12),
+                               (-18,8),(-9,10),(9,10),(18,8))):
+        add_brazier(f"Blackstone_Brazier_{i}",x,y0+dy,0,mats,hall)
+
+    add_king_proxy((0,y0+14.0,.1),mats,hall)
     return hall
-
 
 def camera(name, location, target_point, lens, target_collection):
     data = bpy.data.cameras.new(name + "_Data")
@@ -347,41 +475,46 @@ def camera(name, location, target_point, lens, target_collection):
 
 def add_cameras(root):
     cams = collection("CIN_Cameras", root)
+    y0 = THRONE_Y
     specs = (
-        ("SHOT_01_RETURN_CAM", (-13,-36,6.5), (0,-8,2.3), 44),
-        ("SHOT_02_HOMECOMING_CAM", (-4,-4,3.4), (7.5,8,2.6), 48),
-        ("SHOT_03_PEACE_CAM", (-34,-34,15), (2,7,3.2), 54),
-        ("SHOT_04_RUMBLE_CAM", (4,-21,2.1), (3,12,5.0), 52),
-        ("SHOT_05_OMEN_CAM", (-16,4,8), (-7,8,9), 68),
-        ("SHOT_06_THRONE_REVEAL_CAM", (0,-25,5.0), (0,18,4.6), 42),
-        ("SHOT_07_KING_AWAKENS_CAM", (-6,1,4.0), (0,14.5,4.2), 58),
-        ("SHOT_08_LAST_ARGUMENT_CAM", (0,4.0,3.4), (0,14.0,3.3), 74),
+        # Surface: heroes foreground, village/mountains progressively opened.
+        ("SHOT_01_RETURN_CAM", (0,-42,5.5), (0,-6,2.8), 50),
+        ("SHOT_02_HOMECOMING_CAM", (HALL_X,-12.5,3.1), (HALL_X,4.5,2.6), 46),
+        ("SHOT_03_PEACE_CAM", (-31,-37,13.5), (2,6,3.2), 48),
+        ("SHOT_04_RUMBLE_CAM", (8,-30,3.0), (0,-17,2.5), 58),
+        ("SHOT_05_OMEN_CAM", (-13,1,10.8), (-7,8,9.0), 76),
+        # Underworld: physically isolated set, so no village geometry can leak.
+        ("SHOT_06_THRONE_REVEAL_CAM", (0,y0-37,6.4), (0,y0+18,4.2), 44),
+        ("SHOT_07_KING_AWAKENS_CAM", (-7,y0+1,4.4), (0,y0+14.2,3.6), 60),
+        ("SHOT_08_LAST_ARGUMENT_CAM", (0,y0+5.5,3.5), (0,y0+14.2,3.35), 78),
     )
     created = {}
     for name, loc, tgt, lens in specs:
         created[name] = camera(name, loc, tgt, lens, cams)
     return created
 
-
 def add_lighting(root, mats):
     lights = collection("CIN_Lights", root)
+
     sun_data = bpy.data.lights.new("Surface_Sun_Data", type='SUN')
-    sun_data.energy = 2.2
-    sun_data.color = (0.64,0.70,0.78)
+    sun_data.energy = 3.0
+    sun_data.color = (0.74,0.80,0.92)
     sun = bpy.data.objects.new("Surface_Sun", sun_data)
     sun.rotation_euler = (math.radians(31), math.radians(-18), math.radians(-34))
     lights.objects.link(sun)
 
+    # Cool top light for the distant throne; braziers remain the warm focal
+    # sources and prevent the dark set from becoming uniformly orange.
     key_data = bpy.data.lights.new("Throne_Key_Data", type='AREA')
-    key_data.energy = 1500
+    key_data.energy = 1100
     key_data.shape = 'DISK'
-    key_data.size = 12
-    key_data.color = (0.22,0.25,0.34)
+    key_data.size = 14
+    key_data.color = (0.20,0.28,0.44)
     key = bpy.data.objects.new("Throne_Key", key_data)
-    key.location = (0,4,11)
-    key.rotation_euler = (math.radians(24),0,0)
+    key.location = (0,THRONE_Y+5,14)
+    direction=Vector((0,THRONE_Y+18,3.5))-key.location
+    key.rotation_euler=direction.to_track_quat('-Z','Y').to_euler()
     lights.objects.link(key)
-
 
 def remap_and_pack_images():
     """Resolve workstation-authored texture paths back into the repository and pack them."""
@@ -412,29 +545,35 @@ def set_world():
     world = bpy.data.worlds.new("Magenheim_Cinematic_World")
     world.use_nodes = True
     bg = world.node_tree.nodes.get("Background")
-    bg.inputs["Color"].default_value = (0.075,0.095,0.13,1)
-    bg.inputs["Strength"].default_value = .48
+    bg.inputs["Color"].default_value = (0.16,0.22,0.31,1)
+    bg.inputs["Strength"].default_value = .72
     bpy.context.scene.world = world
 
 
 def materials():
     return {
-        "ground": mat("CIN_Ground", (.17,.19,.18), .95),
-        "path": mat("CIN_Path", (.22,.20,.17), .97),
-        "wood": mat("CIN_Timber", (.22,.15,.10), .82),
+        "ground": mat("CIN_Ground", (.15,.22,.16), .95),
+        "path": mat("CIN_Path", (.24,.21,.17), .97),
+        "wood": mat("CIN_Timber", (.25,.16,.09), .82),
         "darkwood": mat("CIN_DarkTimber", (.09,.065,.05), .88),
         "roof": mat("CIN_Roof", (.14,.12,.11), .96),
         "stone": mat("CIN_VillageStone", (.28,.30,.31), .93),
         "pine": mat("CIN_Pine", (.075,.12,.10), .97),
-        "mountain_far": mat("CIN_MountainFar", (.20,.25,.31), 1.0),
-        "mountain_mid": mat("CIN_MountainMid", (.17,.21,.25), 1.0),
-        "mountain_near": mat("CIN_MountainNear", (.12,.15,.17), 1.0),
+        "mountain_far": mat("CIN_MountainFar", (.25,.32,.42), 1.0, emission=(.25,.32,.42), emission_strength=.12),
+        "mountain_mid": mat("CIN_MountainMid", (.19,.25,.32), 1.0, emission=(.19,.25,.32), emission_strength=.10),
+        "mountain_near": mat("CIN_MountainNear", (.12,.17,.20), 1.0, emission=(.12,.17,.20), emission_strength=.08),
         "basalt": mat("CIN_Basalt", (.055,.060,.070), .92),
         "basalt_dark": mat("CIN_BasaltDark", (.025,.028,.035), .96),
         "blackmetal": mat("CIN_BlackMetal", (.025,.025,.030), .34, .78),
         "cloth": mat("CIN_BlackCloth", (.018,.019,.024), .88),
         "eclipse": mat("CIN_Eclipse", (.23,.23,.24), .75),
         "eye": mat("CIN_EyeGlow", (.20,.005,.003), .25, emission=(1.0,.01,.005), emission_strength=7.0),
+        "window": mat("CIN_WindowWarm", (.42,.14,.035), .65, emission=(1.0,.24,.045), emission_strength=2.0),
+        "hero": mat("CIN_HeroProxy", (.045,.055,.065), .82),
+        "villager": mat("CIN_VillagerProxy", (.20,.10,.065), .90),
+        "raven": mat("CIN_RavenProxy", (.012,.015,.020), .94),
+        "king": mat("CIN_KingProxy", (.008,.010,.014), .68, .35),
+        "hall_floor": mat("CIN_HallFloor", (.11,.075,.045), .90),
     }
 
 
@@ -489,9 +628,9 @@ def verify():
     scene = bpy.context.scene
     required_objects = {
         "AUTH_DarkThrone", "AUTH_Firmament", "AUTH_NullGate",
-        "NOWHERE_KING_ROOT", "HERO_A_ROOT", "HERO_B_ROOT", "HERO_C_ROOT",
-        "SHOT_01_RETURN_CAM", "SHOT_06_THRONE_REVEAL_CAM", "SHOT_08_LAST_ARGUMENT_CAM",
-        "Village_GreatHall_TimberBody", "ThroneHall_Floor",
+        "NOWHERE_KING_ROOT", "HERO_A_ROOT", "HERO_B_ROOT", "HERO_C_ROOT", "RAVEN_ROOT",
+        "SHOT_01_RETURN_CAM", "SHOT_02_HOMECOMING_CAM", "SHOT_06_THRONE_REVEAL_CAM", "SHOT_08_LAST_ARGUMENT_CAM",
+        "Village_GreatHall_TimberBody", "HallInterior_Floor", "ThroneHall_Floor",
     }
     missing = sorted(name for name in required_objects if name not in bpy.data.objects)
     if missing:
@@ -526,6 +665,8 @@ def build(output: Path, preview_dir: Path | None):
     set_world()
     print("CINEMATIC BUILD village", flush=True)
     add_village(mats, root)
+    print("CINEMATIC BUILD hall interior", flush=True)
+    add_hall_interior(mats, root)
     print("CINEMATIC BUILD throne", flush=True)
     add_throne_environment(mats, root)
     print("CINEMATIC BUILD cameras", flush=True)
