@@ -13,7 +13,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Underworld armour source-rig verification fail
 & "$PSScriptRoot/blender.ps1" export-model-assets @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld armour GLB/model export failed.' }
 
-python "$PSScriptRoot/verify-model-assets.py"
+python "$PSScriptRoot/verify-model-assets.py" @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld armour model verification failed.' }
 
 & "$PSScriptRoot/blender.ps1" render-underworld-armour-icons @ids
