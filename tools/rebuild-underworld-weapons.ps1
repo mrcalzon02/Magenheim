@@ -26,7 +26,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Underworld weapon model catalog verification f
 & "$PSScriptRoot/blender.ps1" render-weapon-icons @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld weapon icon rendering failed.' }
 
-python "$PSScriptRoot/verify-icon-assets.py"
+python "$PSScriptRoot/verify-icon-assets.py" @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld weapon icon verification failed.' }
 
 Write-Host 'REBUILT all 12 Underworld crystal-chassis weapon derivatives and icons.'
