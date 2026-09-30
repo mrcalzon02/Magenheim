@@ -1,7 +1,7 @@
 """Validate committed model assets and write the reviewable catalog."""
 from pathlib import Path
 
-import csv,json,math,struct,hashlib,zlib
+import csv,json,math,struct,hashlib,zlib,sys
 
 _texture_range={}
 
@@ -32,9 +32,14 @@ def _png_luminance_range(png):
  return (min(values),max(values)) if values else (0,255)
 
 root=Path(__file__).resolve().parents[1];assets=root/'assets/models'
+selected=set(sys.argv[1:])
 rows=[]
+found=set()
 for file in sorted((assets/'runtime').glob('*.model.json')):
- id=file.name.removesuffix('.model.json');source=assets/'source'/(id+'.blend');glb=assets/'glb'/(id+'.glb')
+ id=file.name.removesuffix('.model.json')
+ if selected and id not in selected: continue
+ found.add(id)
+ source=assets/'source'/(id+'.blend');glb=assets/'glb'/(id+'.glb')
  assert source.exists() and glb.exists(),f'Missing editable/interchange model: {id}'
  # Compressed Blender files use Zstandard; uncompressed files begin with BLENDER.
  head=source.read_bytes()[:7];assert head.startswith(b'BLENDER') or head.startswith(bytes.fromhex('28b52ffd')),f'Invalid Blender file: {id}'
@@ -87,6 +92,12 @@ for file in sorted((assets/'runtime').glob('*.model.json')):
   for primitive in m['primitives']:
    for key in ('POSITION','NORMAL','TEXCOORD_0'):assert key in primitive['attributes'],(id,key)
  rows.append(dict(id=id,parts=len(doc['parts']),triangles=triangles,materials=len(materials),source='source/'+source.name,glb='glb/'+glb.name,runtime='runtime/'+file.name,source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),runtime_sha256=hashlib.sha256(file.read_bytes()).hexdigest(),glb_sha256=hashlib.sha256(data).hexdigest()))
+if selected:
+ missing=sorted(selected-found)
+ assert not missing,('Requested model(s) have no runtime payload',missing)
+ print(f'PASS: targeted model verification for {len(rows)} model(s): '+', '.join(sorted(found)))
+ sys.exit(0)
+
 # 366 is the admitted pre-Underworld-production baseline. Production families are additive,
 # so this gate must reject contraction without rejecting a correct expansion of the library.
 BASELINE_MODEL_FLOOR=366
