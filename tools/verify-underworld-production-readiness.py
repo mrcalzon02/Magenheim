@@ -260,6 +260,18 @@ require("export-model-assets @sulfurCreatureIds" in production_rebuild and
         "Sulfur creature production no longer exports/verifies runtime payloads")
 
 for creature_id in (
+    "underworld-creature-fume-wraith",
+    "underworld-creature-magma-leaper",
+    "underworld-creature-furnace-golem",
+):
+    require(creature_id in production_rebuild,
+            "Remaining Sulfur creature production run lost "+creature_id)
+require("author-underworld-sulfur-remainder" in production_rebuild and
+        "export-model-assets @sulfurRemainderIds" in production_rebuild and
+        "verify-model-assets.py\" @sulfurRemainderIds" in production_rebuild,
+        "Remaining Sulfur creature production no longer authors/exports/verifies runtime payloads")
+
+for creature_id in (
     "underworld-creature-rime-moth",
     "underworld-creature-frost-tick",
     "underworld-creature-iceblind",
