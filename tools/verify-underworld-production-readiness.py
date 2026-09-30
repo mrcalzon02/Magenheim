@@ -258,6 +258,22 @@ for creature_id in (
 require("export-model-assets @sulfurCreatureIds" in production_rebuild and
         "verify-model-assets.py\" @sulfurCreatureIds" in production_rebuild,
         "Sulfur creature production no longer exports/verifies runtime payloads")
+
+for creature_id in (
+    "underworld-creature-rime-moth",
+    "underworld-creature-frost-tick",
+    "underworld-creature-iceblind",
+    "underworld-creature-pale-burrower",
+    "underworld-creature-rimewing",
+    "underworld-creature-glacier-stalker",
+    "underworld-creature-cryolith-guardian",
+):
+    require(creature_id in production_rebuild,
+            "Frozen creature production run lost "+creature_id)
+require("author-underworld-frozen-creatures" in production_rebuild and
+        "export-model-assets @frozenCreatureIds" in production_rebuild and
+        "verify-model-assets.py\" @frozenCreatureIds" in production_rebuild,
+        "Frozen creature production no longer authors/exports/verifies runtime payloads")
 reuse_authority=(ROOT/"src"/"Magenheim.Core"/"Underworld"/"UnderworldVanillaDungeonReuseCatalog.cs").read_text()
 require("MinimumLinearRoomScale = 1.5d" in reuse_authority,
         "ordinary Underworld vanilla-room scale floor is not 1.5x")
