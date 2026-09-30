@@ -42,11 +42,5 @@ internal static class UnderworldSurtlings
         new("Umbral", Body.Masculine, "Skeleton", 1.10f, 1.00f, "Low-luminosity deeps"),
     };
 
-    /// <summary>Humanoid donors surveyed at registration so the choice above rests on logged evidence.</summary>
-    internal static readonly string[] DonorCandidates =
-    {
-        "Draugr", "Draugr_Elite", "Draugr_Ranged", "Skeleton", "Skeleton_Poison", "Charred_Melee", "Charred_Mage",
-        "Charred_Archer", "Dverger", "DvergerMage", "DvergerMageFire", "DvergerMageIce", "DvergerMageSupport",
-        "Goblin", "GoblinBrute", "GoblinShaman", "Fenring", "Troll", "BogWitchKvastur",
-    };
+
 }
