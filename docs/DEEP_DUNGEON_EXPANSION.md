@@ -232,7 +232,7 @@ The following foundation already exists in source.
 
 - private donor-room cloning from `DungeonDB`;
 - private Magenheim dungeon themes;
-- 1.5x room root scaling;
+- connection-safe 1.5x structural scaling under a private scale root while the `Room` root remains unscaled;
 - corresponding `Room.m_size` expansion;
 - live donor min/max room-count expansion;
 - enlarged generator legal zone;
@@ -255,57 +255,42 @@ Underworld production forge.
 The old files remain preserved, but future production runs should not spend Blender capacity
 regenerating those five retired bespoke room families.
 
-### 6.4 Fail-closed runtime status
+### 6.4 Runtime admission status
 
-All five ordinary dungeon definitions remain:
-
-`UnderworldDungeonStatus.Planned`
-
-Therefore the generic registrar currently seeds **none of them**.
-
-Deep Fracture remains:
+All five ordinary expanded-vanilla dungeon definitions and Deep Fracture are now:
 
 `UnderworldDungeonStatus.RuntimeReady`
 
-This is intentional. No ordinary donor dungeon should become visible in worldgen until its gates
-below have been passed.
+The generic registrar requires all five ordinary donor families together. Partial ordinary-dungeon
+admission is treated as an error rather than a supported configuration. The retired
+`EnablePlannedCandidateWorldgen` and `CandidateDungeon` config keys remain bound only so older
+profiles do not fail startup; they no longer alter registration or worldgen.
 
 ---
 
 # 7. Implementation gates
 
-The following gates are sequential. A later gate does not compensate for an earlier failure.
-
-A dungeon may be promoted individually; all five do not need to become RuntimeReady at once.
+The following gates remain acceptance gates. Source runtime admission is complete; installed-game
+evidence still determines whether a defect exists and must be repaired.
 
 The gate identifiers in this document are authoritative and intentionally match `BACKLOG.md`,
-`TESTING.md`, validation records and fail-closed source verifiers.
+`TESTING.md`, validation records and source verifiers.
 
-### Current execution state — 2026-09-29
+### Current execution state — 2026-09-30
 
 | Gate | Current state | What exists now | What still clears the gate |
 |---|---|---|---|
-| DDE-00 | Source-enforced; execution evidence pending | `verify-deep-dungeon-expansion-gate0.py` is wired into normal build and production preflight | Successful execution in the current build/Valheim environment |
+| DDE-00 | Source-enforced; execution evidence pending | `verify-deep-dungeon-expansion-gate0.py` now requires all five ordinary families RuntimeReady together | Successful execution in the installed build environment |
 | DDE-01 | Tooling implemented; live evidence pending | `magenheim_underworld donors` captures a live donor census for all five families | Installed-game census succeeds and evidence is reviewed |
-| DDE-02..DDE-10 | Static prerequisites + live audit harness implemented; live evidence pending | `verify-deep-dungeon-expansion-source-prerequisites.py` guards source seams; `magenheim_underworld dde audit` inspects loaded private rooms, connection-safe scale, ecology, rewards, lore stripping and owning-biome registration | Each donor passes its corresponding installed-game gates |
-| DDE-11 | Source evidence harness implemented; live evidence pending | `magenheim_underworld dde` writes in-dungeon snapshots with generation fingerprint, network-view validity, peer count and harvest/population state | Save/reload, reconnect and two-peer dungeon cases pass with compared snapshots |
-| DDE-12 | Generation instrumentation implemented; live balance/performance pending | Automatic generation evidence records elapsed generation time and managed-memory delta; `TESTING.md` defines the broader measurement pass | Economy and installed-game performance measurements are acceptable |
-| DDE-13 | Blocked | Promotion remains explicit and per-family | A single donor has DDE-00..DDE-12 evidence and its catalog row is deliberately promoted |
-| DDE-14 | Blocked | Deep Fracture is still separate and RuntimeReady | Final regression proves ordinary reuse did not alter Deep Fracture |
+| DDE-02..DDE-10 | Runtime implementation + live audit harness present; live evidence pending | All five families register through the generic donor registrar; `magenheim_underworld dde audit` checks loaded derivatives | Installed-game audits and traversal checks pass |
+| DDE-11 | Runtime evidence harness implemented; live evidence pending | `magenheim_underworld dde snapshot` records persistence/network state | Save/reload, reconnect and two-peer cases pass |
+| DDE-12 | Generation instrumentation implemented; live balance/performance pending | Automatic generation evidence records generation time and managed-memory delta | Economy and installed-game performance measurements are acceptable |
+| DDE-13 | Source admission complete | All five ordinary catalog rows are RuntimeReady together | No further catalog promotion step remains |
+| DDE-14 | Live regression pending | Deep Fracture remains separate and RuntimeReady | Final installed-game regression confirms no cross-lane damage |
 
-All five ordinary catalog entries remain `Planned`. This table must not be interpreted as runtime
-acceptance merely because source prerequisites exist.
-
-### Candidate-world workflow
-
-Live validation of a Planned donor uses the developer-only
-`Development.DeepDungeonExpansion.EnablePlannedCandidateWorldgen` policy. It is disabled by
-default, admits exactly one Planned ordinary dungeon at a time, defaults to Fungal Forest for the
-first validation lane, and is included in gameplay peer authority so multiplayer cannot silently
-disagree about candidate admission.
-
-Candidate admission is a test exception only. It does not change a catalog row to `RuntimeReady`
-and must be disabled again outside disposable DDE validation worlds.
+Source admission must not be described as installed-game acceptance. The five ordinary dungeons are
+enabled now; any live failure is a bug to repair in the authoritative donor runtime, not a reason to
+fall back to one-at-a-time candidate gating.
 
 ---
 
@@ -671,26 +656,21 @@ the dungeon back toward vanilla size.
 
 ---
 
-## DDE-13 — Per-family promotion
+## DDE-13 — All-family runtime admission
 
-A dungeon may move from `Planned` to `RuntimeReady` only after its donor-specific gates pass.
+The five ordinary donor families are RuntimeReady together:
 
-Recommended order:
+1. **Fungal Forest / Burial Chambers**
+2. **Blackwater Deep / Sunken Crypts**
+3. **Sulfurous Wastes / Infested Mines**
+4. **Frozen Caverns / Frost Caves**
+5. **Great Decay / Winding Tunnels**
 
-1. **Fungal Forest / Burial Chambers**  
-   Lowest-risk first proof of the generic clone pipeline.
-2. **Frozen Caverns / Frost Caves**  
-   Strong visual fit and useful vertical/pathing test.
-3. **Blackwater Deep / Sunken Crypts**  
-   Tests obstruction/resource conversion and wet crypt grammar.
-4. **Sulfurous Wastes / Infested Mines**  
-   Highest ordinary complexity: verticality, hidden routes, larger room vocabulary.
-5. **Great Decay / Winding Tunnels**  
-   Newer donor family and therefore last until its current-game behavior is fully censused.
+The generic registrar requires all five profiles and worldgen requires every catalog row. There is no
+supported one-family production mode and no remaining per-family promotion step.
 
-Promotion changes only the individual catalog entry's status after evidence exists.
-
-Do **not** mark all five RuntimeReady merely because one donor family works.
+Live acceptance remains mandatory evidence for quality claims. If one donor fails in installed
+Valheim, repair that donor path while keeping the production architecture unified.
 
 ---
 
