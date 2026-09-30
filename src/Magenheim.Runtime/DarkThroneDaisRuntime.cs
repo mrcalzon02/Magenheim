@@ -13,8 +13,15 @@ internal sealed class DarkThroneDaisRuntime : MonoBehaviour, Hoverable, Interact
     // Valheim 1.0 vanilla prefab: display name "Malicious Blood".
     internal const string MaliciousBloodPrefabName = "HatefulBlood";
     private DarkThroneEncounterRuntime? _encounter;
+    private Transform? _interactionAnchor;
 
     internal void Bind(DarkThroneEncounterRuntime encounter)=>_encounter=encounter;
+    internal void Bind(DarkThroneEncounterRuntime encounter,Transform interactionAnchor)
+    {
+        _encounter=encounter;
+        _interactionAnchor=interactionAnchor;
+    }
+    private Transform InteractionAnchor=>_interactionAnchor!=null?_interactionAnchor:transform;
 
     public string GetHoverName()=>"Dark Throne";
     public float GetHoverOffset()=>0f;
@@ -38,7 +45,7 @@ internal sealed class DarkThroneDaisRuntime : MonoBehaviour, Hoverable, Interact
             var offering=user.GetInventory()?.GetAllItems().Find(item=>item.m_dropPrefab!=null&&item.m_dropPrefab.name==MaliciousBloodPrefabName);
             if(offering!=null)return UseItem(user,offering);
         }
-        if(_encounter.HasBeenDefeated&&UnderworldCompatibility.IsAvailable)return UnderworldCompatibility.TryEnter(user,transform);
+        if(_encounter.HasBeenDefeated&&UnderworldCompatibility.IsAvailable)return UnderworldCompatibility.TryEnter(user,InteractionAnchor);
         return false;
     }
 
@@ -46,7 +53,7 @@ internal sealed class DarkThroneDaisRuntime : MonoBehaviour, Hoverable, Interact
     {
         if(user==null||item==null||_encounter==null||_encounter.IsKingActive||!_encounter.HasBeenDefeated)return false;
         if(item.m_dropPrefab==null||item.m_dropPrefab.name!=MaliciousBloodPrefabName)return false;
-        if(!user.GetInventory().ContainsItem(item)||item.m_stack<1||Vector3.Distance(user.transform.position,transform.position)>5f)return false;
+        if(!user.GetInventory().ContainsItem(item)||item.m_stack<1||Vector3.Distance(user.transform.position,InteractionAnchor.position)>5f)return false;
         if(!_encounter.TryResummonKing())return false;
         user.GetInventory().RemoveItem(item,1);
         return true;

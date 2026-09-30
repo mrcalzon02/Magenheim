@@ -10,7 +10,8 @@ IDS=(
  "blackstone-throne","blackstone-banner","blackstone-attendant-seat","blackstone-brazier",
  "blackstone-stair","blackstone-dais","blackstone-parapet","blackstone-bridge",
  "blackstone-arch","blackstone-cliff-edge","blackstone-floor-tile","blackstone-spire",
- "blackstone-pillar","dark-throne",
+ "blackstone-pillar","blackstone-terrace","blackstone-wall-buttress",
+ "blackstone-cathedral-wall","blackstone-gate","dark-throne",
 )
 
 def cross(a,b,c):
@@ -72,26 +73,57 @@ requirements={
  "throne":sum(n.startswith("Throne_") for n in names)>=20,
  "dais":sum(n.startswith("Dais_") for n in names)>=5,
  "runes":sum(n.startswith("Rune_") for n in names)==8,
- "braziers":len({n.split("_")[1] for n in names if n.startswith("Brazier_") and len(n.split("_"))>1})>=8,
+ "braziers":len({n.split("_")[1] for n in names if n.startswith("Brazier_") and len(n.split("_"))>1})>=12,
  "banners":sum(n.startswith("Banner_") for n in names)>=20,
  "seats":sum(n.startswith("Seat_") for n in names)>=12,
- "terrain":sum(n.startswith(("Floor_","Terrace_","Cliff_","Bridge_","Parapet_","Arch_","Pillar_","Spire_")) for n in names)>=90,
+ "terrain":sum(n.startswith(("LowerTerrace_","IntermediateTerrace_","UpperTerrace_","ThronePlatform_",
+                            "SideLowerTerrace_","SideUpperTerrace_","Cliff_","Bridge_","GrandStair_",
+                            "Arch_","Spire_","CathedralWall_","RearWall_","Buttress_","HighGalleryRail_","Gate_"))
+               for n in names)>=180,
+ "cathedral_walls":sum(n.startswith(("CathedralWall_","RearWall_")) for n in names)>=80,
+ "stacked_stairs":sum(n.startswith("GrandStair_") for n in names)>=30,
 }
 bad=[k for k,v in requirements.items() if not v]
 if bad: raise SystemExit("dark-throne: missing assembled role coverage: "+", ".join(bad))
-if len(site["parts"])<170: raise SystemExit(f"dark-throne: expected >=170 authored parts, found {len(site['parts'])}")
+if len(site["parts"])<360: raise SystemExit(f"dark-throne: expected >=360 authored parts, found {len(site['parts'])}")
 if len(site.get("lights") or [])<16: raise SystemExit("dark-throne: expected brazier + rune runtime lights")
 foundation=next((p for p in site["parts"] if p["name"]=="Arena_Foundation"),None)
 if foundation is None: raise SystemExit("dark-throne: Arena_Foundation missing")
 fx=[v[0] for v in foundation["vertices"]]; fz=[v[2] for v in foundation["vertices"]]
 if min(fx)<-26.05 or max(fx)>26.05 or min(fz)<-30.05 or max(fz)>30.05:
-    raise SystemExit(f"dark-throne: legal combat plate changed from 52x60m authority: x={min(fx):.2f}..{max(fx):.2f} z={min(fz):.2f}..{max(fz):.2f}")
-# Decorative cliff/spire/parapet silhouettes may stand just outside the hard-leash plate; they
-# cannot move the encounter boundary or expand into an unbounded location footprint.
+    raise SystemExit(f"dark-throne: X/Z authority marker changed from 52x60m: x={min(fx):.2f}..{max(fx):.2f} z={min(fz):.2f}..{max(fz):.2f}")
+if foundation.get("collider"):
+    raise SystemExit("dark-throne: Arena_Foundation must remain a non-walkable deep authority marker, not a flat combat plate")
+fy=[v[1] for v in foundation["vertices"]]
+if max(fy)>-18.5:
+    raise SystemExit(f"dark-throne: authority marker rose into the playable hall: y={min(fy):.2f}..{max(fy):.2f}")
+
+def part_height(name):
+    part=next((p for p in site["parts"] if p["name"]==name),None)
+    if part is None: raise SystemExit("dark-throne: missing vertical level part "+name)
+    values=[v[1] for v in part["vertices"]]
+    return (min(values)+max(values))*.5
+
+levels=[
+ ("LowerTerrace_Deck",1.0,2.2),
+ ("IntermediateTerrace_Deck",4.8,6.0),
+ ("UpperTerrace_Deck",9.0,10.2),
+ ("ThronePlatform_Deck",12.2,13.4),
+]
+previous=-1e9
+for name,minimum,maximum in levels:
+    y=part_height(name)
+    if y<minimum or y>maximum: raise SystemExit(f"dark-throne: {name} height {y:.2f} outside intended tier {minimum:.2f}..{maximum:.2f}")
+    if y<=previous+2.0: raise SystemExit("dark-throne: vertical tiers collapsed into a flat arena")
+    previous=y
+
+# Decorative cathedral architecture may exceed the leash in X/Z, but remains a bounded location.
 verts=[v for p in site["parts"] for v in p["vertices"]]
-xs=[v[0] for v in verts]; zs=[v[2] for v in verts]
-if min(xs)<-30.5 or max(xs)>30.5 or min(zs)<-31.5 or max(zs)>31.5:
-    raise SystemExit(f"dark-throne: decorative structure escaped bounded site footprint x={min(xs):.2f}..{max(xs):.2f} z={min(zs):.2f}..{max(zs):.2f}")
+xs=[v[0] for v in verts]; ys=[v[1] for v in verts]; zs=[v[2] for v in verts]
+if min(xs)<-34.5 or max(xs)>34.5 or min(zs)<-34.0 or max(zs)>34.0:
+    raise SystemExit(f"dark-throne: decorative structure escaped bounded site envelope x={min(xs):.2f}..{max(xs):.2f} z={min(zs):.2f}..{max(zs):.2f}")
+if min(ys)>-19.0 or max(ys)<30.0 or max(ys)-min(ys)<49.0:
+    raise SystemExit(f"dark-throne: reference-scale verticality missing y={min(ys):.2f}..{max(ys):.2f}")
 
 art=ROOT/"assets"/"textures"/"underworld"/"blackstone"
 required_art={
@@ -112,4 +144,4 @@ missing=sorted(name for name in required_pbr if not (pbr/name).is_file())
 if missing: raise SystemExit("Blackstone owned PBR source maps missing: "+", ".join(missing))
 
 print("VERIFIED Blackstone Throne set:",len(IDS),"real Blender/GLB/runtime triplets,",len(site["parts"]),
-      "assembled parts, topology/winding/UV/albedo/PBR checks, modular throne/banner/seat/brazier/terrain coverage")
+      "assembled parts, four playable elevation tiers, cathedral wall/buttress envelope, abyss foundation, topology/winding/UV/albedo/PBR checks")

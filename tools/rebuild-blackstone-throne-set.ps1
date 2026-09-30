@@ -3,7 +3,8 @@ $ids=@(
  'blackstone-throne','blackstone-banner','blackstone-attendant-seat','blackstone-brazier',
  'blackstone-stair','blackstone-dais','blackstone-parapet','blackstone-bridge',
  'blackstone-arch','blackstone-cliff-edge','blackstone-floor-tile','blackstone-spire',
- 'blackstone-pillar','dark-throne'
+ 'blackstone-pillar','blackstone-terrace','blackstone-wall-buttress',
+ 'blackstone-cathedral-wall','blackstone-gate','dark-throne'
 )
 
 python "$PSScriptRoot/generate-blackstone-throne-textures.py"
@@ -22,4 +23,4 @@ if($LASTEXITCODE -ne 0){throw 'Blackstone generated-asset ownership recording fa
 python "$PSScriptRoot/verify-generated-freshness.py" blackstone-throne-textures blackstone-throne-set
 if($LASTEXITCODE -ne 0){throw 'Blackstone generated-asset freshness verification failed.'}
 
-Write-Host 'REBUILT Blackstone Throne: 13 modular structure models + assembled dark-throne site + owned 2D graphics.'
+Write-Host 'REBUILT Blackstone Throne: 17 modular structure models + vertical assembled dark-throne site + owned 2D/PBR graphics.'

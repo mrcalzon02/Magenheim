@@ -17,7 +17,8 @@ IDS=(
  "blackstone-throne","blackstone-banner","blackstone-attendant-seat","blackstone-brazier",
  "blackstone-stair","blackstone-dais","blackstone-parapet","blackstone-bridge",
  "blackstone-arch","blackstone-cliff-edge","blackstone-floor-tile","blackstone-spire",
- "blackstone-pillar","dark-throne",
+ "blackstone-pillar","blackstone-terrace","blackstone-wall-buttress",
+ "blackstone-cathedral-wall","blackstone-gate","dark-throne",
 )
 
 def wloc(x,y,z): return (x,-z,y)
@@ -234,6 +235,75 @@ def build_pillar(m,prefix="Pillar",origin=(0,0,0),scale=1.0):
     box(prefix+"_Capital",(ox,oy+4.82*scale,oz),(1.75*scale,.48*scale,1.75*scale),m["bronze"],collision=True,bevel=.05)
     cone(prefix+"_Finial",(ox,oy+5.65*scale,oz),.42*scale,0,1.25*scale,m["stone"],6,True)
 
+
+def build_terrace(m,prefix="Terrace",origin=(0,0,0),scale=1.0,width=18.0,depth=10.0):
+    """Suspended combat/processional terrace with a readable structural load path."""
+    ox,oy,oz=origin
+    box(prefix+"_Deck",(ox,oy,oz),(width*scale,.72*scale,depth*scale),m["stone"],collision=True,bevel=.07)
+    box(prefix+"_Underdeck",(ox,oy-.66*scale,oz),(width*.88*scale,.62*scale,depth*.88*scale),m["void"],collision=True,bevel=.06)
+    for side in (-1,1):
+        x=ox+side*(width*.5-.42)*scale
+        build_arena_rail(m,f"{prefix}_SideRail_{side}",(x,oy+.48*scale,oz),max(3.5,depth-.8)*scale,"z")
+    build_arena_rail(m,prefix+"_RearRail",(ox,oy+.48*scale,oz+(depth*.5-.42)*scale),max(4.0,width-1.0)*scale,"x")
+    for side in (-1,1):
+        for fore in (-1,1):
+            x=ox+side*(width*.5-1.25)*scale
+            z=oz+fore*(depth*.5-1.25)*scale
+            box(f"{prefix}_Support_{side}_{fore}",(x,oy-3.0*scale,z),(1.05*scale,5.4*scale,1.05*scale),m["void"],collision=True,bevel=.05)
+            cone(f"{prefix}_SupportCrown_{side}_{fore}",(x,oy-.08*scale,z),.58*scale,.30*scale,.80*scale,m["bronze"],6,False)
+
+def build_buttress(m,prefix="Buttress",origin=(0,0,0),scale=1.0):
+    """Tall cathedral buttress used to create the vertical wall rhythm in the reference hall."""
+    ox,oy,oz=origin
+    box(prefix+"_Foot",(ox,oy+.45*scale,oz),(3.0*scale,.90*scale,3.2*scale),m["void"],collision=True,bevel=.09)
+    box(prefix+"_Lower",(ox,oy+4.6*scale,oz),(1.75*scale,7.8*scale,2.0*scale),m["stone"],collision=True,bevel=.07)
+    box(prefix+"_Upper",(ox,oy+10.0*scale,oz),(1.15*scale,5.2*scale,1.45*scale),m["stone"],collision=True,bevel=.05)
+    box(prefix+"_BronzeSpine",(ox,oy+8.8*scale,oz-.78*scale),(.20*scale,10.8*scale,.18*scale),m["bronze"],collision=False,bevel=.018)
+    for side in (-1,1):
+        box(f"{prefix}_Shoulder_{side}",(ox+side*1.15*scale,oy+6.9*scale,oz),(.72*scale,3.4*scale,1.25*scale),m["void"],collision=True,bevel=.05)
+        cone(f"{prefix}_ShoulderCrown_{side}",(ox+side*1.15*scale,oy+9.0*scale,oz),.36*scale,0,1.25*scale,m["stone"],6,True)
+    cone(prefix+"_Crown",(ox,oy+13.1*scale,oz),.72*scale,0,2.7*scale,m["stone"],6,True)
+
+def build_cathedral_wall(m,prefix="CathedralWall",origin=(0,0,0),scale=1.0,length=12.0,axis="x"):
+    """Massive wall panel; broad stone stays broad while ribs, fins and sigil carry the detail."""
+    ox,oy,oz=origin
+    if axis=="x":
+        size=(length*scale,18.0*scale,1.15*scale)
+        rib_positions=[(ox+(-length*.42+i*length*.21)*scale,oz) for i in range(5)]
+        sun=(ox,oy+11.2*scale,oz-.72*scale)
+    else:
+        size=(1.15*scale,18.0*scale,length*scale)
+        rib_positions=[(ox,oz+(-length*.42+i*length*.21)*scale) for i in range(5)]
+        sun=(ox-.72*scale,oy+11.2*scale,oz)
+    box(prefix+"_Wall",(ox,oy+9.0*scale,oz),size,m["void"],collision=True,bevel=.08)
+    for i,(x,z) in enumerate(rib_positions):
+        if axis=="x":
+            box(f"{prefix}_Rib_{i+1}",(x,oy+9.4*scale,oz-.66*scale),(.34*scale,15.6*scale,.28*scale),m["stone"],collision=False,bevel=.025)
+        else:
+            box(f"{prefix}_Rib_{i+1}",(ox-.66*scale,oy+9.4*scale,z),(.28*scale,15.6*scale,.34*scale),m["stone"],collision=False,bevel=.025)
+        cone(f"{prefix}_Pinnacle_{i+1}",(x,oy+18.2*scale,z),.24*scale,0,1.5*scale,m["stone"],6,False)
+    add_sun(prefix+"_RoyalSun",sun,m["bronze"],.88*scale)
+
+def build_gate(m,prefix="Gate",origin=(0,0,0),scale=1.0):
+    """Monumental threshold framing the player entry into the throne complex."""
+    ox,oy,oz=origin
+    for side in (-1,1):
+        box(f"{prefix}_Tower_{side}",(ox+side*4.8*scale,oy+5.3*scale,oz),(2.3*scale,10.6*scale,2.5*scale),m["stone"],collision=True,bevel=.08)
+        build_buttress(m,f"{prefix}_Buttress_{side}",(ox+side*6.1*scale,oy,oz+.2*scale),.72*scale)
+        cone(f"{prefix}_TowerCrown_{side}",(ox+side*4.8*scale,oy+11.2*scale,oz),.86*scale,0,2.4*scale,m["stone"],6,True)
+    box(prefix+"_Lintel",(ox,oy+9.8*scale,oz),(8.8*scale,1.2*scale,2.0*scale),m["void"],collision=True,bevel=.08)
+    box(prefix+"_BronzeLintel",(ox,oy+9.65*scale,oz-1.08*scale),(7.1*scale,.28*scale,.18*scale),m["bronze"],collision=False,bevel=.025)
+    add_sun(prefix+"_RoyalSun",(ox,oy+11.4*scale,oz-1.18*scale),m["bronze"],1.05*scale)
+
+def build_cross_bridge(m,prefix,origin,length=10.0,width=5.2):
+    """Horizontal gallery bridge connecting central terraces to the high side walks."""
+    ox,oy,oz=origin
+    box(prefix+"_Deck",(ox,oy,oz),(length,.52,width),m["stone"],collision=True,bevel=.055)
+    for side in (-1,1):
+        build_arena_rail(m,f"{prefix}_Rail_{side}",(ox,oy+.35,oz+side*(width*.5-.30)),length-.5,"x")
+    for side in (-1,1):
+        box(f"{prefix}_Pier_{side}",(ox+side*(length*.36),oy-2.4,oz),(.78,4.6,.78),m["void"],collision=True,bevel=.05)
+
 def build_arena_rail(m,prefix,origin,length=9.0,axis="z"):
     ox,oy,oz=origin
     if axis=="z":
@@ -249,51 +319,81 @@ def build_arena_rail(m,prefix,origin,length=9.0,axis="z"):
         cone(f"{prefix}_Finial_{i+1}",(x,oy+1.68,z),.22,0,.58,m["bronze"],6,False)
 
 def build_assembled(m):
-    # Solid legal combat plate: 52x60 m, matching DarkThroneArena.CreateDefault().
-    box("Arena_Foundation",(0,-.65,0),(52,1.30,60),m["stone"],collision=True,bevel=.10)
-    # Tile the visible combat surface so the huge plate does not read as one stretched texture.
-    n=0
-    for x in (-18,-12,-6,0,6,12,18):
-        for z in (-19,-13,-7,-1,5,11):
-            n+=1; box(f"Floor_Tile_{n}",(x,.12,z),(5.75,.24,5.75),m["stone"],collision=True,bevel=.035)
-    # Formal approach and central dais.
-    build_bridge(m,"Bridge_Approach",(0,.52,-23),1.0,12)
-    build_stair(m,"Dais_Stair",(0,.55,10.8),1.15)
-    build_dais(m,"Dais",(0,1.10,19.0),1.0)
-    build_throne(m,"Throne",(0,2.1,24.0),1.18)
-    # Attendant seats and standards.
-    build_seat(m,"Seat_West",(-6.8,2.35,20.9),.82)
-    build_seat(m,"Seat_East",(6.8,2.35,20.9),.82)
-    build_banner(m,"Banner_West",(-10.2,1.5,26.6),1.10)
-    build_banner(m,"Banner_East",(10.2,1.5,26.6),1.10)
-    # Eight ceremonial braziers retained as the encounter's future extinguish/relight family.
-    brazier_positions=[(-11,.8,-12),(11,.8,-12),(-19,.8,-1),(19,.8,-1),(-15,1.0,11),(15,1.0,11),(-8,2.0,18),(8,2.0,18)]
-    for i,pos in enumerate(brazier_positions): build_brazier(m,f"Brazier_{i+1}",pos,.82,True)
-    # Rune circuit remains grouped under Dais_ by DarkThroneVisuals and surrounds the King home.
+    # The 52x60 X/Z authority remains the Nowhere King leash, NOT a giant walkable floor.
+    # A non-walkable deep foundation records that footprint beneath the suspended throne complex.
+    box("Arena_Foundation",(0,-19.5,0),(52,1.0,60),m["void"],collision=False,bevel=.08)
+
+    # Lower threshold and approach: player entry over a bridge with open abyss on both sides.
+    build_gate(m,"Gate_Approach",(0,-.1,-29.0),.82)
+    build_bridge(m,"Bridge_LowerApproach",(0,.55,-25.0),.92,8.5)
+    build_terrace(m,"LowerTerrace",(0,1.55,-18.2),1.0,26.0,9.5)
+
+    # First climb to the intermediate battle/processional terrace.
+    build_stair(m,"GrandStair_Lower",(0,1.75,-10.5),1.45)
+    build_terrace(m,"IntermediateTerrace",(0,5.35,-2.1),1.0,32.0,13.0)
+
+    # Second climb creates the strong vertical break visible in the reference composition.
+    build_stair(m,"GrandStair_Upper",(0,5.55,6.8),1.58)
+    build_terrace(m,"UpperTerrace",(0,9.55,14.2),1.0,36.0,15.0)
+
+    # Throne platform is another level above the actual boss-combat terrace.
+    build_stair(m,"GrandStair_Throne",(0,9.80,20.3),1.06)
+    build_terrace(m,"ThronePlatform",(0,12.75,25.0),1.0,24.0,8.5)
+    build_dais(m,"Dais",(0,13.25,24.6),.72)
+    build_throne(m,"Throne",(0,14.20,26.0),.96)
+
+    # Court furniture and standards sit on the throne level.
+    build_seat(m,"Seat_West",(-6.6,13.35,23.8),.80)
+    build_seat(m,"Seat_East",(6.6,13.35,23.8),.80)
+    build_banner(m,"Banner_West",(-10.0,12.85,27.0),1.08)
+    build_banner(m,"Banner_East",(10.0,12.85,27.0),1.08)
+
+    # Ceremonial fire marks each elevation and stays individually addressable for phase changes.
+    brazier_positions=[
+        (-9.0,2.05,-18.0),(9.0,2.05,-18.0),
+        (-13.0,5.85,-5.0),(13.0,5.85,-5.0),(-13.0,5.85,1.0),(13.0,5.85,1.0),
+        (-15.0,10.05,10.2),(15.0,10.05,10.2),(-15.0,10.05,17.8),(15.0,10.05,17.8),
+        (-9.0,13.25,24.0),(9.0,13.25,24.0),
+    ]
+    for i,pos in enumerate(brazier_positions):
+        build_brazier(m,f"Brazier_{i+1}",pos,.78 if i<10 else .88,True)
+
+    # Boss rune circuit belongs to the upper combat terrace in front of the throne climb.
     for i in range(8):
-        a=i*math.tau/8
-        x=math.sin(a)*7.4; z=22+math.cos(a)*3.2
-        box(f"Rune_{i+1}",(x,2.34,z),(.32,.08,1.45),m["bronze"],rot=(0,-a,0),collision=True,bevel=.018)
-    # Side processional terraces and strong parapet silhouette.
+        angle=i*math.tau/8
+        x=math.sin(angle)*8.0
+        z=14.5+math.cos(angle)*4.1
+        box(f"Rune_{i+1}",(x,9.98,z),(.34,.08,1.55),m["bronze"],rot=(0,-angle,0),collision=True,bevel=.018)
+
+    # Stacked side galleries and bridge links make the hall a traversable vertical structure.
     for side in (-1,1):
-        box(f"Terrace_{side}",(side*20,.20,3.0),(8.0,.55,34.0),m["void"],collision=True,bevel=.07)
-        for row,z in enumerate((-14,-4,6,16)):
-            build_pillar(m,f"Pillar_{side}_{row}",(side*21.5,.45,z),.72 if row%2 else .82)
-        for row,z in enumerate((-10,4,14)):
-            build_arch(m,f"Arch_{side}_{row}",(side*20,-3.15,z),.75)
-    # Perimeter rails retain the Blackstone silhouette without exploding the assembled site into
-    # hundreds of tiny GameObjects; the standalone parapet asset carries the full ornamental version.
+        build_terrace(m,f"SideLowerTerrace_{side}",(side*21.2,3.45,-4.5),.72,8.0,19.0)
+        build_terrace(m,f"SideUpperTerrace_{side}",(side*22.0,8.55,13.2),.72,7.6,19.5)
+        build_cross_bridge(m,f"Bridge_Intermediate_{side}",(side*18.0,5.55,-1.5),7.5,4.4)
+        build_cross_bridge(m,f"Bridge_Upper_{side}",(side*20.0,9.70,14.0),8.0,4.2)
+
+    # Cathedral side walls and buttresses rise well above the encounter tiers.
     for side in (-1,1):
-        for row,z in enumerate((-18,-6,6,18)):
-            build_arena_rail(m,f"Parapet_X_{side}_{row}",(side*24.2,.55,z),9.0,"z")
+        x=side*28.0
+        for row,z in enumerate((-18.0,-4.0,10.0,24.0)):
+            build_cathedral_wall(m,f"CathedralWall_{side}_{row}",(x,1.0,z),.88,12.0,"z")
+        for row,z in enumerate((-25.0,-13.0,-1.0,11.0,23.0)):
+            build_buttress(m,f"Buttress_{side}_{row}",(side*27.2,.2,z),1.35 if row in (1,3) else 1.18)
+        for row,z in enumerate((-17.0,-5.0,7.0,19.0)):
+            build_arena_rail(m,f"HighGalleryRail_{side}_{row}",(side*25.4,14.4,z),10.5,"z")
+
+    # Rear wall becomes the architectural crown behind the throne instead of empty sky.
+    for col,x in enumerate((-18.0,-6.0,6.0,18.0)):
+        build_cathedral_wall(m,f"RearWall_{col}",(x,5.0,30.0),.96,11.5,"x")
+    for col,x in enumerate((-22.0,-14.5,-7.0,0,7.0,14.5,22.0)):
+        build_spire(m,f"Spire_Rear_{col}",(x,12.0,28.5),2.10 if x else 2.80)
+
+    # Deep understructure and cliff teeth keep the open volume beneath the platforms legible.
     for side in (-1,1):
-        for col,x in enumerate((-15,-5,5,15)):
-            build_arena_rail(m,f"Parapet_Z_{side}_{col}",(x,.55,side*27.9),9.0,"x")
-    # Rear skyline and broken abyss-edge geology.
-    for i,x in enumerate((-18,-13,-8,8,13,18)):
-        build_spire(m,f"Spire_Rear_{i+1}",(x,.3,27.0),.80+(.10*(i%3)))
-    build_cliff(m,"Cliff_West",(-22,-1.0,24),1.0)
-    build_cliff(m,"Cliff_East",(22,-1.0,24),1.0)
+        for row,z in enumerate((-17.0,-3.0,11.0,24.0)):
+            build_arch(m,f"Arch_Under_{side}_{row}",(side*19.5,-5.5,z),1.05)
+            build_cliff(m,f"Cliff_{side}_{row}",(side*25.0,-10.0,z),1.30)
+
 
 BUILD={
  "blackstone-throne":lambda m:build_throne(m),
@@ -309,6 +409,10 @@ BUILD={
  "blackstone-floor-tile":lambda m:build_floor(m),
  "blackstone-spire":lambda m:build_spire(m),
  "blackstone-pillar":lambda m:build_pillar(m),
+ "blackstone-terrace":lambda m:build_terrace(m),
+ "blackstone-wall-buttress":lambda m:build_buttress(m),
+ "blackstone-cathedral-wall":lambda m:build_cathedral_wall(m),
+ "blackstone-gate":lambda m:build_gate(m),
  "dark-throne":build_assembled,
 }
 
@@ -316,7 +420,8 @@ DETAIL_FLOOR={
  "blackstone-throne":20,"blackstone-banner":19,"blackstone-attendant-seat":8,"blackstone-brazier":10,
  "blackstone-stair":12,"blackstone-dais":5,"blackstone-parapet":10,"blackstone-bridge":20,
  "blackstone-arch":8,"blackstone-cliff-edge":4,"blackstone-floor-tile":8,"blackstone-spire":5,
- "blackstone-pillar":4,"dark-throne":170,
+ "blackstone-pillar":4,"blackstone-terrace":18,"blackstone-wall-buttress":8,
+ "blackstone-cathedral-wall":14,"blackstone-gate":20,"dark-throne":360,
 }
 
 def author(model_id):
@@ -331,14 +436,20 @@ def author(model_id):
     scene=bpy.context.scene
     scene["model_id"]=model_id
     scene["magenheim_family"]="blackstone-throne-set"
-    scene["magenheim_fidelity"]="blackstone-throne-r1"
+    scene["magenheim_fidelity"]="blackstone-throne-r2-vertical-hall"
     if model_id=="dark-throne":
         lights=[]
-        for i,(x,y,z) in enumerate([(-11,3.4,-12),(11,3.4,-12),(-19,3.4,-1),(19,3.4,-1),(-15,3.6,11),(15,3.6,11),(-8,4.6,18),(8,4.6,18)]):
-            lights.append({"path":f"Brazier_{i+1}","position":[x,y,z],"color":[1.0,.24,.045],"range":8.5,"intensity":2.2})
+        brazier_lights=[
+            (-9.0,4.15,-18.0),(9.0,4.15,-18.0),
+            (-13.0,7.95,-5.0),(13.0,7.95,-5.0),(-13.0,7.95,1.0),(13.0,7.95,1.0),
+            (-15.0,12.15,10.2),(15.0,12.15,10.2),(-15.0,12.15,17.8),(15.0,12.15,17.8),
+            (-9.0,15.65,24.0),(9.0,15.65,24.0),
+        ]
+        for i,(x,y,z) in enumerate(brazier_lights):
+            lights.append({"path":f"Brazier_{i+1}","position":[x,y,z],"color":[1.0,.24,.045],"range":9.0,"intensity":2.25})
         for i in range(8):
-            a=i*math.tau/8
-            lights.append({"path":f"Rune_{i+1}","position":[math.sin(a)*7.4,2.5,22+math.cos(a)*3.2],"color":[.32,.07,.48],"range":3.4,"intensity":.7})
+            angle=i*math.tau/8
+            lights.append({"path":f"Rune_{i+1}","position":[math.sin(angle)*8.0,10.18,14.5+math.cos(angle)*4.1],"color":[.32,.07,.48],"range":3.8,"intensity":.78})
         scene["runtime_lights"]=json.dumps(lights)
     elif model_id=="blackstone-brazier":
         scene["runtime_lights"]=json.dumps([{"path":"Brazier","position":[0,3.0,0],"color":[1.0,.24,.045],"range":6.0,"intensity":2.0}])

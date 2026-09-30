@@ -26,6 +26,10 @@ The forge owns these editable Blender/GLB/runtime identities:
 - `blackstone-floor-tile`
 - `blackstone-spire`
 - `blackstone-pillar`
+- `blackstone-terrace`
+- `blackstone-wall-buttress`
+- `blackstone-cathedral-wall`
+- `blackstone-gate`
 - `dark-throne` — the assembled final-battle site built from the same design language
 
 Every identity must exist as a real `.blend`, `.glb`, and `.model.json` triplet. Runtime C# does
@@ -47,17 +51,20 @@ runtime model-texture library; Blackstone does not inherit unrelated donor PBR m
 
 ## Encounter constraints
 
-The assembled site remains inside the existing 52 x 60 meter Dark Throne authority footprint.
-This is deliberate: the new architecture may become taller and denser, but it must not silently
-invalidate `DarkThroneArena.CreateDefault()`, the King's hard leash, participant boundary, crystal
-ecology positions or the existing King home anchor.
+The 52 x 60 meter Dark Throne authority remains the encounter's X/Z leash contract, but it is no
+longer represented by a giant walkable floor. `Arena_Foundation` is now a non-colliding marker
+roughly twenty meters beneath the playable architecture. The actual site is a suspended vertical
+hall: gate and lower bridge, lower terrace, first grand stair, intermediate terrace, second grand
+stair, upper combat terrace, throne stair, and a separate throne platform.
 
-The combat plate remains solid. Bridges, arches, terraces and abyss-edge forms create depth around
-the legal arena without punching accidental death holes through the actual fight floor. The King
-still stands before the throne and never sits in it.
+The King spawns and recovers on the upper battle tier in front of the throne. Crystal ecology and
+the dais interaction point are moved onto real walkable tiers instead of remaining at old ground
+level. Side galleries, cross-bridges, under-arches, abyss-edge geology, cathedral walls, buttresses
+and a high rear skyline create the depth visible in the reference without changing the authoritative
+X/Z leash into scenery.
 
-Eight `Brazier_*` families and eight `Rune_*` objects are authored into the assembled site so
-future phase-presentation work can extinguish/relight them without re-authoring the structure.
+Twelve `Brazier_*` families and eight `Rune_*` objects are authored into the assembled site so
+phase presentation can extinguish/relight them without re-authoring the structure.
 
 ## Production path
 
@@ -77,9 +84,10 @@ authoritative `main`.
 
 ## Acceptance boundary
 
-Source/generation acceptance requires all model triplets, owned textures, at least 170 assembled
-site parts, complete throne/banner/seat/brazier/terrain role coverage, eight runes, eight ceremonial
-braziers, and runtime lights while remaining inside the encounter footprint.
+Source/generation acceptance requires all model triplets, owned textures, at least 360 assembled
+site parts, four distinct walkable elevation tiers, complete throne/banner/seat/brazier/terrain role
+coverage, cathedral side/rear wall massing, buttresses, eight runes, twelve ceremonial braziers,
+runtime lights, and at least ~49 meters of total vertical envelope from abyss marker to skyline.
 
 Live acceptance is still separate: Valheim traversal, collision feel, camera readability, boss
 movement/leash behavior, multiplayer ownership, save/reload, and the phase-specific

@@ -43,7 +43,8 @@ ids=[
  "blackstone-throne","blackstone-banner","blackstone-attendant-seat","blackstone-brazier",
  "blackstone-stair","blackstone-dais","blackstone-parapet","blackstone-bridge",
  "blackstone-arch","blackstone-cliff-edge","blackstone-floor-tile","blackstone-spire",
- "blackstone-pillar","dark-throne",
+ "blackstone-pillar","blackstone-terrace","blackstone-wall-buttress",
+ "blackstone-cathedral-wall","blackstone-gate","dark-throne",
 ]
 model_patterns=[]
 for model_id in ids:

@@ -1,2 +1,3 @@
-blackstone-throne-forge pbr-pass-2 2026-09-29
-retry=output-scope-files
+blackstone-throne-forge vertical-reference-r2 2026-09-29
+source=8a7115f3509d762934554e8433efa8e946174581
+intent=replace-flat-plate-with-layered-throne-hall
