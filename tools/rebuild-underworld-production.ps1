@@ -82,6 +82,32 @@ if($LASTEXITCODE -ne 0){throw 'Blackwater creature runtime export failed.'}
 & python "$PSScriptRoot/verify-model-assets.py" @blackwaterCreatureIds
 if($LASTEXITCODE -ne 0){throw 'Blackwater creature runtime payload verification failed.'}
 
+$sulfurCreatureJobs=@(
+    @{Id='underworld-creature-ashmite'; Texture='generate-underworld-ashmite-textures.py'; Author='author-underworld-ashmite'; Animate='animate-underworld-ashmite'; Verify='verify-underworld-ashmite'},
+    @{Id='underworld-creature-cinder-hound'; Texture='generate-underworld-cinder-hound-textures.py'; Author='author-underworld-cinder-hound'; Animate='author-underworld-cinder-hound-actions'; Verify='verify-underworld-cinder-hound'},
+    @{Id='underworld-creature-basalt-crawler'; Texture='generate-underworld-basalt-crawler-textures.py'; Author='author-underworld-basalt-crawler'; Animate='author-underworld-basalt-crawler-actions'; Verify='verify-underworld-basalt-crawler'},
+    @{Id='underworld-creature-vent-spitter'; Texture='generate-underworld-vent-spitter-textures.py'; Author='author-underworld-vent-spitter'; Animate='animate-underworld-vent-spitter'; Verify=$null}
+)
+$sulfurCreatureIds=@()
+foreach($job in $sulfurCreatureJobs){
+    Write-Host "=== Sulfur creature production: $($job.Id) ==="
+    & python "$PSScriptRoot/$($job.Texture)"
+    if($LASTEXITCODE -ne 0){throw "Creature texture generation failed: $($job.Id)"}
+    & "$PSScriptRoot/blender.ps1" $job.Author
+    if($LASTEXITCODE -ne 0){throw "Creature authoring failed: $($job.Id)"}
+    & "$PSScriptRoot/blender.ps1" $job.Animate
+    if($LASTEXITCODE -ne 0){throw "Creature animation authoring failed: $($job.Id)"}
+    if($job.Verify){
+        & "$PSScriptRoot/blender.ps1" $job.Verify
+        if($LASTEXITCODE -ne 0){throw "Creature source verification failed: $($job.Id)"}
+    }
+    $sulfurCreatureIds += $job.Id
+}
+& "$PSScriptRoot/blender.ps1" export-model-assets @sulfurCreatureIds
+if($LASTEXITCODE -ne 0){throw 'Sulfur creature runtime export failed.'}
+& python "$PSScriptRoot/verify-model-assets.py" @sulfurCreatureIds
+if($LASTEXITCODE -ne 0){throw 'Sulfur creature runtime payload verification failed.'}
+
 # Ordinary Underworld dungeons intentionally reuse vanilla entrance/room/generator families.
 # Do NOT forge/promote the legacy Rootwarren/Drowned Vault/Cinderworks/Rime Sepulcher/Carrion
 # bespoke room kits here. Their source assets remain preserved for reference/reuse, while Deep
@@ -117,4 +143,4 @@ if(!$SkipReview){
     & "$PSScriptRoot/blender.ps1" render-underworld-armour-articulation-review
     if($LASTEXITCODE -ne 0){throw 'Underworld armour articulation review failed.'}
 }
-Write-Host 'PRODUCTION READY: 26 PBR families, 40 raw/refined material items, seven Fungal Forest and seven Blackwater Deep creature bodies, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools and armour regenerated and gated. Ordinary Underworld dungeon architecture uses runtime vanilla-donor reuse; creature bodies are authored Blender assets.'
+Write-Host 'PRODUCTION READY: 26 PBR families, 40 raw/refined material items, seven Fungal Forest, seven Blackwater Deep, and four Sulfurous Wastes creature bodies, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools and armour regenerated and gated. Ordinary Underworld dungeon architecture uses runtime vanilla-donor reuse; creature bodies are authored Blender assets.'
