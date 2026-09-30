@@ -279,11 +279,22 @@ Orchard Rotling propagation.
 
 A shared rigid-segment creature runtime/export contract now lets authored creature bodies ride on
 the existing donor gameplay chassis while preserving authored bone rotation, translation and scale
-animation. Seven Fungal Forest bodies, seven Blackwater Deep bodies and four Sulfurous Wastes
-bodies are wired into the normal Underworld production run. Their runtime/GLB payloads still
-require an actual Blender 5.0 production execution. Frozen Caverns and Great Decay creature
-silhouettes, plus the remaining unauthored Sulfur species, remain real asset-construction work rather
-than paper-promoted donor reskins.
+animation. **All 35 ordinary-biome creature species now have authored custom-body source paths**
+wired into the normal Underworld production run. Donor mesh/skinned renderers are disabled when an
+authored runtime payload exists, so the donor remains only the invisible AI/hitbox/network chassis.
+Authored visuals compensate for donor chassis scaling so source models remain at their intended
+physical dimensions.
+
+The source-side creature identity pass now includes the major bespoke mechanics called out by the
+ordinary dungeon work: Fungal conceal/pounce, Shelf Lurker wall-cling/drop attack, Puffback spore
+burst, Blackwater lure/pressure/latch/flee/apex attacks, Shellback armor, Cinder Hound pack rally,
+Vent Spitter pressure attack, Furnace Golem degrading armor, Pale Burrower emergence, Rimewing
+perch release, hearing-led Iceblind perception, rooted Carrion Bloom and rooted Corpse Orchard
+Rotling propagation.
+
+The remaining artifact boundary is execution rather than design/source authoring: the newly authored
+source blends and runtime model payloads still require an actual Blender 5.0 production run, and
+installed-Valheim acceptance remains required before visual/gameplay quality can be claimed.
 
 ### 6.4 Production pipeline cleanup
 
