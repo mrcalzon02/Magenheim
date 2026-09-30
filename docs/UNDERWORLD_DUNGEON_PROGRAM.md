@@ -2,6 +2,8 @@
 
 **Status:** ACTIVE — Deep Fracture remains bespoke; the five ordinary biome dungeons are now an expanded-vanilla reuse program.
 
+**Detailed implementation plan:** [`DEEP_DUNGEON_EXPANSION.md`](DEEP_DUNGEON_EXPANSION.md) is the durable gate-by-gate authority for completing and promoting the five ordinary donor dungeons.
+
 The Underworld is a world-scale realm. Its ordinary dungeons should feel familiar enough that a
 Valheim player recognizes the construction grammar immediately, but large and content-rich enough
 that entering one is a worthwhile expedition rather than a recolored copy of a Surface dungeon.
