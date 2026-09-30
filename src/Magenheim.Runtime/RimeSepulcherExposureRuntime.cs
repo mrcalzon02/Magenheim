@@ -53,6 +53,22 @@ internal static class RimeSepulcherExposureRuntime
             "Magenheim_RimeSepulcher_Exposure");
     }
 
+    internal static void AttachExpandedDonor(
+        GameObject room,
+        UnderworldRimeSepulcherExposureState state,
+        float width,
+        float depth)
+    {
+        if (room is null) throw new ArgumentNullException(nameof(room));
+        state.Validate();
+        Attach(
+            room,
+            state,
+            Mathf.Max(4f, width),
+            Mathf.Max(5f, depth),
+            "Magenheim_DDE_FrozenExposure");
+    }
+
     internal static void AttachPassage(
         GameObject passage,
         UnderworldRimeSepulcherExposureState state)
