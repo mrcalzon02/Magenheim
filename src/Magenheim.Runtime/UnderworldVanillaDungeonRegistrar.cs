@@ -505,7 +505,7 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         UnderworldDungeonCatalog.All.Single(value =>
             string.Equals(value.Id, profile.DungeonId, StringComparison.Ordinal));
 
-    private static string ThemeName(UnderworldVanillaDungeonReuseDefinition profile) =>
+    internal static string ThemeName(UnderworldVanillaDungeonReuseDefinition profile) =>
         "MagenheimUnderworldVanilla" + Safe(profile.Biome.ToString());
 
     private static string RoomPrefabName(
