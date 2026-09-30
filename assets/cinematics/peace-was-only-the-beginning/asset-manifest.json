@@ -1,0 +1,250 @@
+{
+  "schema": 1,
+  "cinematic": "peace-was-only-the-beginning",
+  "policy": {
+    "magenheim_sources": "checked-in editable Blender assets; may be committed and packed into the cinematic scene",
+    "valheim_sources": "runtime-extracted from the provisioned Valheim installation; never committed to the Magenheim repository",
+    "negative_space": "background terrain/sky/fog may remain low-detail; donor fidelity is concentrated near camera and on story-critical forms"
+  },
+  "magenheim": [
+    {
+      "logical": "dark_throne_site",
+      "model": "dark-throne",
+      "required": true
+    },
+    {
+      "logical": "blackstone_throne",
+      "model": "blackstone-throne",
+      "required": true
+    },
+    {
+      "logical": "blackstone_banner",
+      "model": "blackstone-banner",
+      "required": true
+    },
+    {
+      "logical": "blackstone_attendant_seat",
+      "model": "blackstone-attendant-seat",
+      "required": true
+    },
+    {
+      "logical": "blackstone_brazier",
+      "model": "blackstone-brazier",
+      "required": true
+    },
+    {
+      "logical": "blackstone_stair",
+      "model": "blackstone-stair",
+      "required": true
+    },
+    {
+      "logical": "blackstone_dais",
+      "model": "blackstone-dais",
+      "required": true
+    },
+    {
+      "logical": "blackstone_parapet",
+      "model": "blackstone-parapet",
+      "required": true
+    },
+    {
+      "logical": "blackstone_bridge",
+      "model": "blackstone-bridge",
+      "required": true
+    },
+    {
+      "logical": "blackstone_arch",
+      "model": "blackstone-arch",
+      "required": true
+    },
+    {
+      "logical": "blackstone_cliff_edge",
+      "model": "blackstone-cliff-edge",
+      "required": true
+    },
+    {
+      "logical": "blackstone_floor_tile",
+      "model": "blackstone-floor-tile",
+      "required": true
+    },
+    {
+      "logical": "blackstone_spire",
+      "model": "blackstone-spire",
+      "required": true
+    },
+    {
+      "logical": "blackstone_pillar",
+      "model": "blackstone-pillar",
+      "required": true
+    },
+    {
+      "logical": "firmament",
+      "model": "nowhere-king-sword-firmament",
+      "required": true
+    },
+    {
+      "logical": "null_gate",
+      "model": "nowhere-king-sword-null-gate",
+      "required": true
+    }
+  ],
+  "valheim_groups": [
+    {
+      "logical": "timber_wall",
+      "required": true,
+      "candidates": [
+        "piece_woodwall",
+        "woodwall"
+      ]
+    },
+    {
+      "logical": "timber_wall_half",
+      "required": false,
+      "candidates": [
+        "piece_woodwall_half",
+        "woodwall_half"
+      ]
+    },
+    {
+      "logical": "timber_floor",
+      "required": true,
+      "candidates": [
+        "wood_floor",
+        "wood_floor_1x1"
+      ]
+    },
+    {
+      "logical": "roof_26",
+      "required": true,
+      "candidates": [
+        "piece_roof_26",
+        "wood_roof"
+      ]
+    },
+    {
+      "logical": "roof_45",
+      "required": false,
+      "candidates": [
+        "piece_roof_45",
+        "wood_roof_45"
+      ]
+    },
+    {
+      "logical": "door",
+      "required": true,
+      "candidates": [
+        "wood_door",
+        "piece_wood_door"
+      ]
+    },
+    {
+      "logical": "beam",
+      "required": true,
+      "candidates": [
+        "wood_beam",
+        "piece_beam_1",
+        "piece_beam_2"
+      ]
+    },
+    {
+      "logical": "pole",
+      "required": true,
+      "candidates": [
+        "wood_pole",
+        "wood_pole2",
+        "piece_logpole2",
+        "piece_logpole4"
+      ]
+    },
+    {
+      "logical": "stone_floor",
+      "required": false,
+      "candidates": [
+        "stone_floor_2x2",
+        "stone_floor"
+      ]
+    },
+    {
+      "logical": "table",
+      "required": false,
+      "candidates": [
+        "piece_table",
+        "piece_table_oak"
+      ]
+    },
+    {
+      "logical": "bench",
+      "required": false,
+      "candidates": [
+        "piece_bench01",
+        "piece_bench"
+      ]
+    },
+    {
+      "logical": "chair",
+      "required": false,
+      "candidates": [
+        "piece_chair",
+        "piece_chair02"
+      ]
+    },
+    {
+      "logical": "hearth",
+      "required": true,
+      "candidates": [
+        "hearth",
+        "fire_pit"
+      ]
+    },
+    {
+      "logical": "torch",
+      "required": false,
+      "candidates": [
+        "piece_groundtorch_wood",
+        "piece_groundtorch"
+      ]
+    },
+    {
+      "logical": "fir_tree",
+      "required": true,
+      "candidates": [
+        "FirTree",
+        "FirTree_small",
+        "fir_tree"
+      ]
+    },
+    {
+      "logical": "rock",
+      "required": false,
+      "candidates": [
+        "Rock_3",
+        "Rock_4",
+        "rock4_mountain"
+      ]
+    },
+    {
+      "logical": "raven",
+      "required": false,
+      "candidates": [
+        "Raven",
+        "TutorialRaven",
+        "Hugin",
+        "Munin"
+      ]
+    },
+    {
+      "logical": "player_body",
+      "required": false,
+      "candidates": [
+        "Player"
+      ]
+    },
+    {
+      "logical": "nowhere_king_chassis",
+      "required": true,
+      "candidates": [
+        "DvergerMage"
+      ]
+    }
+  ]
+}
