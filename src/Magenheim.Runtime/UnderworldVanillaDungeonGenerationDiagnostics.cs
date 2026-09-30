@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -20,11 +21,49 @@ namespace Magenheim.Runtime;
 internal static class UnderworldVanillaDungeonGenerationDiagnostics
 {
     private static ManualLogSource? _log;
+    private static readonly List<GenerationSummary> LatestSummaries = new();
+
+    internal sealed record GenerationSummary(
+        string DungeonId,
+        UnderworldTerrainBiome Biome,
+        int Seed,
+        int GeneratedRooms,
+        int TargetMinimum,
+        int TargetMaximum,
+        int MaximumDepth,
+        int ActiveCreatureSpawners,
+        int CreatureSpawnerSockets,
+        int ActiveSpawnAreas,
+        int SpawnAreaSockets,
+        long GenerationMilliseconds,
+        long ManagedMemoryDeltaBytes,
+        bool StructuralPass);
+
+    internal readonly record struct GenerationProbe(
+        bool Active,
+        long ManagedMemoryBefore,
+        Stopwatch? Stopwatch);
+
+    internal static IReadOnlyList<GenerationSummary> Latest => LatestSummaries.ToArray();
+
+    internal static GenerationProbe Begin(DungeonGenerator generator)
+    {
+        if (!IsMagenheimGenerator(generator))
+            return new GenerationProbe(false, 0L, null);
+        return new GenerationProbe(
+            true,
+            GC.GetTotalMemory(false),
+            Stopwatch.StartNew());
+    }
 
     internal static void Configure(ManualLogSource log) =>
         _log = log ?? throw new ArgumentNullException(nameof(log));
 
-    internal static void Report(DungeonGenerator generator, int seed, ZoneSystem.SpawnMode mode)
+    internal static void Report(
+        DungeonGenerator generator,
+        int seed,
+        ZoneSystem.SpawnMode mode,
+        GenerationProbe probe)
     {
         if (!generator) return;
         var theme = generator.GetComponent<DungeonGeneratorTheme>();
@@ -36,6 +75,12 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 theme.m_themeName,
                 StringComparison.Ordinal));
         if (profile is null) return;
+
+        probe.Stopwatch?.Stop();
+        var generationMilliseconds = probe.Stopwatch?.ElapsedMilliseconds ?? -1L;
+        var managedMemoryDelta = probe.Active
+            ? GC.GetTotalMemory(false) - probe.ManagedMemoryBefore
+            : 0L;
 
         try
         {
@@ -55,8 +100,12 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 .ToArray();
 
             var metrics = GraphMetrics(rooms);
-            var creatureSpawners = generator.GetComponentsInChildren<CreatureSpawner>(true).Length;
-            var spawnAreas = generator.GetComponentsInChildren<SpawnArea>(true).Length;
+            var creatureSpawnerComponents = generator.GetComponentsInChildren<CreatureSpawner>(true);
+            var creatureSpawners = creatureSpawnerComponents.Length;
+            var activeCreatureSpawners = creatureSpawnerComponents.Count(value => value && value.enabled);
+            var spawnAreaComponents = generator.GetComponentsInChildren<SpawnArea>(true);
+            var spawnAreas = spawnAreaComponents.Length;
+            var activeSpawnAreas = spawnAreaComponents.Count(value => value && value.enabled);
             var containers = generator.GetComponentsInChildren<Container>(true).Length;
             var pickables = generator.GetComponentsInChildren<Pickable>(true).Length;
             var mineables =
@@ -70,9 +119,11 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 $"required={required.Count - missingRequired.Length}/{required.Count} " +
                 $"branch-depth={metrics.MaximumDepth} components={metrics.Components} " +
                 $"connections={metrics.ConnectionEdges} dead-ends={metrics.DeadEnds} " +
-                $"creature-spawners={creatureSpawners} spawn-areas={spawnAreas} " +
+                $"creature-spawners={activeCreatureSpawners}/{creatureSpawners} " +
+                $"spawn-areas={activeSpawnAreas}/{spawnAreas} " +
                 $"containers={containers} pickables={pickables} mineables={mineables} " +
-                $"destructible-drops={destructibleDrops}";
+                $"destructible-drops={destructibleDrops} generation-ms={generationMilliseconds} " +
+                $"managed-memory-delta={managedMemoryDelta}";
 
             if (missingRequired.Length > 0)
                 result += " missing-required=[" + string.Join(",", missingRequired) + "]";
@@ -87,11 +138,37 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 missingRequired,
                 metrics,
                 creatureSpawners,
+                activeCreatureSpawners,
                 spawnAreas,
+                activeSpawnAreas,
                 containers,
                 pickables,
                 mineables,
-                destructibleDrops);
+                destructibleDrops,
+                generationMilliseconds,
+                managedMemoryDelta);
+
+            var structuralPass =
+                rooms.Length >= generator.m_minRooms &&
+                missingRequired.Length == 0 &&
+                metrics.Components <= 1;
+            LatestSummaries.RemoveAll(value =>
+                string.Equals(value.DungeonId, profile.DungeonId, StringComparison.Ordinal));
+            LatestSummaries.Add(new GenerationSummary(
+                profile.DungeonId,
+                profile.Biome,
+                seed,
+                rooms.Length,
+                generator.m_minRooms,
+                generator.m_maxRooms,
+                metrics.MaximumDepth,
+                activeCreatureSpawners,
+                creatureSpawners,
+                activeSpawnAreas,
+                spawnAreas,
+                generationMilliseconds,
+                managedMemoryDelta,
+                structuralPass));
         }
         catch (Exception exception)
         {
@@ -109,11 +186,15 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         IReadOnlyList<string> missingRequired,
         GraphReport graph,
         int creatureSpawners,
+        int activeCreatureSpawners,
         int spawnAreas,
+        int activeSpawnAreas,
         int containers,
         int pickables,
         int mineables,
-        int destructibleDrops)
+        int destructibleDrops,
+        long generationMilliseconds,
+        long managedMemoryDeltaBytes)
     {
         var root = Path.Combine(
             Paths.ConfigPath,
@@ -150,11 +231,15 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         text.AppendLine("graph_connection_edges=" + graph.ConnectionEdges.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("graph_dead_ends=" + graph.DeadEnds.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("creature_spawners=" + creatureSpawners.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("active_creature_spawners=" + activeCreatureSpawners.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("spawn_areas=" + spawnAreas.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("active_spawn_areas=" + activeSpawnAreas.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("containers=" + containers.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("pickables=" + pickables.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("mineables=" + mineables.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("destructible_drops=" + destructibleDrops.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("generation_ms=" + generationMilliseconds.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("managed_memory_delta_bytes=" + managedMemoryDeltaBytes.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("candidate_mode=" + UnderworldVanillaDungeonCandidatePolicy.Enabled);
         text.AppendLine("result=" +
             (roomCount >= generator.m_minRooms &&
@@ -235,6 +320,18 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         return new GraphReport(components, maxDepth, edges, deadEnds);
     }
 
+    private static bool IsMagenheimGenerator(DungeonGenerator generator)
+    {
+        if (!generator) return false;
+        var theme = generator.GetComponent<DungeonGeneratorTheme>();
+        if (!theme || string.IsNullOrWhiteSpace(theme.m_themeName)) return false;
+        return UnderworldVanillaDungeonReuseCatalog.All.Any(profile =>
+            string.Equals(
+                UnderworldVanillaDungeonRegistrar.ThemeName(profile),
+                theme.m_themeName,
+                StringComparison.Ordinal));
+    }
+
     private static string Safe(string value) =>
         new string(value.Where(char.IsLetterOrDigit).ToArray());
 
@@ -251,9 +348,15 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
     new[] { typeof(int), typeof(ZoneSystem.SpawnMode) })]
 internal static class UnderworldVanillaDungeonGenerationDiagnosticsPatch
 {
+    private static void Prefix(
+        DungeonGenerator __instance,
+        out UnderworldVanillaDungeonGenerationDiagnostics.GenerationProbe __state) =>
+        __state = UnderworldVanillaDungeonGenerationDiagnostics.Begin(__instance);
+
     private static void Postfix(
         DungeonGenerator __instance,
         int seed,
-        ZoneSystem.SpawnMode mode) =>
-        UnderworldVanillaDungeonGenerationDiagnostics.Report(__instance, seed, mode);
+        ZoneSystem.SpawnMode mode,
+        UnderworldVanillaDungeonGenerationDiagnostics.GenerationProbe __state) =>
+        UnderworldVanillaDungeonGenerationDiagnostics.Report(__instance, seed, mode, __state);
 }
