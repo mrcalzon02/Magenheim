@@ -283,8 +283,8 @@ The gate identifiers in this document are authoritative and intentionally match 
 | DDE-00 | Source-enforced; execution evidence pending | `verify-deep-dungeon-expansion-gate0.py` is wired into normal build and production preflight | Successful execution in the current build/Valheim environment |
 | DDE-01 | Tooling implemented; live evidence pending | `magenheim_underworld donors` captures a live donor census for all five families | Installed-game census succeeds and evidence is reviewed |
 | DDE-02..DDE-10 | Static prerequisites implemented; live evidence pending | `verify-deep-dungeon-expansion-source-prerequisites.py` guards clone/scale/count/ecology/reward/worldgen/return source seams | Each donor passes its corresponding installed-game gates |
-| DDE-11 | Open | Existing Valheim persistence/network substrate is reused | Save/reload, reconnect and two-peer dungeon cases pass |
-| DDE-12 | Open | Balance/performance acceptance criteria are defined here and in `TESTING.md` | Economy and performance measurements are acceptable |
+| DDE-11 | Source evidence harness implemented; live evidence pending | `magenheim_underworld dde` writes in-dungeon snapshots with generation fingerprint, network-view validity, peer count and harvest/population state | Save/reload, reconnect and two-peer dungeon cases pass with compared snapshots |
+| DDE-12 | Generation instrumentation implemented; live balance/performance pending | Automatic generation evidence records elapsed generation time and managed-memory delta; `TESTING.md` defines the broader measurement pass | Economy and installed-game performance measurements are acceptable |
 | DDE-13 | Blocked | Promotion remains explicit and per-family | A single donor has DDE-00..DDE-12 evidence and its catalog row is deliberately promoted |
 | DDE-14 | Blocked | Deep Fracture is still separate and RuntimeReady | Final regression proves ordinary reuse did not alter Deep Fracture |
 
