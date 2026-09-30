@@ -190,7 +190,8 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             $"containers={population.Rewards.Containers} pickables={population.Rewards.Pickables} " +
             $"bottleneck-pickables={population.Rewards.BottleneckPickables} " +
             $"mineables={population.Rewards.Mineables} destructible-drops={population.Rewards.DestructibleDrops} " +
-            $"dressing=materials:{population.Dressing.ArchitectureMaterials},major:{population.Dressing.MajorProps}," +
+            $"dressing=materials:{population.Dressing.ArchitectureMaterials}," +
+            $"structural:{population.Dressing.StructuralOverlays},major:{population.Dressing.MajorProps}," +
             $"ground:{population.Dressing.GroundProps},lights:{population.Dressing.LocalLights}," +
             $"atmosphere:{population.Dressing.AtmosphereVolumes},thermal:{population.Dressing.ThermalVolumes}," +
             $"water:{population.Dressing.WaterVolumes},frozen-exposure:{population.Dressing.FrozenExposureVolumes}," +
@@ -338,7 +339,8 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             $"altitude:{zone.m_minAltitude:0.##}-{zone.m_maxAltitude:0.##}," +
             $"slope-rotation:{zone.m_slopeRotation},snap-water:{zone.m_snapToWater} " +
             $"entrance-dressing=materials:{entranceDressing.ArchitectureMaterials}," +
-            $"major:{entranceDressing.MajorProps},ground:{entranceDressing.GroundProps}," +
+            $"structural:{entranceDressing.StructuralOverlays},major:{entranceDressing.MajorProps}," +
+            $"ground:{entranceDressing.GroundProps}," +
             $"lights:{entranceDressing.LocalLights}.");
     }
 
