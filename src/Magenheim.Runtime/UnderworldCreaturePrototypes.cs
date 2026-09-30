@@ -7,12 +7,19 @@ internal static class UnderworldCreaturePrototypes
     internal sealed record Entry(string Name, string Biome, string Donor, float Scale, Color Color, string Limit)
     {
         internal string Prefab => "Magenheim_Underworld_Prototype_" + Name.Replace(" ", "");
+
+        internal string? AuthoredModelId => Name switch
+        {
+            "Sporeling" => "underworld-creature-sporeling",
+            "Capcrawler" => "underworld-creature-capcrawler",
+            _ => null,
+        };
     }
     internal static readonly Entry[] All =
     {
         new("Lantern Moth", "Fungal Forest", "Bat", 0.65f, new Color(0.596f, 0.824f, 0.698f), "Winged hover/bite stand-in; ambient temperament and four-wing art pending"),
-        new("Sporeling", "Fungal Forest", "Tick", 0.6f, new Color(0.596f, 0.824f, 0.698f), "Native scuttle/latch; fungal cap art pending"),
-        new("Capcrawler", "Fungal Forest", "Seeker", 0.65f, new Color(0.596f, 0.824f, 0.698f), "Native insect walk/bite/flight; ground-only behavior not claimed"),
+        new("Sporeling", "Fungal Forest", "Tick", 0.6f, new Color(0.596f, 0.824f, 0.698f), "Production creature source/rig authored; runtime payload export pending; donor fallback remains until payload exists"),
+        new("Capcrawler", "Fungal Forest", "Seeker", 0.65f, new Color(0.596f, 0.824f, 0.698f), "Production creature source/rig authored; runtime payload export pending; donor fallback remains until payload exists"),
         new("Mycelial Stalker", "Fungal Forest", "Wolf", 1.05f, new Color(0.596f, 0.824f, 0.698f), "Native quadruped run/bite; no custom concealment or pounce"),
         new("Puffback", "Fungal Forest", "Lox", 0.8f, new Color(0.596f, 0.824f, 0.698f), "Reactive spore burst implemented; donor body still lacks final inflation anatomy"),
         new("Shelf Lurker", "Fungal Forest", "Seeker", 1f, new Color(0.596f, 0.824f, 0.698f), "Native insect movement; no wall climbing"),
