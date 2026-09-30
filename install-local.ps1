@@ -27,13 +27,13 @@ $pluginVersion = $pluginVersionLine.Matches[0].Groups[1].Value
 if ([string]::IsNullOrWhiteSpace($pluginVersion)) { throw 'Resolved Magenheim plugin version is empty.' }
 
 if (!$SkipBuild) {
-    & (Join-Path $PSScriptRoot 'build.ps1') -ProfileRoot $profile -GameRoot $GameRoot -Offline:$Offline
-    if ($LASTEXITCODE -ne 0) { throw 'Magenheim build failed; installation was not modified.' }
+    & (Join-Path $PSScriptRoot 'build-local.ps1') -ProfileRoot $profile -GameRoot $GameRoot -Offline:$Offline
+    if ($LASTEXITCODE -ne 0) { throw 'Magenheim local smoke build failed; installation was not modified.' }
 }
 
 $source = Join-Path $PSScriptRoot "dist/Local-Magenheim-$pluginVersion"
 if (!(Test-Path -LiteralPath "$source/Magenheim/Magenheim.dll")) {
-    throw "Built package for Magenheim $pluginVersion is missing. Run build.ps1 or omit -SkipBuild."
+    throw "Built package for Magenheim $pluginVersion is missing. Run build-local.ps1 or omit -SkipBuild."
 }
 $manifestPath = Join-Path $source 'manifest.json'
 if (!(Test-Path -LiteralPath $manifestPath)) { throw "Package manifest is missing: $manifestPath" }
