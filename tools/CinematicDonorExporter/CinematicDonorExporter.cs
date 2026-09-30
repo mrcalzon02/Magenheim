@@ -164,10 +164,10 @@ public sealed class CinematicDonorExporterPlugin : BaseUnityPlugin
                 var transform = prefab.transform.worldToLocalMatrix * part.Transform.localToWorldMatrix;
                 var normalMatrix = transform.inverse.transpose;
                 var vertices = mesh.vertices;
-                var uvs = mesh.uv;
-                var normals = mesh.normals;
-                var hasUvs = uvs != null && uvs.Length == vertices.Length;
-                var hasNormals = normals != null && normals.Length == vertices.Length;
+                var uvs = mesh.uv ?? Array.Empty<Vector2>();
+                var normals = mesh.normals ?? Array.Empty<Vector3>();
+                var hasUvs = uvs.Length == vertices.Length;
+                var hasNormals = normals.Length == vertices.Length;
 
                 foreach (var vertex in vertices)
                 {
