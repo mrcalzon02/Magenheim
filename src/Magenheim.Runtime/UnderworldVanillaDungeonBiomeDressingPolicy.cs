@@ -20,9 +20,11 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
         int LocalLights,
         int AtmosphereVolumes,
         int ThermalVolumes,
-        int WaterVolumes)
+        int WaterVolumes,
+        int FrozenExposureVolumes,
+        int DecayContaminationVolumes)
     {
-        internal static Stats Empty => new(0, 0, 0, 0, 0, 0, 0);
+        internal static Stats Empty => new(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         public static Stats operator +(Stats left, Stats right) =>
             new(
@@ -32,7 +34,9 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
                 left.LocalLights + right.LocalLights,
                 left.AtmosphereVolumes + right.AtmosphereVolumes,
                 left.ThermalVolumes + right.ThermalVolumes,
-                left.WaterVolumes + right.WaterVolumes);
+                left.WaterVolumes + right.WaterVolumes,
+                left.FrozenExposureVolumes + right.FrozenExposureVolumes,
+                left.DecayContaminationVolumes + right.DecayContaminationVolumes);
     }
 
     private readonly struct Palette
@@ -180,6 +184,8 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
             lights,
             0,
             0,
+            0,
+            0,
             0);
     }
 
@@ -270,6 +276,18 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
             band,
             bounds);
 
+        var frozenExposure = AddFrozenExposure(
+            room,
+            profile,
+            band,
+            bounds);
+
+        var decayContamination = AddDecayContamination(
+            room,
+            profile,
+            band,
+            bounds);
+
         return new Stats(
             architectureMaterials,
             majorProps,
@@ -277,7 +295,9 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
             lights,
             atmosphere,
             thermal,
-            water);
+            water,
+            frozenExposure,
+            decayContamination);
     }
 
     private static int ApplyArchitecturePalette(
@@ -492,6 +512,12 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
     {
         if (room.m_entrance) return 0;
 
+        // Frozen and Great Decay use their dedicated exposure/contamination authorities below so
+        // resistance items and local suppression behave exactly like their bespoke dungeon lanes.
+        if (profile.Biome == UnderworldTerrainBiome.FrozenCaverns ||
+            profile.Biome == UnderworldTerrainBiome.GreatDecay)
+            return 0;
+
         var probability = (int)band >= (int)UnderworldVanillaDungeonRiskBand.Deep ? .72d : .48d;
         if (!UnderworldVanillaDungeonRoomPolicy.Roll(
                 probability,
@@ -565,6 +591,108 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
             palette.AtmosphereEvent,
             Math.Min(1d, palette.AtmosphereIntensity + risk * .16d),
             Math.Min(1d, palette.HazardFloor + risk * .12d));
+        return 1;
+    }
+
+    private static int AddFrozenExposure(
+        Room room,
+        UnderworldVanillaDungeonReuseDefinition profile,
+        UnderworldVanillaDungeonRiskBand band,
+        Bounds bounds)
+    {
+        if (profile.Biome != UnderworldTerrainBiome.FrozenCaverns ||
+            room.m_entrance)
+            return 0;
+
+        UnderworldRimeSepulcherExposureState state;
+        switch (band)
+        {
+            case UnderworldVanillaDungeonRiskBand.Outer:
+                state = new UnderworldRimeSepulcherExposureState(
+                    UnderworldAtmosphereEvent.None,
+                    0d,
+                    .08d,
+                    true);
+                break;
+            case UnderworldVanillaDungeonRiskBand.Mid:
+                state = new UnderworldRimeSepulcherExposureState(
+                    UnderworldAtmosphereEvent.DeepFog,
+                    .18d,
+                    .28d,
+                    false);
+                break;
+            case UnderworldVanillaDungeonRiskBand.Deep:
+                state = new UnderworldRimeSepulcherExposureState(
+                    UnderworldAtmosphereEvent.DeepFog,
+                    .34d,
+                    .46d,
+                    false);
+                break;
+            default:
+                state = new UnderworldRimeSepulcherExposureState(
+                    UnderworldAtmosphereEvent.Whiteout,
+                    .68d,
+                    .64d,
+                    false);
+                break;
+        }
+
+        RimeSepulcherExposureRuntime.AttachExpandedDonor(
+            room.gameObject,
+            state,
+            bounds.size.x,
+            bounds.size.z);
+        return 1;
+    }
+
+    private static int AddDecayContamination(
+        Room room,
+        UnderworldVanillaDungeonReuseDefinition profile,
+        UnderworldVanillaDungeonRiskBand band,
+        Bounds bounds)
+    {
+        if (profile.Biome != UnderworldTerrainBiome.GreatDecay ||
+            room.m_entrance)
+            return 0;
+
+        UnderworldCarrionCatacombsExposureState state;
+        switch (band)
+        {
+            case UnderworldVanillaDungeonRiskBand.Outer:
+                state = new UnderworldCarrionCatacombsExposureState(
+                    UnderworldAtmosphereEvent.None,
+                    0d,
+                    .12d,
+                    true);
+                break;
+            case UnderworldVanillaDungeonRiskBand.Mid:
+                state = new UnderworldCarrionCatacombsExposureState(
+                    UnderworldAtmosphereEvent.None,
+                    0d,
+                    .28d,
+                    false);
+                break;
+            case UnderworldVanillaDungeonRiskBand.Deep:
+                state = new UnderworldCarrionCatacombsExposureState(
+                    UnderworldAtmosphereEvent.BlackBloom,
+                    .36d,
+                    .46d,
+                    false);
+                break;
+            default:
+                state = new UnderworldCarrionCatacombsExposureState(
+                    UnderworldAtmosphereEvent.BlackBloom,
+                    .72d,
+                    .64d,
+                    false);
+                break;
+        }
+
+        CarrionCatacombsContaminationRuntime.AttachExpandedDonor(
+            room.gameObject,
+            state,
+            bounds.size.x,
+            bounds.size.z);
         return 1;
     }
 
