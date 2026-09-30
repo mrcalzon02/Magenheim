@@ -69,7 +69,7 @@ def args():
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--preview-dir", type=Path)
     parser.add_argument("--render-previews", type=Path)
-    parser.add_argument("--render-motion-preview", type=Path)
+    parser.add_argument("--render-motion-frames", type=Path)
     parser.add_argument("--valheim-donor-library", type=Path)
     parser.add_argument("--verify", action="store_true")
     return parser.parse_args(raw)
@@ -1254,14 +1254,17 @@ def render_previews(scene, cameras, preview_dir: Path):
 
 
 
-def render_motion_preview(scene, output: Path):
-    """Render a lightweight silent 28-second motion proof from the real 3D scene.
+def render_motion_frames(scene, output_dir: Path):
+    """Render a lightweight silent 28-second motion proof as PNG frames.
 
-    This is explicitly a motion-review deliverable, not picture lock: half-rate
-    sampling preserves the 28-second duration while making Actions renderable.
-    No text or audio is introduced.
+    Blender 5 no longer exposes FFMPEG as an image output format on this build,
+    so Actions encodes these frames with a pinned Python ffmpeg wheel afterward.
+    Sampling every second 24-fps frame at 12 output fps preserves the 28-second
+    duration while keeping the proof inexpensive.
     """
-    output.parent.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for stale in output_dir.glob("*.png"):
+        stale.unlink()
     scene.render.engine='CYCLES'
     scene.cycles.samples=2
     scene.cycles.use_denoising=False
@@ -1270,18 +1273,15 @@ def render_motion_preview(scene, output: Path):
     scene.render.resolution_percentage=100
     scene.render.fps=12
     scene.frame_step=2
-    scene.render.image_settings.file_format='FFMPEG'
-    scene.render.ffmpeg.format='MPEG4'
-    scene.render.ffmpeg.codec='H264'
-    scene.render.ffmpeg.constant_rate_factor='MEDIUM'
-    scene.render.ffmpeg.audio_codec='NONE'
-    scene.render.filepath=str(output)
+    scene.render.image_settings.file_format='PNG'
+    scene.render.filepath=str(output_dir/"motion_")
     scene.camera=bpy.data.objects["SHOT_01_RETURN_CAM"]
-    print(f"CINEMATIC MOTION PREVIEW render -> {output}",flush=True)
+    print(f"CINEMATIC MOTION FRAMES render -> {output_dir}",flush=True)
     bpy.ops.render.render(animation=True)
-    if not output.is_file() or output.stat().st_size < 100000:
-        raise RuntimeError(f"Motion preview was not produced or is suspiciously small: {output}")
-    print(f"CINEMATIC MOTION PREVIEW wrote {output} bytes={output.stat().st_size}",flush=True)
+    frames=sorted(output_dir.glob("*.png"))
+    if len(frames) < 300:
+        raise RuntimeError(f"Motion proof rendered too few frames: {len(frames)}")
+    print(f"CINEMATIC MOTION FRAMES wrote {len(frames)} frames",flush=True)
 
 
 def verify():
@@ -1386,10 +1386,10 @@ def main():
         cameras = {o.name:o for o in bpy.data.objects if o.type == 'CAMERA'}
         print("CINEMATIC RENDER previews", flush=True)
         render_previews(bpy.context.scene, cameras, preview_dir)
-    elif ns.render_motion_preview:
+    elif ns.render_motion_frames:
         verify()
-        output = ns.render_motion_preview if ns.render_motion_preview.is_absolute() else ROOT / ns.render_motion_preview
-        render_motion_preview(bpy.context.scene, output)
+        output_dir = ns.render_motion_frames if ns.render_motion_frames.is_absolute() else ROOT / ns.render_motion_frames
+        render_motion_frames(bpy.context.scene, output_dir)
     else:
         build(ns.output, ns.preview_dir, ns.valheim_donor_library)
 
