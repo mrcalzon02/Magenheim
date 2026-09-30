@@ -126,7 +126,7 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
                     m_prefab = prefab,
                     m_weight = RoleWeight(UnderworldCreatureCombatBalance.RoleFor(entry.Name), band),
                     m_minLevel = 1,
-                    m_maxLevel = band >= UnderworldVanillaDungeonRiskBand.Deep ? 2 : 1,
+                    m_maxLevel = (int)band >= (int)UnderworldVanillaDungeonRiskBand.Deep ? 2 : 1,
                 });
             }
 
@@ -263,11 +263,11 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
         return band switch
         {
             UnderworldVanillaDungeonRiskBand.Outer =>
-                role <= UnderworldCreatureCombatBalance.Role.Skirmisher,
+                (int)role <= (int)UnderworldCreatureCombatBalance.Role.Skirmisher,
             UnderworldVanillaDungeonRiskBand.Mid =>
-                role <= UnderworldCreatureCombatBalance.Role.Hunter,
+                (int)role <= (int)UnderworldCreatureCombatBalance.Role.Hunter,
             UnderworldVanillaDungeonRiskBand.Deep =>
-                role <= UnderworldCreatureCombatBalance.Role.Heavy,
+                (int)role <= (int)UnderworldCreatureCombatBalance.Role.Heavy,
             UnderworldVanillaDungeonRiskBand.Lair => true,
             _ => false,
         };
