@@ -562,15 +562,16 @@ Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the cur
 - [ ] **Finish custom creature anatomy and remaining species mechanics for ordinary dungeon fauna.**
   The first behavior pass is live in source: Puffback spore burst, Abyss Shellback shell armor,
   Vent Spitter thermal retaliation, rooted Carrion Bloom and Corpse Orchard Rotling propagation.
-  **Creature runtime-art source lanes now cover 18 species:** all seven Fungal Forest species,
-  all seven Blackwater Deep species, plus Ashmite, Cinder Hound, Basalt Crawler and Vent Spitter
-  from Sulfurous Wastes are mapped to authored model identities. The rigid-segment export carries
-  bones plus authored rotation/translation/scale actions; runtime presentation keeps donor
-  AI/hitboxes/networking while replacing the visible body. The normal Underworld production run now
-  owns texture -> author -> animate -> source-gate where available -> runtime export -> model gate
-  for those bodies. Runtime/GLB payload generation still requires a real Blender 5.0 execution.
-  Frozen Caverns, Great Decay, Fume Wraith, Magma Leaper and Furnace Golem remain genuine
-  model-construction work; do not treat donor retexturing as completion.
+  **Creature runtime-art source lanes now cover all 35 ordinary-biome species.** Every Fungal,
+  Blackwater, Sulfur, Frozen and Great Decay creature maps to an authored model identity. The
+  rigid-segment export carries bones plus authored rotation/translation/scale actions; runtime
+  presentation keeps donor AI/hitboxes/networking while disabling donor silhouette renderers and
+  replacing them with authored bodies at source-authored physical scale. The normal Underworld
+  production run owns author/animate/export/model-gate steps for the full ordinary roster. Major
+  bespoke behavior gaps (ambush, wall cling, lure/pressure, latch, pack rally, armor break,
+  burrow emergence, perch release and rooted colony propagation) are implemented in source.
+  Runtime/GLB payload generation still requires a real Blender 5.0 execution, and installed-Valheim
+  validation remains open.
 - [ ] **Compile and live-accept expanded vanilla dungeon reuse.**
   Verify all five donor families on fresh Underworld seeds: recognizable vanilla construction,
   >=1.5x room dimensions, >=3.5x live donor room-count bounds, no overlap/truncation, only owning
