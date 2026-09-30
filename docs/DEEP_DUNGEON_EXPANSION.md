@@ -294,6 +294,18 @@ Vent Spitter pressure attack, Furnace Golem degrading armor, Pale Burrower emerg
 perch release, hearing-led Iceblind perception, rooted Carrion Bloom and rooted Corpse Orchard
 Rotling propagation.
 
+Generated-instance pacing now supersedes prefab-only risk for live dungeon pressure. After the donor
+generator finishes placing the room graph, Magenheim computes shortest-path depth from the actual
+entrance and assigns Outer/Mid/Deep/Lair bands from that physical traversal depth. Ecology, reward
+tables and the dynamic room layer are then rebound on the placed room instances. This prevents a
+hashed "Lair" prefab from appearing beside the entrance while an "Outer" prefab lands at the deepest
+dead end.
+
+The generated-depth dynamic layer controls encounter-room occupancy, per-socket creature pressure,
+reward rarity weighting, local biome light/atmosphere, Blackwater pool eligibility/depth, Sulfur
+thermal pockets, Frozen Rime exposure and Great Decay contamination. Structural overlays/materials
+remain stable prefab art and are not rebuilt during generation.
+
 The remaining artifact boundary is execution rather than design/source authoring: the newly authored
 source blends and runtime model payloads still require an actual Blender 5.0 production run, and
 installed-Valheim acceptance remains required before visual/gameplay quality can be claimed.
