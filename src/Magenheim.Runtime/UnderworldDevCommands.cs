@@ -153,6 +153,19 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
                 $"DUNGEONS {report.PrefabName}: {report.Found}/{report.Expected} " +
                 $"biome={report.Biome} min-spacing={spacing}");
         }
+
+        foreach (var generated in UnderworldVanillaDungeonGenerationDiagnostics.Latest
+                     .OrderBy(value => value.Biome.ToString(), StringComparer.Ordinal))
+        {
+            Say(
+                $"DDE GENERATED {generated.Biome}: rooms={generated.GeneratedRooms}/" +
+                $"{generated.TargetMinimum}-{generated.TargetMaximum} depth={generated.MaximumDepth} " +
+                $"spawners={generated.ActiveCreatureSpawners}/{generated.CreatureSpawnerSockets} " +
+                $"areas={generated.ActiveSpawnAreas}/{generated.SpawnAreaSockets} " +
+                $"generation={generated.GenerationMilliseconds}ms " +
+                $"managed-delta={generated.ManagedMemoryDeltaBytes}B " +
+                $"structural={(generated.StructuralPass ? "PASS" : "FAIL")}");
+        }
     }
 
     private static void RunSurvey(Player player, string[] args)
