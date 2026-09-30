@@ -102,17 +102,24 @@ def frame_and_render(entry, out_path: Path) -> None:
 
 
 def main() -> None:
-    catalog = json.loads((MODELS / 'catalog.json').read_text())
-    weapons = [e for e in catalog
-               if e['id'].startswith('crystal-weapon-')
-               or e['id'].startswith('underworld-weapon-')
-               or e['id'].startswith('nowhere-king-sword-')]
+    source_dir = MODELS / 'source'
+    source_files = []
+    for pattern in ('crystal-weapon-*.blend', 'underworld-weapon-*.blend', 'nowhere-king-sword-*.blend'):
+        source_files.extend(source_dir.glob(pattern))
+    weapons = [
+        {'id': source.stem, 'source': 'source/' + source.name}
+        for source in sorted(set(source_files))
+    ]
     if len([e for e in weapons if e['id'].startswith('crystal-weapon-')]) != 10:
-        raise SystemExit('The ten base crystal weapon models must remain present in the catalog.')
+        raise SystemExit('The ten base crystal weapon Blender sources must remain present.')
 
     requested = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
     if requested:
-        weapons = [e for e in weapons if e['id'] in requested]
+        wanted = set(requested)
+        weapons = [e for e in weapons if e['id'] in wanted]
+        missing = sorted(wanted - {e['id'] for e in weapons})
+        if missing:
+            raise SystemExit('Requested weapon Blender source(s) missing: ' + ', '.join(missing))
 
     for entry in sorted(weapons, key=lambda e: e['id']):
         name = asset_name(entry['id'])
