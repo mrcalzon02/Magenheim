@@ -10,6 +10,7 @@ if (!(Test-Path -LiteralPath $DotNet)) { $DotNet = (Get-Command dotnet -ErrorAct
 $env:DOTNET_CLI_HOME = Join-Path $PSScriptRoot 'dist/toolchain/home'
 $env:NUGET_PACKAGES = Join-Path $PSScriptRoot 'dist/toolchain/packages'
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
+$env:PYTHONUTF8 = '1'
 
 $pluginSource = Join-Path $PSScriptRoot 'src/Magenheim.Runtime/MagenheimPlugin.cs'
 $pluginVersionLine = Select-String -LiteralPath $pluginSource -Pattern 'internal const string PluginVersion = "([^"]+)";' | Select-Object -First 1

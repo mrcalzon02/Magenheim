@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Magenheim.Core.Underworld;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
@@ -55,7 +56,7 @@ internal static class UnderworldVanillaDungeonMechanicsPolicy
         foreach (var vegvisir in vegvisirs)
             UnityEngine.Object.DestroyImmediate(vegvisir);
 
-        var runestones = roomObject.GetComponentsInChildren<Runestone>(true);
+        var runestones = roomObject.GetComponentsInChildren<RuneStone>(true);
         foreach (var runestone in runestones)
             UnityEngine.Object.DestroyImmediate(runestone);
 

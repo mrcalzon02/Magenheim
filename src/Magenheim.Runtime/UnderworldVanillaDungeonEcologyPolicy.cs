@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Jotunn.Managers;
+using Magenheim.Core.Underworld;
 using UnityEngine;
 
 namespace Magenheim.Runtime;

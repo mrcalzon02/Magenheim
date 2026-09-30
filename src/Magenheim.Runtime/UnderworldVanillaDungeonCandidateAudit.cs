@@ -63,7 +63,7 @@ internal static class UnderworldVanillaDungeonCandidateAudit
         AuditWorldgen(profile, failures, notes);
 
         var root = Path.Combine(
-            Paths.ConfigPath,
+            BepInEx.Paths.ConfigPath,
             "Magenheim",
             "validation",
             "deep-dungeon-expansion",
@@ -343,7 +343,7 @@ internal static class UnderworldVanillaDungeonCandidateAudit
         ICollection<string> notes)
     {
         var vegvisirs = generator.GetComponentsInChildren<Vegvisir>(true).Length;
-        var runestones = generator.GetComponentsInChildren<Runestone>(true).Length;
+        var runestones = generator.GetComponentsInChildren<RuneStone>(true).Length;
         if (vegvisirs > 0)
             failures.Add("Surface Vegvisir components remain in the derivative: " + vegvisirs + ".");
         if (runestones > 0)

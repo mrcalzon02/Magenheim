@@ -122,7 +122,12 @@ def declared_outputs(entry: dict) -> list[str]:
 
 
 def regenerate(entry: dict) -> None:
-    command = entry['command']
+    command = list(entry['command'])
+    # Windows PowerShell inherits the machine execution policy even for repository-owned build
+    # scripts. The manifest predates that policy hardening and several recorded commands otherwise
+    # fail before their generator starts. Match the explicit bypass used by the main build scripts.
+    if command and Path(command[0]).name.lower() in {'powershell', 'powershell.exe'}:
+        command[1:1] = ['-ExecutionPolicy', 'Bypass']
     print(f"  running {' '.join(command)}", flush=True)
     result = subprocess.run(command, cwd=ROOT)
     if result.returncode != 0:

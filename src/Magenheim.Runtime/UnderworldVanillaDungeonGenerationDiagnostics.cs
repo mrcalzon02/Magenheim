@@ -209,7 +209,7 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         string fingerprint)
     {
         var root = Path.Combine(
-            Paths.ConfigPath,
+            BepInEx.Paths.ConfigPath,
             "Magenheim",
             "validation",
             "deep-dungeon-expansion",
@@ -310,7 +310,7 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         var fingerprint = GenerationFingerprint(rooms);
 
         var root = Path.Combine(
-            Paths.ConfigPath,
+            BepInEx.Paths.ConfigPath,
             "Magenheim",
             "validation",
             "deep-dungeon-expansion",

@@ -310,7 +310,7 @@ internal static class UnderworldVanillaDungeonDonorCensus
                 mineRock5s += prefab.GetComponentsInChildren<MineRock5>(true).Length;
                 destructibleDrops += prefab.GetComponentsInChildren<DropOnDestroyed>(true).Length;
                 vegvisirs += prefab.GetComponentsInChildren<Vegvisir>(true).Length;
-                runestones += prefab.GetComponentsInChildren<Runestone>(true).Length;
+                runestones += prefab.GetComponentsInChildren<RuneStone>(true).Length;
                 foreach (var component in prefab.GetComponentsInChildren<Component>(true))
                 {
                     if (!component || component is Transform) continue;

@@ -108,6 +108,7 @@ internal sealed class UnderworldDungeonPlacementRuntime : MonoBehaviour
 
     private IEnumerator Reconcile(IReadOnlyList<MissingFamily> missing)
     {
+        Exception? failure = null;
         try
         {
             foreach (var family in missing)
@@ -117,41 +118,78 @@ internal sealed class UnderworldDungeonPlacementRuntime : MonoBehaviour
                     $"{family.Definition.Quantity} pregenerated positions. Running one native " +
                     "GenerateLocationsTimeSliced recovery pass for the detached Underworld instance.");
 
-                var generated = GenerateLocationsMethod.Invoke(
-                    _zoneSystem,
-                    new object[] { family.Location, Stopwatch.StartNew(), new ZPackage() }) as IEnumerator
-                    ?? throw new InvalidOperationException(
-                        "Valheim GenerateLocationsTimeSliced no longer returns IEnumerator.");
+                IEnumerator? generated = null;
+                try
+                {
+                    generated = GenerateLocationsMethod.Invoke(
+                        _zoneSystem,
+                        new object[] { family.Location, Stopwatch.StartNew(), new ZPackage() }) as IEnumerator
+                        ?? throw new InvalidOperationException(
+                            "Valheim GenerateLocationsTimeSliced no longer returns IEnumerator.");
+                }
+                catch (Exception exception)
+                {
+                    failure = exception;
+                }
 
-                while (generated.MoveNext())
-                    yield return generated.Current;
+                while (failure is null)
+                {
+                    object? current = null;
+                    bool moved = false;
+                    try
+                    {
+                        moved = generated!.MoveNext();
+                        if (moved)
+                            current = generated.Current;
+                    }
+                    catch (Exception exception)
+                    {
+                        failure = exception;
+                    }
+
+                    if (failure is not null || !moved)
+                        break;
+                    yield return current;
+                }
+
+                if (failure is not null)
+                    break;
             }
 
-            var after = Analyze(_zoneSystem);
-            if (after.Invalid.Count != 0)
+            if (failure is not null)
             {
-                Fail(
-                    "Underworld dungeon placement reconciliation produced invalid positions: " +
-                    string.Join("; ", after.Invalid));
-                yield break;
+                Fail("Underworld dungeon placement reconciliation failed: " + failure);
             }
-
-            if (after.Missing.Count != 0)
+            else
             {
-                Fail(
-                    "Underworld dungeon placement reconciliation could not reach requested quantities: " +
-                    string.Join(
-                        "; ",
-                        after.Missing.Select(x =>
-                            x.Definition.DisplayName + "=" + x.Found + "/" + x.Definition.Quantity)));
-                yield break;
+                try
+                {
+                    var after = Analyze(_zoneSystem);
+                    if (after.Invalid.Count != 0)
+                    {
+                        Fail(
+                            "Underworld dungeon placement reconciliation produced invalid positions: " +
+                            string.Join("; ", after.Invalid));
+                    }
+                    else if (after.Missing.Count != 0)
+                    {
+                        Fail(
+                            "Underworld dungeon placement reconciliation could not reach requested quantities: " +
+                            string.Join(
+                                "; ",
+                                after.Missing.Select(x =>
+                                    x.Definition.DisplayName + "=" + x.Found + "/" + x.Definition.Quantity)));
+                    }
+                    else
+                    {
+                        Pass(after.Reports);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    Fail("Underworld dungeon placement reconciliation failed: " + exception);
+                }
             }
-
-            Pass(after.Reports);
-        }
-        catch (Exception exception)
-        {
-            Fail("Underworld dungeon placement reconciliation failed: " + exception);
         }
         finally
         {
@@ -254,7 +292,7 @@ internal sealed class UnderworldDungeonPlacementRuntime : MonoBehaviour
         return generated;
     }
 
-    private static double MinimumSpacing(IReadOnlyList<LocationInstance> instances)
+    private static double MinimumSpacing(IReadOnlyList<ZoneSystem.LocationInstance> instances)
     {
         if (instances.Count < 2) return double.PositiveInfinity;
         var minimum = double.PositiveInfinity;
