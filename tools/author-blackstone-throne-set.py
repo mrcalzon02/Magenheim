@@ -97,8 +97,8 @@ def add_sun(prefix,center,mat,scale=1.0):
     cx,cy,cz=center
     torus(f"{prefix}_Ring",(cx,cy,cz),.64*scale,.075*scale,mat,False)
     cone(f"{prefix}_Disc",(cx,cy,cz),.43*scale,.43*scale,.06*scale,mat,24,False,rot=(math.pi/2,0,0),bevel=.008)
-    for i in range(16):
-        a=i*math.tau/16
+    for i in range(12):
+        a=i*math.tau/12
         r=(.80+1.15)*.5*scale
         x=cx+math.cos(a)*r; y=cy+math.sin(a)*r
         box(f"{prefix}_Ray_{i+1}",(x,y,cz),(.07*scale,.35*scale,.06*scale),mat,
@@ -232,6 +232,20 @@ def build_pillar(m,prefix="Pillar",origin=(0,0,0),scale=1.0):
     box(prefix+"_Capital",(ox,oy+4.82*scale,oz),(1.75*scale,.48*scale,1.75*scale),m["bronze"],collision=True,bevel=.05)
     cone(prefix+"_Finial",(ox,oy+5.65*scale,oz),.42*scale,0,1.25*scale,m["stone"],6,True)
 
+def build_arena_rail(m,prefix,origin,length=9.0,axis="z"):
+    ox,oy,oz=origin
+    if axis=="z":
+        box(prefix+"_Foot",(ox,oy,oz),(.52,.34,length),m["stone"],collision=True,bevel=.035)
+        box(prefix+"_Rail",(ox,oy+1.18,oz),(.34,.20,length),m["bronze"],collision=True,bevel=.022)
+        ends=((ox,oz-length/2),(ox,oz+length/2))
+    else:
+        box(prefix+"_Foot",(ox,oy,oz),(length,.34,.52),m["stone"],collision=True,bevel=.035)
+        box(prefix+"_Rail",(ox,oy+1.18,oz),(length,.20,.34),m["bronze"],collision=True,bevel=.022)
+        ends=((ox-length/2,oz),(ox+length/2,oz))
+    for i,(x,z) in enumerate(ends):
+        box(f"{prefix}_Post_{i+1}",(x,oy+.72,z),(.42,1.45,.42),m["stone"],collision=True,bevel=.035)
+        cone(f"{prefix}_Finial_{i+1}",(x,oy+1.68,z),.22,0,.58,m["bronze"],6,False)
+
 def build_assembled(m):
     # Solid legal combat plate: 52x60 m, matching DarkThroneArena.CreateDefault().
     box("Arena_Foundation",(0,-.65,0),(52,1.30,60),m["stone"],collision=True,bevel=.10)
@@ -265,13 +279,14 @@ def build_assembled(m):
             build_pillar(m,f"Pillar_{side}_{row}",(side*21.5,.45,z),.72 if row%2 else .82)
         for row,z in enumerate((-10,4,14)):
             build_arch(m,f"Arch_{side}_{row}",(side*20,-3.15,z),.75)
-    # Perimeter parapets are intentionally segmented so the arena reads constructed, not boxed.
+    # Perimeter rails retain the Blackstone silhouette without exploding the assembled site into
+    # hundreds of tiny GameObjects; the standalone parapet asset carries the full ornamental version.
     for side in (-1,1):
-        for row,z in enumerate((-21,-10,1,12,23)):
-            build_parapet(m,f"Parapet_X_{side}_{row}",(side*24.2,.55,z),.90,8.5)
+        for row,z in enumerate((-18,-6,6,18)):
+            build_arena_rail(m,f"Parapet_X_{side}_{row}",(side*24.2,.55,z),9.0,"z")
     for side in (-1,1):
-        for col,x in enumerate((-18,-9,0,9,18)):
-            build_parapet(m,f"Parapet_Z_{side}_{col}",(x,.55,side*27.9),.90,8.0)
+        for col,x in enumerate((-15,-5,5,15)):
+            build_arena_rail(m,f"Parapet_Z_{side}_{col}",(x,.55,side*27.9),9.0,"x")
     # Rear skyline and broken abyss-edge geology.
     for i,x in enumerate((-18,-13,-8,8,13,18)):
         build_spire(m,f"Spire_Rear_{i+1}",(x,.3,27.0),.80+(.10*(i%3)))
