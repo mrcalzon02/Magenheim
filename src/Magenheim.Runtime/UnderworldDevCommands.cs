@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Developer console access to the Underworld: <c>magenheim_underworld enter|return|status|audit|survey|dungeons|donors</c>.
+/// Developer console access to the Underworld: <c>magenheim_underworld enter|return|status|audit|survey|dungeons|donors|dde</c>.
 /// </summary>
 /// <remarks>
 /// A cheat command, so Valheim's own <c>devcommands</c> gate applies. It is not a second transit
@@ -37,9 +37,9 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
     }
 
     public override string Name => "magenheim_underworld";
-    public override string Help => "enter | return | status | audit | survey | dungeons | donors -- transit/status, admission audit, terrain/dungeon audit, or Deep Dungeon donor census (devcommands)";
+    public override string Help => "enter | return | status | audit | survey | dungeons | donors | dde -- transit/status, admission audit, terrain/dungeon audit, donor census, or DDE persistence snapshot (devcommands)";
     public override bool IsCheat => true;
-    public override List<string> CommandOptionList() => new() { "enter", "return", "status", "audit", "survey", "dungeons", "donors" };
+    public override List<string> CommandOptionList() => new() { "enter", "return", "status", "audit", "survey", "dungeons", "donors", "dde" };
 
     public override void Run(string[] args)
     {
@@ -88,8 +88,11 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
             case "donors":
                 RunDonorCensus();
                 break;
+            case "dde":
+                RunDdeSnapshot(player);
+                break;
             default:
-                Say($"Unknown option '{verb}'. Use: {Name} enter | return | status | audit | survey | dungeons | donors");
+                Say($"Unknown option '{verb}'. Use: {Name} enter | return | status | audit | survey | dungeons | donors | dde");
                 break;
         }
     }
@@ -133,6 +136,20 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
         {
             _log?.LogError("Deep Dungeon donor census failed: " + exception);
             Say("DDE-01 DONOR CENSUS FAIL: " + exception.Message);
+        }
+    }
+
+    private static void RunDdeSnapshot(Player player)
+    {
+        try
+        {
+            var file = UnderworldVanillaDungeonGenerationDiagnostics.CaptureRuntimeSnapshot(player, _log);
+            Say("DDE RUNTIME SNAPSHOT: " + file);
+        }
+        catch (Exception exception)
+        {
+            _log?.LogError("Deep Dungeon runtime snapshot failed: " + exception);
+            Say("DDE RUNTIME SNAPSHOT FAIL: " + exception.Message);
         }
     }
 
