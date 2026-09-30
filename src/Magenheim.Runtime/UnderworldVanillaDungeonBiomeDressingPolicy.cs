@@ -15,6 +15,7 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
 {
     internal readonly record struct Stats(
         int ArchitectureMaterials,
+        int StructuralOverlays,
         int MajorProps,
         int GroundProps,
         int LocalLights,
@@ -24,11 +25,12 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
         int FrozenExposureVolumes,
         int DecayContaminationVolumes)
     {
-        internal static Stats Empty => new(0, 0, 0, 0, 0, 0, 0, 0, 0);
+        internal static Stats Empty => new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         public static Stats operator +(Stats left, Stats right) =>
             new(
                 left.ArchitectureMaterials + right.ArchitectureMaterials,
+                left.StructuralOverlays + right.StructuralOverlays,
                 left.MajorProps + right.MajorProps,
                 left.GroundProps + right.GroundProps,
                 left.LocalLights + right.LocalLights,
@@ -179,6 +181,7 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
 
         return new Stats(
             architectureMaterials,
+            0,
             major,
             ground,
             lights,
@@ -220,6 +223,15 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
         var bounds = StructuralBounds(roomObject.transform, scaleRoot, room.m_size);
         var dressingRoot = new GameObject("Magenheim_DDE_BiomeDressing");
         dressingRoot.transform.SetParent(roomObject.transform, false);
+
+        var structuralOverlays = AddStructuralOverlays(
+            dressingRoot.transform,
+            room,
+            profile,
+            donorRoomName,
+            donorRoomIndex,
+            band,
+            bounds);
 
         var majorProps = AddMajorProps(
             dressingRoot.transform,
@@ -290,6 +302,7 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
 
         return new Stats(
             architectureMaterials,
+            structuralOverlays,
             majorProps,
             groundProps,
             lights,
@@ -378,6 +391,165 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
         }
 
         return changed;
+    }
+
+    private static int AddStructuralOverlays(
+        Transform parent,
+        Room room,
+        UnderworldVanillaDungeonReuseDefinition profile,
+        string roomName,
+        int roomIndex,
+        UnderworldVanillaDungeonRiskBand band,
+        Bounds bounds)
+    {
+        if (room.m_entrance)
+            return 0;
+
+        var minimumSpan = Mathf.Min(bounds.size.x, bounds.size.z);
+        var desired = minimumSpan >= 18f ? 3 : minimumSpan >= 10f ? 2 : 1;
+        if ((int)band >= (int)UnderworldVanillaDungeonRiskBand.Deep)
+            desired = Mathf.Min(4, desired + 1);
+
+        var prefabName = StructuralPrefab(profile.Biome);
+        var added = 0;
+        for (var index = 0; index < desired; index++)
+        {
+            if (!UnderworldVanillaDungeonRoomPolicy.Roll(
+                    .84d,
+                    profile.DungeonId,
+                    roomName,
+                    roomIndex,
+                    "biome-structural-overlay",
+                    index))
+                continue;
+
+            var seed = StableSeed(
+                profile.DungeonId,
+                roomName,
+                roomIndex,
+                "structural-overlay",
+                index);
+
+            GameObject visual;
+            try
+            {
+                visual = UnderworldDonorVisualFactory.CreateSpecific(
+                    profile.Biome,
+                    prefabName,
+                    seed,
+                    "Magenheim_DDE_StructuralOverlay_" + index);
+            }
+            catch (InvalidOperationException)
+            {
+                continue;
+            }
+
+            StripGameplayCollision(visual);
+            visual.transform.SetParent(parent, false);
+
+            var side = index % 4;
+            var x = bounds.center.x;
+            var z = bounds.center.z;
+            var rotation = visual.transform.localRotation;
+            switch (side)
+            {
+                case 0:
+                    x = bounds.min.x + Mathf.Max(.35f, bounds.size.x * .08f);
+                    z += bounds.extents.z * .34f;
+                    rotation = Quaternion.Euler(0f, 90f, 0f) * rotation;
+                    break;
+                case 1:
+                    x = bounds.max.x - Mathf.Max(.35f, bounds.size.x * .08f);
+                    z -= bounds.extents.z * .34f;
+                    rotation = Quaternion.Euler(0f, -90f, 0f) * rotation;
+                    break;
+                case 2:
+                    z = bounds.min.z + Mathf.Max(.35f, bounds.size.z * .08f);
+                    x -= bounds.extents.x * .30f;
+                    break;
+                default:
+                    z = bounds.max.z - Mathf.Max(.35f, bounds.size.z * .08f);
+                    x += bounds.extents.x * .30f;
+                    rotation = Quaternion.Euler(0f, 180f, 0f) * rotation;
+                    break;
+            }
+
+            var y = bounds.min.y + Mathf.Clamp(bounds.size.y * .18f, .25f, 1.1f);
+            if (profile.Biome == UnderworldTerrainBiome.FrozenCaverns &&
+                (index & 1) == 1)
+            {
+                y = bounds.max.y - Mathf.Clamp(bounds.size.y * .15f, .35f, 1.25f);
+                rotation = Quaternion.Euler(180f, 0f, 0f) * rotation;
+            }
+
+            var position = new Vector3(x, y, z);
+            if (NearConnection(room, position, 3.1f))
+            {
+                UnityEngine.Object.DestroyImmediate(visual);
+                continue;
+            }
+
+            visual.transform.localPosition = position;
+            visual.transform.localRotation = rotation;
+            visual.transform.localScale = Vector3.Scale(
+                visual.transform.localScale,
+                StructuralScale(profile.Biome, index));
+            added++;
+        }
+
+        return added;
+    }
+
+    private static string StructuralPrefab(UnderworldTerrainBiome biome)
+    {
+        switch (biome)
+        {
+            case UnderworldTerrainBiome.FungalForest:
+                return "model:underworld-flora-fungal-tanglecap";
+            case UnderworldTerrainBiome.BlackwaterDeep:
+                return "model:underworld-flora-blackwater-drowned-root-arch";
+            case UnderworldTerrainBiome.SulfurousWastes:
+                return "AshlandsBranch2";
+            case UnderworldTerrainBiome.FrozenCaverns:
+                return "BlackIceShard_01";
+            case UnderworldTerrainBiome.GreatDecay:
+                return "root07";
+            default:
+                throw new InvalidOperationException(
+                    "No ordinary dungeon structural overlay exists for " + biome + ".");
+        }
+    }
+
+    private static Vector3 StructuralScale(
+        UnderworldTerrainBiome biome,
+        int variant)
+    {
+        var alternate = (variant & 1) == 1;
+        switch (biome)
+        {
+            case UnderworldTerrainBiome.FungalForest:
+                return alternate
+                    ? new Vector3(.62f, .88f, .58f)
+                    : new Vector3(.72f, .76f, .68f);
+            case UnderworldTerrainBiome.BlackwaterDeep:
+                return alternate
+                    ? new Vector3(.72f, .62f, .74f)
+                    : new Vector3(.62f, .74f, .64f);
+            case UnderworldTerrainBiome.SulfurousWastes:
+                return alternate
+                    ? new Vector3(.58f, .82f, .54f)
+                    : new Vector3(.72f, .58f, .66f);
+            case UnderworldTerrainBiome.FrozenCaverns:
+                return alternate
+                    ? new Vector3(.56f, .78f, .56f)
+                    : new Vector3(.66f, .68f, .66f);
+            case UnderworldTerrainBiome.GreatDecay:
+                return alternate
+                    ? new Vector3(.66f, .72f, .62f)
+                    : new Vector3(.76f, .58f, .70f);
+            default:
+                return Vector3.one;
+        }
     }
 
     private static int AddMajorProps(
