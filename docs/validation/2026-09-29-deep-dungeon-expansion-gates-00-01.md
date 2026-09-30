@@ -58,3 +58,22 @@ that command succeeds in the installed game and its evidence files are reviewed.
 
 No ordinary dungeon status is changed by this work. Fungal, Blackwater, Sulfurous, Frozen and Great
 Decay remain `Planned`. Deep Fracture remains the bespoke `RuntimeReady` exception.
+
+
+## Durable-plan authority reconciliation
+
+`docs/DEEP_DUNGEON_EXPANSION.md` is now aligned with the execution vocabulary used by the backlog
+and verifiers:
+
+- DDE-00 through DDE-12 are the sequential per-family implementation/acceptance gates;
+- DDE-13 is deliberate per-family `Planned -> RuntimeReady` promotion;
+- DDE-14 is the final Deep Fracture regression closure.
+
+The plan now includes a dated execution-state table and the single-family candidate-world workflow.
+`verify-deep-dungeon-expansion-gate0.py` also reads the durable plan and fails closed if the plan
+loses the 1.5x scale rule, 3.5x room-count rule, five donor identities, promotion/regression gates or
+the explicit Deep Fracture separation.
+
+Current stop point remains unchanged: no ordinary dungeon has been promoted. DDE-00 still needs a
+successful normal build execution in the current game environment, and DDE-01 still needs an
+installed-game donor census plus evidence review.
