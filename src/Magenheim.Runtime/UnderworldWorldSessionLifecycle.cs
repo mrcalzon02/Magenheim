@@ -152,7 +152,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             _services.InstanceLifecycle.EnsureActive(identity);
             _log.LogInfo(
                 $"Admitted persistent Underworld instance authority '{identity.DerivedWorldId}' for parent world '{identity.ParentWorldId}'. " +
-                $"Admission audit: {admission}");
+                $"Instance validation: {admission}");
         }
         catch (Exception exception)
         {
