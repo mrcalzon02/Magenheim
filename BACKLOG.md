@@ -552,6 +552,18 @@ Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the cur
   DDE-00 source gates now require the five ordinary donor families RuntimeReady together, the
   one-at-a-time candidate switch is retired/inert, detached worldgen requires the full dungeon
   catalog, and native placement audits every family unconditionally.
+- [x] **Biome-assimilate the expanded vanilla donor dungeons — FIRST CONTENT PASS COMPLETE.**
+  Every ordinary donor room now receives owning-biome architecture palette treatment, authored or
+  stripped biome edge dressing, local lighting and biome atmosphere; deep Sulfur rooms may add
+  geothermal hazard pockets. Donor entrances receive matching dressing. Decorative additions are
+  collision-stripped so they cannot silently break donor navigation. This preserves recognizable
+  Burial Chamber/Sunken Crypt/Infested Mine/Frost Cave/Winding Tunnel grammar while making the
+  spaces read as Fungal, Blackwater, Sulfur, Frozen or Great Decay.
+- [ ] **Finish custom creature anatomy and remaining species mechanics for ordinary dungeon fauna.**
+  The first behavior pass is live in source: Puffback spore burst, Abyss Shellback shell armor,
+  Vent Spitter thermal retaliation, rooted Carrion Bloom and Corpse Orchard Rotling propagation.
+  Most creature rigs/animations still use donor chassis and many silhouettes remain explicitly
+  unfinished; complete those rather than treating retexturing alone as final creature art.
 - [ ] **Compile and live-accept expanded vanilla dungeon reuse.**
   Verify all five donor families on fresh Underworld seeds: recognizable vanilla construction,
   >=1.5x room dimensions, >=3.5x live donor room-count bounds, no overlap/truncation, only owning
