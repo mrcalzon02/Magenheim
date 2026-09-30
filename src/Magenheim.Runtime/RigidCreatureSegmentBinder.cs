@@ -15,11 +15,13 @@ internal static class RigidCreatureSegmentBinder
 {
     private const string BonePrefix = "creaturebone:";
 
-    internal static string Apply(GameObject prefab, string modelId)
+    internal static string Apply(GameObject prefab, string modelId, float chassisScale)
     {
         if (!prefab) throw new ArgumentNullException(nameof(prefab));
         if (string.IsNullOrWhiteSpace(modelId))
             throw new ArgumentException("Creature model id is required.", nameof(modelId));
+        if (float.IsNaN(chassisScale) || float.IsInfinity(chassisScale) || chassisScale <= 0f)
+            throw new ArgumentOutOfRangeException(nameof(chassisScale));
 
         var rig = ModelAssets.CreatureRig(modelId)
             ?? throw new InvalidOperationException(modelId + " declares no creatureRig payload.");
@@ -79,6 +81,13 @@ internal static class RigidCreatureSegmentBinder
         var root = ModelAssets.Load(prefab, modelId, arrange: arrange);
         if (!skeletonBuilt)
             throw new InvalidOperationException(modelId + " exported no creaturebone-bound visual parts.");
+
+        // The clone root is scaled for the vanilla donor chassis/hitbox. Authored creature sources
+        // are already modeled in final metres, so cancel the inherited chassis scale on the visual
+        // root instead of shrinking the custom anatomy a second time.
+        root.transform.localScale = Vector3.Scale(
+            root.transform.localScale,
+            Vector3.one * (1f / chassisScale));
 
         foreach (var renderer in donorRenderers)
             if (renderer)
