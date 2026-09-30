@@ -58,5 +58,6 @@ action('LanternMoth_Death',42,{1:neutral,9:down(.30),20:death,42:death})
 arm.animation_data.action=None
 arm['production_contract']='production-creature-r1'
 arm['authored_actions']='Hover,Flight,BankLeft,BankRight,Takeoff,Land,GroundIdle,AlertFlee,Hit,Death'
+sc=bpy.context.scene; sc['magenheim_authored_actions']=arm['authored_actions']; sc['magenheim_skinning']='rigid-segment-weighted'
 bpy.ops.wm.save_as_mainfile(filepath=str(BLEND))
 print('AUTHORED 10 Lantern Moth HOST-INSECT-FLY actions; four-wing flap/bank/landing contract, no root translation')
