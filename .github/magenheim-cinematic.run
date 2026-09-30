@@ -10,3 +10,4 @@ Blackstone source integration pass.
 Physical motion pass v1: object-space gait, rumble, raven, king rise, sword draw, camera cuts.
 Retry physical motion pass after Blender 5 action API/fail-closed repair.
 Render actual silent motion-proof MP4 from object-space animation.
+Retry silent motion-proof using PNG sequence + pinned encoder.
