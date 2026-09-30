@@ -137,15 +137,17 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
                 var sourceName = data.m_prefab.Name;
                 clone.name = RoomPrefabName(profile, sourceName, index);
 
-                // The recognizable vanilla tile itself is enlarged, not replaced. Because the
-                // RoomConnection transforms live beneath this root, their world-space separation
-                // scales with the room geometry; Room.m_size below is expanded to the same linear
-                // factor so vanilla packing/collision authority sees the true larger footprint.
-                clone.transform.localScale *= scale;
-
                 var room = clone.GetComponent<Room>()
                     ?? throw new InvalidOperationException(
                         $"Cloned donor room '{sourceName}' has no Room component.");
+
+                // Do NOT scale the Room root. DungeonGenerator.CalculateRoomPosRot reads raw
+                // RoomConnection.localPosition and does not multiply it by the Room root scale.
+                // Root scaling therefore makes the rendered socket disagree with placement math.
+                // Expand the donor's direct-child construction envelope instead: connection
+                // positions move 1.5x, structural child geometry grows 1.5x, while networked
+                // gameplay props keep their normal physical size at the expanded positions.
+                ScaleRoomHierarchy(clone, room, scale, sourceName);
                 room.m_size = new Vector3Int(
                     Mathf.CeilToInt(room.m_size.x * scale),
                     Mathf.CeilToInt(room.m_size.y * scale),
@@ -475,6 +477,55 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             cloned++;
         }
         return cloned;
+    }
+
+    private static void ScaleRoomHierarchy(
+        GameObject clone,
+        Room room,
+        float scale,
+        string donorRoomName)
+    {
+        if (Mathf.Approximately(scale, 1f)) return;
+        if (scale < 1f)
+            throw new InvalidOperationException(
+                $"DDE room '{donorRoomName}' requested shrink scale {scale:0.###}.");
+
+        // Root-attached render/collision geometry cannot be enlarged without mutating/cloning
+        // shared mesh/collider data separately. Fail closed rather than silently shipping a room
+        // whose visual shell does not match its enlarged placement bounds.
+        if (clone.GetComponent<Renderer>() ||
+            clone.GetComponent<Collider>() ||
+            clone.GetComponent<MeshFilter>())
+            throw new InvalidOperationException(
+                $"Donor room '{donorRoomName}' carries render/collision geometry on the Room root. " +
+                "DDE requires child-authored geometry so 1.5x connection-safe scaling can remain vanilla-isolated.");
+
+        for (var index = 0; index < clone.transform.childCount; index++)
+        {
+            var child = clone.transform.GetChild(index);
+            child.localPosition *= scale;
+
+            // Connections must remain direct children because DungeonGenerator explicitly expects
+            // that topology. Their position expands, but their transform scale itself is semantic
+            // metadata and must stay 1.
+            if (child.GetComponent<RoomConnection>())
+                continue;
+
+            // Valheim instantiates ZNetView children separately during room placement. Scale their
+            // position with the room but keep chest/spawner/fixture physical size normal.
+            if (child.GetComponentInChildren<ZNetView>(true))
+                continue;
+
+            child.localScale *= scale;
+        }
+
+        foreach (var connection in room.GetConnections())
+        {
+            if (connection.transform.parent != clone.transform)
+                throw new InvalidOperationException(
+                    $"Donor room '{donorRoomName}' has RoomConnection '{connection.name}' below a nested parent. " +
+                    "Vanilla placement itself warns on this topology; DDE refuses to scale it ambiguously.");
+        }
     }
 
     private static PopulationRebindStats RebindPopulation(
