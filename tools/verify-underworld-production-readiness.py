@@ -231,6 +231,21 @@ for creature_id in (
 require("export-model-assets @fungalCreatureIds" in production_rebuild and
         "verify-model-assets.py\" @fungalCreatureIds" in production_rebuild,
         "Fungal creature production no longer exports/verifies runtime payloads")
+
+for creature_id in (
+    "underworld-creature-cave-ray",
+    "underworld-creature-gloomfin",
+    "underworld-creature-blackwater-lamprey",
+    "underworld-creature-shoreclaw",
+    "underworld-creature-lantern-angler",
+    "underworld-creature-abyss-shellback",
+    "underworld-creature-deep-hunter",
+):
+    require(creature_id in production_rebuild,
+            "Blackwater creature production run lost "+creature_id)
+require("export-model-assets @blackwaterCreatureIds" in production_rebuild and
+        "verify-model-assets.py\" @blackwaterCreatureIds" in production_rebuild,
+        "Blackwater creature production no longer exports/verifies runtime payloads")
 reuse_authority=(ROOT/"src"/"Magenheim.Core"/"Underworld"/"UnderworldVanillaDungeonReuseCatalog.cs").read_text()
 require("MinimumLinearRoomScale = 1.5d" in reuse_authority,
         "ordinary Underworld vanilla-room scale floor is not 1.5x")
