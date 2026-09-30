@@ -471,6 +471,96 @@ def append_valheim_donor_collections(path: Path):
     return loaded
 
 
+def style_valheim_donor_materials(donors):
+    """Apply restrained cinematic values when the headless server cannot read textures.
+
+    Geometry stays the actual Valheim donor mesh.  These are intentionally broad
+    color fields, following the reference cinematic's low-noise material language.
+    """
+    palettes={
+        "timber_wall":((.18,.105,.055),.86),
+        "timber_floor":((.16,.09,.045),.88),
+        "roof_26":((.16,.13,.075),.93),
+        "roof_45":((.14,.115,.065),.94),
+        "door":((.12,.065,.032),.88),
+        "beam":((.095,.052,.028),.90),
+        "pole":((.095,.052,.028),.90),
+        "stone_floor":((.24,.25,.25),.94),
+        "table":((.17,.09,.045),.88),
+        "bench":((.16,.085,.04),.90),
+        "chair":((.15,.08,.04),.90),
+        "hearth":((.19,.18,.17),.95),
+        "torch":((.12,.085,.05),.88),
+        "fir_tree":((.055,.10,.075),.96),
+        "rock":((.20,.22,.23),.96),
+        "raven":((.012,.016,.025),.90),
+        "player_body":((.17,.15,.14),.86),
+        "nowhere_king_chassis":((.008,.010,.014),.78),
+    }
+    for key,col in donors.items():
+        logical=key.removeprefix("VALHEIM_")
+        base,rough=palettes.get(logical,((.18,.18,.18),.9))
+        seen=set()
+        for obj in col.all_objects:
+            if obj.type!="MESH":
+                continue
+            for material in obj.data.materials:
+                if material is None or material in seen:
+                    continue
+                seen.add(material)
+                material.use_nodes=True
+                bs=material.node_tree.nodes.get("Principled BSDF")
+                if bs is None:
+                    continue
+                name=(material.name+" "+obj.name).lower()
+                color=base
+                if logical=="fir_tree":
+                    color=(.055,.105,.073) if any(token in name for token in ("leaf","needle","branch","pine")) else (.105,.060,.032)
+                elif logical in {"hearth","torch"} and any(token in name for token in ("fire","ember","flame","coal")):
+                    color=(.42,.10,.018)
+                    if "Emission Color" in bs.inputs:
+                        bs.inputs["Emission Color"].default_value=(1.0,.12,.015,1)
+                        bs.inputs["Emission Strength"].default_value=1.5
+                elif logical=="player_body" and any(token in name for token in ("skin","body","face","head")):
+                    color=(.31,.20,.145)
+                if "Base Color" in bs.inputs:
+                    bs.inputs["Base Color"].default_value=(*color,1)
+                if "Roughness" in bs.inputs:
+                    bs.inputs["Roughness"].default_value=rough
+
+
+def hide_objects_with_prefixes(prefixes):
+    for obj in bpy.data.objects:
+        if any(obj.name.startswith(prefix) for prefix in prefixes):
+            obj.hide_render=True
+
+
+def add_king_cinematic_chassis(donors,target,location,mats):
+    """Temporary real-humanoid chassis until an owned King body/client Dverger donor is available."""
+    player=donor_instance("CIN_King_PlayerChassis","player_body",donors,target,location,scale=1.38)
+    if player is None:
+        return None
+    x,y,z=location
+    # Broad mantle: one quiet silhouette field rather than a cube mannequin.
+    verts=[
+        (x-.82,y+.08,z+2.18),(x+.82,y+.08,z+2.18),
+        (x+1.05,y+.24,z+.45),(x-.1,y+.48,z+.12),(x-1.05,y+.24,z+.45),
+        (x-.62,y-.20,z+2.05),(x+.62,y-.20,z+2.05),
+    ]
+    faces=[(0,1,2,3,4),(0,5,6,1),(0,4,3,2,1)]
+    cloak=mesh_obj("CIN_King_Mantle",verts,faces,mats["king"],target)
+    # Crown and eye markers are the Magenheim identity carried over the real donor body.
+    for i,dx in enumerate((-.24,-.12,0,.12,.24)):
+        add_box(f"CIN_King_Crown_{i}",(x+dx,y,z+2.75+abs(dx)*.18),(.055,.07,.46-abs(dx)*.5),mats["blackmetal"],target)
+    for i,dx in enumerate((-.095,.095)):
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=6, radius=.035, location=(x+dx,y-.12,z+2.32))
+        eye=bpy.context.object
+        eye.name=f"CIN_King_Eye_{i}"
+        eye.data.materials.append(mats["eye"])
+        relink(eye,target)
+    return player
+
+
 def donor_instance(name, logical, donors, target, location, rotation=(0,0,0), scale=1.0):
     key="VALHEIM_"+logical
     col=donors.get(key)
@@ -532,6 +622,7 @@ def build_donor_house(prefix,x,y,width,depth,wall_levels,donors,target,scale=1.0
 
 def add_valheim_donor_sets(mats,root,donor_library:Path):
     donors=append_valheim_donor_collections(donor_library)
+    style_valheim_donor_materials(donors)
     surface=bpy.data.collections.get("CIN_SurfaceVillage")
     hall=bpy.data.collections.get("CIN_GreatHallInterior")
     if surface is None or hall is None:
@@ -568,10 +659,36 @@ def add_valheim_donor_sets(mats,root,donor_library:Path):
             donor_instance(f"VHI_Bench_{sx}_{yi}","bench",donors,h,(x0+sx*4.2,yi,.1),(0,0,0 if sx<0 else math.pi),1.0)
     donor_instance("VHI_Table","table",donors,h,(x0,7,.1),scale=1.0)
 
+    # Replace box mannequins with the actual readable Valheim Player donor for
+    # blocking.  Equipment and final character-specific meshes are a later rig pass.
+    if "VALHEIM_player_body" in donors:
+        hide_objects_with_prefixes(("HERO_A_","HERO_B_","HERO_C_","HALL_HERO_A_","HALL_HERO_B_","HALL_HERO_C_","HALL_VILLAGER_"))
+        for name,loc,rot,scale in (
+            ("VH_Hero_A",(-2.2,-26.0,.15),0.06,.96),
+            ("VH_Hero_B",(0.0,-27.0,.15),-.04,.88),
+            ("VH_Hero_C",(2.1,-26.4,.15),.03,.92),
+        ):
+            donor_instance(name,"player_body",donors,v,loc,(0,0,rot),scale)
+        for name,dx,dy,rot,scale in (
+            ("VHI_Hero_A",-1.6,-7,.02,.96),("VHI_Hero_B",0,-7.5,-.03,.88),("VHI_Hero_C",1.6,-7,.04,.92),
+            ("VHI_Villager_0",-5,-1,.10,.82),("VHI_Villager_1",5,-1,-.10,.82),
+            ("VHI_Villager_2",-5,5,.08,.80),("VHI_Villager_3",5,5,-.08,.80),
+            ("VHI_Villager_4",-4,10,.05,.78),("VHI_Villager_5",4,10,-.05,.78),
+        ):
+            donor_instance(name,"player_body",donors,h,(x0+dx,dy,.05),(0,0,rot),scale)
+
     raven=bpy.data.objects.get("RAVEN_ROOT")
     if raven is not None and "VALHEIM_raven" in donors:
-        raven.hide_render=True
-        donor_instance("VH_Raven","raven",donors,v,(-7,8,9),scale=.85)
+        hide_objects_with_prefixes(("RAVEN_",))
+        donor_instance("VH_Raven","raven",donors,v,(-7,8,9),(0,0,-.35),.82)
+
+    # Dedicated-server Dverger geometry is non-readable.  Until the client donor
+    # or owned final King body is admitted, use the readable Valheim player mesh
+    # under Magenheim's mantle/crown rather than the old block mannequin.
+    if "VALHEIM_player_body" in donors:
+        hide_objects_with_prefixes(("NOWHERE_KING_",))
+        actors=collection("CIN_ValheimThroneActors",root)
+        add_king_cinematic_chassis(donors,actors,(0,THRONE_Y-19.5,.10),mats)
 
     bpy.context.scene["valheim_cinematic_donors"]=len(donors)
     return donors
@@ -601,9 +718,9 @@ def add_cameras(root):
         ("SHOT_05_OMEN_CAM", (-13,1,10.8), (-7,8,9.0), 76),
         # Blackstone approach is at +Y; throne/King are at -Y after the
         # Magenheim game-space -> Blender-space conversion.
-        ("SHOT_06_THRONE_REVEAL_CAM", (0,y0+41,6.2), (0,y0-18.5,3.4), 36),
-        ("SHOT_07_KING_AWAKENS_CAM", (-7.5,y0-5.5,4.8), (0,y0-19.5,3.7), 58),
-        ("SHOT_08_LAST_ARGUMENT_CAM", (0,y0-8.5,4.0), (0,y0-19.5,3.45), 72),
+        ("SHOT_06_THRONE_REVEAL_CAM", (19,y0+30,6.4), (0,y0-17.5,3.2), 44),
+        ("SHOT_07_KING_AWAKENS_CAM", (-8.5,y0-5.0,3.6), (0,y0-19.5,2.1), 66),
+        ("SHOT_08_LAST_ARGUMENT_CAM", (0,y0-8.0,3.05), (0,y0-19.5,1.95), 74),
     )
     created = {}
     for name, loc, tgt, lens in specs:
@@ -758,11 +875,20 @@ def set_shot_visibility(shot_name):
         "CIN_ThroneLights": shot_name in {"SHOT_06_THRONE_REVEAL","SHOT_07_KING_AWAKENS","SHOT_08_LAST_ARGUMENT"},
         "CIN_ValheimVillage": shot_name in {"SHOT_01_RETURN","SHOT_03_PEACE","SHOT_04_RUMBLE","SHOT_05_OMEN"},
         "CIN_ValheimHall": shot_name=="SHOT_02_HOMECOMING",
+        "CIN_ValheimThroneActors": shot_name in {"SHOT_06_THRONE_REVEAL","SHOT_07_KING_AWAKENS","SHOT_08_LAST_ARGUMENT"},
     }
     for name,visible in groups.items():
         col=bpy.data.collections.get(name)
         if col is not None:
             col.hide_render=not visible
+    bg=bpy.context.scene.world.node_tree.nodes.get("Background") if bpy.context.scene.world and bpy.context.scene.world.use_nodes else None
+    if bg is not None:
+        if shot_name in {"SHOT_06_THRONE_REVEAL","SHOT_07_KING_AWAKENS","SHOT_08_LAST_ARGUMENT"}:
+            bg.inputs["Color"].default_value=(.004,.006,.014,1)
+            bg.inputs["Strength"].default_value=.11
+        else:
+            bg.inputs["Color"].default_value=(.16,.22,.31,1)
+            bg.inputs["Strength"].default_value=.72
 
 
 def render_previews(scene, cameras, preview_dir: Path):
