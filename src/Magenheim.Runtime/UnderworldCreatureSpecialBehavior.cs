@@ -180,6 +180,7 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         }
 
         EmitBurst(owner.transform, new Color(.48f, .92f, .48f, .62f), 26, 4.4f);
+        owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("sporepuff");
     }
 
     private void TryThermalSpit(Character owner, Character? attacker)
