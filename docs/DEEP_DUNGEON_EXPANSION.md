@@ -1567,3 +1567,167 @@ biome.
 
 Reason: architecture is reused; gameplay progression is not. The point is new reasons to explore a
 familiar structural language.
+
+
+---
+
+## 24. Risk register
+
+### RISK-DDE-01 — Room scaling breaks generator packing
+
+**Risk:** visible rooms scale to 1.5x but placement math remains partly vanilla-sized, creating
+overlap, inaccessible joins or hidden collision.
+
+**Mitigation:** DDX-W03 scale verifier + DDE-04 live measurements. Treat `Room.m_size`,
+connections, doors and any world-space offsets as one contract.
+
+**Stop condition:** any repeated overlap or broken join blocks promotion.
+
+### RISK-DDE-02 — 3.5x target becomes generation failure rather than exploration
+
+**Risk:** the generator repeatedly exhausts legal placement before reaching expanded minimums.
+
+**Mitigation:** DDX-W04 telemetry, donor-specific zone/packing tuning backed by measured placement
+failure data.
+
+**Stop condition:** seeds routinely fail to reach minimum target or produce pathological generation
+times.
+
+### RISK-DDE-03 — Hidden donor progression leaks
+
+**Risk:** a room contains a component not covered by current sanitation and still produces vanilla
+loot, keys, boss progression, quests or events.
+
+**Mitigation:** DDX-W01 component inventory + DDX-W02 fail-closed sanitation registry.
+
+**Stop condition:** any unexplained gameplay-bearing donor component remains.
+
+### RISK-DDE-04 — Oversized rooms become empty
+
+**Risk:** 1.5x geometry and 3.5x length dilute encounter pressure.
+
+**Mitigation:** depth-aware encounter profiles, room suitability rules and occupancy bands rather
+than globally increasing every spawn count.
+
+**Stop condition:** telemetry/live review shows long repeated stretches with no meaningful encounter
+or reward pressure.
+
+### RISK-DDE-05 — Large dungeons destroy rare-resource balance
+
+**Risk:** repeated treasure/resource sockets multiply scarce materials too aggressively.
+
+**Mitigation:** deterministic dungeon-level reward budget and rare-resource caps.
+
+**Stop condition:** one full clear materially bypasses intended biome progression.
+
+### RISK-DDE-06 — Body-plan mismatch inside donor rooms
+
+**Risk:** large/aquatic/flying custom creatures technically spawn but cannot navigate or attack
+correctly in a particular donor room.
+
+**Mitigation:** room suitability filters and per-biome encounter profiles.
+
+**Stop condition:** a creature repeatedly wedges, cannot reach players or attacks through geometry.
+
+### RISK-DDE-07 — Multiplayer graph or reward divergence
+
+**Risk:** depth, encounter weighting or resource allocation depends on non-deterministic local state.
+
+**Mitigation:** derive from authoritative dungeon seed/generated graph; server owns mutable reward
+and encounter state.
+
+**Stop condition:** host/client disagree about room depth, population or resource state.
+
+### RISK-DDE-08 — Vanilla update donor drift
+
+**Risk:** Valheim renames entrance/generator/room content or adds new gameplay components.
+
+**Mitigation:** DDE-01 donor audit is repeatable and fail-closed; Great Decay/Winding Tunnels gets
+extra scrutiny because it is newest.
+
+**Stop condition:** expected donor identity/component inventory changes without review.
+
+### RISK-DDE-09 — Existing-save location corruption
+
+**Risk:** promoting a new family into an existing Underworld save generates duplicate, overlapping
+or unreachable locations.
+
+**Mitigation:** use established location recovery/admission mechanism and test pre-promotion saves.
+
+**Stop condition:** duplicate/overlapping locations or generated entrances inside already-generated
+invalid terrain.
+
+### RISK-DDE-10 — Generic implementation becomes donor-specific spaghetti
+
+**Risk:** every donor adds special cases until the shared registrar is no longer understandable.
+
+**Mitigation:** keep generic clone/scale/population/depth interfaces stable; donor adapters remain
+small, named and documented.
+
+**Stop condition:** donor-specific branches begin duplicating core generation/population logic.
+
+---
+
+## 25. First implementation sprint
+
+This is the next recommended development slice from the current repository state.
+
+### Sprint objective
+
+Clear **DDE-00**, implement **DDX-W01**, and prepare **DDE-01** evidence without enabling any new
+ordinary dungeon location.
+
+### Files expected to change
+
+Primary:
+
+- `src/Magenheim.Runtime/UnderworldVanillaDungeonRegistrar.cs`
+- new runtime donor-audit helper under `src/Magenheim.Runtime/`
+- `src/Magenheim.Runtime/UnderworldDevCommands.cs` or the existing Underworld dungeon diagnostic
+  surface
+- `tests/Magenheim.Core.Tests/UnderworldVanillaDungeonReuseCatalogTests.cs`
+- `TESTING.md`
+- `docs/DEEP_DUNGEON_EXPANSION.md` only if the live donor audit changes assumptions.
+
+Evidence after installed-game execution:
+
+- `docs/validation/deep-dungeon-expansion/burial-chambers/<date>/donor-audit.md`
+- equivalent donor-audit evidence directories for the other four donor families.
+
+### Sprint tasks
+
+1. Add a read-only donor-audit model that can serialize/log generator, room and component facts.
+2. Enumerate all five donor profiles from `UnderworldVanillaDungeonReuseCatalog`.
+3. Resolve entrance -> generator -> theme -> room family from the live game.
+4. Record donor min/max rooms, zone size, tile width, algorithm and required rooms.
+5. Record each room's flags, size, connection types and gameplay-bearing components.
+6. Compare the live result to the catalog assumptions.
+7. Fail loudly on missing entrance, wrong generator identity, zero-room theme or unknown theme.
+8. Add a developer diagnostic command/output for the audit.
+9. Do **not** set any ordinary dungeon to `RuntimeReady`.
+10. Run Core tests and runtime compile against current references.
+11. Execute the diagnostic in installed Valheim.
+12. Commit evidence and update this document only where the actual donor data requires correction.
+
+### Sprint success criteria
+
+The sprint is complete when the repository contains a reproducible way to answer:
+
+- “What exactly does vanilla currently put in each donor dungeon?”
+- “Which components must we retain, retarget or strip?”
+- “What live room-count values are our 3.5x targets derived from?”
+- “Did a Valheim update change anything we assumed?”
+
+No worldgen admission is part of this sprint.
+
+### Sprint stop conditions
+
+Stop and repair before proceeding if:
+
+- any mapped entrance/generator identity is wrong;
+- `DG_Hole` / Winding Tunnel assumptions do not match the installed Valheim version;
+- a donor theme cannot be enumerated cleanly;
+- the donor component inventory exposes unknown progression-bearing systems;
+- the runtime cannot compile cleanly against current assemblies.
+
+After this sprint clears, proceed directly to **DDX-W02 Component Sanitation Registry**.
