@@ -170,6 +170,8 @@ internal static class ModelAssets
 
     internal static JToken? SkinRig(string id) => Document(id)["skinRig"];
 
+    internal static JToken? CreatureRig(string id) => Document(id)["creatureRig"];
+
     internal static GameObject Load(GameObject prefab, string id, bool item = false, float scale = 1f, bool hideOriginal = true, bool preserveParticles = false, Transform? parent = null, Material? materialSource = null, Action<string, Transform>? arrange = null)
     {
         if (!prefab) throw new ArgumentNullException(nameof(prefab));
