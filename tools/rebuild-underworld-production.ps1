@@ -108,6 +108,19 @@ if($LASTEXITCODE -ne 0){throw 'Sulfur creature runtime export failed.'}
 & python "$PSScriptRoot/verify-model-assets.py" @sulfurCreatureIds
 if($LASTEXITCODE -ne 0){throw 'Sulfur creature runtime payload verification failed.'}
 
+Write-Host '=== Remaining Sulfurous Wastes creature production ==='
+& "$PSScriptRoot/blender.ps1" author-underworld-sulfur-remainder
+if($LASTEXITCODE -ne 0){throw 'Remaining Sulfurous Wastes creature authoring failed.'}
+$sulfurRemainderIds=@(
+    'underworld-creature-fume-wraith',
+    'underworld-creature-magma-leaper',
+    'underworld-creature-furnace-golem'
+)
+& "$PSScriptRoot/blender.ps1" export-model-assets @sulfurRemainderIds
+if($LASTEXITCODE -ne 0){throw 'Remaining Sulfur creature runtime export failed.'}
+& python "$PSScriptRoot/verify-model-assets.py" @sulfurRemainderIds
+if($LASTEXITCODE -ne 0){throw 'Remaining Sulfur creature runtime payload verification failed.'}
+
 Write-Host '=== Frozen Caverns creature production ==='
 & "$PSScriptRoot/blender.ps1" author-underworld-frozen-creatures
 if($LASTEXITCODE -ne 0){throw 'Frozen Caverns creature authoring failed.'}
@@ -177,4 +190,4 @@ if(!$SkipReview){
     & "$PSScriptRoot/blender.ps1" render-underworld-armour-articulation-review
     if($LASTEXITCODE -ne 0){throw 'Underworld armour articulation review failed.'}
 }
-Write-Host 'PRODUCTION READY: 26 PBR families, 40 raw/refined material items, seven Fungal Forest, seven Blackwater Deep, four Sulfurous Wastes, seven Frozen Caverns, and seven Great Decay creature bodies, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools and armour regenerated and gated. Ordinary Underworld dungeon architecture uses runtime vanilla-donor reuse; creature bodies are authored Blender assets.'
+Write-Host 'PRODUCTION READY: 26 PBR families, 40 raw/refined material items, all 35 ordinary-biome creature bodies, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools and armour regenerated and gated. Ordinary Underworld dungeon architecture uses runtime vanilla-donor reuse; creature bodies are authored Blender assets.'
