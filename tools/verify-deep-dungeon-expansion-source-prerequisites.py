@@ -178,10 +178,10 @@ for token,label in (
     ("zone.m_snapToWater = donorSnapToWater","donor water-snap preservation"),
 ):
     require(token in registrar,"DDE-09 missing "+label)
-require("UnderworldVanillaDungeonCandidatePolicy.IsWorldgenAdmitted(dungeon)" in bridge,
-        "DDE-09 detached catalog does not use RuntimeReady admission predicate")
+require("UnderworldDungeonCatalog.All.Count" in bridge,
+        "DDE-09 detached catalog does not require all dungeon families")
 require("definition.Status == UnderworldDungeonStatus.RuntimeReady" in candidate,
-        "DDE-09 runtime admission predicate is not RuntimeReady-only")
+        "DDE-09 compatibility policy no longer describes RuntimeReady-only admission")
 require("internal static bool Enabled => false" in candidate,
         "DDE-09 retired one-at-a-time candidate switch can still activate")
 require("active.Length != UnderworldVanillaDungeonReuseCatalog.All.Count" in registrar,
