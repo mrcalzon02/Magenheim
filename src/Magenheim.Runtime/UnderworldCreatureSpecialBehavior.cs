@@ -24,6 +24,7 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         LanternAnglerPressure,
         AbyssShellArmor,
         DeepHunterRam,
+        CinderHoundPackRally,
         PaleBurrowerAmbush,
         RimewingPerch,
         FurnaceGolemArmorBreak,
@@ -46,6 +47,12 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
     private bool _burrowEmerging;
     private bool _burrowComplete;
     private int _armorStage = 2;
+    private Light? _lureLight;
+    private float _lureBaseIntensity;
+    private bool _anglerCharging;
+    private float _anglerReleaseAt;
+    private float _packBaseRunSpeed;
+    private float _packRallyUntil;
     private BaseAI? _stageAi;
     private Rigidbody? _stageBody;
     private Vector3 _stageOrigin;
@@ -78,7 +85,8 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
             Mode.LampreyLatch => "timed attach-and-feed latch",
             Mode.LanternAnglerPressure => "radial pressure-release attack",
             Mode.AbyssShellArmor => "shell armor; pickaxe bypass",
-            Mode.DeepHunterRam => "apex ram charge",
+            Mode.DeepHunterRam => "apex ram plus close tail strike",
+            Mode.CinderHoundPackRally => "pack-call rally burst",
             Mode.PaleBurrowerAmbush => "subterranean proximity ambush",
             Mode.RimewingPerch => "dormant perch-to-flight lifecycle",
             Mode.FurnaceGolemArmorBreak => "two-stage furnace armor break",
@@ -169,6 +177,9 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
                 break;
             case Mode.DeepHunterRam:
                 UpdateDeepHunter(owner);
+                break;
+            case Mode.CinderHoundPackRally:
+                UpdateCinderHound(owner);
                 break;
             case Mode.PaleBurrowerAmbush:
                 UpdatePaleBurrower(owner);
@@ -317,6 +328,19 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
 
     private void UpdateLanternAngler(Character owner)
     {
+        UpdateAnglerLure(owner);
+
+        if (_anglerCharging)
+        {
+            if (Time.time < _anglerReleaseAt)
+                return;
+
+            _anglerCharging = false;
+            ReleaseAnglerPressure(owner);
+            _nextAbilityTime = Time.time + 8.5f;
+            return;
+        }
+
         if (Time.time < _nextAbilityTime)
             return;
 
@@ -331,7 +355,47 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         if (distance < 4.5f || distance > 12f)
             return;
 
-        _nextAbilityTime = Time.time + 8.5f;
+        _anglerCharging = true;
+        _anglerReleaseAt = Time.time + 1.15f;
+        owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("pressuretell");
+    }
+
+    private void UpdateAnglerLure(Character owner)
+    {
+        if (!_lureLight)
+        {
+            foreach (var light in owner.GetComponentsInChildren<Light>(true))
+            {
+                if (!light ||
+                    !string.Equals(
+                        light.gameObject.name,
+                        "Magenheim_Underworld_IdentityGlow",
+                        StringComparison.Ordinal))
+                    continue;
+
+                _lureLight = light;
+                _lureBaseIntensity = light.intensity;
+                break;
+            }
+        }
+
+        if (_lureLight)
+        {
+            var pulse = .72f + (Mathf.Sin(Time.time * 2.7f) + 1f) * .22f;
+            _lureLight.intensity = _lureBaseIntensity * pulse;
+        }
+
+        if (!_anglerCharging &&
+            Time.time >= _nextAbilityTime &&
+            UnderworldVanillaDungeonRoomPolicy.Unit(
+                owner.gameObject.GetInstanceID(),
+                Mathf.FloorToInt(Time.time / 3f),
+                "angler-lure") > .82d)
+            owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("luretell");
+    }
+
+    private static void ReleaseAnglerPressure(Character owner)
+    {
         owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("pressurerelease");
 
         foreach (var player in Player.GetAllPlayers())
@@ -383,10 +447,15 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
 
         var delta = target.GetCenterPoint() - owner.GetCenterPoint();
         var distance = delta.magnitude;
-        if (distance < 7f || distance > 20f)
-            return;
 
-        if (!ClearLine(owner, target))
+        if (distance <= 5.2f)
+        {
+            DeepHunterTailStrike(owner);
+            _nextAbilityTime = Time.time + 6.2f;
+            return;
+        }
+
+        if (distance < 7f || distance > 20f || !ClearLine(owner, target))
             return;
 
         var body = owner.GetComponent<Rigidbody>();
@@ -397,6 +466,43 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         var direction = delta.normalized;
         body.AddForce(direction * 10.5f, ForceMode.VelocityChange);
         owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("ram");
+    }
+
+    private static void DeepHunterTailStrike(Character owner)
+    {
+        owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("tailstrike");
+
+        foreach (var player in Player.GetAllPlayers())
+        {
+            if (!player ||
+                player.IsDead() ||
+                player.gameObject.scene.handle != owner.gameObject.scene.handle)
+                continue;
+
+            var offset = player.transform.position - owner.transform.position;
+            var distance = offset.magnitude;
+            if (distance > 5.5f || distance < .01f)
+                continue;
+
+            var direction = offset / distance;
+            var hit = new HitData
+            {
+                m_point = player.GetCenterPoint(),
+                m_dir = direction,
+                m_damage = new HitData.DamageTypes
+                {
+                    m_blunt = 22f,
+                },
+                m_pushForce = 12f,
+                m_staggerMultiplier = 1.05f,
+            };
+            hit.SetAttacker(owner);
+            player.Damage(hit);
+
+            var body = player.GetComponent<Rigidbody>();
+            if (body)
+                body.AddForce(direction * 5.8f, ForceMode.VelocityChange);
+        }
     }
 
     private void TryFlee(Character owner, Character? attacker)
@@ -655,6 +761,68 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         }
 
         return found;
+    }
+
+    private void UpdateCinderHound(Character owner)
+    {
+        if (_packRallyUntil > 0f && Time.time >= _packRallyUntil)
+        {
+            if (_packBaseRunSpeed > 0f)
+                owner.m_runSpeed = _packBaseRunSpeed;
+            _packRallyUntil = 0f;
+        }
+
+        if (Time.time < _nextAbilityTime)
+            return;
+
+        var target = NearestLivingPlayer(
+            owner.transform.position,
+            owner.gameObject.scene.handle,
+            18f);
+        if (!target)
+            return;
+
+        var nearby = new List<Character>();
+        foreach (var character in Character.GetAllCharacters())
+        {
+            if (!character ||
+                character.IsDead() ||
+                character.gameObject.scene.handle != owner.gameObject.scene.handle ||
+                !character.gameObject.name.StartsWith(
+                    "Magenheim_Underworld_Prototype_CinderHound",
+                    StringComparison.Ordinal))
+                continue;
+
+            if ((character.transform.position - owner.transform.position).sqrMagnitude <= 14f * 14f)
+                nearby.Add(character);
+        }
+
+        if (nearby.Count < 2)
+            return;
+
+        _nextAbilityTime = Time.time + 12f;
+        foreach (var hound in nearby)
+        {
+            var view = hound.GetComponent<ZNetView>();
+            if (!view || !view.IsValid() || !view.IsOwner())
+                continue;
+
+            var behavior = hound.GetComponent<UnderworldCreatureSpecialBehavior>();
+            if (!behavior)
+                continue;
+
+            behavior.ApplyPackRally(hound);
+            hound.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("packcall");
+        }
+    }
+
+    private void ApplyPackRally(Character owner)
+    {
+        if (_packBaseRunSpeed <= 0f)
+            _packBaseRunSpeed = owner.m_runSpeed;
+
+        owner.m_runSpeed = Mathf.Max(owner.m_runSpeed, _packBaseRunSpeed * 1.18f);
+        _packRallyUntil = Mathf.Max(_packRallyUntil, Time.time + 6f);
     }
 
     private void UpdatePaleBurrower(Character owner)
@@ -932,6 +1100,8 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
                 return Mode.AbyssShellArmor;
             case "Deep Hunter":
                 return Mode.DeepHunterRam;
+            case "Cinder Hound":
+                return Mode.CinderHoundPackRally;
             case "Pale Burrower":
                 return Mode.PaleBurrowerAmbush;
             case "Rimewing":
