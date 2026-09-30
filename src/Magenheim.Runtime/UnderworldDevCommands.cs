@@ -10,7 +10,7 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Developer console access to the Underworld: <c>magenheim_underworld enter|return|status|audit|survey|dungeons</c>.
+/// Developer console access to the Underworld: <c>magenheim_underworld enter|return|status|audit|survey|dungeons|donors</c>.
 /// </summary>
 /// <remarks>
 /// A cheat command, so Valheim's own <c>devcommands</c> gate applies. It is not a second transit
@@ -37,9 +37,9 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
     }
 
     public override string Name => "magenheim_underworld";
-    public override string Help => "enter | return | status | audit | survey | dungeons -- transit/status, admission audit, live terrain survey, or actual dungeon placement audit (devcommands)";
+    public override string Help => "enter | return | status | audit | survey | dungeons | donors -- transit/status, admission audit, terrain/dungeon audit, or Deep Dungeon donor census (devcommands)";
     public override bool IsCheat => true;
-    public override List<string> CommandOptionList() => new() { "enter", "return", "status", "audit", "survey", "dungeons" };
+    public override List<string> CommandOptionList() => new() { "enter", "return", "status", "audit", "survey", "dungeons", "donors" };
 
     public override void Run(string[] args)
     {
@@ -85,8 +85,11 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
             case "dungeons":
                 RunDungeonAudit();
                 break;
+            case "donors":
+                RunDonorCensus();
+                break;
             default:
-                Say($"Unknown option '{verb}'. Use: {Name} enter | return | status | audit | survey | dungeons");
+                Say($"Unknown option '{verb}'. Use: {Name} enter | return | status | audit | survey | dungeons | donors");
                 break;
         }
     }
@@ -116,6 +119,20 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
         {
             _log?.LogError("magenheim_underworld audit failed: " + exception);
             Say("AUDIT FAIL: " + exception.Message);
+        }
+    }
+
+    private static void RunDonorCensus()
+    {
+        try
+        {
+            var index = UnderworldVanillaDungeonDonorCensus.CaptureAll(_log);
+            Say("DDE-01 DONOR CENSUS PASS: " + index);
+        }
+        catch (Exception exception)
+        {
+            _log?.LogError("Deep Dungeon donor census failed: " + exception);
+            Say("DDE-01 DONOR CENSUS FAIL: " + exception.Message);
         }
     }
 
