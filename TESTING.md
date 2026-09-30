@@ -844,6 +844,52 @@ bind only `UnderworldVanillaDungeonRegistrar` for those five families; the prese
 Rootwarren/Drowned Vault/Cinderworks/Rime Sepulcher/Carrion Catacombs room/location registrars must
 not be instantiated. Deep Fracture remains the sole bespoke custom-architecture dungeon lane.
 
+## Deep Dungeon Expansion DDE-00 / DDE-01 admission
+
+### DDE-00 architecture freeze
+
+Before testing any ordinary Underworld donor dungeon, run the normal Magenheim build. The build now
+executes `tools/verify-deep-dungeon-expansion-gate0.py` before runtime compilation. The gate must
+print:
+
+`PASS Deep Dungeon Expansion DDE-00 architecture freeze`
+
+A failure blocks all later DDE work. Do not bypass it by directly editing a dungeon status to
+`RuntimeReady`.
+
+### DDE-01 live donor census
+
+With the current Magenheim build installed, load a disposable world, enable `devcommands`, then run:
+
+`magenheim_underworld donors`
+
+The command does **not** register or generate the five Planned derivatives. It reads the installed
+game's live `ZoneSystem` and `DungeonDB` and writes one evidence file per donor plus an index under:
+
+`BepInEx/config/Magenheim/validation/deep-dungeon-expansion/`
+
+The console must report:
+
+`DDE-01 DONOR CENSUS PASS: <index path>`
+
+Review all five evidence files. Each must prove:
+
+1. every configured donor entrance prefab resolves;
+2. the expected `DungeonGenerator` object exists exactly once;
+3. its object name matches Core authority;
+4. the configured `Room.Theme` resolves and the generator includes it;
+5. `DungeonDB` contains at least one enabled room for that theme;
+6. donor `m_minRooms/m_maxRooms` are sane;
+7. required-room names and minimum required count are recorded;
+8. every door definition is recorded with prefab, connection type and chance;
+9. `Location.m_useCustomInteriorTransform` and
+   `DungeonGenerator.m_useCustomInteriorTransform` agree;
+10. the current installed Valheim version is recorded in the census index.
+
+Do not proceed to donor derivative admission if any family reports FAIL. A donor mapping change must
+be made in `UnderworldVanillaDungeonReuseCatalog` and the census rerun; do not paper over a live
+identity mismatch inside the generic registrar.
+
 ## Expanded vanilla Underworld dungeon acceptance
 
 The five ordinary Underworld dungeons deliberately reuse vanilla architecture. Deep Fracture is
