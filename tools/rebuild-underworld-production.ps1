@@ -6,6 +6,8 @@ $scope=Get-Content -LiteralPath "$PSScriptRoot/underworld-production-scope.json"
 
 & python "$PSScriptRoot/verify-underworld-production-readiness.py"
 if($LASTEXITCODE -ne 0){throw 'Production readiness preflight failed.'}
+& python "$PSScriptRoot/verify-deep-dungeon-expansion-gate0.py"
+if($LASTEXITCODE -ne 0){throw 'Deep Dungeon Expansion DDE-00 architecture freeze failed.'}
 & python "$PSScriptRoot/verify-underworld-dungeon-worldgen.py"
 if($LASTEXITCODE -ne 0){throw 'Underworld dungeon native-worldgen spawn contract failed.'}
 
