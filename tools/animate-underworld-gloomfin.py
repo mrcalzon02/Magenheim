@@ -50,6 +50,7 @@ action('Gloomfin_Death',64,{1:N,18:{**wave(.8,.10),'Spine_1':(.18,0,.18),**fins(
 arm.animation_data.action=None
 arm['production_contract']='production-creature-r2'
 arm['authored_actions']='Gloomfin_SwimIdle,Gloomfin_Cruise,Gloomfin_Sprint,Gloomfin_BankLeft,Gloomfin_BankRight,Gloomfin_Bite,Gloomfin_Hit,Gloomfin_Death'
+sc=bpy.context.scene; sc['magenheim_authored_actions']=arm['authored_actions']; sc['magenheim_skinning']='rigid-segment-weighted'
 arm['animation_readability_contract']='traveling-six-stage-propulsion;sprint-amplitude-cadence;asymmetric-fin-banks;jaw-led-bite'
 bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(MODEL),compress=True)
