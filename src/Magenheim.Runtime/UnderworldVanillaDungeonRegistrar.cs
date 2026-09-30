@@ -189,7 +189,7 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
     {
         try
         {
-            foreach (var profile in ReadyProfiles())
+            foreach (var profile in ActiveProfiles())
                 RegisterLocation(profile);
         }
         catch (Exception exception)
