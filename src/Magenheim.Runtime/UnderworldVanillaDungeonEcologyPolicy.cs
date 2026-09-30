@@ -64,7 +64,7 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
         for (var index = 0; index < spawners.Length; index++)
         {
             var selected = SelectCreature(
-                creatures, band, profile.DungeonId, donorRoomName, donorRoomIndex, "spawner", index);
+                creatures, room, band, profile.DungeonId, donorRoomName, donorRoomIndex, "spawner", index);
             var prefab = PrefabManager.Instance.GetPrefab(selected.Prefab)
                 ?? throw new InvalidOperationException(
                     "Underworld dungeon creature prefab '" + selected.Prefab + "' is unavailable.");
@@ -90,7 +90,7 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
         if (!room.m_entrance && spawners.Length > 0 && activeSpawners == 0)
         {
             var selected = SelectCreature(
-                creatures, band, profile.DungeonId, donorRoomName, donorRoomIndex, "spawner-fallback", 0);
+                creatures, room, band, profile.DungeonId, donorRoomName, donorRoomIndex, "spawner-fallback", 0);
             var prefab = PrefabManager.Instance.GetPrefab(selected.Prefab)
                 ?? throw new InvalidOperationException(
                     "Underworld dungeon creature prefab '" + selected.Prefab + "' is unavailable.");
@@ -110,6 +110,7 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
             // Populate with only biome-valid Magenheim identities even if this area is suppressed.
             var selected = SelectDistinctCreatures(
                 creatures,
+                room,
                 band,
                 profile.DungeonId,
                 donorRoomName,
@@ -204,6 +205,7 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
 
     private static UnderworldCreaturePrototypes.Entry SelectCreature(
         IReadOnlyList<UnderworldCreaturePrototypes.Entry> creatures,
+        Room room,
         UnderworldVanillaDungeonRiskBand band,
         string dungeonId,
         string roomName,
@@ -212,7 +214,11 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
         int socketIndex)
     {
         var candidates = creatures
-            .Where(entry => Allowed(UnderworldCreatureCombatBalance.RoleFor(entry.Name), band))
+            .Where(entry =>
+            {
+                var role = UnderworldCreatureCombatBalance.RoleFor(entry.Name);
+                return Allowed(role, band) && FitsRoom(role, room);
+            })
             .ToArray();
         if (candidates.Length == 0)
             throw new InvalidOperationException("DDE encounter policy produced no eligible creature candidates.");
@@ -233,6 +239,7 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
 
     private static IReadOnlyList<UnderworldCreaturePrototypes.Entry> SelectDistinctCreatures(
         IReadOnlyList<UnderworldCreaturePrototypes.Entry> creatures,
+        Room room,
         UnderworldVanillaDungeonRiskBand band,
         string dungeonId,
         string roomName,
@@ -244,7 +251,7 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
         for (var index = 0; index < count; index++)
         {
             var candidate = SelectCreature(
-                creatures, band, dungeonId, roomName, roomIndex,
+                creatures, room, band, dungeonId, roomName, roomIndex,
                 "area-choice-" + areaIndex, index);
             if (!selected.Contains(candidate))
                 selected.Add(candidate);
@@ -252,8 +259,26 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
 
         if (selected.Count == 0)
             selected.Add(SelectCreature(
-                creatures, band, dungeonId, roomName, roomIndex, "area-fallback", areaIndex));
+                creatures, room, band, dungeonId, roomName, roomIndex, "area-fallback", areaIndex));
         return selected;
+    }
+
+    private static bool FitsRoom(
+        UnderworldCreatureCombatBalance.Role role,
+        Room room)
+    {
+        var horizontal = Math.Min(room.m_size.x, room.m_size.z);
+        var height = room.m_size.y;
+        return role switch
+        {
+            UnderworldCreatureCombatBalance.Role.Bruiser =>
+                horizontal >= 8 && height >= 5,
+            UnderworldCreatureCombatBalance.Role.Heavy =>
+                horizontal >= 11 && height >= 6,
+            UnderworldCreatureCombatBalance.Role.Apex =>
+                horizontal >= 14 && height >= 7,
+            _ => true,
+        };
     }
 
     private static bool Allowed(
