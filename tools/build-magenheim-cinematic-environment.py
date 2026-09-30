@@ -69,6 +69,7 @@ def args():
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--preview-dir", type=Path)
     parser.add_argument("--render-previews", type=Path)
+    parser.add_argument("--valheim-donor-library", type=Path)
     parser.add_argument("--verify", action="store_true")
     return parser.parse_args(raw)
 
@@ -455,6 +456,126 @@ def add_throne_environment(mats, root):
     add_king_proxy((0,king_y,.95),mats,hall)
     return hall
 
+def append_valheim_donor_collections(path: Path):
+    if not path.is_file():
+        raise RuntimeError(f"Transient Valheim donor library missing: {path}")
+    wanted=[]
+    with bpy.data.libraries.load(str(path),link=False) as (src,dst):
+        wanted=[name for name in src.collections if name.startswith("VALHEIM_")]
+        dst.collections=wanted
+    loaded={name:bpy.data.collections.get(name) for name in wanted}
+    loaded={name:col for name,col in loaded.items() if col is not None}
+    if not loaded:
+        raise RuntimeError("Valheim donor library supplied no VALHEIM_* collections.")
+    return loaded
+
+
+def donor_instance(name, logical, donors, target, location, rotation=(0,0,0), scale=1.0):
+    key="VALHEIM_"+logical
+    col=donors.get(key)
+    if col is None:
+        return None
+    obj=bpy.data.objects.new(name,None)
+    obj.instance_type='COLLECTION'
+    obj.instance_collection=col
+    obj.location=location
+    obj.rotation_euler=rotation
+    obj.scale=(scale,scale,scale)
+    target.objects.link(obj)
+    return obj
+
+
+def remove_named_prefixes(collection_, prefixes):
+    doomed=[o for o in tuple(collection_.objects) if any(o.name.startswith(prefix) for prefix in prefixes)]
+    for obj in doomed:
+        bpy.data.objects.remove(obj,do_unlink=True)
+
+
+def build_donor_house(prefix,x,y,width,depth,wall_levels,donors,target,scale=1.0):
+    # Valheim build pieces are approximately two-metre modules.  We preserve
+    # their authored material/mesh identity and use placement logic only.
+    step=2.0*scale
+    h=2.0*wall_levels*scale
+    nx=max(2,int(round(width/step)))
+    ny=max(2,int(round(depth/step)))
+    half_w=(nx-1)*step/2
+    half_d=(ny-1)*step/2
+    for level in range(wall_levels):
+        z=(1.0+2.0*level)*scale
+        for i in range(nx):
+            dx=-half_w+i*step
+            if not (level==0 and i==nx//2):
+                donor_instance(f"{prefix}_Front_{level}_{i}","timber_wall",donors,target,(x+dx,y-half_d,z),scale=scale)
+            donor_instance(f"{prefix}_Back_{level}_{i}","timber_wall",donors,target,
+                           (x+dx,y+half_d,z),(0,0,math.pi),scale)
+        for j in range(1,ny-1):
+            dy=-half_d+j*step
+            donor_instance(f"{prefix}_Left_{level}_{j}","timber_wall",donors,target,
+                           (x-half_w-step/2,y+dy,z),(0,0,math.pi/2),scale)
+            donor_instance(f"{prefix}_Right_{level}_{j}","timber_wall",donors,target,
+                           (x+half_w+step/2,y+dy,z),(0,0,-math.pi/2),scale)
+    donor_instance(prefix+"_Door","door",donors,target,(x,y-half_d-.03,1.0*scale),scale=scale)
+
+    # Roof donor already carries the Valheim pitch; run two opposing slopes.
+    for j in range(ny):
+        dy=-half_d+j*step
+        for side in (-1,1):
+            rx=x+side*(half_w*.52)
+            donor_instance(f"{prefix}_Roof_{side}_{j}","roof_26",donors,target,
+                           (rx,y+dy,h+.55*scale),(0,0,0 if side<0 else math.pi),scale)
+    for sx in (-1,1):
+        for sy in (-1,1):
+            donor_instance(f"{prefix}_Pole_{sx}_{sy}","pole",donors,target,
+                           (x+sx*half_w,y+sy*half_d,h/2),(0,0,0),scale)
+
+
+def add_valheim_donor_sets(mats,root,donor_library:Path):
+    donors=append_valheim_donor_collections(donor_library)
+    surface=bpy.data.collections.get("CIN_SurfaceVillage")
+    hall=bpy.data.collections.get("CIN_GreatHallInterior")
+    if surface is None or hall is None:
+        raise RuntimeError("Base cinematic surface collections do not exist.")
+
+    # Retain terrain, road, atmosphere and rigging anchors, but replace the
+    # synthetic architecture/tree stand-ins with real runtime-extracted Valheim
+    # meshes.  These objects never become repository assets.
+    remove_named_prefixes(surface,("Village_GreatHall_","Village_House_","Village_Pine_"))
+    remove_named_prefixes(hall,("HallInterior_Wall_","HallInterior_Post_","HallInterior_Crossbeam_",
+                                "HallInterior_Bench_","HallInterior_Hearth"))
+
+    v=collection("CIN_ValheimVillage",root)
+    build_donor_house("VH_GreatHall",7.5,8.0,8.0,12.0,2,donors,v,1.0)
+    for idx,(x,y,s) in enumerate(((-12,5,.86),(-18,-8,.78),(16,-6,.82),(22,10,.72),(-3,18,.72))):
+        build_donor_house(f"VH_House_{idx}",x,y,5.5,7.0,1,donors,v,s)
+
+    for i,(x,y,s) in enumerate(((-28,-18,1.1),(-24,18,1.0),(31,-10,.95),(-38,4,.95),
+                                (-45,18,.9),(39,24,.8),(45,-24,.85),(-50,-24,.82),(34,34,.78))):
+        donor_instance(f"VH_Fir_{i}","fir_tree",donors,v,(x,y,0),scale=s)
+
+    h=collection("CIN_ValheimHall",root)
+    x0=HALL_X
+    # Wall/pole shell: camera-facing end remains open enough for readable depth.
+    for yi in (-11,-7,-3,1,5,9,13):
+        for sx in (-1,1):
+            donor_instance(f"VHI_Wall_{sx}_{yi}","timber_wall",donors,h,(x0+sx*7.0,yi,2.0),(0,0,math.pi/2 if sx<0 else -math.pi/2),1.0)
+            donor_instance(f"VHI_Pole_{sx}_{yi}","pole",donors,h,(x0+sx*6.7,yi,3.0),scale=1.0)
+    for xi in (-6,-4,-2,0,2,4,6):
+        donor_instance(f"VHI_Rear_{xi}","timber_wall",donors,h,(x0+xi,14.0,2.0),(0,0,math.pi),1.0)
+    donor_instance("VHI_Hearth","hearth",donors,h,(x0,3,.05),scale=1.0)
+    for sx in (-1,1):
+        for yi in (-5,0,5,10):
+            donor_instance(f"VHI_Bench_{sx}_{yi}","bench",donors,h,(x0+sx*4.2,yi,.1),(0,0,0 if sx<0 else math.pi),1.0)
+    donor_instance("VHI_Table","table",donors,h,(x0,7,.1),scale=1.0)
+
+    raven=bpy.data.objects.get("RAVEN_ROOT")
+    if raven is not None and "VALHEIM_raven" in donors:
+        raven.hide_render=True
+        donor_instance("VH_Raven","raven",donors,v,(-7,8,9),scale=.85)
+
+    bpy.context.scene["valheim_cinematic_donors"]=len(donors)
+    return donors
+
+
 def camera(name, location, target_point, lens, target_collection):
     data = bpy.data.cameras.new(name + "_Data")
     data.lens = lens
@@ -634,6 +755,8 @@ def set_shot_visibility(shot_name):
         "CIN_DarkThrone": shot_name in {"SHOT_06_THRONE_REVEAL","SHOT_07_KING_AWAKENS","SHOT_08_LAST_ARGUMENT"},
         "CIN_SurfaceLights": shot_name in {"SHOT_01_RETURN","SHOT_03_PEACE","SHOT_04_RUMBLE","SHOT_05_OMEN"},
         "CIN_ThroneLights": shot_name in {"SHOT_06_THRONE_REVEAL","SHOT_07_KING_AWAKENS","SHOT_08_LAST_ARGUMENT"},
+        "CIN_ValheimVillage": shot_name in {"SHOT_01_RETURN","SHOT_03_PEACE","SHOT_04_RUMBLE","SHOT_05_OMEN"},
+        "CIN_ValheimHall": shot_name=="SHOT_02_HOMECOMING",
     }
     for name,visible in groups.items():
         col=bpy.data.collections.get(name)
@@ -691,7 +814,7 @@ def verify():
     print("CINEMATIC VERIFIED " + json.dumps(report, sort_keys=True))
 
 
-def build(output: Path, preview_dir: Path | None):
+def build(output: Path, preview_dir: Path | None, donor_library: Path | None):
     print("CINEMATIC BUILD preflight", flush=True)
     for name in REQUIRED_SOURCES:
         if not (SOURCE / name).is_file():
@@ -708,6 +831,10 @@ def build(output: Path, preview_dir: Path | None):
     add_hall_interior(mats, root)
     print("CINEMATIC BUILD throne", flush=True)
     add_throne_environment(mats, root)
+    if donor_library:
+        donor_library = donor_library if donor_library.is_absolute() else ROOT / donor_library
+        print("CINEMATIC BUILD Valheim donors", flush=True)
+        add_valheim_donor_sets(mats,root,donor_library)
     print("CINEMATIC BUILD cameras", flush=True)
     cameras = add_cameras(root)
     add_lighting(root, mats)
@@ -739,7 +866,7 @@ def main():
         print("CINEMATIC RENDER previews", flush=True)
         render_previews(bpy.context.scene, cameras, preview_dir)
     else:
-        build(ns.output, ns.preview_dir)
+        build(ns.output, ns.preview_dir, ns.valheim_donor_library)
 
 
 if __name__ == "__main__":
