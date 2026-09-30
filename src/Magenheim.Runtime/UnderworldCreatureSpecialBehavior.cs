@@ -22,6 +22,8 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         LanternAnglerPressure,
         AbyssShellArmor,
         DeepHunterRam,
+        PaleBurrowerAmbush,
+        FurnaceGolemArmorBreak,
         VentSpitterRetaliation,
         RootedCaster,
         RootedSpawner,
@@ -33,6 +35,14 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
     private BaseAI? _latchedAi;
     private float _latchUntil;
     private float _nextLatchTick;
+    private BaseAI? _burrowAi;
+    private Rigidbody? _burrowBody;
+    private Vector3 _burrowSurface;
+    private float _burrowEmergenceStarted;
+    private bool _burrowStaged;
+    private bool _burrowEmerging;
+    private bool _burrowComplete;
+    private int _armorStage = 2;
 
     internal static string Attach(GameObject prefab, UnderworldCreaturePrototypes.Entry entry)
     {
@@ -59,6 +69,8 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
             Mode.LanternAnglerPressure => "radial pressure-release attack",
             Mode.AbyssShellArmor => "shell armor; pickaxe bypass",
             Mode.DeepHunterRam => "apex ram charge",
+            Mode.PaleBurrowerAmbush => "subterranean proximity ambush",
+            Mode.FurnaceGolemArmorBreak => "two-stage furnace armor break",
             Mode.VentSpitterRetaliation => "line-of-sight thermal spit retaliation",
             Mode.RootedCaster => "rooted caster behavior",
             Mode.RootedSpawner => "rooted colony with Rotling propagation",
@@ -66,19 +78,37 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         };
     }
 
-    internal void ModifyIncoming(HitData hit)
+    internal void ModifyIncoming(Character owner, HitData hit)
     {
-        if (hit is null || _mode != Mode.AbyssShellArmor)
+        if (!owner || hit is null)
             return;
 
-        // Shell armor strongly resists ordinary weapon impact but deliberately does not reduce
-        // pickaxe damage, giving the player a readable tool-counter instead of flat durability.
-        hit.m_damage.m_damage *= .62f;
-        hit.m_damage.m_blunt *= .58f;
-        hit.m_damage.m_slash *= .52f;
-        hit.m_damage.m_pierce *= .55f;
-        hit.m_damage.m_chop *= .70f;
-        hit.m_staggerMultiplier *= .68f;
+        if (_mode == Mode.AbyssShellArmor)
+        {
+            // Shell armor strongly resists ordinary weapon impact but deliberately does not reduce
+            // pickaxe damage, giving the player a readable tool-counter instead of flat durability.
+            hit.m_damage.m_damage *= .62f;
+            hit.m_damage.m_blunt *= .58f;
+            hit.m_damage.m_slash *= .52f;
+            hit.m_damage.m_pierce *= .55f;
+            hit.m_damage.m_chop *= .70f;
+            hit.m_staggerMultiplier *= .68f;
+            return;
+        }
+
+        if (_mode != Mode.FurnaceGolemArmorBreak)
+            return;
+
+        var health = owner.GetHealthPercentage();
+        var factor = health > .66f ? .56f : health > .33f ? .78f : 1f;
+        hit.m_damage.m_damage *= factor;
+        hit.m_damage.m_blunt *= factor;
+        hit.m_damage.m_slash *= factor;
+        hit.m_damage.m_pierce *= factor;
+        hit.m_damage.m_chop *= factor;
+        hit.m_staggerMultiplier *= Mathf.Lerp(.62f, 1f, 1f - factor);
+        // Pickaxe and elemental channels are deliberately left untouched. The shell breaks over
+        // the fight rather than becoming a universal resistance layer.
     }
 
     internal void AfterDamage(Character owner, HitData hit)
@@ -93,6 +123,9 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
                 break;
             case Mode.CaveRayFlee:
                 TryFlee(owner, hit.GetAttacker());
+                break;
+            case Mode.FurnaceGolemArmorBreak:
+                UpdateFurnaceArmorStage(owner);
                 break;
             case Mode.VentSpitterRetaliation:
                 TryThermalSpit(owner, hit.GetAttacker());
@@ -119,6 +152,9 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
                 break;
             case Mode.DeepHunterRam:
                 UpdateDeepHunter(owner);
+                break;
+            case Mode.PaleBurrowerAmbush:
+                UpdatePaleBurrower(owner);
                 break;
         }
     }
@@ -166,6 +202,7 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
             return;
         }
 
+        owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("pulse");
         instance.SetActive(true);
         _nextAbilityTime = Time.time + 18f;
     }
@@ -417,6 +454,79 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         return best;
     }
 
+    private void UpdatePaleBurrower(Character owner)
+    {
+        if (_burrowComplete)
+            return;
+
+        if (!_burrowStaged)
+        {
+            _burrowSurface = owner.transform.position;
+            _burrowAi = owner.GetComponent<BaseAI>();
+            _burrowBody = owner.GetComponent<Rigidbody>();
+            if (_burrowAi)
+                _burrowAi.enabled = false;
+            if (_burrowBody)
+            {
+                _burrowBody.linearVelocity = Vector3.zero;
+                _burrowBody.isKinematic = true;
+            }
+
+            owner.transform.position = _burrowSurface - Vector3.up * 1.45f;
+            _burrowStaged = true;
+            return;
+        }
+
+        if (!_burrowEmerging)
+        {
+            var target = NearestLivingPlayer(
+                _burrowSurface,
+                owner.gameObject.scene.handle,
+                9.5f);
+            if (!target)
+                return;
+
+            _burrowEmerging = true;
+            _burrowEmergenceStarted = Time.time;
+            owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("emerge");
+            EmitBurst(owner.transform, new Color(.74f, .90f, .98f, .52f), 24, 3.2f);
+        }
+
+        var amount = Mathf.Clamp01((Time.time - _burrowEmergenceStarted) / .72f);
+        owner.transform.position = Vector3.Lerp(
+            _burrowSurface - Vector3.up * 1.45f,
+            _burrowSurface,
+            Mathf.SmoothStep(0f, 1f, amount));
+
+        if (amount < 1f)
+            return;
+
+        owner.transform.position = _burrowSurface;
+        if (_burrowBody)
+            _burrowBody.isKinematic = false;
+        if (_burrowAi)
+            _burrowAi.enabled = true;
+        _burrowComplete = true;
+    }
+
+    private void UpdateFurnaceArmorStage(Character owner)
+    {
+        var health = owner.GetHealthPercentage();
+        var stage = health > .66f ? 2 : health > .33f ? 1 : 0;
+        if (stage >= _armorStage)
+            return;
+
+        _armorStage = stage;
+        owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("vent");
+        EmitBurst(
+            owner.transform,
+            stage == 1
+                ? new Color(.90f, .34f, .08f, .66f)
+                : new Color(1f, .18f, .04f, .78f),
+            stage == 1 ? 24 : 36,
+            stage == 1 ? 3.8f : 4.8f);
+    }
+
     private void TrySporeBurst(Character owner)
     {
         if (Time.time < _nextAbilityTime)
@@ -615,6 +725,10 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
                 return Mode.AbyssShellArmor;
             case "Deep Hunter":
                 return Mode.DeepHunterRam;
+            case "Pale Burrower":
+                return Mode.PaleBurrowerAmbush;
+            case "Furnace Golem":
+                return Mode.FurnaceGolemArmorBreak;
             case "Vent Spitter":
                 return Mode.VentSpitterRetaliation;
             case "Carrion Bloom":
@@ -631,7 +745,7 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
 internal static class UnderworldCreatureSpecialBehaviorPatch
 {
     private static void Prefix(Character __instance, HitData hit) =>
-        __instance?.GetComponent<UnderworldCreatureSpecialBehavior>()?.ModifyIncoming(hit);
+        __instance?.GetComponent<UnderworldCreatureSpecialBehavior>()?.ModifyIncoming(__instance, hit);
 
     private static void Postfix(Character __instance, HitData hit) =>
         __instance?.GetComponent<UnderworldCreatureSpecialBehavior>()?.AfterDamage(__instance, hit);
