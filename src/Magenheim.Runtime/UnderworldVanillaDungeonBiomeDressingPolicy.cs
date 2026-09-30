@@ -65,6 +65,106 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
         internal double HazardFloor { get; }
     }
 
+    internal static Stats ApplyEntrance(
+        GameObject entranceObject,
+        UnderworldVanillaDungeonReuseDefinition profile)
+    {
+        if (!entranceObject) throw new ArgumentNullException(nameof(entranceObject));
+        if (profile is null) throw new ArgumentNullException(nameof(profile));
+
+        var palette = PaletteFor(profile.Biome);
+        var architectureMaterials = ApplyArchitecturePalette(
+            entranceObject.transform,
+            palette,
+            profile.Biome,
+            9000);
+
+        var dressingRoot = new GameObject("Magenheim_DDE_EntranceDressing");
+        dressingRoot.transform.SetParent(entranceObject.transform, false);
+
+        var major = 0;
+        var ground = 0;
+        for (var index = 0; index < 6; index++)
+        {
+            var seed = StableSeed(
+                profile.DungeonId,
+                profile.DonorDisplayName,
+                9000,
+                "entrance-dressing",
+                index);
+            GameObject? visual = null;
+            try
+            {
+                if (index < 2)
+                {
+                    visual = UnderworldDonorVisualFactory.Create(
+                        profile.Biome,
+                        seed,
+                        "Magenheim_DDE_EntranceMajor_" + index);
+                    major++;
+                }
+                else
+                {
+                    visual = UnderworldDonorVisualFactory.CreateCover(
+                        profile.Biome,
+                        seed,
+                        "Magenheim_DDE_EntranceCover_" + index,
+                        profile.Biome == UnderworldTerrainBiome.BlackwaterDeep ? .4d : 1d,
+                        0d,
+                        Vector3.up);
+                    if (visual) ground++;
+                }
+            }
+            catch (InvalidOperationException)
+            {
+                visual = null;
+            }
+
+            if (!visual) continue;
+            StripGameplayCollision(visual);
+            visual.transform.SetParent(dressingRoot.transform, false);
+
+            var angle = (index / 6f) * Mathf.PI * 2f + Hash01(seed, 0x35A1) * .28f;
+            var radius = index < 2 ? 5.4f : 4.2f + (index % 2) * .8f;
+            var yOffset = visual.transform.localPosition.y;
+            visual.transform.localPosition = new Vector3(
+                Mathf.Cos(angle) * radius,
+                yOffset,
+                Mathf.Sin(angle) * radius);
+            visual.transform.localScale = Vector3.Scale(
+                visual.transform.localScale,
+                index < 2
+                    ? new Vector3(.58f, .66f, .58f)
+                    : new Vector3(.72f, .72f, .72f));
+        }
+
+        var lights = 0;
+        for (var index = 0; index < 2; index++)
+        {
+            var lightRoot = new GameObject("Magenheim_DDE_EntranceLight_" + index);
+            lightRoot.transform.SetParent(dressingRoot.transform, false);
+            lightRoot.transform.localPosition = new Vector3(
+                index == 0 ? -2.8f : 2.8f,
+                2.2f,
+                1.4f);
+            var light = lightRoot.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.color = palette.LightColor;
+            light.intensity = palette.LightIntensity * .82f;
+            light.range = 7f;
+            light.shadows = LightShadows.None;
+            lights++;
+        }
+
+        return new Stats(
+            architectureMaterials,
+            major,
+            ground,
+            lights,
+            0,
+            0);
+    }
+
     internal static Stats Apply(
         GameObject roomObject,
         UnderworldVanillaDungeonReuseDefinition profile,
