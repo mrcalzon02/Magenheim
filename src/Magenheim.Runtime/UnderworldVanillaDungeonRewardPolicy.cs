@@ -58,6 +58,26 @@ internal static class UnderworldVanillaDungeonRewardPolicy
             ?? throw new InvalidOperationException("DDE reward policy received a donor clone without Room.");
         var band = UnderworldVanillaDungeonRoomPolicy.RiskFor(
             room, profile.DungeonId, donorRoomName, donorRoomIndex);
+        return RebindAtBand(
+            roomObject,
+            profile,
+            donorRoomName,
+            donorRoomIndex,
+            ecology,
+            band);
+    }
+
+    internal static Stats RebindAtBand(
+        GameObject roomObject,
+        UnderworldVanillaDungeonReuseDefinition profile,
+        string donorRoomName,
+        int donorRoomIndex,
+        UnderworldVanillaDungeonEcologyPolicy.Stats ecology,
+        UnderworldVanillaDungeonRiskBand band)
+    {
+        if (!roomObject) throw new ArgumentNullException(nameof(roomObject));
+        var room = roomObject.GetComponent<Room>()
+            ?? throw new InvalidOperationException("DDE reward policy received a donor clone without Room.");
         var resources = UnderworldResourceCatalog.All
             .Where(resource => resource.Biome == profile.Biome)
             .ToArray();
