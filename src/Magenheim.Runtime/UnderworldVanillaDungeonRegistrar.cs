@@ -490,42 +490,51 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             throw new InvalidOperationException(
                 $"DDE room '{donorRoomName}' requested shrink scale {scale:0.###}.");
 
-        // Root-attached render/collision geometry cannot be enlarged without mutating/cloning
-        // shared mesh/collider data separately. Fail closed rather than silently shipping a room
-        // whose visual shell does not match its enlarged placement bounds.
+        // Root-attached render/collision geometry cannot be isolated from Room/connection metadata
+        // without cloning component-specific data. Fail closed instead of making placement bounds
+        // claim a size the visible shell does not actually have.
         if (clone.GetComponent<Renderer>() ||
             clone.GetComponent<Collider>() ||
             clone.GetComponent<MeshFilter>())
             throw new InvalidOperationException(
                 $"Donor room '{donorRoomName}' carries render/collision geometry on the Room root. " +
-                "DDE requires child-authored geometry so 1.5x connection-safe scaling can remain vanilla-isolated.");
+                "DDE requires child-authored geometry for connection-safe scaling.");
 
+        var connections = room.GetConnections();
+        foreach (var connection in connections)
+        {
+            if (!connection || connection.transform.parent != clone.transform)
+                throw new InvalidOperationException(
+                    $"Donor room '{donorRoomName}' contains a RoomConnection below a nested parent. " +
+                    "DungeonGenerator expects connections to remain direct Room children.");
+        }
+
+        var originalChildren = new List<Transform>();
         for (var index = 0; index < clone.transform.childCount; index++)
         {
             var child = clone.transform.GetChild(index);
-            child.localPosition *= scale;
-
-            // Connections must remain direct children because DungeonGenerator explicitly expects
-            // that topology. Their position expands, but their transform scale itself is semantic
-            // metadata and must stay 1.
-            if (child.GetComponent<RoomConnection>())
-                continue;
-
-            // Valheim instantiates ZNetView children separately during room placement. Scale their
-            // position with the room but keep chest/spawner/fixture physical size normal.
-            if (child.GetComponentInChildren<ZNetView>(true))
-                continue;
-
-            child.localScale *= scale;
+            if (!child.GetComponent<RoomConnection>())
+                originalChildren.Add(child);
         }
 
-        foreach (var connection in room.GetConnections())
-        {
-            if (connection.transform.parent != clone.transform)
-                throw new InvalidOperationException(
-                    $"Donor room '{donorRoomName}' has RoomConnection '{connection.name}' below a nested parent. " +
-                    "Vanilla placement itself warns on this topology; DDE refuses to scale it ambiguously.");
-        }
+        var scaleRootObject = new GameObject("Magenheim_DDE_ScaleRoot");
+        var scaleRoot = scaleRootObject.transform;
+        scaleRoot.SetParent(clone.transform, false);
+        scaleRoot.localPosition = Vector3.zero;
+        scaleRoot.localRotation = Quaternion.identity;
+        scaleRoot.localScale = Vector3.one * scale;
+
+        // Reparent all ordinary room content under one uniform scale. Nested ZNetViews inherit the
+        // enlarged source-space position used by DungeonGenerator.PlaceRoom, but when Valheim
+        // instantiates those networked children separately their own local scale remains intact.
+        foreach (var child in originalChildren)
+            child.SetParent(scaleRoot, false);
+
+        // Connections cannot live under the scale root: PlaceRoom reads their raw localPosition.
+        // Move those raw positions outward by exactly the same factor so generator math and visible
+        // openings agree.
+        foreach (var connection in connections)
+            connection.transform.localPosition *= scale;
     }
 
     private static PopulationRebindStats RebindPopulation(
