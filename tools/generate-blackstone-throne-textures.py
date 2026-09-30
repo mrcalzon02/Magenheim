@@ -6,7 +6,9 @@ import math, random
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/"assets"/"textures"/"underworld"/"blackstone"
+PBR=ROOT/"assets"/"material-source"/"blackstone"
 OUT.mkdir(parents=True,exist_ok=True)
+PBR.mkdir(parents=True,exist_ok=True)
 SIZE=512
 
 def noise_surface(name, base, grain, veins=None, seed=1):
@@ -66,8 +68,50 @@ def ember():
         d.ellipse((x-r,y-r,x+r,y+r),fill=c)
     im=im.filter(ImageFilter.GaussianBlur(1.2)); im.save(OUT/"blackstone-ember-albedo.png")
 
+def pbr_family(albedo_name,key,metallic,smoothness,normal_strength=1.6,emissive=False):
+    """Derive deterministic owned runtime maps from the authored Blackstone albedo.
+
+    The albedo remains the visual authority. Height is intentionally shallow: broad Blackstone
+    surfaces should read as dressed material, not crusted detail over every square centimetre.
+    """
+    source=Image.open(OUT/albedo_name).convert("RGB")
+    height=source.convert("L").filter(ImageFilter.GaussianBlur(1.15))
+    h=height.load()
+    normal=Image.new("RGB",(SIZE,SIZE)); np=normal.load()
+    packed=Image.new("RGBA",(SIZE,SIZE)); pp=packed.load()
+    emission=Image.new("RGB",(SIZE,SIZE),(0,0,0)) if emissive else None
+    ep=emission.load() if emission else None
+    sp=source.load()
+    for y in range(SIZE):
+        ym=max(0,y-1); yp=min(SIZE-1,y+1)
+        for x in range(SIZE):
+            xm=max(0,x-1); xp=min(SIZE-1,x+1)
+            dx=(h[xp,y]-h[xm,y])/255.0*normal_strength
+            dy=(h[x,yp]-h[x,ym])/255.0*normal_strength
+            nx,ny,nz=-dx,-dy,1.0
+            mag=math.sqrt(nx*nx+ny*ny+nz*nz)
+            np[x,y]=(int((nx/mag*.5+.5)*255),int((ny/mag*.5+.5)*255),int((nz/mag*.5+.5)*255))
+            local=(h[x,y]-128)/128.0
+            sm=max(0.04,min(.96,smoothness-local*.035))
+            pp[x,y]=(int(max(0,min(1,metallic))*255),0,0,int(sm*255))
+            if ep is not None:
+                r,g,b=sp[x,y]
+                energy=max(r,g,b)/255.0
+                ep[x,y]=(int(r*energy),int(g*energy),int(b*energy))
+    normal.save(PBR/(key+"-normal.png"))
+    packed.save(PBR/(key+"-metallic-smoothness.png"))
+    if emission is not None:
+        emission.filter(ImageFilter.GaussianBlur(.65)).save(PBR/(key+"-emission.png"))
+
 noise_surface("blackstone-basalt-albedo.png",(29,32,40),9,(12,10,18,120),71)
 noise_surface("blackstone-voidstone-albedo.png",(10,11,17),5,(44,23,54,90),72)
 noise_surface("blackstone-bronze-albedo.png",(91,52,38),8,(164,85,42,70),73)
 banner(); ember()
-print("GENERATED Blackstone Throne 2D source artwork:",", ".join(sorted(p.name for p in OUT.glob("blackstone-*.png"))))
+pbr_family("blackstone-basalt-albedo.png","blackstone-basalt",.02,.22,1.25)
+pbr_family("blackstone-voidstone-albedo.png","blackstone-voidstone",.05,.34,1.05)
+pbr_family("blackstone-bronze-albedo.png","blackstone-royal-bronze",.82,.68,.72)
+pbr_family("blackstone-banner-sun-albedo.png","blackstone-banner-cloth",0,.18,.48)
+pbr_family("blackstone-ember-albedo.png","blackstone-ember",.04,.76,.58,True)
+print("GENERATED Blackstone Throne 2D source artwork:",
+      len(list(OUT.glob("blackstone-*.png"))),"albedo/graphic files +",
+      len(list(PBR.glob("blackstone-*.png"))),"owned PBR maps")

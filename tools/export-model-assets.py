@@ -92,10 +92,14 @@ for file in files:
      image.filepath_raw=str(root/'assets/earth'/(file.stem[6:]+'.png'));image.save()
     image.pack();break
   pbr_key=material.get('magenheim_material_source_key')
+  pbr_root=material.get('magenheim_material_source_root')
   normal_texture=metallic_gloss_texture=emission_texture=None
   emission_value=[v*bs.inputs['Emission Strength'].default_value for v in bs.inputs['Emission Color'].default_value[:3]]
   if pbr_key:
-   pbr_dir=root/'assets'/'material-source'/'underworld'
+   pbr_dir=(root/pbr_root) if pbr_root else (root/'assets'/'material-source'/'underworld')
+   pbr_dir=pbr_dir.resolve()
+   if root.resolve() not in pbr_dir.parents:
+    raise ValueError(file.name+'/'+material.name+': PBR source root escapes repository')
    normal_texture=runtime_texture_from_file(pbr_dir/(pbr_key+'-normal.png'))
    metallic_gloss_texture=runtime_texture_from_file(pbr_dir/(pbr_key+'-metallic-smoothness.png'))
    emission_file=pbr_dir/(pbr_key+'-emission.png')

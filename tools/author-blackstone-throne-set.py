@@ -23,7 +23,7 @@ IDS=(
 def wloc(x,y,z): return (x,-z,y)
 def wrot(rx,ry,rz): return (rx,rz,-ry)
 
-def material(name,texture,metallic=0.0,rough=.72,emission=None,double_sided=False):
+def material(name,texture,pbr_key,metallic=0.0,rough=.72,emission=None,double_sided=False):
     path=TEX/texture
     if not path.is_file(): raise RuntimeError(f"Missing Blackstone source texture: {path}")
     mat=bpy.data.materials.new(name); mat.use_nodes=True; mat.use_backface_culling=not double_sided
@@ -38,15 +38,17 @@ def material(name,texture,metallic=0.0,rough=.72,emission=None,double_sided=Fals
         bs.inputs["Emission Color"].default_value=(*emission,1)
         bs.inputs["Emission Strength"].default_value=2.0
     mat["magenheim_material_name"]=name
+    mat["magenheim_material_source_key"]=pbr_key
+    mat["magenheim_material_source_root"]="assets/material-source/blackstone"
     return mat
 
 def palette():
     return {
-      "stone":material("blackstone.basalt","blackstone-basalt-albedo.png",0.02,.78),
-      "void":material("blackstone.voidstone","blackstone-voidstone-albedo.png",0.05,.66),
-      "bronze":material("blackstone.royal-bronze","blackstone-bronze-albedo.png",.80,.32),
-      "cloth":material("blackstone.banner-cloth","blackstone-banner-sun-albedo.png",0,.82,double_sided=True),
-      "ember":material("blackstone.ember","blackstone-ember-albedo.png",.05,.22,(1.0,.18,.025),double_sided=True),
+      "stone":material("blackstone.basalt","blackstone-basalt-albedo.png","blackstone-basalt",0.02,.78),
+      "void":material("blackstone.voidstone","blackstone-voidstone-albedo.png","blackstone-voidstone",0.05,.66),
+      "bronze":material("blackstone.royal-bronze","blackstone-bronze-albedo.png","blackstone-royal-bronze",.80,.32),
+      "cloth":material("blackstone.banner-cloth","blackstone-banner-sun-albedo.png","blackstone-banner-cloth",0,.82,double_sided=True),
+      "ember":material("blackstone.ember","blackstone-ember-albedo.png","blackstone-ember",.05,.22,(1.0,.18,.025),double_sided=True),
     }
 
 def finish(o,name,mat,collision=True,bevel=.0,uv=.65):

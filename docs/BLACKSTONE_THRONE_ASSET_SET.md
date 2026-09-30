@@ -40,8 +40,10 @@ recurring royal mark. Cold violet/blue ambience is expected from the world; the 
 orange brazier lights and restrained violet rune lights.
 
 The 2D source art is owned under `assets/textures/underworld/blackstone/`: basalt, voidstone,
-royal bronze, banner/sun cloth, a standalone sun sigil, and ember artwork. Blender sources pack
-their images and the exporter content-addresses them into the runtime model-texture library.
+royal bronze, banner/sun cloth, a standalone sun sigil, and ember artwork. Owned normal,
+metallic-smoothness, and ember-emission maps live under `assets/material-source/blackstone/`.
+Blender sources bind both authorities explicitly and the exporter content-addresses them into the
+runtime model-texture library; Blackstone does not inherit unrelated donor PBR maps.
 
 ## Encounter constraints
 

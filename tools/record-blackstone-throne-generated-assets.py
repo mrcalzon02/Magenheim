@@ -24,7 +24,10 @@ manifest=json.loads(MANIFEST.read_text())
 entries=manifest["generators"]
 by_id={e["id"]:e for e in entries}
 
-texture_patterns=["assets/textures/underworld/blackstone/blackstone-*.png"]
+texture_patterns=[
+ "assets/textures/underworld/blackstone/blackstone-*.png",
+ "assets/material-source/blackstone/blackstone-*.png",
+]
 texture_entry={
  "id":"blackstone-throne-textures",
  "generator":"tools/generate-blackstone-throne-textures.py",

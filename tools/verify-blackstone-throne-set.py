@@ -53,6 +53,14 @@ for model_id in IDS:
             raise SystemExit(f"{model_id}/{part['name']}: invalid PNG {tex}")
         width,height=struct.unpack(">II",png[16:24])
         if width<256 or height<256: raise SystemExit(f"{model_id}/{part['name']}: texture below 256px floor")
+        for slot in ("normalTexture","metallicGlossTexture"):
+            owned=mat.get(slot)
+            if not owned or Path(owned).name!=owned or not (MTEX/owned).is_file():
+                raise SystemExit(f"{model_id}/{part['name']}: owned runtime PBR map missing for {slot}")
+        if mat.get("name")=="blackstone.ember":
+            owned=mat.get("emissionTexture")
+            if not owned or Path(owned).name!=owned or not (MTEX/owned).is_file():
+                raise SystemExit(f"{model_id}/{part['name']}: ember emission map missing")
     data=glb.read_bytes()
     if len(data)<20: raise SystemExit(f"{model_id}: truncated GLB")
     magic,version,length=struct.unpack_from("<III",data)
@@ -92,6 +100,16 @@ required_art={
 }
 missing=sorted(name for name in required_art if not (art/name).is_file())
 if missing: raise SystemExit("Blackstone 2D source artwork missing: "+", ".join(missing))
+pbr=ROOT/"assets"/"material-source"/"blackstone"
+required_pbr={
+ "blackstone-basalt-normal.png","blackstone-basalt-metallic-smoothness.png",
+ "blackstone-voidstone-normal.png","blackstone-voidstone-metallic-smoothness.png",
+ "blackstone-royal-bronze-normal.png","blackstone-royal-bronze-metallic-smoothness.png",
+ "blackstone-banner-cloth-normal.png","blackstone-banner-cloth-metallic-smoothness.png",
+ "blackstone-ember-normal.png","blackstone-ember-metallic-smoothness.png","blackstone-ember-emission.png",
+}
+missing=sorted(name for name in required_pbr if not (pbr/name).is_file())
+if missing: raise SystemExit("Blackstone owned PBR source maps missing: "+", ".join(missing))
 
 print("VERIFIED Blackstone Throne set:",len(IDS),"real Blender/GLB/runtime triplets,",len(site["parts"]),
-      "assembled parts, topology/winding/UV/texture checks, modular throne/banner/seat/brazier/terrain coverage")
+      "assembled parts, topology/winding/UV/albedo/PBR checks, modular throne/banner/seat/brazier/terrain coverage")
