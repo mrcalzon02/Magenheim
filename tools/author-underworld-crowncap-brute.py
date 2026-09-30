@@ -79,4 +79,5 @@ if tris<14000: raise RuntimeError(f'Crowncap Brute triangle floor regression: {t
 for o in meshes:
     if not o.data.uv_layers.get('CrowncapBruteUV'): raise RuntimeError(f'Missing UVs: {o.name}')
 arm['magenheim_asset']='crowncap-brute'; arm['production_contract']='production-creature-r1'; arm['host_rig']='HOST-BIPED-MASS'; arm['height_m']=HEIGHT; arm['role']='elite-slow-armored-ground-control'; arm['crown_layers']=4; arm['exposed_gill_curtains']=5; arm['animation_contract']='idle,walk,turn,alert,sweep-left,sweep-right,heavy-slam,hit,heavy-stagger,death'
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-crowncap-brute'; sc['magenheim_skinning']='rigid-segment-weighted'
 OUT.parent.mkdir(parents=True,exist_ok=True); bpy.ops.wm.save_as_mainfile(filepath=str(OUT)); print(f'Wrote {OUT} meshes={len(meshes)} tris={tris}')
