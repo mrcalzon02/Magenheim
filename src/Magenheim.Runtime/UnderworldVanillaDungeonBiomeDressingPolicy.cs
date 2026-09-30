@@ -313,6 +313,117 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
             decayContamination);
     }
 
+    internal static Stats RebindGeneratedDepth(
+        GameObject roomObject,
+        UnderworldVanillaDungeonReuseDefinition profile,
+        string donorRoomName,
+        int donorRoomIndex,
+        UnderworldVanillaDungeonRiskBand band)
+    {
+        if (!roomObject) throw new ArgumentNullException(nameof(roomObject));
+        if (profile is null) throw new ArgumentNullException(nameof(profile));
+
+        var room = roomObject.GetComponent<Room>()
+            ?? throw new InvalidOperationException("DDE generated dressing received a room without Room.");
+        var scaleRoot = FindDirectChild(roomObject.transform, "Magenheim_DDE_ScaleRoot")
+            ?? throw new InvalidOperationException("DDE generated dressing lost the connection-safe scale root.");
+        var dressingRoot = FindDirectChild(roomObject.transform, "Magenheim_DDE_BiomeDressing");
+        if (!dressingRoot)
+        {
+            var created = new GameObject("Magenheim_DDE_BiomeDressing");
+            created.transform.SetParent(roomObject.transform, false);
+            dressingRoot = created.transform;
+        }
+
+        DestroyDirectChildrenNamed(dressingRoot, "Magenheim_DDE_BiomeLight");
+        DestroyDirectChildrenNamed(dressingRoot, "Magenheim_DDE_BiomeAtmosphere");
+        DestroyDirectChildrenNamed(dressingRoot, "Magenheim_DDE_ThermalPocket");
+        DestroyDirectChildrenNamed(roomObject.transform, "Magenheim_DrownedVault_WaterVolume");
+
+        var bounds = StructuralBounds(roomObject.transform, scaleRoot, room.m_size);
+        var palette = PaletteFor(profile.Biome);
+
+        var lights = AddLocalLight(
+            dressingRoot,
+            room,
+            profile,
+            donorRoomName,
+            donorRoomIndex,
+            band,
+            bounds,
+            palette);
+        var atmosphere = AddAtmosphere(
+            dressingRoot,
+            room,
+            profile,
+            donorRoomName,
+            donorRoomIndex,
+            band,
+            bounds,
+            palette);
+        var thermal = AddSulfurThermalPocket(
+            dressingRoot,
+            room,
+            profile,
+            donorRoomName,
+            donorRoomIndex,
+            band,
+            bounds);
+        var water = AddBlackwaterPool(
+            room,
+            profile,
+            donorRoomName,
+            donorRoomIndex,
+            band,
+            bounds);
+
+        var frozenExposure = 0;
+        if (!room.m_entrance &&
+            profile.Biome == UnderworldTerrainBiome.FrozenCaverns)
+        {
+            RimeSepulcherExposureRuntime.RebindExpandedDonor(
+                room.gameObject,
+                FrozenExposureForBand(band),
+                bounds.size.x,
+                bounds.size.z);
+            frozenExposure = 1;
+        }
+
+        var decayContamination = 0;
+        if (!room.m_entrance &&
+            profile.Biome == UnderworldTerrainBiome.GreatDecay)
+        {
+            CarrionCatacombsContaminationRuntime.RebindExpandedDonor(
+                room.gameObject,
+                DecayExposureForBand(band),
+                bounds.size.x,
+                bounds.size.z);
+            decayContamination = 1;
+        }
+
+        return new Stats(
+            0,
+            0,
+            0,
+            0,
+            lights,
+            atmosphere,
+            thermal,
+            water,
+            frozenExposure,
+            decayContamination);
+    }
+
+    private static void DestroyDirectChildrenNamed(Transform parent, string name)
+    {
+        for (var index = parent.childCount - 1; index >= 0; index--)
+        {
+            var child = parent.GetChild(index);
+            if (child && string.Equals(child.name, name, StringComparison.Ordinal))
+                UnityEngine.Object.DestroyImmediate(child.gameObject);
+        }
+    }
+
     private static int ApplyArchitecturePalette(
         Transform scaleRoot,
         Palette palette,
