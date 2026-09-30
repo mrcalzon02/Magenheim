@@ -256,6 +256,8 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
                 $"Vanilla entrance '{donorEntrance}' resolved generator '{generator.gameObject.name}', " +
                 $"expected '{profile.DonorGeneratorPrefab}'.");
 
+        ValidateInteriorTransport(profile, donorZone, custom.Prefab, generator);
+
         // A private theme is mandatory. Leaving the donor bitmask active would mix ordinary
         // vanilla-size rooms back into the 1.5x Magenheim room family.
         if (!DungeonManager.Instance.RegisterDungeonTheme(custom.Prefab, ThemeName(profile)))
@@ -318,11 +320,94 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             $"tile-width={donorTileWidth:0.###}->{generator.m_tileWidth:0.###} grid={donorGridSize} " +
             $"required=[{string.Join(",", donorRequired)}] min-required={donorMinRequired} " +
             $"remapped=[{string.Join(",", generator.m_requiredRooms ?? new List<string>())}] " +
-            $"doors-cloned={clonedDoors} terrain=radius:{zone.m_exteriorRadius:0.##}," +
+            $"doors-cloned={clonedDoors} custom-interior:{generator.m_useCustomInteriorTransform} " +
+            $"teleports:{CollectDungeonTeleports(custom.Prefab, custom.Prefab.GetComponent<Location>()).Count} " +
+            $"terrain=radius:{zone.m_exteriorRadius:0.##}," +
             $"delta:{zone.m_minTerrainDelta:0.##}-{zone.m_maxTerrainDelta:0.##}," +
             $"altitude:{zone.m_minAltitude:0.##}-{zone.m_maxAltitude:0.##}," +
             $"slope-rotation:{zone.m_slopeRotation},snap-water:{zone.m_snapToWater} " +
             $"candidate={UnderworldVanillaDungeonCandidatePolicy.Enabled}.");
+    }
+
+    private static void ValidateInteriorTransport(
+        UnderworldVanillaDungeonReuseDefinition profile,
+        ZoneSystem.ZoneLocation donorZone,
+        GameObject clonePrefab,
+        DungeonGenerator cloneGenerator)
+    {
+        donorZone.m_prefab.Load();
+        try
+        {
+            var donorPrefab = donorZone.m_prefab.Asset
+                ?? throw new InvalidOperationException(
+                    $"Donor location '{profile.DonorDisplayName}' prefab could not be loaded.");
+            var donorLocation = donorPrefab.GetComponent<Location>()
+                ?? throw new InvalidOperationException(
+                    $"Donor location '{profile.DonorDisplayName}' has no Location component.");
+            var cloneLocation = clonePrefab.GetComponent<Location>()
+                ?? throw new InvalidOperationException(
+                    $"Cloned location '{profile.DungeonId}' has no Location component.");
+            var donorGenerator = donorPrefab.GetComponentInChildren<DungeonGenerator>(true)
+                ?? throw new InvalidOperationException(
+                    $"Donor location '{profile.DonorDisplayName}' has no DungeonGenerator.");
+
+            if (!donorLocation.m_hasInterior || !cloneLocation.m_hasInterior)
+                throw new InvalidOperationException(
+                    $"{profile.DonorDisplayName} derivative must preserve the donor's real dungeon interior.");
+            if (cloneLocation.m_useCustomInteriorTransform != donorLocation.m_useCustomInteriorTransform)
+                throw new InvalidOperationException(
+                    $"{profile.DonorDisplayName} clone changed Location.m_useCustomInteriorTransform.");
+            if (cloneGenerator.m_useCustomInteriorTransform != donorGenerator.m_useCustomInteriorTransform)
+                throw new InvalidOperationException(
+                    $"{profile.DonorDisplayName} clone changed DungeonGenerator.m_useCustomInteriorTransform.");
+            if (cloneLocation.m_useCustomInteriorTransform != cloneGenerator.m_useCustomInteriorTransform)
+                throw new InvalidOperationException(
+                    $"{profile.DonorDisplayName} clone has mismatched Location/DungeonGenerator custom-interior flags.");
+            if (cloneLocation.m_useCustomInteriorTransform && !cloneLocation.m_interiorTransform)
+                throw new InvalidOperationException(
+                    $"{profile.DonorDisplayName} requires a custom interior transform but the clone lost it.");
+            if (!cloneLocation.m_interiorPrefab)
+                throw new InvalidOperationException(
+                    $"{profile.DonorDisplayName} clone lost its interior prefab.");
+            if (cloneLocation.m_generator != cloneGenerator)
+                throw new InvalidOperationException(
+                    $"{profile.DonorDisplayName} clone Location.m_generator no longer points at the cloned generator.");
+
+            var donorTeleports = CollectDungeonTeleports(donorPrefab, donorLocation);
+            var cloneTeleports = CollectDungeonTeleports(clonePrefab, cloneLocation);
+            if (donorTeleports.Count < 2)
+                throw new InvalidOperationException(
+                    $"{profile.DonorDisplayName} donor exposes only {donorTeleports.Count} dungeon Teleport endpoint(s); expected a paired entrance/exit.");
+            if (cloneTeleports.Count != donorTeleports.Count)
+                throw new InvalidOperationException(
+                    $"{profile.DonorDisplayName} clone changed dungeon Teleport endpoint count " +
+                    $"from {donorTeleports.Count} to {cloneTeleports.Count}.");
+
+            foreach (var teleport in cloneTeleports)
+            {
+                if (!teleport || !teleport.m_targetPoint)
+                    throw new InvalidOperationException(
+                        $"{profile.DonorDisplayName} clone contains an unpaired Teleport endpoint.");
+                if (!cloneTeleports.Contains(teleport.m_targetPoint))
+                    throw new InvalidOperationException(
+                        $"{profile.DonorDisplayName} clone Teleport targets an endpoint outside its cloned location/interior graph.");
+            }
+        }
+        finally
+        {
+            donorZone.m_prefab.Release();
+        }
+    }
+
+    private static HashSet<Teleport> CollectDungeonTeleports(GameObject root, Location location)
+    {
+        var result = new HashSet<Teleport>();
+        foreach (var teleport in root.GetComponentsInChildren<Teleport>(true))
+            if (teleport) result.Add(teleport);
+        if (location.m_interiorPrefab)
+            foreach (var teleport in location.m_interiorPrefab.GetComponentsInChildren<Teleport>(true))
+                if (teleport) result.Add(teleport);
+        return result;
     }
 
     private void RemapRequiredRooms(
