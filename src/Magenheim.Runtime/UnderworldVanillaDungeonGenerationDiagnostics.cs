@@ -32,6 +32,11 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         int TargetMinimum,
         int TargetMaximum,
         int MaximumDepth,
+        int OuterRooms,
+        int MidRooms,
+        int DeepRooms,
+        int LairRooms,
+        int UnclassifiedRooms,
         int CombatSocketRooms,
         int ActiveEncounterRooms,
         int QuietCombatRooms,
@@ -135,6 +140,7 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
             var networkViews = generator.GetComponentsInChildren<ZNetView>(true);
             var validNetworkViews = networkViews.Count(value => value && value.IsValid());
             var fingerprint = GenerationFingerprint(rooms);
+            var riskCounts = GeneratedRiskCounts(rooms);
 
             var result =
                 $"DDE GENERATED {profile.Biome}: seed={seed} mode={mode} " +
@@ -142,6 +148,7 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 $"required={required.Count - missingRequired.Length}/{required.Count} " +
                 $"branch-depth={metrics.MaximumDepth} components={metrics.Components} " +
                 $"connections={metrics.ConnectionEdges} dead-ends={metrics.DeadEnds} " +
+                $"risk-bands=O{riskCounts[0]}/M{riskCounts[1]}/D{riskCounts[2]}/L{riskCounts[3]}/U{riskCounts[4]} " +
                 $"encounter-rooms={activeEncounterRooms}/{combatSocketRooms} quiet-combat-rooms={quietCombatRooms} " +
                 $"creature-spawners={activeCreatureSpawners}/{creatureSpawners} " +
                 $"spawn-areas={activeSpawnAreas}/{spawnAreas} " +
@@ -163,6 +170,7 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 generator,
                 missingRequired,
                 metrics,
+                riskCounts,
                 combatSocketRooms,
                 activeEncounterRooms,
                 quietCombatRooms,
@@ -194,6 +202,11 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 generator.m_minRooms,
                 generator.m_maxRooms,
                 metrics.MaximumDepth,
+                riskCounts[0],
+                riskCounts[1],
+                riskCounts[2],
+                riskCounts[3],
+                riskCounts[4],
                 combatSocketRooms,
                 activeEncounterRooms,
                 quietCombatRooms,
@@ -220,6 +233,7 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         DungeonGenerator generator,
         IReadOnlyList<string> missingRequired,
         GraphReport graph,
+        IReadOnlyList<int> riskCounts,
         int combatSocketRooms,
         int activeEncounterRooms,
         int quietCombatRooms,
@@ -271,6 +285,11 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         text.AppendLine("graph_maximum_depth=" + graph.MaximumDepth.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("graph_connection_edges=" + graph.ConnectionEdges.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("graph_dead_ends=" + graph.DeadEnds.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("risk_outer_rooms=" + riskCounts[0].ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("risk_mid_rooms=" + riskCounts[1].ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("risk_deep_rooms=" + riskCounts[2].ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("risk_lair_rooms=" + riskCounts[3].ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("risk_unclassified_rooms=" + riskCounts[4].ToString(CultureInfo.InvariantCulture));
         text.AppendLine("combat_socket_rooms=" + combatSocketRooms.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("active_encounter_rooms=" + activeEncounterRooms.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("quiet_combat_rooms=" + quietCombatRooms.ToString(CultureInfo.InvariantCulture));
@@ -340,6 +359,7 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         var net = ZNet.instance;
         var peerCount = net is null ? 0 : net.GetPeers().Count;
         var fingerprint = GenerationFingerprint(rooms);
+        var riskCounts = GeneratedRiskCounts(rooms);
 
         var root = Path.Combine(
             BepInEx.Paths.ConfigPath,
@@ -366,6 +386,11 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         text.AppendLine("network_server=" + (net is not null && net.IsServer()));
         text.AppendLine("network_peer_count=" + peerCount.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("rooms=" + rooms.Length.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("risk_outer_rooms=" + riskCounts[0].ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("risk_mid_rooms=" + riskCounts[1].ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("risk_deep_rooms=" + riskCounts[2].ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("risk_lair_rooms=" + riskCounts[3].ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("risk_unclassified_rooms=" + riskCounts[4].ToString(CultureInfo.InvariantCulture));
         text.AppendLine("generation_fingerprint=" + fingerprint);
         text.AppendLine("znetviews=" + networkViews.Length.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("valid_znetviews=" + networkViews.Count(value => value && value.IsValid()).ToString(CultureInfo.InvariantCulture));
@@ -394,6 +419,34 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 UnderworldVanillaDungeonRegistrar.ThemeName(candidate),
                 theme.m_themeName,
                 StringComparison.Ordinal));
+    }
+
+    private static int[] GeneratedRiskCounts(IEnumerable<Room> rooms)
+    {
+        var counts = new int[5];
+        foreach (var room in rooms)
+        {
+            if (!room)
+            {
+                counts[4]++;
+                continue;
+            }
+
+            var metadata = room.GetComponent<UnderworldVanillaDungeonRoomAuditMetadata>();
+            if (!metadata ||
+                !Enum.TryParse(
+                    metadata.GeneratedRiskBand,
+                    ignoreCase: false,
+                    out UnderworldVanillaDungeonRiskBand band))
+            {
+                counts[4]++;
+                continue;
+            }
+
+            counts[(int)band]++;
+        }
+
+        return counts;
     }
 
     private static string GenerationFingerprint(IEnumerable<Room> rooms)
