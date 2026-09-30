@@ -193,7 +193,8 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             $"dressing=materials:{population.Dressing.ArchitectureMaterials},major:{population.Dressing.MajorProps}," +
             $"ground:{population.Dressing.GroundProps},lights:{population.Dressing.LocalLights}," +
             $"atmosphere:{population.Dressing.AtmosphereVolumes},thermal:{population.Dressing.ThermalVolumes}," +
-            $"water:{population.Dressing.WaterVolumes} " +
+            $"water:{population.Dressing.WaterVolumes},frozen-exposure:{population.Dressing.FrozenExposureVolumes}," +
+            $"decay-contamination:{population.Dressing.DecayContaminationVolumes} " +
             $"donor-mechanics=doors:{population.Mechanics.DoorsPreserved},teleports:{population.Mechanics.TeleportsPreserved}," +
             $"random-spawns:{population.Mechanics.RandomSpawnsPreserved},destructibles:{population.Mechanics.DestructiblesPreserved} " +
             $"lore-markers-removed={population.Mechanics.LoreMarkersRemoved}.");
