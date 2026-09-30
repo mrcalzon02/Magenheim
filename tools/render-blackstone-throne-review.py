@@ -15,7 +15,10 @@ if not SOURCE.is_file():
 
 bpy.ops.wm.open_mainfile(filepath=str(SOURCE))
 scene=bpy.context.scene
-scene.render.engine="BLENDER_EEVEE"
+scene.render.engine="CYCLES"
+scene.cycles.device="CPU"
+scene.cycles.samples=16
+scene.cycles.use_denoising=True
 scene.render.resolution_x=1440
 scene.render.resolution_y=900
 scene.render.resolution_percentage=100
