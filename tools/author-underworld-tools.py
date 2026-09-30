@@ -84,7 +84,8 @@ def build_player_rig():
 def finish(o,name,material):
  o.name=name;o["game_node_path"]=name;o["game_collision"]=False;o["game_crystal"]=json.dumps(None)
  o.data.materials.clear();o.data.materials.append(material)
- if not o.data.uv_layers:o.data.uv_layers.new(name="ToolUV")
+ if o.data.uv_layers.get("ToolUV") is None:o.data.uv_layers.new(name="ToolUV")
+ o.data.uv_layers.active_index=o.data.uv_layers.find("ToolUV")
  bpy.context.view_layer.objects.active=o;o.select_set(True);bpy.ops.object.mode_set(mode="EDIT")
  bpy.ops.mesh.select_all(action="SELECT");bpy.ops.uv.cube_project(cube_size=.28)
  bpy.ops.object.mode_set(mode="OBJECT");o.select_set(False)
