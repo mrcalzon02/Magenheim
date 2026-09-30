@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using BepInEx;
 using BepInEx.Logging;
@@ -112,6 +113,9 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 generator.GetComponentsInChildren<MineRock>(true).Length +
                 generator.GetComponentsInChildren<MineRock5>(true).Length;
             var destructibleDrops = generator.GetComponentsInChildren<DropOnDestroyed>(true).Length;
+            var networkViews = generator.GetComponentsInChildren<ZNetView>(true);
+            var validNetworkViews = networkViews.Count(value => value && value.IsValid());
+            var fingerprint = GenerationFingerprint(rooms);
 
             var result =
                 $"DDE GENERATED {profile.Biome}: seed={seed} mode={mode} " +
@@ -122,8 +126,10 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 $"creature-spawners={activeCreatureSpawners}/{creatureSpawners} " +
                 $"spawn-areas={activeSpawnAreas}/{spawnAreas} " +
                 $"containers={containers} pickables={pickables} mineables={mineables} " +
-                $"destructible-drops={destructibleDrops} generation-ms={generationMilliseconds} " +
-                $"managed-memory-delta={managedMemoryDelta}";
+                $"destructible-drops={destructibleDrops} " +
+                $"znetviews={validNetworkViews}/{networkViews.Length} " +
+                $"generation-ms={generationMilliseconds} managed-memory-delta={managedMemoryDelta} " +
+                $"fingerprint={fingerprint}";
 
             if (missingRequired.Length > 0)
                 result += " missing-required=[" + string.Join(",", missingRequired) + "]";
@@ -145,8 +151,11 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 pickables,
                 mineables,
                 destructibleDrops,
+                networkViews.Length,
+                validNetworkViews,
                 generationMilliseconds,
-                managedMemoryDelta);
+                managedMemoryDelta,
+                fingerprint);
 
             var structuralPass =
                 rooms.Length >= generator.m_minRooms &&
@@ -193,8 +202,11 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         int pickables,
         int mineables,
         int destructibleDrops,
+        int networkViews,
+        int validNetworkViews,
         long generationMilliseconds,
-        long managedMemoryDeltaBytes)
+        long managedMemoryDeltaBytes,
+        string fingerprint)
     {
         var root = Path.Combine(
             Paths.ConfigPath,
@@ -238,6 +250,9 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         text.AppendLine("pickables=" + pickables.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("mineables=" + mineables.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("destructible_drops=" + destructibleDrops.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("znetviews=" + networkViews.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("valid_znetviews=" + validNetworkViews.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("generation_fingerprint=" + fingerprint);
         text.AppendLine("generation_ms=" + generationMilliseconds.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("managed_memory_delta_bytes=" + managedMemoryDeltaBytes.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("candidate_mode=" + UnderworldVanillaDungeonCandidatePolicy.Enabled);
@@ -250,6 +265,120 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
 
         File.WriteAllText(file, text.ToString(), new UTF8Encoding(false));
         _log?.LogInfo("DDE generation evidence -> '" + file + "'.");
+    }
+
+    internal static string CaptureRuntimeSnapshot(Player player, ManualLogSource? log)
+    {
+        if (!player) throw new ArgumentNullException(nameof(player));
+
+        var candidates = Resources.FindObjectsOfTypeAll<DungeonGenerator>()
+            .Where(generator =>
+                generator &&
+                generator.gameObject.activeInHierarchy &&
+                generator.gameObject.scene.handle == player.gameObject.scene.handle)
+            .Select(generator => new
+            {
+                Generator = generator,
+                Profile = ProfileFor(generator),
+                Distance = (generator.transform.position - player.transform.position).sqrMagnitude,
+            })
+            .Where(value => value.Profile is not null)
+            .OrderBy(value => value.Distance)
+            .ToArray();
+
+        if (candidates.Length == 0)
+            throw new InvalidOperationException(
+                "No loaded expanded-vanilla Underworld dungeon is present in the local player's scene.");
+
+        var selected = candidates[0];
+        var generator = selected.Generator;
+        var profile = selected.Profile!;
+        var rooms = generator.GetComponentsInChildren<Room>(true)
+            .Where(room => room && room.gameObject != generator.gameObject)
+            .ToArray();
+        var networkViews = generator.GetComponentsInChildren<ZNetView>(true);
+        var creatureSpawners = generator.GetComponentsInChildren<CreatureSpawner>(true);
+        var spawnAreas = generator.GetComponentsInChildren<SpawnArea>(true);
+        var containers = generator.GetComponentsInChildren<Container>(true);
+        var pickables = generator.GetComponentsInChildren<Pickable>(true);
+        var mineables =
+            generator.GetComponentsInChildren<MineRock>(true).Length +
+            generator.GetComponentsInChildren<MineRock5>(true).Length;
+        var destructibleDrops = generator.GetComponentsInChildren<DropOnDestroyed>(true);
+        var net = ZNet.instance;
+        var peerCount = net is null ? 0 : net.GetPeers().Count;
+        var fingerprint = GenerationFingerprint(rooms);
+
+        var root = Path.Combine(
+            Paths.ConfigPath,
+            "Magenheim",
+            "validation",
+            "deep-dungeon-expansion",
+            "snapshots");
+        Directory.CreateDirectory(root);
+        var stamp = DateTime.UtcNow.ToString("yyyyMMdd-HHmmssfff", CultureInfo.InvariantCulture);
+        var file = Path.Combine(
+            root,
+            stamp + "-" + Safe(profile.Biome.ToString()) + "-runtime-snapshot.txt");
+
+        var text = new StringBuilder();
+        text.AppendLine("Deep Dungeon Expansion runtime snapshot");
+        text.AppendLine("utc=" + DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture));
+        text.AppendLine("game=" + global::Version.GetVersionString());
+        text.AppendLine("dungeon_id=" + profile.DungeonId);
+        text.AppendLine("biome=" + profile.Biome);
+        text.AppendLine("donor=" + profile.DonorDisplayName);
+        text.AppendLine("candidate_mode=" + UnderworldVanillaDungeonCandidatePolicy.Enabled);
+        text.AppendLine("player_id=" + player.GetPlayerID().ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("scene_handle=" + player.gameObject.scene.handle.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("network_server=" + (net is not null && net.IsServer()));
+        text.AppendLine("network_peer_count=" + peerCount.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("rooms=" + rooms.Length.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("generation_fingerprint=" + fingerprint);
+        text.AppendLine("znetviews=" + networkViews.Length.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("valid_znetviews=" + networkViews.Count(value => value && value.IsValid()).ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("creature_spawners=" + creatureSpawners.Length.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("active_creature_spawners=" + creatureSpawners.Count(value => value && value.enabled).ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("spawn_areas=" + spawnAreas.Length.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("active_spawn_areas=" + spawnAreas.Count(value => value && value.enabled).ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("containers=" + containers.Length.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("pickables=" + pickables.Length.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("active_pickables=" + pickables.Count(value => value && value.gameObject.activeInHierarchy).ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("mineables=" + mineables.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("destructible_drops=" + destructibleDrops.Length.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("result=SNAPSHOT_CAPTURED");
+
+        File.WriteAllText(file, text.ToString(), new UTF8Encoding(false));
+        log?.LogInfo("DDE runtime snapshot -> '" + file + "'.");
+        return file;
+    }
+
+    private static UnderworldVanillaDungeonReuseDefinition? ProfileFor(DungeonGenerator generator)
+    {
+        var theme = generator.GetComponent<DungeonGeneratorTheme>();
+        if (!theme || string.IsNullOrWhiteSpace(theme.m_themeName)) return null;
+        return UnderworldVanillaDungeonReuseCatalog.All.SingleOrDefault(candidate =>
+            string.Equals(
+                UnderworldVanillaDungeonRegistrar.ThemeName(candidate),
+                theme.m_themeName,
+                StringComparison.Ordinal));
+    }
+
+    private static string GenerationFingerprint(IEnumerable<Room> rooms)
+    {
+        var canonical = rooms
+            .Where(room => room)
+            .Select(room =>
+                Utils.GetPrefabName(room.gameObject) + "|" +
+                room.transform.position.x.ToString("0.00", CultureInfo.InvariantCulture) + "," +
+                room.transform.position.y.ToString("0.00", CultureInfo.InvariantCulture) + "," +
+                room.transform.position.z.ToString("0.00", CultureInfo.InvariantCulture) + "|" +
+                room.transform.rotation.eulerAngles.y.ToString("0.0", CultureInfo.InvariantCulture))
+            .OrderBy(value => value, StringComparer.Ordinal);
+        using var sha = SHA256.Create();
+        var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(string.Join("\n", canonical)));
+        return string.Concat(bytes.Select(value =>
+            value.ToString("x2", CultureInfo.InvariantCulture)));
     }
 
     private static GraphReport GraphMetrics(Room[] rooms)
