@@ -36,7 +36,7 @@ internal static class UnderworldVanillaDungeonDonorCensus
         var summary = new StringBuilder();
         summary.AppendLine("Deep Dungeon Expansion donor census");
         summary.AppendLine("utc=" + DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture));
-        summary.AppendLine("game=" + Version.GetVersionString());
+        summary.AppendLine("game=" + global::Version.GetVersionString());
         summary.AppendLine("profiles=" + UnderworldVanillaDungeonReuseCatalog.All.Count);
         summary.AppendLine();
 
@@ -177,8 +177,6 @@ internal static class UnderworldVanillaDungeonDonorCensus
                 output.AppendLine("generator_min_required_rooms=" + dg.m_minRequiredRooms);
                 output.AppendLine("generator_required_rooms=" +
                     string.Join(",", dg.m_requiredRooms ?? new List<string>()));
-                output.AppendLine("generator_excluded_rooms=" +
-                    string.Join(",", dg.m_excludedRooms ?? new List<string>()));
                 output.AppendLine("generator_zone_size=" + Vector(dg.m_zoneSize));
                 output.AppendLine("generator_tile_width=" +
                     dg.m_tileWidth.ToString("0.###", CultureInfo.InvariantCulture));
