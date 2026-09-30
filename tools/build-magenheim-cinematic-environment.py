@@ -186,47 +186,82 @@ def add_house(prefix, x, y, scale, mats, target, great_hall=False):
     return body
 
 def add_humanoid_proxy(name, location, scale, mats, target, material_key="hero", broad=False):
-    """Low-poly rigging proxy. It is a replaceable body, not final character art."""
-    root = bpy.data.objects.new(name + "_ROOT", None)
-    root.empty_display_type = 'ARROWS'
-    root.empty_display_size = .65 * scale
-    root.location = location
+    """Articulated low-poly blocking rig.
+
+    This is not final character art. Its job is to make body mechanics honest:
+    hips, knees, ankles, shoulders and elbows have real pivots so walking,
+    bracing, standing and weapon draws can be judged before final rigs replace it.
+    """
+    root=bpy.data.objects.new(name+"_ROOT",None)
+    root.empty_display_type='ARROWS'
+    root.empty_display_size=.65*scale
+    root.location=location
     target.objects.link(root)
 
-    def child_box(suffix, local, dims, key=material_key, pivot=None):
-        obj = add_box(name + "_" + suffix,
-                      (location[0] + local[0], location[1] + local[1], location[2] + local[2]),
-                      dims, mats[key], target)
+    def part(suffix, center, dims, pivot=None, parent=None, key=material_key):
+        obj=add_box(name+"_"+suffix,
+                    (location[0]+center[0],location[1]+center[1],location[2]+center[2]),
+                    dims,mats[key],target)
         if pivot is not None:
-            bpy.context.scene.cursor.location = (
-                location[0] + pivot[0], location[1] + pivot[1], location[2] + pivot[2]
-            )
-            bpy.context.view_layer.objects.active = obj
+            bpy.context.scene.cursor.location=(
+                location[0]+pivot[0],location[1]+pivot[1],location[2]+pivot[2])
+            bpy.context.view_layer.objects.active=obj
             obj.select_set(True)
-            bpy.ops.object.origin_set(type='ORIGIN_CURSOR', center='MEDIAN')
+            bpy.ops.object.origin_set(type='ORIGIN_CURSOR',center='MEDIAN')
             obj.select_set(False)
-        obj.parent = root
-        obj.matrix_parent_inverse = root.matrix_world.inverted()
+        parent=parent or root
+        obj.parent=parent
+        obj.matrix_parent_inverse=parent.matrix_world.inverted()
         return obj
 
-    torso_w = (.95 if broad else .72) * scale
-    child_box("Torso", (0,0,1.42*scale), (torso_w,.48*scale,1.28*scale))
-    child_box("Pelvis", (0,0,.78*scale), (.62*scale,.42*scale,.34*scale))
+    torso_w=(.95 if broad else .72)*scale
+    part("Pelvis",(0,0,.92*scale),(.62*scale,.42*scale,.30*scale))
+    part("Torso",(0,0,1.48*scale),(torso_w,.48*scale,1.00*scale))
+
+    hip_z=.86*scale
+    thigh_len=.48*scale
+    knee_z=hip_z-thigh_len
+    shin_len=.38*scale
+    ankle_z=knee_z-shin_len
+    shoulder_z=1.90*scale
+    upper_len=.48*scale
+    elbow_z=shoulder_z-upper_len
+    fore_len=.43*scale
+    wrist_z=elbow_z-fore_len
+
     for side in (-1,1):
-        child_box(f"Leg_{side:+}", (side*.19*scale,0,.34*scale), (.24*scale,.28*scale,.82*scale),
-                  pivot=(side*.19*scale,0,.75*scale))
-        child_box(f"Arm_{side:+}", (side*(torso_w*.62),0,1.40*scale), (.22*scale,.25*scale,1.05*scale),
-                  pivot=(side*(torso_w*.62),0,1.92*scale))
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=.30*scale,
-                                         location=(location[0],location[1],location[2]+2.28*scale))
-    head = bpy.context.object
-    head.name = name + "_Head"
+        sx=side*.19*scale
+        thigh=part(f"Leg_{side:+}",(sx,0,(hip_z+knee_z)/2),
+                   (.26*scale,.30*scale,thigh_len),
+                   pivot=(sx,0,hip_z))
+        shin=part(f"Shin_{side:+}",(sx,0,(knee_z+ankle_z)/2),
+                  (.22*scale,.26*scale,shin_len),
+                  pivot=(sx,0,knee_z),parent=thigh)
+        part(f"Foot_{side:+}",(sx,.12*scale,max(.075*scale,ankle_z+.055*scale)),
+             (.25*scale,.46*scale,.14*scale),
+             pivot=(sx,0,max(.07*scale,ankle_z)),parent=shin)
+
+        ax=side*(torso_w*.62)
+        upper=part(f"Arm_{side:+}",(ax,0,(shoulder_z+elbow_z)/2),
+                   (.23*scale,.26*scale,upper_len),
+                   pivot=(ax,0,shoulder_z))
+        fore=part(f"Forearm_{side:+}",(ax,0,(elbow_z+wrist_z)/2),
+                  (.20*scale,.23*scale,fore_len),
+                  pivot=(ax,0,elbow_z),parent=upper)
+        part(f"Hand_{side:+}",(ax,0,wrist_z-.07*scale),
+             (.22*scale,.24*scale,.18*scale),
+             pivot=(ax,0,wrist_z),parent=fore)
+
+    bpy.ops.mesh.primitive_ico_sphere_add(
+        subdivisions=2,radius=.30*scale,
+        location=(location[0],location[1],location[2]+2.22*scale))
+    head=bpy.context.object
+    head.name=name+"_Head"
     head.data.materials.append(mats[material_key])
     relink(head,target)
-    head.parent = root
-    head.matrix_parent_inverse = root.matrix_world.inverted()
+    head.parent=root
+    head.matrix_parent_inverse=root.matrix_world.inverted()
     return root
-
 
 def add_raven_proxy(name, location, scale, mats, target):
     root = bpy.data.objects.new(name + "_ROOT", None)
@@ -927,41 +962,69 @@ def _look_at(cam, frame, location, target, lens=None):
         cam.data.keyframe_insert(data_path="lens", frame=frame)
 
 
-def _walk_cycle(root_name, start, end, start_loc, end_loc, phase=0, stride=12, swing_deg=24):
+def _walk_cycle(root_name, start, end, start_loc, end_loc, phase=0, stride=24, swing_deg=22):
+    """Articulated walk with root motion, knee flexion and approximate foot leveling.
+
+    Stride is a complete left-to-left gait cycle. At the default 24 frames this
+    is one second at picture rate: a natural two-step cadence rather than the
+    old half-second pinwheel gait.
+    """
     root=bpy.data.objects.get(root_name)
     if root is None:
         return
-    root.location=start_loc
-    root.keyframe_insert(data_path="location",frame=start)
-    root.location=end_loc
-    root.keyframe_insert(data_path="location",frame=end)
-    left=bpy.data.objects.get(root_name.removesuffix("_ROOT")+"_Leg_-1")
-    right=bpy.data.objects.get(root_name.removesuffix("_ROOT")+"_Leg_+1")
-    larm=bpy.data.objects.get(root_name.removesuffix("_ROOT")+"_Arm_-1")
-    rarm=bpy.data.objects.get(root_name.removesuffix("_ROOT")+"_Arm_+1")
-    amplitude=math.radians(swing_deg)
-    for frame in range(start+phase,end+1,stride//2):
-        polarity=1 if ((frame-start-phase)//(stride//2))%2==0 else -1
-        for obj,sign in ((left,1),(right,-1),(larm,-.72),(rarm,.72)):
+    prefix=root_name.removesuffix("_ROOT")
+    thigh_l=bpy.data.objects.get(prefix+"_Leg_-1")
+    thigh_r=bpy.data.objects.get(prefix+"_Leg_+1")
+    shin_l=bpy.data.objects.get(prefix+"_Shin_-1")
+    shin_r=bpy.data.objects.get(prefix+"_Shin_+1")
+    foot_l=bpy.data.objects.get(prefix+"_Foot_-1")
+    foot_r=bpy.data.objects.get(prefix+"_Foot_+1")
+    arm_l=bpy.data.objects.get(prefix+"_Arm_-1")
+    arm_r=bpy.data.objects.get(prefix+"_Arm_+1")
+    fore_l=bpy.data.objects.get(prefix+"_Forearm_-1")
+    fore_r=bpy.data.objects.get(prefix+"_Forearm_+1")
+
+    amp=math.radians(swing_deg)
+    quarter=max(1,stride//4)
+    frames=list(range(start,end+1,quarter))
+    if frames[-1]!=end:
+        frames.append(end)
+
+    for frame in frames:
+        t=(frame-start)/max(1,end-start)
+        gait=math.tau*((frame-start+phase)/stride)
+        left_thigh=amp*math.cos(gait)
+        right_thigh=-left_thigh
+        left_knee=math.radians(4+31*max(0.0,-math.sin(gait)))
+        right_knee=math.radians(4+31*max(0.0, math.sin(gait)))
+        left_arm=-.62*left_thigh
+        right_arm=-.62*right_thigh
+
+        poses=(
+            (thigh_l,left_thigh),(thigh_r,right_thigh),
+            (shin_l,-left_knee),(shin_r,-right_knee),
+            (arm_l,left_arm),(arm_r,right_arm),
+            (fore_l,math.radians(-10)-.18*left_arm),
+            (fore_r,math.radians(-10)-.18*right_arm),
+            (foot_l,-.70*(left_thigh-left_knee)),
+            (foot_r,-.70*(right_thigh-right_knee)),
+        )
+        for obj,angle in poses:
             if obj is None:
                 continue
             obj.rotation_mode='XYZ'
-            obj.rotation_euler=(amplitude*polarity*sign,0,0)
+            obj.rotation_euler=(angle,0,0)
             obj.keyframe_insert(data_path="rotation_euler",frame=frame)
-    # Real gait has a very small vertical center-of-mass oscillation, not an
-    # arbitrary screen-space wobble.
-    base_z0=start_loc[2]
-    base_z1=end_loc[2]
-    for frame in range(start,end+1,stride//4):
-        t=(frame-start)/max(1,end-start)
-        z=base_z0+(base_z1-base_z0)*t + .025*(1-math.cos((frame-start)*math.tau/(stride/2)))
+
         x=start_loc[0]+(end_loc[0]-start_loc[0])*t
         y=start_loc[1]+(end_loc[1]-start_loc[1])*t
-        root.location=(x,y,z)
+        base_z=start_loc[2]+(end_loc[2]-start_loc[2])*t
+        bob=.028*(1-math.cos(2*gait))
+        root.location=(x,y,base_z+bob)
         root.keyframe_insert(data_path="location",frame=frame)
+
     root.location=end_loc
     root.keyframe_insert(data_path="location",frame=end)
-
 
 def _pose_limb(name, frame, rotation):
     obj=bpy.data.objects.get(name)
@@ -1008,9 +1071,9 @@ def animate_scene(scene,cameras):
     There is no image warping and no arbitrary moving screen region.
     """
     # Shot 1 — three heroes walk into the village on actual world trajectories.
-    _walk_cycle("HERO_A_ROOT",1,72,(-2.2,-31.4,.15),(-2.0,-22.4,.15),phase=0)
-    _walk_cycle("HERO_B_ROOT",1,72,(0,-32.2,.15),(.1,-23.2,.15),phase=3)
-    _walk_cycle("HERO_C_ROOT",1,72,(2.1,-31.6,.15),(2.2,-22.7,.15),phase=6)
+    _walk_cycle("HERO_A_ROOT",1,72,(-2.2,-29.4,.15),(-2.0,-24.7,.15),phase=0,stride=24)
+    _walk_cycle("HERO_B_ROOT",1,72,(0,-30.2,.15),(.1,-25.5,.15),phase=6,stride=24)
+    _walk_cycle("HERO_C_ROOT",1,72,(2.1,-29.6,.15),(2.2,-24.9,.15),phase=12,stride=24)
     _look_at(cameras["SHOT_01_RETURN_CAM"],1,(0,-42,5.5),(0,-22,2.1),50)
     _look_at(cameras["SHOT_01_RETURN_CAM"],72,(1.0,-35.4,5.0),(.2,-16.5,2.3),48)
 
@@ -1021,7 +1084,7 @@ def animate_scene(scene,cameras):
         if root:
             start=(HALL_X+x,-9.0-(.35 if idx==1 else 0),.05)
             end=(HALL_X+x,-6.3-(.25 if idx==1 else 0),.05)
-            _walk_cycle(root.name,73,112,start,end,phase=idx*3,stride=12,swing_deg=20)
+            _walk_cycle(root.name,73,112,start,end,phase=idx*5,stride=20,swing_deg=19)
             root.location=end
             root.keyframe_insert(data_path="location",frame=144)
     for i in range(6):
@@ -1063,6 +1126,13 @@ def animate_scene(scene,cameras):
             root.keyframe_insert(data_path="rotation_euler",frame=244)
             root.rotation_euler=(0,0,math.radians((-18,7,22)[i]))
             root.keyframe_insert(data_path="rotation_euler",frame=270)
+    for prefix in ("HERO_A","HERO_B","HERO_C"):
+        _pose_limb(prefix+"_Leg_-1",238,(math.radians(3),0,0))
+        _pose_limb(prefix+"_Leg_+1",238,(math.radians(-2),0,0))
+        _pose_limb(prefix+"_Shin_-1",244,(math.radians(-18),0,0))
+        _pose_limb(prefix+"_Shin_+1",244,(math.radians(-16),0,0))
+        _pose_limb(prefix+"_Shin_-1",260,(math.radians(-4),0,0))
+        _pose_limb(prefix+"_Shin_+1",260,(math.radians(-4),0,0))
     # Lift the heads slightly toward the source of the disturbance.
     for prefix in ("HERO_A","HERO_B","HERO_C"):
         head=bpy.data.objects.get(prefix+"_Head")
@@ -1071,8 +1141,8 @@ def animate_scene(scene,cameras):
             head.rotation_euler=(0,0,0); head.keyframe_insert(data_path="rotation_euler",frame=230)
             head.rotation_euler=(math.radians(-10),0,0); head.keyframe_insert(data_path="rotation_euler",frame=268)
 
-    # Shot 5 — raven crosses actual 3D space.  Proxy wings move as a single
-    # readable beat until the final raven rig replaces them.
+    # Shot 5 — raven crosses actual 3D space. Left/right wings flap around
+    # real body pivots until the final raven rig replaces the blocking proxy.
     raven=bpy.data.objects.get("RAVEN_ROOT")
     if raven:
         raven.location=(-13,1,7.0); raven.keyframe_insert(data_path="location",frame=289)
@@ -1119,8 +1189,12 @@ def animate_scene(scene,cameras):
         head.rotation_euler=(math.radians(-3),0,0); head.keyframe_insert(data_path="rotation_euler",frame=528)
     _pose_limb("NOWHERE_KING_Arm_-1",445,(math.radians(12),0,math.radians(-8)))
     _pose_limb("NOWHERE_KING_Arm_+1",445,(math.radians(12),0,math.radians(8)))
+    _pose_limb("NOWHERE_KING_Forearm_-1",445,(math.radians(-38),0,0))
+    _pose_limb("NOWHERE_KING_Forearm_+1",445,(math.radians(-38),0,0))
     _pose_limb("NOWHERE_KING_Arm_-1",530,(math.radians(-8),0,math.radians(-18)))
     _pose_limb("NOWHERE_KING_Arm_+1",530,(math.radians(-8),0,math.radians(18)))
+    _pose_limb("NOWHERE_KING_Forearm_-1",530,(math.radians(-18),0,0))
+    _pose_limb("NOWHERE_KING_Forearm_+1",530,(math.radians(-18),0,0))
     _look_at(cameras["SHOT_07_KING_AWAKENS_CAM"],445,(-9.5,THRONE_Y-3.0,4.4),(0,THRONE_Y-19.5,2.2),58)
     _look_at(cameras["SHOT_07_KING_AWAKENS_CAM"],540,(-7.4,THRONE_Y-6.0,4.35),(0,THRONE_Y-19.5,2.9),62)
 
@@ -1158,10 +1232,16 @@ def animate_scene(scene,cameras):
         sword.keyframe_insert(data_path="rotation_euler",frame=672)
     _pose_limb("NOWHERE_KING_Arm_-1",541,(math.radians(-8),0,math.radians(-18)))
     _pose_limb("NOWHERE_KING_Arm_+1",541,(math.radians(-8),0,math.radians(18)))
+    _pose_limb("NOWHERE_KING_Forearm_-1",541,(math.radians(-42),0,0))
+    _pose_limb("NOWHERE_KING_Forearm_+1",541,(math.radians(-42),0,0))
     _pose_limb("NOWHERE_KING_Arm_-1",622,(math.radians(-42),math.radians(-10),math.radians(-48)))
     _pose_limb("NOWHERE_KING_Arm_+1",622,(math.radians(-42),math.radians(10),math.radians(48)))
+    _pose_limb("NOWHERE_KING_Forearm_-1",622,(math.radians(-14),0,math.radians(-8)))
+    _pose_limb("NOWHERE_KING_Forearm_+1",622,(math.radians(-14),0,math.radians(8)))
     _pose_limb("NOWHERE_KING_Arm_-1",672,(math.radians(-36),math.radians(-8),math.radians(-42)))
     _pose_limb("NOWHERE_KING_Arm_+1",672,(math.radians(-36),math.radians(8),math.radians(42)))
+    _pose_limb("NOWHERE_KING_Forearm_-1",672,(math.radians(-10),0,math.radians(-6)))
+    _pose_limb("NOWHERE_KING_Forearm_+1",672,(math.radians(-10),0,math.radians(6)))
     _look_at(cameras["SHOT_08_LAST_ARGUMENT_CAM"],541,(0,THRONE_Y-3.0,4.35),(0,THRONE_Y-19.5,2.8),58)
     _look_at(cameras["SHOT_08_LAST_ARGUMENT_CAM"],672,(0,THRONE_Y-6.5,4.15),(0,THRONE_Y-19.5,2.9),62)
 
