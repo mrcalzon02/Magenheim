@@ -22,6 +22,23 @@ bridge=(ROOT/"src/Magenheim.Runtime/UnderworldWorldgenContentBridge.cs").read_te
 placement=(ROOT/"src/Magenheim.Runtime/UnderworldDungeonPlacementRuntime.cs").read_text()
 synchronizer=(ROOT/"src/Magenheim.Runtime/DefinitionAuthoritySynchronizer.cs").read_text()
 gameplay_fingerprint=(ROOT/"src/Magenheim.Core/Socketing/GameplayAuthorityFingerprint.cs").read_text()
+plan=(ROOT/"docs/DEEP_DUNGEON_EXPANSION.md").read_text()
+
+for token in (
+    "# Deep Dungeon Expansion",
+    "## DDE-00 — Architecture freeze",
+    "## DDE-13 — Per-family promotion",
+    "## DDE-14 — Final regression against Deep Fracture",
+    "1.5x linear room scale",
+    "3.5x donor room-count target",
+    "DG_ForestCrypt",
+    "DG_SunkenCrypt",
+    "DG_DvergrTown",
+    "DG_Cave",
+    "DG_Hole",
+    "Deep Fracture remains fully Magenheim-owned architecture",
+):
+    require(token in plan,"DDE-00 durable plan authority lost required contract text: "+token)
 
 require("MinimumLinearRoomScale = 1.5d" in reuse,
         "DDE-00 scale floor drifted below the 1.5x authority")
