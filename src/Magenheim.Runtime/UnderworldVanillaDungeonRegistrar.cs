@@ -481,6 +481,7 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
                 ?? throw new InvalidOperationException(
                     $"Unable to clone dungeon door '{definition.m_prefab.name}'.");
             clone.transform.localScale *= (float)profile.LinearRoomScale;
+            UnderworldVanillaDungeonBiomeDressingPolicy.ApplyDoor(clone, profile, index);
             PrefabManager.Instance.AddPrefab(clone);
             definition.m_prefab = clone;
             _registeredDoorPrefabs.Add(name);
