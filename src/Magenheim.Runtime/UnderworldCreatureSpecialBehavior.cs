@@ -17,12 +17,15 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
     {
         None,
         PuffbackSporeBurst,
+        MycelialStalkerAmbush,
+        ShelfLurkerCling,
         CaveRayFlee,
         LampreyLatch,
         LanternAnglerPressure,
         AbyssShellArmor,
         DeepHunterRam,
         PaleBurrowerAmbush,
+        RimewingPerch,
         FurnaceGolemArmorBreak,
         VentSpitterRetaliation,
         RootedCaster,
@@ -43,6 +46,11 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
     private bool _burrowEmerging;
     private bool _burrowComplete;
     private int _armorStage = 2;
+    private BaseAI? _stageAi;
+    private Rigidbody? _stageBody;
+    private Vector3 _stageOrigin;
+    private bool _stageInitialized;
+    private bool _stageReleased;
 
     internal static string Attach(GameObject prefab, UnderworldCreaturePrototypes.Entry entry)
     {
@@ -64,12 +72,15 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         return mode switch
         {
             Mode.PuffbackSporeBurst => "reactive spore burst",
+            Mode.MycelialStalkerAmbush => "concealed proximity pounce",
+            Mode.ShelfLurkerCling => "wall-cling drop pounce",
             Mode.CaveRayFlee => "hit-triggered aquatic flee impulse",
             Mode.LampreyLatch => "timed attach-and-feed latch",
             Mode.LanternAnglerPressure => "radial pressure-release attack",
             Mode.AbyssShellArmor => "shell armor; pickaxe bypass",
             Mode.DeepHunterRam => "apex ram charge",
             Mode.PaleBurrowerAmbush => "subterranean proximity ambush",
+            Mode.RimewingPerch => "dormant perch-to-flight lifecycle",
             Mode.FurnaceGolemArmorBreak => "two-stage furnace armor break",
             Mode.VentSpitterRetaliation => "line-of-sight thermal spit retaliation",
             Mode.RootedCaster => "rooted caster behavior",
@@ -144,6 +155,12 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
             case Mode.RootedSpawner:
                 UpdateRootedSpawner(owner);
                 break;
+            case Mode.MycelialStalkerAmbush:
+                UpdateMycelialStalker(owner);
+                break;
+            case Mode.ShelfLurkerCling:
+                UpdateShelfLurker(owner);
+                break;
             case Mode.LampreyLatch:
                 UpdateLampreyLatch(owner);
                 break;
@@ -155,6 +172,9 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
                 break;
             case Mode.PaleBurrowerAmbush:
                 UpdatePaleBurrower(owner);
+                break;
+            case Mode.RimewingPerch:
+                UpdateRimewing(owner);
                 break;
         }
     }
@@ -454,6 +474,189 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         return best;
     }
 
+    private void UpdateMycelialStalker(Character owner)
+    {
+        if (_stageReleased)
+            return;
+
+        if (!_stageInitialized)
+        {
+            InitializeStage(owner, makeKinematic: true);
+            owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("concealidle");
+            return;
+        }
+
+        var target = NearestLivingPlayer(
+            _stageOrigin,
+            owner.gameObject.scene.handle,
+            8.5f);
+        if (!target)
+            return;
+
+        ReleaseStage(owner);
+        var body = owner.GetComponent<Rigidbody>();
+        if (body)
+        {
+            var direction = target.GetCenterPoint() - owner.GetCenterPoint();
+            if (direction.sqrMagnitude > .001f)
+                body.AddForce(direction.normalized * 6.5f + Vector3.up * 1.1f, ForceMode.VelocityChange);
+        }
+
+        owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("pounce");
+    }
+
+    private void UpdateRimewing(Character owner)
+    {
+        if (_stageReleased)
+            return;
+
+        if (!_stageInitialized)
+        {
+            InitializeStage(owner, makeKinematic: true);
+            owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("perchidle");
+            return;
+        }
+
+        var target = NearestLivingPlayer(
+            _stageOrigin,
+            owner.gameObject.scene.handle,
+            13f);
+        if (!target)
+            return;
+
+        ReleaseStage(owner);
+        var body = owner.GetComponent<Rigidbody>();
+        if (body)
+        {
+            var toward = target.GetCenterPoint() - owner.GetCenterPoint();
+            if (toward.sqrMagnitude > .001f)
+                toward.Normalize();
+            body.AddForce(toward * 2.5f + Vector3.up * 3.4f, ForceMode.VelocityChange);
+        }
+
+        owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("flight");
+    }
+
+    private void UpdateShelfLurker(Character owner)
+    {
+        if (_stageReleased)
+            return;
+
+        if (!_stageInitialized)
+        {
+            if (!TryFindClingSurface(owner, out var point, out var normal))
+            {
+                _stageInitialized = true;
+                _stageReleased = true;
+                return;
+            }
+
+            InitializeStage(owner, makeKinematic: true);
+            owner.transform.position = point + normal * .28f;
+            owner.transform.rotation = Quaternion.LookRotation(normal, Vector3.up);
+            _stageOrigin = owner.transform.position;
+            owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("clingidle");
+            return;
+        }
+
+        var target = NearestLivingPlayer(
+            _stageOrigin,
+            owner.gameObject.scene.handle,
+            7.5f);
+        if (!target)
+            return;
+
+        ReleaseStage(owner);
+        var body = owner.GetComponent<Rigidbody>();
+        if (body)
+        {
+            var direction = target.GetCenterPoint() - owner.GetCenterPoint();
+            if (direction.sqrMagnitude > .001f)
+                body.AddForce(direction.normalized * 7.2f + Vector3.up * .8f, ForceMode.VelocityChange);
+        }
+
+        owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("droppounce");
+    }
+
+    private void InitializeStage(Character owner, bool makeKinematic)
+    {
+        _stageOrigin = owner.transform.position;
+        _stageAi = owner.GetComponent<BaseAI>();
+        _stageBody = owner.GetComponent<Rigidbody>();
+
+        if (_stageAi)
+            _stageAi.enabled = false;
+        if (_stageBody)
+        {
+            _stageBody.linearVelocity = Vector3.zero;
+            if (makeKinematic)
+                _stageBody.isKinematic = true;
+        }
+
+        _stageInitialized = true;
+    }
+
+    private void ReleaseStage(Character owner)
+    {
+        if (_stageBody)
+            _stageBody.isKinematic = false;
+        if (_stageAi)
+            _stageAi.enabled = true;
+        _stageReleased = true;
+    }
+
+    private static bool TryFindClingSurface(
+        Character owner,
+        out Vector3 point,
+        out Vector3 normal)
+    {
+        point = Vector3.zero;
+        normal = Vector3.forward;
+
+        var origin = owner.GetCenterPoint();
+        var directions = new[]
+        {
+            Vector3.forward,
+            Vector3.back,
+            Vector3.left,
+            Vector3.right,
+            (Vector3.forward + Vector3.left).normalized,
+            (Vector3.forward + Vector3.right).normalized,
+            (Vector3.back + Vector3.left).normalized,
+            (Vector3.back + Vector3.right).normalized,
+        };
+
+        var found = false;
+        var bestDistance = float.MaxValue;
+        foreach (var direction in directions)
+        {
+            var hits = Physics.RaycastAll(
+                origin,
+                direction,
+                2.2f,
+                Physics.DefaultRaycastLayers,
+                QueryTriggerInteraction.Ignore);
+            foreach (var hit in hits)
+            {
+                if (!hit.collider)
+                    continue;
+
+                var hitCharacter = hit.collider.GetComponentInParent<Character>();
+                if (ReferenceEquals(hitCharacter, owner))
+                    continue;
+                if (hit.distance >= bestDistance)
+                    continue;
+
+                found = true;
+                bestDistance = hit.distance;
+                point = hit.point;
+                normal = hit.normal;
+            }
+        }
+
+        return found;
+    }
+
     private void UpdatePaleBurrower(Character owner)
     {
         if (_burrowComplete)
@@ -715,6 +918,10 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         {
             case "Puffback":
                 return Mode.PuffbackSporeBurst;
+            case "Mycelial Stalker":
+                return Mode.MycelialStalkerAmbush;
+            case "Shelf Lurker":
+                return Mode.ShelfLurkerCling;
             case "Cave Ray":
                 return Mode.CaveRayFlee;
             case "Blackwater Lamprey":
@@ -727,6 +934,8 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
                 return Mode.DeepHunterRam;
             case "Pale Burrower":
                 return Mode.PaleBurrowerAmbush;
+            case "Rimewing":
+                return Mode.RimewingPerch;
             case "Furnace Golem":
                 return Mode.FurnaceGolemArmorBreak;
             case "Vent Spitter":
