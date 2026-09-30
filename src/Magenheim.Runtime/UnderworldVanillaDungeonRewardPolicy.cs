@@ -33,10 +33,9 @@ internal static class UnderworldVanillaDungeonRewardPolicy
         int Pickables,
         int Mineables,
         int DestructibleDrops,
-        int BottleneckPickables,
-        int LoreMarkersRemoved)
+        int BottleneckPickables)
     {
-        internal static Stats Empty => new(0,0,0,0,0,0);
+        internal static Stats Empty => new(0,0,0,0,0);
 
         public static Stats operator +(Stats left, Stats right) =>
             new(
@@ -44,8 +43,7 @@ internal static class UnderworldVanillaDungeonRewardPolicy
                 left.Pickables + right.Pickables,
                 left.Mineables + right.Mineables,
                 left.DestructibleDrops + right.DestructibleDrops,
-                left.BottleneckPickables + right.BottleneckPickables,
-                left.LoreMarkersRemoved + right.LoreMarkersRemoved);
+                left.BottleneckPickables + right.BottleneckPickables);
     }
 
     internal static Stats Rebind(
@@ -101,22 +99,12 @@ internal static class UnderworldVanillaDungeonRewardPolicy
             destroyed[index].m_dropWhenDestroyed = ResourceTable(
                 resources, profile, band, Fixture.Destructible, donorRoomName, donorRoomIndex, index);
 
-        // Surface progression/lore markers do not belong in the derivative. Structural donor
-        // mechanics stay intact; only the Surface-facing discovery/lore component is removed.
-        var vegvisirs = roomObject.GetComponentsInChildren<Vegvisir>(true);
-        foreach (var vegvisir in vegvisirs)
-            UnityEngine.Object.DestroyImmediate(vegvisir);
-        var runestones = roomObject.GetComponentsInChildren<Runestone>(true);
-        foreach (var runestone in runestones)
-            UnityEngine.Object.DestroyImmediate(runestone);
-
         return new Stats(
             containers.Length,
             pickables.Length,
             mines.Length + mines5.Length,
             destroyed.Length,
-            bottleneckPickables,
-            vegvisirs.Length + runestones.Length);
+            bottleneckPickables);
     }
 
     private static DropTable ResourceTable(
