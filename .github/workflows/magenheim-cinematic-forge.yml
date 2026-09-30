@@ -71,7 +71,7 @@ jobs:
           $env:TEMP = $env:RUNNER_TEMP
           $env:TMP = $env:RUNNER_TEMP
           $out = 'assets/cinematics/peace-was-only-the-beginning/source/magenheim-peace-cinematic.blend'
-          & $env:MAGENHEIM_BLENDER --background --factory-startup --python tools/build-magenheim-cinematic-environment.py -- --output $out
+          & $env:MAGENHEIM_BLENDER --background --factory-startup --python-exit-code 1 --python tools/build-magenheim-cinematic-environment.py -- --output $out
           if ($LASTEXITCODE -ne 0) { throw 'Cinematic environment authoring failed.' }
           if (!(Test-Path -LiteralPath $out)) { throw 'Cinematic Blender scene was not created.' }
           $size = (Get-Item -LiteralPath $out).Length
@@ -81,7 +81,7 @@ jobs:
         shell: pwsh
         run: |
           $out = 'assets/cinematics/peace-was-only-the-beginning/source/magenheim-peace-cinematic.blend'
-          & $env:MAGENHEIM_BLENDER --background $out --python tools/build-magenheim-cinematic-environment.py -- --verify
+          & $env:MAGENHEIM_BLENDER --background $out --python-exit-code 1 --python tools/build-magenheim-cinematic-environment.py -- --verify
           if ($LASTEXITCODE -ne 0) { throw 'Re-open verification of cinematic Blender scene failed.' }
 
       - name: Render eight CPU preview frames
@@ -89,7 +89,7 @@ jobs:
         run: |
           $out = 'assets/cinematics/peace-was-only-the-beginning/source/magenheim-peace-cinematic.blend'
           $previews = 'build/cinematic-previews'
-          & $env:MAGENHEIM_BLENDER --background $out --python tools/build-magenheim-cinematic-environment.py -- --render-previews $previews
+          & $env:MAGENHEIM_BLENDER --background $out --python-exit-code 1 --python tools/build-magenheim-cinematic-environment.py -- --render-previews $previews
           if ($LASTEXITCODE -ne 0) { throw 'Cinematic preview render failed.' }
           $previewCount = @(Get-ChildItem -LiteralPath $previews -Filter '*.png' -File).Count
           if ($previewCount -ne 8) { throw "Expected eight cinematic preview frames; got $previewCount." }
