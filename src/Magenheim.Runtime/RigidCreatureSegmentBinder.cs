@@ -35,6 +35,7 @@ internal static class RigidCreatureSegmentBinder
         var clips = ParseActions(rig, specs, modelId);
         var transforms = new Dictionary<string, Transform>(StringComparer.Ordinal);
         var rest = new Dictionary<string, Quaternion>(StringComparer.Ordinal);
+        var restPosition = new Dictionary<string, Vector3>(StringComparer.Ordinal);
         var restScale = new Dictionary<string, Vector3>(StringComparer.Ordinal);
         var skeletonBuilt = false;
         Transform? visualRoot = null;
@@ -49,7 +50,7 @@ internal static class RigidCreatureSegmentBinder
 
             if (!skeletonBuilt)
             {
-                BuildSkeleton(visualRoot, specs, transforms, rest, restScale, modelId);
+                BuildSkeleton(visualRoot, specs, transforms, rest, restPosition, restScale, modelId);
                 skeletonBuilt = true;
             }
 
@@ -74,7 +75,7 @@ internal static class RigidCreatureSegmentBinder
         var character = prefab.GetComponent<Character>()
             ?? throw new InvalidOperationException(prefab.name + " has no Character for creature visual driving.");
         var driver = root.AddComponent<RigidCreaturePresentationDriver>();
-        driver.Bind(character, transforms, rest, restScale, clips, fps);
+        driver.Bind(character, transforms, rest, restPosition, restScale, clips, fps);
         return transforms.Count + " bones / " + clips.Count + " authored action(s)";
     }
 
@@ -147,6 +148,8 @@ internal static class RigidCreatureSegmentBinder
                     if (!(property.Value is JObject pose) ||
                         !(pose["rotation"] is JArray quaternion) ||
                         quaternion.Count != 4 ||
+                        !(pose["position"] is JArray position) ||
+                        position.Count != 3 ||
                         !(pose["scale"] is JArray scale) ||
                         scale.Count != 3)
                         throw new InvalidOperationException(
@@ -157,14 +160,18 @@ internal static class RigidCreatureSegmentBinder
                         (float)quaternion[1]!,
                         (float)quaternion[2]!,
                         (float)quaternion[3]!);
+                    var p = new Vector3(
+                        (float)position[0]!,
+                        (float)position[1]!,
+                        (float)position[2]!);
                     var s = new Vector3(
                         (float)scale[0]!,
                         (float)scale[1]!,
                         (float)scale[2]!);
-                    if (!Finite(q) || !Finite(s) || s.x <= 0f || s.y <= 0f || s.z <= 0f)
+                    if (!Finite(q) || !Finite(p) || !Finite(s) || s.x <= 0f || s.y <= 0f || s.z <= 0f)
                         throw new InvalidOperationException(
                             modelId + " action '" + name + "' has non-finite/invalid pose for '" + property.Name + "'.");
-                    frame[property.Name] = new BonePose(q.normalized, s);
+                    frame[property.Name] = new BonePose(q.normalized, p, s);
                 }
                 frames.Add(frame);
             }
@@ -180,6 +187,7 @@ internal static class RigidCreatureSegmentBinder
         IReadOnlyDictionary<string, BoneSpec> specs,
         IDictionary<string, Transform> transforms,
         IDictionary<string, Quaternion> rest,
+        IDictionary<string, Vector3> restPosition,
         IDictionary<string, Vector3> restScale,
         string modelId)
     {
@@ -211,6 +219,7 @@ internal static class RigidCreatureSegmentBinder
         foreach (var pair in transforms)
         {
             rest.Add(pair.Key, pair.Value.localRotation);
+            restPosition.Add(pair.Key, pair.Value.localPosition);
             restScale.Add(pair.Key, pair.Value.localScale);
         }
 
@@ -262,13 +271,15 @@ internal static class RigidCreatureSegmentBinder
 
     internal sealed class BonePose
     {
-        internal BonePose(Quaternion rotation, Vector3 scale)
+        internal BonePose(Quaternion rotation, Vector3 position, Vector3 scale)
         {
             Rotation = rotation;
+            Position = position;
             Scale = scale;
         }
 
         internal Quaternion Rotation { get; }
+        internal Vector3 Position { get; }
         internal Vector3 Scale { get; }
     }
 
@@ -292,6 +303,7 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
     private Rigidbody? _body;
     private IReadOnlyDictionary<string, Transform> _bones = null!;
     private IReadOnlyDictionary<string, Quaternion> _rest = null!;
+    private IReadOnlyDictionary<string, Vector3> _restPosition = null!;
     private IReadOnlyDictionary<string, Vector3> _restScale = null!;
     private IReadOnlyList<RigidCreatureSegmentBinder.ActionClip> _clips = null!;
     private float _fps;
@@ -306,6 +318,7 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
         Character character,
         IReadOnlyDictionary<string, Transform> bones,
         IReadOnlyDictionary<string, Quaternion> rest,
+        IReadOnlyDictionary<string, Vector3> restPosition,
         IReadOnlyDictionary<string, Vector3> restScale,
         IReadOnlyList<RigidCreatureSegmentBinder.ActionClip> clips,
         float fps)
@@ -313,6 +326,7 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
         _character = character ?? throw new ArgumentNullException(nameof(character));
         _bones = bones ?? throw new ArgumentNullException(nameof(bones));
         _rest = rest ?? throw new ArgumentNullException(nameof(rest));
+        _restPosition = restPosition ?? throw new ArgumentNullException(nameof(restPosition));
         _restScale = restScale ?? throw new ArgumentNullException(nameof(restScale));
         _clips = clips ?? throw new ArgumentNullException(nameof(clips));
         _fps = fps;
@@ -460,6 +474,7 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
         foreach (var pair in _bones)
         {
             var rest = _rest[pair.Key];
+            var basePosition = _restPosition[pair.Key];
             var baseScale = _restScale[pair.Key];
             var a = first.TryGetValue(pair.Key, out var firstPose)
                 ? firstPose
@@ -469,9 +484,12 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
                 : null;
             var rotationA = a?.Rotation ?? Quaternion.identity;
             var rotationB = b?.Rotation ?? Quaternion.identity;
+            var positionA = a?.Position ?? Vector3.zero;
+            var positionB = b?.Position ?? Vector3.zero;
             var scaleA = a?.Scale ?? Vector3.one;
             var scaleB = b?.Scale ?? Vector3.one;
             pair.Value.localRotation = rest * Quaternion.Slerp(rotationA, rotationB, amount);
+            pair.Value.localPosition = basePosition + Vector3.Lerp(positionA, positionB, amount);
             pair.Value.localScale = Vector3.Scale(baseScale, Vector3.Lerp(scaleA, scaleB, amount));
         }
     }
