@@ -102,25 +102,16 @@ jobs:
           "MAGENHEIM_BEPINEX=$(Join-Path $env:MAGENHEIM_VALHEIM_GAME 'BepInEx')" | Out-File -FilePath $env:GITHUB_ENV -Append
           "MAGENHEIM_PRELOADER=$preloader" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Compile and install export-capable Magenheim runtime
+      - name: Compile and install isolated cinematic donor exporter
         shell: pwsh
         run: |
-          dotnet build src/Magenheim.Runtime -c Release "-p:ValheimManagedPath=$env:MAGENHEIM_VALHEIM_MANAGED" "-p:BepInExPath=$env:MAGENHEIM_BEPINEX"
-          if ($LASTEXITCODE -ne 0) { throw 'Magenheim runtime compile failed before donor extraction.' }
+          dotnet build tools/CinematicDonorExporter -c Release "-p:ValheimManagedPath=$env:MAGENHEIM_VALHEIM_MANAGED" "-p:BepInExPath=$env:MAGENHEIM_BEPINEX"
+          if ($LASTEXITCODE -ne 0) { throw 'Isolated cinematic donor exporter compile failed.' }
 
-          $source = Resolve-Path 'src/Magenheim.Runtime/bin/Release/net462'
-          $dest = Join-Path $env:MAGENHEIM_VALHEIM_GAME 'BepInEx/plugins/Magenheim'
+          $dll = Resolve-Path 'tools/CinematicDonorExporter/bin/Release/net462/Magenheim.CinematicDonorExporter.dll'
+          $dest = Join-Path $env:MAGENHEIM_VALHEIM_GAME 'BepInEx/plugins/MagenheimCinematicDonorExporter'
           New-Item -ItemType Directory -Force -Path $dest | Out-Null
-          foreach ($name in @('Magenheim.dll','Magenheim.Core.dll')) {
-            $path = Join-Path $source $name
-            if (!(Test-Path -LiteralPath $path)) { throw "Compiled runtime missing $name." }
-            Copy-Item -LiteralPath $path -Destination $dest -Force
-          }
-          foreach ($dirName in @('assets','default-data')) {
-            $path = Join-Path $source $dirName
-            if (!(Test-Path -LiteralPath $path)) { throw "Compiled runtime missing $dirName." }
-            Copy-Item -LiteralPath $path -Destination $dest -Recurse -Force
-          }
+          Copy-Item -LiteralPath $dll -Destination $dest -Force
 
       - name: Export selected registered Valheim prefabs
         shell: pwsh
