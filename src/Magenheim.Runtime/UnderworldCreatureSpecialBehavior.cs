@@ -329,19 +329,8 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         if (distance < 7f || distance > 20f)
             return;
 
-        if (Physics.Linecast(
-                owner.GetCenterPoint(),
-                target.GetCenterPoint(),
-                out var obstruction,
-                Physics.DefaultRaycastLayers,
-                QueryTriggerInteraction.Ignore))
-        {
-            var hitCharacter = obstruction.collider
-                ? obstruction.collider.GetComponentInParent<Character>()
-                : null;
-            if (!ReferenceEquals(hitCharacter, target))
-                return;
-        }
+        if (!ClearLine(owner, target))
+            return;
 
         var body = owner.GetComponent<Rigidbody>();
         if (!body)
@@ -370,6 +359,36 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         body.AddForce((away * 7.5f) + Vector3.up * 1.2f, ForceMode.VelocityChange);
         _nextAbilityTime = Time.time + 3.5f;
         owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("flee");
+    }
+
+    private static bool ClearLine(Character owner, Player target)
+    {
+        var start = owner.GetCenterPoint();
+        var delta = target.GetCenterPoint() - start;
+        var distance = delta.magnitude;
+        if (distance < .01f)
+            return true;
+
+        var hits = Physics.RaycastAll(
+            start,
+            delta / distance,
+            distance,
+            Physics.DefaultRaycastLayers,
+            QueryTriggerInteraction.Ignore);
+
+        foreach (var hit in hits)
+        {
+            if (!hit.collider)
+                continue;
+
+            var character = hit.collider.GetComponentInParent<Character>();
+            if (ReferenceEquals(character, owner) || ReferenceEquals(character, target))
+                continue;
+
+            return false;
+        }
+
+        return true;
     }
 
     private static Player? NearestLivingPlayer(
