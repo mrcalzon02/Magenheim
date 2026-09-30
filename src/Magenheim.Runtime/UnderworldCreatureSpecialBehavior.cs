@@ -17,7 +17,11 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
     {
         None,
         PuffbackSporeBurst,
+        CaveRayFlee,
+        LampreyLatch,
+        LanternAnglerPressure,
         AbyssShellArmor,
+        DeepHunterRam,
         VentSpitterRetaliation,
         RootedCaster,
         RootedSpawner,
@@ -25,6 +29,10 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
 
     [SerializeField] private Mode _mode;
     [SerializeField] private float _nextAbilityTime;
+    private Player? _latchedTarget;
+    private BaseAI? _latchedAi;
+    private float _latchUntil;
+    private float _nextLatchTick;
 
     internal static string Attach(GameObject prefab, UnderworldCreaturePrototypes.Entry entry)
     {
@@ -46,7 +54,11 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         return mode switch
         {
             Mode.PuffbackSporeBurst => "reactive spore burst",
+            Mode.CaveRayFlee => "hit-triggered aquatic flee impulse",
+            Mode.LampreyLatch => "timed attach-and-feed latch",
+            Mode.LanternAnglerPressure => "radial pressure-release attack",
             Mode.AbyssShellArmor => "shell armor; pickaxe bypass",
+            Mode.DeepHunterRam => "apex ram charge",
             Mode.VentSpitterRetaliation => "line-of-sight thermal spit retaliation",
             Mode.RootedCaster => "rooted caster behavior",
             Mode.RootedSpawner => "rooted colony with Rotling propagation",
@@ -79,6 +91,9 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
             case Mode.PuffbackSporeBurst:
                 TrySporeBurst(owner);
                 break;
+            case Mode.CaveRayFlee:
+                TryFlee(owner, hit.GetAttacker());
+                break;
             case Mode.VentSpitterRetaliation:
                 TryThermalSpit(owner, hit.GetAttacker());
                 break;
@@ -87,12 +102,32 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
 
     private void Update()
     {
-        if (_mode != Mode.RootedSpawner || Time.time < _nextAbilityTime)
+        var owner = GetComponent<Character>();
+        if (!owner || owner.IsDead() || !HasAuthority(owner))
             return;
 
-        var owner = GetComponent<Character>();
-        if (!owner || owner.IsDead() || !HasAuthority(owner) ||
-            ZNet.instance is null || !ZNet.instance.IsServer())
+        switch (_mode)
+        {
+            case Mode.RootedSpawner:
+                UpdateRootedSpawner(owner);
+                break;
+            case Mode.LampreyLatch:
+                UpdateLampreyLatch(owner);
+                break;
+            case Mode.LanternAnglerPressure:
+                UpdateLanternAngler(owner);
+                break;
+            case Mode.DeepHunterRam:
+                UpdateDeepHunter(owner);
+                break;
+        }
+    }
+
+    private void UpdateRootedSpawner(Character owner)
+    {
+        if (Time.time < _nextAbilityTime ||
+            ZNet.instance is null ||
+            !ZNet.instance.IsServer())
             return;
 
         if (!HasLivingPlayerNearby(owner.transform.position, owner.gameObject.scene.handle, 15f))
@@ -133,6 +168,234 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
 
         instance.SetActive(true);
         _nextAbilityTime = Time.time + 18f;
+    }
+
+    private void UpdateLampreyLatch(Character owner)
+    {
+        if (_latchedTarget)
+        {
+            if (_latchedTarget.IsDead() ||
+                _latchedTarget.gameObject.scene.handle != owner.gameObject.scene.handle ||
+                Time.time >= _latchUntil)
+            {
+                ReleaseLamprey(owner);
+                return;
+            }
+
+            var target = _latchedTarget;
+            var body = owner.GetComponent<Rigidbody>();
+            if (body)
+                body.linearVelocity = Vector3.zero;
+
+            owner.transform.position =
+                target.GetCenterPoint() -
+                target.transform.forward * .38f +
+                target.transform.right * .22f;
+            owner.transform.rotation = Quaternion.LookRotation(
+                target.transform.forward,
+                Vector3.up);
+
+            if (Time.time >= _nextLatchTick)
+            {
+                _nextLatchTick = Time.time + .72f;
+                var hit = new HitData
+                {
+                    m_point = target.GetCenterPoint(),
+                    m_dir = target.transform.forward,
+                    m_damage = new HitData.DamageTypes
+                    {
+                        m_pierce = 4f,
+                        m_poison = 3f,
+                    },
+                    m_staggerMultiplier = .15f,
+                };
+                hit.SetAttacker(owner);
+                target.Damage(hit);
+            }
+            return;
+        }
+
+        if (Time.time < _nextAbilityTime)
+            return;
+
+        var candidate = NearestLivingPlayer(
+            owner.transform.position,
+            owner.gameObject.scene.handle,
+            1.9f);
+        if (!candidate)
+            return;
+
+        _latchedTarget = candidate;
+        _latchUntil = Time.time + 3.2f;
+        _nextLatchTick = Time.time;
+        _latchedAi = owner.GetComponent<BaseAI>();
+        if (_latchedAi)
+            _latchedAi.enabled = false;
+
+        owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("latch");
+    }
+
+    private void ReleaseLamprey(Character owner)
+    {
+        var previous = _latchedTarget;
+        _latchedTarget = null;
+        if (_latchedAi)
+            _latchedAi.enabled = true;
+        _latchedAi = null;
+        _nextAbilityTime = Time.time + 6.5f;
+
+        var body = owner.GetComponent<Rigidbody>();
+        if (body)
+        {
+            var away = previous
+                ? owner.transform.position - previous.transform.position
+                : -owner.transform.forward;
+            if (away.sqrMagnitude < .001f)
+                away = -owner.transform.forward;
+            body.AddForce(away.normalized * 4.5f, ForceMode.VelocityChange);
+        }
+
+        owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("detach");
+    }
+
+    private void UpdateLanternAngler(Character owner)
+    {
+        if (Time.time < _nextAbilityTime)
+            return;
+
+        var target = NearestLivingPlayer(
+            owner.transform.position,
+            owner.gameObject.scene.handle,
+            12f);
+        if (!target)
+            return;
+
+        var distance = Vector3.Distance(owner.transform.position, target.transform.position);
+        if (distance < 4.5f || distance > 12f)
+            return;
+
+        _nextAbilityTime = Time.time + 8.5f;
+        owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("pressurerelease");
+
+        foreach (var player in Player.GetAllPlayers())
+        {
+            if (!player ||
+                player.IsDead() ||
+                player.gameObject.scene.handle != owner.gameObject.scene.handle)
+                continue;
+
+            var offset = player.transform.position - owner.transform.position;
+            var distanceToPlayer = offset.magnitude;
+            if (distanceToPlayer > 8f || distanceToPlayer < .01f)
+                continue;
+
+            var direction = offset / distanceToPlayer;
+            var hit = new HitData
+            {
+                m_point = player.GetCenterPoint(),
+                m_dir = direction,
+                m_damage = new HitData.DamageTypes
+                {
+                    m_blunt = 12f,
+                },
+                m_pushForce = 14f,
+                m_staggerMultiplier = .85f,
+            };
+            hit.SetAttacker(owner);
+            player.Damage(hit);
+
+            var body = player.GetComponent<Rigidbody>();
+            if (body)
+                body.AddForce(direction * 6.5f, ForceMode.VelocityChange);
+        }
+
+        EmitBurst(owner.transform, new Color(.22f, .72f, .86f, .52f), 30, 6.2f);
+    }
+
+    private void UpdateDeepHunter(Character owner)
+    {
+        if (Time.time < _nextAbilityTime)
+            return;
+
+        var target = NearestLivingPlayer(
+            owner.transform.position,
+            owner.gameObject.scene.handle,
+            20f);
+        if (!target)
+            return;
+
+        var delta = target.GetCenterPoint() - owner.GetCenterPoint();
+        var distance = delta.magnitude;
+        if (distance < 7f || distance > 20f)
+            return;
+
+        if (Physics.Linecast(
+                owner.GetCenterPoint(),
+                target.GetCenterPoint(),
+                out var obstruction,
+                Physics.DefaultRaycastLayers,
+                QueryTriggerInteraction.Ignore))
+        {
+            var hitCharacter = obstruction.collider
+                ? obstruction.collider.GetComponentInParent<Character>()
+                : null;
+            if (!ReferenceEquals(hitCharacter, target))
+                return;
+        }
+
+        var body = owner.GetComponent<Rigidbody>();
+        if (!body)
+            return;
+
+        _nextAbilityTime = Time.time + 7.8f;
+        var direction = delta.normalized;
+        body.AddForce(direction * 10.5f, ForceMode.VelocityChange);
+        owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("ram");
+    }
+
+    private void TryFlee(Character owner, Character? attacker)
+    {
+        if (Time.time < _nextAbilityTime || attacker is not Player || attacker.IsDead())
+            return;
+
+        var body = owner.GetComponent<Rigidbody>();
+        if (!body)
+            return;
+
+        var away = owner.transform.position - attacker.transform.position;
+        if (away.sqrMagnitude < .001f)
+            away = -owner.transform.forward;
+        away.Normalize();
+
+        body.AddForce((away * 7.5f) + Vector3.up * 1.2f, ForceMode.VelocityChange);
+        _nextAbilityTime = Time.time + 3.5f;
+        owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("flee");
+    }
+
+    private static Player? NearestLivingPlayer(
+        Vector3 origin,
+        int sceneHandle,
+        float maximumDistance)
+    {
+        Player? best = null;
+        var bestSquared = maximumDistance * maximumDistance;
+
+        foreach (var player in Player.GetAllPlayers())
+        {
+            if (!player ||
+                player.IsDead() ||
+                player.gameObject.scene.handle != sceneHandle)
+                continue;
+
+            var squared = (player.transform.position - origin).sqrMagnitude;
+            if (squared > bestSquared)
+                continue;
+
+            best = player;
+            bestSquared = squared;
+        }
+
+        return best;
     }
 
     private void TrySporeBurst(Character owner)
@@ -322,8 +585,16 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         {
             case "Puffback":
                 return Mode.PuffbackSporeBurst;
+            case "Cave Ray":
+                return Mode.CaveRayFlee;
+            case "Blackwater Lamprey":
+                return Mode.LampreyLatch;
+            case "Lantern Angler":
+                return Mode.LanternAnglerPressure;
             case "Abyss Shellback":
                 return Mode.AbyssShellArmor;
+            case "Deep Hunter":
+                return Mode.DeepHunterRam;
             case "Vent Spitter":
                 return Mode.VentSpitterRetaliation;
             case "Carrion Bloom":
