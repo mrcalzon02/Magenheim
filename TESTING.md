@@ -919,6 +919,35 @@ absent from the detached Underworld catalog and native placement table.
 When candidate testing is complete, set `EnablePlannedCandidateWorldgen = false` again before
 ordinary play or any promotion build.
 
+### Candidate structural/ecology audit
+
+After entering a generated candidate dungeon and before treating any visual inspection as gate
+evidence, run:
+
+`magenheim_underworld dde audit`
+
+The command writes a fail-closed report under:
+
+`BepInEx/config/Magenheim/validation/deep-dungeon-expansion/audits/`
+
+For every placed private donor room it verifies donor provenance captured before scaling, an
+unscaled `Room` root, the 1.5x `Magenheim_DDE_ScaleRoot`, donor-relative
+`RoomConnection.localPosition` expansion, donor-scaled `Room.m_size`, private room identities and
+private door identities. It also rejects Surface creature ownership, non-biome reward prefabs,
+Vegvisirs, runestones and the wrong owning Underworld biome.
+
+For the first Fungal/Burial candidate, the console should report:
+
+`DDE CANDIDATE AUDIT PASS: <evidence path>`
+
+A PASS here is evidence for the source-verifiable portions of DDE-02, DDE-03, DDE-05, DDE-06,
+DDE-07, DDE-08 and DDE-09. It does **not** replace visual join/pathing inspection, multi-seed
+generation, Surface-donor comparison, entrance/return testing, persistence, multiplayer, economy or
+performance evidence.
+
+Any audit failure blocks promotion. Fix the authoritative clone/rebind path; do not weaken the audit
+to accept the generated result.
+
 ### DDE-11 / DDE-12 runtime evidence capture
 
 Every generated expanded-vanilla donor now writes automatic generation evidence under:
@@ -932,7 +961,7 @@ not by itself proof that persistence passed.
 
 While physically inside the loaded candidate dungeon, run:
 
-`magenheim_underworld dde`
+`magenheim_underworld dde snapshot`
 
 This writes a point-in-time runtime snapshot under:
 
