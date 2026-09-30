@@ -31,6 +31,14 @@ internal static class RigidCreatureSegmentBinder
         if (float.IsNaN(fps) || float.IsInfinity(fps) || fps <= 0f || fps > 240f)
             throw new InvalidOperationException(modelId + " has invalid creature animation fps.");
 
+        // Capture donor silhouette renderers before loading the authored body. The donor remains the
+        // invisible gameplay/network chassis; only mesh-bearing silhouette renderers are disabled.
+        // Particle/projectile renderers are not touched so donor combat telegraphs may still work.
+        var donorRenderers = prefab
+            .GetComponentsInChildren<Renderer>(true)
+            .Where(value => value is MeshRenderer || value is SkinnedMeshRenderer)
+            .ToArray();
+
         var specs = ParseBones(rig, modelId);
         var clips = ParseActions(rig, specs, modelId);
         var transforms = new Dictionary<string, Transform>(StringComparer.Ordinal);
@@ -71,6 +79,10 @@ internal static class RigidCreatureSegmentBinder
         var root = ModelAssets.Load(prefab, modelId, arrange: arrange);
         if (!skeletonBuilt)
             throw new InvalidOperationException(modelId + " exported no creaturebone-bound visual parts.");
+
+        foreach (var renderer in donorRenderers)
+            if (renderer)
+                renderer.enabled = false;
 
         var character = prefab.GetComponent<Character>()
             ?? throw new InvalidOperationException(prefab.name + " has no Character for creature visual driving.");
