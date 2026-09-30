@@ -553,12 +553,14 @@ Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the cur
   one-at-a-time candidate switch is retired/inert, detached worldgen requires the full dungeon
   catalog, and native placement audits every family unconditionally.
 - [x] **Biome-assimilate the expanded vanilla donor dungeons — FIRST CONTENT PASS COMPLETE.**
-  Every ordinary donor room now receives owning-biome architecture palette treatment, authored or
-  stripped biome edge dressing, local lighting and biome atmosphere; deep Sulfur rooms may add
-  geothermal hazard pockets. Donor entrances receive matching dressing. Decorative additions are
-  collision-stripped so they cannot silently break donor navigation. This preserves recognizable
-  Burial Chamber/Sunken Crypt/Infested Mine/Frost Cave/Winding Tunnel grammar while making the
-  spaces read as Fungal, Blackwater, Sulfur, Frozen or Great Decay.
+  Every ordinary donor room now receives owning-biome architecture palette treatment, collisionless
+  wall/ceiling structural overlays, authored or stripped biome edge dressing, local lighting and
+  native biome hazard treatment. Blackwater can add real native water pools; deep Sulfur can add
+  geothermal pressure pockets; Frozen and Great Decay reuse their existing exposure/contamination
+  authorities. Donor entrances and doors receive matching dressing. Decorative additions are
+  collision-stripped and connection-cleared so they cannot silently break donor navigation. This
+  preserves recognizable Burial Chamber/Sunken Crypt/Infested Mine/Frost Cave/Winding Tunnel
+  grammar while making the spaces read as Fungal, Blackwater, Sulfur, Frozen or Great Decay.
 - [ ] **Finish custom creature anatomy and remaining species mechanics for ordinary dungeon fauna.**
   The first behavior pass is live in source: Puffback spore burst, Abyss Shellback shell armor,
   Vent Spitter thermal retaliation, rooted Carrion Bloom and Corpse Orchard Rotling propagation.
