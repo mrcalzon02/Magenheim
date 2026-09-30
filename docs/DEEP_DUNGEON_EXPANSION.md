@@ -253,6 +253,8 @@ The following foundation already exists in source.
 owning Underworld biome without replacing the donor room grammar:
 
 - private donor architecture receives a biome-specific material/palette pass;
+- collisionless biome structural overlays are attached to walls/ceilings: fungal growth masses,
+  drowned-root arches, sulfur/ash ribs, black-ice intrusions and Great Decay roots;
 - authored/stripped biome props are placed around room edges with connection clearances;
 - decorative props are visual-only and have gameplay collision stripped;
 - local biome lights reinforce Fungal, Blackwater, Sulfur, Frozen and Great Decay identity;
