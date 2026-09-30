@@ -12,6 +12,7 @@ from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/"assets"/"models"/"source"
 TEX=ROOT/"assets"/"textures"/"underworld"/"blackstone"
+PBR=ROOT/"assets"/"material-source"/"blackstone"
 
 IDS=(
  "blackstone-throne","blackstone-banner","blackstone-attendant-seat","blackstone-brazier",
@@ -41,6 +42,36 @@ def material(name,texture,pbr_key,metallic=0.0,rough=.72,emission=None,double_si
     mat["magenheim_material_name"]=name
     mat["magenheim_material_source_key"]=pbr_key
     mat["magenheim_material_source_root"]="assets/material-source/blackstone"
+
+    normal_path=PBR/(pbr_key+"-normal.png")
+    packed_path=PBR/(pbr_key+"-metallic-smoothness.png")
+    if not normal_path.is_file() or not packed_path.is_file():
+        raise RuntimeError("Missing Blackstone PBR source for "+pbr_key)
+    normal_image=bpy.data.images.load(str(normal_path),check_existing=True)
+    normal_image.colorspace_settings.name="Non-Color"; normal_image.pack()
+    normal_node=tree.nodes.new("ShaderNodeTexImage"); normal_node.name="Blackstone Normal"; normal_node.image=normal_image
+    normal_map=tree.nodes.new("ShaderNodeNormalMap"); normal_map.name="Blackstone NormalMap"; normal_map.inputs["Strength"].default_value=.45
+    tree.links.new(normal_node.outputs["Color"],normal_map.inputs["Color"])
+    tree.links.new(normal_map.outputs["Normal"],bs.inputs["Normal"])
+
+    packed_image=bpy.data.images.load(str(packed_path),check_existing=True)
+    packed_image.colorspace_settings.name="Non-Color"; packed_image.pack()
+    packed_node=tree.nodes.new("ShaderNodeTexImage"); packed_node.name="Blackstone MetallicSmoothness"; packed_node.image=packed_image
+    separate=tree.nodes.new("ShaderNodeSeparateColor"); separate.name="Blackstone Packed Channels"
+    tree.links.new(packed_node.outputs["Color"],separate.inputs["Color"])
+    tree.links.new(separate.outputs["Red"],bs.inputs["Metallic"])
+    invert=tree.nodes.new("ShaderNodeMath"); invert.name="Blackstone Smoothness To Roughness"; invert.operation="SUBTRACT"
+    invert.inputs[0].default_value=1.0
+    tree.links.new(packed_node.outputs["Alpha"],invert.inputs[1])
+    tree.links.new(invert.outputs[0],bs.inputs["Roughness"])
+
+    emission_path=PBR/(pbr_key+"-emission.png")
+    if emission_path.is_file() and "Emission Color" in bs.inputs:
+        emission_image=bpy.data.images.load(str(emission_path),check_existing=True); emission_image.pack()
+        emission_node=tree.nodes.new("ShaderNodeTexImage"); emission_node.name="Blackstone Emission"; emission_node.image=emission_image
+        tree.links.new(emission_node.outputs["Color"],bs.inputs["Emission Color"])
+        if bs.inputs["Emission Strength"].default_value<=0:
+            bs.inputs["Emission Strength"].default_value=.8
     return mat
 
 def palette():

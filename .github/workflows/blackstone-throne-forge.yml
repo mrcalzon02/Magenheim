@@ -34,7 +34,7 @@ jobs:
         shell: pwsh
         run: |
           python -m pip install --disable-pip-version-check Pillow==12.3.0
-          python -m py_compile tools/generate-blackstone-throne-textures.py tools/author-blackstone-throne-set.py tools/verify-blackstone-throne-set.py tools/record-blackstone-throne-generated-assets.py tools/export-model-assets.py tools/verify-model-assets.py
+          python -m py_compile tools/generate-blackstone-throne-textures.py tools/author-blackstone-throne-set.py tools/verify-blackstone-throne-set.py tools/record-blackstone-throne-generated-assets.py tools/export-model-assets.py tools/verify-model-assets.py tools/render-blackstone-throne-review.py
           if ($LASTEXITCODE -ne 0) { throw 'Blackstone Python preflight failed.' }
           foreach ($script in @('tools/blender.ps1','tools/rebuild-blackstone-throne-set.ps1')) {
             $tokens = $null
@@ -70,6 +70,12 @@ jobs:
           ./tools/rebuild-blackstone-throne-set.ps1
           if ($LASTEXITCODE -ne 0) { throw 'Blackstone Throne rebuild failed.' }
 
+      - name: Render actual Blackstone review views
+        shell: pwsh
+        run: |
+          & $env:MAGENHEIM_BLENDER --background --factory-startup --python tools/render-blackstone-throne-review.py
+          if ($LASTEXITCODE -ne 0) { throw 'Blackstone Throne review rendering failed.' }
+
       - name: Enforce Blackstone output scope
         shell: pwsh
         run: |
@@ -83,7 +89,92 @@ jobs:
             '^assets/models/catalog\.(json|tsv)$',
             '^assets/textures/underworld/blackstone/blackstone-[a-z0-9-]+\.png$',
             '^assets/material-source/blackstone/blackstone-[a-z0-9-]+\.png$',
-            '^assets/generated\.manifest\.json$'
+            '^assets/generated\.manifest\.json
+          )
+          $unexpected = @()
+          foreach ($path in $changed) {
+            $ok = $false
+            foreach ($pattern in $allowed) {
+              if ($path -match $pattern) { $ok = $true; break }
+            }
+            if (!$ok) { $unexpected += $path }
+          }
+          if ($unexpected.Count -gt 0) { throw "Blackstone forge escaped allowlist: $($unexpected -join ', ')" }
+
+      - name: Commit generated Blackstone assets to review branch
+        shell: pwsh
+        run: |
+          $source = (git rev-parse HEAD).Trim()
+          $short = $source.Substring(0,12)
+          $branch = "production/blackstone-throne-$short-$env:GITHUB_RUN_ID"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -b $branch
+          git add -- assets/models/source assets/models/glb assets/models/runtime assets/models/textures
+          git add -- assets/models/catalog.json assets/models/catalog.tsv
+          git add -- assets/textures/underworld/blackstone assets/material-source/blackstone assets/generated.manifest.json
+          git add -- dist/blackstone-throne-review
+          if (git diff --cached --quiet) { throw 'No Blackstone assets were staged.' }
+          git commit -m "Generate Blackstone Throne structure assets ($env:GITHUB_RUN_ID)"
+          git push origin "HEAD:refs/heads/$branch"
+          "Generated branch: $branch" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+
+      - name: Upload actual Blackstone review renders
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: blackstone-throne-review-${{ github.run_id }}
+          path: dist/blackstone-throne-review/*.png
+          if-no-files-found: warn
+          retention-days: 5
+
+      - name: Upload Blender logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: blackstone-throne-${{ github.run_id }}
+          path: ${{ runner.temp }}/magenheim-blender/**
+          if-no-files-found: warn
+          retention-days: 2
+,
+            '^dist/blackstone-throne-review/[0-9a-z-]+\.png
+          )
+          $unexpected = @()
+          foreach ($path in $changed) {
+            $ok = $false
+            foreach ($pattern in $allowed) {
+              if ($path -match $pattern) { $ok = $true; break }
+            }
+            if (!$ok) { $unexpected += $path }
+          }
+          if ($unexpected.Count -gt 0) { throw "Blackstone forge escaped allowlist: $($unexpected -join ', ')" }
+
+      - name: Commit generated Blackstone assets to review branch
+        shell: pwsh
+        run: |
+          $source = (git rev-parse HEAD).Trim()
+          $short = $source.Substring(0,12)
+          $branch = "production/blackstone-throne-$short-$env:GITHUB_RUN_ID"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -b $branch
+          git add -- assets/models/source assets/models/glb assets/models/runtime assets/models/textures
+          git add -- assets/models/catalog.json assets/models/catalog.tsv
+          git add -- assets/textures/underworld/blackstone assets/material-source/blackstone assets/generated.manifest.json
+          if (git diff --cached --quiet) { throw 'No Blackstone assets were staged.' }
+          git commit -m "Generate Blackstone Throne structure assets ($env:GITHUB_RUN_ID)"
+          git push origin "HEAD:refs/heads/$branch"
+          "Generated branch: $branch" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+
+      - name: Upload Blender logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: blackstone-throne-${{ github.run_id }}
+          path: ${{ runner.temp }}/magenheim-blender/**
+          if-no-files-found: warn
+          retention-days: 2
+
           )
           $unexpected = @()
           foreach ($path in $changed) {
