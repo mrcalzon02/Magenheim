@@ -1,4 +1,5 @@
 name: One-Off Missing Underworld Asset Forge
+# Retry after completing Slag Pick and Rime Chisel production detail.
 # Retry after targeted icon verification was scoped to generated families.
 # Retry after all named UV authors were corrected.
 # Retry after rendering material icons directly from Blender sources.
