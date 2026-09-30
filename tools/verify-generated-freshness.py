@@ -185,8 +185,29 @@ def main() -> int:
             print(f"  recorded {len(entry['output_sha256'])} outputs", flush=True)
             continue
 
+        recorded_generator = entry.get('generator_sha256')
+        if not recorded_generator:
+            failures.append(
+                f"{entry['id']}: freshness manifest has no generator_sha256; this generator has never been "
+                f"fully admitted. Run: python tools/verify-generated-freshness.py --update {entry['id']}"
+            )
+            continue
+        if entry.get('inputs') and not entry.get('inputs_sha256'):
+            failures.append(
+                f"{entry['id']}: freshness manifest has declared inputs but no inputs_sha256; this generator "
+                f"must be regenerated before admission. Run: python tools/verify-generated-freshness.py --update {entry['id']}"
+            )
+            continue
+        recorded = entry.get('output_sha256')
+        if not isinstance(recorded, dict) or not recorded:
+            failures.append(
+                f"{entry['id']}: freshness manifest has no recorded outputs; this generator has never been "
+                f"fully admitted. Run: python tools/verify-generated-freshness.py --update {entry['id']}"
+            )
+            continue
+
         current = sha256(generator)
-        if current != entry['generator_sha256']:
+        if current != recorded_generator:
             failures.append(
                 f"{entry['id']}: {entry['generator']} has changed since its outputs were generated. "
                 f"Run: python tools/verify-generated-freshness.py --update {entry['id']}"
@@ -200,7 +221,6 @@ def main() -> int:
             )
             continue
 
-        recorded = entry['output_sha256']
         present = declared_outputs(entry)
         added = sorted(set(present) - set(recorded))
         removed = sorted(set(recorded) - set(present))
