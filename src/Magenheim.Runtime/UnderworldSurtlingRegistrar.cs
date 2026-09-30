@@ -21,7 +21,6 @@ internal sealed class UnderworldSurtlingRegistrar : IDisposable
 
     private void RegisterContent()
     {
-        Survey();
         var registered = 0;
         foreach (var entry in UnderworldSurtlings.All)
         {
@@ -172,35 +171,6 @@ internal sealed class UnderworldSurtlingRegistrar : IDisposable
         var type = item ? item.GetComponent<ItemDrop>()?.m_itemData?.m_shared?.m_itemType : null;
         return type is ItemDrop.ItemData.ItemType.Helmet or ItemDrop.ItemData.ItemType.Chest or
             ItemDrop.ItemData.ItemType.Legs or ItemDrop.ItemData.ItemType.Shoulder or ItemDrop.ItemData.ItemType.Utility;
-    }
-
-    /// <summary>Logs, per candidate donor, what the binder and the roster depend on.</summary>
-    private void Survey()
-    {
-        foreach (var name in UnderworldSurtlings.DonorCandidates)
-        {
-            var prefab = PrefabManager.Instance.GetPrefab(name);
-            if (!prefab) { _log.LogInfo($"Surtling donor survey: {name} absent."); continue; }
-            var animator = prefab.GetComponentInChildren<Animator>(true);
-            var avatar = animator ? animator.avatar : null;
-            var human = avatar && avatar.isHuman;
-            var character = prefab.GetComponent<Character>();
-            var humanoid = prefab.GetComponent<Humanoid>();
-            var weapons = humanoid is null ? "none" : string.Join(",",
-                (humanoid.m_defaultItems ?? Array.Empty<GameObject>()).Concat(humanoid.m_randomWeapon ?? Array.Empty<GameObject>())
-                .Where(item => item).Select(item => item.name).Distinct());
-            var ragdoll = character?.m_deathEffects?.m_effectPrefabs?.Any(e => e?.m_prefab && e.m_prefab.GetComponentInChildren<Ragdoll>(true)) == true;
-            var deaths = string.Join(",", (character?.m_deathEffects?.m_effectPrefabs ?? Array.Empty<EffectList.EffectData>())
-                .Where(e => e?.m_prefab).Select(e => e.m_prefab.name));
-            var detail = "";
-            if (human)
-            {
-                try { detail = " " + HumanoidSegmentBinder.DonorSkeleton.Resolve(prefab).Count + " roles"; }
-                catch (Exception exception) { detail = " roles unresolved: " + exception.Message; }
-            }
-            _log.LogInfo($"Surtling donor survey: {name} avatar={(avatar ? avatar.name : "none")} humanoid={human}{detail} " +
-                         $"faction={character?.m_faction} ragdoll={ragdoll} death=[{deaths}] weapons=[{weapons}]");
-        }
     }
 
     public void Dispose() => PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent;
