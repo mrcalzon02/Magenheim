@@ -420,7 +420,7 @@ def frame_markers(scene):
 
 def configure_scene():
     s = bpy.context.scene
-    s.render.engine = 'BLENDER_EEVEE_NEXT'
+    s.render.engine = 'BLENDER_EEVEE'
     s.render.resolution_x = 1920
     s.render.resolution_y = 1080
     s.render.resolution_percentage = 50
