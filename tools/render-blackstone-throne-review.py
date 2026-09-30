@@ -21,6 +21,8 @@ scene.render.resolution_y=900
 scene.render.resolution_percentage=100
 scene.render.image_settings.file_format="PNG"
 scene.render.film_transparent=False
+if scene.world is None:
+    scene.world=bpy.data.worlds.new("BlackstoneReviewWorld")
 scene.world.color=(.008,.012,.025)
 
 def bpos(world):
