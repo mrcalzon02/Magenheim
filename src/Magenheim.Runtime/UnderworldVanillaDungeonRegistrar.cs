@@ -120,6 +120,7 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
                 $"Vanilla dungeon donor '{profile.DonorDisplayName}' resolved zero loaded room definitions.");
 
         var names = new Dictionary<string, string>(StringComparer.Ordinal);
+        var population = PopulationRebindStats.Empty;
         var scale = (float)profile.LinearRoomScale;
         for (var index = 0; index < sourceRooms.Length; index++)
         {
@@ -150,7 +151,7 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
                     Mathf.CeilToInt(room.m_size.y * scale),
                     Mathf.CeilToInt(room.m_size.z * scale));
 
-                RebindPopulation(clone, profile, index);
+                population += RebindPopulation(clone, profile, index);
 
                 var custom = new CustomRoom(
                     clone,
@@ -176,7 +177,12 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         if (_generators.TryGetValue(profile.DungeonId, out var existingGenerator))
             RemapRequiredRooms(profile, existingGenerator);
         _log.LogInfo(
-            $"Registered {names.Count} private {profile.DonorDisplayName} room clones for {profile.Biome} at {profile.LinearRoomScale:0.##}x linear scale.");
+            $"DDE rooms {profile.Biome}: donor={profile.DonorDisplayName} theme={profile.DonorThemeName} " +
+            $"enabled-donor-rooms={sourceRooms.Length} clones={names.Count} scale={profile.LinearRoomScale:0.##}x " +
+            $"creature-spawners={population.CreatureSpawners} spawn-areas={population.SpawnAreas} " +
+            $"containers={population.Containers} pickables={population.Pickables} " +
+            $"mineables={population.Mineables} destructible-drops={population.DestructibleDrops} " +
+            $"vegvisirs-removed={population.VegvisirsRemoved} runestones-removed={population.RunestonesRemoved}.");
     }
 
     private void RegisterLocations()
@@ -237,6 +243,11 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
 
         var vanillaMin = generator.m_minRooms;
         var vanillaMax = generator.m_maxRooms;
+        var donorZoneSize = generator.m_zoneSize;
+        var donorTileWidth = generator.m_tileWidth;
+        var donorGridSize = generator.m_gridSize;
+        var donorRequired = generator.m_requiredRooms?.ToArray() ?? Array.Empty<string>();
+        var donorMinRequired = generator.m_minRequiredRooms;
         if (vanillaMin < 1 || vanillaMax < vanillaMin)
             throw new InvalidOperationException(
                 $"Vanilla generator '{profile.DonorGeneratorPrefab}' has invalid room bounds {vanillaMin}-{vanillaMax}.");
@@ -251,11 +262,10 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         generator.m_tileWidth *= (float)profile.LinearRoomScale;
 
         _generators[profile.DungeonId] = generator;
-        _donorRequiredRooms[profile.DungeonId] =
-            generator.m_requiredRooms?.ToArray() ?? Array.Empty<string>();
+        _donorRequiredRooms[profile.DungeonId] = donorRequired;
         RemapRequiredRooms(profile, generator);
 
-        CloneAndScaleDoors(generator, profile);
+        var clonedDoors = CloneAndScaleDoors(generator, profile);
 
         var zone = custom.ZoneLocation;
         zone.m_biome = UnderworldTerrainRuntime.ToNativeBiome(profile.Biome);
@@ -270,9 +280,14 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         zone.m_unique = false;
 
         _log.LogInfo(
-            $"Registered {definition.DisplayName} from vanilla {profile.DonorDisplayName}: " +
-            $"{vanillaMin}-{vanillaMax} donor rooms -> {generator.m_minRooms}-{generator.m_maxRooms}, " +
-            $"{profile.LinearRoomScale:0.##}x room scale, {zoneScale:0.##}x legal generator span.");
+            $"DDE location {definition.DisplayName}: entrance={donorEntrance} generator={profile.DonorGeneratorPrefab} " +
+            $"theme={profile.DonorThemeName} donor-rooms={vanillaMin}-{vanillaMax} " +
+            $"expanded-rooms={generator.m_minRooms}-{generator.m_maxRooms} room-scale={profile.LinearRoomScale:0.##}x " +
+            $"zone={donorZoneSize}->{generator.m_zoneSize} zone-scale={zoneScale:0.##}x " +
+            $"tile-width={donorTileWidth:0.###}->{generator.m_tileWidth:0.###} grid={donorGridSize} " +
+            $"required=[{string.Join(",", donorRequired)}] min-required={donorMinRequired} " +
+            $"remapped=[{string.Join(",", generator.m_requiredRooms ?? new List<string>())}] " +
+            $"doors-cloned={clonedDoors} candidate={UnderworldVanillaDungeonCandidatePolicy.Enabled}.");
     }
 
     private void RemapRequiredRooms(
@@ -290,19 +305,33 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         }
 
         var mapped = new List<string>();
+        var missing = new List<string>();
         foreach (var required in donorRequired)
+        {
             if (roomNames.TryGetValue(required, out var replacement))
                 mapped.Add(replacement);
+            else
+                missing.Add(required);
+        }
+
+        if (missing.Count > 0)
+            throw new InvalidOperationException(
+                $"{profile.DonorDisplayName} required room(s) did not resolve to private clones: " +
+                string.Join(", ", missing));
+        if (generator.m_minRequiredRooms > mapped.Count)
+            throw new InvalidOperationException(
+                $"{profile.DonorDisplayName} requires at least {generator.m_minRequiredRooms} required rooms " +
+                $"but only {mapped.Count} donor required-room identities exist.");
 
         generator.m_requiredRooms = mapped;
-        generator.m_minRequiredRooms = Math.Min(generator.m_minRequiredRooms, mapped.Count);
     }
 
-    private void CloneAndScaleDoors(
+    private int CloneAndScaleDoors(
         DungeonGenerator generator,
         UnderworldVanillaDungeonReuseDefinition profile)
     {
-        if (generator.m_doorTypes is null) return;
+        if (generator.m_doorTypes is null) return 0;
+        var cloned = 0;
 
         for (var index = 0; index < generator.m_doorTypes.Count; index++)
         {
@@ -323,10 +352,12 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             PrefabManager.Instance.AddPrefab(clone);
             definition.m_prefab = clone;
             _registeredDoorPrefabs.Add(name);
+            cloned++;
         }
+        return cloned;
     }
 
-    private static void RebindPopulation(
+    private static PopulationRebindStats RebindPopulation(
         GameObject room,
         UnderworldVanillaDungeonReuseDefinition profile,
         int roomIndex)
@@ -399,10 +430,23 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             destroyed.m_dropWhenDestroyed = ResourceTable(resources, roomIndex + 23);
 
         // Keep the donor stonework/props, but remove Surface progression/lore interactions.
-        foreach (var vegvisir in room.GetComponentsInChildren<Vegvisir>(true))
+        var vegvisirs = room.GetComponentsInChildren<Vegvisir>(true);
+        foreach (var vegvisir in vegvisirs)
             UnityEngine.Object.DestroyImmediate(vegvisir);
-        foreach (var runestone in room.GetComponentsInChildren<Runestone>(true))
+        var runestones = room.GetComponentsInChildren<Runestone>(true);
+        foreach (var runestone in runestones)
             UnityEngine.Object.DestroyImmediate(runestone);
+
+        return new PopulationRebindStats(
+            spawners.Length,
+            areas.Length,
+            containers.Length,
+            pickables.Length,
+            room.GetComponentsInChildren<MineRock>(true).Length +
+                room.GetComponentsInChildren<MineRock5>(true).Length,
+            room.GetComponentsInChildren<DropOnDestroyed>(true).Length,
+            vegvisirs.Length,
+            runestones.Length);
     }
 
     private static DropTable ResourceTable(
@@ -470,6 +514,32 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         int index) =>
         "Magenheim_Underworld_VanillaRoom_" +
         Safe(profile.Biome.ToString()) + "_" + index.ToString("000") + "_" + Safe(donorName);
+
+    private readonly record struct PopulationRebindStats(
+        int CreatureSpawners,
+        int SpawnAreas,
+        int Containers,
+        int Pickables,
+        int Mineables,
+        int DestructibleDrops,
+        int VegvisirsRemoved,
+        int RunestonesRemoved)
+    {
+        internal static PopulationRebindStats Empty => new(0, 0, 0, 0, 0, 0, 0, 0);
+
+        public static PopulationRebindStats operator +(
+            PopulationRebindStats left,
+            PopulationRebindStats right) =>
+            new(
+                left.CreatureSpawners + right.CreatureSpawners,
+                left.SpawnAreas + right.SpawnAreas,
+                left.Containers + right.Containers,
+                left.Pickables + right.Pickables,
+                left.Mineables + right.Mineables,
+                left.DestructibleDrops + right.DestructibleDrops,
+                left.VegvisirsRemoved + right.VegvisirsRemoved,
+                left.RunestonesRemoved + right.RunestonesRemoved);
+    }
 
     private static string Safe(string value) =>
         new string(value.Where(char.IsLetterOrDigit).ToArray());
