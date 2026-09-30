@@ -895,8 +895,29 @@ identity mismatch inside the generic registrar.
 The five ordinary Underworld dungeons deliberately reuse vanilla architecture. Deep Fracture is
 excluded from this section and must retain its bespoke Magenheim expedition.
 
-Do not run this as an acceptance pass until the relevant ordinary dungeon definitions are promoted
-from Planned to RuntimeReady. Planned entries must seed no entrance.
+Normal worlds remain fail-closed: a Planned family seeds no entrance. For DDE-02 through DDE-13,
+however, one Planned family may be admitted in a **disposable validation world** through the
+developer-only candidate policy below. Candidate admission is not RuntimeReady promotion and must
+never be used as promotion evidence by itself.
+
+### Candidate-mode setup for DDE-02 through DDE-13
+
+After DDE-00 and DDE-01 are actually passed, use the Fungal/Burial donor first. In the Magenheim
+BepInEx config set:
+
+`[Development.DeepDungeonExpansion]`
+`EnablePlannedCandidateWorldgen = true`
+`CandidateDungeon = fungal_forest`
+
+Restart Valheim before generating the disposable Underworld. Candidate policy is startup-bound and
+is included in Magenheim's existing gameplay authority fingerprint. For multiplayer, host and every
+peer must use the same candidate setting or peer admission must fail.
+
+Only one Planned family can be admitted this way. Every other Planned ordinary dungeon must remain
+absent from the detached Underworld catalog and native placement table.
+
+When candidate testing is complete, set `EnablePlannedCandidateWorldgen = false` again before
+ordinary play or any promotion build.
 
 ### Donor identity and isolation
 
