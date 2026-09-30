@@ -87,10 +87,10 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
             var rooms = generator.GetComponentsInChildren<Room>(true)
                 .Where(room => room && room.gameObject != generator.gameObject)
                 .ToArray();
-            var placedNames = rooms
-                .Select(room => Utils.GetPrefabName(room.gameObject))
-                .Where(name => !string.IsNullOrWhiteSpace(name))
-                .ToHashSet(StringComparer.Ordinal);
+            var placedNames = new HashSet<string>(
+                rooms.Select(room => Utils.GetPrefabName(room.gameObject))
+                    .Where(name => !string.IsNullOrWhiteSpace(name)),
+                StringComparer.Ordinal);
 
             var required = generator.m_requiredRooms ?? new List<string>();
             var missingRequired = required
