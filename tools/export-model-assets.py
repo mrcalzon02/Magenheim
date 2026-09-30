@@ -19,6 +19,55 @@ def runtime_texture_from_file(source):
  target=out/'textures'/name
  if not target.exists():target.write_bytes(data)
  return name
+
+def game_vec(v):
+ return [float(v.x),float(v.z),float(-v.y)]
+def game_quat(q):
+ # Blender -> Unity basis is a -90 degree rotation around X. Quaternion vector components
+ # follow the same basis transform while w is unchanged.
+ return [float(q.x),float(q.z),float(-q.y),float(q.w)]
+def rigid_creature_contract(scene,armature):
+ bones=[]
+ basis=armature.matrix_world.to_3x3()
+ for bone in armature.data.bones:
+  head=armature.matrix_world@bone.head_local
+  y=(basis@bone.y_axis).normalized()
+  z=(basis@bone.z_axis).normalized()
+  bones.append(dict(name=bone.name,parent=bone.parent.name if bone.parent else None,
+                    head=game_vec(head),yAxis=game_vec(y),zAxis=game_vec(z)))
+ names={row['name'] for row in bones}
+ authored=[value.strip() for value in str(scene.get('magenheim_authored_actions','')).split(',') if value.strip()]
+ if not authored:raise ValueError('Rigid creature source declares no magenheim_authored_actions')
+ actions=[]
+ armature.animation_data_create()
+ old_action=armature.animation_data.action
+ old_pose=armature.data.pose_position
+ old_frame=scene.frame_current
+ try:
+  armature.data.pose_position='POSE'
+  by_name={action.name:action for action in bpy.data.actions}
+  for action_name in authored:
+   action=by_name.get(action_name)
+   if action is None:raise ValueError('Missing authored creature action '+action_name)
+   start=int(round(action.frame_start));end=int(round(action.frame_end))
+   if end<start:raise ValueError('Invalid action range '+action_name)
+   armature.animation_data.action=action
+   samples=[]
+   for frame in range(start,end+1):
+    scene.frame_set(frame)
+    rotations={}
+    for pose_bone in armature.pose.bones:
+     if pose_bone.name not in names:continue
+     q=pose_bone.matrix_basis.to_quaternion().normalized()
+     rotations[pose_bone.name]=game_quat(q)
+    samples.append(rotations)
+   actions.append(dict(name=action_name,start=start,end=end,samples=samples))
+ finally:
+  armature.animation_data.action=old_action
+  armature.data.pose_position=old_pose
+  scene.frame_set(old_frame)
+ return dict(kind='rigid-segment-creature-v1',fps=float(scene.render.fps)/max(1.0,float(scene.render.fps_base)),
+             bones=bones,actions=actions)
 for file in files:
  if file.resolve().parent != (out/'source').resolve():raise ValueError('Invalid model path')
  bpy.ops.wm.open_mainfile(filepath=str(file))
@@ -31,14 +80,27 @@ for file in files:
   except RuntimeError:pass
  scene=bpy.context.scene
  skin_contract=None
+ creature_contract=None
+ creature_armature=None
  if 'magenheim_skinning' in scene:
-  if scene['magenheim_skinning']!='valheim-player-attach-skin':
-   raise ValueError(file.name+': unsupported runtime skinning contract '+repr(scene['magenheim_skinning']))
-  bone_names=json.loads(scene.get('magenheim_bone_order','[]'))
-  if not bone_names or len(bone_names)!=len(set(bone_names)) or 'Hips' not in bone_names:
-   raise ValueError(file.name+': invalid canonical skin bone order')
-  skin_contract=dict(kind='valheim-player-attach-skin',bones=bone_names,root='Hips')
-  skin_bone_index={name:i for i,name in enumerate(bone_names)}
+  skinning=scene['magenheim_skinning']
+  if skinning=='valheim-player-attach-skin':
+   bone_names=json.loads(scene.get('magenheim_bone_order','[]'))
+   if not bone_names or len(bone_names)!=len(set(bone_names)) or 'Hips' not in bone_names:
+    raise ValueError(file.name+': invalid canonical skin bone order')
+   skin_contract=dict(kind='valheim-player-attach-skin',bones=bone_names,root='Hips')
+   skin_bone_index={name:i for i,name in enumerate(bone_names)}
+  elif skinning=='rigid-segment-weighted':
+   armatures=[obj for obj in scene.objects if obj.type=='ARMATURE']
+   if len(armatures)!=1:
+    raise ValueError(file.name+': rigid creature source requires exactly one armature')
+   creature_armature=armatures[0]
+   creature_armature.animation_data_create()
+   creature_armature.animation_data.action=None
+   creature_armature.data.pose_position='REST'
+   creature_contract=rigid_creature_contract(scene,creature_armature)
+  else:
+   raise ValueError(file.name+': unsupported runtime skinning contract '+repr(skinning))
  bindings={p['path']:p for p in json.loads(scene.get('binding_metadata','[]'))}
  if 'binding_metadata' in scene:del scene['binding_metadata']
  parts=[]
@@ -48,6 +110,20 @@ for file in files:
   if skin_contract is None:bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY',center='BOUNDS')
   obj.select_set(False)
   path=obj.get('game_node_path',obj.name)
+  if creature_contract:
+   weighted=set()
+   group_names_for_binding={group.index:group.name for group in obj.vertex_groups}
+   for vertex in obj.data.vertices:
+    for element in vertex.groups:
+     if element.weight>1e-7:
+      name=group_names_for_binding.get(element.group)
+      if name:weighted.add(name)
+   if len(weighted)!=1:
+    raise ValueError(f'{file.name}/{obj.name}: rigid creature part must bind to exactly one bone, found {sorted(weighted)}')
+   creature_bone=next(iter(weighted))
+   if not any(row['name']==creature_bone for row in creature_contract['bones']):
+    raise ValueError(f'{file.name}/{obj.name}: rigid creature part binds unknown bone {creature_bone!r}')
+   path='creaturebone:'+creature_bone+'/'+obj.name
   previous=bindings.get(path,{})
   if 'game_collision' not in obj:obj['game_collision']=bool(previous.get('collider',False))
   if 'game_crystal' not in obj:obj['game_crystal']=json.dumps(previous.get('crystal'))
@@ -152,6 +228,7 @@ for file in files:
  # that declare one change, so every other payload stays byte-identical.
  if 'runtime_rig' in scene:payload['rig']=json.loads(scene['runtime_rig'])
  if skin_contract:payload['skinRig']=skin_contract
+ if creature_contract:payload['creatureRig']=creature_contract
  if file.stem.startswith('earth-'):
   vs=[];uvs=[];indices=[]
   for part in parts:
