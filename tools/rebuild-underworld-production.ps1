@@ -108,6 +108,23 @@ if($LASTEXITCODE -ne 0){throw 'Sulfur creature runtime export failed.'}
 & python "$PSScriptRoot/verify-model-assets.py" @sulfurCreatureIds
 if($LASTEXITCODE -ne 0){throw 'Sulfur creature runtime payload verification failed.'}
 
+Write-Host '=== Frozen Caverns creature production ==='
+& "$PSScriptRoot/blender.ps1" author-underworld-frozen-creatures
+if($LASTEXITCODE -ne 0){throw 'Frozen Caverns creature authoring failed.'}
+$frozenCreatureIds=@(
+    'underworld-creature-rime-moth',
+    'underworld-creature-frost-tick',
+    'underworld-creature-iceblind',
+    'underworld-creature-pale-burrower',
+    'underworld-creature-rimewing',
+    'underworld-creature-glacier-stalker',
+    'underworld-creature-cryolith-guardian'
+)
+& "$PSScriptRoot/blender.ps1" export-model-assets @frozenCreatureIds
+if($LASTEXITCODE -ne 0){throw 'Frozen Caverns creature runtime export failed.'}
+& python "$PSScriptRoot/verify-model-assets.py" @frozenCreatureIds
+if($LASTEXITCODE -ne 0){throw 'Frozen Caverns creature runtime payload verification failed.'}
+
 # Ordinary Underworld dungeons intentionally reuse vanilla entrance/room/generator families.
 # Do NOT forge/promote the legacy Rootwarren/Drowned Vault/Cinderworks/Rime Sepulcher/Carrion
 # bespoke room kits here. Their source assets remain preserved for reference/reuse, while Deep
@@ -143,4 +160,4 @@ if(!$SkipReview){
     & "$PSScriptRoot/blender.ps1" render-underworld-armour-articulation-review
     if($LASTEXITCODE -ne 0){throw 'Underworld armour articulation review failed.'}
 }
-Write-Host 'PRODUCTION READY: 26 PBR families, 40 raw/refined material items, seven Fungal Forest, seven Blackwater Deep, and four Sulfurous Wastes creature bodies, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools and armour regenerated and gated. Ordinary Underworld dungeon architecture uses runtime vanilla-donor reuse; creature bodies are authored Blender assets.'
+Write-Host 'PRODUCTION READY: 26 PBR families, 40 raw/refined material items, seven Fungal Forest, seven Blackwater Deep, four Sulfurous Wastes, and seven Frozen Caverns creature bodies, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools and armour regenerated and gated. Ordinary Underworld dungeon architecture uses runtime vanilla-donor reuse; creature bodies are authored Blender assets.'
