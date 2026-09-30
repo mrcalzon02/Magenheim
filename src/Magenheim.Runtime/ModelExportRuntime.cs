@@ -64,7 +64,7 @@ internal static class ModelExportRuntime
             var found = new HashSet<string>(prefabs.Select(prefab => prefab.name), StringComparer.OrdinalIgnoreCase);
             var missingRequested = requested.Where(name => !found.Contains(name)).OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToArray();
             if (missingRequested.Length > 0)
-                throw new InvalidOperationException("Requested runtime prefab(s) were not registered: " + string.Join(", ", missingRequested));
+                _logger?.LogWarning("Requested runtime prefab candidate(s) were not registered: " + string.Join(", ", missingRequested));
 
             var records = new List<ExportRecord>();
             foreach (var prefab in prefabs)
