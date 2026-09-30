@@ -766,6 +766,70 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
         return 1;
     }
 
+    internal static UnderworldRimeSepulcherExposureState FrozenExposureForBand(
+        UnderworldVanillaDungeonRiskBand band)
+    {
+        switch (band)
+        {
+            case UnderworldVanillaDungeonRiskBand.Outer:
+                return new UnderworldRimeSepulcherExposureState(
+                    UnderworldAtmosphereEvent.None,
+                    0d,
+                    .08d,
+                    true);
+            case UnderworldVanillaDungeonRiskBand.Mid:
+                return new UnderworldRimeSepulcherExposureState(
+                    UnderworldAtmosphereEvent.DeepFog,
+                    .18d,
+                    .28d,
+                    false);
+            case UnderworldVanillaDungeonRiskBand.Deep:
+                return new UnderworldRimeSepulcherExposureState(
+                    UnderworldAtmosphereEvent.DeepFog,
+                    .34d,
+                    .46d,
+                    false);
+            default:
+                return new UnderworldRimeSepulcherExposureState(
+                    UnderworldAtmosphereEvent.Whiteout,
+                    .68d,
+                    .64d,
+                    false);
+        }
+    }
+
+    internal static UnderworldCarrionCatacombsExposureState DecayExposureForBand(
+        UnderworldVanillaDungeonRiskBand band)
+    {
+        switch (band)
+        {
+            case UnderworldVanillaDungeonRiskBand.Outer:
+                return new UnderworldCarrionCatacombsExposureState(
+                    UnderworldAtmosphereEvent.None,
+                    0d,
+                    .12d,
+                    true);
+            case UnderworldVanillaDungeonRiskBand.Mid:
+                return new UnderworldCarrionCatacombsExposureState(
+                    UnderworldAtmosphereEvent.None,
+                    0d,
+                    .28d,
+                    false);
+            case UnderworldVanillaDungeonRiskBand.Deep:
+                return new UnderworldCarrionCatacombsExposureState(
+                    UnderworldAtmosphereEvent.BlackBloom,
+                    .36d,
+                    .46d,
+                    false);
+            default:
+                return new UnderworldCarrionCatacombsExposureState(
+                    UnderworldAtmosphereEvent.BlackBloom,
+                    .72d,
+                    .64d,
+                    false);
+        }
+    }
+
     private static int AddFrozenExposure(
         Room room,
         UnderworldVanillaDungeonReuseDefinition profile,
@@ -776,38 +840,7 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
             room.m_entrance)
             return 0;
 
-        UnderworldRimeSepulcherExposureState state;
-        switch (band)
-        {
-            case UnderworldVanillaDungeonRiskBand.Outer:
-                state = new UnderworldRimeSepulcherExposureState(
-                    UnderworldAtmosphereEvent.None,
-                    0d,
-                    .08d,
-                    true);
-                break;
-            case UnderworldVanillaDungeonRiskBand.Mid:
-                state = new UnderworldRimeSepulcherExposureState(
-                    UnderworldAtmosphereEvent.DeepFog,
-                    .18d,
-                    .28d,
-                    false);
-                break;
-            case UnderworldVanillaDungeonRiskBand.Deep:
-                state = new UnderworldRimeSepulcherExposureState(
-                    UnderworldAtmosphereEvent.DeepFog,
-                    .34d,
-                    .46d,
-                    false);
-                break;
-            default:
-                state = new UnderworldRimeSepulcherExposureState(
-                    UnderworldAtmosphereEvent.Whiteout,
-                    .68d,
-                    .64d,
-                    false);
-                break;
-        }
+        var state = FrozenExposureForBand(band);
 
         RimeSepulcherExposureRuntime.AttachExpandedDonor(
             room.gameObject,
@@ -827,38 +860,7 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
             room.m_entrance)
             return 0;
 
-        UnderworldCarrionCatacombsExposureState state;
-        switch (band)
-        {
-            case UnderworldVanillaDungeonRiskBand.Outer:
-                state = new UnderworldCarrionCatacombsExposureState(
-                    UnderworldAtmosphereEvent.None,
-                    0d,
-                    .12d,
-                    true);
-                break;
-            case UnderworldVanillaDungeonRiskBand.Mid:
-                state = new UnderworldCarrionCatacombsExposureState(
-                    UnderworldAtmosphereEvent.None,
-                    0d,
-                    .28d,
-                    false);
-                break;
-            case UnderworldVanillaDungeonRiskBand.Deep:
-                state = new UnderworldCarrionCatacombsExposureState(
-                    UnderworldAtmosphereEvent.BlackBloom,
-                    .36d,
-                    .46d,
-                    false);
-                break;
-            default:
-                state = new UnderworldCarrionCatacombsExposureState(
-                    UnderworldAtmosphereEvent.BlackBloom,
-                    .72d,
-                    .64d,
-                    false);
-                break;
-        }
+        var state = DecayExposureForBand(band);
 
         CarrionCatacombsContaminationRuntime.AttachExpandedDonor(
             room.gameObject,
