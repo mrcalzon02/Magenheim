@@ -11,7 +11,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Underworld geothermal vent authoring failed.' 
 & "$PSScriptRoot/blender.ps1" export-model-assets @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld geothermal vent export failed.' }
 
-python "$PSScriptRoot/verify-model-assets.py"
+python "$PSScriptRoot/verify-model-assets.py" @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld geothermal vent verification failed.' }
 
 Write-Host 'REBUILT three owned Sulfurous-Wastes geothermal vent models.'
