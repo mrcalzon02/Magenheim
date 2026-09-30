@@ -68,6 +68,7 @@ for name in names:
         if 'pose.bones["Root"].location' in fc.data_path: raise RuntimeError(f'{name}: Root translation forbidden')
 arm.animation_data.action=None
 arm['production_contract']='production-creature-r2'; arm['authored_actions']=','.join(names)
+sc=bpy.context.scene; sc['magenheim_authored_actions']=arm['authored_actions']; sc['magenheim_skinning']='rigid-segment-weighted'
 arm['animation_readability_contract']='traveling-caudal-wave;three-stage-lure-lag;physical-lure-tell;jaw-throat-bite;throat-pressure-inflate-release;bank-fin-asymmetry;no-root-translation'
 bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(MODEL),compress=True)
