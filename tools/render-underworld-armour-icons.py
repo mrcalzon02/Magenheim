@@ -22,8 +22,9 @@ def render(entry):
  for name,pos,power,size in (("Key",(-2.4,-1.5,6),950,6),("Fill",(2.5,1.8,5),500,6)):
   ld=bpy.data.lights.new(name,"AREA");ld.energy=power;ld.size=size;l=bpy.data.objects.new(name,ld);sc.collection.objects.link(l);l.location=pos
  sc.render.filepath=str(OUT/(entry["id"]+".icon.png"));bpy.ops.render.render(write_still=True);print("RENDERED",entry["id"],flush=True)
-catalog={e["id"]:e for e in json.loads((MODELS/"catalog.json").read_text())};requested=sys.argv[sys.argv.index("--")+1:] if "--" in sys.argv else list(IDS)
+requested=sys.argv[sys.argv.index("--")+1:] if "--" in sys.argv else list(IDS)
 for model_id in requested:
  if model_id not in IDS:raise SystemExit("Unknown Underworld armour icon: "+model_id)
- if model_id not in catalog:raise RuntimeError(model_id+": missing exported catalog entry")
- render(catalog[model_id])
+ source=MODELS/"source"/(model_id+".blend")
+ if not source.is_file():raise RuntimeError(model_id+": authored Blender source is missing")
+ render({"id":model_id,"source":"source/"+source.name})
