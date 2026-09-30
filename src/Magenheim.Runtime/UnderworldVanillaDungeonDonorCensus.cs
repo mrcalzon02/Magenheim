@@ -267,6 +267,7 @@ internal static class UnderworldVanillaDungeonDonorCensus
         var teleports = 0;
         var randomSpawns = 0;
         var destructibles = 0;
+        var rootGeometryRooms = new List<string>();
 
         foreach (var data in donorRooms)
         {
@@ -288,6 +289,10 @@ internal static class UnderworldVanillaDungeonDonorCensus
                 }
 
                 roomSizes.Add(room.m_size);
+                if (prefab.GetComponent<Renderer>() ||
+                    prefab.GetComponent<Collider>() ||
+                    prefab.GetComponent<MeshFilter>())
+                    rootGeometryRooms.Add(data.m_prefab.Name);
                 if (room.m_entrance) entranceRooms++;
                 if (room.m_endCap) endcapRooms++;
                 if (room.m_divider) dividerRooms++;
@@ -359,6 +364,9 @@ internal static class UnderworldVanillaDungeonDonorCensus
         output.AppendLine("mechanic_teleports=" + teleports);
         output.AppendLine("mechanic_random_spawns=" + randomSpawns);
         output.AppendLine("mechanic_destructibles=" + destructibles);
+        output.AppendLine("room_root_geometry_count=" + rootGeometryRooms.Count);
+        output.AppendLine("room_root_geometry_names=" +
+            string.Join(",", rootGeometryRooms.OrderBy(name => name, StringComparer.Ordinal)));
         output.AppendLine("room_component_types=" + string.Join(";",
             componentTypes.OrderBy(pair => pair.Key, StringComparer.Ordinal)
                 .Select(pair => pair.Key + ":" + pair.Value.ToString(CultureInfo.InvariantCulture))));
