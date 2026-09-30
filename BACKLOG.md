@@ -540,19 +540,21 @@ Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the cur
   Frost Caves and Winding Tunnels. Core authority requires at least 1.5x donor-room linear scale,
   at least 3.5x live donor room-count bounds, Magenheim creature/resource population, and forbids
   bespoke Magenheim room injection into these five ordinary donor tilesets.
-- [x] **Implement fail-closed vanilla dungeon clone runtime — SOURCE IMPLEMENTED.**
-  `UnderworldVanillaDungeonRegistrar` clones donor room families into private themes without
-  mutating vanilla DungeonDB content, scales geometry plus `Room.m_size`, expands live donor
-  min/max room counts and generator zone span, remaps required rooms, scales donor doors, replaces
-  CreatureSpawner/SpawnArea inhabitants, replaces chest/pickable/mineable/destructible loot with
-  biome resources, and clones donor entrances into the owning native Underworld biome. The five
-  catalog entries remain Planned pending compile/runtime acceptance.
-- [ ] **Execute the Deep Dungeon Expansion gate sequence.**
-  `docs/DEEP_DUNGEON_EXPANSION.md` is the durable implementation plan. Clear DDE-00 through
-  DDE-12 per donor, promote independently at DDE-13, then run DDE-14 regression closure.
-- [ ] **Compile and live-accept expanded vanilla dungeon reuse before RuntimeReady promotion.**
+- [x] **Implement all-family expanded-vanilla dungeon runtime — SOURCE IMPLEMENTED.**
+  `UnderworldVanillaDungeonRegistrar` clones all five donor room families into private themes
+  without mutating vanilla DungeonDB content, uses connection-safe 1.5x structural scaling plus
+  matching `Room.m_size`/connection expansion, expands live donor min/max room counts and generator
+  zone span, remaps required rooms, scales donor doors, replaces CreatureSpawner/SpawnArea
+  inhabitants, replaces chest/pickable/mineable/destructible loot with biome resources, and clones
+  donor entrances into the owning native Underworld biome. All five ordinary catalog entries are
+  RuntimeReady together; partial one-family admission is no longer supported.
+- [x] **Complete Deep Dungeon Expansion source admission.**
+  DDE-00 source gates now require the five ordinary donor families RuntimeReady together, the
+  one-at-a-time candidate switch is retired/inert, detached worldgen requires the full dungeon
+  catalog, and native placement audits every family unconditionally.
+- [ ] **Compile and live-accept expanded vanilla dungeon reuse.**
   Verify all five donor families on fresh Underworld seeds: recognizable vanilla construction,
   >=1.5x room dimensions, >=3.5x live donor room-count bounds, no overlap/truncation, only owning
   Underworld creatures/resources, no vanilla progression loot, no Surface leakage, stable
-  save/reload and host/client generation, and exact dungeon return behavior. Promote each ordinary
-  dungeon independently only after its donor clone passes installed-Valheim acceptance.
+  save/reload and host/client generation, and exact dungeon return behavior. Any failure is now a
+  runtime defect to repair, not a reason to fall back to one-at-a-time candidate gating.
