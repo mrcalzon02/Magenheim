@@ -86,4 +86,5 @@ if sum(len(o.data.polygons) for o in meshes)<6500: raise RuntimeError('Ashmite s
 for o in meshes:
     if not o.data.uv_layers.get('AshmiteUV'): raise RuntimeError(f'{o.name}: missing AshmiteUV')
 arm['host_family']='HOST-SWARM-HEXAPOD'; arm['production_scale_m']=round(length,3); arm['material_language']='heat-cracked chitin / sulfur crust / wet protected joints / scorched mouthparts / no emission'; arm['readability_contract']='low armored vent scavenger; five raised scutes; six recessed joints; six rapid legs; physical vent scrapers'; arm['planned_actions']='Idle,Scavenge,Walk,Scuttle,TurnLeft,TurnRight,Bite,Hit,Stagger,Death'
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-ashmite'; sc['magenheim_skinning']='rigid-segment-weighted'
 bpy.context.view_layer.objects.active=arm; arm.select_set(True); bpy.ops.wm.save_as_mainfile(filepath=str(OUT)); print(f'Authored {OUT}: {length:.3f}m, {len(meshes)} meshes, {sum(len(o.data.polygons) for o in meshes)} polygons')
