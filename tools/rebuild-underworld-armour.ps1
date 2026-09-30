@@ -19,7 +19,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Underworld armour model verification failed.' 
 & "$PSScriptRoot/blender.ps1" render-underworld-armour-icons @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld armour icon rendering failed.' }
 
-python "$PSScriptRoot/verify-icon-assets.py"
+python "$PSScriptRoot/verify-icon-assets.py" @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld armour icon verification failed.' }
 
 Write-Host 'REBUILT twenty-four owned Underworld armour sources, GLBs and inventory icons.'
