@@ -4,3 +4,4 @@ purpose=runtime-extract selected base Valheim cinematic donor prefabs and build 
 attempt=1
 attempt=2 jsondotnet-newtonsoft-fix
 attempt=3 isolated-exporter
+attempt=4 nullable-fix
