@@ -67,6 +67,7 @@ action('CrowncapBrute_Death',72,{1:n,16:{'Chest':(.12,0,.18),'Head':(-.12,0,-.10
 arm.animation_data.action=None
 arm['production_contract']='production-creature-r2'
 arm['authored_actions']='CrowncapBrute_Idle,CrowncapBrute_Walk,CrowncapBrute_Turn,CrowncapBrute_Alert,CrowncapBrute_SweepLeft,CrowncapBrute_SweepRight,CrowncapBrute_HeavySlam,CrowncapBrute_Hit,CrowncapBrute_HeavyStagger,CrowncapBrute_Death'
+sc['magenheim_authored_actions']=arm['authored_actions']; sc['magenheim_skinning']='rigid-segment-weighted'
 arm['animation_readability_contract']='asymmetric-sweep-weight-transfer;slam-full-mass-anticipation;heavy-stagger-exposes-under-cap-gills'
 bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(MODEL),compress=True)
