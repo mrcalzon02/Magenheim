@@ -46,6 +46,34 @@ internal static class DrownedVaultWaterRuntime
             CheckedFloat(definition.WaterDepthMeters, nameof(definition.WaterDepthMeters)));
     }
 
+    internal static DrownedVaultWaterBinding AttachExpandedDonorPool(
+        GameObject room,
+        string identity,
+        float width,
+        float depth,
+        float waterDepth,
+        float localSurfaceY)
+    {
+        if (room is null) throw new ArgumentNullException(nameof(room));
+        if (string.IsNullOrWhiteSpace(identity))
+            throw new ArgumentException("Expanded donor pool identity is required.", nameof(identity));
+        if (width < 2f || depth < 2f)
+            throw new ArgumentOutOfRangeException(nameof(width));
+        if (waterDepth <= .1f || waterDepth > 2.5f)
+            throw new ArgumentOutOfRangeException(nameof(waterDepth));
+
+        var binding = AttachNativeWater(
+            room,
+            identity,
+            UnderworldDrownedVaultRouteMode.Mixed,
+            width,
+            depth,
+            waterDepth);
+        binding.transform.localPosition = new Vector3(0f, localSurfaceY, 0f);
+        binding.Validate();
+        return binding;
+    }
+
     internal static DrownedVaultWaterBinding? AttachPassage(
         GameObject passage,
         string connectionIdentity,
