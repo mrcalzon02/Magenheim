@@ -1,0 +1,152 @@
+name: Magenheim Cinematic Environment Forge
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/magenheim-cinematic.run'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: magenheim-cinematic-environment-forge
+  cancel-in-progress: false
+
+jobs:
+  forge:
+    runs-on: windows-2025
+    timeout-minutes: 55
+    steps:
+      - name: Checkout authoritative main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12.10'
+
+      - name: Preflight cinematic authoring source
+        shell: pwsh
+        run: |
+          python -m py_compile tools/build-magenheim-cinematic-environment.py
+          if ($LASTEXITCODE -ne 0) { throw 'Cinematic Blender source failed Python syntax preflight.' }
+
+          $required = @(
+            'assets/models/source/dark-throne.blend',
+            'assets/models/source/nowhere-king-sword-firmament.blend',
+            'assets/models/source/nowhere-king-sword-null-gate.blend'
+          )
+          foreach ($path in $required) {
+            if (!(Test-Path -LiteralPath $path)) { throw "Missing authoritative cinematic source: $path" }
+          }
+
+      - name: Provision pinned Blender 5.0.0
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP 'blender'
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          $file = 'blender-5.0.0-windows-x64.zip'
+          $base = 'https://download.blender.org/release/Blender5.0'
+          Invoke-WebRequest "$base/$file" -OutFile "$dir/$file"
+          Invoke-WebRequest "$base/blender-5.0.0.sha256" -OutFile "$dir/blender.sha256"
+          $line = Get-Content "$dir/blender.sha256" | Where-Object { $_ -match [regex]::Escape($file) } | Select-Object -First 1
+          if (!$line) { throw 'Official Blender checksum file does not contain the pinned archive.' }
+          $expected = ($line -split '\s+')[0].ToLowerInvariant()
+          $actual = (Get-FileHash "$dir/$file" -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne $expected) { throw "Blender checksum mismatch: $actual != $expected" }
+          Expand-Archive "$dir/$file" -DestinationPath $dir -Force
+          $exe = Join-Path $dir 'blender-5.0.0-windows-x64/blender.exe'
+          if (!(Test-Path $exe)) { throw 'Pinned Blender executable missing after extraction.' }
+          "MAGENHEIM_BLENDER=$exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Build actual 3D cinematic sets and shot cameras
+        shell: pwsh
+        run: |
+          $env:TEMP = $env:RUNNER_TEMP
+          $env:TMP = $env:RUNNER_TEMP
+          $out = 'assets/cinematics/peace-was-only-the-beginning/source/magenheim-peace-cinematic.blend'
+          $previews = 'build/cinematic-previews'
+          & $env:MAGENHEIM_BLENDER --background --factory-startup --python tools/build-magenheim-cinematic-environment.py -- --output $out --preview-dir $previews
+          if ($LASTEXITCODE -ne 0) { throw 'Cinematic environment authoring failed.' }
+          if (!(Test-Path -LiteralPath $out)) { throw 'Cinematic Blender scene was not created.' }
+          $size = (Get-Item -LiteralPath $out).Length
+          if ($size -lt 100000) { throw "Cinematic Blender scene is suspiciously small: $size bytes" }
+          $previewCount = @(Get-ChildItem -LiteralPath $previews -Filter '*.png' -File).Count
+          if ($previewCount -ne 8) { throw "Expected eight cinematic preview frames; got $previewCount." }
+
+      - name: Re-open and verify authored Blender scene
+        shell: pwsh
+        run: |
+          $out = 'assets/cinematics/peace-was-only-the-beginning/source/magenheim-peace-cinematic.blend'
+          & $env:MAGENHEIM_BLENDER --background $out --python tools/build-magenheim-cinematic-environment.py -- --verify
+          if ($LASTEXITCODE -ne 0) { throw 'Re-open verification of cinematic Blender scene failed.' }
+
+      - name: Write generation manifest
+        shell: pwsh
+        run: |
+          $dir = 'assets/cinematics/peace-was-only-the-beginning'
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          $scene = Join-Path $dir 'source/magenheim-peace-cinematic.blend'
+          $manifest = [ordered]@{
+            schema = 1
+            cinematic = 'peace-was-only-the-beginning'
+            source_commit = (git rev-parse HEAD).Trim()
+            workflow_run = "$env:GITHUB_RUN_ID"
+            blender = '5.0.0'
+            scene = 'source/magenheim-peace-cinematic.blend'
+            scene_sha256 = (Get-FileHash $scene -Algorithm SHA256).Hash.ToLowerInvariant()
+            shot_count = 8
+            fps = 24
+            frame_end = 672
+            text_baked_in = $false
+            audio_baked_in = $false
+            source_assets = @(
+              'assets/models/source/dark-throne.blend',
+              'assets/models/source/nowhere-king-sword-firmament.blend',
+              'assets/models/source/nowhere-king-sword-null-gate.blend'
+            )
+          }
+          $manifest | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $dir 'manifest.json') -Encoding utf8
+
+      - name: Upload cinematic scene and previews
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: magenheim-cinematic-environment-\${{ github.run_id }}
+          path: |
+            assets/cinematics/peace-was-only-the-beginning/source/magenheim-peace-cinematic.blend
+            assets/cinematics/peace-was-only-the-beginning/manifest.json
+            build/cinematic-previews/*.png
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Commit authored scene to review branch
+        shell: pwsh
+        run: |
+          $source = (git rev-parse HEAD).Trim()
+          $short = $source.Substring(0,12)
+          $branch = "production/cinematic-peace-$short-$env:GITHUB_RUN_ID"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -b $branch
+          git add -f -- assets/cinematics/peace-was-only-the-beginning/source/magenheim-peace-cinematic.blend
+          git add -- assets/cinematics/peace-was-only-the-beginning/manifest.json
+          if (git diff --cached --quiet) { throw 'No cinematic environment output was staged.' }
+          git commit -m "Forge Peace Was Only the Beginning cinematic environment ($env:GITHUB_RUN_ID)"
+          git push origin "HEAD:refs/heads/$branch"
+          "Generated review branch: $branch" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+          "The scene contains no baked text or audio." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append
+
+      - name: Upload Blender logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: magenheim-cinematic-logs-\${{ github.run_id }}
+          path: \${{ runner.temp }}/magenheim-blender/**
+          if-no-files-found: ignore
+          retention-days: 2
