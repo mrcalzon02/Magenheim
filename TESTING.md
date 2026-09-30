@@ -973,8 +973,13 @@ snapshot command supplies evidence but does not auto-pass persistence or multipl
 
 For DDE-12, retain the automatic `generation_ms` and `managed_memory_delta_bytes` values from
 multiple seeds together with the frame-hitch, active-creature, physics, lighting and network
-observations required by the durable plan. Source instrumentation is not acceptance; performance
-and economy still require installed-game measurements.
+observations required by the durable plan. The generation artifact now also records
+`risk_outer_rooms`, `risk_mid_rooms`, `risk_deep_rooms`, `risk_lair_rooms`,
+`risk_unclassified_rooms`, `combat_socket_rooms`, `active_encounter_rooms` and
+`quiet_combat_rooms`. Confirm no generated room remains unclassified, entrance rooms are Outer,
+pressure trends deeper through the placed graph, and the 3.5x room expansion leaves deliberate quiet
+combat rooms instead of multiplying mandatory fights by 3.5x. Source instrumentation is not
+acceptance; performance and economy still require installed-game measurements.
 
 ### Donor identity and isolation
 
