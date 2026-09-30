@@ -62,8 +62,8 @@ internal static class UnderworldDungeonCatalogTests
                 dungeon.DisplayName + " must not mix bespoke Magenheim architecture into its vanilla tileset.");
         }
 
-        Assert(all.Count(value => value.Status == UnderworldDungeonStatus.RuntimeReady) >= 1,
-            "At least Deep Fracture must remain runtime-ready while ordinary dungeons are promoted independently.");
+        Assert(all.Count(value => value.Status == UnderworldDungeonStatus.RuntimeReady) == 6,
+            "All five expanded-vanilla ordinary dungeons and Deep Fracture must be runtime-ready together.");
 
         return assertions;
     }
