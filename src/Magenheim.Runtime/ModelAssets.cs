@@ -26,6 +26,10 @@ internal static class ModelAssets
     private static readonly Dictionary<string, Texture2D> Textures = new();
     private static string DirectoryPath => Path.Combine(Path.GetDirectoryName(typeof(ModelAssets).Assembly.Location)!, "assets", "models");
 
+    internal static bool Exists(string id) =>
+        !string.IsNullOrEmpty(id) && Path.GetFileName(id) == id &&
+        File.Exists(Path.Combine(DirectoryPath, "runtime", id + ".model.json"));
+
     // Valheim ships its shaders in addressable bundles and does not include Unity's built-in
     // Standard shader, so Shader.Find("Standard") returns null in the built player. That took out
     // every caller that needed a material for a prefab with no renderer of its own -- the Deep
