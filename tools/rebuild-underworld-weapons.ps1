@@ -20,7 +20,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Underworld weapon authoring failed.' }
 & "$PSScriptRoot/blender.ps1" export-model-assets @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld weapon export failed.' }
 
-python "$PSScriptRoot/verify-model-assets.py"
+python "$PSScriptRoot/verify-model-assets.py" @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld weapon model catalog verification failed.' }
 
 & "$PSScriptRoot/blender.ps1" render-weapon-icons @ids
