@@ -182,6 +182,8 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         _log.LogInfo(
             $"DDE rooms {profile.Biome}: donor={profile.DonorDisplayName} theme={profile.DonorThemeName} " +
             $"enabled-donor-rooms={sourceRooms.Length} clones={names.Count} scale={profile.LinearRoomScale:0.##}x " +
+            $"encounter-rooms={population.Ecology.ActiveEncounterRooms}/{population.Ecology.CombatSocketRooms} " +
+            $"quiet-combat-rooms={population.Ecology.QuietCombatRooms} " +
             $"creature-spawners={population.Ecology.ActiveCreatureSpawners}/{population.Ecology.CreatureSpawnerSockets} " +
             $"spawn-areas={population.Ecology.ActiveSpawnAreas}/{population.Ecology.SpawnAreaSockets} " +
             $"roles=swarm:{population.Ecology.SwarmBindings},skirmisher:{population.Ecology.SkirmisherBindings}," +
