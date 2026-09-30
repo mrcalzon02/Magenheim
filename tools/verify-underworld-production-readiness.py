@@ -274,6 +274,22 @@ require("author-underworld-frozen-creatures" in production_rebuild and
         "export-model-assets @frozenCreatureIds" in production_rebuild and
         "verify-model-assets.py\" @frozenCreatureIds" in production_rebuild,
         "Frozen creature production no longer authors/exports/verifies runtime payloads")
+
+for creature_id in (
+    "underworld-creature-rotling",
+    "underworld-creature-carrion-bloom",
+    "underworld-creature-spore-husk",
+    "underworld-creature-marrow-creeper",
+    "underworld-creature-decay-hound",
+    "underworld-creature-graft-warden",
+    "underworld-creature-corpse-orchard",
+):
+    require(creature_id in production_rebuild,
+            "Great Decay creature production run lost "+creature_id)
+require("author-underworld-decay-creatures" in production_rebuild and
+        "export-model-assets @decayCreatureIds" in production_rebuild and
+        "verify-model-assets.py\" @decayCreatureIds" in production_rebuild,
+        "Great Decay creature production no longer authors/exports/verifies runtime payloads")
 reuse_authority=(ROOT/"src"/"Magenheim.Core"/"Underworld"/"UnderworldVanillaDungeonReuseCatalog.cs").read_text()
 require("MinimumLinearRoomScale = 1.5d" in reuse_authority,
         "ordinary Underworld vanilla-room scale floor is not 1.5x")
