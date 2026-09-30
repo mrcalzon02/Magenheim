@@ -90,6 +90,23 @@ internal static class SocketCompatibilityAuthorityTests
             "Changing the Underworld spatial-domain fingerprint must change gameplay peer authority.");
         Assert(!string.Equals(baseline, spatialAuthorityA, StringComparison.Ordinal),
             "Presence versus absence of Underworld spatial authority must be fingerprint-significant.");
+        var runtimePolicyA = new string('d', GameplayAuthorityFingerprint.Sha256HexLength);
+        var runtimePolicyB = new string('e', GameplayAuthorityFingerprint.Sha256HexLength);
+        var policyAuthorityA = GameplayAuthorityFingerprint.Compute(
+            definitionFingerprint,
+            new SocketEligibilityPolicy(),
+            spatialA,
+            runtimePolicyA);
+        var policyAuthorityB = GameplayAuthorityFingerprint.Compute(
+            definitionFingerprint,
+            new SocketEligibilityPolicy(),
+            spatialA,
+            runtimePolicyB);
+        Assert(!string.Equals(policyAuthorityA, policyAuthorityB, StringComparison.Ordinal),
+            "Changing runtime candidate policy must change gameplay peer authority.");
+        Assert(!string.Equals(spatialAuthorityA, policyAuthorityA, StringComparison.Ordinal),
+            "Presence versus absence of runtime candidate policy must be fingerprint-significant.");
+
 
         var invalidSpatialRejected = false;
         try
@@ -105,6 +122,22 @@ internal static class SocketCompatibilityAuthorityTests
         }
         Assert(invalidSpatialRejected,
             "Malformed Underworld spatial authority must fail closed before peer synchronization.");
+        var invalidRuntimePolicyRejected = false;
+        try
+        {
+            _ = GameplayAuthorityFingerprint.Compute(
+                definitionFingerprint,
+                new SocketEligibilityPolicy(),
+                spatialA,
+                "not-a-sha256");
+        }
+        catch (ArgumentException)
+        {
+            invalidRuntimePolicyRejected = true;
+        }
+        Assert(invalidRuntimePolicyRejected,
+            "Malformed runtime candidate policy must fail closed before peer synchronization.");
+
 
         var caseA = GameplayAuthorityFingerprint.Compute(
             definitionFingerprint,
