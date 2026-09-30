@@ -684,12 +684,6 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
     {
         if (room.m_entrance) return 0;
 
-        // Frozen and Great Decay use their dedicated exposure/contamination authorities below so
-        // resistance items and local suppression behave exactly like their bespoke dungeon lanes.
-        if (profile.Biome == UnderworldTerrainBiome.FrozenCaverns ||
-            profile.Biome == UnderworldTerrainBiome.GreatDecay)
-            return 0;
-
         var probability = (int)band >= (int)UnderworldVanillaDungeonRiskBand.Deep ? .72d : .48d;
         if (!UnderworldVanillaDungeonRoomPolicy.Roll(
                 probability,
@@ -730,6 +724,12 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
         Palette palette)
     {
         if (room.m_entrance) return 0;
+
+        // Frozen and Great Decay use their dedicated exposure/contamination authorities so their
+        // resistance and suppression items stay on the canonical mitigation path.
+        if (profile.Biome == UnderworldTerrainBiome.FrozenCaverns ||
+            profile.Biome == UnderworldTerrainBiome.GreatDecay)
+            return 0;
 
         var probability = (int)band >= (int)UnderworldVanillaDungeonRiskBand.Deep ? .86d : .62d;
         if (!UnderworldVanillaDungeonRoomPolicy.Roll(
