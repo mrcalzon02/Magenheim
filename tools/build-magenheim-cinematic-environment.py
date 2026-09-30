@@ -793,9 +793,14 @@ def verify():
         "AUTH_DarkThrone", "AUTH_Firmament", "AUTH_NullGate",
         "NOWHERE_KING_ROOT", "HERO_A_ROOT", "HERO_B_ROOT", "HERO_C_ROOT", "RAVEN_ROOT",
         "SHOT_01_RETURN_CAM", "SHOT_02_HOMECOMING_CAM", "SHOT_06_THRONE_REVEAL_CAM", "SHOT_08_LAST_ARGUMENT_CAM",
-        "Village_GreatHall_TimberBody", "HallInterior_Floor", "AUTH_DarkThrone",
+        "HallInterior_Floor", "AUTH_DarkThrone",
     }
     missing = sorted(name for name in required_objects if name not in bpy.data.objects)
+    if scene.get("valheim_cinematic_donors",0):
+        if bpy.data.collections.get("CIN_ValheimVillage") is None or bpy.data.collections.get("CIN_ValheimHall") is None:
+            missing.append("CIN_ValheimVillage/CIN_ValheimHall")
+    elif "Village_GreatHall_TimberBody" not in bpy.data.objects:
+        missing.append("Village_GreatHall_TimberBody")
     if missing:
         raise RuntimeError("Cinematic environment missing required objects: " + ", ".join(missing))
     marker_names = {m.name for m in scene.timeline_markers}
