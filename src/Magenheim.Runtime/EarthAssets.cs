@@ -18,6 +18,10 @@ internal static class EarthAssets
     private static string DirectoryPath => Path.Combine(
         Path.GetDirectoryName(typeof(EarthAssets).Assembly.Location)!, "assets", "earth");
 
+    internal static bool IconExists(string name) =>
+        !string.IsNullOrEmpty(name) && Path.GetFileName(name) == name &&
+        File.Exists(Path.Combine(DirectoryPath, name + ".icon.png"));
+
     internal static Sprite Icon(string name)
     {
         if (Icons.TryGetValue(name, out var icon)) return icon;
