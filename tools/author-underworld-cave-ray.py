@@ -71,4 +71,5 @@ if tris<7000: raise RuntimeError(f'Cave Ray source triangle floor regression: {t
 for o in meshes:
     if not o.data.uv_layers.get('CaveRayUV'): raise RuntimeError(f'Missing UVs: {o.name}')
 arm['magenheim_asset']='cave-ray'; arm['production_contract']='production-creature-r1'; arm['host_rig']='HOST-AQUATIC-RAY'; arm['span_m']=SPAN; arm['role']='blackwater-ambient-swimmer'; arm['photophores']=6; arm['wing_deformation_chains']=6; arm['animation_contract']='glide,flap-impulse,bank-left,bank-right,dive,rise,flee,hit,death'
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-cave-ray'; sc['magenheim_skinning']='rigid-segment-weighted'
 OUT.parent.mkdir(parents=True,exist_ok=True); bpy.ops.wm.save_as_mainfile(filepath=str(OUT)); print(f'Wrote {OUT} meshes={len(meshes)} tris={tris}')
