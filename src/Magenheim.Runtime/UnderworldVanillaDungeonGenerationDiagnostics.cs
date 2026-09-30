@@ -429,8 +429,8 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         {
             if (visited[start]) continue;
             components++;
-            var queue = new Queue<(int Room, int Depth)>();
-            queue.Enqueue((start, 0));
+            var queue = new Queue<TraversalNode>();
+            queue.Enqueue(new TraversalNode(start, 0));
             visited[start] = true;
             while (queue.Count > 0)
             {
@@ -440,7 +440,7 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 {
                     if (visited[next]) continue;
                     visited[next] = true;
-                    queue.Enqueue((next, current.Depth + 1));
+                    queue.Enqueue(new TraversalNode(next, current.Depth + 1));
                 }
             }
         }
@@ -463,6 +463,18 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
 
     private static string Safe(string value) =>
         new string(value.Where(char.IsLetterOrDigit).ToArray());
+
+    private readonly struct TraversalNode
+    {
+        internal TraversalNode(int room, int depth)
+        {
+            Room = room;
+            Depth = depth;
+        }
+
+        internal int Room { get; }
+        internal int Depth { get; }
+    }
 
     private readonly record struct GraphReport(
         int Components,
