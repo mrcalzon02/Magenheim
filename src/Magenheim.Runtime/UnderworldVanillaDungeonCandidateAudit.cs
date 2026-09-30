@@ -127,7 +127,7 @@ internal static class UnderworldVanillaDungeonCandidateAudit
         if (generator.m_doorTypes is not null)
         {
             var foreignDoors = generator.m_doorTypes
-                .Where(value => value?.m_prefab)
+                .Where(value => value is not null && value.m_prefab)
                 .Select(value => Utils.GetPrefabName(value.m_prefab))
                 .Where(name =>
                     string.IsNullOrWhiteSpace(name) ||
