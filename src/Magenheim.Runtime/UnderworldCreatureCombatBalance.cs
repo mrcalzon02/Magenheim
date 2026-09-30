@@ -114,7 +114,7 @@ internal static class UnderworldCreatureCombatBalance
             attackInterval);
     }
 
-    private static Role RoleFor(string name)
+    internal static Role RoleFor(string name)
     {
         switch (name)
         {
