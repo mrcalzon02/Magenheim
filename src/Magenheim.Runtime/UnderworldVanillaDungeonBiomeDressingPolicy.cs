@@ -19,9 +19,10 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
         int GroundProps,
         int LocalLights,
         int AtmosphereVolumes,
-        int ThermalVolumes)
+        int ThermalVolumes,
+        int WaterVolumes)
     {
-        internal static Stats Empty => new(0, 0, 0, 0, 0, 0);
+        internal static Stats Empty => new(0, 0, 0, 0, 0, 0, 0);
 
         public static Stats operator +(Stats left, Stats right) =>
             new(
@@ -30,7 +31,8 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
                 left.GroundProps + right.GroundProps,
                 left.LocalLights + right.LocalLights,
                 left.AtmosphereVolumes + right.AtmosphereVolumes,
-                left.ThermalVolumes + right.ThermalVolumes);
+                left.ThermalVolumes + right.ThermalVolumes,
+                left.WaterVolumes + right.WaterVolumes);
     }
 
     private readonly struct Palette
@@ -162,6 +164,7 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
             ground,
             lights,
             0,
+            0,
             0);
     }
 
@@ -244,13 +247,22 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
             band,
             bounds);
 
+        var water = AddBlackwaterPool(
+            room,
+            profile,
+            donorRoomName,
+            donorRoomIndex,
+            band,
+            bounds);
+
         return new Stats(
             architectureMaterials,
             majorProps,
             groundProps,
             lights,
             atmosphere,
-            thermal);
+            thermal,
+            water);
     }
 
     private static int ApplyArchitecturePalette(
@@ -538,6 +550,55 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
             palette.AtmosphereEvent,
             Math.Min(1d, palette.AtmosphereIntensity + risk * .16d),
             Math.Min(1d, palette.HazardFloor + risk * .12d));
+        return 1;
+    }
+
+    private static int AddBlackwaterPool(
+        Room room,
+        UnderworldVanillaDungeonReuseDefinition profile,
+        string roomName,
+        int roomIndex,
+        UnderworldVanillaDungeonRiskBand band,
+        Bounds bounds)
+    {
+        if (profile.Biome != UnderworldTerrainBiome.BlackwaterDeep ||
+            room.m_entrance ||
+            (int)band < (int)UnderworldVanillaDungeonRiskBand.Deep)
+            return 0;
+
+        var connections = room.GetConnections().Where(value => value).ToArray();
+        if (connections.Length == 0)
+            return 0;
+
+        var minimumY = connections.Min(value => value.transform.localPosition.y);
+        var maximumY = connections.Max(value => value.transform.localPosition.y);
+        if (maximumY - minimumY > 1.5f)
+            return 0;
+
+        if (!room.m_endCap &&
+            !UnderworldVanillaDungeonRoomPolicy.Roll(
+                .42d,
+                profile.DungeonId,
+                roomName,
+                roomIndex,
+                "blackwater-pool",
+                0))
+            return 0;
+
+        var surfaceY = connections.Average(value => value.transform.localPosition.y) + .18f;
+        var width = Mathf.Max(3.5f, bounds.size.x * .56f);
+        var depth = Mathf.Max(3.5f, bounds.size.z * .56f);
+        var waterDepth = (int)band >= (int)UnderworldVanillaDungeonRiskBand.Lair
+            ? .95f
+            : .68f;
+
+        DrownedVaultWaterRuntime.AttachExpandedDonorPool(
+            room.gameObject,
+            profile.DungeonId + ":" + roomName + ":" + roomIndex,
+            width,
+            depth,
+            waterDepth,
+            surfaceY);
         return 1;
     }
 
