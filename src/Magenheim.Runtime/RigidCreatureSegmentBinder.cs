@@ -388,6 +388,8 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
                    Find("tailstrike") ??
                    Find("pressurerelease") ??
                    Find("bite") ??
+                   Find("latch") ??
+                   Find("cast") ??
                    Find("lunge") ??
                    Find("ram") ??
                    Find("leap") ??
