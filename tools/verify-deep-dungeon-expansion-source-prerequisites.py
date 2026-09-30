@@ -16,6 +16,7 @@ diagnostics=(RUNTIME/"UnderworldVanillaDungeonGenerationDiagnostics.cs").read_te
 room_policy=(RUNTIME/"UnderworldVanillaDungeonRoomPolicy.cs").read_text()
 ecology=(RUNTIME/"UnderworldVanillaDungeonEcologyPolicy.cs").read_text()
 rewards=(RUNTIME/"UnderworldVanillaDungeonRewardPolicy.cs").read_text()
+mechanics=(RUNTIME/"UnderworldVanillaDungeonMechanicsPolicy.cs").read_text()
 candidate=(RUNTIME/"UnderworldVanillaDungeonCandidatePolicy.cs").read_text()
 bridge=(RUNTIME/"UnderworldWorldgenContentBridge.cs").read_text()
 placement=(RUNTIME/"UnderworldDungeonPlacementRuntime.cs").read_text()
@@ -120,9 +121,24 @@ require("fixture == Fixture.Destructible && rarity == Rarity.Bottleneck" in rewa
         "DDE-07 generic destructibles may still spill bottleneck resources")
 
 # Gate 8 — retain donor mechanics while stripping donor lore/progression.
-require("GetComponentsInChildren<Vegvisir>" in rewards and
-        "GetComponentsInChildren<Runestone>" in rewards,
-        "DDE-08 donor lore stripping is absent")
+require("UnderworldVanillaDungeonMechanicsPolicy.Apply" in registrar,
+        "DDE-08 registrar is not bound to donor-mechanics policy")
+for token,label in (
+    ("GetComponentsInChildren<Vegvisir>","Vegvisir lore stripping"),
+    ("GetComponentsInChildren<Runestone>","Runestone lore stripping"),
+    ('Count(counts, "Door")',"door preservation inventory"),
+    ('Count(counts, "Teleport")',"teleport preservation inventory"),
+    ('Count(counts, "RandomSpawn")',"hidden/random mechanic preservation inventory"),
+    ('Count(counts, "Destructible")',"destructible preservation inventory"),
+    ("unknown donor mechanics are deliberately preserved","unknown donor mechanic preservation"),
+):
+    require(token in mechanics,"DDE-08 missing "+label)
+require("DestroyImmediate" in mechanics,
+        "DDE-08 known donor lore markers are not actually removed")
+for forbidden in ("GetComponentsInChildren<Door>", "GetComponentsInChildren<Teleport>",
+                  "GetComponentsInChildren<RandomSpawn>", "GetComponentsInChildren<Destructible>"):
+    require(forbidden not in mechanics or "DestroyImmediate" not in mechanics.split(forbidden,1)[-1][:220],
+            "DDE-08 structural donor mechanic appears to be destroyed: "+forbidden)
 require("CreateClonedLocation(definition.PrefabName, donorEntrance)" in registrar,
         "DDE-08 donor entrance/mechanics are not inherited by clone")
 require("GetComponentInChildren<DungeonGenerator>(true)" in registrar,
