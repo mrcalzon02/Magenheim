@@ -13,6 +13,9 @@ def require(ok,msg):
 
 registrar=(RUNTIME/"UnderworldVanillaDungeonRegistrar.cs").read_text()
 diagnostics=(RUNTIME/"UnderworldVanillaDungeonGenerationDiagnostics.cs").read_text()
+room_policy=(RUNTIME/"UnderworldVanillaDungeonRoomPolicy.cs").read_text()
+ecology=(RUNTIME/"UnderworldVanillaDungeonEcologyPolicy.cs").read_text()
+rewards=(RUNTIME/"UnderworldVanillaDungeonRewardPolicy.cs").read_text()
 candidate=(RUNTIME/"UnderworldVanillaDungeonCandidatePolicy.cs").read_text()
 bridge=(RUNTIME/"UnderworldWorldgenContentBridge.cs").read_text()
 placement=(RUNTIME/"UnderworldDungeonPlacementRuntime.cs").read_text()
@@ -72,17 +75,32 @@ require("requires at least" in registrar and "required-room identities exist" in
 require("doors-cloned=" in registrar,
         "DDE-05 cloned door diagnostics are absent")
 
-# Gate 6 — creature ecology replacement.
+# Gate 6 — creature ecology replacement and pacing.
+for token,label in (
+    ("UnderworldVanillaDungeonEcologyPolicy.Rebind","registrar ecology-policy bind"),
+):
+    require(token in registrar,"DDE-06 missing "+label)
 for token,label in (
     ("GetComponentsInChildren<CreatureSpawner>","CreatureSpawner replacement"),
     ("m_creaturePrefab = prefab","CreatureSpawner Magenheim binding"),
     ("GetComponentsInChildren<SpawnArea>","SpawnArea replacement"),
     ("area.m_prefabs.Clear()","donor SpawnArea removal"),
-    ("Creatures(profile.Biome)","owning-biome creature vocabulary"),
+    ("spawner.enabled = active","deterministic CreatureSpawner suppression"),
+    ("area.enabled = active","deterministic SpawnArea suppression"),
+    ("room.m_entrance) return false","safe entrance-room pacing"),
+    ("UnderworldCreatureCombatBalance.RoleFor","combat-role authority"),
+    ("Role.Apex => .35f","rare apex weighting"),
+    ('string.Equals(entry.Donor, "Serpent"',"Blackwater Serpent exclusion"),
 ):
-    require(token in registrar,"DDE-06 missing "+label)
+    require(token in ecology,"DDE-06 missing "+label)
+require(".42d" in ecology and ".72d" in ecology,
+        "DDE-06 active socket fractions are not bounded from outer to lair pressure")
+require("RiskFor(" in room_policy and "m_minPlaceOrder" in room_policy and "m_endCap" in room_policy,
+        "DDE-06 room-risk authority does not use donor depth/room hints")
 
-# Gate 7 — resource / reward replacement.
+# Gate 7 — resource / reward replacement with rare-yield normalization.
+require("UnderworldVanillaDungeonRewardPolicy.Rebind" in registrar,
+        "DDE-07 registrar is not bound to reward policy")
 for token,label in (
     ("GetComponentsInChildren<Container>","container reward replacement"),
     ("m_defaultItems = ResourceTable","container biome-resource table"),
@@ -90,13 +108,20 @@ for token,label in (
     ("GetComponentsInChildren<MineRock>","MineRock reward replacement"),
     ("GetComponentsInChildren<MineRock5>","MineRock5 reward replacement"),
     ("GetComponentsInChildren<DropOnDestroyed>","destructible reward replacement"),
-    ("Resources(profile.Biome)","owning-biome resource vocabulary"),
+    ("1d / roomCountMultiplier","inverse bottleneck normalization"),
+    ("baselineShare / profile.RoomCountMultiplier","direct-pickable bottleneck normalization"),
+    ('"Magenheim_Underworld_Resource_BlackwaterPearl"',"Blackwater bottleneck"),
+    ('"Magenheim_Underworld_Resource_Emberiron"',"Sulfur bottleneck"),
+    ('"Magenheim_Underworld_Resource_Rimesilver"',"Frozen bottleneck"),
+    ('"Magenheim_Underworld_Resource_CarrionAmber"',"Decay bottleneck"),
 ):
-    require(token in registrar,"DDE-07 missing "+label)
+    require(token in rewards,"DDE-07 missing "+label)
+require("fixture == Fixture.Destructible && rarity == Rarity.Bottleneck" in rewards,
+        "DDE-07 generic destructibles may still spill bottleneck resources")
 
 # Gate 8 — retain donor mechanics while stripping donor lore/progression.
-require("GetComponentsInChildren<Vegvisir>" in registrar and
-        "GetComponentsInChildren<Runestone>" in registrar,
+require("GetComponentsInChildren<Vegvisir>" in rewards and
+        "GetComponentsInChildren<Runestone>" in rewards,
         "DDE-08 donor lore stripping is absent")
 require("CreateClonedLocation(definition.PrefabName, donorEntrance)" in registrar,
         "DDE-08 donor entrance/mechanics are not inherited by clone")
