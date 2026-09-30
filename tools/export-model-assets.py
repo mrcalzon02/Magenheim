@@ -107,7 +107,7 @@ for file in files:
  for obj in scene.objects:
   if obj.type!='MESH':continue
   bpy.context.view_layer.objects.active=obj;obj.select_set(True)
-  if skin_contract is None:bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY',center='BOUNDS')
+  if skin_contract is None and creature_contract is None:bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY',center='BOUNDS')
   obj.select_set(False)
   path=obj.get('game_node_path',obj.name)
   if creature_contract:
