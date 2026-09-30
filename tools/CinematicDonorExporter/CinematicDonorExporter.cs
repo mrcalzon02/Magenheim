@@ -24,19 +24,19 @@ public sealed class CinematicDonorExporterPlugin : BaseUnityPlugin
     {
         if (_armed) return;
         _armed = true;
-        PrefabManager.OnPrefabsRegistered += ExportRegisteredPrefabs;
-        Logger.LogInfo("Cinematic donor exporter armed; waiting for registered Valheim prefabs.");
+        PrefabManager.OnVanillaPrefabsAvailable += ExportRegisteredPrefabs;
+        Logger.LogInfo("Cinematic donor exporter armed; waiting for vanilla prefab availability.");
     }
 
     private void OnDestroy()
     {
         if (_armed)
-            PrefabManager.OnPrefabsRegistered -= ExportRegisteredPrefabs;
+            PrefabManager.OnVanillaPrefabsAvailable -= ExportRegisteredPrefabs;
     }
 
     private void ExportRegisteredPrefabs()
     {
-        PrefabManager.OnPrefabsRegistered -= ExportRegisteredPrefabs;
+        PrefabManager.OnVanillaPrefabsAvailable -= ExportRegisteredPrefabs;
         _armed = false;
         string? output = null;
         try
@@ -50,23 +50,17 @@ public sealed class CinematicDonorExporterPlugin : BaseUnityPlugin
             if (requested.Count == 0)
                 throw new InvalidOperationException(ExportPrefabsVariable + " contains no prefab identities.");
 
-            var scene = ZNetScene.instance ?? throw new InvalidOperationException("ZNetScene is unavailable during cinematic donor export.");
-            var available = scene.m_prefabs
+            var requestedPrefabs = requested
+                .Select(name => PrefabManager.Instance.GetPrefab(name))
                 .Where(prefab => prefab != null)
-                .Select(prefab => prefab.name)
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .OrderBy(name => name, StringComparer.OrdinalIgnoreCase)
-                .ToArray();
-            File.WriteAllLines(Path.Combine(output, "available-prefabs.txt"), available, new UTF8Encoding(false));
-
-            var requestedPrefabs = scene.m_prefabs
-                .Where(prefab => prefab != null && requested.Contains(prefab.name))
+                .Cast<GameObject>()
                 .GroupBy(prefab => prefab.name, StringComparer.OrdinalIgnoreCase)
                 .Select(group => group.First())
                 .OrderBy(prefab => prefab.name, StringComparer.OrdinalIgnoreCase)
                 .ToArray();
 
             var found = new HashSet<string>(requestedPrefabs.Select(prefab => prefab.name), StringComparer.OrdinalIgnoreCase);
+            File.WriteAllLines(Path.Combine(output, "available-prefabs.txt"), found.OrderBy(name => name, StringComparer.OrdinalIgnoreCase), new UTF8Encoding(false));
             var missing = requested.Where(name => !found.Contains(name)).OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToArray();
             if (missing.Length > 0)
                 Logger.LogWarning("Requested donor alias candidate(s) not registered: " + string.Join(", ", missing));
