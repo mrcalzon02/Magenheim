@@ -49,7 +49,7 @@ action('MycelialStalker_Stagger',32,{1:neutral,9:{'Spine':(.24,0,.22),'Pelvis':(
 action('MycelialStalker_Death',58,{1:neutral,18:{'Spine':(.20,0,.20),'Pelvis':(.16,0,-.12)},36:{'Spine':(.35,0,1.05),'Pelvis':(.20,0,.55),'Neck':(.30,0,.25),'Jaw_L':(.18,0,.24),'Jaw_R':(.18,0,-.24)},58:{'Spine':(.15,0,1.48),'Pelvis':(.12,0,.82),'Neck':(.42,0,.18),'Head':(.25,0,0)}})
 arm.animation_data.action=None
 sc['magenheim_fidelity']='production-creature-r2'
-sc['magenheim_authored_actions']='MycelialStalker_ConcealIdle,MycelialStalker_Crouch,MycelialStalker_Walk,MycelialStalker_Pounce,MycelialStalker_FailedPounceRetreat,MycelialStalker_Hit,MycelialStalker_Stagger,MycelialStalker_Death'
+sc['magenheim_authored_actions']='MycelialStalker_ConcealIdle,MycelialStalker_Crouch,MycelialStalker_Walk,MycelialStalker_Pounce,MycelialStalker_FailedPounceRetreat,MycelialStalker_Hit,MycelialStalker_Stagger,MycelialStalker_Death'; sc['magenheim_skinning']='rigid-segment-weighted'
 bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(MODEL),compress=True)
 print('AUTHORED Mycelial Stalker r2 animation set: 8 actions',flush=True)
