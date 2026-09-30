@@ -50,7 +50,8 @@ internal static class UnderworldVanillaDungeonRewardPolicy
         GameObject roomObject,
         UnderworldVanillaDungeonReuseDefinition profile,
         string donorRoomName,
-        int donorRoomIndex)
+        int donorRoomIndex,
+        UnderworldVanillaDungeonEcologyPolicy.Stats ecology)
     {
         if (!roomObject) throw new ArgumentNullException(nameof(roomObject));
         var room = roomObject.GetComponent<Room>()
@@ -67,14 +68,14 @@ internal static class UnderworldVanillaDungeonRewardPolicy
         var containers = roomObject.GetComponentsInChildren<Container>(true);
         for (var index = 0; index < containers.Length; index++)
             containers[index].m_defaultItems = ResourceTable(
-                resources, profile, band, Fixture.Container, donorRoomName, donorRoomIndex, index);
+                resources, profile, band, ecology, Fixture.Container, donorRoomName, donorRoomIndex, index);
 
         var bottleneckPickables = 0;
         var pickables = roomObject.GetComponentsInChildren<Pickable>(true);
         for (var index = 0; index < pickables.Length; index++)
         {
             var resource = DirectResource(
-                resources, profile, band, donorRoomName, donorRoomIndex, index);
+                resources, profile, band, ecology, donorRoomName, donorRoomIndex, index);
             var prefab = PrefabManager.Instance.GetPrefab(resource.Prefab)
                 ?? throw new InvalidOperationException(
                     "Underworld resource item '" + resource.Prefab + "' is unavailable.");
@@ -87,17 +88,17 @@ internal static class UnderworldVanillaDungeonRewardPolicy
         var mines = roomObject.GetComponentsInChildren<MineRock>(true);
         for (var index = 0; index < mines.Length; index++)
             mines[index].m_dropItems = ResourceTable(
-                resources, profile, band, Fixture.Mineable, donorRoomName, donorRoomIndex, index);
+                resources, profile, band, ecology, Fixture.Mineable, donorRoomName, donorRoomIndex, index);
 
         var mines5 = roomObject.GetComponentsInChildren<MineRock5>(true);
         for (var index = 0; index < mines5.Length; index++)
             mines5[index].m_dropItems = ResourceTable(
-                resources, profile, band, Fixture.Mineable, donorRoomName, donorRoomIndex, index + mines.Length);
+                resources, profile, band, ecology, Fixture.Mineable, donorRoomName, donorRoomIndex, index + mines.Length);
 
         var destroyed = roomObject.GetComponentsInChildren<DropOnDestroyed>(true);
         for (var index = 0; index < destroyed.Length; index++)
             destroyed[index].m_dropWhenDestroyed = ResourceTable(
-                resources, profile, band, Fixture.Destructible, donorRoomName, donorRoomIndex, index);
+                resources, profile, band, ecology, Fixture.Destructible, donorRoomName, donorRoomIndex, index);
 
         return new Stats(
             containers.Length,
@@ -111,6 +112,7 @@ internal static class UnderworldVanillaDungeonRewardPolicy
         IReadOnlyList<UnderworldResourceDefinition> resources,
         UnderworldVanillaDungeonReuseDefinition profile,
         UnderworldVanillaDungeonRiskBand band,
+        UnderworldVanillaDungeonEcologyPolicy.Stats ecology,
         Fixture fixture,
         string roomName,
         int roomIndex,
@@ -145,7 +147,7 @@ internal static class UnderworldVanillaDungeonRewardPolicy
         foreach (var resource in resources)
         {
             var rarity = RarityFor(resource);
-            var weight = Weight(rarity, profile.RoomCountMultiplier, band, fixture);
+            var weight = Weight(rarity, profile.RoomCountMultiplier, band, ecology, fixture);
             if (weight <= 0f) continue;
 
             var prefab = PrefabManager.Instance.GetPrefab(resource.Prefab)
@@ -172,6 +174,7 @@ internal static class UnderworldVanillaDungeonRewardPolicy
         IReadOnlyList<UnderworldResourceDefinition> resources,
         UnderworldVanillaDungeonReuseDefinition profile,
         UnderworldVanillaDungeonRiskBand band,
+        UnderworldVanillaDungeonEcologyPolicy.Stats ecology,
         string roomName,
         int roomIndex,
         int fixtureIndex)
@@ -186,7 +189,8 @@ internal static class UnderworldVanillaDungeonRewardPolicy
             // bottleneck share by the room-count multiplier. Deeper rooms may improve it modestly,
             // but 3.5x more rooms still cannot become 3.5x rare-material output.
             var baselineShare = bottlenecks.Length / (double)resources.Count;
-            var probability = baselineShare / profile.RoomCountMultiplier * RiskFactor(band);
+            var probability =
+                baselineShare / profile.RoomCountMultiplier * RiskFactor(band, ecology);
             if (UnderworldVanillaDungeonRoomPolicy.Roll(
                 probability, profile.DungeonId, roomName, roomIndex, "reward-bottleneck", fixtureIndex))
                 return bottlenecks[Index(
@@ -195,7 +199,7 @@ internal static class UnderworldVanillaDungeonRewardPolicy
 
         if (uncommon.Length > 0 &&
             UnderworldVanillaDungeonRoomPolicy.Roll(
-                .22d * RiskFactor(band),
+                .22d * RiskFactor(band, ecology),
                 profile.DungeonId, roomName, roomIndex, "reward-uncommon", fixtureIndex))
             return uncommon[Index(
                 uncommon.Length, profile.DungeonId, roomName, roomIndex, "reward-uncommon-choice", fixtureIndex)];
@@ -209,12 +213,13 @@ internal static class UnderworldVanillaDungeonRewardPolicy
         Rarity rarity,
         double roomCountMultiplier,
         UnderworldVanillaDungeonRiskBand band,
+        UnderworldVanillaDungeonEcologyPolicy.Stats ecology,
         Fixture fixture)
     {
         if (fixture == Fixture.Destructible && rarity == Rarity.Bottleneck)
             return 0f;
 
-        var risk = (float)RiskFactor(band);
+        var risk = (float)RiskFactor(band, ecology);
         return rarity switch
         {
             Rarity.Common => 1f,
@@ -224,14 +229,25 @@ internal static class UnderworldVanillaDungeonRewardPolicy
         };
     }
 
-    private static double RiskFactor(UnderworldVanillaDungeonRiskBand band) => band switch
+    private static double RiskFactor(
+        UnderworldVanillaDungeonRiskBand band,
+        UnderworldVanillaDungeonEcologyPolicy.Stats ecology)
     {
-        UnderworldVanillaDungeonRiskBand.Outer => .65d,
-        UnderworldVanillaDungeonRiskBand.Mid => .90d,
-        UnderworldVanillaDungeonRiskBand.Deep => 1.20d,
-        UnderworldVanillaDungeonRiskBand.Lair => 1.50d,
-        _ => 1d,
-    };
+        var baseFactor = band switch
+        {
+            UnderworldVanillaDungeonRiskBand.Outer => .65d,
+            UnderworldVanillaDungeonRiskBand.Mid => .90d,
+            UnderworldVanillaDungeonRiskBand.Deep => 1.20d,
+            UnderworldVanillaDungeonRiskBand.Lair => 1.50d,
+            _ => 1d,
+        };
+
+        // Heavy/apex pressure earns a better alternate-material opportunity, but the boost remains
+        // inside the inverse 3.5x normalization rather than becoming guaranteed rare loot.
+        return ecology.HeavyBindings + ecology.ApexBindings > 0
+            ? baseFactor * 1.18d
+            : baseFactor;
+    }
 
     private static Rarity RarityFor(UnderworldResourceDefinition resource)
     {
