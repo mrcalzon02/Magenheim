@@ -34,6 +34,7 @@ action('Lamprey_Hit',18,{1:N,6:{**wave(.9,.22),'Spine_1':(.08,.08,.25),'Head':(-
 action('Lamprey_Death',64,{1:N,20:{**wave(.8,.10),'Spine_1':(.20,0,.18)},42:{**wave(1.5,.05),'Spine_1':(.48,0,.62),'Head':(.28,0,.20),'MouthRing':(-.20,0,0)},64:{'Spine_1':(.74,0,1.08),'Head':(.42,0,.30),'MouthRing':(-.30,0,0),'Jaw':(-.28,0,0)}})
 arm.animation_data.action=None; arm['production_contract']='production-creature-r2'
 arm['authored_actions']='Lamprey_SwimIdle,Lamprey_Cruise,Lamprey_Sprint,Lamprey_BankLeft,Lamprey_BankRight,Lamprey_Lunge,Lamprey_Latch,Lamprey_AttachedIdle,Lamprey_Detach,Lamprey_Hit,Lamprey_Death'
+sc=bpy.context.scene; sc['magenheim_authored_actions']=arm['authored_actions']; sc['magenheim_skinning']='rigid-segment-weighted'
 arm['animation_readability_contract']='traveling-six-stage-propulsion;oral-disc-latch-without-root-translation;living-attached-idle;detach-recovery'
 bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(MODEL),compress=True)
 print('AUTHORED Blackwater Lamprey r2: 11 actions; traveling propulsion and oral-disc latch lifecycle',flush=True)
