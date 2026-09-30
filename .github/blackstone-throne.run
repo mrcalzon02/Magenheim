@@ -1,3 +1,3 @@
-blackstone-throne-forge vertical-reference-r2-review-repaired 2026-09-29
-source=956058bd6155ee9ad623be5b39bb88c5160f5781
-intent=forge-authored-vertical-hall-and-real-blender-review
+blackstone-throne-forge vertical-reference-r2-pinned 2026-09-29
+source=60294bf4be23053647f104fc5f9cc679849a8610
+intent=pin-forge-to-triggering-vertical-hall-commit
