@@ -69,6 +69,18 @@ internal static class UnderworldVanillaDungeonCandidatePolicy
             ? "ENABLED for " + RequireCandidate().DungeonId
             : "disabled";
 
+    internal static bool IsCandidate(UnderworldDungeonDefinition definition)
+    {
+        if (definition is null || !Enabled) return false;
+        var candidate = RequireCandidate();
+        return string.Equals(candidate.DungeonId, definition.Id, StringComparison.Ordinal);
+    }
+
+    internal static bool IsWorldgenAdmitted(UnderworldDungeonDefinition definition) =>
+        definition is not null &&
+        (definition.Status == UnderworldDungeonStatus.RuntimeReady || IsCandidate(definition));
+
+
     private static UnderworldVanillaDungeonReuseDefinition RequireCandidate()
     {
         var raw = (_candidate?.Value ?? string.Empty).Trim();
