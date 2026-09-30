@@ -94,4 +94,5 @@ for required in ['Spine_1','Spine_2','Spine_3','Spine_4','Spine_5','Tail_1','Tai
 arm['magenheim_asset']='deep-hunter'; arm['production_contract']='production-creature-r1'; arm['host_rig']='HOST-AQUATIC-FISH-APEX'; arm['length_m']=LENGTH
 arm['role']='blackwater-apex-hero-predator'; arm['modeled_teeth']=40; arm['body_tail_deformation_bones']=7
 arm['animation_contract']='swim-idle,cruise,sprint,turn-left,turn-right,bite,ram,breach,breach-recover,tail-strike,hit,stagger,death'
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-deep-hunter'; sc['magenheim_skinning']='rigid-segment-weighted'
 OUT.parent.mkdir(parents=True,exist_ok=True); bpy.ops.wm.save_as_mainfile(filepath=str(OUT)); print(f'Wrote {OUT} meshes={len(meshes)} tris={tris}')
