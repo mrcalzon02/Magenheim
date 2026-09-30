@@ -273,9 +273,38 @@ The following gates are sequential. A later gate does not compensate for an earl
 
 A dungeon may be promoted individually; all five do not need to become RuntimeReady at once.
 
+The gate identifiers in this document are authoritative and intentionally match `BACKLOG.md`,
+`TESTING.md`, validation records and fail-closed source verifiers.
+
+### Current execution state — 2026-09-29
+
+| Gate | Current state | What exists now | What still clears the gate |
+|---|---|---|---|
+| DDE-00 | Source-enforced; execution evidence pending | `verify-deep-dungeon-expansion-gate0.py` is wired into normal build and production preflight | Successful execution in the current build/Valheim environment |
+| DDE-01 | Tooling implemented; live evidence pending | `magenheim_underworld donors` captures a live donor census for all five families | Installed-game census succeeds and evidence is reviewed |
+| DDE-02..DDE-10 | Static prerequisites implemented; live evidence pending | `verify-deep-dungeon-expansion-source-prerequisites.py` guards clone/scale/count/ecology/reward/worldgen/return source seams | Each donor passes its corresponding installed-game gates |
+| DDE-11 | Open | Existing Valheim persistence/network substrate is reused | Save/reload, reconnect and two-peer dungeon cases pass |
+| DDE-12 | Open | Balance/performance acceptance criteria are defined here and in `TESTING.md` | Economy and performance measurements are acceptable |
+| DDE-13 | Blocked | Promotion remains explicit and per-family | A single donor has DDE-00..DDE-12 evidence and its catalog row is deliberately promoted |
+| DDE-14 | Blocked | Deep Fracture is still separate and RuntimeReady | Final regression proves ordinary reuse did not alter Deep Fracture |
+
+All five ordinary catalog entries remain `Planned`. This table must not be interpreted as runtime
+acceptance merely because source prerequisites exist.
+
+### Candidate-world workflow
+
+Live validation of a Planned donor uses the developer-only
+`Development.DeepDungeonExpansion.EnablePlannedCandidateWorldgen` policy. It is disabled by
+default, admits exactly one Planned ordinary dungeon at a time, defaults to Fungal Forest for the
+first validation lane, and is included in gameplay peer authority so multiplayer cannot silently
+disagree about candidate admission.
+
+Candidate admission is a test exception only. It does not change a catalog row to `RuntimeReady`
+and must be disabled again outside disposable DDE validation worlds.
+
 ---
 
-## Gate 0 — Architecture freeze
+## DDE-00 — Architecture freeze
 
 **Objective:** prevent scope drift.
 
@@ -298,7 +327,7 @@ Evidence:
 
 ---
 
-## Gate 1 — Live donor identity verification
+## DDE-01 — Live donor identity verification
 
 **Objective:** prove every donor name/theme/generator used in Core authority matches the currently
 installed Valheim build.
@@ -329,7 +358,7 @@ Record a donor census artifact for each family.
 
 ---
 
-## Gate 2 — Vanilla isolation
+## DDE-02 — Vanilla isolation
 
 **Objective:** prove Magenheim cannot damage the Surface donor.
 
@@ -352,7 +381,7 @@ compare them directly.
 
 ---
 
-## Gate 3 — 1.5x physical-scale integrity
+## DDE-03 — 1.5x physical-scale integrity
 
 **Objective:** make the rooms genuinely larger without breaking procedural construction.
 
@@ -385,7 +414,7 @@ Test representative:
 
 ---
 
-## Gate 4 — 3.5x generation-volume integrity
+## DDE-04 — 3.5x generation-volume integrity
 
 **Objective:** make the dungeon meaningfully larger rather than merely stretching rooms.
 
@@ -407,7 +436,7 @@ The desired result is **a familiar procedural grammar operating over a much long
 
 ---
 
-## Gate 5 — Required-room and door correctness
+## DDE-05 — Required-room and door correctness
 
 **Objective:** ensure the private theme remains functionally complete.
 
@@ -424,7 +453,7 @@ This gate must be repeated for every donor because required-room and door behavi
 
 ---
 
-## Gate 6 — Creature ecology replacement
+## DDE-06 — Creature ecology replacement
 
 **Objective:** make the dungeon belong to the Underworld biome.
 
@@ -444,7 +473,7 @@ Do not simply fill every possible donor socket. A 3.5x dungeon needs pacing, not
 
 ---
 
-## Gate 7 — Resource and reward replacement
+## DDE-07 — Resource and reward replacement
 
 **Objective:** turn exploration into meaningful biome progression.
 
@@ -469,7 +498,7 @@ A recommended distribution model is:
 
 ---
 
-## Gate 8 — Donor mechanics retention review
+## DDE-08 — Donor mechanics retention review
 
 **Objective:** preserve useful vanilla dungeon mechanics rather than stripping them blindly.
 
@@ -526,7 +555,7 @@ Mechanics that leak donor lore/progression should be removed even when mechanica
 
 ---
 
-## Gate 9 — Underworld worldgen confinement
+## DDE-09 — Underworld worldgen confinement
 
 **Objective:** guarantee the derivative exists only where intended.
 
@@ -545,7 +574,7 @@ Run fresh-world generation tests, not only console placement.
 
 ---
 
-## Gate 10 — Entrance / interior / return integrity
+## DDE-10 — Entrance / interior / return integrity
 
 **Objective:** preserve the donor's proven dungeon travel mechanics while keeping world identity
 correct.
@@ -565,7 +594,7 @@ This is especially important for donors using custom interior transforms.
 
 ---
 
-## Gate 11 — Persistence and multiplayer
+## DDE-11 — Persistence and multiplayer
 
 **Objective:** prove the enlarged derivative behaves like a real Valheim dungeon over time.
 
@@ -588,10 +617,12 @@ Required live cases:
 
 ---
 
-## Gate 12 — Economy and progression review
+## DDE-12 — Economy, progression, performance and stability
 
-**Objective:** confirm that the larger dungeon is worth exploring without replacing the rest of the
-biome economy.
+**Objective:** prove that the larger dungeon is worth exploring, does not replace the rest of the
+biome economy, and remains practical at the expanded scale.
+
+### Economy and progression measurements
 
 Measure:
 
@@ -611,13 +642,9 @@ Desired result:
 A full expanded dungeon should feel **materially rewarding**, but exterior exploration, gathering,
 geodes, stations and ordinary biome combat must remain useful.
 
-A 3.5x dungeon should not imply a 3.5x multiplier to every rare reward.
+A 3.5x dungeon must not imply a 3.5x multiplier to every rare reward.
 
----
-
-## Gate 13 — Performance and stability
-
-**Objective:** prove the larger procedural spaces remain practical.
+### Performance and stability measurements
 
 Measure:
 
@@ -631,14 +658,15 @@ Measure:
 - light count / shadow cost;
 - physics/collider cost.
 
-If performance is unacceptable, reduce active ecology density or optimize donor clone handling
-before reducing the exploration-size requirement.
+If performance is unacceptable, reduce active ecology density, lighting cost or donor-clone runtime
+overhead before reducing the exploration-size requirement. The first response must not be to shrink
+the dungeon back toward vanilla size.
 
-The first response should not be to shrink the dungeon back toward vanilla size.
+**DDE-12 passes only when both the economy and the performance sides pass.**
 
 ---
 
-## Gate 14 — Per-family promotion
+## DDE-13 — Per-family promotion
 
 A dungeon may move from `Planned` to `RuntimeReady` only after its donor-specific gates pass.
 
@@ -661,7 +689,7 @@ Do **not** mark all five RuntimeReady merely because one donor family works.
 
 ---
 
-## Gate 15 — Final regression against Deep Fracture
+## DDE-14 — Final regression against Deep Fracture
 
 Before the ordinary dungeon program is considered complete:
 
