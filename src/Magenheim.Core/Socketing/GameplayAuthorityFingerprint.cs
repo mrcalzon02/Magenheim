@@ -19,7 +19,8 @@ public static class GameplayAuthorityFingerprint
     public static string Compute(
         string definitionFingerprint,
         SocketEligibilityPolicy socketPolicy,
-        string? underworldSpatialFingerprint = null)
+        string? underworldSpatialFingerprint = null,
+        string? runtimePolicyFingerprint = null)
     {
         if (!IsCanonicalSha256(definitionFingerprint))
             throw new ArgumentException("Definition fingerprint must be canonical lowercase SHA-256 hex.", nameof(definitionFingerprint));
@@ -27,11 +28,16 @@ public static class GameplayAuthorityFingerprint
             throw new ArgumentNullException(nameof(socketPolicy));
         if (underworldSpatialFingerprint is not null && !IsCanonicalSha256(underworldSpatialFingerprint))
             throw new ArgumentException("Underworld spatial fingerprint must be canonical lowercase SHA-256 hex.", nameof(underworldSpatialFingerprint));
+        if (runtimePolicyFingerprint is not null && !IsCanonicalSha256(runtimePolicyFingerprint))
+            throw new ArgumentException("Runtime policy fingerprint must be canonical lowercase SHA-256 hex.", nameof(runtimePolicyFingerprint));
 
         var builder = new StringBuilder();
         builder.Append("definition|").Append(definitionFingerprint).Append('\n');
         builder.Append("underworld-spatial|")
             .Append(underworldSpatialFingerprint ?? "absent")
+            .Append('\n');
+        builder.Append("runtime-policy|")
+            .Append(runtimePolicyFingerprint ?? "absent")
             .Append('\n');
         builder.Append("socket-policy-v1|")
             .Append(socketPolicy.WeaponMaxSlots).Append('|')
