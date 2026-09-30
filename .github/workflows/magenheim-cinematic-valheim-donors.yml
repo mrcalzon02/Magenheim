@@ -1,0 +1,249 @@
+name: Magenheim Cinematic Valheim Donor Forge
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/magenheim-cinematic-donors.run'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: magenheim-cinematic-valheim-donors
+  cancel-in-progress: false
+
+jobs:
+  donor-forge:
+    runs-on: windows-2025
+    timeout-minutes: 75
+    steps:
+      - name: Checkout authoritative main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12.10'
+
+      - name: .NET
+        uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9
+        with:
+          dotnet-version: '8.0.425'
+
+      - name: Preflight cinematic donor authority
+        shell: pwsh
+        run: |
+          python -m py_compile tools/verify-cinematic-asset-manifest.py tools/resolve-cinematic-valheim-donors.py tools/build-cinematic-valheim-donor-library.py tools/build-magenheim-cinematic-environment.py
+          if ($LASTEXITCODE -ne 0) { throw 'Cinematic donor Python preflight failed.' }
+          python tools/verify-cinematic-asset-manifest.py
+          if ($LASTEXITCODE -ne 0) { throw 'Cinematic asset manifest failed.' }
+
+      - name: Provision current Valheim dedicated-server runtime
+        shell: pwsh
+        run: |
+          $depot = Join-Path $env:RUNNER_TEMP 'depotdownloader'
+          $game = Join-Path $env:RUNNER_TEMP 'valheim-server'
+          New-Item -ItemType Directory -Force -Path $depot,$game | Out-Null
+
+          $zip = Join-Path $depot 'DepotDownloader-windows-x64.zip'
+          Invoke-WebRequest 'https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_3.4.0/DepotDownloader-windows-x64.zip' -OutFile $zip
+          Expand-Archive $zip -DestinationPath $depot -Force
+          $exe = Join-Path $depot 'DepotDownloader.exe'
+          if (!(Test-Path -LiteralPath $exe)) { throw 'Pinned DepotDownloader executable missing.' }
+
+          & $exe -app 896660 -depot 896662 -branch public -os windows -osarch 64 -dir $game -validate
+          if ($LASTEXITCODE -ne 0) { throw 'Valheim Windows dedicated-server depot provisioning failed.' }
+
+          $server = Get-ChildItem -LiteralPath $game -Filter 'valheim_server.exe' -File -Recurse | Select-Object -First 1
+          $assembly = Get-ChildItem -LiteralPath $game -Filter 'assembly_valheim.dll' -File -Recurse | Select-Object -First 1
+          if (!$server -or !$assembly) { throw 'Provisioned Valheim runtime is incomplete.' }
+          "MAGENHEIM_VALHEIM_GAME=$($server.DirectoryName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "MAGENHEIM_VALHEIM_SERVER=$($server.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "MAGENHEIM_VALHEIM_MANAGED=$($assembly.DirectoryName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Provision BepInEx, Jotunn and JsonDotNET into isolated runtime
+        shell: pwsh
+        run: |
+          $packages = Join-Path $env:RUNNER_TEMP 'valheim-mod-packages'
+          New-Item -ItemType Directory -Force -Path $packages | Out-Null
+
+          $bepZip = Join-Path $packages 'bepinex.zip'
+          Invoke-WebRequest 'https://thunderstore.io/package/download/denikson/BepInExPack_Valheim/5.4.2351/' -OutFile $bepZip
+          $bepExtract = Join-Path $packages 'bepinex'
+          Expand-Archive $bepZip -DestinationPath $bepExtract -Force
+          $doorstop = Get-ChildItem -LiteralPath $bepExtract -Filter 'winhttp.dll' -File -Recurse | Select-Object -First 1
+          if (!$doorstop) { throw 'BepInEx pack did not contain winhttp.dll.' }
+          Copy-Item -Path (Join-Path $doorstop.DirectoryName '*') -Destination $env:MAGENHEIM_VALHEIM_GAME -Recurse -Force
+
+          function Install-ThunderstorePlugin([string]$Name,[string]$Url,[string]$DllName) {
+            $zip = Join-Path $packages ($Name + '.zip')
+            $dir = Join-Path $packages $Name
+            Invoke-WebRequest $Url -OutFile $zip
+            Expand-Archive $zip -DestinationPath $dir -Force
+            $dll = Get-ChildItem -LiteralPath $dir -Filter $DllName -File -Recurse | Select-Object -First 1
+            if (!$dll) { throw "$Name package did not contain $DllName." }
+            $dest = Join-Path $env:MAGENHEIM_VALHEIM_GAME ('BepInEx/plugins/' + $Name)
+            New-Item -ItemType Directory -Force -Path $dest | Out-Null
+            Copy-Item -Path (Join-Path $dll.DirectoryName '*') -Destination $dest -Recurse -Force
+          }
+
+          Install-ThunderstorePlugin 'Jotunn' 'https://thunderstore.io/package/download/ValheimModding/Jotunn/2.30.0/' 'Jotunn.dll'
+          Install-ThunderstorePlugin 'JsonDotNET' 'https://thunderstore.io/package/download/ValheimModding/JsonDotNET/13.0.4/' 'JsonDotNET.dll'
+
+          $preloader = Join-Path $env:MAGENHEIM_VALHEIM_GAME 'BepInEx/core/BepInEx.Preloader.dll'
+          $bepDll = Join-Path $env:MAGENHEIM_VALHEIM_GAME 'BepInEx/core/BepInEx.dll'
+          if (!(Test-Path $preloader) -or !(Test-Path $bepDll)) { throw 'Isolated BepInEx loader is incomplete.' }
+          "MAGENHEIM_BEPINEX=$(Join-Path $env:MAGENHEIM_VALHEIM_GAME 'BepInEx')" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "MAGENHEIM_PRELOADER=$preloader" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Compile and install export-capable Magenheim runtime
+        shell: pwsh
+        run: |
+          dotnet build src/Magenheim.Runtime -c Release "-p:ValheimManagedPath=$env:MAGENHEIM_VALHEIM_MANAGED" "-p:BepInExPath=$env:MAGENHEIM_BEPINEX"
+          if ($LASTEXITCODE -ne 0) { throw 'Magenheim runtime compile failed before donor extraction.' }
+
+          $source = Resolve-Path 'src/Magenheim.Runtime/bin/Release/net462'
+          $dest = Join-Path $env:MAGENHEIM_VALHEIM_GAME 'BepInEx/plugins/Magenheim'
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          foreach ($name in @('Magenheim.dll','Magenheim.Core.dll')) {
+            $path = Join-Path $source $name
+            if (!(Test-Path -LiteralPath $path)) { throw "Compiled runtime missing $name." }
+            Copy-Item -LiteralPath $path -Destination $dest -Force
+          }
+          foreach ($dirName in @('assets','default-data')) {
+            $path = Join-Path $source $dirName
+            if (!(Test-Path -LiteralPath $path)) { throw "Compiled runtime missing $dirName." }
+            Copy-Item -LiteralPath $path -Destination $dest -Recurse -Force
+          }
+
+      - name: Export selected registered Valheim prefabs
+        shell: pwsh
+        run: |
+          $export = Join-Path $env:RUNNER_TEMP 'cinematic-valheim-export'
+          New-Item -ItemType Directory -Force -Path $export | Out-Null
+
+          $prefabs = @(python tools/verify-cinematic-asset-manifest.py --prefab-list | Where-Object { $_ -and $_ -notmatch '^VERIFIED ' })
+          if ($LASTEXITCODE -ne 0 -or $prefabs.Count -eq 0) { throw 'Unable to resolve cinematic prefab request list.' }
+
+          $env:MAGENHEIM_EXPORT_MODELS='1'
+          $env:MAGENHEIM_EXPORT_SCOPE='selected'
+          $env:MAGENHEIM_EXPORT_PREFABS=($prefabs -join ',')
+          $env:MAGENHEIM_EXPORT_DIR=$export
+          $env:MAGENHEIM_EXPORT_EXIT='1'
+
+          $args = @(
+            '--doorstop-enabled','true',
+            '--doorstop-target-assembly',$env:MAGENHEIM_PRELOADER,
+            '-nographics','-batchmode',
+            '-name','MagenheimCinematicExport',
+            '-port','2468',
+            '-world','MagenheimCinematicExport',
+            '-password','MagenheimExport42',
+            '-public','0'
+          )
+          $process = Start-Process -FilePath $env:MAGENHEIM_VALHEIM_SERVER -ArgumentList $args -WorkingDirectory $env:MAGENHEIM_VALHEIM_GAME -PassThru -NoNewWindow
+          $deadline = (Get-Date).AddMinutes(5)
+          while ((Get-Date) -lt $deadline) {
+            if (Test-Path -LiteralPath (Join-Path $export 'SUCCESS')) { break }
+            if (Test-Path -LiteralPath (Join-Path $export 'FAILED')) {
+              Get-Content -LiteralPath (Join-Path $export 'FAILED') -ErrorAction SilentlyContinue | Write-Host
+              throw 'Runtime Valheim donor export reported failure.'
+            }
+            if ($process.HasExited) { break }
+            Start-Sleep -Seconds 2
+            $process.Refresh()
+          }
+
+          if (!(Test-Path -LiteralPath (Join-Path $export 'SUCCESS'))) {
+            if (!$process.HasExited) { Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue }
+            $log = Join-Path $env:MAGENHEIM_VALHEIM_GAME 'BepInEx/LogOutput.log'
+            if (Test-Path -LiteralPath $log) { Get-Content -LiteralPath $log -Tail 180 | Write-Host }
+            throw 'Valheim donor export did not complete within the acceptance window.'
+          }
+          if (!$process.HasExited) {
+            Start-Sleep -Seconds 2
+            $process.Refresh()
+            if (!$process.HasExited) { Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue }
+          }
+
+          "MAGENHEIM_DONOR_EXPORT=$export" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Resolve required donor roles
+        shell: pwsh
+        run: |
+          $resolved = Join-Path $env:RUNNER_TEMP 'cinematic-valheim-resolved.json'
+          python tools/resolve-cinematic-valheim-donors.py --export-dir "$env:MAGENHEIM_DONOR_EXPORT" --output $resolved
+          if ($LASTEXITCODE -ne 0) {
+            if (Test-Path -LiteralPath (Join-Path $env:MAGENHEIM_DONOR_EXPORT 'manifest.json')) {
+              Get-Content -LiteralPath (Join-Path $env:MAGENHEIM_DONOR_EXPORT 'manifest.json') | Write-Host
+            }
+            throw 'Required cinematic Valheim donor roles did not resolve.'
+          }
+          "MAGENHEIM_DONOR_RESOLVED=$resolved" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Provision pinned Blender 5.0.0
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP 'blender'
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          $file = 'blender-5.0.0-windows-x64.zip'
+          $base = 'https://download.blender.org/release/Blender5.0'
+          Invoke-WebRequest "$base/$file" -OutFile "$dir/$file"
+          Invoke-WebRequest "$base/blender-5.0.0.sha256" -OutFile "$dir/blender.sha256"
+          $line = Get-Content "$dir/blender.sha256" | Where-Object { $_ -match [regex]::Escape($file) } | Select-Object -First 1
+          if (!$line) { throw 'Official Blender checksum file does not contain the pinned archive.' }
+          $expected = ($line -split '\s+')[0].ToLowerInvariant()
+          $actual = (Get-FileHash "$dir/$file" -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne $expected) { throw "Blender checksum mismatch: $actual != $expected" }
+          Expand-Archive "$dir/$file" -DestinationPath $dir -Force
+          $exe = Join-Path $dir 'blender-5.0.0-windows-x64/blender.exe'
+          if (!(Test-Path $exe)) { throw 'Pinned Blender executable missing after extraction.' }
+          "MAGENHEIM_BLENDER=$exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Build transient donor library and donor-integrated cinematic previews
+        shell: pwsh
+        run: |
+          $library = Join-Path $env:RUNNER_TEMP 'valheim-cinematic-donors.blend'
+          & $env:MAGENHEIM_BLENDER --background --factory-startup --python tools/build-cinematic-valheim-donor-library.py -- --export-dir "$env:MAGENHEIM_DONOR_EXPORT" --resolved "$env:MAGENHEIM_DONOR_RESOLVED" --output $library
+          if ($LASTEXITCODE -ne 0 -or !(Test-Path -LiteralPath $library)) { throw 'Transient Valheim donor Blender library failed.' }
+
+          $scene = Join-Path $env:RUNNER_TEMP 'magenheim-cinematic-with-valheim-donors.blend'
+          $previews = Join-Path $env:RUNNER_TEMP 'cinematic-donor-previews'
+          & $env:MAGENHEIM_BLENDER --background --factory-startup --python tools/build-magenheim-cinematic-environment.py -- --output $scene --preview-dir $previews --valheim-donor-library $library
+          if ($LASTEXITCODE -ne 0) { throw 'Donor-integrated cinematic scene build failed.' }
+          $previewCount = @(Get-ChildItem -LiteralPath $previews -Filter '*.png' -File).Count
+          if ($previewCount -ne 8) { throw "Expected eight donor-integrated previews; got $previewCount." }
+
+          $report = [ordered]@{
+            schema = 1
+            workflow_run = "$env:GITHUB_RUN_ID"
+            source_commit = (git rev-parse HEAD).Trim()
+            donor_library_bytes = (Get-Item -LiteralPath $library).Length
+            scene_bytes = (Get-Item -LiteralPath $scene).Length
+            preview_count = $previewCount
+            raw_valheim_assets_uploaded = $false
+            raw_valheim_assets_committed = $false
+          }
+          $reportPath = Join-Path $env:RUNNER_TEMP 'cinematic-donor-report.json'
+          $report | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $reportPath -Encoding utf8
+          "MAGENHEIM_DONOR_PREVIEWS=$previews" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "MAGENHEIM_DONOR_REPORT=$reportPath" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Upload reviewable previews and manifests only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: magenheim-cinematic-valheim-donor-review-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/cinematic-donor-previews/*.png
+            ${{ runner.temp }}/cinematic-valheim-resolved.json
+            ${{ runner.temp }}/cinematic-donor-report.json
+            ${{ runner.temp }}/valheim-server/BepInEx/LogOutput.log
+          if-no-files-found: warn
+          retention-days: 5
