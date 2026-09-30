@@ -116,4 +116,5 @@ arm['readability_contract']='squat front-heavy geothermal animal; exposed three-
 arm['planned_actions']='Idle,PressureIdle,Walk,Scuttle,TurnLeft,TurnRight,Charge,Spit,Recoil,Bite,Hit,Stagger,Death'
 arm['charge_contract']='Charge must visibly inflate Sac and Throat before Spit; ranged tell cannot be particle-only'
 arm['root_motion_policy']='Root translation reserved for Valheim runtime; authored actions remain in-place'
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-vent-spitter'; sc['magenheim_skinning']='rigid-segment-weighted'
 bpy.context.view_layer.objects.active=arm; arm.select_set(True); bpy.ops.wm.save_as_mainfile(filepath=str(OUT)); print(f'Authored {OUT}: {len(meshes)} meshes, {polys} polygons, 3 pressure lobes, 6 relief vents, 16 teeth')
