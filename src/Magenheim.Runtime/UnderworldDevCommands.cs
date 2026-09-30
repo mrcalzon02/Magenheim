@@ -37,7 +37,7 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
     }
 
     public override string Name => "magenheim_underworld";
-    public override string Help => "enter | return | status | audit | survey | dungeons | donors | dde -- transit/status, admission audit, terrain/dungeon audit, donor census, or DDE persistence snapshot (devcommands)";
+    public override string Help => "enter | return | status | audit | survey | dungeons | donors | dde [snapshot|audit] -- transit/status, admission audit, terrain/dungeon audit, donor census, or DDE evidence (devcommands)";
     public override bool IsCheat => true;
     public override List<string> CommandOptionList() => new() { "enter", "return", "status", "audit", "survey", "dungeons", "donors", "dde" };
 
@@ -89,7 +89,7 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
                 RunDonorCensus();
                 break;
             case "dde":
-                RunDdeSnapshot(player);
+                RunDde(player, args);
                 break;
             default:
                 Say($"Unknown option '{verb}'. Use: {Name} enter | return | status | audit | survey | dungeons | donors | dde");
@@ -139,17 +139,35 @@ internal sealed class UnderworldDevCommands : ConsoleCommand
         }
     }
 
-    private static void RunDdeSnapshot(Player player)
+    private static void RunDde(Player player, string[] args)
     {
+        var mode = args.Length > 1 ? args[1].ToLowerInvariant() : "snapshot";
         try
         {
-            var file = UnderworldVanillaDungeonGenerationDiagnostics.CaptureRuntimeSnapshot(player, _log);
-            Say("DDE RUNTIME SNAPSHOT: " + file);
+            switch (mode)
+            {
+                case "snapshot":
+                    var file = UnderworldVanillaDungeonGenerationDiagnostics.CaptureRuntimeSnapshot(player, _log);
+                    Say("DDE RUNTIME SNAPSHOT: " + file);
+                    break;
+                case "audit":
+                    var result = UnderworldVanillaDungeonCandidateAudit.Capture(player, _log);
+                    Say(
+                        (result.Pass ? "DDE CANDIDATE AUDIT PASS: " : "DDE CANDIDATE AUDIT FAIL: ") +
+                        result.EvidenceFile);
+                    if (!result.Pass)
+                        foreach (var failure in result.Failures.Take(8))
+                            Say("DDE AUDIT FAILURE: " + failure);
+                    break;
+                default:
+                    Say("Unknown DDE option '" + mode + "'. Use: magenheim_underworld dde snapshot | audit");
+                    break;
+            }
         }
         catch (Exception exception)
         {
-            _log?.LogError("Deep Dungeon runtime snapshot failed: " + exception);
-            Say("DDE RUNTIME SNAPSHOT FAIL: " + exception.Message);
+            _log?.LogError("Deep Dungeon evidence capture failed: " + exception);
+            Say("DDE " + mode.ToUpperInvariant() + " FAIL: " + exception.Message);
         }
     }
 
