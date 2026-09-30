@@ -93,4 +93,5 @@ arm['material_language']='dry fractured basalt plates / warmer fracture edges / 
 arm['readability_contract']='very low broad crawler; seven overlapping stone slabs; face protected below articulated brow; six bracing legs; paired frontal ram bosses'
 arm['planned_actions']='Idle,Scuttle,TurnLeft,TurnRight,AttackLeft,AttackRight,FrontStrike,Guard,Ram,Hit,Stagger,Death'
 arm['root_motion_policy']='Root translation reserved for Valheim runtime; authored actions remain in-place'
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-basalt-crawler'; sc['magenheim_skinning']='rigid-segment-weighted'
 bpy.context.view_layer.objects.active=arm; arm.select_set(True); bpy.ops.wm.save_as_mainfile(filepath=str(OUT)); print(f'Authored {OUT}: {len(meshes)} meshes, {polys} polygons, 7 plates, 6 articulated legs')
