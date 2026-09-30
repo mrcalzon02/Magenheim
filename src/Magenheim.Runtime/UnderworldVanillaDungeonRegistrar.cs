@@ -38,16 +38,10 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
     {
         UnderworldVanillaDungeonReuseCatalog.Validate();
         var active = ActiveProfiles().ToArray();
-        if (active.Length == 0)
-        {
-            _log.LogDebug(
-                "Expanded vanilla Underworld dungeons remain fail-closed: all five ordinary dungeon definitions are Planned and DDE candidate admission is disabled.");
-            return;
-        }
-
-        if (UnderworldVanillaDungeonCandidatePolicy.TryGetCandidate(out var candidate))
-            _log.LogWarning(
-                $"DDE CANDIDATE MODE: admitting Planned donor derivative '{candidate.DungeonId}' for disposable validation only. This is not RuntimeReady promotion.");
+        if (active.Length != UnderworldVanillaDungeonReuseCatalog.All.Count)
+            throw new InvalidOperationException(
+                $"Expanded vanilla Underworld dungeon admission is incomplete: {active.Length}/" +
+                $"{UnderworldVanillaDungeonReuseCatalog.All.Count} ordinary donor families are RuntimeReady.");
 
         DungeonManager.OnVanillaRoomsAvailable += RegisterRooms;
         ZoneManager.OnVanillaLocationsAvailable += RegisterLocations;
@@ -65,9 +59,7 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             yield return profile;
         }
 
-        if (UnderworldVanillaDungeonCandidatePolicy.TryGetCandidate(out var candidate) &&
-            seen.Add(candidate.DungeonId))
-            yield return candidate;
+
     }
 
     private void RegisterRooms()
