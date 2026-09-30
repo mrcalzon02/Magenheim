@@ -20,8 +20,6 @@ internal static class ModelExportRuntime
     private const string ExportFlag = "MAGENHEIM_EXPORT_MODELS";
     private const string ExportDirectoryVariable = "MAGENHEIM_EXPORT_DIR";
     private const string ExportExitFlag = "MAGENHEIM_EXPORT_EXIT";
-    private const string ExportPrefabsVariable = "MAGENHEIM_EXPORT_PREFABS";
-    private const string ExportScopeVariable = "MAGENHEIM_EXPORT_SCOPE";
     private static ManualLogSource? _logger;
     private static bool _armed;
 
@@ -49,22 +47,12 @@ internal static class ModelExportRuntime
             Directory.CreateDirectory(output);
 
             var scene = ZNetScene.instance ?? throw new InvalidOperationException("ZNetScene is unavailable during model export.");
-            var requested = ParseRequestedPrefabs();
-            var selectedOnly = string.Equals(Environment.GetEnvironmentVariable(ExportScopeVariable), "selected", StringComparison.OrdinalIgnoreCase);
-            if (selectedOnly && requested.Count == 0)
-                throw new InvalidOperationException("MAGENHEIM_EXPORT_SCOPE=selected requires MAGENHEIM_EXPORT_PREFABS.");
-
             var prefabs = scene.m_prefabs
-                .Where(prefab => prefab != null && ((!selectedOnly && IsMagenheimPrefab(prefab)) || requested.Contains(prefab.name)))
-                .GroupBy(prefab => prefab.name, StringComparer.OrdinalIgnoreCase)
+                .Where(prefab => prefab != null && IsMagenheimPrefab(prefab))
+                .GroupBy(prefab => prefab.name, StringComparer.Ordinal)
                 .Select(group => group.First())
-                .OrderBy(prefab => prefab.name, StringComparer.OrdinalIgnoreCase)
+                .OrderBy(prefab => prefab.name, StringComparer.Ordinal)
                 .ToArray();
-
-            var found = new HashSet<string>(prefabs.Select(prefab => prefab.name), StringComparer.OrdinalIgnoreCase);
-            var missingRequested = requested.Where(name => !found.Contains(name)).OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToArray();
-            if (missingRequested.Length > 0)
-                _logger?.LogWarning("Requested runtime prefab candidate(s) were not registered: " + string.Join(", ", missingRequested));
 
             var records = new List<ExportRecord>();
             foreach (var prefab in prefabs)
@@ -76,11 +64,11 @@ internal static class ModelExportRuntime
 
             var exported = records.Count(record => record.File != null);
             if (exported == 0)
-                throw new InvalidOperationException("No requested runtime meshes were exported.");
+                throw new InvalidOperationException("No Magenheim runtime meshes were exported.");
 
             WriteManifest(output, records);
             File.WriteAllText(Path.Combine(output, "SUCCESS"), $"Exported {exported} Magenheim model prefabs.{Environment.NewLine}", new UTF8Encoding(false));
-            _logger?.LogInfo($"Runtime model export complete: {exported}/{records.Count} Magenheim prefabs produced OBJ geometry in '{output}'.");
+            _logger?.LogInfo($"Magenheim runtime model export complete: {exported}/{records.Count} Magenheim prefabs produced OBJ geometry in '{output}'.");
 
             if (string.Equals(Environment.GetEnvironmentVariable(ExportExitFlag), "1", StringComparison.Ordinal))
                 Application.Quit(0);
@@ -104,18 +92,6 @@ internal static class ModelExportRuntime
             else
                 throw;
         }
-    }
-
-    private static HashSet<string> ParseRequestedPrefabs()
-    {
-        var raw = Environment.GetEnvironmentVariable(ExportPrefabsVariable);
-        if (string.IsNullOrWhiteSpace(raw))
-            return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        return new HashSet<string>(
-            raw.Split(new[] { ',', ';', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-               .Select(value => value.Trim())
-               .Where(value => value.Length > 0),
-            StringComparer.OrdinalIgnoreCase);
     }
 
     private static bool IsMagenheimPrefab(GameObject prefab)
@@ -147,23 +123,16 @@ internal static class ModelExportRuntime
         if (parts.Count == 0)
             return new ExportRecord(prefab.name, null, 0, 0, 0);
 
-        var safePrefab = SafeFileName(prefab.name);
-        var fileName = safePrefab + ".obj";
+        var fileName = SafeFileName(prefab.name) + ".obj";
         var path = Path.Combine(output, fileName);
-        var mtlFileName = safePrefab + ".mtl";
-        var mtlPath = Path.Combine(output, mtlFileName);
         var vertexOffset = 1;
-        var uvOffset = 1;
-        var normalOffset = 1;
         var vertexCount = 0;
         var triangleCount = 0;
-        var exportedMaterials = new Dictionary<Material, MaterialRecord>();
 
         using (var writer = new StreamWriter(path, false, new UTF8Encoding(false)))
         {
             writer.WriteLine("# Magenheim runtime mesh export");
             writer.WriteLine("# prefab: " + prefab.name);
-            writer.WriteLine("mtllib " + mtlFileName);
 
             foreach (var part in parts)
             {
@@ -176,65 +145,29 @@ internal static class ModelExportRuntime
 
                 writer.WriteLine("o " + SafeObjName(part.Transform.name));
                 var transform = prefab.transform.worldToLocalMatrix * part.Transform.localToWorldMatrix;
-                var normalMatrix = transform.inverse.transpose;
                 var vertices = mesh.vertices;
-                var uvs = mesh.uv;
-                var normals = mesh.normals;
-                var hasUvs = uvs != null && uvs.Length == vertices.Length;
-                var hasNormals = normals != null && normals.Length == vertices.Length;
-
                 foreach (var vertex in vertices)
                 {
                     var point = transform.MultiplyPoint3x4(vertex);
                     writer.WriteLine(string.Format(CultureInfo.InvariantCulture, "v {0:R} {1:R} {2:R}", point.x, point.y, point.z));
-                }
-                if (hasUvs)
-                {
-                    foreach (var uv in uvs)
-                        writer.WriteLine(string.Format(CultureInfo.InvariantCulture, "vt {0:R} {1:R}", uv.x, uv.y));
-                }
-                if (hasNormals)
-                {
-                    foreach (var normal in normals)
-                    {
-                        var n = normalMatrix.MultiplyVector(normal).normalized;
-                        writer.WriteLine(string.Format(CultureInfo.InvariantCulture, "vn {0:R} {1:R} {2:R}", n.x, n.y, n.z));
-                    }
                 }
 
                 vertexCount += vertices.Length;
                 var materials = part.Renderer != null ? part.Renderer.sharedMaterials : Array.Empty<Material>();
                 for (var subMesh = 0; subMesh < mesh.subMeshCount; subMesh++)
                 {
-                    Material? material = subMesh < materials.Length ? materials[subMesh] : null;
-                    if (material != null)
-                    {
-                        if (!exportedMaterials.TryGetValue(material, out var record))
-                        {
-                            record = ExportMaterial(prefab.name, material, output, exportedMaterials.Count);
-                            exportedMaterials.Add(material, record);
-                        }
-                        writer.WriteLine("usemtl " + record.Name);
-                    }
+                    if (subMesh < materials.Length && materials[subMesh] != null)
+                        writer.WriteLine("g " + SafeObjName(materials[subMesh].name));
 
                     var triangles = mesh.GetTriangles(subMesh);
                     for (var index = 0; index + 2 < triangles.Length; index += 3)
                     {
-                        var a = triangles[index];
-                        var b = triangles[index + 1];
-                        var c = triangles[index + 2];
-                        writer.WriteLine(
-                            "f " +
-                            ObjIndex(a, vertexOffset, uvOffset, normalOffset, hasUvs, hasNormals) + " " +
-                            ObjIndex(b, vertexOffset, uvOffset, normalOffset, hasUvs, hasNormals) + " " +
-                            ObjIndex(c, vertexOffset, uvOffset, normalOffset, hasUvs, hasNormals));
+                        writer.WriteLine($"f {triangles[index] + vertexOffset} {triangles[index + 1] + vertexOffset} {triangles[index + 2] + vertexOffset}");
                         triangleCount++;
                     }
                 }
 
                 vertexOffset += vertices.Length;
-                if (hasUvs) uvOffset += uvs.Length;
-                if (hasNormals) normalOffset += normals.Length;
             }
         }
 
@@ -244,83 +177,7 @@ internal static class ModelExportRuntime
             return new ExportRecord(prefab.name, null, parts.Count, vertexCount, triangleCount);
         }
 
-        WriteMaterialLibrary(mtlPath, exportedMaterials.Values);
         return new ExportRecord(prefab.name, fileName, parts.Count, vertexCount, triangleCount);
-    }
-
-    private static string ObjIndex(int localIndex, int vertexOffset, int uvOffset, int normalOffset, bool hasUvs, bool hasNormals)
-    {
-        var v = localIndex + vertexOffset;
-        if (hasUvs && hasNormals) return $"{v}/{localIndex + uvOffset}/{localIndex + normalOffset}";
-        if (hasUvs) return $"{v}/{localIndex + uvOffset}";
-        if (hasNormals) return $"{v}//{localIndex + normalOffset}";
-        return v.ToString(CultureInfo.InvariantCulture);
-    }
-
-    private static MaterialRecord ExportMaterial(string prefabName, Material material, string output, int ordinal)
-    {
-        var name = SafeObjName(prefabName + "_" + material.name + "_" + ordinal);
-        var color = material.HasProperty("_Color") ? material.color : Color.white;
-        var metallic = material.HasProperty("_Metallic") ? material.GetFloat("_Metallic") : 0f;
-        var roughness = material.HasProperty("_Glossiness") ? 1f - material.GetFloat("_Glossiness") : 0.7f;
-
-        return new MaterialRecord(
-            name,
-            color,
-            metallic,
-            roughness,
-            ExportTexture(prefabName, material.GetTexture("_MainTex"), output, name + "-albedo"),
-            ExportTexture(prefabName, material.GetTexture("_BumpMap"), output, name + "-normal"),
-            ExportTexture(prefabName, material.GetTexture("_MetallicGlossMap"), output, name + "-metallic-gloss"),
-            ExportTexture(prefabName, material.GetTexture("_EmissionMap"), output, name + "-emission"));
-    }
-
-    private static string? ExportTexture(string prefabName, Texture? texture, string output, string fileStem)
-    {
-        if (texture == null || texture.width <= 0 || texture.height <= 0) return null;
-        var fileName = SafeFileName(fileStem) + ".png";
-        var path = Path.Combine(output, fileName);
-        RenderTexture? temporary = null;
-        var previous = RenderTexture.active;
-        Texture2D? readable = null;
-        try
-        {
-            temporary = RenderTexture.GetTemporary(texture.width, texture.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
-            Graphics.Blit(texture, temporary);
-            RenderTexture.active = temporary;
-            readable = new Texture2D(texture.width, texture.height, TextureFormat.RGBA32, false);
-            readable.ReadPixels(new Rect(0, 0, texture.width, texture.height), 0, 0, false);
-            readable.Apply(false, false);
-            File.WriteAllBytes(path, readable.EncodeToPNG());
-            return fileName;
-        }
-        catch (Exception exception)
-        {
-            _logger?.LogWarning($"Texture export skipped for '{prefabName}/{texture.name}': {exception.Message}");
-            return null;
-        }
-        finally
-        {
-            RenderTexture.active = previous;
-            if (temporary != null) RenderTexture.ReleaseTemporary(temporary);
-            if (readable != null) UnityEngine.Object.DestroyImmediate(readable);
-        }
-    }
-
-    private static void WriteMaterialLibrary(string path, IEnumerable<MaterialRecord> materials)
-    {
-        using var writer = new StreamWriter(path, false, new UTF8Encoding(false));
-        foreach (var material in materials)
-        {
-            writer.WriteLine("newmtl " + material.Name);
-            writer.WriteLine(string.Format(CultureInfo.InvariantCulture, "Kd {0:R} {1:R} {2:R}", material.Color.r, material.Color.g, material.Color.b));
-            writer.WriteLine(string.Format(CultureInfo.InvariantCulture, "d {0:R}", material.Color.a));
-            writer.WriteLine(string.Format(CultureInfo.InvariantCulture, "Ns {0:R}", Math.Max(0f, Math.Min(1f, 1f - material.Roughness)) * 1000f));
-            if (material.Albedo != null) writer.WriteLine("map_Kd " + material.Albedo);
-            if (material.Normal != null) writer.WriteLine("map_Bump " + material.Normal);
-            if (material.Emission != null) writer.WriteLine("map_Ke " + material.Emission);
-            writer.WriteLine();
-        }
     }
 
     private static bool ShouldExportRenderer(Transform prefabRoot, Transform candidate, Renderer? renderer)
@@ -381,30 +238,6 @@ internal static class ModelExportRuntime
         internal Transform Transform { get; }
         internal Mesh Mesh { get; }
         internal Renderer? Renderer { get; }
-    }
-
-    private sealed class MaterialRecord
-    {
-        internal MaterialRecord(string name, Color color, float metallic, float roughness, string? albedo, string? normal, string? metallicGloss, string? emission)
-        {
-            Name = name;
-            Color = color;
-            Metallic = metallic;
-            Roughness = roughness;
-            Albedo = albedo;
-            Normal = normal;
-            MetallicGloss = metallicGloss;
-            Emission = emission;
-        }
-
-        internal string Name { get; }
-        internal Color Color { get; }
-        internal float Metallic { get; }
-        internal float Roughness { get; }
-        internal string? Albedo { get; }
-        internal string? Normal { get; }
-        internal string? MetallicGloss { get; }
-        internal string? Emission { get; }
     }
 
     private sealed class ExportRecord
