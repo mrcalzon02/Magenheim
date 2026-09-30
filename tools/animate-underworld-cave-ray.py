@@ -39,6 +39,7 @@ action('CaveRay_Death',72,{1:N,20:{**wings(-.20,-.16),'Body':(.18,0,.22),**tail(
 arm.animation_data.action=None
 arm['production_contract']='production-creature-r2'
 arm['authored_actions']='CaveRay_Glide,CaveRay_FlapImpulse,CaveRay_BankLeft,CaveRay_BankRight,CaveRay_Dive,CaveRay_Rise,CaveRay_Flee,CaveRay_Hit,CaveRay_Death'
+sc=bpy.context.scene; sc['magenheim_authored_actions']=arm['authored_actions']; sc['magenheim_skinning']='rigid-segment-weighted'
 arm['animation_readability_contract']='progressive-root-mid-tip-membrane;asymmetric-banks;independent-tail-chain'
 bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(MODEL),compress=True)
