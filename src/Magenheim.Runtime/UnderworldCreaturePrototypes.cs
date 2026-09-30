@@ -35,6 +35,13 @@ internal static class UnderworldCreaturePrototypes
             "Rimewing" => "underworld-creature-rimewing",
             "Glacier Stalker" => "underworld-creature-glacier-stalker",
             "Cryolith Guardian" => "underworld-creature-cryolith-guardian",
+            "Rotling" => "underworld-creature-rotling",
+            "Carrion Bloom" => "underworld-creature-carrion-bloom",
+            "Spore Husk" => "underworld-creature-spore-husk",
+            "Marrow Creeper" => "underworld-creature-marrow-creeper",
+            "Decay Hound" => "underworld-creature-decay-hound",
+            "Graft Warden" => "underworld-creature-graft-warden",
+            "Corpse Orchard" => "underworld-creature-corpse-orchard",
             _ => null,
         };
     }
@@ -75,13 +82,13 @@ internal static class UnderworldCreaturePrototypes
         new("Chasm Stalker", "Fracture Zones", "Seeker", 1.15f, new Color(0.741f, 0.624f, 0.863f), "Native insect locomotion; long-limb art pending"),
         new("Stonebound", "Fracture Zones", "StoneGolem", 0.7f, new Color(0.741f, 0.624f, 0.863f), "Native grounded construct; independent floating masses deferred"),
         new("Rift Colossus", "Fracture Zones", "StoneGolem", 1.3f, new Color(0.741f, 0.624f, 0.863f), "Native heavy construct; no custom displacement system"),
-        new("Rotling", "Great Decay", "Tick", 0.8f, new Color(0.690f, 0.702f, 0.416f), "Native scuttle/latch; biomass anatomy pending"),
-        new("Carrion Bloom", "Great Decay", "Greydwarf_Shaman", 0.85f, new Color(0.690f, 0.702f, 0.416f), "Rooted caster behavior implemented; rooted bloom anatomy pending"),
-        new("Spore Husk", "Great Decay", "Draugr", 1f, new Color(0.690f, 0.702f, 0.416f), "Native humanoid equipment/attacks; grafted silhouette pending"),
-        new("Marrow Creeper", "Great Decay", "Seeker", 0.7f, new Color(0.690f, 0.702f, 0.416f), "Native insect locomotion; bone-supported anatomy pending"),
-        new("Decay Hound", "Great Decay", "Wolf", 1.1f, new Color(0.690f, 0.702f, 0.416f), "Native quadruped attacks; contamination art pending"),
-        new("Graft Warden", "Great Decay", "Troll", 1f, new Color(0.690f, 0.702f, 0.416f), "Native heavy biped attacks; asymmetric graft art pending"),
-        new("Corpse Orchard", "Great Decay", "Greydwarf_Shaman", 1.5f, new Color(0.690f, 0.702f, 0.416f), "Rooted colony and Rotling propagation implemented; final colony anatomy pending"),
+        new("Rotling", "Great Decay", "Tick", 0.8f, new Color(0.690f, 0.702f, 0.416f), "Biomass Rotling body/actions authored for runtime export; donor latch gameplay retained"),
+        new("Carrion Bloom", "Great Decay", "Greydwarf_Shaman", 0.85f, new Color(0.690f, 0.702f, 0.416f), "Rooted caster behavior implemented; Carrion Bloom body/root/bloom actions authored for runtime export"),
+        new("Spore Husk", "Great Decay", "Draugr", 1f, new Color(0.690f, 0.702f, 0.416f), "Grafted Spore Husk body/actions authored for runtime export; donor humanoid combat chassis retained"),
+        new("Marrow Creeper", "Great Decay", "Seeker", 0.7f, new Color(0.690f, 0.702f, 0.416f), "Bone-rib Marrow Creeper body/actions authored for runtime export; donor insect gameplay chassis retained"),
+        new("Decay Hound", "Great Decay", "Wolf", 1.1f, new Color(0.690f, 0.702f, 0.416f), "Contaminated Decay Hound body/actions authored for runtime export; donor quadruped attacks retained"),
+        new("Graft Warden", "Great Decay", "Troll", 1f, new Color(0.690f, 0.702f, 0.416f), "Asymmetric Graft Warden body/actions authored for runtime export; donor heavy biped attacks retained"),
+        new("Corpse Orchard", "Great Decay", "Greydwarf_Shaman", 1.5f, new Color(0.690f, 0.702f, 0.416f), "Rooted colony and Rotling propagation implemented; Corpse Orchard body/pulse/cast actions authored for runtime export"),
     };
     internal static readonly Entry[] Infrastructure =
     {
