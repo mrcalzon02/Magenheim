@@ -299,6 +299,8 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
     private float _startedAt;
     private float _lastHealth;
     private float _hitUntil;
+    private RigidCreatureSegmentBinder.ActionClip? _forced;
+    private float _forcedUntil;
 
     internal void Bind(
         Character character,
@@ -320,6 +322,19 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
         Select(ChooseIdle());
     }
 
+    internal void PlayOneShot(string token)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+            return;
+        var clip = Find(token);
+        if (clip is null)
+            return;
+
+        _forced = clip;
+        _forcedUntil = Time.time + Mathf.Max(.08f, clip.Frames.Count / _fps);
+        Select(clip);
+    }
+
     private void Update()
     {
         if (!_character || _clips is null || _clips.Count == 0)
@@ -335,6 +350,8 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
             Select(desired);
 
         ApplyCurrent();
+        if (_forced is not null && Time.time >= _forcedUntil)
+            _forced = null;
     }
 
     private RigidCreatureSegmentBinder.ActionClip Choose()
@@ -345,17 +362,40 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
         if (Time.time < _hitUntil)
             return Find("hit") ?? _current ?? ChooseIdle();
 
+        if (_forced is not null && Time.time < _forcedUntil)
+            return _forced;
+
         if (_humanoid is not null && _humanoid.InAttack())
-            return Find("attackfront") ?? Find("bite") ?? Find("attack") ?? _current ?? ChooseIdle();
+            return Find("attackfront") ??
+                   Find("bite") ??
+                   Find("heavyslam") ??
+                   Find("slam") ??
+                   Find("sweep") ??
+                   Find("pounce") ??
+                   Find("charge") ??
+                   Find("attack") ??
+                   _current ??
+                   ChooseIdle();
 
         if (HorizontalSpeedSquared() > .035f)
-            return Find("scuttle") ?? Find("walk") ?? _current ?? ChooseIdle();
+            return Find("scuttle") ??
+                   Find("walk") ??
+                   Find("flight") ??
+                   Find("crawl") ??
+                   _current ??
+                   ChooseIdle();
 
         return ChooseIdle();
     }
 
     private RigidCreatureSegmentBinder.ActionClip ChooseIdle() =>
-        Find("idle") ?? _clips[0];
+        Find("hover") ??
+        Find("clingidle") ??
+        Find("concealidle") ??
+        Find("groundidle") ??
+        Find("idle") ??
+        Find("grazeroot") ??
+        _clips[0];
 
     private RigidCreatureSegmentBinder.ActionClip? Find(string token)
     {
