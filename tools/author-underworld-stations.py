@@ -58,8 +58,9 @@ def finish(obj, path, mat):
     obj["game_crystal"] = json.dumps(None)
     obj.data.materials.clear()
     obj.data.materials.append(mat)
-    if not obj.data.uv_layers:
+    if obj.data.uv_layers.get("StationUV") is None:
         obj.data.uv_layers.new(name="StationUV")
+    obj.data.uv_layers.active_index = obj.data.uv_layers.find("StationUV")
     bpy.context.view_layer.objects.active = obj
     obj.select_set(True)
     bpy.ops.object.mode_set(mode="EDIT")
