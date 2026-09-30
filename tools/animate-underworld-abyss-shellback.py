@@ -90,6 +90,7 @@ for act in bpy.data.actions:
 arm.animation_data.action=None
 arm['production_contract']='production-creature-r2'
 arm['authored_actions']=','.join('AbyssShellback_'+x for x in required)
+sc=bpy.context.scene; sc['magenheim_authored_actions']=arm['authored_actions']; sc['magenheim_skinning']='rigid-segment-weighted'
 arm['animation_readability_contract']='eight-leg-heavy-weight-transfer;five-plate-independent-lag;bilateral-heavy-claws;brace-shell-interlock;guard-underside-cover;distinct-paddle-swim-strokes;blended-water-transitions;no-root-translation'
 bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(MODEL),compress=True)
