@@ -217,6 +217,20 @@ arm=(ROOT/"tools"/"author-underworld-armour.py").read_text()
 require("valheim-player-attach-skin" in arm and "BONE_ORDER=[" in arm,
         "Underworld armour source rig contract is absent")
 production_rebuild=(ROOT/"tools"/"rebuild-underworld-production.ps1").read_text()
+for creature_id in (
+    "underworld-creature-lantern-moth",
+    "underworld-creature-sporeling",
+    "underworld-creature-capcrawler",
+    "underworld-creature-mycelial-stalker",
+    "underworld-creature-puffback",
+    "underworld-creature-shelf-lurker",
+    "underworld-creature-crowncap-brute",
+):
+    require(creature_id in production_rebuild,
+            "Fungal creature production run lost "+creature_id)
+require("export-model-assets @fungalCreatureIds" in production_rebuild and
+        "verify-model-assets.py\" @fungalCreatureIds" in production_rebuild,
+        "Fungal creature production no longer exports/verifies runtime payloads")
 reuse_authority=(ROOT/"src"/"Magenheim.Core"/"Underworld"/"UnderworldVanillaDungeonReuseCatalog.cs").read_text()
 require("MinimumLinearRoomScale = 1.5d" in reuse_authority,
         "ordinary Underworld vanilla-room scale floor is not 1.5x")
