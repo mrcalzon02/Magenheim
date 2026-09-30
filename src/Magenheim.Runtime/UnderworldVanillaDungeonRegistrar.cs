@@ -37,13 +37,17 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
     internal void Register()
     {
         UnderworldVanillaDungeonReuseCatalog.Validate();
-        var ready = ReadyProfiles().ToArray();
-        if (ready.Length == 0)
+        var active = ActiveProfiles().ToArray();
+        if (active.Length == 0)
         {
             _log.LogDebug(
-                "Expanded vanilla Underworld dungeons remain fail-closed: all five ordinary dungeon definitions are Planned.");
+                "Expanded vanilla Underworld dungeons remain fail-closed: all five ordinary dungeon definitions are Planned and DDE candidate admission is disabled.");
             return;
         }
+
+        if (UnderworldVanillaDungeonCandidatePolicy.TryGetCandidate(out var candidate))
+            _log.LogWarning(
+                $"DDE CANDIDATE MODE: admitting Planned donor derivative '{candidate.DungeonId}' for disposable validation only. This is not RuntimeReady promotion.");
 
         DungeonManager.OnVanillaRoomsAvailable += RegisterRooms;
         ZoneManager.OnVanillaLocationsAvailable += RegisterLocations;
@@ -51,15 +55,26 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         _locationsSubscribed = true;
     }
 
-    private IEnumerable<UnderworldVanillaDungeonReuseDefinition> ReadyProfiles() =>
-        UnderworldVanillaDungeonReuseCatalog.All.Where(profile =>
-            Definition(profile).Status == UnderworldDungeonStatus.RuntimeReady);
+    private IEnumerable<UnderworldVanillaDungeonReuseDefinition> ActiveProfiles()
+    {
+        var seen = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var profile in UnderworldVanillaDungeonReuseCatalog.All)
+        {
+            if (Definition(profile).Status != UnderworldDungeonStatus.RuntimeReady) continue;
+            seen.Add(profile.DungeonId);
+            yield return profile;
+        }
+
+        if (UnderworldVanillaDungeonCandidatePolicy.TryGetCandidate(out var candidate) &&
+            seen.Add(candidate.DungeonId))
+            yield return candidate;
+    }
 
     private void RegisterRooms()
     {
         try
         {
-            foreach (var profile in ReadyProfiles())
+            foreach (var profile in ActiveProfiles())
                 RegisterRoomFamily(profile);
         }
         catch (Exception exception)
