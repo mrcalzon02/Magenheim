@@ -131,15 +131,6 @@ internal static class UnderworldWorldgenContentBridge
                     matches.Add(location);
             }
 
-            if (!UnderworldVanillaDungeonCandidatePolicy.IsWorldgenAdmitted(dungeon))
-            {
-                if (matches.Count != 0)
-                    invalidDungeons.Add(
-                        dungeon.PrefabName + " is Planned but has " + matches.Count +
-                        " detached Underworld location row(s) without candidate admission");
-                continue;
-            }
-
             if (matches.Count == 0)
             {
                 missingDungeons.Add(dungeon.PrefabName + "@" + dungeon.Biome);
@@ -192,16 +183,7 @@ internal static class UnderworldWorldgenContentBridge
                 string.Join(", ", missingGeodes));
 
         _log?.LogInfo(
-            $"Verified Underworld worldgen resources: {UnderworldResourceCatalog.All.Count}/{UnderworldResourceCatalog.All.Count} resource pickup spawners, {UnderworldGeothermalVentRegistrar.Vents.Length} geothermal vent spawners, {AdmittedGeodePrefabs.Count} geode spawners and {WorldgenAdmittedDungeonCount()} dungeon family/families are instance-local and generation-ready (candidate={UnderworldVanillaDungeonCandidatePolicy.Describe()}).");
-    }
-
-    private static int WorldgenAdmittedDungeonCount()
-    {
-        var count = 0;
-        foreach (var dungeon in UnderworldDungeonCatalog.All)
-            if (UnderworldVanillaDungeonCandidatePolicy.IsWorldgenAdmitted(dungeon))
-                count++;
-        return count;
+            $"Verified Underworld worldgen resources: {UnderworldResourceCatalog.All.Count}/{UnderworldResourceCatalog.All.Count} resource pickup spawners, {UnderworldGeothermalVentRegistrar.Vents.Length} geothermal vent spawners, {AdmittedGeodePrefabs.Count} geode spawners and {UnderworldDungeonCatalog.All.Count} dungeon family/families are instance-local and generation-ready.");
     }
 
     private static ZoneSystem.ZoneVegetation? FindVegetation(
