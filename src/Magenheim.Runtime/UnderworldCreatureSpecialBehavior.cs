@@ -504,6 +504,7 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
             m_pushForce = 4f,
         };
         retaliation.SetAttacker(owner);
+        owner.GetComponentInChildren<RigidCreaturePresentationDriver>(true)?.PlayOneShot("spit");
         attacker.Damage(retaliation);
         EmitBurst(owner.transform, new Color(1f, .42f, .08f, .68f), 18, 2.8f);
     }
