@@ -94,4 +94,5 @@ for o in meshes:
 arm['magenheim_asset']='abyss-shellback'; arm['production_contract']='production-creature-r1'; arm['host_rig']='HOST-AMPHIB-ARMORED'; arm['length_m']=LENGTH
 arm['role']='blackwater-elite-fortress'; arm['leg_chains']=8; arm['shell_plates']=5; arm['vulnerability']='underside-and-leg-joints'; arm['claw_identity']='bilateral-heavy'
 arm['animation_contract']='idle,heavy-walk,turn-left,turn-right,claw-left,claw-right,brace,guard,swim-idle,swim-forward,water-exit,water-entry,hit,stagger,death'
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-abyss-shellback'; sc['magenheim_skinning']='rigid-segment-weighted'
 OUT.parent.mkdir(parents=True,exist_ok=True); bpy.ops.wm.save_as_mainfile(filepath=str(OUT)); print(f'Wrote {OUT} meshes={len(meshes)} tris={tris}')
