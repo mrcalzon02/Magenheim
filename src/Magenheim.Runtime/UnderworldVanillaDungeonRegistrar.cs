@@ -409,6 +409,13 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
                     throw new InvalidOperationException(
                         $"{profile.DonorDisplayName} clone Teleport targets an endpoint outside its cloned location/interior graph.");
             }
+
+            var donorTopology = CollectDungeonTeleportTopology(donorPrefab, donorLocation);
+            var cloneTopology = CollectDungeonTeleportTopology(clonePrefab, cloneLocation);
+            if (!donorTopology.SequenceEqual(cloneTopology, StringComparer.Ordinal))
+                throw new InvalidOperationException(
+                    $"{profile.DonorDisplayName} clone changed donor teleport topology. " +
+                    $"donor=[{string.Join(";", donorTopology)}] clone=[{string.Join(";", cloneTopology)}]");
         }
         finally
         {
@@ -425,6 +432,78 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             foreach (var teleport in location.m_interiorPrefab.GetComponentsInChildren<Teleport>(true))
                 if (teleport) result.Add(teleport);
         return result;
+    }
+
+    private static IReadOnlyList<string> CollectDungeonTeleportTopology(
+        GameObject root,
+        Location location)
+    {
+        var keys = new Dictionary<Teleport, string>();
+        AddTeleportKeys(keys, root, "exterior");
+        if (location.m_interiorPrefab)
+            AddTeleportKeys(keys, location.m_interiorPrefab, "interior");
+
+        var topology = new List<string>();
+        foreach (var pair in keys.OrderBy(value => value.Value, StringComparer.Ordinal))
+        {
+            var teleport = pair.Key;
+            if (!teleport || !teleport.m_targetPoint)
+            {
+                topology.Add(pair.Value + "-><unpaired>");
+                continue;
+            }
+
+            topology.Add(
+                pair.Value + "->" +
+                (keys.TryGetValue(teleport.m_targetPoint, out var targetKey)
+                    ? targetKey
+                    : "<external>"));
+        }
+
+        return topology;
+    }
+
+    private static void AddTeleportKeys(
+        IDictionary<Teleport, string> keys,
+        GameObject root,
+        string scope)
+    {
+        if (!root)
+            return;
+
+        foreach (var teleport in root.GetComponentsInChildren<Teleport>(true))
+        {
+            if (!teleport || keys.ContainsKey(teleport))
+                continue;
+
+            keys.Add(
+                teleport,
+                scope + "/" + RelativeTransformPath(root.transform, teleport.transform) +
+                "#" + ComponentIndex(teleport));
+        }
+    }
+
+    private static string RelativeTransformPath(Transform root, Transform value)
+    {
+        var parts = new List<string>();
+        var current = value;
+        while (current && current != root)
+        {
+            parts.Add(current.name + "[" + current.GetSiblingIndex() + "]");
+            current = current.parent;
+        }
+
+        parts.Reverse();
+        return string.Join("/", parts);
+    }
+
+    private static int ComponentIndex(Teleport teleport)
+    {
+        var components = teleport.GetComponents<Teleport>();
+        for (var index = 0; index < components.Length; index++)
+            if (ReferenceEquals(components[index], teleport))
+                return index;
+        return -1;
     }
 
     private void RemapRequiredRooms(
