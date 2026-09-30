@@ -141,6 +141,15 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
                     ?? throw new InvalidOperationException(
                         $"Cloned donor room '{sourceName}' has no Room component.");
 
+                var auditMetadata = clone.AddComponent<UnderworldVanillaDungeonRoomAuditMetadata>();
+                auditMetadata.DonorRoomName = sourceName;
+                auditMetadata.DonorRoomSize = room.m_size;
+                auditMetadata.DonorConnectionLocalPositions = room.GetConnections()
+                    .Where(value => value)
+                    .Select(value => value.transform.localPosition)
+                    .ToArray();
+                auditMetadata.LinearScale = scale;
+
                 // Do NOT scale the Room root. DungeonGenerator.CalculateRoomPosRot reads raw
                 // RoomConnection.localPosition and does not multiply it by the Room root scale.
                 // Root scaling therefore makes the rendered socket disagree with placement math.
