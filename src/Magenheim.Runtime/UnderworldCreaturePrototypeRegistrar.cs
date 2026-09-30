@@ -35,7 +35,20 @@ internal sealed class UnderworldCreaturePrototypeRegistrar : IDisposable
                 clone.GetComponent<Character>().m_name = entry.Name;
                 // Uniform scale keeps the donor's bone hierarchy and attack sockets together.
                 clone.transform.localScale *= entry.Scale;
-                var materialCount = UnderworldCreatureBiomeVisuals.Apply(clone, entry);
+
+                var authoredVisual = string.Empty;
+                var materialCount = 0;
+                if (!string.IsNullOrWhiteSpace(entry.AuthoredModelId) &&
+                    ModelAssets.Exists(entry.AuthoredModelId))
+                {
+                    authoredVisual = RigidCreatureSegmentBinder.Apply(clone, entry.AuthoredModelId);
+                }
+                else
+                {
+                    materialCount = UnderworldCreatureBiomeVisuals.Apply(clone, entry);
+                    authoredVisual = "donor visual fallback";
+                }
+
                 var identity = UnderworldCreatureIdentityPass.Apply(clone, entry);
                 var creatureConfig = new CreatureConfig { Name = entry.Name };
                 foreach (var drop in UnderworldCreatureLootRuntime.OrdinaryDrops(entry))
@@ -44,7 +57,7 @@ internal sealed class UnderworldCreaturePrototypeRegistrar : IDisposable
                 if (!CreatureManager.Instance.AddCreature(new CustomCreature(clone, true, creatureConfig)))
                     throw new InvalidOperationException($"Jotunn refused creature registration for '{entry.Prefab}'.");
                 registered++;
-                _log.LogDebug($"Underworld creature {entry.Prefab}: intact {entry.Donor} skeleton/controller; {materialCount} renderer material(s) retextured for {entry.Biome}; {identity}; native biome spawn enabled; {entry.Limit}");
+                _log.LogDebug($"Underworld creature {entry.Prefab}: intact {entry.Donor} gameplay chassis; visual={authoredVisual}; {materialCount} donor renderer material(s) retextured when fallback is active; {identity}; native biome spawn enabled; {entry.Limit}");
             }
             catch (Exception exception)
             {
