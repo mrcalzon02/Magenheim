@@ -165,6 +165,12 @@ def slag_pick(a,b,c):
  tube("charred-haft",(0,0,-.48),(0,0,.68),.075,a,12)
  for z in (-.25,.04,.33,.58):torus("grip-band-"+str(z),(0,0,z),.085,.017,b)
  cube("pick-eye",(0,0,.72),(.22,.16,.16),b,.035)
+ # Forged cheek plates and through-pins make the heavy pick head read as an assembled Emberiron
+ # tool rather than two spikes intersecting a haft. They also carry the load path into the eye.
+ for face in (-1,1):
+  cube("head-cheek-"+str(face),(0,face*.17,.72),(.22,.025,.13),b,.012)
+ for x in (-.11,.11):
+  tube("head-pin-"+str(x),(x,-.205,.72),(x,.205,.72),.018,b,8)
  tube("pick-left",(-.02,0,.76),(-.70,0,.96),.10,b,12)
  tube("pick-right",(.02,0,.76),(.58,0,.62),.10,b,12)
  for x in (-.55,-.30,.30,.48):sphere("heat-rivet-"+str(x),(x,0,.80 if x<0 else .70),.04,c,10,6)
@@ -173,6 +179,7 @@ def slag_pick(a,b,c):
 
 def rime_chisel(a,b,c):
  tube("rimewood-grip",(0,0,-.42),(0,0,.38),.07,a,12)
+ cyl("silver-pommel",(0,0,-.48),.10,.08,b,14)
  for z in (-.30,-.08,.15,.34):torus("silver-grip-"+str(z),(0,0,z),.078,.014,b)
  tube("silver-spine",(0,0,.32),(0,0,.86),.055,b,12)
  # faceted ice cutting nose
