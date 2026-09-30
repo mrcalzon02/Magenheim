@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using BepInEx;
 using BepInEx.Logging;
@@ -37,6 +38,7 @@ internal static class UnderworldVanillaDungeonDonorCensus
         summary.AppendLine("Deep Dungeon Expansion donor census");
         summary.AppendLine("utc=" + DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture));
         summary.AppendLine("game=" + global::Version.GetVersionString());
+        summary.AppendLine("assembly_valheim_sha256=" + AssemblySha256());
         summary.AppendLine("profiles=" + UnderworldVanillaDungeonReuseCatalog.All.Count);
         summary.AppendLine();
 
@@ -102,6 +104,7 @@ internal static class UnderworldVanillaDungeonDonorCensus
         {
             output.AppendLine("room_names=" +
                 string.Join(",", donorRooms.Select(room => room.m_prefab.Name).OrderBy(name => name, StringComparer.Ordinal)));
+            CaptureRoomEnvelope(donorRooms, output, errors);
         }
 
         foreach (var entranceName in profile.DonorEntrancePrefabs)
@@ -171,6 +174,7 @@ internal static class UnderworldVanillaDungeonDonorCensus
                 var dg = matching[0];
                 output.AppendLine("expected_generator_matches=1");
                 output.AppendLine("generator_name=" + dg.gameObject.name);
+                output.AppendLine("generator_algorithm=" + dg.m_algorithm);
                 output.AppendLine("generator_themes=" + dg.m_themes);
                 output.AppendLine("generator_min_rooms=" + dg.m_minRooms);
                 output.AppendLine("generator_max_rooms=" + dg.m_maxRooms);
@@ -181,7 +185,17 @@ internal static class UnderworldVanillaDungeonDonorCensus
                 output.AppendLine("generator_tile_width=" +
                     dg.m_tileWidth.ToString("0.###", CultureInfo.InvariantCulture));
                 output.AppendLine("generator_grid_size=" +
-                    dg.m_gridSize.ToString("0.###", CultureInfo.InvariantCulture));
+                    dg.m_gridSize.ToString(CultureInfo.InvariantCulture));
+                output.AppendLine("generator_door_chance=" +
+                    dg.m_doorChance.ToString("0.###", CultureInfo.InvariantCulture));
+                output.AppendLine("generator_alternative_functionality=" + dg.m_alternativeFunctionality);
+                output.AppendLine("generator_spawn_chance=" +
+                    dg.m_spawnChance.ToString("0.###", CultureInfo.InvariantCulture));
+                output.AppendLine("generator_camp_radius_min=" +
+                    dg.m_campRadiusMin.ToString("0.###", CultureInfo.InvariantCulture));
+                output.AppendLine("generator_camp_radius_max=" +
+                    dg.m_campRadiusMax.ToString("0.###", CultureInfo.InvariantCulture));
+                output.AppendLine("generator_zone_center=" + Vector(dg.m_zoneCenter));
                 output.AppendLine("generator_use_custom_interior=" + dg.m_useCustomInteriorTransform);
 
                 if (dg.m_minRooms < 1 || dg.m_maxRooms < dg.m_minRooms)
@@ -227,6 +241,119 @@ internal static class UnderworldVanillaDungeonDonorCensus
 
         return new CensusResult(errors.Count == 0, output.ToString());
     }
+
+    private static void CaptureRoomEnvelope(
+        DungeonDB.RoomData[] donorRooms,
+        StringBuilder output,
+        List<string> errors)
+    {
+        var roomSizes = new List<Vector3Int>();
+        var connectionTypes = new SortedSet<string>(StringComparer.Ordinal);
+        var totalConnections = 0;
+        var entranceRooms = 0;
+        var endcapRooms = 0;
+        var dividerRooms = 0;
+        var creatureSpawners = 0;
+        var spawnAreas = 0;
+        var containers = 0;
+        var pickables = 0;
+        var mineRocks = 0;
+        var mineRock5s = 0;
+        var destructibleDrops = 0;
+        var vegvisirs = 0;
+        var runestones = 0;
+
+        foreach (var data in donorRooms)
+        {
+            data.m_prefab.Load();
+            try
+            {
+                var prefab = data.m_prefab.Asset;
+                if (!prefab)
+                {
+                    errors.Add("Donor room asset failed to load: " + data.m_prefab.Name);
+                    continue;
+                }
+
+                var room = prefab.GetComponent<Room>();
+                if (!room)
+                {
+                    errors.Add("Donor room has no Room component: " + data.m_prefab.Name);
+                    continue;
+                }
+
+                roomSizes.Add(room.m_size);
+                if (room.m_entrance) entranceRooms++;
+                if (room.m_endCap) endcapRooms++;
+                if (room.m_divider) dividerRooms++;
+
+                var connections = prefab.GetComponentsInChildren<RoomConnection>(false);
+                totalConnections += connections.Length;
+                foreach (var connection in connections)
+                    connectionTypes.Add(string.IsNullOrEmpty(connection.m_type) ? "<empty>" : connection.m_type);
+
+                creatureSpawners += prefab.GetComponentsInChildren<CreatureSpawner>(true).Length;
+                spawnAreas += prefab.GetComponentsInChildren<SpawnArea>(true).Length;
+                containers += prefab.GetComponentsInChildren<Container>(true).Length;
+                pickables += prefab.GetComponentsInChildren<Pickable>(true).Length;
+                mineRocks += prefab.GetComponentsInChildren<MineRock>(true).Length;
+                mineRock5s += prefab.GetComponentsInChildren<MineRock5>(true).Length;
+                destructibleDrops += prefab.GetComponentsInChildren<DropOnDestroyed>(true).Length;
+                vegvisirs += prefab.GetComponentsInChildren<Vegvisir>(true).Length;
+                runestones += prefab.GetComponentsInChildren<Runestone>(true).Length;
+            }
+            finally
+            {
+                data.m_prefab.Release();
+            }
+        }
+
+        if (roomSizes.Count == 0)
+        {
+            errors.Add("No donor room geometry could be inspected.");
+            return;
+        }
+
+        output.AppendLine("room_size_min=" + VectorInt(new Vector3Int(
+            roomSizes.Min(value => value.x),
+            roomSizes.Min(value => value.y),
+            roomSizes.Min(value => value.z))));
+        output.AppendLine("room_size_max=" + VectorInt(new Vector3Int(
+            roomSizes.Max(value => value.x),
+            roomSizes.Max(value => value.y),
+            roomSizes.Max(value => value.z))));
+        output.AppendLine("room_entrance_count=" + entranceRooms);
+        output.AppendLine("room_endcap_count=" + endcapRooms);
+        output.AppendLine("room_divider_count=" + dividerRooms);
+        output.AppendLine("room_connection_count=" + totalConnections);
+        output.AppendLine("room_connection_types=" + string.Join(",", connectionTypes));
+        output.AppendLine("socket_creature_spawners=" + creatureSpawners);
+        output.AppendLine("socket_spawn_areas=" + spawnAreas);
+        output.AppendLine("socket_containers=" + containers);
+        output.AppendLine("socket_pickables=" + pickables);
+        output.AppendLine("socket_mine_rock=" + mineRocks);
+        output.AppendLine("socket_mine_rock5=" + mineRock5s);
+        output.AppendLine("socket_drop_on_destroyed=" + destructibleDrops);
+        output.AppendLine("socket_vegvisirs=" + vegvisirs);
+        output.AppendLine("socket_runestones=" + runestones);
+    }
+
+    private static string AssemblySha256()
+    {
+        var path = typeof(DungeonGenerator).Assembly.Location;
+        if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            return "<unavailable>";
+        using var stream = File.OpenRead(path);
+        using var sha = SHA256.Create();
+        return string.Concat(sha.ComputeHash(stream)
+            .Select(value => value.ToString("x2", CultureInfo.InvariantCulture)));
+    }
+
+    private static string VectorInt(Vector3Int value) =>
+        string.Join(",",
+            value.x.ToString(CultureInfo.InvariantCulture),
+            value.y.ToString(CultureInfo.InvariantCulture),
+            value.z.ToString(CultureInfo.InvariantCulture));
 
     private static string Vector(Vector3 value) =>
         string.Join(",",
