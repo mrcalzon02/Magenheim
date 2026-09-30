@@ -20,9 +20,10 @@ internal static class UnderworldCreatureIdentityPass
         var combat = UnderworldCreatureCombatBalance.Apply(prefab, entry);
         var aggression = ApplyTemperament(prefab, entry);
         var elemental = AttachElementalAttack(prefab, entry);
+        var special = UnderworldCreatureSpecialBehavior.Attach(prefab, entry);
         var effects = AddPresentation(prefab, entry);
 
-        return $"{combat}, aggression x{aggression:0.00}, {elemental}, {effects}";
+        return $"{combat}, aggression x{aggression:0.00}, {elemental}, {special}, {effects}";
     }
 
     internal static bool HuntsPlayer(UnderworldCreaturePrototypes.Entry entry)
