@@ -5,3 +5,4 @@ Purpose: build verified Blender scene, eight shot cameras, and previews from aut
 Trigger refresh: 2026-09-29T16:15-08:00
 Retry after Blender 5 engine/workflow fix: 2026-09-29T16:22-08:00
 Retry after headless Cycles/build-render split: 2026-09-29T16:29-08:00
+Preview-layout repair: separated sets and renderable proxies.
