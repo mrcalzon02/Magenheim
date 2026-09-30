@@ -26,7 +26,7 @@ for donor in ("DG_ForestCrypt","DG_SunkenCrypt","DG_DvergrTown","DG_Cave","DG_Ho
     if donor not in reuse:
         fail.append("ordinary reuse catalog: missing donor "+donor)
 for token,label in (
-    ("ActiveProfiles()","candidate/RuntimeReady active profile boundary"),
+    ("ActiveProfiles()","RuntimeReady active profile boundary"),
     ("CreateClonedLocation","owned donor entrance clone"),
     ("RegisterDungeonTheme","private room theme"),
     ("generator.m_themes = Room.Theme.None","vanilla room-theme isolation"),
@@ -39,22 +39,22 @@ for token,label in (
 
 candidate=(RUNTIME/"UnderworldVanillaDungeonCandidatePolicy.cs").read_text()
 for token,label in (
-    ('"EnablePlannedCandidateWorldgen",\n            false',"candidate disabled-by-default contract"),
-    ("IsWorldgenAdmitted","single candidate worldgen admission predicate"),
-    ("definition.Status == UnderworldDungeonStatus.RuntimeReady || IsCandidate(definition)",
-     "RuntimeReady-or-explicit-candidate restriction"),
+    ("Compatibility shell for the retired one-at-a-time DDE candidate switch",
+     "retired candidate compatibility shell"),
+    ("internal static bool Enabled => false","inert retired candidate switch"),
+    ("definition.Status == UnderworldDungeonStatus.RuntimeReady",
+     "RuntimeReady-only worldgen admission"),
 ):
     if token not in candidate:
-        fail.append("candidate policy: missing "+label)
+        fail.append("runtime admission policy: missing "+label)
 
 bridge=(RUNTIME/"UnderworldWorldgenContentBridge.cs").read_text()
 for token,label in (
     ("row.m_biome != expectedBiome","exact owning-biome mask enforcement"),
-    ("is Planned but has","non-candidate Planned dungeon row rejection"),
-    ("without candidate admission","candidate-scoped Planned rejection diagnostic"),
+    ("is Planned but has","unexpected Planned dungeon row rejection"),
     ("exactly one is required","duplicate detached dungeon-row rejection"),
     ("missingDungeons","admitted row presence gate"),
-    ("IsWorldgenAdmitted(dungeon)","candidate-aware catalog admission"),
+    ("IsWorldgenAdmitted(dungeon)","RuntimeReady catalog admission"),
 ):
     if token not in bridge:
         fail.append("worldgen bridge: missing "+label)
@@ -68,8 +68,7 @@ for token,label in (
     ("instances.Length != dungeon.Quantity","target quantity enforcement"),
     ("MinDistanceFromSimilarMeters","same-family spacing enforcement"),
     ("ZNet.instance.IsServer()","server-authoritative reconciliation"),
-    ("IsWorldgenAdmitted(dungeon)","candidate-aware native placement audit"),
-    ("without candidate admission","non-candidate Planned placement rejection"),
+    ("IsWorldgenAdmitted(dungeon)","RuntimeReady native placement audit"),
 ):
     if token not in placement:
         fail.append("placement runtime: missing "+label)
@@ -107,6 +106,6 @@ if fail:
     raise SystemExit("FAIL Underworld dungeon worldgen contract: "+"; ".join(fail))
 
 print(
-    "PASS Underworld dungeon worldgen contract: Deep Fracture remains bespoke; five ordinary "
-    "families use private vanilla-donor clones; RuntimeReady plus at most one fingerprinted "
-    "developer candidate route through exact native Underworld biome masks and placement audit.")
+    "PASS Underworld dungeon worldgen contract: Deep Fracture remains bespoke; all five ordinary "
+    "families use private vanilla-donor clones and are RuntimeReady together through exact native "
+    "Underworld biome masks and placement audit.")
