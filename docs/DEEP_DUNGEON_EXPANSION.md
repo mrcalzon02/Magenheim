@@ -888,3 +888,682 @@ The intended final result is not five replacement dungeons. It is five **massive
 of Valheim dungeons the player already knows**, repopulated and repurposed as part of the
 Underworld — alongside Deep Fracture, which remains the place where Magenheim fully owns the
 architecture.
+
+
+---
+
+## 13. Current implementation state
+
+This section is intentionally operational. It records what exists now so future work does not
+re-implement finished source seams or mistake source implementation for runtime acceptance.
+
+### Implemented in Core
+
+- donor-to-biome mapping for all five ordinary dungeons;
+- 1.5x minimum linear room scale;
+- 3.5x minimum live donor room-count multiplier;
+- mandatory vanilla enemy replacement;
+- mandatory vanilla loot/resource replacement;
+- prohibition on bespoke Magenheim room injection;
+- validation that all five ordinary dungeon ids are covered exactly once;
+- Deep Fracture exclusion from the generic donor program;
+- independent `Planned` / `RuntimeReady` promotion model.
+
+### Implemented in Runtime source
+
+- generic `UnderworldVanillaDungeonRegistrar` bootstrap path;
+- private donor room cloning;
+- private Magenheim themes;
+- room root scale and `Room.m_size` expansion;
+- live donor min/max room-count expansion;
+- derived generator-zone expansion;
+- required-room remapping;
+- donor door cloning and scale adjustment;
+- cloned donor entrance registration;
+- Underworld-biome confinement;
+- `CreatureSpawner` replacement;
+- `SpawnArea` replacement;
+- chest resource-table replacement;
+- pickable resource replacement;
+- `MineRock`, `MineRock5` and `DropOnDestroyed` replacement;
+- removal of obvious donor `Vegvisir` and `Runestone` progression hooks;
+- generic registrar wired into the plugin instead of the five retired bespoke ordinary registrars.
+
+### Deliberately not yet enabled
+
+All five ordinary catalog entries remain `Planned`.
+
+Therefore the current source should **not** seed these five new entrances in live worlds yet. That is
+intentional. The implementation seam exists so it can be hardened without writing unfinished
+locations into player saves.
+
+### Still unproven
+
+The following must be treated as unknown until tested:
+
+- whether every current Valheim donor prefab/theme name is still correct;
+- whether all cloned rooms behave correctly at 1.5x;
+- whether all donor connection/door mechanics survive scaling;
+- whether the current generator-zone formula reliably supports 3.5x room counts;
+- whether donor-specific gameplay components have all been sanitized;
+- whether the generic resource-table replacement is economically sane;
+- whether dungeon-return behavior remains bound to the correct Underworld entrance;
+- whether large cloned dungeons survive save/reload and multiplayer;
+- whether performance remains acceptable;
+- whether all five donors can use one generic implementation without donor-specific adapters.
+
+---
+
+## 14. Execution work packages
+
+Development should proceed in work packages rather than making all five donors RuntimeReady and
+debugging the resulting failures simultaneously.
+
+### DDX-W01 — Donor introspection tooling
+
+**Goal:** make the game tell us exactly what each donor contains.
+
+Implement a diagnostic pass that records, for every donor profile:
+
+- resolved entrance prefab;
+- resolved `DungeonGenerator` object;
+- theme enum;
+- live room list;
+- enabled/disabled room state;
+- entrance/endcap/divider flags;
+- room size;
+- room connection count and connection types;
+- donor door definitions;
+- required-room list;
+- min/max rooms;
+- zone size;
+- tile width;
+- algorithm;
+- interior environment;
+- gameplay-bearing component inventory.
+
+Output should be deterministic, human-readable and suitable for checking into
+`docs/validation/`.
+
+**Blocks:** DDE-01 and every later donor-specific gate.
+
+### DDX-W02 — Component sanitation registry
+
+**Goal:** replace ad-hoc component stripping with an explicit reviewable policy.
+
+Create a registry that classifies known donor components into:
+
+- structural-retain;
+- gameplay-retarget;
+- remove;
+- donor-specific review.
+
+The runtime should report any gameplay-bearing component that appears in a cloned donor room but is
+not represented in this registry.
+
+This becomes the durable protection against future Valheim updates quietly introducing new loot,
+quest, event or spawn behavior into reused rooms.
+
+**Blocks:** DDE-03, DDE-06.
+
+### DDX-W03 — Scale verifier
+
+**Goal:** prove that 1.5x works as architecture, not just as a transform.
+
+Instrumentation should compare donor vs clone for representative room types:
+
+- renderer bounds;
+- collider bounds;
+- `Room.m_size`;
+- connection world positions;
+- door opening dimensions;
+- vertical step/ledge distances.
+
+Log ratios and fail static/runtime acceptance when a cloned gameplay-critical dimension remains at
+roughly vanilla scale.
+
+**Blocks:** DDE-04.
+
+### DDX-W04 — Generation telemetry
+
+**Goal:** measure whether the 3.5x target produces real dungeons.
+
+Record each generated ordinary dungeon:
+
+- requested minimum/maximum rooms;
+- actual room count;
+- placement failures;
+- bounding extents;
+- generation duration;
+- required rooms placed;
+- dead ends;
+- graph edges;
+- longest entrance-to-room graph distance;
+- room-family frequency.
+
+Generate aggregate summaries over multiple seeds.
+
+**Blocks:** DDE-05, DDE-12.
+
+### DDX-W05 — Deterministic depth authority
+
+**Goal:** turn added size into progression rather than repetition.
+
+After generation, construct a room graph from the entrance and assign each room a normalized depth
+value from 0.0 to 1.0.
+
+Recommended implementation:
+
+1. locate entrance room;
+2. build adjacency from actual connected room instances;
+3. breadth-first search shortest graph distance;
+4. identify maximum reachable depth;
+5. normalize each room distance;
+6. persist or deterministically recompute from generated dungeon state;
+7. expose depth to encounter and reward selection.
+
+If a donor produces disconnected room islands, generation should fail validation rather than
+silently assign arbitrary depth.
+
+**Blocks:** DDE-07, DDE-08.
+
+### DDX-W06 — Dungeon encounter profiles
+
+**Goal:** make interior ecology deliberate.
+
+Create one profile per ordinary biome containing:
+
+- creature identities;
+- role weighting by depth band;
+- permitted room/spawner types;
+- maximum simultaneous population;
+- group sizes;
+- apex eligibility;
+- respawn rules;
+- aquatic/flying restrictions;
+- empty-room probability.
+
+Reuse the existing creature balance authority. Do not create dungeon-specific stat clones unless a
+specific encounter mechanic requires one.
+
+**Blocks:** DDE-06, DDE-07.
+
+### DDX-W07 — Dungeon resource profiles
+
+**Goal:** make large dungeons valuable but bounded.
+
+Create one reward profile per ordinary biome with:
+
+- common/uncommon/rare resource pools;
+- depth thresholds;
+- per-container budget;
+- per-mineable budget;
+- per-pickable budget;
+- per-dungeon rare-resource cap;
+- full-clear expected yield;
+- refill/respawn policy.
+
+The generic `ResourceTable()` implementation should ultimately consume these profiles rather than
+treating all raw materials as roughly interchangeable.
+
+**Blocks:** DDE-08.
+
+### DDX-W08 — Donor-specific adapters
+
+**Goal:** keep one generic system without pretending all vanilla dungeons are identical.
+
+Adapters should only exist when a donor has a real unique mechanic.
+
+Expected candidates:
+
+- Frost Cave vertical traversal;
+- Sunken Crypt water/blockers;
+- Infested Mine large-room/bridge behavior;
+- Winding Tunnel new-version mechanics.
+
+Each adapter must document why the generic path is insufficient and should remain narrow.
+
+**Blocks:** donor-specific DDE-04, DDE-09.
+
+### DDX-W09 — Return/persistence validation
+
+**Goal:** prove dungeon travel remains inside the owning Underworld world instance.
+
+Add diagnostics for:
+
+- owning entrance identity;
+- owning world-instance id;
+- interior identity;
+- return target;
+- player instance before entry;
+- player instance inside;
+- player instance after exit.
+
+Then test save/reload and peer ownership transitions.
+
+**Blocks:** DDE-10, DDE-11.
+
+### DDX-W10 — Promotion tooling
+
+**Goal:** make RuntimeReady promotion small and auditable.
+
+Create a validation command/report that prints, per donor:
+
+- DDE gate state;
+- evidence document paths;
+- current catalog state;
+- unresolved blockers.
+
+It may recommend promotion but must **not** modify `UnderworldDungeonCatalog` automatically.
+
+Promotion remains an explicit source edit after review.
+
+---
+
+## 15. Biome encounter and resource planning
+
+These are planning defaults for the dungeon profiles. They are not permission to hard-code every
+room with the same encounter.
+
+### 15.1 Fungal Forest / Burial Chambers
+
+**Creature pool**
+
+- Lantern Moth — ambient/small;
+- Sporeling — swarm;
+- Capcrawler — skirmisher;
+- Mycelial Stalker — hunter;
+- Puffback — bruiser;
+- Shelf Lurker — hunter/skirmisher;
+- Crowncap Brute — deep/apex.
+
+**Resource pool**
+
+- Worldroot Timber — common;
+- Glowcap Flesh — common;
+- Spire Fibre — common/uncommon;
+- Understone — common.
+
+**Depth intent**
+
+Entry rooms should lean toward Sporelings, Lantern Moths, Understone and Glowcap Flesh. Stalkers and
+Puffbacks become more common deeper in. Crowncap Brutes should be deep-room events rather than
+routine crypt occupants.
+
+**Special concern**
+
+Burial Chambers have many compact corridors. The 1.5x scale helps, but Lox/Troll-derived body plans
+still need pathing checks before Puffback/Crowncap Brute are admitted to every room type.
+
+### 15.2 Blackwater Deep / Sunken Crypts
+
+**Creature pool**
+
+- Cave Ray — ambient aquatic;
+- Gloomfin — aquatic;
+- Blackwater Lamprey — hunter;
+- Shoreclaw — skirmisher/amphibious;
+- Lantern Angler — hunter;
+- Abyss Shellback — heavy;
+- Deep Hunter — apex.
+
+**Resource pool**
+
+- Blackwater Flowstone — common;
+- Pale Fibre — common/uncommon;
+- Deep Salt — common/uncommon;
+- Blackwater Pearl — rare.
+
+**Depth intent**
+
+Flowstone and salt may appear throughout. Pearls should become substantially more likely deeper in.
+Deep Hunters and Abyss Shellbacks should require rooms with enough water/volume to function.
+
+**Special concern**
+
+Do not place Serpent-derived creatures into dry sealed rooms merely because a generic spawner socket
+exists. The encounter profile must understand aquatic suitability.
+
+### 15.3 Sulfurous Wastes / Infested Mines
+
+**Creature pool**
+
+- Ashmite — swarm;
+- Cinder Hound — hunter;
+- Basalt Crawler — bruiser;
+- Vent Spitter — skirmisher;
+- Fume Wraith — hunter/spectral;
+- Magma Leaper — hunter;
+- Furnace Golem — apex/heavy.
+
+**Resource pool**
+
+- Slagstone — common;
+- Sulfur — common;
+- Charred Timber — common/uncommon;
+- Emberiron — rare.
+
+**Depth intent**
+
+Sulfur and Slagstone establish baseline value. Emberiron should strongly favor deep rooms, defended
+mineable fixtures or heavy encounters.
+
+**Special concern**
+
+Infested Mines already contain large combat spaces. The 1.5x scale can create enormous volumes;
+encounter density must rise enough to avoid empty halls without turning every large room into a
+mob pile.
+
+### 15.4 Frozen Caverns / Frost Caves
+
+**Creature pool**
+
+- Rime Moth — ambient;
+- Frost Tick — swarm;
+- Iceblind — hunter;
+- Pale Burrower — skirmisher;
+- Rimewing — flying pressure;
+- Glacier Stalker — hunter;
+- Cryolith Guardian — heavy/apex.
+
+**Resource pool**
+
+- Clear Ice — common;
+- Rimewood — common/uncommon;
+- Rimesilver — rare.
+
+**Depth intent**
+
+Clear Ice should be common enough to make the dungeon visibly worthwhile. Rimesilver should be deep,
+low-frequency and often associated with stronger encounters.
+
+**Special concern**
+
+Vertical traversal after 1.5x scaling is the primary gate: ledges, drops and stairs that are fair at
+vanilla scale may become impossible or annoying at 1.5x.
+
+### 15.5 Great Decay / Winding Tunnels
+
+**Creature pool**
+
+- Rotling — swarm;
+- Carrion Bloom — skirmisher/caster;
+- Spore Husk — hunter;
+- Marrow Creeper — skirmisher;
+- Decay Hound — hunter;
+- Graft Warden — heavy;
+- Corpse Orchard — heavy/rare encounter.
+
+**Resource pool**
+
+- Rotwood — common;
+- Decay Spore — common;
+- Bone Gravel — common/uncommon;
+- Carrion Amber — rare.
+
+**Depth intent**
+
+Decay Spore and Bone Gravel establish broad value. Carrion Amber belongs primarily in the Deep and
+Abyssal bands, especially behind Warden/Orchard pressure.
+
+**Special concern**
+
+Winding Tunnels are the highest donor-drift risk. Re-audit this donor after every relevant Valheim
+update before assuming prior component sanitation remains complete.
+
+---
+
+## 16. Depth-band defaults
+
+Until live telemetry gives a reason to change them, use these as starting design targets:
+
+| Band | Normalized graph depth | Encounter pressure | Resource intent |
+|---|---:|---|---|
+| Entry | 0.00-0.20 | low | common only, rare exceptional |
+| Developing | >0.20-0.45 | moderate | common + uncommon |
+| Deep | >0.45-0.75 | high | uncommon + rare eligible |
+| Abyssal | >0.75-1.00 | highest | strongest rare eligibility and apex pressure |
+
+These bands should influence **probability**, not produce rigid scripts. A deep room can still be
+empty; an entry room can still surprise the player. The overall dungeon should feel authored by
+pressure curves without losing vanilla procedural variation.
+
+Recommended initial occupancy targets:
+
+- Entry: 45-60% of encounter-capable sockets populated;
+- Developing: 55-70%;
+- Deep: 65-80%;
+- Abyssal: 70-85%.
+
+Do not exceed these merely because the dungeon is large. Large spaces need pauses.
+
+---
+
+## 17. Reward-budget planning
+
+The final numbers require live balance, but implementation should support a bounded total reward
+model from the beginning.
+
+### 17.1 Budget principle
+
+A full clear of a 3.5x dungeon should return materially more value than a vanilla dungeon and enough
+Underworld resources to justify the risk/time, but should not equal several hours of uncontested
+surface-biome gathering in its rarest resource.
+
+### 17.2 Proposed control model
+
+Each generated dungeon receives a deterministic reward budget derived from:
+
+- biome;
+- generated room count;
+- graph depth distribution;
+- dungeon seed;
+- difficulty/encounter population.
+
+Each room consumes part of that budget when its loot/resource fixtures are resolved.
+
+Rare-resource budget should be capped at the dungeon level. This avoids a seed that happens to
+repeat many treasure-room donor pieces from generating absurd quantities of Emberiron, Rimesilver,
+Blackwater Pearl or Carrion Amber.
+
+### 17.3 No room-prefab rarity exploit
+
+Resource quality must not be permanently tied only to donor room prefab identity. If one vanilla
+treasure room repeats several times in a 140-room run, the player should not receive the rare payout
+several times without regard to total budget/depth.
+
+Depth + dungeon budget should be authoritative; donor room type is only one weighting factor.
+
+---
+
+## 18. Telemetry schema
+
+For each generated dungeon, emit one summary record with at least:
+
+`dungeon_id`  
+`donor_generator`  
+`seed`  
+`underworld_instance_id`  
+`biome`  
+`room_scale`  
+`donor_min_rooms`  
+`donor_max_rooms`  
+`target_min_rooms`  
+`target_max_rooms`  
+`actual_rooms`  
+`placement_failures`  
+`generation_ms`  
+`bounds_x` / `bounds_y` / `bounds_z`  
+`max_graph_depth`  
+`dead_ends`  
+`graph_edges`  
+`required_rooms_expected`  
+`required_rooms_placed`  
+`creature_spawners`  
+`spawn_areas`  
+`containers`  
+`pickables`  
+`mineables`  
+`donor_population_violations`  
+`rare_resource_budget`  
+`rare_resource_allocated`
+
+For development builds, a per-room trace should optionally include:
+
+- cloned room prefab;
+- donor room prefab;
+- graph depth;
+- normalized depth band;
+- connections;
+- assigned encounter profile;
+- assigned resource budget;
+- any sanitation action applied.
+
+Release builds should keep only concise diagnostics necessary for support unless verbose dungeon
+logging is explicitly enabled.
+
+---
+
+## 19. Evidence layout
+
+Use consistent evidence paths so promotion can be audited later.
+
+Recommended layout:
+
+`docs/validation/deep-dungeon-expansion/<donor>/<date>/`
+
+Each donor acceptance directory should contain or reference:
+
+- `donor-audit.md`
+- `compile.md`
+- `clone-isolation.md`
+- `scale.md`
+- `generation-telemetry.md`
+- `population-sanitation.md`
+- `depth-economy.md`
+- `worldgen-return.md`
+- `multiplayer-persistence.md`
+- `performance.md`
+- `promotion.md`
+
+Do not create empty evidence files merely to satisfy this structure. An evidence file exists only
+when it contains actual observations/results.
+
+---
+
+## 20. Donor promotion packet
+
+Before changing a donor to `RuntimeReady`, assemble this checklist in its `promotion.md`:
+
+- [ ] DDE-00 Authority freeze passed
+- [ ] DDE-01 Donor audit passed
+- [ ] DDE-02 Compile/static passed
+- [ ] DDE-03 Clone isolation passed
+- [ ] DDE-04 Physical scale passed
+- [ ] DDE-05 Expanded generation passed
+- [ ] DDE-06 Population sanitation passed
+- [ ] DDE-07 Depth progression passed
+- [ ] DDE-08 Economy balance passed
+- [ ] DDE-09 Atmosphere/donor mechanics passed
+- [ ] DDE-10 Worldgen/return passed
+- [ ] DDE-11 Persistence/multiplayer passed
+- [ ] DDE-12 Performance/stress passed
+- [ ] Surface donor regression checked
+- [ ] Deep Fracture regression checked where relevant
+- [ ] Existing-world admission tested
+- [ ] catalog change reviewed
+- [ ] post-promotion fresh-world smoke test completed
+
+The packet should record the exact commit tested. If code changes after the packet is completed, any
+affected gate must be rerun.
+
+---
+
+## 21. Development sequence from current state
+
+Given the source that exists today, continue in this order:
+
+1. **Do not promote any ordinary dungeon yet.**
+2. Implement **DDX-W01 donor introspection tooling**.
+3. Run it against all five live donor families and commit the audit evidence.
+4. Implement **DDX-W02 sanitation registry** using the actual donor-component inventory.
+5. Compile the generic registrar against the current managed assemblies and fix every API mismatch.
+6. Enable **only Fungal/Burial Chambers** in a disposable development branch/state for runtime
+   testing; keep the committed production catalog Planned until gates are satisfied.
+7. Complete DDE-03 through DDE-06 for Fungal.
+8. Implement shared **DDX-W05 depth authority**, **W06 encounters** and **W07 reward budgets** using
+   Fungal as the first live donor.
+9. Complete DDE-07 through DDE-12 for Fungal.
+10. Promote Fungal only after its packet is complete.
+11. Repeat the process for Frozen, adding only the adapters discovered by its vertical layout.
+12. Repeat for Blackwater, then Sulfurous, then Great Decay.
+13. After all five promotions, execute DDE-14 regression closure.
+
+This order intentionally front-loads generic-system defects into the simplest donor so later donors
+mostly exercise additional mechanics instead of rediscovering the same clone/scale bugs.
+
+---
+
+## 22. Explicitly deferred enhancements
+
+These are valid future improvements but are **not** prerequisites for first RuntimeReady promotion
+unless testing proves one is necessary:
+
+- bespoke dungeon-only creature species;
+- custom ordinary-dungeon room geometry;
+- custom boss room for every ordinary dungeon;
+- unique dungeon-only crafting station;
+- dungeon map/minimap UI;
+- special dungeon keys beyond donor mechanics;
+- procedural wall retexturing of every donor room;
+- new voice/lore narration systems;
+- custom soundtrack per ordinary donor;
+- hand-authored set-piece room inserted into vanilla donor themes.
+
+The program should first prove that **expanded vanilla architecture + Underworld ecology + meaningful
+depth/resource progression** is already worth exploring. Add complexity only where the tested
+experience actually needs it.
+
+---
+
+## 23. Durable decision log
+
+Record major design changes here instead of allowing them to survive only in chat history.
+
+### 2026-09-29 — Ordinary architecture direction
+
+Decision: ordinary Underworld dungeons reuse vanilla entrances, room/tile sets and construction
+mechanics rather than custom Magenheim room architecture.
+
+Reason: the desired experience is recognition followed by surprise at scale and content, not a
+light reskin and not an unrelated replacement dungeon.
+
+### 2026-09-29 — Scale floor
+
+Decision: vanilla donor room geometry is at least 1.5x linear scale.
+
+Reason: larger spaces make the donor feel physically transformed without requiring extensive mesh
+editing.
+
+### 2026-09-29 — Exploration floor
+
+Decision: ordinary dungeons target at least 3.5x the live donor's min/max room counts.
+
+Reason: the Underworld version must feel like a significant expedition and be worthwhile to explore,
+not the exact same dungeon with different enemies.
+
+### 2026-09-29 — Custom-content separation
+
+Decision: Deep Fracture remains the bespoke Magenheim dungeon architecture lane. The five ordinary
+donor dungeons do not inject the retired bespoke ordinary room kits.
+
+Reason: preserve a clear distinction between expanded familiar Valheim spaces and Magenheim's fully
+custom expedition content.
+
+### 2026-09-29 — Ecology/economy ownership
+
+Decision: all ordinary donor-dungeon enemies and progression rewards come from the owning Underworld
+biome.
+
+Reason: architecture is reused; gameplay progression is not. The point is new reasons to explore a
+familiar structural language.
