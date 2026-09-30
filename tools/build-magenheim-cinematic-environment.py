@@ -192,10 +192,18 @@ def add_humanoid_proxy(name, location, scale, mats, target, material_key="hero",
     root.location = location
     target.objects.link(root)
 
-    def child_box(suffix, local, dims, key=material_key):
+    def child_box(suffix, local, dims, key=material_key, pivot=None):
         obj = add_box(name + "_" + suffix,
                       (location[0] + local[0], location[1] + local[1], location[2] + local[2]),
                       dims, mats[key], target)
+        if pivot is not None:
+            bpy.context.scene.cursor.location = (
+                location[0] + pivot[0], location[1] + pivot[1], location[2] + pivot[2]
+            )
+            bpy.context.view_layer.objects.active = obj
+            obj.select_set(True)
+            bpy.ops.object.origin_set(type='ORIGIN_CURSOR', center='MEDIAN')
+            obj.select_set(False)
         obj.parent = root
         obj.matrix_parent_inverse = root.matrix_world.inverted()
         return obj
@@ -204,8 +212,10 @@ def add_humanoid_proxy(name, location, scale, mats, target, material_key="hero",
     child_box("Torso", (0,0,1.42*scale), (torso_w,.48*scale,1.28*scale))
     child_box("Pelvis", (0,0,.78*scale), (.62*scale,.42*scale,.34*scale))
     for side in (-1,1):
-        child_box(f"Leg_{side:+}", (side*.19*scale,0,.34*scale), (.24*scale,.28*scale,.82*scale))
-        child_box(f"Arm_{side:+}", (side*(torso_w*.62),0,1.40*scale), (.22*scale,.25*scale,1.05*scale))
+        child_box(f"Leg_{side:+}", (side*.19*scale,0,.34*scale), (.24*scale,.28*scale,.82*scale),
+                  pivot=(side*.19*scale,0,.75*scale))
+        child_box(f"Arm_{side:+}", (side*(torso_w*.62),0,1.40*scale), (.22*scale,.25*scale,1.05*scale),
+                  pivot=(side*(torso_w*.62),0,1.92*scale))
     bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=.30*scale,
                                          location=(location[0],location[1],location[2]+2.28*scale))
     head = bpy.context.object
@@ -234,7 +244,9 @@ def add_raven_proxy(name, location, scale, mats, target):
     x,y,z=location
     verts=[(x-.1*scale,y,z),(x-1.05*scale,y-.12*scale,z+.08*scale),(x-.3*scale,y,z-.08*scale),
            (x+.1*scale,y,z),(x+1.05*scale,y-.12*scale,z+.08*scale),(x+.3*scale,y,z-.08*scale)]
-    mesh_obj(name+"_Wings",verts,[(0,1,2),(3,4,5)],mats["raven"],target)
+    wings=mesh_obj(name+"_Wings",verts,[(0,1,2),(3,4,5)],mats["raven"],target)
+    wings.parent=root
+    wings.matrix_parent_inverse=root.matrix_world.inverted()
     return root
 
 
@@ -839,6 +851,310 @@ def materials():
     }
 
 
+
+def _key(obj, frame, data_path, value=None, index=-1):
+    if value is not None:
+        if data_path == "location":
+            obj.location = value
+        elif data_path == "rotation_euler":
+            obj.rotation_euler = value
+        elif data_path == "scale":
+            obj.scale = value
+        elif data_path == "lens":
+            obj.data.lens = value
+        else:
+            raise ValueError("Unsupported key path: " + data_path)
+    owner = obj.data if data_path == "lens" else obj
+    owner.keyframe_insert(data_path=data_path, frame=frame, index=index)
+
+
+def _set_action_interpolation(idblock, interpolation="BEZIER"):
+    if idblock.animation_data is None or idblock.animation_data.action is None:
+        return
+    for curve in idblock.animation_data.action.fcurves:
+        for point in curve.keyframe_points:
+            point.interpolation = interpolation
+            if interpolation == "BEZIER":
+                point.handle_left_type = "AUTO_CLAMPED"
+                point.handle_right_type = "AUTO_CLAMPED"
+
+
+def _look_at(cam, frame, location, target, lens=None):
+    cam.location = location
+    direction = Vector(target) - Vector(location)
+    cam.rotation_euler = direction.to_track_quat('-Z','Y').to_euler()
+    cam.keyframe_insert(data_path="location", frame=frame)
+    cam.keyframe_insert(data_path="rotation_euler", frame=frame)
+    if lens is not None:
+        cam.data.lens = lens
+        cam.data.keyframe_insert(data_path="lens", frame=frame)
+
+
+def _walk_cycle(root_name, start, end, start_loc, end_loc, phase=0, stride=12, swing_deg=24):
+    root=bpy.data.objects.get(root_name)
+    if root is None:
+        return
+    root.location=start_loc
+    root.keyframe_insert(data_path="location",frame=start)
+    root.location=end_loc
+    root.keyframe_insert(data_path="location",frame=end)
+    left=bpy.data.objects.get(root_name.removesuffix("_ROOT")+"_Leg_-1")
+    right=bpy.data.objects.get(root_name.removesuffix("_ROOT")+"_Leg_+1")
+    larm=bpy.data.objects.get(root_name.removesuffix("_ROOT")+"_Arm_-1")
+    rarm=bpy.data.objects.get(root_name.removesuffix("_ROOT")+"_Arm_+1")
+    amplitude=math.radians(swing_deg)
+    for frame in range(start+phase,end+1,stride//2):
+        polarity=1 if ((frame-start-phase)//(stride//2))%2==0 else -1
+        for obj,sign in ((left,1),(right,-1),(larm,-.72),(rarm,.72)):
+            if obj is None:
+                continue
+            obj.rotation_mode='XYZ'
+            obj.rotation_euler=(amplitude*polarity*sign,0,0)
+            obj.keyframe_insert(data_path="rotation_euler",frame=frame)
+    # Real gait has a very small vertical center-of-mass oscillation, not an
+    # arbitrary screen-space wobble.
+    base_z0=start_loc[2]
+    base_z1=end_loc[2]
+    for frame in range(start,end+1,stride//4):
+        t=(frame-start)/max(1,end-start)
+        z=base_z0+(base_z1-base_z0)*t + .025*(1-math.cos((frame-start)*math.tau/(stride/2)))
+        x=start_loc[0]+(end_loc[0]-start_loc[0])*t
+        y=start_loc[1]+(end_loc[1]-start_loc[1])*t
+        root.location=(x,y,z)
+        root.keyframe_insert(data_path="location",frame=frame)
+    root.location=end_loc
+    root.keyframe_insert(data_path="location",frame=end)
+
+
+def _pose_limb(name, frame, rotation):
+    obj=bpy.data.objects.get(name)
+    if obj is None:
+        return
+    obj.rotation_mode='XYZ'
+    obj.rotation_euler=rotation
+    obj.keyframe_insert(data_path="rotation_euler",frame=frame)
+
+
+def _camera_shake(cam, center_frame, base_location, target, offsets):
+    # Damped whole-camera impulse caused by the world tremor.  All offsets are
+    # in metres and return to the same physical camera position.
+    for delta,off in offsets:
+        frame=center_frame+delta
+        loc=(base_location[0]+off[0],base_location[1]+off[1],base_location[2]+off[2])
+        _look_at(cam,frame,loc,target)
+
+
+def _animate_light_energy(obj_name, keys):
+    obj=bpy.data.objects.get(obj_name)
+    if obj is None or obj.type!="LIGHT":
+        return
+    for frame,value in keys:
+        obj.data.energy=value
+        obj.data.keyframe_insert(data_path="energy",frame=frame)
+
+
+def bind_camera_cuts(scene,cameras):
+    marker_by_name={m.name:m for m in scene.timeline_markers}
+    for shot,start,_ in SHOT_SPECS:
+        marker=marker_by_name.get(shot)
+        cam=cameras.get(shot+"_CAM")
+        if marker is None or cam is None:
+            raise RuntimeError(f"Cannot bind cinematic camera cut {shot}")
+        marker.camera=cam
+    scene.camera=cameras["SHOT_01_RETURN_CAM"]
+
+
+def animate_scene(scene,cameras):
+    """Author object-space motion for the eight-shot cinematic.
+
+    Every motion is attached to a scene object, limb, camera, light or weapon.
+    There is no image warping and no arbitrary moving screen region.
+    """
+    # Shot 1 — three heroes walk into the village on actual world trajectories.
+    _walk_cycle("HERO_A_ROOT",1,72,(-2.2,-31.4,.15),(-2.0,-22.4,.15),phase=0)
+    _walk_cycle("HERO_B_ROOT",1,72,(0,-32.2,.15),(.1,-23.2,.15),phase=3)
+    _walk_cycle("HERO_C_ROOT",1,72,(2.1,-31.6,.15),(2.2,-22.7,.15),phase=6)
+    _look_at(cameras["SHOT_01_RETURN_CAM"],1,(0,-42,5.5),(0,-22,2.1),50)
+    _look_at(cameras["SHOT_01_RETURN_CAM"],72,(1.0,-35.4,5.0),(.2,-16.5,2.3),48)
+
+    # Shot 2 — short homecoming advance, then weight settles; villagers turn
+    # toward the entrants instead of twitching in place.
+    for idx,x in enumerate((-1.6,0,1.6)):
+        root=bpy.data.objects.get(f"HALL_HERO_{chr(65+idx)}_ROOT")
+        if root:
+            start=(HALL_X+x,-9.0-(.35 if idx==1 else 0),.05)
+            end=(HALL_X+x,-6.3-(.25 if idx==1 else 0),.05)
+            _walk_cycle(root.name,73,112,start,end,phase=idx*3,stride=12,swing_deg=20)
+            root.location=end
+            root.keyframe_insert(data_path="location",frame=144)
+    for i in range(6):
+        root=bpy.data.objects.get(f"HALL_VILLAGER_{i}_ROOT")
+        if root:
+            root.rotation_mode='XYZ'
+            root.rotation_euler=(0,0,0)
+            root.keyframe_insert(data_path="rotation_euler",frame=73)
+            turn=math.radians(14 if i%2==0 else -14)
+            root.rotation_euler=(0,0,turn)
+            root.keyframe_insert(data_path="rotation_euler",frame=116)
+            root.keyframe_insert(data_path="rotation_euler",frame=144)
+    _look_at(cameras["SHOT_02_HOMECOMING_CAM"],73,(HALL_X,-12.5,3.1),(HALL_X,2.5,2.4),46)
+    _look_at(cameras["SHOT_02_HOMECOMING_CAM"],144,(HALL_X+.4,-10.2,3.0),(HALL_X,5.0,2.5),49)
+
+    # Shot 3 — stillness is intentional.  Only the camera eases across the
+    # landscape; characters do not perform fake idle motion.
+    _look_at(cameras["SHOT_03_PEACE_CAM"],145,(-31,-37,13.5),(2,6,3.2),48)
+    _look_at(cameras["SHOT_03_PEACE_CAM"],216,(-27.8,-34.5,12.9),(3.5,7.0,3.1),52)
+
+    # Shot 4 — physical tremor followed by human reaction.
+    cam4=cameras["SHOT_04_RUMBLE_CAM"]
+    base=(8,-30,3.0); target=(0,-17,2.5)
+    _look_at(cam4,217,base,target,58)
+    _camera_shake(cam4,242,base,target,(
+        (-8,(0,0,0)),(-5,(.07,0,.035)),(-2,(-.10,.01,-.045)),
+        (1,(.08,-.01,.04)),(4,(-.055,.01,-.025)),(7,(.03,0,.014)),(11,(0,0,0)),
+    ))
+    _look_at(cam4,288,(7.4,-28.7,3.15),(0,-16,2.6),60)
+    for i,name in enumerate(("HERO_A_ROOT","HERO_B_ROOT","HERO_C_ROOT")):
+        root=bpy.data.objects.get(name)
+        if root:
+            root.rotation_mode='XYZ'
+            root.keyframe_insert(data_path="rotation_euler",frame=230)
+            root.rotation_euler=(0,0,math.radians((-18,7,22)[i]))
+            root.keyframe_insert(data_path="rotation_euler",frame=270)
+    # Lift the heads slightly toward the source of the disturbance.
+    for prefix in ("HERO_A","HERO_B","HERO_C"):
+        head=bpy.data.objects.get(prefix+"_Head")
+        if head:
+            head.rotation_mode='XYZ'
+            head.rotation_euler=(0,0,0); head.keyframe_insert(data_path="rotation_euler",frame=230)
+            head.rotation_euler=(math.radians(-10),0,0); head.keyframe_insert(data_path="rotation_euler",frame=268)
+
+    # Shot 5 — raven crosses actual 3D space.  Proxy wings move as a single
+    # readable beat until the final raven rig replaces them.
+    raven=bpy.data.objects.get("RAVEN_ROOT")
+    if raven:
+        raven.location=(-13,1,7.0); raven.keyframe_insert(data_path="location",frame=289)
+        raven.location=(-8,7,9.4); raven.keyframe_insert(data_path="location",frame=325)
+        raven.location=(-3,13,10.0); raven.keyframe_insert(data_path="location",frame=360)
+        raven.rotation_mode='XYZ'
+        raven.rotation_euler=(0,0,math.radians(-20)); raven.keyframe_insert(data_path="rotation_euler",frame=289)
+        raven.rotation_euler=(0,0,math.radians(8)); raven.keyframe_insert(data_path="rotation_euler",frame=360)
+    wings=bpy.data.objects.get("RAVEN_Wings")
+    if wings:
+        for frame in range(289,361,6):
+            wings.rotation_mode='XYZ'
+            wings.rotation_euler=(0,math.radians(18 if ((frame-289)//6)%2==0 else -12),0)
+            wings.keyframe_insert(data_path="rotation_euler",frame=frame)
+    _look_at(cameras["SHOT_05_OMEN_CAM"],289,(-13,1,10.8),(-8,7,9.0),76)
+    _look_at(cameras["SHOT_05_OMEN_CAM"],360,(-7,5,11.3),(-3,13,10.0),82)
+
+    # Shot 6 — a real dolly through the Blackstone approach.  The monumental
+    # set supplies parallax; the camera does not zoom a still image.
+    _look_at(cameras["SHOT_06_THRONE_REVEAL_CAM"],361,(19,THRONE_Y+30,6.4),(0,THRONE_Y-17.5,3.2),44)
+    _look_at(cameras["SHOT_06_THRONE_REVEAL_CAM"],444,(10.5,THRONE_Y+13.5,5.3),(0,THRONE_Y-19.0,3.0),49)
+
+    # Shot 7 — King rises on a coherent body trajectory, torso straightens,
+    # head lifts, and arms separate with delayed follow-through.
+    king=bpy.data.objects.get("NOWHERE_KING_ROOT")
+    if king:
+        king.location=(0,THRONE_Y-19.5,.28); king.keyframe_insert(data_path="location",frame=445)
+        king.location=(0,THRONE_Y-19.5,.58); king.keyframe_insert(data_path="location",frame=480)
+        king.location=(0,THRONE_Y-19.5,.95); king.keyframe_insert(data_path="location",frame=522)
+        king.keyframe_insert(data_path="location",frame=540)
+    torso=bpy.data.objects.get("NOWHERE_KING_Torso")
+    if torso:
+        torso.rotation_mode='XYZ'
+        torso.rotation_euler=(math.radians(16),0,0); torso.keyframe_insert(data_path="rotation_euler",frame=445)
+        torso.rotation_euler=(0,0,0); torso.keyframe_insert(data_path="rotation_euler",frame=520)
+    head=bpy.data.objects.get("NOWHERE_KING_Head")
+    if head:
+        head.rotation_mode='XYZ'
+        head.rotation_euler=(math.radians(18),0,0); head.keyframe_insert(data_path="rotation_euler",frame=445)
+        head.rotation_euler=(math.radians(-3),0,0); head.keyframe_insert(data_path="rotation_euler",frame=528)
+    _pose_limb("NOWHERE_KING_Arm_-1",445,(math.radians(12),0,math.radians(-8)))
+    _pose_limb("NOWHERE_KING_Arm_+1",445,(math.radians(12),0,math.radians(8)))
+    _pose_limb("NOWHERE_KING_Arm_-1",530,(math.radians(-8),0,math.radians(-18)))
+    _pose_limb("NOWHERE_KING_Arm_+1",530,(math.radians(-8),0,math.radians(18)))
+    _look_at(cameras["SHOT_07_KING_AWAKENS_CAM"],445,(-8.5,THRONE_Y-5.0,3.6),(0,THRONE_Y-19.5,1.6),66)
+    _look_at(cameras["SHOT_07_KING_AWAKENS_CAM"],540,(-6.2,THRONE_Y-8.0,4.0),(0,THRONE_Y-19.5,2.5),70)
+
+    # Shot 8 — both Last Argument blades start physically inside the mantle
+    # volume and are drawn outward by the King's arms.  Nothing pops on.
+    sword_specs=(
+        ("AUTH_Firmament",-1,math.radians(-16)),
+        ("AUTH_NullGate",1,math.radians(16)),
+    )
+    for name,side,final_z in sword_specs:
+        sword=bpy.data.objects.get(name)
+        if sword is None:
+            continue
+        sword.rotation_mode='XYZ'
+        sword.location=(side*.26,THRONE_Y-19.40,2.40)
+        sword.rotation_euler=(math.radians(90),0,side*math.radians(3))
+        sword.keyframe_insert(data_path="location",frame=541)
+        sword.keyframe_insert(data_path="rotation_euler",frame=541)
+        sword.location=(side*.48,THRONE_Y-19.56,2.52)
+        sword.rotation_euler=(math.radians(90),0,side*math.radians(9))
+        sword.keyframe_insert(data_path="location",frame=570)
+        sword.keyframe_insert(data_path="rotation_euler",frame=570)
+        sword.location=(side*1.15,THRONE_Y-19.76,2.62)
+        sword.rotation_euler=(math.radians(90),0,final_z)
+        sword.keyframe_insert(data_path="location",frame=622)
+        sword.keyframe_insert(data_path="rotation_euler",frame=622)
+        sword.keyframe_insert(data_path="location",frame=672)
+        sword.keyframe_insert(data_path="rotation_euler",frame=672)
+    _pose_limb("NOWHERE_KING_Arm_-1",541,(math.radians(-8),0,math.radians(-18)))
+    _pose_limb("NOWHERE_KING_Arm_+1",541,(math.radians(-8),0,math.radians(18)))
+    _pose_limb("NOWHERE_KING_Arm_-1",622,(math.radians(-42),math.radians(-10),math.radians(-48)))
+    _pose_limb("NOWHERE_KING_Arm_+1",622,(math.radians(-42),math.radians(10),math.radians(48)))
+    _pose_limb("NOWHERE_KING_Arm_-1",672,(math.radians(-36),math.radians(-8),math.radians(-42)))
+    _pose_limb("NOWHERE_KING_Arm_+1",672,(math.radians(-36),math.radians(8),math.radians(42)))
+    _look_at(cameras["SHOT_08_LAST_ARGUMENT_CAM"],541,(0,THRONE_Y-8.0,3.05),(0,THRONE_Y-19.5,2.0),74)
+    _look_at(cameras["SHOT_08_LAST_ARGUMENT_CAM"],672,(0,THRONE_Y-10.6,3.2),(0,THRONE_Y-19.5,2.55),80)
+
+    # Coherent light transition: surface sun owns the upper-world shots;
+    # Blackstone sources own the underworld shots.
+    _animate_light_energy("Surface_Sun",((1,3.0),(360,3.0),(361,0.0),(672,0.0)))
+    _animate_light_energy("Throne_Key",((1,0.0),(360,0.0),(361,1850.0),(672,1850.0)))
+    for i in range(1,9):
+        _animate_light_energy(f"Throne_Brazier_{i}",((1,0.0),(360,0.0),(361,1050.0),(672,1050.0)))
+        _animate_light_energy(f"Throne_Rune_{i}",((1,0.0),(360,0.0),(361,240.0),(672,240.0)))
+
+    # World background transitions on the cut, not continuously across shots.
+    bg=scene.world.node_tree.nodes.get("Background") if scene.world and scene.world.use_nodes else None
+    if bg:
+        bg.inputs["Color"].default_value=(.16,.22,.31,1)
+        bg.inputs["Color"].keyframe_insert("default_value",frame=1)
+        bg.inputs["Color"].keyframe_insert("default_value",frame=360)
+        bg.inputs["Strength"].default_value=.72
+        bg.inputs["Strength"].keyframe_insert("default_value",frame=1)
+        bg.inputs["Strength"].keyframe_insert("default_value",frame=360)
+        bg.inputs["Color"].default_value=(.004,.006,.014,1)
+        bg.inputs["Color"].keyframe_insert("default_value",frame=361)
+        bg.inputs["Color"].keyframe_insert("default_value",frame=672)
+        bg.inputs["Strength"].default_value=.11
+        bg.inputs["Strength"].keyframe_insert("default_value",frame=361)
+        bg.inputs["Strength"].keyframe_insert("default_value",frame=672)
+
+    # Apply motion interpolation deliberately.  Translation/camera moves ease;
+    # the short tremor remains linear to preserve its impulse.
+    for obj in bpy.data.objects:
+        _set_action_interpolation(obj,"BEZIER")
+        if obj.type=="CAMERA":
+            _set_action_interpolation(obj.data,"BEZIER")
+        if obj.type=="LIGHT":
+            _set_action_interpolation(obj.data,"CONSTANT")
+    # Camera shake needs sharp, non-overshooting samples.
+    if cam4.animation_data and cam4.animation_data.action:
+        for curve in cam4.animation_data.action.fcurves:
+            for point in curve.keyframe_points:
+                if 234 <= point.co.x <= 253:
+                    point.interpolation="LINEAR"
+
+    bind_camera_cuts(scene,cameras)
+    scene["motion_contract"]="object-space-keyframed-v1"
+    scene["motion_no_image_warp"]=True
+
 def frame_markers(scene):
     for name, start, end in SHOT_SPECS:
         scene.timeline_markers.new(name, frame=start)
@@ -935,6 +1251,20 @@ def verify():
         raise RuntimeError("Cinematic environment missing shot markers: " + ", ".join(missing_markers))
     if scene.get("magenheim_cinematic_id") != "peace-was-only-the-beginning":
         raise RuntimeError("Cinematic identity metadata missing.")
+    if scene.get("motion_contract") != "object-space-keyframed-v1" or not scene.get("motion_no_image_warp"):
+        raise RuntimeError("Cinematic motion contract missing.")
+    animated_required=("HERO_A_ROOT","HERO_B_ROOT","HERO_C_ROOT","RAVEN_ROOT",
+                       "NOWHERE_KING_ROOT","AUTH_Firmament","AUTH_NullGate",
+                       "SHOT_01_RETURN_CAM","SHOT_06_THRONE_REVEAL_CAM","SHOT_08_LAST_ARGUMENT_CAM")
+    unanimated=[name for name in animated_required
+                if bpy.data.objects.get(name) is None
+                or bpy.data.objects[name].animation_data is None
+                or bpy.data.objects[name].animation_data.action is None]
+    if unanimated:
+        raise RuntimeError("Required cinematic object motion missing: "+", ".join(unanimated))
+    cut_markers=[m for m in scene.timeline_markers if m.camera is not None]
+    if len(cut_markers) != len(SHOT_SPECS):
+        raise RuntimeError(f"Expected {len(SHOT_SPECS)} camera-cut markers; got {len(cut_markers)}.")
     report = {
         "scene": scene.get("magenheim_cinematic_id"),
         "objects": len(bpy.data.objects),
@@ -942,6 +1272,8 @@ def verify():
         "materials": len(bpy.data.materials),
         "shots": len(SHOT_SPECS),
         "frame_end": scene.frame_end,
+        "animated_objects": sum(1 for o in bpy.data.objects if o.animation_data and o.animation_data.action),
+        "camera_cuts": sum(1 for m in scene.timeline_markers if m.camera is not None),
     }
     print("CINEMATIC VERIFIED " + json.dumps(report, sort_keys=True))
 
@@ -970,6 +1302,8 @@ def build(output: Path, preview_dir: Path | None, donor_library: Path | None):
     print("CINEMATIC BUILD cameras", flush=True)
     cameras = add_cameras(root)
     add_lighting(root, mats)
+    print("CINEMATIC BUILD motion", flush=True)
+    animate_scene(scene,cameras)
     print("CINEMATIC BUILD textures", flush=True)
     remap_and_pack_images()
 
