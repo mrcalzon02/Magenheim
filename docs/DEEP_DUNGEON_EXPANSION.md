@@ -256,22 +256,34 @@ owning Underworld biome without replacing the donor room grammar:
 - authored/stripped biome props are placed around room edges with connection clearances;
 - decorative props are visual-only and have gameplay collision stripped;
 - local biome lights reinforce Fungal, Blackwater, Sulfur, Frozen and Great Decay identity;
-- room-local atmosphere volumes use Sporefall, Deep Fog, Ashfall, Whiteout or Black Bloom as
+- Fungal/Blackwater/Sulfur rooms use room-local Sporefall, Deep Fog or Ashfall atmosphere where
   appropriate;
+- suitable deep Blackwater rooms can carry real native WaterVolume pools rather than decorative
+  water planes;
 - deep Sulfur rooms may contain bounded geothermal pressure pockets;
-- cloned dungeon entrances receive the same biome-specific material/prop/light treatment.
+- Frozen donor rooms use the existing Rime exposure authority so Rimebound/Rimeward mitigation
+  continues to work inside the reused Frost Cave grammar;
+- Great Decay donor rooms use the existing Carrion contamination authority so Defiant Flesh,
+  armour resistance and Censer suppression remain on the normal mitigation path;
+- cloned dungeon entrances and donor doors receive the same biome-specific material/prop/light
+  treatment.
 
 This is additive dressing of the vanilla-derived architecture, not injection of the retired bespoke
 ordinary room kits.
 
-The creature identity layer also now supplies first-pass species mechanics beyond donor behavior:
-Puffback reactive spore burst, Abyss Shellback shell armor with a pickaxe counter, Vent Spitter
-line-of-sight thermal retaliation, rooted Carrion Bloom behavior, and rooted Corpse Orchard Rotling
-propagation.
+The creature identity layer now supplies first-pass species mechanics beyond donor behavior:
+Puffback reactive spore burst; Cave Ray flee response; Blackwater Lamprey timed attach/feed latch;
+Lantern Angler pressure release; Abyss Shellback shell armor with a pickaxe counter; Deep Hunter
+apex ram; Vent Spitter thermal retaliation; rooted Carrion Bloom behavior; and rooted Corpse
+Orchard Rotling propagation.
 
-Final custom anatomy/silhouette work and additional species-specific behaviors remain open for much
-of the ordinary-biome creature roster; donor rigs and animation controllers are still intentionally
-used as the runtime chassis.
+A shared rigid-segment creature runtime/export contract now lets authored creature bodies ride on
+the existing donor gameplay chassis while preserving authored bone rotation, translation and scale
+animation. Seven Fungal Forest bodies, seven Blackwater Deep bodies and four Sulfurous Wastes
+bodies are wired into the normal Underworld production run. Their runtime/GLB payloads still
+require an actual Blender 5.0 production execution. Frozen Caverns and Great Decay creature
+silhouettes, plus the remaining unauthored Sulfur species, remain real asset-construction work rather
+than paper-promoted donor reskins.
 
 ### 6.4 Production pipeline cleanup
 
