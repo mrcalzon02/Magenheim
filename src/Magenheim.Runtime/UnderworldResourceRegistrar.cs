@@ -58,8 +58,10 @@ internal sealed class UnderworldResourceRegistrar : IDisposable
                 shared.m_consumeStatusEffect = null;
                 var model = UnderworldResourceVisuals.ModelFor(entry.Prefab)
                     ?? throw new InvalidOperationException("Missing authored Underworld raw-resource visual mapping: " + entry.Prefab);
-                shared.m_icons = new[] { EarthAssets.Icon(model) };
-                UnderworldResourceVisuals.Apply(item.ItemPrefab, model);
+                if (EarthAssets.IconExists(model))
+                    shared.m_icons = new[] { EarthAssets.Icon(model) };
+                if (ModelAssets.Exists(model))
+                    UnderworldResourceVisuals.Apply(item.ItemPrefab, model);
                 if (!ItemManager.Instance.AddItem(item)) throw new InvalidOperationException("Item registration refused: " + entry.Prefab);
                 items++;
                 var clone = PrefabManager.Instance.CreateClonedPrefab(entry.PickupPrefab, source);
@@ -77,7 +79,8 @@ internal sealed class UnderworldResourceRegistrar : IDisposable
                 pickable.m_defaultEnabled = true;
                 pickable.m_maxLevelBonusChance = 0f;
                 pickable.m_bonusYieldAmount = 0;
-                pickable.m_hideWhenPicked = UnderworldResourceVisuals.Apply(clone, model);
+                if (ModelAssets.Exists(model))
+                    pickable.m_hideWhenPicked = UnderworldResourceVisuals.Apply(clone, model);
                 // Keep both native Pickable lifecycles: authored visuals retain the picked ZDO;
                 // one-shot donors without a hide target are removed by native ZNetView.Destroy.
                 // ZoneSystem owns generated-zone persistence, so neither needs a custom respawn loop.
