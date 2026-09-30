@@ -101,6 +101,7 @@ for b in ('Head','Jaw','Mandible_L','Mandible_R'):
 arm.animation_data.action=None
 arm['production_contract']='production-creature-r2'
 arm['authored_actions']=','.join(EXPECTED)
+sc=bpy.context.scene; sc['magenheim_authored_actions']=arm['authored_actions']; sc['magenheim_skinning']='rigid-segment-weighted'
 arm['animation_readability_contract']='fast-alternating-tripod-scuttle;distinct-deliberate-walk;physical-vent-scraping-mouth-tools;bilateral-compact-turns;short-bite;lightweight-reactions;arthropod-collapse;no-root-translation'
 bpy.ops.wm.save_as_mainfile(filepath=str(BLEND))
 print(f'Authored {len(EXPECTED)} Ashmite production actions into {BLEND}')
