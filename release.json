@@ -1,4 +1,4 @@
 {
-  "version": "0.0.155",
-  "description": "0.0.155: Admits Deep Fracture to the Underworld, validates dungeon catalog survival, adds deterministic branching biome-dungeon authority, and repairs the Fungal Rootwarren production manifest."
+  "version": "0.0.156",
+  "description": "0.0.156: Removes forbidden System.ValueTuple runtime dependencies from geothermal vents, dungeon diagnostics, and Underworld creature combat balance."
 }
