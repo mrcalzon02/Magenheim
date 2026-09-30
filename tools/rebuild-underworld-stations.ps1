@@ -14,7 +14,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Underworld station authoring failed.' }
 & "$PSScriptRoot/blender.ps1" export-model-assets @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld station export failed.' }
 
-python "$PSScriptRoot/verify-model-assets.py"
+python "$PSScriptRoot/verify-model-assets.py" @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld station model verification failed.' }
 
 & "$PSScriptRoot/blender.ps1" render-underworld-station-icons @ids
