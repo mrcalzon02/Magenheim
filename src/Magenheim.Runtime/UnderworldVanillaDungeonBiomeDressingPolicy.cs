@@ -279,7 +279,7 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
             StripGameplayCollision(visual);
             visual.transform.SetParent(parent, false);
 
-            var position = PerimeterPosition(bounds, seed, index, desired, .31f);
+            var position = PerimeterPosition(bounds, seed, index, desired, .58f);
             position.y = bounds.min.y + visual.transform.localPosition.y;
             if (NearConnection(room, position, 2.8f))
             {
@@ -335,7 +335,7 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
             StripGameplayCollision(visual);
             visual.transform.SetParent(parent, false);
 
-            var position = PerimeterPosition(bounds, seed, index, desired, .39f);
+            var position = PerimeterPosition(bounds, seed, index, desired, .74f);
             position.y = bounds.min.y + visual.transform.localPosition.y;
             if (NearConnection(room, position, 2.1f))
             {
