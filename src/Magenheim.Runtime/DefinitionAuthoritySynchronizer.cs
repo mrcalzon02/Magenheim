@@ -36,6 +36,7 @@ internal sealed class DefinitionAuthoritySynchronizer
         RefinementOperationGuard refinementOperations,
         SocketOperationGuard socketOperations,
         SocketExtractionOperationGuard socketExtractionOperations,
+        string runtimePolicyFingerprint,
         ManualLogSource logger)
     {
         if (definitions is null) throw new ArgumentNullException(nameof(definitions));
@@ -55,7 +56,8 @@ internal sealed class DefinitionAuthoritySynchronizer
         var gameplayFingerprint = GameplayAuthorityFingerprint.Compute(
             definitions.Fingerprint,
             socketPolicy,
-            underworldTerrainFingerprint);
+            underworldTerrainFingerprint,
+            runtimePolicyFingerprint);
         _localAuthority = new DefinitionAuthorityDescriptor(definitions.SchemaVersion, gameplayFingerprint);
         if (!DefinitionAuthorityHandshake.IsValid(_localAuthority, out var validationError))
             throw new InvalidOperationException($"Cannot register gameplay synchronization with invalid local authority: {validationError}");
