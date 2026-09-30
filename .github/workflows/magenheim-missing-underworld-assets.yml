@@ -1,4 +1,5 @@
 name: One-Off Missing Underworld Asset Forge
+# Retry after all named UV authors were corrected.
 # Retry after rendering material icons directly from Blender sources.
 # Retry after scoping family verification to generated IDs.
 # Retry after repairing thin material-plate bevel geometry.
