@@ -9,7 +9,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Underworld material-item authoring failed.' }
 & "$PSScriptRoot/blender.ps1" export-model-assets @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld material-item export failed.' }
 
-python "$PSScriptRoot/verify-model-assets.py"
+python "$PSScriptRoot/verify-model-assets.py" @ids
 if ($LASTEXITCODE -ne 0) { throw 'Underworld material-item model verification failed.' }
 
 Write-Host 'REBUILT 14 missing raw + 18 refined Underworld material item models; icon ownership remains underworld-resource-icons.'
