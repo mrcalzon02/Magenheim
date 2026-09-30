@@ -136,6 +136,14 @@ internal static class UnderworldCreatureIdentityPass
                 ai.m_circleTargetDuration = Mathf.Clamp(ai.m_circleTargetDuration / Mathf.Sqrt(aggression), .75f, 6f);
             if (ai.m_randomMoveInterval > 0f && aggression > 1.05f)
                 ai.m_randomMoveInterval = Mathf.Clamp(ai.m_randomMoveInterval / Mathf.Lerp(1f, aggression, .55f), 1.2f, 12f);
+
+            if (entry.Name == "Iceblind")
+            {
+                ai.m_viewRange = Mathf.Min(ai.m_viewRange, 5f);
+                ai.m_viewAngle = Mathf.Min(ai.m_viewAngle, 75f);
+                ai.m_hearRange = Mathf.Max(ai.m_hearRange, 34f);
+                ai.m_alertRange = Mathf.Max(ai.m_alertRange, 28f);
+            }
         }
 
         // Perception may become more aggressive, but movement speed is owned by the combat profile.
