@@ -56,7 +56,7 @@ action('Puffback_Stagger',32,{1:neutral,9:{'Spine_1':(.18,0,.16),'Spine_2':(.22,
 action('Puffback_Death',62,{1:neutral,18:{'Spine_1':(.14,0,.18),'Spine_2':(.20,0,.20)},38:{'Spine_1':(.28,0,.72),'Spine_2':(.34,0,.92),'Pelvis':(.16,0,.48),'Neck':(.30,0,.18)},62:{'Spine_1':(.16,0,1.20),'Spine_2':(.18,0,1.38),'Pelvis':(.12,0,.70),'Neck':(.36,0,.12),'Head':(.22,0,0)}},{1:{'Bladder_Main':(1,1,1)},38:{'Bladder_Main':(.92,.92,.86)},62:{'Bladder_Main':(.76,.76,.68)}})
 arm.animation_data.action=None
 sc['magenheim_fidelity']='production-creature-r2'
-sc['magenheim_authored_actions']='Puffback_GrazeRoot,Puffback_Idle,Puffback_Walk,Puffback_WarningDisplay,Puffback_Charge,Puffback_DefensiveInflate,Puffback_SporePuff,Puffback_Hit,Puffback_Stagger,Puffback_Death'
+sc['magenheim_authored_actions']='Puffback_GrazeRoot,Puffback_Idle,Puffback_Walk,Puffback_WarningDisplay,Puffback_Charge,Puffback_DefensiveInflate,Puffback_SporePuff,Puffback_Hit,Puffback_Stagger,Puffback_Death'; sc['magenheim_skinning']='rigid-segment-weighted'
 sc['magenheim_inflation_tell']='compress->inflate-before-release;Bladder_Main scale keyed independently'
 bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(MODEL),compress=True)
