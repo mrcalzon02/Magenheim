@@ -919,6 +919,45 @@ absent from the detached Underworld catalog and native placement table.
 When candidate testing is complete, set `EnablePlannedCandidateWorldgen = false` again before
 ordinary play or any promotion build.
 
+### DDE-11 / DDE-12 runtime evidence capture
+
+Every generated expanded-vanilla donor now writes automatic generation evidence under:
+
+`BepInEx/config/Magenheim/validation/deep-dungeon-expansion/generated/`
+
+The generation record includes room-count targets, branch depth, active/total encounter sockets,
+resource-fixture counts, valid/total network views, generation time, managed-memory delta, and a
+stable generated-layout fingerprint. The fingerprint is intended for before/after comparison; it is
+not by itself proof that persistence passed.
+
+While physically inside the loaded candidate dungeon, run:
+
+`magenheim_underworld dde`
+
+This writes a point-in-time runtime snapshot under:
+
+`BepInEx/config/Magenheim/validation/deep-dungeon-expansion/snapshots/`
+
+Capture snapshots at minimum:
+
+1. immediately after first generation;
+2. after opening containers, harvesting fixtures and clearing encounters;
+3. after save/quit/reload while outside;
+4. after save/quit/reload while inside;
+5. on host and peer during a two-player session;
+6. after a peer disconnect/reconnect while the dungeon remains loaded.
+
+Compare `generation_fingerprint`, room count, network-view validity, encounter socket counts,
+container/pickable counts and active pickable state across the relevant snapshots. The generated
+layout must remain stable for the same dungeon, harvested state must not repopulate unexpectedly,
+and multiplayer peers must observe the same dungeon authority. DDE-11 remains a live gate: the
+snapshot command supplies evidence but does not auto-pass persistence or multiplayer.
+
+For DDE-12, retain the automatic `generation_ms` and `managed_memory_delta_bytes` values from
+multiple seeds together with the frame-hitch, active-creature, physics, lighting and network
+observations required by the durable plan. Source instrumentation is not acceptance; performance
+and economy still require installed-game measurements.
+
 ### Donor identity and isolation
 
 Test all five mappings:
