@@ -83,35 +83,67 @@ internal static class UnderworldCreatureCombatBalance
 
     private static Profile Build(string biome, Role role)
     {
-        var (baseHealth, biomeDamage, baseDamageCap) = biome switch
+        var biomeBand = biome switch
         {
-            "Fungal Forest" => (180f, .90f, 36f),
-            "Blackwater Deep" => (220f, 1.00f, 44f),
-            "Sulfurous Wastes" => (270f, 1.10f, 54f),
-            "Frozen Caverns" => (330f, 1.20f, 66f),
-            "Fracture Zones" => (410f, 1.32f, 80f),
-            "Great Decay" => (500f, 1.45f, 96f),
+            "Fungal Forest" => new BiomeBand(180f, .90f, 36f),
+            "Blackwater Deep" => new BiomeBand(220f, 1.00f, 44f),
+            "Sulfurous Wastes" => new BiomeBand(270f, 1.10f, 54f),
+            "Frozen Caverns" => new BiomeBand(330f, 1.20f, 66f),
+            "Fracture Zones" => new BiomeBand(410f, 1.32f, 80f),
+            "Great Decay" => new BiomeBand(500f, 1.45f, 96f),
             _ => throw new InvalidOperationException($"Unknown Underworld biome '{biome}' has no combat progression band."),
         };
 
-        var (healthScale, roleDamage, capScale, movement, attackInterval) = role switch
+        var roleBand = role switch
         {
-            Role.Swarm => (.55f, .45f, .55f, 1.15f, .75f),
-            Role.Skirmisher => (.80f, .65f, .80f, 1.08f, 1.00f),
-            Role.Hunter => (1.10f, .85f, 1.00f, 1.00f, 1.40f),
-            Role.Bruiser => (1.55f, 1.05f, 1.25f, .88f, 2.00f),
-            Role.Heavy => (2.15f, 1.25f, 1.55f, .72f, 2.80f),
-            Role.Apex => (3.00f, 1.45f, 1.90f, .60f, 3.60f),
+            Role.Swarm => new RoleBand(.55f, .45f, .55f, 1.15f, .75f),
+            Role.Skirmisher => new RoleBand(.80f, .65f, .80f, 1.08f, 1.00f),
+            Role.Hunter => new RoleBand(1.10f, .85f, 1.00f, 1.00f, 1.40f),
+            Role.Bruiser => new RoleBand(1.55f, 1.05f, 1.25f, .88f, 2.00f),
+            Role.Heavy => new RoleBand(2.15f, 1.25f, 1.55f, .72f, 2.80f),
+            Role.Apex => new RoleBand(3.00f, 1.45f, 1.90f, .60f, 3.60f),
             _ => throw new ArgumentOutOfRangeException(nameof(role), role, null),
         };
 
         return new Profile(
             role,
-            Mathf.Round(baseHealth * healthScale),
-            movement,
-            biomeDamage * roleDamage,
-            baseDamageCap * capScale,
-            attackInterval);
+            Mathf.Round(biomeBand.BaseHealth * roleBand.HealthScale),
+            roleBand.Movement,
+            biomeBand.Damage * roleBand.Damage,
+            biomeBand.DamageCap * roleBand.CapScale,
+            roleBand.AttackInterval);
+    }
+
+    private readonly struct BiomeBand
+    {
+        internal BiomeBand(float baseHealth, float damage, float damageCap)
+        {
+            BaseHealth = baseHealth;
+            Damage = damage;
+            DamageCap = damageCap;
+        }
+
+        internal float BaseHealth { get; }
+        internal float Damage { get; }
+        internal float DamageCap { get; }
+    }
+
+    private readonly struct RoleBand
+    {
+        internal RoleBand(float healthScale, float damage, float capScale, float movement, float attackInterval)
+        {
+            HealthScale = healthScale;
+            Damage = damage;
+            CapScale = capScale;
+            Movement = movement;
+            AttackInterval = attackInterval;
+        }
+
+        internal float HealthScale { get; }
+        internal float Damage { get; }
+        internal float CapScale { get; }
+        internal float Movement { get; }
+        internal float AttackInterval { get; }
     }
 
     internal static Role RoleFor(string name)
