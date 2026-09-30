@@ -138,7 +138,7 @@ internal static class UnderworldVanillaDungeonRewardPolicy
         {
             case Fixture.Container:
                 table.m_dropMin = 1;
-                table.m_dropMax = band >= UnderworldVanillaDungeonRiskBand.Deep ? 3 : 2;
+                table.m_dropMax = (int)band >= (int)UnderworldVanillaDungeonRiskBand.Deep ? 3 : 2;
                 break;
             case Fixture.Mineable:
                 table.m_dropMin = 1;
