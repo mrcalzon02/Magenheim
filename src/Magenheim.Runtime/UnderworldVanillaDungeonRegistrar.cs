@@ -233,6 +233,21 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
                 $"Jotunn could not clone vanilla dungeon entrance '{donorEntrance}'.");
         _registeredLocations.Add(definition.PrefabName);
 
+        // The entrance is deliberately vanilla-derived. Preserve its proven placement envelope
+        // instead of imposing the retired bespoke-dungeon 18m/36m terrain settings.
+        var donorZone = ZoneManager.Instance.GetZoneLocation(donorEntrance)
+            ?? throw new InvalidOperationException(
+                $"Resolved donor entrance '{donorEntrance}' disappeared before placement-policy capture.");
+        var donorExteriorRadius = donorZone.m_exteriorRadius;
+        var donorMinTerrainDelta = donorZone.m_minTerrainDelta;
+        var donorMaxTerrainDelta = donorZone.m_maxTerrainDelta;
+        var donorMinAltitude = donorZone.m_minAltitude;
+        var donorMaxAltitude = donorZone.m_maxAltitude;
+        var donorForestThresholdMin = donorZone.m_forestTresholdMin;
+        var donorForestThresholdMax = donorZone.m_forestTresholdMax;
+        var donorSlopeRotation = donorZone.m_slopeRotation;
+        var donorSnapToWater = donorZone.m_snapToWater;
+
         var generator = custom.Prefab.GetComponentInChildren<DungeonGenerator>(true)
             ?? throw new InvalidOperationException(
                 $"Cloned vanilla entrance '{donorEntrance}' has no DungeonGenerator.");
@@ -279,12 +294,21 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         zone.m_biomeArea = JotunnWorldgenAdapter.MapArea(Magenheim.Core.Worldgen.SpawnArea.All);
         zone.m_quantity = definition.Quantity;
         zone.m_prioritized = false;
-        zone.m_exteriorRadius = (float)definition.ExteriorRadiusMeters;
-        zone.m_minTerrainDelta = 0f;
-        zone.m_maxTerrainDelta = (float)definition.MaxTerrainDeltaMeters;
         zone.m_minDistanceFromSimilar = (float)definition.MinDistanceFromSimilarMeters;
         zone.m_group = definition.Id;
         zone.m_unique = false;
+
+        // DDE-09: terrain placement stays donor-native. Explicit assignments make this invariant
+        // visible in diagnostics and protect it from future generic-location refactors.
+        zone.m_exteriorRadius = donorExteriorRadius;
+        zone.m_minTerrainDelta = donorMinTerrainDelta;
+        zone.m_maxTerrainDelta = donorMaxTerrainDelta;
+        zone.m_minAltitude = donorMinAltitude;
+        zone.m_maxAltitude = donorMaxAltitude;
+        zone.m_forestTresholdMin = donorForestThresholdMin;
+        zone.m_forestTresholdMax = donorForestThresholdMax;
+        zone.m_slopeRotation = donorSlopeRotation;
+        zone.m_snapToWater = donorSnapToWater;
 
         _log.LogInfo(
             $"DDE location {definition.DisplayName}: entrance={donorEntrance} generator={profile.DonorGeneratorPrefab} " +
@@ -294,7 +318,11 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
             $"tile-width={donorTileWidth:0.###}->{generator.m_tileWidth:0.###} grid={donorGridSize} " +
             $"required=[{string.Join(",", donorRequired)}] min-required={donorMinRequired} " +
             $"remapped=[{string.Join(",", generator.m_requiredRooms ?? new List<string>())}] " +
-            $"doors-cloned={clonedDoors} candidate={UnderworldVanillaDungeonCandidatePolicy.Enabled}.");
+            $"doors-cloned={clonedDoors} terrain=radius:{zone.m_exteriorRadius:0.##}," +
+            $"delta:{zone.m_minTerrainDelta:0.##}-{zone.m_maxTerrainDelta:0.##}," +
+            $"altitude:{zone.m_minAltitude:0.##}-{zone.m_maxAltitude:0.##}," +
+            $"slope-rotation:{zone.m_slopeRotation},snap-water:{zone.m_snapToWater} " +
+            $"candidate={UnderworldVanillaDungeonCandidatePolicy.Enabled}.");
     }
 
     private void RemapRequiredRooms(
