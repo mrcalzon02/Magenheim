@@ -863,8 +863,9 @@ With the current Magenheim build installed, load a disposable world, enable `dev
 
 `magenheim_underworld donors`
 
-The command does **not** register or generate the five Planned derivatives. It reads the installed
-game's live `ZoneSystem` and `DungeonDB` and writes one evidence file per donor plus an index under:
+The command inventories the live vanilla donor families independently of the already-enabled
+Magenheim derivatives. It reads the installed game's live `ZoneSystem` and `DungeonDB` and writes
+one evidence file per donor plus an index under:
 
 `BepInEx/config/Magenheim/validation/deep-dungeon-expansion/`
 
@@ -895,34 +896,19 @@ identity mismatch inside the generic registrar.
 The five ordinary Underworld dungeons deliberately reuse vanilla architecture. Deep Fracture is
 excluded from this section and must retain its bespoke Magenheim expedition.
 
-Normal worlds remain fail-closed: a Planned family seeds no entrance. For DDE-02 through DDE-13,
-however, one Planned family may be admitted in a **disposable validation world** through the
-developer-only candidate policy below. Candidate admission is not RuntimeReady promotion and must
-never be used as promotion evidence by itself.
+All five ordinary expanded-vanilla families are RuntimeReady together in normal Underworld
+worldgen. There is no supported one-family enable step. The legacy
+`EnablePlannedCandidateWorldgen` and `CandidateDungeon` settings are inert compatibility keys and
+must not be used to control production dungeon admission.
 
-### Candidate-mode setup for DDE-02 through DDE-13
+For DDE-02 through DDE-14, use a fresh or disposable Underworld and exercise **all five** ordinary
+families. The registrar, detached worldgen catalog and native placement audit all require the full
+set.
 
-After DDE-00 and DDE-01 are actually passed, use the Fungal/Burial donor first. In the Magenheim
-BepInEx config set:
+### Structural/ecology audit
 
-`[Development.DeepDungeonExpansion]`
-`EnablePlannedCandidateWorldgen = true`
-`CandidateDungeon = fungal_forest`
-
-Restart Valheim before generating the disposable Underworld. Candidate policy is startup-bound and
-is included in Magenheim's existing gameplay authority fingerprint. For multiplayer, host and every
-peer must use the same candidate setting or peer admission must fail.
-
-Only one Planned family can be admitted this way. Every other Planned ordinary dungeon must remain
-absent from the detached Underworld catalog and native placement table.
-
-When candidate testing is complete, set `EnablePlannedCandidateWorldgen = false` again before
-ordinary play or any promotion build.
-
-### Candidate structural/ecology audit
-
-After entering a generated candidate dungeon and before treating any visual inspection as gate
-evidence, run:
+After entering any generated expanded-vanilla ordinary dungeon and before treating visual
+inspection as gate evidence, run:
 
 `magenheim_underworld dde audit`
 
@@ -936,9 +922,12 @@ unscaled `Room` root, the 1.5x `Magenheim_DDE_ScaleRoot`, donor-relative
 private door identities. It also rejects Surface creature ownership, non-biome reward prefabs,
 Vegvisirs, runestones and the wrong owning Underworld biome.
 
-For the first Fungal/Burial candidate, the console should report:
+For each ordinary donor dungeon, the console should report:
 
 `DDE CANDIDATE AUDIT PASS: <evidence path>`
+
+(The command retains its historical "candidate audit" wording, but it now audits normal RuntimeReady
+dungeons.)
 
 A PASS here is evidence for the source-verifiable portions of DDE-02, DDE-03, DDE-05, DDE-06,
 DDE-07, DDE-08 and DDE-09. It does **not** replace visual join/pathing inspection, multi-seed
@@ -959,7 +948,7 @@ resource-fixture counts, valid/total network views, generation time, managed-mem
 stable generated-layout fingerprint. The fingerprint is intended for before/after comparison; it is
 not by itself proof that persistence passed.
 
-While physically inside the loaded candidate dungeon, run:
+While physically inside the loaded ordinary donor dungeon, run:
 
 `magenheim_underworld dde snapshot`
 
