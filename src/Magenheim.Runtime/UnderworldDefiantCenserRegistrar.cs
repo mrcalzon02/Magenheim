@@ -57,8 +57,10 @@ internal sealed class UnderworldDefiantCenserRegistrar : IDisposable
             shared.m_useDurability = false;
             shared.m_damages = new HitData.DamageTypes();
             shared.m_damagesPerLevel = new HitData.DamageTypes();
-            shared.m_icons = new[] { EarthAssets.Icon(definition.ModelId) };
-            ModelAssets.Load(item.ItemPrefab, definition.ModelId, item: true);
+            if (EarthAssets.IconExists(definition.ModelId))
+                shared.m_icons = new[] { EarthAssets.Icon(definition.ModelId) };
+            if (ModelAssets.Exists(definition.ModelId))
+                ModelAssets.Load(item.ItemPrefab, definition.ModelId, item: true);
 
             if (!ItemManager.Instance.AddItem(item))
                 throw new InvalidOperationException(
