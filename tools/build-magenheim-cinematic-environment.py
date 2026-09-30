@@ -61,6 +61,7 @@ def args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--preview-dir", type=Path)
+    parser.add_argument("--render-previews", type=Path)
     parser.add_argument("--verify", action="store_true")
     return parser.parse_args(raw)
 
@@ -382,6 +383,31 @@ def add_lighting(root, mats):
     lights.objects.link(key)
 
 
+def remap_and_pack_images():
+    """Resolve workstation-authored texture paths back into the repository and pack them."""
+    texture_dir = ROOT / "assets" / "models" / "textures"
+    unresolved = []
+    for image in bpy.data.images:
+        if image.source != 'FILE' or not image.filepath:
+            continue
+        filename = Path(bpy.path.abspath(image.filepath)).name
+        candidate = texture_dir / filename
+        if candidate.is_file():
+            image.filepath = str(candidate)
+            try:
+                image.reload()
+            except RuntimeError:
+                unresolved.append(image.name)
+        elif not Path(bpy.path.abspath(image.filepath)).is_file():
+            unresolved.append(image.name)
+    if unresolved:
+        print("CINEMATIC TEXTURE WARNING unresolved=" + ",".join(sorted(set(unresolved))), flush=True)
+    try:
+        bpy.ops.file.pack_all()
+    except RuntimeError as exc:
+        print("CINEMATIC PACK WARNING " + str(exc), flush=True)
+
+
 def set_world():
     world = bpy.data.worlds.new("Magenheim_Cinematic_World")
     world.use_nodes = True
@@ -420,7 +446,9 @@ def frame_markers(scene):
 
 def configure_scene():
     s = bpy.context.scene
-    s.render.engine = 'BLENDER_EEVEE'
+    s.render.engine = 'CYCLES'
+    s.cycles.samples = 16
+    s.cycles.use_denoising = True
     s.render.resolution_x = 1920
     s.render.resolution_y = 1080
     s.render.resolution_percentage = 50
@@ -486,35 +514,50 @@ def verify():
 
 
 def build(output: Path, preview_dir: Path | None):
+    print("CINEMATIC BUILD preflight", flush=True)
     for name in REQUIRED_SOURCES:
         if not (SOURCE / name).is_file():
             raise RuntimeError(f"Required authoritative source is missing: {SOURCE/name}")
     bpy.ops.wm.read_factory_settings(use_empty=True)
+    print("CINEMATIC BUILD factory", flush=True)
     root = collection("Magenheim_Cinematic")
     mats = materials()
     scene = configure_scene()
     set_world()
+    print("CINEMATIC BUILD village", flush=True)
     add_village(mats, root)
+    print("CINEMATIC BUILD throne", flush=True)
     add_throne_environment(mats, root)
+    print("CINEMATIC BUILD cameras", flush=True)
     cameras = add_cameras(root)
     add_lighting(root, mats)
+    print("CINEMATIC BUILD textures", flush=True)
+    remap_and_pack_images()
 
     output = output if output.is_absolute() else ROOT / output
     output.parent.mkdir(parents=True, exist_ok=True)
     scene.camera = cameras["SHOT_01_RETURN_CAM"]
+    print("CINEMATIC BUILD save", flush=True)
     bpy.ops.wm.save_as_mainfile(filepath=str(output), compress=True)
     verify()
     if preview_dir:
         preview_dir = preview_dir if preview_dir.is_absolute() else ROOT / preview_dir
+        print("CINEMATIC BUILD previews", flush=True)
         render_previews(scene, cameras, preview_dir)
         bpy.ops.wm.save_as_mainfile(filepath=str(output), compress=True)
-    print(f"WROTE {output}")
+    print(f"WROTE {output}", flush=True)
 
 
 def main():
     ns = args()
     if ns.verify:
         verify()
+    elif ns.render_previews:
+        verify()
+        preview_dir = ns.render_previews if ns.render_previews.is_absolute() else ROOT / ns.render_previews
+        cameras = {o.name:o for o in bpy.data.objects if o.type == 'CAMERA'}
+        print("CINEMATIC RENDER previews", flush=True)
+        render_previews(bpy.context.scene, cameras, preview_dir)
     else:
         build(ns.output, ns.preview_dir)
 
