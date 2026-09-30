@@ -44,8 +44,36 @@ for file in sorted((assets/'runtime').glob('*.model.json')):
  # Compressed Blender files use Zstandard; uncompressed files begin with BLENDER.
  head=source.read_bytes()[:7];assert head.startswith(b'BLENDER') or head.startswith(bytes.fromhex('28b52ffd')),f'Invalid Blender file: {id}'
  doc=json.loads(file.read_text());assert doc['parts'],id
+ if 'creatureRig' in doc:
+  rig=doc['creatureRig'];assert rig.get('kind')=='rigid-segment-creature-v1',(id,'bad creature rig kind')
+  assert math.isfinite(rig.get('fps',0)) and 0<rig['fps']<=240,(id,'bad creature rig fps')
+  bones=rig.get('bones',[]);assert bones,(id,'creature rig has no bones')
+  bone_names=[b.get('name') for b in bones]
+  assert all(bone_names) and len(bone_names)==len(set(bone_names)),(id,'invalid/duplicate creature bones')
+  bone_set=set(bone_names)
+  assert sum(1 for b in bones if not b.get('parent'))>=1,(id,'creature rig has no root bone')
+  for bone in bones:
+   assert not bone.get('parent') or bone['parent'] in bone_set,(id,'missing creature parent',bone)
+   for key in ('head','yAxis','zAxis'):
+    value=bone.get(key)
+    assert isinstance(value,list) and len(value)==3 and all(math.isfinite(x) for x in value),(id,'invalid creature bone frame',bone.get('name'),key)
+  actions=rig.get('actions',[]);assert actions,(id,'creature rig has no actions')
+  action_names=[a.get('name') for a in actions]
+  assert all(action_names) and len(action_names)==len(set(action_names)),(id,'invalid/duplicate creature actions')
+  for action in actions:
+   samples=action.get('samples',[]);assert samples,(id,'creature action has no samples',action.get('name'))
+   for sample in samples:
+    assert isinstance(sample,dict),(id,'creature action sample is not an object',action.get('name'))
+    assert set(sample)<=bone_set,(id,'creature action animates unknown bone',action.get('name'))
+    for bone_name,quat in sample.items():
+     assert isinstance(quat,list) and len(quat)==4 and all(math.isfinite(x) for x in quat),(id,'invalid creature action quaternion',action.get('name'),bone_name)
  triangles=0;materials=set();names=set()
  for part in doc['parts']:
+  if 'creatureRig' in doc:
+   path=part.get('path','')
+   assert path.startswith('creaturebone:'),(id,'creature part is not bone-bound',part.get('name'))
+   bound=path[len('creaturebone:'):].split('/',1)[0]
+   assert bound in bone_set,(id,'creature part binds unknown bone',part.get('name'),bound)
   vertices=part['vertices'];indices=part['triangles'];uv=part['uv'];normals=part['normals']
   assert vertices and len(indices)%3==0 and len(vertices)==len(uv)==len(normals),id
   assert part['name'] not in names,('Duplicate object',id,part['name']);names.add(part['name'])
