@@ -106,6 +106,7 @@ for n in ('Walk','PackSprint'):
 for a in [bpy.data.actions['CH_'+n] for n in ACTIONS]:
     if bone_has(a,'Root') and any('location' in fc.data_path and 'Root' in fc.data_path for fc in a.fcurves): raise RuntimeError(f'{a.name} illegally animates Root.location')
 arm['action_contract']='Idle,VentIdle,Walk,PackSprint,TurnLeft,TurnRight,Bite,Lunge,PackCall,Hit,Stagger,Death'
+sc=bpy.context.scene; sc['magenheim_authored_actions']=','.join('CH_'+name for name in ACTIONS); sc['magenheim_skinning']='rigid-segment-weighted'
 arm['animation_fidelity']='diagonal quadruped gait; compressed digitigrade pack sprint; segmented tail counterbalance; physical heat-vent idle; jaw-led bite; full-body in-place lunge; throat-presenting pack call'
 arm['root_motion_policy']='Root translation reserved for Valheim runtime; all production actions are in-place'
 bpy.ops.wm.save_as_mainfile(filepath=str(BLEND)); print(f'Authored {len(ACTIONS)} Cinder Hound production actions into {BLEND}')
