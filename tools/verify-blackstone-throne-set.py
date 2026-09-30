@@ -73,10 +73,17 @@ bad=[k for k,v in requirements.items() if not v]
 if bad: raise SystemExit("dark-throne: missing assembled role coverage: "+", ".join(bad))
 if len(site["parts"])<170: raise SystemExit(f"dark-throne: expected >=170 authored parts, found {len(site['parts'])}")
 if len(site.get("lights") or [])<16: raise SystemExit("dark-throne: expected brazier + rune runtime lights")
+foundation=next((p for p in site["parts"] if p["name"]=="Arena_Foundation"),None)
+if foundation is None: raise SystemExit("dark-throne: Arena_Foundation missing")
+fx=[v[0] for v in foundation["vertices"]]; fz=[v[2] for v in foundation["vertices"]]
+if min(fx)<-26.05 or max(fx)>26.05 or min(fz)<-30.05 or max(fz)>30.05:
+    raise SystemExit(f"dark-throne: legal combat plate changed from 52x60m authority: x={min(fx):.2f}..{max(fx):.2f} z={min(fz):.2f}..{max(fz):.2f}")
+# Decorative cliff/spire/parapet silhouettes may stand just outside the hard-leash plate; they
+# cannot move the encounter boundary or expand into an unbounded location footprint.
 verts=[v for p in site["parts"] for v in p["vertices"]]
 xs=[v[0] for v in verts]; zs=[v[2] for v in verts]
-if min(xs)<-27 or max(xs)>27 or min(zs)<-31 or max(zs)>31:
-    raise SystemExit(f"dark-throne: geometry escaped encounter footprint x={min(xs):.2f}..{max(xs):.2f} z={min(zs):.2f}..{max(zs):.2f}")
+if min(xs)<-30.5 or max(xs)>30.5 or min(zs)<-31.5 or max(zs)>31.5:
+    raise SystemExit(f"dark-throne: decorative structure escaped bounded site footprint x={min(xs):.2f}..{max(xs):.2f} z={min(zs):.2f}..{max(zs):.2f}")
 
 art=ROOT/"assets"/"textures"/"underworld"/"blackstone"
 required_art={
