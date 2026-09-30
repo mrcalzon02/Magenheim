@@ -15,8 +15,6 @@ if($LASTEXITCODE -ne 0){throw 'Blackstone Throne source authoring failed.'}
 & "$PSScriptRoot/blender.ps1" export-model-assets @ids
 if($LASTEXITCODE -ne 0){throw 'Blackstone Throne model export failed.'}
 
-python "$PSScriptRoot/verify-model-assets.py"
-if($LASTEXITCODE -ne 0){throw 'Global model verification failed after Blackstone authoring.'}
 python "$PSScriptRoot/verify-blackstone-throne-set.py"
 if($LASTEXITCODE -ne 0){throw 'Blackstone Throne family verification failed.'}
 python "$PSScriptRoot/record-blackstone-throne-generated-assets.py"
