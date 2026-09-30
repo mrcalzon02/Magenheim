@@ -86,4 +86,5 @@ for o in meshes:
 arm['magenheim_asset']='shoreclaw'; arm['production_contract']='production-creature-r1'; arm['host_rig']='HOST-AMPHIB-ARMORED'; arm['length_m']=LENGTH
 arm['role']='blackwater-coastline-controller'; arm['leg_chains']=8; arm['shell_plates']=4; arm['claw_asymmetry']='left-crusher/right-cutter'
 arm['animation_contract']='idle,scuttle,turn-left,turn-right,crusher-attack,cutter-attack,guard,swim-idle,swim-forward,water-exit,water-entry,hit,stagger,death'
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-shoreclaw'; sc['magenheim_skinning']='rigid-segment-weighted'
 OUT.parent.mkdir(parents=True,exist_ok=True); bpy.ops.wm.save_as_mainfile(filepath=str(OUT)); print(f'Wrote {OUT} meshes={len(meshes)} tris={tris}')
