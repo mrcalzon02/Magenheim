@@ -17,6 +17,38 @@ if (!(Test-Path -LiteralPath $ProfilesRoot -PathType Container)) {
     throw "r2modman Valheim profiles root does not exist: $ProfilesRoot"
 }
 
+$expectedProfileRoot = Join-Path $ProfilesRoot $ExpectedProfile
+if (!(Test-Path -LiteralPath $expectedProfileRoot -PathType Container)) {
+    throw "Expected r2modman profile does not exist: $expectedProfileRoot"
+}
+
+# The launcher card is driven by mods.yml, not assembly metadata. Verify it independently so an
+# updated DLL beside a stale r2modman record can never be reported as a successful local install.
+$catalogPath = Join-Path $expectedProfileRoot 'mods.yml'
+if (!(Test-Path -LiteralPath $catalogPath -PathType Leaf)) {
+    throw "Expected r2modman catalog does not exist: $catalogPath"
+}
+$catalogText = [IO.File]::ReadAllText($catalogPath)
+$catalogRecords = [regex]::Matches($catalogText, '(?ms)^- manifestVersion:.*?(?=^- manifestVersion:|\z)')
+$catalogMatches = @($catalogRecords | Where-Object { $_.Value -match '(?m)^  name: Local-Magenheim\r?$' })
+if ($catalogMatches.Count -ne 1) {
+    throw "Expected exactly one Local-Magenheim launcher record in '$catalogPath'; found $($catalogMatches.Count)."
+}
+$catalogRecord = $catalogMatches[0].Value
+$majorMatch = [regex]::Match($catalogRecord, '(?m)^    major:\s*(\d+)\s*\r?$')
+$minorMatch = [regex]::Match($catalogRecord, '(?m)^    minor:\s*(\d+)\s*\r?$')
+$patchMatch = [regex]::Match($catalogRecord, '(?m)^    patch:\s*(\d+)\s*\r?$')
+if (!$majorMatch.Success -or !$minorMatch.Success -or !$patchMatch.Success) {
+    throw "Unable to read Local-Magenheim versionNumber from '$catalogPath'."
+}
+$catalogVersion = "$($majorMatch.Groups[1].Value).$($minorMatch.Groups[1].Value).$($patchMatch.Groups[1].Value)"
+if ($catalogVersion -ne $expectedVersion) {
+    throw "STALE LAUNCHER CATALOG: source expects Magenheim $expectedVersion but '$ExpectedProfile' advertises $catalogVersion in $catalogPath"
+}
+if ($catalogRecord -notmatch '(?m)^  enabled: true\r?$') {
+    throw "Magenheim $catalogVersion is not enabled in launcher catalog '$catalogPath'."
+}
+
 $rows = @()
 foreach ($profileDir in Get-ChildItem -LiteralPath $ProfilesRoot -Directory) {
     foreach ($dll in Get-ChildItem -LiteralPath (Join-Path $profileDir.FullName 'BepInEx/plugins') -Filter Magenheim.dll -File -Recurse -ErrorAction SilentlyContinue) {
@@ -47,6 +79,7 @@ if ($expectedRows[0].Version -ne $expectedVersion) {
 
 $otherCurrent = @($rows | Where-Object { $_.Profile -ne $ExpectedProfile -and $_.Version -eq $expectedVersion })
 $otherStale = @($rows | Where-Object { $_.Profile -ne $ExpectedProfile -and $_.Version -ne $expectedVersion })
+Write-Output "LAUNCHER PROOF PASS: $ExpectedProfile advertises Magenheim $catalogVersion in $catalogPath."
 Write-Output "INSTALL PROOF PASS: $ExpectedProfile contains Magenheim $expectedVersion."
 Write-Output "Expected startup line: Runtime image $expectedVersion checkpoint $expectedCheckpoint loaded from '<path>'."
 if ($otherStale.Count -gt 0) {
@@ -54,6 +87,6 @@ if ($otherStale.Count -gt 0) {
         (($otherStale | ForEach-Object { "$($_.Profile)=$($_.Version)" }) -join ', '))
 }
 if ($otherCurrent.Count -gt 0) {
-    Write-Output ("Other profiles also contain current Magenheim ${expectedVersion}: " +
+    Write-Output ("Other profiles also contain current Magenheim $expectedVersion: " +
         (($otherCurrent | ForEach-Object { $_.Profile }) -join ', '))
 }
