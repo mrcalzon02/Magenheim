@@ -89,4 +89,5 @@ for required in ['Jaw','MouthRing','Tail_1','Tail_2','AttackOrigin','LatchSocket
 arm['magenheim_asset']='blackwater-lamprey'; arm['production_contract']='production-creature-r1'; arm['host_rig']='HOST-AQUATIC-FISH'; arm['length_m']=LENGTH
 arm['role']='blackwater-common-latch-predator'; arm['modeled_radial_teeth']=28; arm['oral_disc_geometry']=True
 arm['animation_contract']='swim-idle,cruise,sprint,bank-left,bank-right,lunge,latch,attached-idle,detach,hit,death'
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-blackwater-lamprey'; sc['magenheim_skinning']='rigid-segment-weighted'
 OUT.parent.mkdir(parents=True,exist_ok=True); bpy.ops.wm.save_as_mainfile(filepath=str(OUT)); print(f'Wrote {OUT} meshes={len(meshes)} tris={tris}')
