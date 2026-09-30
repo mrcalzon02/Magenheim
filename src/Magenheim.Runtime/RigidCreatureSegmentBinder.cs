@@ -35,6 +35,7 @@ internal static class RigidCreatureSegmentBinder
         var clips = ParseActions(rig, specs, modelId);
         var transforms = new Dictionary<string, Transform>(StringComparer.Ordinal);
         var rest = new Dictionary<string, Quaternion>(StringComparer.Ordinal);
+        var restScale = new Dictionary<string, Vector3>(StringComparer.Ordinal);
         var skeletonBuilt = false;
         Transform? visualRoot = null;
 
@@ -48,7 +49,7 @@ internal static class RigidCreatureSegmentBinder
 
             if (!skeletonBuilt)
             {
-                BuildSkeleton(visualRoot, specs, transforms, rest, modelId);
+                BuildSkeleton(visualRoot, specs, transforms, rest, restScale, modelId);
                 skeletonBuilt = true;
             }
 
@@ -73,7 +74,7 @@ internal static class RigidCreatureSegmentBinder
         var character = prefab.GetComponent<Character>()
             ?? throw new InvalidOperationException(prefab.name + " has no Character for creature visual driving.");
         var driver = root.AddComponent<RigidCreaturePresentationDriver>();
-        driver.Bind(character, transforms, rest, clips, fps);
+        driver.Bind(character, transforms, rest, restScale, clips, fps);
         return transforms.Count + " bones / " + clips.Count + " authored action(s)";
     }
 
@@ -131,31 +132,39 @@ internal static class RigidCreatureSegmentBinder
             if (!(row["samples"] is JArray samples) || samples.Count == 0)
                 throw new InvalidOperationException(modelId + " creature action '" + name + "' has no samples.");
 
-            var frames = new List<Dictionary<string, Quaternion>>(samples.Count);
+            var frames = new List<Dictionary<string, BonePose>>(samples.Count);
             foreach (var sample in samples)
             {
                 if (!(sample is JObject objectSample))
                     throw new InvalidOperationException(modelId + " action '" + name + "' has malformed sample data.");
 
-                var frame = new Dictionary<string, Quaternion>(StringComparer.Ordinal);
+                var frame = new Dictionary<string, BonePose>(StringComparer.Ordinal);
                 foreach (var property in objectSample.Properties())
                 {
                     if (!bones.ContainsKey(property.Name))
                         throw new InvalidOperationException(
                             modelId + " action '" + name + "' animates unknown bone '" + property.Name + "'.");
-                    if (!(property.Value is JArray quaternion) || quaternion.Count != 4)
+                    if (!(property.Value is JObject pose) ||
+                        !(pose["rotation"] is JArray quaternion) ||
+                        quaternion.Count != 4 ||
+                        !(pose["scale"] is JArray scale) ||
+                        scale.Count != 3)
                         throw new InvalidOperationException(
-                            modelId + " action '" + name + "' has malformed quaternion for '" + property.Name + "'.");
+                            modelId + " action '" + name + "' has malformed pose for '" + property.Name + "'.");
 
                     var q = new Quaternion(
                         (float)quaternion[0]!,
                         (float)quaternion[1]!,
                         (float)quaternion[2]!,
                         (float)quaternion[3]!);
-                    if (!Finite(q))
+                    var s = new Vector3(
+                        (float)scale[0]!,
+                        (float)scale[1]!,
+                        (float)scale[2]!);
+                    if (!Finite(q) || !Finite(s) || s.x <= 0f || s.y <= 0f || s.z <= 0f)
                         throw new InvalidOperationException(
-                            modelId + " action '" + name + "' has non-finite rotation for '" + property.Name + "'.");
-                    frame[property.Name] = q.normalized;
+                            modelId + " action '" + name + "' has non-finite/invalid pose for '" + property.Name + "'.");
+                    frame[property.Name] = new BonePose(q.normalized, s);
                 }
                 frames.Add(frame);
             }
@@ -171,6 +180,7 @@ internal static class RigidCreatureSegmentBinder
         IReadOnlyDictionary<string, BoneSpec> specs,
         IDictionary<string, Transform> transforms,
         IDictionary<string, Quaternion> rest,
+        IDictionary<string, Vector3> restScale,
         string modelId)
     {
         foreach (var spec in specs.Values)
@@ -199,7 +209,10 @@ internal static class RigidCreatureSegmentBinder
         }
 
         foreach (var pair in transforms)
+        {
             rest.Add(pair.Key, pair.Value.localRotation);
+            restScale.Add(pair.Key, pair.Value.localScale);
+        }
 
         if (transforms.Count != specs.Count)
             throw new InvalidOperationException(modelId + " creature skeleton did not materialize completely.");
@@ -224,6 +237,11 @@ internal static class RigidCreatureSegmentBinder
         !float.IsNaN(value.z) && !float.IsInfinity(value.z) &&
         !float.IsNaN(value.w) && !float.IsInfinity(value.w);
 
+    private static bool Finite(Vector3 value) =>
+        !float.IsNaN(value.x) && !float.IsInfinity(value.x) &&
+        !float.IsNaN(value.y) && !float.IsInfinity(value.y) &&
+        !float.IsNaN(value.z) && !float.IsInfinity(value.z);
+
     private sealed class BoneSpec
     {
         internal BoneSpec(string name, string? parent, Vector3 head, Vector3 yAxis, Vector3 zAxis)
@@ -242,16 +260,28 @@ internal static class RigidCreatureSegmentBinder
         internal Vector3 ZAxis { get; }
     }
 
+    internal sealed class BonePose
+    {
+        internal BonePose(Quaternion rotation, Vector3 scale)
+        {
+            Rotation = rotation;
+            Scale = scale;
+        }
+
+        internal Quaternion Rotation { get; }
+        internal Vector3 Scale { get; }
+    }
+
     internal sealed class ActionClip
     {
-        internal ActionClip(string name, IReadOnlyList<Dictionary<string, Quaternion>> frames)
+        internal ActionClip(string name, IReadOnlyList<Dictionary<string, BonePose>> frames)
         {
             Name = name;
             Frames = frames;
         }
 
         internal string Name { get; }
-        internal IReadOnlyList<Dictionary<string, Quaternion>> Frames { get; }
+        internal IReadOnlyList<Dictionary<string, BonePose>> Frames { get; }
     }
 }
 
@@ -262,6 +292,7 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
     private Rigidbody? _body;
     private IReadOnlyDictionary<string, Transform> _bones = null!;
     private IReadOnlyDictionary<string, Quaternion> _rest = null!;
+    private IReadOnlyDictionary<string, Vector3> _restScale = null!;
     private IReadOnlyList<RigidCreatureSegmentBinder.ActionClip> _clips = null!;
     private float _fps;
     private RigidCreatureSegmentBinder.ActionClip? _current;
@@ -273,12 +304,14 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
         Character character,
         IReadOnlyDictionary<string, Transform> bones,
         IReadOnlyDictionary<string, Quaternion> rest,
+        IReadOnlyDictionary<string, Vector3> restScale,
         IReadOnlyList<RigidCreatureSegmentBinder.ActionClip> clips,
         float fps)
     {
         _character = character ?? throw new ArgumentNullException(nameof(character));
         _bones = bones ?? throw new ArgumentNullException(nameof(bones));
         _rest = rest ?? throw new ArgumentNullException(nameof(rest));
+        _restScale = restScale ?? throw new ArgumentNullException(nameof(restScale));
         _clips = clips ?? throw new ArgumentNullException(nameof(clips));
         _fps = fps;
         _humanoid = character.GetComponent<Humanoid>();
@@ -371,13 +404,19 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
         foreach (var pair in _bones)
         {
             var rest = _rest[pair.Key];
-            var a = first.TryGetValue(pair.Key, out var firstRotation)
-                ? firstRotation
-                : Quaternion.identity;
-            var b = second.TryGetValue(pair.Key, out var secondRotation)
-                ? secondRotation
-                : Quaternion.identity;
-            pair.Value.localRotation = rest * Quaternion.Slerp(a, b, amount);
+            var baseScale = _restScale[pair.Key];
+            var a = first.TryGetValue(pair.Key, out var firstPose)
+                ? firstPose
+                : null;
+            var b = second.TryGetValue(pair.Key, out var secondPose)
+                ? secondPose
+                : null;
+            var rotationA = a?.Rotation ?? Quaternion.identity;
+            var rotationB = b?.Rotation ?? Quaternion.identity;
+            var scaleA = a?.Scale ?? Vector3.one;
+            var scaleB = b?.Scale ?? Vector3.one;
+            pair.Value.localRotation = rest * Quaternion.Slerp(rotationA, rotationB, amount);
+            pair.Value.localScale = Vector3.Scale(baseScale, Vector3.Lerp(scaleA, scaleB, amount));
         }
     }
 
