@@ -10,20 +10,25 @@ internal static class UnderworldCreaturePrototypes
 
         internal string? AuthoredModelId => Name switch
         {
+            "Lantern Moth" => "underworld-creature-lantern-moth",
             "Sporeling" => "underworld-creature-sporeling",
             "Capcrawler" => "underworld-creature-capcrawler",
+            "Mycelial Stalker" => "underworld-creature-mycelial-stalker",
+            "Puffback" => "underworld-creature-puffback",
+            "Shelf Lurker" => "underworld-creature-shelf-lurker",
+            "Crowncap Brute" => "underworld-creature-crowncap-brute",
             _ => null,
         };
     }
     internal static readonly Entry[] All =
     {
-        new("Lantern Moth", "Fungal Forest", "Bat", 0.65f, new Color(0.596f, 0.824f, 0.698f), "Winged hover/bite stand-in; ambient temperament and four-wing art pending"),
+        new("Lantern Moth", "Fungal Forest", "Bat", 0.65f, new Color(0.596f, 0.824f, 0.698f), "Four-wing production author/animation pipeline ready; Blender source/runtime payload regeneration pending; donor fallback remains until payload exists"),
         new("Sporeling", "Fungal Forest", "Tick", 0.6f, new Color(0.596f, 0.824f, 0.698f), "Production creature source/rig authored; runtime payload export pending; donor fallback remains until payload exists"),
         new("Capcrawler", "Fungal Forest", "Seeker", 0.65f, new Color(0.596f, 0.824f, 0.698f), "Production creature source/rig authored; runtime payload export pending; donor fallback remains until payload exists"),
-        new("Mycelial Stalker", "Fungal Forest", "Wolf", 1.05f, new Color(0.596f, 0.824f, 0.698f), "Native quadruped run/bite; no custom concealment or pounce"),
-        new("Puffback", "Fungal Forest", "Lox", 0.8f, new Color(0.596f, 0.824f, 0.698f), "Reactive spore burst implemented; donor body still lacks final inflation anatomy"),
-        new("Shelf Lurker", "Fungal Forest", "Seeker", 1f, new Color(0.596f, 0.824f, 0.698f), "Native insect movement; no wall climbing"),
-        new("Crowncap Brute", "Fungal Forest", "Troll", 0.9f, new Color(0.596f, 0.824f, 0.698f), "Native heavy biped swings; crown/gill art pending"),
+        new("Mycelial Stalker", "Fungal Forest", "Wolf", 1.05f, new Color(0.596f, 0.824f, 0.698f), "Production Stalker author/animation pipeline ready with conceal/pounce actions; Blender source/runtime payload regeneration pending"),
+        new("Puffback", "Fungal Forest", "Lox", 0.8f, new Color(0.596f, 0.824f, 0.698f), "Reactive spore burst implemented; production Puffback author/animation pipeline ready with inflation/spore actions; Blender source/runtime payload regeneration pending"),
+        new("Shelf Lurker", "Fungal Forest", "Seeker", 1f, new Color(0.596f, 0.824f, 0.698f), "Production Shelf Lurker author/animation pipeline ready; donor fallback remains until payload exists; wall-clinging locomotion still requires gameplay integration"),
+        new("Crowncap Brute", "Fungal Forest", "Troll", 0.9f, new Color(0.596f, 0.824f, 0.698f), "Production Crowncap author/animation pipeline ready with crown/gill anatomy; Blender source/runtime payload regeneration pending"),
         new("Cave Ray", "Blackwater Deep", "Serpent", 0.45f, new Color(0.459f, 0.710f, 0.769f), "Swim-chain motion proxy only; no fin-wing deformation or ambient temperament"),
         new("Gloomfin", "Blackwater Deep", "Serpent", 0.55f, new Color(0.459f, 0.710f, 0.769f), "Native swimming/bite; fish body art pending"),
         new("Blackwater Lamprey", "Blackwater Deep", "Leech", 1f, new Color(0.459f, 0.710f, 0.769f), "Native swimming/bite; no attached-player latch"),
