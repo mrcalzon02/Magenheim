@@ -88,4 +88,5 @@ for required in ['Jaw','Throat','Lure_1','Lure_2','Lure_3','Fin_L','Fin_R','Tail
 arm['magenheim_asset']='lantern-angler'; arm['production_contract']='production-creature-r1'; arm['host_rig']='HOST-AQUATIC-FISH'; arm['length_m']=LENGTH
 arm['role']='blackwater-uncommon-lure-pressure-predator'; arm['modeled_teeth']=20; arm['articulated_lure_segments']=3; arm['expanding_throat']=True
 arm['animation_contract']='swim-idle,cruise,bank-left,bank-right,lure-idle,lure-tell,bite,pressure-tell,pressure-release,hit,death'
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-lantern-angler'; sc['magenheim_skinning']='rigid-segment-weighted'
 OUT.parent.mkdir(parents=True,exist_ok=True); bpy.ops.wm.save_as_mainfile(filepath=str(OUT)); print(f'Wrote {OUT} meshes={len(meshes)} tris={tris}')
