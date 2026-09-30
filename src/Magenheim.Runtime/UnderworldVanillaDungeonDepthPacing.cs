@@ -64,24 +64,12 @@ internal static class UnderworldVanillaDungeonDepthPacing
                 ecology,
                 band);
 
-            if (!room.m_entrance &&
-                profile.Biome == UnderworldTerrainBiome.FrozenCaverns)
-            {
-                RimeSepulcherExposureRuntime.RebindExpandedDonor(
-                    room.gameObject,
-                    UnderworldVanillaDungeonBiomeDressingPolicy.FrozenExposureForBand(band),
-                    room.m_size.x,
-                    room.m_size.z);
-            }
-            else if (!room.m_entrance &&
-                     profile.Biome == UnderworldTerrainBiome.GreatDecay)
-            {
-                CarrionCatacombsContaminationRuntime.RebindExpandedDonor(
-                    room.gameObject,
-                    UnderworldVanillaDungeonBiomeDressingPolicy.DecayExposureForBand(band),
-                    room.m_size.x,
-                    room.m_size.z);
-            }
+            UnderworldVanillaDungeonBiomeDressingPolicy.RebindGeneratedDepth(
+                room.gameObject,
+                profile,
+                metadata.DonorRoomName,
+                metadata.DonorRoomIndex,
+                band);
         }
     }
 
