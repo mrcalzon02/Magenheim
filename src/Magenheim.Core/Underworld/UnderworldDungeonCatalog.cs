@@ -77,19 +77,19 @@ public static class UnderworldDungeonCatalog
     // Stable identities for the five ordinary biome dungeons. Their runtime architecture is now
     // expanded vanilla reuse (see UnderworldVanillaDungeonReuseCatalog), not bespoke room kits.
     // Deep Fracture remains the separate Magenheim-authored architecture program.
-    public static UnderworldDungeonDefinition FungalForest { get; } = Planned(
+    public static UnderworldDungeonDefinition FungalForest { get; } = Ready(
         "fungal_forest", "Rootwarren",
         UnderworldTerrainBiome.FungalForest, quantity: 8, spacing: 900d);
 
-    public static UnderworldDungeonDefinition BlackwaterDeep { get; } = Planned(
+    public static UnderworldDungeonDefinition BlackwaterDeep { get; } = Ready(
         "blackwater_deep", "Drowned Vaults",
         UnderworldTerrainBiome.BlackwaterDeep, quantity: 7, spacing: 1050d);
 
-    public static UnderworldDungeonDefinition SulfurousWastes { get; } = Planned(
+    public static UnderworldDungeonDefinition SulfurousWastes { get; } = Ready(
         "sulfurous_wastes", "Cinderworks",
         UnderworldTerrainBiome.SulfurousWastes, quantity: 7, spacing: 1050d);
 
-    public static UnderworldDungeonDefinition FrozenCaverns { get; } = Planned(
+    public static UnderworldDungeonDefinition FrozenCaverns { get; } = Ready(
         "frozen_caverns", "Rime Sepulcher",
         UnderworldTerrainBiome.FrozenCaverns, quantity: 7, spacing: 1100d);
 
@@ -112,7 +112,7 @@ public static class UnderworldDungeonCatalog
         MinimumRoomFamilyUses: 1,
         MaximumRoomFamilyUses: 1);
 
-    public static UnderworldDungeonDefinition GreatDecay { get; } = Planned(
+    public static UnderworldDungeonDefinition GreatDecay { get; } = Ready(
         "great_decay", "Carrion Catacombs",
         UnderworldTerrainBiome.GreatDecay, quantity: 6, spacing: 1200d);
 
@@ -136,9 +136,9 @@ public static class UnderworldDungeonCatalog
             throw new InvalidOperationException("Underworld dungeon prefab identities must be unique.");
         if (All.Select(value => value.Biome).Distinct().Count() != 6)
             throw new InvalidOperationException("Underworld dungeon catalog must cover all six canonical biomes exactly once.");
-        if (DeepFracture.Status != UnderworldDungeonStatus.RuntimeReady)
+        if (All.Any(value => value.Status != UnderworldDungeonStatus.RuntimeReady))
             throw new InvalidOperationException(
-                "Deep Fracture must remain runtime-ready; ordinary biome dungeons may advance independently once their vanilla-reuse runtime gates are satisfied.");
+                "All six Underworld dungeon families must remain runtime-ready: five expanded vanilla donor families plus Deep Fracture.");
 
         UnderworldVanillaDungeonReuseCatalog.Validate();
     }
