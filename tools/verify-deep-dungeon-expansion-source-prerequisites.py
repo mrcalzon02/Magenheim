@@ -36,10 +36,19 @@ for token,label in (
     require(token in registrar,"DDE-02 missing "+label)
 
 # Gate 3 — physical scale integrity source prerequisites.
-require("clone.transform.localScale *= scale" in registrar,
-        "DDE-03 room root is not scaled")
+require("ScaleRoomHierarchy(clone, room, scale, sourceName)" in registrar,
+        "DDE-03 room clone is not routed through connection-safe scaling")
+require('new GameObject("Magenheim_DDE_ScaleRoot")' in registrar and
+        "scaleRoot.localScale = Vector3.one * scale" in registrar,
+        "DDE-03 room structural content is not uniformly scaled beneath a private scale root")
+require("connection.transform.localPosition *= scale" in registrar,
+        "DDE-03 RoomConnection raw positions are not expanded with visible geometry")
+require("connection.transform.parent != clone.transform" in registrar,
+        "DDE-03 nested RoomConnection topology is not rejected")
 require("room.m_size = new Vector3Int(" in registrar,
         "DDE-03 Room.m_size is not scaled with visible geometry")
+require("clone.transform.localScale *= scale" not in registrar,
+        "DDE-03 incorrectly scales the Room root and would desynchronize PlaceRoom connection math")
 require("clone.transform.localScale *= (float)profile.LinearRoomScale" in registrar,
         "DDE-03 donor door clone is not scaled")
 require("generator.m_tileWidth *= (float)profile.LinearRoomScale" in registrar,
