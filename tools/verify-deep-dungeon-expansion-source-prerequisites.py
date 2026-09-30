@@ -147,6 +147,16 @@ require("GetComponentInChildren<DungeonGenerator>(true)" in registrar,
 # Gate 9 — exact Underworld confinement and Planned fail-close.
 require("zone.m_biome = UnderworldTerrainRuntime.ToNativeBiome(profile.Biome)" in registrar,
         "DDE-09 clone is not bound to exact owning Underworld biome")
+for token,label in (
+    ("zone.m_exteriorRadius = donorExteriorRadius","donor exterior-radius preservation"),
+    ("zone.m_minTerrainDelta = donorMinTerrainDelta","donor minimum terrain-delta preservation"),
+    ("zone.m_maxTerrainDelta = donorMaxTerrainDelta","donor maximum terrain-delta preservation"),
+    ("zone.m_minAltitude = donorMinAltitude","donor minimum-altitude preservation"),
+    ("zone.m_maxAltitude = donorMaxAltitude","donor maximum-altitude preservation"),
+    ("zone.m_slopeRotation = donorSlopeRotation","donor slope-rotation preservation"),
+    ("zone.m_snapToWater = donorSnapToWater","donor water-snap preservation"),
+):
+    require(token in registrar,"DDE-09 missing "+label)
 require("UnderworldVanillaDungeonCandidatePolicy.IsWorldgenAdmitted(dungeon)" in bridge,
         "DDE-09 detached catalog does not use admitted-family predicate")
 require("without candidate admission" in bridge and "without candidate admission" in placement,
@@ -157,6 +167,16 @@ require('"EnablePlannedCandidateWorldgen",\n            false' in candidate,
 # Gate 10 source prerequisite — preserve donor location/interior mechanics, no custom return system.
 require("CreateClonedLocation(definition.PrefabName, donorEntrance)" in registrar,
         "DDE-10 derivative does not inherit donor entrance/interior transport")
+for token,label in (
+    ("ValidateInteriorTransport(profile, donorZone, custom.Prefab, generator)","transport parity admission"),
+    ("cloneLocation.m_useCustomInteriorTransform != donorLocation.m_useCustomInteriorTransform","Location custom-interior parity"),
+    ("cloneGenerator.m_useCustomInteriorTransform != donorGenerator.m_useCustomInteriorTransform","generator custom-interior parity"),
+    ("cloneLocation.m_generator != cloneGenerator","Location-to-generator pairing"),
+    ("CollectDungeonTeleports","paired Teleport graph audit"),
+    ("cloneTeleports.Count != donorTeleports.Count","Teleport endpoint-count parity"),
+    ("!cloneTeleports.Contains(teleport.m_targetPoint)","Teleport target containment"),
+):
+    require(token in registrar,"DDE-10 missing "+label)
 for forbidden in ("UnderworldGateTransitRuntime","ReturnToSurface","DeepFractureReturn"):
     require(forbidden not in registrar,
             "DDE-10 ordinary donor registrar wrongly owns non-donor return mechanism: "+forbidden)
