@@ -459,12 +459,13 @@ def add_throne_environment(mats, root):
 def append_valheim_donor_collections(path: Path):
     if not path.is_file():
         raise RuntimeError(f"Transient Valheim donor library missing: {path}")
-    wanted=[]
+    wanted_names=[]
+    loaded_list=[]
     with bpy.data.libraries.load(str(path),link=False) as (src,dst):
-        wanted=[name for name in src.collections if name.startswith("VALHEIM_")]
-        dst.collections=wanted
-    loaded={name:bpy.data.collections.get(name) for name in wanted}
-    loaded={name:col for name,col in loaded.items() if col is not None}
+        wanted_names=[name for name in src.collections if name.startswith("VALHEIM_")]
+        dst.collections=wanted_names
+        loaded_list=dst.collections
+    loaded={col.name:col for col in loaded_list if col is not None}
     if not loaded:
         raise RuntimeError("Valheim donor library supplied no VALHEIM_* collections.")
     return loaded
