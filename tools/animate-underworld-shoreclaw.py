@@ -89,6 +89,7 @@ for act in bpy.data.actions:
 arm.animation_data.action=None
 arm['production_contract']='production-creature-r2'
 arm['authored_actions']='Shoreclaw_Idle,Shoreclaw_Scuttle,Shoreclaw_TurnLeft,Shoreclaw_TurnRight,Shoreclaw_CrusherAttack,Shoreclaw_CutterAttack,Shoreclaw_Guard,Shoreclaw_SwimIdle,Shoreclaw_SwimForward,Shoreclaw_WaterExit,Shoreclaw_WaterEntry,Shoreclaw_Hit,Shoreclaw_Stagger,Shoreclaw_Death'
+sc=bpy.context.scene; sc['magenheim_authored_actions']=arm['authored_actions']; sc['magenheim_skinning']='rigid-segment-weighted'
 arm['animation_readability_contract']='eight-leg-land-weight-transfer;distinct-paddle-swim-strokes;independent-shell-lag;asymmetric-claw-attacks;blended-water-transitions;no-root-translation'
 bpy.context.preferences.filepaths.save_version=0
 bpy.ops.wm.save_as_mainfile(filepath=str(MODEL),compress=True)
