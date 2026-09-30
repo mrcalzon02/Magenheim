@@ -27,7 +27,7 @@ plan=(ROOT/"docs/DEEP_DUNGEON_EXPANSION.md").read_text()
 for token in (
     "# Deep Dungeon Expansion",
     "## DDE-00 — Architecture freeze",
-    "## DDE-13 — Per-family promotion",
+    "## DDE-13 — All-family runtime admission",
     "## DDE-14 — Final regression against Deep Fracture",
     "1.5x linear room scale",
     "3.5x donor room-count target",
