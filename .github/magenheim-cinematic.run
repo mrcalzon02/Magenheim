@@ -8,3 +8,4 @@ Retry after headless Cycles/build-render split: 2026-09-29T16:29-08:00
 Preview-layout repair: separated sets and renderable proxies.
 Blackstone source integration pass.
 Physical motion pass v1: object-space gait, rumble, raven, king rise, sword draw, camera cuts.
+Retry physical motion pass after Blender 5 action API/fail-closed repair.
