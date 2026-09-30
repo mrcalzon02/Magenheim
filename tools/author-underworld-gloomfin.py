@@ -94,4 +94,5 @@ for required in ['Jaw','Fin_L','Fin_R','Tail_1','Tail_2','AttackOrigin','MouthFX
     if required not in arm.data.bones: raise RuntimeError(f'Missing production bone/socket: {required}')
 arm['magenheim_asset']='gloomfin'; arm['production_contract']='production-creature-r1'; arm['host_rig']='HOST-AQUATIC-FISH'; arm['length_m']=LENGTH
 arm['role']='blackwater-common-pack-predator'; arm['dorsal_fins']=3; arm['modeled_teeth']=16; arm['animation_contract']='swim-idle,cruise,sprint,bank-left,bank-right,bite,hit,death'
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-gloomfin'; sc['magenheim_skinning']='rigid-segment-weighted'
 OUT.parent.mkdir(parents=True,exist_ok=True); bpy.ops.wm.save_as_mainfile(filepath=str(OUT)); print(f'Wrote {OUT} meshes={len(meshes)} tris={tris}')
