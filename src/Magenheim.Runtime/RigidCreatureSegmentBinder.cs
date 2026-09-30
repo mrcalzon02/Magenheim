@@ -390,8 +390,11 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
                    Find("bite") ??
                    Find("lunge") ??
                    Find("ram") ??
+                   Find("leap") ??
                    Find("heavyslam") ??
                    Find("slam") ??
+                   Find("swipe") ??
+                   Find("strike") ??
                    Find("sweep") ??
                    Find("pounce") ??
                    Find("charge") ??
@@ -407,6 +410,7 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
                    Find("walk") ??
                    Find("flight") ??
                    Find("glide") ??
+                   Find("drift") ??
                    Find("crawl") ??
                    _current ??
                    ChooseIdle();
@@ -422,6 +426,10 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
         Find("clingidle") ??
         Find("concealidle") ??
         Find("groundidle") ??
+        Find("pressureidle") ??
+        Find("ventidle") ??
+        Find("perchidle") ??
+        Find("drift") ??
         Find("idle") ??
         Find("grazeroot") ??
         Find("glide") ??
