@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using HarmonyLib;
 using Jotunn.Managers;
 using UnityEngine;
 
@@ -124,7 +125,7 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         var view = instance.GetComponent<ZNetView>();
         if (!view || !view.IsValid())
         {
-            Destroy(instance);
+            UnityEngine.Object.Destroy(instance);
             _nextAbilityTime = Time.time + 6f;
             return;
         }
@@ -310,7 +311,7 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         shape.radius = Mathf.Max(.2f, radius * .22f);
 
         particles.Emit(count);
-        Destroy(root, 1.8f);
+        UnityEngine.Object.Destroy(root, 1.8f);
     }
 
     private static Mode ModeFor(string name)
