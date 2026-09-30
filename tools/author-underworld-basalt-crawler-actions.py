@@ -105,6 +105,7 @@ for n in ('Guard','Ram'):
 for a in [bpy.data.actions['BC_'+n] for n in ACTIONS]:
     if any('pose.bones["Root"]' in fc.data_path and 'location' in fc.data_path for fc in a.fcurves): raise RuntimeError(f'{a.name} illegally animates Root.location')
 arm['action_contract']=','.join(ACTIONS)
+sc=bpy.context.scene; sc['magenheim_authored_actions']=','.join('BC_'+name for name in ACTIONS); sc['magenheim_skinning']='rigid-segment-weighted'
 arm['animation_fidelity']='alternating-tripod low scuttle; heavy mirrored pivots; whole-body lateral/frontal strikes; physical brow shutter guard; braced in-place ram; lithic flank collapse'
 arm['root_motion_policy']='Root translation reserved for Valheim runtime; all production actions are in-place'
 bpy.ops.wm.save_as_mainfile(filepath=str(BLEND)); print(f'Authored {len(ACTIONS)} Basalt Crawler production actions into {BLEND}')
