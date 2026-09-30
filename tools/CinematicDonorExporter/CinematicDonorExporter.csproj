@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net462</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AssemblyName>Magenheim.CinematicDonorExporter</AssemblyName>
+    <RootNamespace>Magenheim.Tools.CinematicDonorExporter</RootNamespace>
+    <ValheimManagedPath Condition="'$(ValheimManagedPath)' == ''">$(MSBuildThisFileDirectory)../../../valheim_Data/Managed</ValheimManagedPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JotunnLib" Version="2.30.0" ExcludeAssets="build" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="$(ValheimManagedPath)/assembly_*.dll" Private="false" />
+    <Reference Include="$(ValheimManagedPath)/UnityEngine*.dll" Private="false" />
+    <Reference Include="$(ValheimManagedPath)/netstandard.dll" Private="false" />
+    <Reference Include="$(BepInExPath)/core/BepInEx.dll" Private="false" />
+    <Reference Include="$(BepInExPath)/core/0Harmony.dll" Private="false" />
+  </ItemGroup>
+
+  <Target Name="ValidateLocalReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="!Exists('$(ValheimManagedPath)/assembly_valheim.dll')" Text="Set ValheimManagedPath to Valheim's Managed directory." />
+    <Error Condition="!Exists('$(BepInExPath)/core/BepInEx.dll')" Text="Set BepInExPath to an installed BepInEx directory." />
+  </Target>
+</Project>
