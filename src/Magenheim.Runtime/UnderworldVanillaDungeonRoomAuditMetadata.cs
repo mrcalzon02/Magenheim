@@ -10,6 +10,7 @@ namespace Magenheim.Runtime;
 internal sealed class UnderworldVanillaDungeonRoomAuditMetadata : MonoBehaviour
 {
     [SerializeField] internal string DonorRoomName = string.Empty;
+    [SerializeField] internal int DonorRoomIndex = -1;
     [SerializeField] internal Vector3Int DonorRoomSize;
     [SerializeField] internal Vector3[] DonorConnectionLocalPositions = System.Array.Empty<Vector3>();
     [SerializeField] internal float LinearScale;
