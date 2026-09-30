@@ -55,6 +55,33 @@ if($LASTEXITCODE -ne 0){throw 'Fungal creature runtime export failed.'}
 & python "$PSScriptRoot/verify-model-assets.py" @fungalCreatureIds
 if($LASTEXITCODE -ne 0){throw 'Fungal creature runtime payload verification failed.'}
 
+$blackwaterCreatureJobs=@(
+    @{Id='underworld-creature-cave-ray'; Texture='generate-underworld-cave-ray-textures.py'; Author='author-underworld-cave-ray'; Animate='animate-underworld-cave-ray'; Verify='verify-underworld-cave-ray'},
+    @{Id='underworld-creature-gloomfin'; Texture='generate-underworld-gloomfin-textures.py'; Author='author-underworld-gloomfin'; Animate='animate-underworld-gloomfin'; Verify='verify-underworld-gloomfin-production'},
+    @{Id='underworld-creature-blackwater-lamprey'; Texture='generate-underworld-blackwater-lamprey-textures.py'; Author='author-underworld-blackwater-lamprey'; Animate='animate-underworld-blackwater-lamprey'; Verify='verify-underworld-blackwater-lamprey'},
+    @{Id='underworld-creature-shoreclaw'; Texture='generate-underworld-shoreclaw-textures.py'; Author='author-underworld-shoreclaw'; Animate='animate-underworld-shoreclaw'; Verify='verify-underworld-shoreclaw'},
+    @{Id='underworld-creature-lantern-angler'; Texture='generate-underworld-lantern-angler-textures.py'; Author='author-underworld-lantern-angler'; Animate='animate-underworld-lantern-angler'; Verify='verify-underworld-lantern-angler'},
+    @{Id='underworld-creature-abyss-shellback'; Texture='generate-underworld-abyss-shellback-textures.py'; Author='author-underworld-abyss-shellback'; Animate='animate-underworld-abyss-shellback'; Verify='verify-underworld-abyss-shellback'},
+    @{Id='underworld-creature-deep-hunter'; Texture='generate-underworld-deep-hunter-textures.py'; Author='author-underworld-deep-hunter'; Animate='animate-underworld-deep-hunter'; Verify='verify-underworld-deep-hunter'}
+)
+$blackwaterCreatureIds=@()
+foreach($job in $blackwaterCreatureJobs){
+    Write-Host "=== Blackwater creature production: $($job.Id) ==="
+    & python "$PSScriptRoot/$($job.Texture)"
+    if($LASTEXITCODE -ne 0){throw "Creature texture generation failed: $($job.Id)"}
+    & "$PSScriptRoot/blender.ps1" $job.Author
+    if($LASTEXITCODE -ne 0){throw "Creature authoring failed: $($job.Id)"}
+    & "$PSScriptRoot/blender.ps1" $job.Animate
+    if($LASTEXITCODE -ne 0){throw "Creature animation authoring failed: $($job.Id)"}
+    & "$PSScriptRoot/blender.ps1" $job.Verify
+    if($LASTEXITCODE -ne 0){throw "Creature source verification failed: $($job.Id)"}
+    $blackwaterCreatureIds += $job.Id
+}
+& "$PSScriptRoot/blender.ps1" export-model-assets @blackwaterCreatureIds
+if($LASTEXITCODE -ne 0){throw 'Blackwater creature runtime export failed.'}
+& python "$PSScriptRoot/verify-model-assets.py" @blackwaterCreatureIds
+if($LASTEXITCODE -ne 0){throw 'Blackwater creature runtime payload verification failed.'}
+
 # Ordinary Underworld dungeons intentionally reuse vanilla entrance/room/generator families.
 # Do NOT forge/promote the legacy Rootwarren/Drowned Vault/Cinderworks/Rime Sepulcher/Carrion
 # bespoke room kits here. Their source assets remain preserved for reference/reuse, while Deep
@@ -90,4 +117,4 @@ if(!$SkipReview){
     & "$PSScriptRoot/blender.ps1" render-underworld-armour-articulation-review
     if($LASTEXITCODE -ne 0){throw 'Underworld armour articulation review failed.'}
 }
-Write-Host 'PRODUCTION READY: 26 PBR families, 40 raw/refined material items, seven Fungal Forest creature bodies, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools and armour regenerated and gated. Ordinary Underworld dungeon architecture uses runtime vanilla-donor reuse; creature bodies are authored Blender assets.'
+Write-Host 'PRODUCTION READY: 26 PBR families, 40 raw/refined material items, seven Fungal Forest and seven Blackwater Deep creature bodies, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools and armour regenerated and gated. Ordinary Underworld dungeon architecture uses runtime vanilla-donor reuse; creature bodies are authored Blender assets.'
