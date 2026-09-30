@@ -91,12 +91,12 @@ def render(entry):
     bpy.ops.render.render(write_still=True)
     print("RENDERED", entry["id"], flush=True)
 
-catalog = {entry["id"]: entry for entry in json.loads((MODELS / "catalog.json").read_text())}
 requested = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else list(IDS)
 unknown = [model_id for model_id in requested if model_id not in IDS]
 if unknown:
     raise SystemExit("Unknown Underworld station icon model(s): " + ", ".join(unknown))
 for model_id in requested:
-    if model_id not in catalog:
-        raise RuntimeError(model_id + ": exported model is missing from assets/models/catalog.json")
-    render(catalog[model_id])
+    source = MODELS / "source" / (model_id + ".blend")
+    if not source.is_file():
+        raise RuntimeError(model_id + ": authored Blender source is missing")
+    render({"id": model_id, "source": "source/" + source.name})
