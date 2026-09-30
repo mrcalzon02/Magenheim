@@ -17,6 +17,11 @@ plugin=(ROOT/"src/Magenheim.Runtime/MagenheimPlugin.cs").read_text()
 production=(ROOT/"tools/rebuild-underworld-production.ps1").read_text()
 readiness=(ROOT/"tools/verify-underworld-production-readiness.py").read_text()
 deep_fracture=(ROOT/"src/Magenheim.Runtime/DeepFractureLocationRegistrar.cs").read_text()
+candidate=(ROOT/"src/Magenheim.Runtime/UnderworldVanillaDungeonCandidatePolicy.cs").read_text()
+bridge=(ROOT/"src/Magenheim.Runtime/UnderworldWorldgenContentBridge.cs").read_text()
+placement=(ROOT/"src/Magenheim.Runtime/UnderworldDungeonPlacementRuntime.cs").read_text()
+synchronizer=(ROOT/"src/Magenheim.Runtime/DefinitionAuthoritySynchronizer.cs").read_text()
+gameplay_fingerprint=(ROOT/"src/Magenheim.Core/Socketing/GameplayAuthorityFingerprint.cs").read_text()
 
 require("MinimumLinearRoomScale = 1.5d" in reuse,
         "DDE-00 scale floor drifted below the 1.5x authority")
@@ -73,6 +78,26 @@ require("ordinary vanilla-reuse dungeons must not be rebuilt/promoted" in readin
 require("DeepFracture" in deep_fracture,
         "DDE-00 Deep Fracture runtime architecture source is missing")
 
+# Planned candidate admission is a developer-only exception, disabled by default and peer-fingerprinted.
+require('"EnablePlannedCandidateWorldgen",\n            false' in candidate,
+        "DDE-00 candidate worldgen is not disabled by default")
+require("CandidateDungeon" in candidate and '"fungal_forest"' in candidate,
+        "DDE-00 Fungal-first candidate default is missing")
+require("definition.Status == UnderworldDungeonStatus.RuntimeReady || IsCandidate(definition)" in candidate,
+        "DDE-00 candidate policy no longer limits admission to RuntimeReady or one explicit candidate")
+require("UnderworldVanillaDungeonCandidatePolicy.Fingerprint" in plugin,
+        "DDE-00 candidate policy is not included in gameplay peer authority")
+require('builder.Append("runtime-policy|")' in gameplay_fingerprint,
+        "DDE-00 gameplay authority no longer fingerprints runtime candidate policy")
+require("runtimePolicyFingerprint" in synchronizer,
+        "DDE-00 definition authority synchronizer lost runtime candidate policy")
+require("IsWorldgenAdmitted(dungeon)" in bridge and "without candidate admission" in bridge,
+        "DDE-00 detached worldgen catalog does not preserve candidate-aware Planned rejection")
+require("IsWorldgenAdmitted(dungeon)" in placement and "without candidate admission" in placement,
+        "DDE-00 native placement audit does not preserve candidate-aware Planned rejection")
+require("ReadyProfiles()" not in runtime,
+        "DDE-00 generic registrar still contains the retired ReadyProfiles execution seam")
+
 if fail:
     print("FAIL Deep Dungeon Expansion DDE-00 architecture freeze")
     for item in fail:
@@ -85,3 +110,4 @@ print(" - five ordinary families remain Planned and vanilla-derived")
 print(" - >=1.5x room scale and >=3.5x donor room-count floors are locked")
 print(" - vanilla assets are cloned into private Magenheim identities")
 print(" - retired bespoke ordinary dungeon bootstrap/production paths are inactive")
+print(" - Planned candidate admission is disabled by default, single-family, and multiplayer-fingerprinted")
