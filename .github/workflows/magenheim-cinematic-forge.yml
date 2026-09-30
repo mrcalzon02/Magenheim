@@ -117,7 +117,7 @@ jobs:
       - name: Upload cinematic scene and previews
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: magenheim-cinematic-environment-\${{ github.run_id }}
+          name: magenheim-cinematic-environment-${{ github.run_id }}
           path: |
             assets/cinematics/peace-was-only-the-beginning/source/magenheim-peace-cinematic.blend
             assets/cinematics/peace-was-only-the-beginning/manifest.json
@@ -146,7 +146,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: magenheim-cinematic-logs-\${{ github.run_id }}
-          path: \${{ runner.temp }}/magenheim-blender/**
+          name: magenheim-cinematic-logs-${{ github.run_id }}
+          path: ${{ runner.temp }}/magenheim-blender/**
           if-no-files-found: ignore
           retention-days: 2
