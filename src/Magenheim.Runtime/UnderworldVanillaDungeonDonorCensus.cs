@@ -262,6 +262,11 @@ internal static class UnderworldVanillaDungeonDonorCensus
         var destructibleDrops = 0;
         var vegvisirs = 0;
         var runestones = 0;
+        var componentTypes = new Dictionary<string, int>(StringComparer.Ordinal);
+        var doors = 0;
+        var teleports = 0;
+        var randomSpawns = 0;
+        var destructibles = 0;
 
         foreach (var data in donorRooms)
         {
@@ -301,6 +306,20 @@ internal static class UnderworldVanillaDungeonDonorCensus
                 destructibleDrops += prefab.GetComponentsInChildren<DropOnDestroyed>(true).Length;
                 vegvisirs += prefab.GetComponentsInChildren<Vegvisir>(true).Length;
                 runestones += prefab.GetComponentsInChildren<Runestone>(true).Length;
+                foreach (var component in prefab.GetComponentsInChildren<Component>(true))
+                {
+                    if (!component || component is Transform) continue;
+                    var typeName = component.GetType().Name;
+                    componentTypes[typeName] =
+                        componentTypes.TryGetValue(typeName, out var current) ? current + 1 : 1;
+                    switch (typeName)
+                    {
+                        case "Door": doors++; break;
+                        case "Teleport": teleports++; break;
+                        case "RandomSpawn": randomSpawns++; break;
+                        case "Destructible": destructibles++; break;
+                    }
+                }
             }
             finally
             {
@@ -336,6 +355,13 @@ internal static class UnderworldVanillaDungeonDonorCensus
         output.AppendLine("socket_drop_on_destroyed=" + destructibleDrops);
         output.AppendLine("socket_vegvisirs=" + vegvisirs);
         output.AppendLine("socket_runestones=" + runestones);
+        output.AppendLine("mechanic_doors=" + doors);
+        output.AppendLine("mechanic_teleports=" + teleports);
+        output.AppendLine("mechanic_random_spawns=" + randomSpawns);
+        output.AppendLine("mechanic_destructibles=" + destructibles);
+        output.AppendLine("room_component_types=" + string.Join(";",
+            componentTypes.OrderBy(pair => pair.Key, StringComparer.Ordinal)
+                .Select(pair => pair.Key + ":" + pair.Value.ToString(CultureInfo.InvariantCulture))));
     }
 
     private static string AssemblySha256()
