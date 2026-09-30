@@ -562,8 +562,13 @@ Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the cur
 - [ ] **Finish custom creature anatomy and remaining species mechanics for ordinary dungeon fauna.**
   The first behavior pass is live in source: Puffback spore burst, Abyss Shellback shell armor,
   Vent Spitter thermal retaliation, rooted Carrion Bloom and Corpse Orchard Rotling propagation.
-  Most creature rigs/animations still use donor chassis and many silhouettes remain explicitly
-  unfinished; complete those rather than treating retexturing alone as final creature art.
+  **Fungal Forest runtime-art source lane is now complete:** all seven Fungal species are mapped to
+  authored model identities; rigid-segment creature export carries bones, authored actions and bone
+  scale; runtime presentation keeps donor AI/hitboxes/networking while replacing the visible body;
+  and the existing Underworld production run owns texture -> author -> animate -> verify -> export
+  for Lantern Moth, Sporeling, Capcrawler, Mycelial Stalker, Puffback, Shelf Lurker and Crowncap
+  Brute. The seven runtime/glb payloads still require an actual Blender 5.0 production execution.
+  Other biome creature silhouettes and additional species mechanics remain open.
 - [ ] **Compile and live-accept expanded vanilla dungeon reuse.**
   Verify all five donor families on fresh Underworld seeds: recognizable vanilla construction,
   >=1.5x room dimensions, >=3.5x live donor room-count bounds, no overlap/truncation, only owning
