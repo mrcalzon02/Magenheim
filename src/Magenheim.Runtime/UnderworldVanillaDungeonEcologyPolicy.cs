@@ -59,6 +59,13 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
             throw new InvalidOperationException(
                 "No dungeon-eligible Underworld creatures exist for " + profile.Biome + ".");
 
+        var encounterRoomActive = ShouldActivateEncounterRoom(
+            room,
+            band,
+            profile,
+            donorRoomName,
+            donorRoomIndex);
+
         var roleCounts = new int[6];
         var spawners = roomObject.GetComponentsInChildren<CreatureSpawner>(true);
         var activeSpawners = 0;
@@ -77,7 +84,7 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
             spawner.m_requiredGlobalKey = string.Empty;
             spawner.m_blockingGlobalKey = string.Empty;
 
-            var active = ShouldActivate(
+            var active = encounterRoomActive && ShouldActivate(
                 room, band, profile.DungeonId, donorRoomName, donorRoomIndex, "spawner-active", index);
             spawner.enabled = active;
             if (!active) continue;
@@ -86,9 +93,11 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
             roleCounts[(int)UnderworldCreatureCombatBalance.RoleFor(selected.Name)]++;
         }
 
-        // Never turn a non-entrance authored combat room with donor CreatureSpawners into an empty
-        // room solely because the deterministic rolls all missed.
-        if (!room.m_entrance && spawners.Length > 0 && activeSpawners == 0)
+        // Once a room has been admitted as an encounter room, do not let every individual socket
+        // miss and accidentally erase that encounter. Rooms deliberately suppressed by the room-level
+        // pacing roll stay quiet: that is how a 3.5x dungeon gains traversal/resource breathing space
+        // without turning into 3.5x mandatory combat.
+        if (encounterRoomActive && !room.m_entrance && spawners.Length > 0 && activeSpawners == 0)
         {
             var selected = SelectCreature(
                 creatures, room, band, profile.DungeonId, donorRoomName, donorRoomIndex, "spawner-fallback", 0);
@@ -138,7 +147,7 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
             if (area.m_maxTotal > 0) area.m_maxTotal = Math.Min(area.m_maxTotal, 6);
             area.m_spawnIntervalSec = Mathf.Max(area.m_spawnIntervalSec, 45f);
 
-            var active = ShouldActivate(
+            var active = encounterRoomActive && ShouldActivate(
                 room, band, profile.DungeonId, donorRoomName, donorRoomIndex, "area-active", areaIndex);
             area.enabled = active;
             if (!active) continue;
@@ -177,6 +186,46 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
 
             return true;
         });
+    }
+
+    private static bool ShouldActivateEncounterRoom(
+        Room room,
+        UnderworldVanillaDungeonRiskBand band,
+        UnderworldVanillaDungeonReuseDefinition profile,
+        string roomName,
+        int roomIndex)
+    {
+        if (room.m_entrance)
+            return false;
+
+        // Normalize room-level encounter occupancy against the enlarged expedition. Per-socket
+        // activation then controls local density inside an admitted combat room. At the floor
+        // multiplier (3.5x) this keeps total fight count materially above vanilla while well below
+        // a naive 3.5x multiplication.
+        var baseline = band switch
+        {
+            UnderworldVanillaDungeonRiskBand.Outer => .52d,
+            UnderworldVanillaDungeonRiskBand.Mid => .64d,
+            UnderworldVanillaDungeonRiskBand.Deep => .76d,
+            UnderworldVanillaDungeonRiskBand.Lair => .90d,
+            _ => .60d,
+        };
+
+        var multiplier = Math.Max(1d, profile.RoomCountMultiplier);
+        var normalization = 1d / Math.Sqrt(multiplier);
+        var probability = baseline * normalization;
+
+        if (room.m_endCap)
+            probability = Math.Min(.88d, probability + .18d);
+        if (band == UnderworldVanillaDungeonRiskBand.Lair)
+            probability = Math.Max(.58d, probability);
+
+        return UnderworldVanillaDungeonRoomPolicy.Roll(
+            probability,
+            profile.DungeonId,
+            roomName,
+            roomIndex,
+            "encounter-room-active");
     }
 
     private static bool ShouldActivate(
