@@ -1,5 +1,7 @@
 # Underworld Biome Dungeon Program
 
+> **Durable implementation authority:** [`DEEP_DUNGEON_EXPANSION.md`](DEEP_DUNGEON_EXPANSION.md) owns the detailed rollout order, gates, donor-specific requirements, telemetry, evidence, risk register and RuntimeReady promotion contract. This file remains the concise architecture summary.
+
 **Status:** ACTIVE — Deep Fracture remains bespoke; the five ordinary biome dungeons are now an expanded-vanilla reuse program.
 
 **Detailed implementation plan:** [`DEEP_DUNGEON_EXPANSION.md`](DEEP_DUNGEON_EXPANSION.md) is the durable gate-by-gate authority for completing and promoting the five ordinary donor dungeons.
