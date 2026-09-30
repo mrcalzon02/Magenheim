@@ -432,33 +432,27 @@ def add_throne_environment(mats, root):
     hall = collection("CIN_DarkThrone", root)
     y0 = THRONE_Y
 
-    # The committed Dark Throne source is the arena authority.  These broad
-    # envelope pieces only give cinematic negative space and vertical scale.
-    add_box("ThroneHall_Floor", (0,y0,-.70), (58,68,.5), mats["basalt"], hall)
-    for x in (-27.0,27.0):
-        add_box(f"ThroneHall_Wall_{x:+}",(x,y0+2,8),(1.6,66,16),mats["basalt_dark"],hall)
-    add_box("ThroneHall_RearWall",(0,y0+31,8),(56,1.6,16),mats["basalt_dark"],hall)
-    for i,x in enumerate((-20,-13,-6,6,13,20)):
-        add_box(f"ThroneHall_Pier_{i}",(x,y0+17,7),(1.2,1.2,14),mats["basalt"],hall)
+    # The newly forged dark-throne source is the complete Blackstone final-battle
+    # site: throne, dais, attendant seats, banners, eight braziers, rune circuit,
+    # terraces, parapets, pillars, arches, spires, bridge and abyss-edge geology.
+    # Do not bury it under cinematic-only cube architecture or duplicate its props.
+    append_blend(SOURCE/"dark-throne.blend", "AUTH_DarkThrone", hall,
+                 location=(0,y0,0))
 
-    append_blend(SOURCE/"dark-throne.blend","AUTH_DarkThrone",hall,location=(0,y0,0))
-
-    # Existing Magenheim weapon art is parked at the King's staging position.
-    # Animation will bind these to the hands and perform the actual cloak draw.
+    # The source is authored game-Y-up and converted into Blender Z-up by wloc:
+    # positive game Z points toward negative Blender Y.  The throne/rune circuit
+    # therefore sits around y0-22, while the formal approach enters from y0+23.
+    king_y = y0 - 19.5
     append_blend(SOURCE/"nowhere-king-sword-firmament.blend","AUTH_Firmament",hall,
-                 location=(-1.25,y0+14.0,2.0),scale=.78,
+                 location=(-1.15,king_y,2.55),scale=.78,
                  rotation=(math.radians(90),0,math.radians(-16)))
     append_blend(SOURCE/"nowhere-king-sword-null-gate.blend","AUTH_NullGate",hall,
-                 location=(1.25,y0+14.0,2.0),scale=.78,
+                 location=(1.15,king_y,2.55),scale=.78,
                  rotation=(math.radians(90),0,math.radians(16)))
 
-    for i,x in enumerate((-18,-8,8,18)):
-        add_banner(f"Blackstone_Banner_{i}",x,y0+28.5,7.0,0,mats,hall)
-    for i,(x,dy) in enumerate(((-18,-12),(-9,-10),(9,-10),(18,-12),
-                               (-18,8),(-9,10),(9,10),(18,8))):
-        add_brazier(f"Blackstone_Brazier_{i}",x,y0+dy,0,mats,hall)
-
-    add_king_proxy((0,y0+14.0,.1),mats,hall)
+    # Replaceable rigging proxy until the real Dverger-derived King rig is
+    # materialized for Blender.  It now occupies the actual home/throne region.
+    add_king_proxy((0,king_y,.95),mats,hall)
     return hall
 
 def camera(name, location, target_point, lens, target_collection):
@@ -483,10 +477,11 @@ def add_cameras(root):
         ("SHOT_03_PEACE_CAM", (-31,-37,13.5), (2,6,3.2), 48),
         ("SHOT_04_RUMBLE_CAM", (8,-30,3.0), (0,-17,2.5), 58),
         ("SHOT_05_OMEN_CAM", (-13,1,10.8), (-7,8,9.0), 76),
-        # Underworld: physically isolated set, so no village geometry can leak.
-        ("SHOT_06_THRONE_REVEAL_CAM", (0,y0-37,6.4), (0,y0+18,4.2), 44),
-        ("SHOT_07_KING_AWAKENS_CAM", (-7,y0+1,4.4), (0,y0+14.2,3.6), 60),
-        ("SHOT_08_LAST_ARGUMENT_CAM", (0,y0+5.5,3.5), (0,y0+14.2,3.35), 78),
+        # Blackstone approach is at +Y; throne/King are at -Y after the
+        # Magenheim game-space -> Blender-space conversion.
+        ("SHOT_06_THRONE_REVEAL_CAM", (0,y0+37,6.8), (0,y0-20,3.6), 44),
+        ("SHOT_07_KING_AWAKENS_CAM", (-8,y0-2,5.0), (0,y0-19.5,3.8), 60),
+        ("SHOT_08_LAST_ARGUMENT_CAM", (0,y0-7.0,4.15), (0,y0-19.5,3.55), 78),
     )
     created = {}
     for name, loc, tgt, lens in specs:
@@ -511,8 +506,8 @@ def add_lighting(root, mats):
     key_data.size = 14
     key_data.color = (0.20,0.28,0.44)
     key = bpy.data.objects.new("Throne_Key", key_data)
-    key.location = (0,THRONE_Y+5,14)
-    direction=Vector((0,THRONE_Y+18,3.5))-key.location
+    key.location = (0,THRONE_Y-2,14)
+    direction=Vector((0,THRONE_Y-20,3.5))-key.location
     key.rotation_euler=direction.to_track_quat('-Z','Y').to_euler()
     lights.objects.link(key)
 
@@ -630,7 +625,7 @@ def verify():
         "AUTH_DarkThrone", "AUTH_Firmament", "AUTH_NullGate",
         "NOWHERE_KING_ROOT", "HERO_A_ROOT", "HERO_B_ROOT", "HERO_C_ROOT", "RAVEN_ROOT",
         "SHOT_01_RETURN_CAM", "SHOT_02_HOMECOMING_CAM", "SHOT_06_THRONE_REVEAL_CAM", "SHOT_08_LAST_ARGUMENT_CAM",
-        "Village_GreatHall_TimberBody", "HallInterior_Floor", "ThroneHall_Floor",
+        "Village_GreatHall_TimberBody", "HallInterior_Floor", "AUTH_DarkThrone",
     }
     missing = sorted(name for name in required_objects if name not in bpy.data.objects)
     if missing:
