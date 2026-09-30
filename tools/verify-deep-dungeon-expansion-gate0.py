@@ -110,10 +110,12 @@ require('builder.Append("runtime-policy|")' in gameplay_fingerprint,
         "DDE-00 gameplay authority no longer fingerprints runtime policy")
 require("runtimePolicyFingerprint" in synchronizer,
         "DDE-00 definition authority synchronizer lost runtime policy")
-require("IsWorldgenAdmitted(dungeon)" in bridge,
-        "DDE-00 detached worldgen catalog does not use RuntimeReady admission")
-require("IsWorldgenAdmitted(dungeon)" in placement,
-        "DDE-00 native placement audit does not use RuntimeReady admission")
+require("UnderworldDungeonCatalog.All.Count" in bridge and
+        "WorldgenAdmittedDungeonCount" not in bridge,
+        "DDE-00 detached worldgen bridge does not require the full dungeon catalog")
+require("without candidate admission" not in placement and
+        "IsWorldgenAdmitted(dungeon)" not in placement,
+        "DDE-00 native placement audit still contains one-at-a-time candidate gating")
 require("active.Length != UnderworldVanillaDungeonReuseCatalog.All.Count" in runtime,
         "DDE-00 registrar does not require all five ordinary donor families together")
 
