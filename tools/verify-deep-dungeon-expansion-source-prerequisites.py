@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static prerequisites for DDE Gates 2-10. Live gate completion still requires installed Valheim."""
+"""Static prerequisites for DDE Gates 2-12. Live gate completion still requires installed Valheim."""
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -13,6 +13,7 @@ def require(ok,msg):
 
 registrar=(RUNTIME/"UnderworldVanillaDungeonRegistrar.cs").read_text()
 diagnostics=(RUNTIME/"UnderworldVanillaDungeonGenerationDiagnostics.cs").read_text()
+dev_commands=(RUNTIME/"UnderworldDevCommands.cs").read_text()
 room_policy=(RUNTIME/"UnderworldVanillaDungeonRoomPolicy.cs").read_text()
 ecology=(RUNTIME/"UnderworldVanillaDungeonEcologyPolicy.cs").read_text()
 rewards=(RUNTIME/"UnderworldVanillaDungeonRewardPolicy.cs").read_text()
@@ -181,16 +182,32 @@ for forbidden in ("UnderworldGateTransitRuntime","ReturnToSurface","DeepFracture
     require(forbidden not in registrar,
             "DDE-10 ordinary donor registrar wrongly owns non-donor return mechanism: "+forbidden)
 
+# Gates 11-12 source prerequisites — runtime persistence/multiplayer snapshots and
+# generation cost evidence. These remain evidence tooling only; live cases still decide pass/fail.
+for token,label in (
+    ("CaptureRuntimeSnapshot","runtime persistence snapshot capture"),
+    ("generation_fingerprint=","stable generated-layout fingerprint"),
+    ("network_peer_count=","peer-count evidence"),
+    ("valid_znetviews=","network-object validity evidence"),
+    ("active_pickables=","harvest-state evidence"),
+    ("generation_ms=","generation-time evidence"),
+    ("managed_memory_delta_bytes=","managed-memory evidence"),
+):
+    require(token in diagnostics,"DDE-11/12 missing "+label)
+require('case "dde":' in dev_commands and
+        "CaptureRuntimeSnapshot(player" in dev_commands,
+        "DDE-11/12 developer snapshot command is not wired")
+
 # Catalog may remain Planned until live gates are complete.
 for name in ("FungalForest","BlackwaterDeep","SulfurousWastes","FrozenCaverns","GreatDecay"):
     require(f"public static UnderworldDungeonDefinition {name}" in catalog,
             "DDE catalog lost ordinary family "+name)
 
 if fail:
-    print("FAIL DDE Gates 2-10 source prerequisites")
+    print("FAIL DDE Gates 2-12 source prerequisites")
     for item in fail:
         print(" - "+item)
     raise SystemExit(1)
 
-print("PASS DDE Gates 2-10 source prerequisites")
+print("PASS DDE Gates 2-12 source prerequisites")
 print(" - this is static admission only; no live DDE gate is claimed passed")
