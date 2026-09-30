@@ -146,7 +146,7 @@ require("UnderworldVanillaDungeonMechanicsPolicy.Apply" in registrar,
         "DDE-08 registrar is not bound to donor-mechanics policy")
 for token,label in (
     ("GetComponentsInChildren<Vegvisir>","Vegvisir lore stripping"),
-    ("GetComponentsInChildren<Runestone>","Runestone lore stripping"),
+    ("GetComponentsInChildren<RuneStone>","RuneStone lore stripping"),
     ('Count(counts, "Door")',"door preservation inventory"),
     ('Count(counts, "Teleport")',"teleport preservation inventory"),
     ('Count(counts, "RandomSpawn")',"hidden/random mechanic preservation inventory"),
