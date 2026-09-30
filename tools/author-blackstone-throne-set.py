@@ -498,7 +498,7 @@ BUILD={
 }
 
 DETAIL_FLOOR={
- "blackstone-throne":20,"blackstone-banner":19,"blackstone-attendant-seat":8,"blackstone-brazier":10,
+ "blackstone-throne":20,"blackstone-banner":10,"blackstone-attendant-seat":8,"blackstone-brazier":10,
  "blackstone-stair":12,"blackstone-dais":5,"blackstone-parapet":10,"blackstone-bridge":20,
  "blackstone-arch":8,"blackstone-cliff-edge":4,"blackstone-floor-tile":8,"blackstone-spire":5,
  "blackstone-pillar":4,"blackstone-terrace":18,"blackstone-wall-buttress":8,
