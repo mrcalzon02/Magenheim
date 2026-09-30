@@ -67,6 +67,21 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
         internal double HazardFloor { get; }
     }
 
+    internal static int ApplyDoor(
+        GameObject doorObject,
+        UnderworldVanillaDungeonReuseDefinition profile,
+        int doorIndex)
+    {
+        if (!doorObject) throw new ArgumentNullException(nameof(doorObject));
+        if (profile is null) throw new ArgumentNullException(nameof(profile));
+
+        return ApplyArchitecturePalette(
+            doorObject.transform,
+            PaletteFor(profile.Biome),
+            profile.Biome,
+            8000 + doorIndex);
+    }
+
     internal static Stats ApplyEntrance(
         GameObject entranceObject,
         UnderworldVanillaDungeonReuseDefinition profile)
