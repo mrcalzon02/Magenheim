@@ -1,3 +1,3 @@
-blackstone-throne-forge execute-current-vertical-assets 2026-09-29
-source=59811705a5855c83a241b98062a70cd03e98f338
-intent=cancel-stale-blackstone-runs-and-build-current-assets
+blackstone-throne-forge observable-execute-current-assets 2026-09-29
+source=3ee78f8a020a9086871cc4d217096a6c50a4a808
+intent=publish-run-id-then-author-export-render-assets
