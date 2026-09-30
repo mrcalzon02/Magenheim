@@ -8,8 +8,12 @@ param(
 $ErrorActionPreference = 'Stop'
 
 if (Get-Process valheim -ErrorAction SilentlyContinue) { throw 'Exit Valheim before installing.' }
-if (Get-Process | Where-Object ProcessName -match '^(r2modman|Thunderstore Mod Manager)$') {
-    throw 'Close r2modman before installing so its cached catalog cannot overwrite the updated version.'
+$modManagerProcesses = @(Get-Process -ErrorAction SilentlyContinue | Where-Object {
+    $_.ProcessName -match '(?i)(r2modman|thunderstore)'
+})
+if ($modManagerProcesses.Count -gt 0) {
+    throw ("Close r2modman/Thunderstore Mod Manager before installing so its in-memory profile cannot overwrite mods.yml. Running process(es): " +
+        (($modManagerProcesses | ForEach-Object { $_.ProcessName }) -join ', '))
 }
 $profile = (Resolve-Path -LiteralPath $ProfileRoot).Path
 if (!(Test-Path -LiteralPath "$profile/BepInEx/core/BepInEx.dll")) { throw 'The selected profile has no BepInEx loader.' }
@@ -121,8 +125,8 @@ $installedDllHash = (Get-FileHash -LiteralPath "$target/Magenheim/Magenheim.dll"
 if ($sourceDllHash -ne $installedDllHash) { throw 'Installed Magenheim.dll does not match the just-built package.' }
 
 # Publish launcher metadata only after the payload has been verified.
-if ((Get-Process | Where-Object ProcessName -match '^(r2modman|Thunderstore Mod Manager)$') -or
-    [IO.File]::ReadAllText($catalogPath) -cne $catalogBefore) { throw 'Launcher catalog changed during install; close the launcher and rerun installation.' }
+if ((Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.ProcessName -match '(?i)(r2modman|thunderstore)' }) -or
+    [IO.File]::ReadAllText($catalogPath) -cne $catalogBefore) { throw 'Launcher catalog changed during install; close r2modman/Thunderstore Mod Manager and rerun installation.' }
 $catalogBackup = Join-Path $PSScriptRoot ('backups/mods-' + (Get-Date -Format yyyyMMdd-HHmmss-fff) + '.yml')
 New-Item -ItemType Directory -Force -Path (Split-Path $catalogBackup -Parent) | Out-Null
 $catalogTemp = $catalogPath + '.magenheim-' + [guid]::NewGuid().ToString('N') + '.tmp'
@@ -130,11 +134,11 @@ $catalogTemp = $catalogPath + '.magenheim-' + [guid]::NewGuid().ToString('N') + 
 [IO.File]::Replace($catalogTemp, $catalogPath, $catalogBackup)
 if ([IO.File]::ReadAllText($catalogPath) -cne $catalogAfter) { throw 'Launcher catalog read-back verification failed.' }
 
-& (Join-Path $PSScriptRoot 'tools/verify-local-install.ps1') -ExpectedProfile (Split-Path $profile -Leaf)
+& (Join-Path $PSScriptRoot 'tools/verify-local-install.ps1') -ProfilesRoot (Split-Path $profile -Parent) -ExpectedProfile (Split-Path $profile -Leaf)
 
 Write-Output "Installed and SHA-256 verified Magenheim ${pluginVersion}: $target"
 Write-Output "Installed Magenheim.dll SHA256: $installedDllHash"
 Write-Output "Expected startup diagnostic: Magenheim $pluginVersion"
-Write-Output "Verified launcher entry: Magenheim v$pluginVersion by Local (enabled)"
+Write-Output "Verified launcher entry: Magenheim v$pluginVersion by Local (enabled) in $catalogPath"
 Write-Output "Launcher description: $($manifest.description)"
 Write-Output "Launcher catalog backup: $catalogBackup"
