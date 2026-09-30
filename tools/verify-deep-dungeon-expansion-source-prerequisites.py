@@ -12,6 +12,7 @@ def require(ok,msg):
         fail.append(msg)
 
 registrar=(RUNTIME/"UnderworldVanillaDungeonRegistrar.cs").read_text()
+diagnostics=(RUNTIME/"UnderworldVanillaDungeonGenerationDiagnostics.cs").read_text()
 candidate=(RUNTIME/"UnderworldVanillaDungeonCandidatePolicy.cs").read_text()
 bridge=(RUNTIME/"UnderworldWorldgenContentBridge.cs").read_text()
 placement=(RUNTIME/"UnderworldDungeonPlacementRuntime.cs").read_text()
@@ -51,6 +52,17 @@ require("generator.m_zoneSize *= zoneScale" in registrar,
         "DDE-04 generator legal zone is not expanded")
 require("MinimumRoomCountMultiplier = 3.5d" in reuse,
         "DDE-04 3.5x room-count floor is absent")
+
+for token,label in (
+    ("nameof(DungeonGenerator.Generate)","generation completion hook"),
+    ("generated_rooms=","placed-room evidence"),
+    ("graph_maximum_depth=","branch-depth evidence"),
+    ("missing_required_rooms=","required-room evidence"),
+    ("creature_spawners=","encounter-socket evidence"),
+    ("containers=","container evidence"),
+    ("mineables=","mineable evidence"),
+):
+    require(token in diagnostics,"DDE runtime diagnostics missing "+label)
 
 # Gate 5 — required rooms / doors fail closed.
 require("required room(s) did not resolve to private clones" in registrar,
