@@ -53,8 +53,8 @@ for token,label in (
     ("row.m_biome != expectedBiome","exact owning-biome mask enforcement"),
     ("is Planned but has","unexpected Planned dungeon row rejection"),
     ("exactly one is required","duplicate detached dungeon-row rejection"),
-    ("missingDungeons","admitted row presence gate"),
-    ("IsWorldgenAdmitted(dungeon)","RuntimeReady catalog admission"),
+    ("missingDungeons","required row presence gate"),
+    ("UnderworldDungeonCatalog.All.Count","all-family catalog admission"),
 ):
     if token not in bridge:
         fail.append("worldgen bridge: missing "+label)
@@ -68,7 +68,6 @@ for token,label in (
     ("instances.Length != dungeon.Quantity","target quantity enforcement"),
     ("MinDistanceFromSimilarMeters","same-family spacing enforcement"),
     ("ZNet.instance.IsServer()","server-authoritative reconciliation"),
-    ("IsWorldgenAdmitted(dungeon)","RuntimeReady native placement audit"),
 ):
     if token not in placement:
         fail.append("placement runtime: missing "+label)
