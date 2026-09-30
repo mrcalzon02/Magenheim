@@ -52,6 +52,22 @@ internal static class CarrionCatacombsContaminationRuntime
             "Magenheim_CarrionCatacombs_Contamination");
     }
 
+    internal static void AttachExpandedDonor(
+        GameObject room,
+        UnderworldCarrionCatacombsExposureState state,
+        float width,
+        float depth)
+    {
+        if (room is null) throw new ArgumentNullException(nameof(room));
+        state.Validate();
+        Attach(
+            room,
+            state,
+            Mathf.Max(4f, width),
+            Mathf.Max(5f, depth),
+            "Magenheim_DDE_DecayContamination");
+    }
+
     internal static void AttachPassage(
         GameObject passage,
         UnderworldCarrionCatacombsExposureState state)
