@@ -100,7 +100,8 @@ def build_rig():
 def finish(o,name,m,arm,bone):
  o.name=name;o["game_node_path"]=name;o["game_collision"]=False;o["game_crystal"]=json.dumps(None)
  o.data.materials.clear();o.data.materials.append(m)
- if not o.data.uv_layers:o.data.uv_layers.new(name="ArmourUV")
+ if o.data.uv_layers.get("ArmourUV") is None:o.data.uv_layers.new(name="ArmourUV")
+ o.data.uv_layers.active_index=o.data.uv_layers.find("ArmourUV")
  bpy.context.view_layer.objects.active=o;o.select_set(True);bpy.ops.object.mode_set(mode="EDIT");bpy.ops.mesh.select_all(action="SELECT")
  bpy.ops.uv.cube_project(cube_size=.32);bpy.ops.object.mode_set(mode="OBJECT");o.select_set(False)
  vg=o.vertex_groups.new(name=bone);vg.add(range(len(o.data.vertices)),1.0,"REPLACE")
