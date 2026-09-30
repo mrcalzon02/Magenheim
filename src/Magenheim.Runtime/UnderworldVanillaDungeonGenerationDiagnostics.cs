@@ -530,6 +530,9 @@ internal static class UnderworldVanillaDungeonGenerationDiagnosticsPatch
         DungeonGenerator __instance,
         int seed,
         ZoneSystem.SpawnMode mode,
-        UnderworldVanillaDungeonGenerationDiagnostics.GenerationProbe __state) =>
+        UnderworldVanillaDungeonGenerationDiagnostics.GenerationProbe __state)
+    {
+        UnderworldVanillaDungeonDepthPacing.Apply(__instance);
         UnderworldVanillaDungeonGenerationDiagnostics.Report(__instance, seed, mode, __state);
+    }
 }
