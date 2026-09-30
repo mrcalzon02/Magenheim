@@ -548,7 +548,7 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         var ecology = UnderworldVanillaDungeonEcologyPolicy.Rebind(
             room, profile, donorRoomName, roomIndex);
         var rewards = UnderworldVanillaDungeonRewardPolicy.Rebind(
-            room, profile, donorRoomName, roomIndex);
+            room, profile, donorRoomName, roomIndex, ecology);
         return new PopulationRebindStats(mechanics, ecology, rewards);
     }
 
