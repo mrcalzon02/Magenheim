@@ -243,11 +243,20 @@ def add_raven_proxy(name, location, scale, mats, target):
     body.parent=root
     body.matrix_parent_inverse=root.matrix_world.inverted()
     x,y,z=location
-    verts=[(x-.1*scale,y,z),(x-1.05*scale,y-.12*scale,z+.08*scale),(x-.3*scale,y,z-.08*scale),
-           (x+.1*scale,y,z),(x+1.05*scale,y-.12*scale,z+.08*scale),(x+.3*scale,y,z-.08*scale)]
-    wings=mesh_obj(name+"_Wings",verts,[(0,1,2),(3,4,5)],mats["raven"],target)
-    wings.parent=root
-    wings.matrix_parent_inverse=root.matrix_world.inverted()
+    left=mesh_obj(name+"_Wing_L",
+                  [(x,y,z),(x-1.05*scale,y-.12*scale,z+.08*scale),(x-.30*scale,y,z-.08*scale)],
+                  [(0,1,2)],mats["raven"],target)
+    right=mesh_obj(name+"_Wing_R",
+                   [(x,y,z),(x+1.05*scale,y-.12*scale,z+.08*scale),(x+.30*scale,y,z-.08*scale)],
+                   [(0,1,2)],mats["raven"],target)
+    for wing in (left,right):
+        bpy.context.scene.cursor.location=location
+        bpy.context.view_layer.objects.active=wing
+        wing.select_set(True)
+        bpy.ops.object.origin_set(type='ORIGIN_CURSOR',center='MEDIAN')
+        wing.select_set(False)
+        wing.parent=root
+        wing.matrix_parent_inverse=root.matrix_world.inverted()
     return root
 
 
@@ -458,11 +467,11 @@ def add_throne_environment(mats, root):
     # therefore sits around y0-22, while the formal approach enters from y0+23.
     king_y = y0 - 19.5
     append_blend(SOURCE/"nowhere-king-sword-firmament.blend","AUTH_Firmament",hall,
-                 location=(-1.15,king_y,2.55),scale=.78,
-                 rotation=(math.radians(90),0,math.radians(-16)))
+                 location=(-1.15,king_y,2.55),scale=1.82,
+                 rotation=(0,math.radians(-46),0))
     append_blend(SOURCE/"nowhere-king-sword-null-gate.blend","AUTH_NullGate",hall,
-                 location=(1.15,king_y,2.55),scale=.78,
-                 rotation=(math.radians(90),0,math.radians(16)))
+                 location=(1.15,king_y,2.55),scale=1.82,
+                 rotation=(0,math.radians(46),0))
 
     # Replaceable rigging proxy until the real Dverger-derived King rig is
     # materialized for Blender.  It now occupies the actual home/throne region.
@@ -732,8 +741,8 @@ def add_cameras(root):
         # Blackstone approach is at +Y; throne/King are at -Y after the
         # Magenheim game-space -> Blender-space conversion.
         ("SHOT_06_THRONE_REVEAL_CAM", (19,y0+30,6.4), (0,y0-17.5,3.2), 44),
-        ("SHOT_07_KING_AWAKENS_CAM", (-8.5,y0-5.0,3.6), (0,y0-19.5,2.1), 66),
-        ("SHOT_08_LAST_ARGUMENT_CAM", (0,y0-8.0,3.05), (0,y0-19.5,1.95), 74),
+        ("SHOT_07_KING_AWAKENS_CAM", (-9.5,y0-3.0,4.4), (0,y0-19.5,2.7), 58),
+        ("SHOT_08_LAST_ARGUMENT_CAM", (0,y0-3.0,4.35), (0,y0-19.5,2.8), 58),
     )
     created = {}
     for name, loc, tgt, lens in specs:
@@ -1038,15 +1047,20 @@ def animate_scene(scene,cameras):
     base=(8,-30,3.0); target=(0,-17,2.5)
     _look_at(cam4,217,base,target,58)
     _camera_shake(cam4,242,base,target,(
-        (-8,(0,0,0)),(-5,(.07,0,.035)),(-2,(-.10,.01,-.045)),
-        (1,(.08,-.01,.04)),(4,(-.055,.01,-.025)),(7,(.03,0,.014)),(11,(0,0,0)),
+        (-8,(0,0,0)),(-5,(.16,0,.075)),(-2,(-.22,.015,-.095)),
+        (1,(.18,-.012,.080)),(4,(-.12,.010,-.055)),(7,(.065,0,.028)),(11,(0,0,0)),
     ))
     _look_at(cam4,288,(7.4,-28.7,3.15),(0,-16,2.6),60)
     for i,name in enumerate(("HERO_A_ROOT","HERO_B_ROOT","HERO_C_ROOT")):
         root=bpy.data.objects.get(name)
         if root:
             root.rotation_mode='XYZ'
+            base_rot=(0,0,0)
+            root.rotation_euler=base_rot
             root.keyframe_insert(data_path="rotation_euler",frame=230)
+            # Brace into the impulse before turning toward its source.
+            root.rotation_euler=(math.radians((3,-2,4)[i]),math.radians((-2,3,-3)[i]),0)
+            root.keyframe_insert(data_path="rotation_euler",frame=244)
             root.rotation_euler=(0,0,math.radians((-18,7,22)[i]))
             root.keyframe_insert(data_path="rotation_euler",frame=270)
     # Lift the heads slightly toward the source of the disturbance.
@@ -1067,12 +1081,16 @@ def animate_scene(scene,cameras):
         raven.rotation_mode='XYZ'
         raven.rotation_euler=(0,0,math.radians(-20)); raven.keyframe_insert(data_path="rotation_euler",frame=289)
         raven.rotation_euler=(0,0,math.radians(8)); raven.keyframe_insert(data_path="rotation_euler",frame=360)
-    wings=bpy.data.objects.get("RAVEN_Wings")
-    if wings:
+    wing_l=bpy.data.objects.get("RAVEN_Wing_L")
+    wing_r=bpy.data.objects.get("RAVEN_Wing_R")
+    if wing_l and wing_r:
         for frame in range(289,361,6):
-            wings.rotation_mode='XYZ'
-            wings.rotation_euler=(0,math.radians(18 if ((frame-289)//6)%2==0 else -12),0)
-            wings.keyframe_insert(data_path="rotation_euler",frame=frame)
+            angle=math.radians(34 if ((frame-289)//6)%2==0 else -24)
+            wing_l.rotation_mode='XYZ'; wing_r.rotation_mode='XYZ'
+            wing_l.rotation_euler=(0,angle,0)
+            wing_r.rotation_euler=(0,-angle,0)
+            wing_l.keyframe_insert(data_path="rotation_euler",frame=frame)
+            wing_r.keyframe_insert(data_path="rotation_euler",frame=frame)
     _look_at(cameras["SHOT_05_OMEN_CAM"],289,(-13,1,10.8),(-8,7,9.0),76)
     _look_at(cameras["SHOT_05_OMEN_CAM"],360,(-7,5,11.3),(-3,13,10.0),82)
 
@@ -1085,50 +1103,57 @@ def animate_scene(scene,cameras):
     # head lifts, and arms separate with delayed follow-through.
     king=bpy.data.objects.get("NOWHERE_KING_ROOT")
     if king:
-        king.location=(0,THRONE_Y-19.5,.28); king.keyframe_insert(data_path="location",frame=445)
-        king.location=(0,THRONE_Y-19.5,.58); king.keyframe_insert(data_path="location",frame=480)
+        king.location=(0,THRONE_Y-19.5,-.38); king.keyframe_insert(data_path="location",frame=445)
+        king.location=(0,THRONE_Y-19.5,.18); king.keyframe_insert(data_path="location",frame=480)
         king.location=(0,THRONE_Y-19.5,.95); king.keyframe_insert(data_path="location",frame=522)
         king.keyframe_insert(data_path="location",frame=540)
     torso=bpy.data.objects.get("NOWHERE_KING_Torso")
     if torso:
         torso.rotation_mode='XYZ'
-        torso.rotation_euler=(math.radians(16),0,0); torso.keyframe_insert(data_path="rotation_euler",frame=445)
+        torso.rotation_euler=(math.radians(34),0,0); torso.keyframe_insert(data_path="rotation_euler",frame=445)
         torso.rotation_euler=(0,0,0); torso.keyframe_insert(data_path="rotation_euler",frame=520)
     head=bpy.data.objects.get("NOWHERE_KING_Head")
     if head:
         head.rotation_mode='XYZ'
-        head.rotation_euler=(math.radians(18),0,0); head.keyframe_insert(data_path="rotation_euler",frame=445)
+        head.rotation_euler=(math.radians(32),0,0); head.keyframe_insert(data_path="rotation_euler",frame=445)
         head.rotation_euler=(math.radians(-3),0,0); head.keyframe_insert(data_path="rotation_euler",frame=528)
     _pose_limb("NOWHERE_KING_Arm_-1",445,(math.radians(12),0,math.radians(-8)))
     _pose_limb("NOWHERE_KING_Arm_+1",445,(math.radians(12),0,math.radians(8)))
     _pose_limb("NOWHERE_KING_Arm_-1",530,(math.radians(-8),0,math.radians(-18)))
     _pose_limb("NOWHERE_KING_Arm_+1",530,(math.radians(-8),0,math.radians(18)))
-    _look_at(cameras["SHOT_07_KING_AWAKENS_CAM"],445,(-8.5,THRONE_Y-5.0,3.6),(0,THRONE_Y-19.5,1.6),66)
-    _look_at(cameras["SHOT_07_KING_AWAKENS_CAM"],540,(-6.2,THRONE_Y-8.0,4.0),(0,THRONE_Y-19.5,2.5),70)
+    _look_at(cameras["SHOT_07_KING_AWAKENS_CAM"],445,(-9.5,THRONE_Y-3.0,4.4),(0,THRONE_Y-19.5,2.2),58)
+    _look_at(cameras["SHOT_07_KING_AWAKENS_CAM"],540,(-7.4,THRONE_Y-6.0,4.35),(0,THRONE_Y-19.5,2.9),62)
 
     # Shot 8 — both Last Argument blades start physically inside the mantle
     # volume and are drawn outward by the King's arms.  Nothing pops on.
     sword_specs=(
-        ("AUTH_Firmament",-1,math.radians(-16)),
-        ("AUTH_NullGate",1,math.radians(16)),
+        ("AUTH_Firmament",-1,math.radians(-48)),
+        ("AUTH_NullGate",1,math.radians(48)),
     )
-    for name,side,final_z in sword_specs:
+    for name,side,final_y in sword_specs:
         sword=bpy.data.objects.get(name)
         if sword is None:
             continue
         sword.rotation_mode='XYZ'
-        sword.location=(side*.26,THRONE_Y-19.40,2.40)
-        sword.rotation_euler=(math.radians(90),0,side*math.radians(3))
+        sword.scale=(1.82,1.82,1.82)
+        sword.keyframe_insert(data_path="scale",frame=541)
+        sword.keyframe_insert(data_path="scale",frame=672)
+        # Grip begins beneath the mantle with the blade nearly vertical.
+        sword.location=(side*.18,THRONE_Y-19.34,2.32)
+        sword.rotation_euler=(0,side*math.radians(8),0)
         sword.keyframe_insert(data_path="location",frame=541)
         sword.keyframe_insert(data_path="rotation_euler",frame=541)
-        sword.location=(side*.48,THRONE_Y-19.56,2.52)
-        sword.rotation_euler=(math.radians(90),0,side*math.radians(9))
-        sword.keyframe_insert(data_path="location",frame=570)
-        sword.keyframe_insert(data_path="rotation_euler",frame=570)
-        sword.location=(side*1.15,THRONE_Y-19.76,2.62)
-        sword.rotation_euler=(math.radians(90),0,final_z)
-        sword.keyframe_insert(data_path="location",frame=622)
-        sword.keyframe_insert(data_path="rotation_euler",frame=622)
+        # Hand clears the cloak before the blade fans outward.
+        sword.location=(side*.52,THRONE_Y-19.42,2.48)
+        sword.rotation_euler=(0,side*math.radians(22),0)
+        sword.keyframe_insert(data_path="location",frame=578)
+        sword.keyframe_insert(data_path="rotation_euler",frame=578)
+        sword.location=(side*1.18,THRONE_Y-19.50,2.62)
+        sword.rotation_euler=(0,final_y,0)
+        sword.keyframe_insert(data_path="location",frame=624)
+        sword.keyframe_insert(data_path="rotation_euler",frame=624)
+        sword.location=(side*1.30,THRONE_Y-19.54,2.68)
+        sword.rotation_euler=(0,side*math.radians(52),0)
         sword.keyframe_insert(data_path="location",frame=672)
         sword.keyframe_insert(data_path="rotation_euler",frame=672)
     _pose_limb("NOWHERE_KING_Arm_-1",541,(math.radians(-8),0,math.radians(-18)))
@@ -1137,8 +1162,8 @@ def animate_scene(scene,cameras):
     _pose_limb("NOWHERE_KING_Arm_+1",622,(math.radians(-42),math.radians(10),math.radians(48)))
     _pose_limb("NOWHERE_KING_Arm_-1",672,(math.radians(-36),math.radians(-8),math.radians(-42)))
     _pose_limb("NOWHERE_KING_Arm_+1",672,(math.radians(-36),math.radians(8),math.radians(42)))
-    _look_at(cameras["SHOT_08_LAST_ARGUMENT_CAM"],541,(0,THRONE_Y-8.0,3.05),(0,THRONE_Y-19.5,2.0),74)
-    _look_at(cameras["SHOT_08_LAST_ARGUMENT_CAM"],672,(0,THRONE_Y-10.6,3.2),(0,THRONE_Y-19.5,2.55),80)
+    _look_at(cameras["SHOT_08_LAST_ARGUMENT_CAM"],541,(0,THRONE_Y-3.0,4.35),(0,THRONE_Y-19.5,2.8),58)
+    _look_at(cameras["SHOT_08_LAST_ARGUMENT_CAM"],672,(0,THRONE_Y-6.5,4.15),(0,THRONE_Y-19.5,2.9),62)
 
     # Coherent light transition: surface sun owns the upper-world shots;
     # Blackstone sources own the underworld shots.
