@@ -59,6 +59,24 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
             ?? throw new InvalidOperationException("DDE ecology received a donor clone without Room.");
         var band = UnderworldVanillaDungeonRoomPolicy.RiskFor(
             room, profile.DungeonId, donorRoomName, donorRoomIndex);
+        return RebindAtBand(
+            roomObject,
+            profile,
+            donorRoomName,
+            donorRoomIndex,
+            band);
+    }
+
+    internal static Stats RebindAtBand(
+        GameObject roomObject,
+        UnderworldVanillaDungeonReuseDefinition profile,
+        string donorRoomName,
+        int donorRoomIndex,
+        UnderworldVanillaDungeonRiskBand band)
+    {
+        if (!roomObject) throw new ArgumentNullException(nameof(roomObject));
+        var room = roomObject.GetComponent<Room>()
+            ?? throw new InvalidOperationException("DDE ecology received a donor clone without Room.");
 
         var creatures = EligibleCreatures(profile.Biome).ToArray();
         if (creatures.Length == 0)
