@@ -344,7 +344,7 @@ Required donor set:
 
 Record a donor census artifact for each family.
 
-**Do not promote a dungeon whose donor census is incomplete.**
+**A failed or incomplete donor census is a runtime defect and blocks acceptance for that family.**
 
 ---
 
@@ -367,7 +367,7 @@ Live check:
 Generate both the vanilla donor and the Underworld derivative in the same test world/session and
 compare them directly.
 
-**Any mutation of vanilla content blocks promotion.**
+**Any mutation of vanilla content is a release-blocking defect.**
 
 ---
 
@@ -554,7 +554,7 @@ Required:
 - each location uses exactly its owning custom Underworld biome flag;
 - no Surface worldgen registration;
 - no cross-Underworld-biome leakage;
-- no location generated while status is Planned;
+- every ordinary location row corresponds to a RuntimeReady catalog family; no hidden non-admitted family may leak into worldgen;
 - expected quantity and minimum spacing enforced;
 - entrances place properly on Underworld terrain;
 - entrance exterior footprint does not float/bury excessively;
@@ -716,8 +716,7 @@ Suggested exploration pressure:
 - bruiser/apex encounters guarding high-value dead ends;
 - fungal-resource abundance without turning rare progression into guaranteed loot.
 
-This should be the first donor promoted because its architecture is comparatively simple and makes
-an ideal validation chassis for the generic system.
+This remains the simplest validation chassis for the generic system because its architecture is comparatively simple.
 
 ---
 
@@ -818,8 +817,7 @@ deepening, diseased subterranean network.
 
 Carrion Amber should be tied to deeper/high-risk branches, not routine tunnel clutter.
 
-Because Winding Tunnels are newer donor content, this family should remain last in promotion order
-until all donor identities and generation behavior are verified against the installed game.
+Because Winding Tunnels are newer donor content, give this family the most conservative live validation pass and verify its donor identities and generation behavior carefully against the installed game.
 
 ---
 
@@ -850,7 +848,7 @@ rather than restoring five parallel bespoke implementations.
 
 ---
 
-# 10. Logging and diagnostics required before promotion
+# 10. Logging and diagnostics required for acceptance
 
 Each generated family should log enough information to diagnose failures without decompiling the
 world save.
@@ -886,7 +884,7 @@ These diagnostics are part of the admission evidence, not optional debug noise.
 
 ---
 
-# 11. Evidence package for each promoted dungeon
+# 11. Evidence package for each runtime-admitted dungeon
 
 Each dungeon should have a validation file under `docs/validation/` containing:
 
@@ -904,7 +902,7 @@ Each dungeon should have a validation file under `docs/validation/` containing:
 12. save/reload evidence;
 13. multiplayer evidence;
 14. economy sample;
-15. final promotion commit.
+15. final acceptance/fix commit associated with the completed evidence package.
 
 The claim vocabulary remains:
 
@@ -912,7 +910,8 @@ The claim vocabulary remains:
 - **source verified** = static/read-back checks pass;
 - **compiled** = current runtime builds against the current game assemblies;
 - **runtime verified** = installed Valheim test succeeds;
-- **promoted / RuntimeReady** = all required gates for that family have passed.
+- **RuntimeReady** = the family is enabled in source/runtime admission;
+- **runtime accepted** = the installed-game evidence package for that family has passed all required gates.
 
 Do not collapse those terms.
 
@@ -922,7 +921,7 @@ Do not collapse those terms.
 
 The Deep Dungeon Expansion program is complete only when all of the following are true:
 
-- all five ordinary Underworld dungeons are individually RuntimeReady;
+- all five ordinary Underworld dungeons remain RuntimeReady together and pass their installed-game acceptance gates;
 - each remains clearly recognizable as its vanilla donor family;
 - all donor rooms are at least 1.5x linear size;
 - each generator targets at least 3.5x live donor room count;
