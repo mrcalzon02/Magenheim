@@ -80,6 +80,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Underworld instance architecture validation failed.' }
     & python "$PSScriptRoot/tools/verify-deep-dungeon-expansion-gate0.py"
     if ($LASTEXITCODE -ne 0) { throw 'Deep Dungeon Expansion DDE-00 architecture freeze failed.' }
+    & python "$PSScriptRoot/tools/verify-deep-dungeon-expansion-source-prerequisites.py"
+    if ($LASTEXITCODE -ne 0) { throw 'Deep Dungeon Expansion DDE-02..10 source prerequisites failed.' }
     & python "$PSScriptRoot/tools/verify-generated-freshness.py"
     if ($LASTEXITCODE -ne 0) { throw 'Generated assets are out of date with the generators that own them.' }
     # Compile both runtime and its Core dependency before the expensive Blender gates.
