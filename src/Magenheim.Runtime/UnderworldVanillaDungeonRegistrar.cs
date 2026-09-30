@@ -135,6 +135,7 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
 
                 var auditMetadata = clone.AddComponent<UnderworldVanillaDungeonRoomAuditMetadata>();
                 auditMetadata.DonorRoomName = sourceName;
+                auditMetadata.DonorRoomIndex = index;
                 auditMetadata.DonorRoomSize = room.m_size;
                 auditMetadata.DonorConnectionLocalPositions = room.GetConnections()
                     .Where(value => value)
