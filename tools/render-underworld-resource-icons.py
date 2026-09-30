@@ -87,13 +87,26 @@ def render(entry, out_path):
 
 
 def main():
-    catalog = json.loads((MODELS / 'catalog.json').read_text())
-    resources = [e for e in catalog if e['id'].startswith(('underworld-resource-', 'underworld-refined-'))]
+    # Icons are rendered directly from the authoritative editable Blender sources. Do not depend
+    # on catalog.json here: targeted one-off generation intentionally validates a family without
+    # rewriting the whole-library catalog, so newly authored material items may exist before the
+    # next full production catalog refresh.
+    source_dir = MODELS / 'source'
+    source_files = sorted(list(source_dir.glob('underworld-resource-*.blend')) +
+                          list(source_dir.glob('underworld-refined-*.blend')))
+    resources = [
+        {'id': path.stem, 'source': str(path.relative_to(MODELS)).replace('\\', '/')}
+        for path in source_files
+    ]
     if not resources:
-        raise SystemExit('No authored Underworld raw/refined material models in the catalog.')
+        raise SystemExit('No authored Underworld raw/refined material Blender sources found.')
     requested = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
     if requested:
-        resources = [e for e in resources if e['id'] in requested]
+        wanted = set(requested)
+        resources = [e for e in resources if e['id'] in wanted]
+        missing = sorted(wanted - {e['id'] for e in resources})
+        if missing:
+            raise SystemExit('Requested Underworld material source(s) missing: ' + ', '.join(missing))
     for entry in sorted(resources, key=lambda e: e['id']):
         render(entry, OUT / f"{entry['id']}.icon.png")
         print('RENDERED', entry['id'], flush=True)
