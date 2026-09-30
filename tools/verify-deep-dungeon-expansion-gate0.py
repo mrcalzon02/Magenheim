@@ -49,12 +49,14 @@ require("AllowMagenheimAuthoredRoomInjection: false" in reuse,
 for donor in ("DG_ForestCrypt","DG_SunkenCrypt","DG_DvergrTown","DG_Cave","DG_Hole"):
     require(donor in reuse,"DDE-00 donor mapping disappeared: "+donor)
 
-# Ordinary dungeons must remain fail-closed until their individual promotion gate is cleared.
+# All five ordinary expanded-vanilla families are production-admitted together.
 for name in ("FungalForest","BlackwaterDeep","SulfurousWastes","FrozenCaverns","GreatDecay"):
-    match=re.search(rf'public static UnderworldDungeonDefinition {name} .*?= Planned\(',catalog,re.DOTALL)
-    require(match is not None,"DDE-00 ordinary dungeon is not Planned before per-family promotion: "+name)
+    match=re.search(rf'public static UnderworldDungeonDefinition {name} .*?= Ready\(',catalog,re.DOTALL)
+    require(match is not None,"DDE-00 ordinary dungeon is not RuntimeReady: "+name)
 require("DeepFracture" in catalog and "Status: UnderworldDungeonStatus.RuntimeReady" in catalog,
         "DDE-00 Deep Fracture lost RuntimeReady status")
+require("All.Any(value => value.Status != UnderworldDungeonStatus.RuntimeReady)" in catalog,
+        "DDE-00 catalog no longer enforces all-six runtime admission")
 
 # Vanilla assets are cloned into private identities; they are never modified in place.
 for token in (
@@ -95,25 +97,25 @@ require("ordinary vanilla-reuse dungeons must not be rebuilt/promoted" in readin
 require("DeepFracture" in deep_fracture,
         "DDE-00 Deep Fracture runtime architecture source is missing")
 
-# Planned candidate admission is a developer-only exception, disabled by default and peer-fingerprinted.
-require('"EnablePlannedCandidateWorldgen",\n            false' in candidate,
-        "DDE-00 candidate worldgen is not disabled by default")
-require("CandidateDungeon" in candidate and '"fungal_forest"' in candidate,
-        "DDE-00 Fungal-first candidate default is missing")
-require("definition.Status == UnderworldDungeonStatus.RuntimeReady || IsCandidate(definition)" in candidate,
-        "DDE-00 candidate policy no longer limits admission to RuntimeReady or one explicit candidate")
+# One-at-a-time candidate admission is retired. Legacy config keys are inert compatibility only.
+require("Compatibility shell for the retired one-at-a-time DDE candidate switch" in candidate,
+        "DDE-00 retired candidate compatibility shell is missing")
+require("internal static bool Enabled => false" in candidate,
+        "DDE-00 retired candidate switch can still become active")
+require("definition.Status == UnderworldDungeonStatus.RuntimeReady" in candidate,
+        "DDE-00 worldgen admission is not RuntimeReady-only")
 require("UnderworldVanillaDungeonCandidatePolicy.Fingerprint" in plugin,
-        "DDE-00 candidate policy is not included in gameplay peer authority")
+        "DDE-00 retired runtime-policy fingerprint is not included in gameplay peer authority")
 require('builder.Append("runtime-policy|")' in gameplay_fingerprint,
-        "DDE-00 gameplay authority no longer fingerprints runtime candidate policy")
+        "DDE-00 gameplay authority no longer fingerprints runtime policy")
 require("runtimePolicyFingerprint" in synchronizer,
-        "DDE-00 definition authority synchronizer lost runtime candidate policy")
-require("IsWorldgenAdmitted(dungeon)" in bridge and "without candidate admission" in bridge,
-        "DDE-00 detached worldgen catalog does not preserve candidate-aware Planned rejection")
-require("IsWorldgenAdmitted(dungeon)" in placement and "without candidate admission" in placement,
-        "DDE-00 native placement audit does not preserve candidate-aware Planned rejection")
-require("ReadyProfiles()" not in runtime,
-        "DDE-00 generic registrar still contains the retired ReadyProfiles execution seam")
+        "DDE-00 definition authority synchronizer lost runtime policy")
+require("IsWorldgenAdmitted(dungeon)" in bridge,
+        "DDE-00 detached worldgen catalog does not use RuntimeReady admission")
+require("IsWorldgenAdmitted(dungeon)" in placement,
+        "DDE-00 native placement audit does not use RuntimeReady admission")
+require("active.Length != UnderworldVanillaDungeonReuseCatalog.All.Count" in runtime,
+        "DDE-00 registrar does not require all five ordinary donor families together")
 
 if fail:
     print("FAIL Deep Dungeon Expansion DDE-00 architecture freeze")
@@ -123,8 +125,8 @@ if fail:
 
 print("PASS Deep Dungeon Expansion DDE-00 architecture freeze")
 print(" - Deep Fracture remains separate and runtime-ready")
-print(" - five ordinary families remain Planned and vanilla-derived")
+print(" - five ordinary expanded-vanilla families are RuntimeReady together")
 print(" - >=1.5x room scale and >=3.5x donor room-count floors are locked")
 print(" - vanilla assets are cloned into private Magenheim identities")
 print(" - retired bespoke ordinary dungeon bootstrap/production paths are inactive")
-print(" - Planned candidate admission is disabled by default, single-family, and multiplayer-fingerprinted")
+print(" - one-at-a-time candidate admission is retired; legacy config is inert")
