@@ -151,7 +151,7 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
                     Mathf.CeilToInt(room.m_size.y * scale),
                     Mathf.CeilToInt(room.m_size.z * scale));
 
-                population += RebindPopulation(clone, profile, index);
+                population += RebindPopulation(clone, profile, sourceName, index);
 
                 var custom = new CustomRoom(
                     clone,
@@ -179,10 +179,15 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         _log.LogInfo(
             $"DDE rooms {profile.Biome}: donor={profile.DonorDisplayName} theme={profile.DonorThemeName} " +
             $"enabled-donor-rooms={sourceRooms.Length} clones={names.Count} scale={profile.LinearRoomScale:0.##}x " +
-            $"creature-spawners={population.CreatureSpawners} spawn-areas={population.SpawnAreas} " +
-            $"containers={population.Containers} pickables={population.Pickables} " +
-            $"mineables={population.Mineables} destructible-drops={population.DestructibleDrops} " +
-            $"vegvisirs-removed={population.VegvisirsRemoved} runestones-removed={population.RunestonesRemoved}.");
+            $"creature-spawners={population.Ecology.ActiveCreatureSpawners}/{population.Ecology.CreatureSpawnerSockets} " +
+            $"spawn-areas={population.Ecology.ActiveSpawnAreas}/{population.Ecology.SpawnAreaSockets} " +
+            $"roles=swarm:{population.Ecology.SwarmBindings},skirmisher:{population.Ecology.SkirmisherBindings}," +
+            $"hunter:{population.Ecology.HunterBindings},bruiser:{population.Ecology.BruiserBindings}," +
+            $"heavy:{population.Ecology.HeavyBindings},apex:{population.Ecology.ApexBindings} " +
+            $"containers={population.Rewards.Containers} pickables={population.Rewards.Pickables} " +
+            $"bottleneck-pickables={population.Rewards.BottleneckPickables} " +
+            $"mineables={population.Rewards.Mineables} destructible-drops={population.Rewards.DestructibleDrops} " +
+            $"lore-markers-removed={population.Rewards.LoreMarkersRemoved}.");
     }
 
     private void RegisterLocations()
@@ -360,145 +365,15 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
     private static PopulationRebindStats RebindPopulation(
         GameObject room,
         UnderworldVanillaDungeonReuseDefinition profile,
+        string donorRoomName,
         int roomIndex)
     {
-        var creatures = Creatures(profile.Biome);
-        var resources = Resources(profile.Biome);
-        if (creatures.Length == 0 || resources.Length == 0)
-            throw new InvalidOperationException(
-                $"Biome '{profile.Biome}' has no registered dungeon ecology.");
-
-        var spawners = room.GetComponentsInChildren<CreatureSpawner>(true);
-        for (var index = 0; index < spawners.Length; index++)
-        {
-            var prefab = PrefabManager.Instance.GetPrefab(
-                creatures[(roomIndex + index) % creatures.Length].Prefab)
-                ?? throw new InvalidOperationException(
-                    $"Underworld creature prefab '{creatures[(roomIndex + index) % creatures.Length].Prefab}' is unavailable.");
-            spawners[index].m_creaturePrefab = prefab;
-            spawners[index].m_requiredGlobalKey = string.Empty;
-            spawners[index].m_blockingGlobalKey = string.Empty;
-        }
-
-        var areas = room.GetComponentsInChildren<SpawnArea>(true);
-        for (var areaIndex = 0; areaIndex < areas.Length; areaIndex++)
-        {
-            var area = areas[areaIndex];
-            area.m_prefabs.Clear();
-            var count = Math.Min(4, creatures.Length);
-            for (var index = 0; index < count; index++)
-            {
-                var entry = creatures[(roomIndex + areaIndex + index) % creatures.Length];
-                var prefab = PrefabManager.Instance.GetPrefab(entry.Prefab)
-                    ?? throw new InvalidOperationException(
-                        $"Underworld creature prefab '{entry.Prefab}' is unavailable.");
-                area.m_prefabs.Add(new SpawnArea.SpawnData
-                {
-                    m_prefab = prefab,
-                    m_weight = 1f,
-                    m_minLevel = 1,
-                    m_maxLevel = 2,
-                });
-            }
-            area.m_maxNear = Math.Min(area.m_maxNear, 4);
-            area.m_maxTotal = Math.Min(area.m_maxTotal, 10);
-        }
-
-        var containers = room.GetComponentsInChildren<Container>(true);
-        for (var index = 0; index < containers.Length; index++)
-            containers[index].m_defaultItems = ResourceTable(resources, roomIndex + index);
-
-        var pickables = room.GetComponentsInChildren<Pickable>(true);
-        for (var index = 0; index < pickables.Length; index++)
-        {
-            var resource = resources[(roomIndex + index) % resources.Length];
-            var prefab = PrefabManager.Instance.GetPrefab(resource.Prefab)
-                ?? throw new InvalidOperationException(
-                    $"Underworld resource item '{resource.Prefab}' is unavailable.");
-            pickables[index].m_itemPrefab = prefab;
-            pickables[index].m_amount = Math.Max(1, pickables[index].m_amount);
-            pickables[index].m_overrideName = resource.Name;
-        }
-
-        // Donor mineables/destructibles must not smuggle Surface progression drops back in after
-        // the obvious chests/pickables have been replaced.
-        foreach (var mine in room.GetComponentsInChildren<MineRock>(true))
-            mine.m_dropItems = ResourceTable(resources, roomIndex + 11);
-        foreach (var mine in room.GetComponentsInChildren<MineRock5>(true))
-            mine.m_dropItems = ResourceTable(resources, roomIndex + 17);
-        foreach (var destroyed in room.GetComponentsInChildren<DropOnDestroyed>(true))
-            destroyed.m_dropWhenDestroyed = ResourceTable(resources, roomIndex + 23);
-
-        // Keep the donor stonework/props, but remove Surface progression/lore interactions.
-        var vegvisirs = room.GetComponentsInChildren<Vegvisir>(true);
-        foreach (var vegvisir in vegvisirs)
-            UnityEngine.Object.DestroyImmediate(vegvisir);
-        var runestones = room.GetComponentsInChildren<Runestone>(true);
-        foreach (var runestone in runestones)
-            UnityEngine.Object.DestroyImmediate(runestone);
-
-        return new PopulationRebindStats(
-            spawners.Length,
-            areas.Length,
-            containers.Length,
-            pickables.Length,
-            room.GetComponentsInChildren<MineRock>(true).Length +
-                room.GetComponentsInChildren<MineRock5>(true).Length,
-            room.GetComponentsInChildren<DropOnDestroyed>(true).Length,
-            vegvisirs.Length,
-            runestones.Length);
+        var ecology = UnderworldVanillaDungeonEcologyPolicy.Rebind(
+            room, profile, donorRoomName, roomIndex);
+        var rewards = UnderworldVanillaDungeonRewardPolicy.Rebind(
+            room, profile, donorRoomName, roomIndex);
+        return new PopulationRebindStats(ecology, rewards);
     }
-
-    private static DropTable ResourceTable(
-        UnderworldResourceDefinition[] resources,
-        int offset)
-    {
-        var table = new DropTable
-        {
-            m_dropMin = 1,
-            m_dropMax = 3,
-            m_dropChance = 1f,
-            m_oneOfEach = false,
-        };
-        for (var index = 0; index < resources.Length; index++)
-        {
-            var resource = resources[(offset + index) % resources.Length];
-            var prefab = PrefabManager.Instance.GetPrefab(resource.Prefab)
-                ?? throw new InvalidOperationException(
-                    $"Underworld resource item '{resource.Prefab}' is unavailable.");
-            table.m_drops.Add(new DropTable.DropData
-            {
-                m_item = prefab,
-                m_stackMin = 1,
-                m_stackMax = index == resources.Length - 1 ? 1 : 3,
-                m_weight = index == resources.Length - 1 ? .35f : 1f,
-                m_dontScale = false,
-            });
-        }
-        return table;
-    }
-
-    private static UnderworldCreaturePrototypes.Entry[] Creatures(UnderworldTerrainBiome biome)
-    {
-        var label = BiomeLabel(biome);
-        return UnderworldCreaturePrototypes.All
-            .Where(entry => string.Equals(entry.Biome, label, StringComparison.Ordinal))
-            .ToArray();
-    }
-
-    private static UnderworldResourceDefinition[] Resources(UnderworldTerrainBiome biome) =>
-        UnderworldResourceCatalog.All.Where(entry => entry.Biome == biome).ToArray();
-
-    private static string BiomeLabel(UnderworldTerrainBiome biome) => biome switch
-    {
-        UnderworldTerrainBiome.FungalForest => "Fungal Forest",
-        UnderworldTerrainBiome.BlackwaterDeep => "Blackwater Deep",
-        UnderworldTerrainBiome.SulfurousWastes => "Sulfurous Wastes",
-        UnderworldTerrainBiome.FrozenCaverns => "Frozen Caverns",
-        UnderworldTerrainBiome.FractureZones => "Fracture Zones",
-        UnderworldTerrainBiome.GreatDecay => "Great Decay",
-        _ => throw new ArgumentOutOfRangeException(nameof(biome), biome, null),
-    };
 
     private static UnderworldDungeonDefinition Definition(
         UnderworldVanillaDungeonReuseDefinition profile) =>
@@ -516,29 +391,18 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         Safe(profile.Biome.ToString()) + "_" + index.ToString("000") + "_" + Safe(donorName);
 
     private readonly record struct PopulationRebindStats(
-        int CreatureSpawners,
-        int SpawnAreas,
-        int Containers,
-        int Pickables,
-        int Mineables,
-        int DestructibleDrops,
-        int VegvisirsRemoved,
-        int RunestonesRemoved)
+        UnderworldVanillaDungeonEcologyPolicy.Stats Ecology,
+        UnderworldVanillaDungeonRewardPolicy.Stats Rewards)
     {
-        internal static PopulationRebindStats Empty => new(0, 0, 0, 0, 0, 0, 0, 0);
+        internal static PopulationRebindStats Empty =>
+            new(
+                UnderworldVanillaDungeonEcologyPolicy.Stats.Empty,
+                UnderworldVanillaDungeonRewardPolicy.Stats.Empty);
 
         public static PopulationRebindStats operator +(
             PopulationRebindStats left,
             PopulationRebindStats right) =>
-            new(
-                left.CreatureSpawners + right.CreatureSpawners,
-                left.SpawnAreas + right.SpawnAreas,
-                left.Containers + right.Containers,
-                left.Pickables + right.Pickables,
-                left.Mineables + right.Mineables,
-                left.DestructibleDrops + right.DestructibleDrops,
-                left.VegvisirsRemoved + right.VegvisirsRemoved,
-                left.RunestonesRemoved + right.RunestonesRemoved);
+            new(left.Ecology + right.Ecology, left.Rewards + right.Rewards);
     }
 
     private static string Safe(string value) =>
