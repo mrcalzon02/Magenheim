@@ -247,7 +247,33 @@ The following foundation already exists in source.
 - donor Vegvisir/runestone removal;
 - cloned location registration in the owning Underworld biome.
 
-### 6.3 Production pipeline cleanup
+### 6.3 Biome assimilation pass
+
+`UnderworldVanillaDungeonBiomeDressingPolicy` now assimilates every enlarged donor room into its
+owning Underworld biome without replacing the donor room grammar:
+
+- private donor architecture receives a biome-specific material/palette pass;
+- authored/stripped biome props are placed around room edges with connection clearances;
+- decorative props are visual-only and have gameplay collision stripped;
+- local biome lights reinforce Fungal, Blackwater, Sulfur, Frozen and Great Decay identity;
+- room-local atmosphere volumes use Sporefall, Deep Fog, Ashfall, Whiteout or Black Bloom as
+  appropriate;
+- deep Sulfur rooms may contain bounded geothermal pressure pockets;
+- cloned dungeon entrances receive the same biome-specific material/prop/light treatment.
+
+This is additive dressing of the vanilla-derived architecture, not injection of the retired bespoke
+ordinary room kits.
+
+The creature identity layer also now supplies first-pass species mechanics beyond donor behavior:
+Puffback reactive spore burst, Abyss Shellback shell armor with a pickaxe counter, Vent Spitter
+line-of-sight thermal retaliation, rooted Carrion Bloom behavior, and rooted Corpse Orchard Rotling
+propagation.
+
+Final custom anatomy/silhouette work and additional species-specific behaviors remain open for much
+of the ordinary-biome creature roster; donor rigs and animation controllers are still intentionally
+used as the runtime chassis.
+
+### 6.4 Production pipeline cleanup
 
 The ordinary bespoke dungeon rebuild/promotion/review path has been removed from the active
 Underworld production forge.
@@ -255,7 +281,7 @@ Underworld production forge.
 The old files remain preserved, but future production runs should not spend Blender capacity
 regenerating those five retired bespoke room families.
 
-### 6.4 Runtime admission status
+### 6.5 Runtime admission status
 
 All five ordinary expanded-vanilla dungeon definitions and Deep Fracture are now:
 
