@@ -84,19 +84,25 @@ def rock(name,pos,scale,mat,collision=True,seed=0):
     bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
     return finish(o,name,mat,collision,.03,.75)
 
-def ray_boxes(prefix,center,r1,r2,height,width,mat,count=16):
+def ray_boxes_floor(prefix,center,r1,r2,height,width,mat,count=16):
     cx,cy,cz=center
     for i in range(count):
         a=i*math.tau/count
         r=(r1+r2)/2
         x=cx+math.cos(a)*r; y=cy; z=cz+math.sin(a)*r
-        box(f"{prefix}_Ray_{i+1}",(x,y,z),(width,height,r2-r1),mat,rot=(0,-math.degrees(a)+90,0),collision=False,bevel=.01)
+        box(f"{prefix}_Ray_{i+1}",(x,y,z),(width,height,r2-r1),mat,rot=(0,-a+math.pi/2,0),collision=False,bevel=.01)
 
 def add_sun(prefix,center,mat,scale=1.0):
+    # Royal sun is vertical in the X/Y plane with only a thin Z depth.
     cx,cy,cz=center
     torus(f"{prefix}_Ring",(cx,cy,cz),.64*scale,.075*scale,mat,False)
-    cyl(f"{prefix}_Disc",(cx,cy,cz),.43*scale,.06*scale,mat,24,False,.008)
-    ray_boxes(prefix,(cx,cy,cz),.80*scale,1.15*scale,.06*scale,.07*scale,mat,16)
+    cone(f"{prefix}_Disc",(cx,cy,cz),.43*scale,.43*scale,.06*scale,mat,24,False,rot=(math.pi/2,0,0),bevel=.008)
+    for i in range(16):
+        a=i*math.tau/16
+        r=(.80+1.15)*.5*scale
+        x=cx+math.cos(a)*r; y=cy+math.sin(a)*r
+        box(f"{prefix}_Ray_{i+1}",(x,y,cz),(.07*scale,.35*scale,.06*scale),mat,
+            rot=(0,0,a-math.pi/2),collision=False,bevel=.01)
 
 def add_finial(prefix,pos,mat,scale=1.0):
     x,y,z=pos
@@ -105,7 +111,7 @@ def add_finial(prefix,pos,mat,scale=1.0):
 
 def build_throne(m,prefix="Throne",origin=(0,0,0),scale=1.0):
     ox,oy,oz=origin
-    box(prefix+"_Plinth",(ox,oy+.25*scale,oz),(5.8*scale,.5*scale,4.1*scale),m["void"],True if False else (0,0,0),True,.08*scale)
+    box(prefix+"_Plinth",(ox,oy+.25*scale,oz),(5.8*scale,.5*scale,4.1*scale),m["void"],collision=True,bevel=.08*scale)
     box(prefix+"_Step",(ox,oy+.62*scale,oz-1.35*scale),(4.8*scale,.28*scale,1.1*scale),m["stone"],collision=True,bevel=.05*scale)
     box(prefix+"_Seat",(ox,oy+1.28*scale,oz+.10*scale),(2.6*scale,.44*scale,2.1*scale),m["stone"],collision=True,bevel=.08*scale)
     box(prefix+"_Back",(ox,oy+4.25*scale,oz+.95*scale),(3.1*scale,6.2*scale,.72*scale),m["void"],collision=True,bevel=.10*scale)
@@ -209,7 +215,7 @@ def build_floor(m,prefix="Floor",origin=(0,0,0),scale=1.0):
     ox,oy,oz=origin
     box(prefix+"_Slab",(ox,oy,oz),(5.0*scale,.34*scale,5.0*scale),m["stone"],collision=True,bevel=.04)
     cyl(prefix+"_SunDisc",(ox,oy+.20*scale,oz),.56*scale,.055*scale,m["bronze"],24,False,.008)
-    ray_boxes(prefix+"_Sun",(ox,oy+.22*scale,oz),.78*scale,1.55*scale,.06*scale,.08*scale,m["bronze"],12)
+    ray_boxes_floor(prefix+"_Sun",(ox,oy+.22*scale,oz),.78*scale,1.55*scale,.06*scale,.08*scale,m["bronze"],12)
 
 def build_spire(m,prefix="Spire",origin=(0,0,0),scale=1.0):
     ox,oy,oz=origin
@@ -251,7 +257,7 @@ def build_assembled(m):
     for i in range(8):
         a=i*math.tau/8
         x=math.sin(a)*7.4; z=22+math.cos(a)*3.2
-        box(f"Rune_{i+1}",(x,2.34,z),(.32,.08,1.45),m["bronze"],rot=(0,-math.degrees(a),0),collision=True,bevel=.018)
+        box(f"Rune_{i+1}",(x,2.34,z),(.32,.08,1.45),m["bronze"],rot=(0,-a,0),collision=True,bevel=.018)
     # Side processional terraces and strong parapet silhouette.
     for side in (-1,1):
         box(f"Terrace_{side}",(side*20,.20,3.0),(8.0,.55,34.0),m["void"],collision=True,bevel=.07)
