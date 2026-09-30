@@ -241,10 +241,11 @@
     },
     {
       "logical": "nowhere_king_chassis",
-      "required": true,
+      "required": false,
       "candidates": [
         "DvergerMage"
-      ]
+      ],
+      "note": "Dedicated-server runtime exposes DvergerMage but its renderer mesh is non-readable; keep optional until a client/local donor extraction or owned King body is admitted."
     }
   ]
 }
