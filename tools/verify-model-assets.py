@@ -67,8 +67,9 @@ for file in sorted((assets/'runtime').glob('*.model.json')):
     assert set(sample)<=bone_set,(id,'creature action animates unknown bone',action.get('name'))
     for bone_name,pose in sample.items():
      assert isinstance(pose,dict),(id,'invalid creature action pose',action.get('name'),bone_name)
-     quat=pose.get('rotation');scale=pose.get('scale')
+     quat=pose.get('rotation');position=pose.get('position');scale=pose.get('scale')
      assert isinstance(quat,list) and len(quat)==4 and all(math.isfinite(x) for x in quat),(id,'invalid creature action quaternion',action.get('name'),bone_name)
+     assert isinstance(position,list) and len(position)==3 and all(math.isfinite(x) for x in position),(id,'invalid creature action position',action.get('name'),bone_name)
      assert isinstance(scale,list) and len(scale)==3 and all(math.isfinite(x) and x>0 for x in scale),(id,'invalid creature action scale',action.get('name'),bone_name)
  triangles=0;materials=set();names=set()
  for part in doc['parts']:
