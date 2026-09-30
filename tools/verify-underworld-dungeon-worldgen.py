@@ -4,63 +4,57 @@ from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
 RUNTIME=ROOT/"src/Magenheim.Runtime"
-
-families={
-    "Deep Fracture":(
-        "UnderworldDeepFractureLocationRegistrar.cs",
-        "UnderworldDungeonCatalog.DeepFracture",
-        "FractureZones"),
-    "Rootwarren":(
-        "RootwarrenLocationRegistrar.cs",
-        "UnderworldDungeonCatalog.FungalForest",
-        "FungalForest"),
-    "Drowned Vaults":(
-        "DrownedVaultLocationRegistrar.cs",
-        "UnderworldDungeonCatalog.BlackwaterDeep",
-        "BlackwaterDeep"),
-    "Cinderworks":(
-        "CinderworksLocationRegistrar.cs",
-        "UnderworldDungeonCatalog.SulfurousWastes",
-        "SulfurousWastes"),
-    "Rime Sepulcher":(
-        "RimeSepulcherLocationRegistrar.cs",
-        "UnderworldDungeonCatalog.FrozenCaverns",
-        "FrozenCaverns"),
-    "Carrion Catacombs":(
-        "CarrionCatacombsLocationRegistrar.cs",
-        "UnderworldDungeonCatalog.GreatDecay",
-        "GreatDecay"),
-}
-
+CORE=ROOT/"src/Magenheim.Core"/"Underworld"
 fail=[]
 
-for name,(filename,catalog,biome) in families.items():
-    path=RUNTIME/filename
-    if not path.is_file():
-        fail.append(name+": missing "+filename)
-        continue
-    text=path.read_text()
-    for token,label in (
-        (catalog,"catalog binding"),
-        ("UnderworldTerrainRuntime.ToNativeBiome","native biome mapping"),
-        ("Quantity","quantity"),
-        ("MinDistanceFromSimilar","same-family spacing"),
-        ("ZoneManager.Instance.AddCustomLocation","native/Jotunn location admission"),
-    ):
-        if token not in text:
-            fail.append(name+": missing "+label)
-    if name!="Deep Fracture" and "UnderworldDungeonStatus.RuntimeReady" not in text:
-        fail.append(name+": missing RuntimeReady registration gate")
-    if biome not in text and name=="Deep Fracture":
-        # Deep Fracture logs/identity may use the definition rather than spelling the enum.
-        pass
+# Deep Fracture is the sole bespoke architecture lane.
+deep=(RUNTIME/"UnderworldDeepFractureLocationRegistrar.cs").read_text()
+for token,label in (
+    ("UnderworldDungeonCatalog.DeepFracture","Deep Fracture catalog binding"),
+    ("UnderworldTerrainRuntime.ToNativeBiome","Deep Fracture native biome mapping"),
+    ("Quantity","Deep Fracture quantity"),
+    ("MinDistanceFromSimilar","Deep Fracture same-family spacing"),
+    ("ZoneManager.Instance.AddCustomLocation","Deep Fracture native/Jotunn admission"),
+):
+    if token not in deep:
+        fail.append("Deep Fracture: missing "+label)
+
+# The five ordinary families share one generic vanilla-donor runtime.
+reuse=(CORE/"UnderworldVanillaDungeonReuseCatalog.cs").read_text()
+registrar=(RUNTIME/"UnderworldVanillaDungeonRegistrar.cs").read_text()
+for donor in ("DG_ForestCrypt","DG_SunkenCrypt","DG_DvergrTown","DG_Cave","DG_Hole"):
+    if donor not in reuse:
+        fail.append("ordinary reuse catalog: missing donor "+donor)
+for token,label in (
+    ("ActiveProfiles()","candidate/RuntimeReady active profile boundary"),
+    ("CreateClonedLocation","owned donor entrance clone"),
+    ("RegisterDungeonTheme","private room theme"),
+    ("generator.m_themes = Room.Theme.None","vanilla room-theme isolation"),
+    ("UnderworldTerrainRuntime.ToNativeBiome(profile.Biome)","native owning-biome mapping"),
+    ("zone.m_quantity = definition.Quantity","catalog quantity binding"),
+    ("zone.m_minDistanceFromSimilar","same-family spacing binding"),
+):
+    if token not in registrar:
+        fail.append("ordinary reuse registrar: missing "+label)
+
+candidate=(RUNTIME/"UnderworldVanillaDungeonCandidatePolicy.cs").read_text()
+for token,label in (
+    ('"EnablePlannedCandidateWorldgen",\n            false',"candidate disabled-by-default contract"),
+    ("IsWorldgenAdmitted","single candidate worldgen admission predicate"),
+    ("definition.Status == UnderworldDungeonStatus.RuntimeReady || IsCandidate(definition)",
+     "RuntimeReady-or-explicit-candidate restriction"),
+):
+    if token not in candidate:
+        fail.append("candidate policy: missing "+label)
 
 bridge=(RUNTIME/"UnderworldWorldgenContentBridge.cs").read_text()
 for token,label in (
     ("row.m_biome != expectedBiome","exact owning-biome mask enforcement"),
-    ("is Planned but has","Planned dungeon row rejection"),
+    ("is Planned but has","non-candidate Planned dungeon row rejection"),
+    ("without candidate admission","candidate-scoped Planned rejection diagnostic"),
     ("exactly one is required","duplicate detached dungeon-row rejection"),
-    ("missingDungeons","runtime-ready row presence gate"),
+    ("missingDungeons","admitted row presence gate"),
+    ("IsWorldgenAdmitted(dungeon)","candidate-aware catalog admission"),
 ):
     if token not in bridge:
         fail.append("worldgen bridge: missing "+label)
@@ -74,6 +68,8 @@ for token,label in (
     ("instances.Length != dungeon.Quantity","target quantity enforcement"),
     ("MinDistanceFromSimilarMeters","same-family spacing enforcement"),
     ("ZNet.instance.IsServer()","server-authoritative reconciliation"),
+    ("IsWorldgenAdmitted(dungeon)","candidate-aware native placement audit"),
+    ("without candidate admission","non-candidate Planned placement rejection"),
 ):
     if token not in placement:
         fail.append("placement runtime: missing "+label)
@@ -93,9 +89,8 @@ for token in (
     "FractureZonesBiome = (Heightmap.Biome)16384",
     "GreatDecayBiome = (Heightmap.Biome)32768",
     "GetBiomeSector",
-    "GetBiomeArea",
 ):
-    if token not in terrain and token!="GetBiomeArea":
+    if token not in terrain:
         fail.append("terrain runtime: missing "+token)
 
 cache=(RUNTIME/"UnderworldWorldGeneratorCacheIsolation.cs").read_text()
@@ -105,10 +100,13 @@ if "GetBiomeArea" not in cache or "TryGetBiomeArea" not in cache:
 dev=(RUNTIME/"UnderworldDevCommands.cs").read_text()
 if 'case "dungeons"' not in dev or "UnderworldDungeonPlacementRuntime.LastReport" not in dev:
     fail.append("dev commands: actual dungeon placement report is unavailable")
+if 'case "donors"' not in dev or "UnderworldVanillaDungeonDonorCensus.CaptureAll" not in dev:
+    fail.append("dev commands: DDE live donor census is unavailable")
 
 if fail:
     raise SystemExit("FAIL Underworld dungeon worldgen contract: "+"; ".join(fail))
 
 print(
-    "PASS Underworld dungeon worldgen contract: six dungeon families route through exact native "
-    "Underworld biome masks; generated positions are counted, biome/spacing-audited and server-reconciled.")
+    "PASS Underworld dungeon worldgen contract: Deep Fracture remains bespoke; five ordinary "
+    "families use private vanilla-donor clones; RuntimeReady plus at most one fingerprinted "
+    "developer candidate route through exact native Underworld biome masks and placement audit.")
