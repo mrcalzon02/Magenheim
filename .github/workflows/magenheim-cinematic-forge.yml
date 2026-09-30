@@ -94,6 +94,16 @@ jobs:
           $previewCount = @(Get-ChildItem -LiteralPath $previews -Filter '*.png' -File).Count
           if ($previewCount -ne 8) { throw "Expected eight cinematic preview frames; got $previewCount." }
 
+      - name: Render silent motion proof
+        shell: pwsh
+        run: |
+          $out = 'assets/cinematics/peace-was-only-the-beginning/source/magenheim-peace-cinematic.blend'
+          $motion = 'build/magenheim-motion-preview.mp4'
+          & $env:MAGENHEIM_BLENDER --background $out --python-exit-code 1 --python tools/build-magenheim-cinematic-environment.py -- --render-motion-preview $motion
+          if ($LASTEXITCODE -ne 0) { throw 'Cinematic motion-proof render failed.' }
+          if (!(Test-Path -LiteralPath $motion)) { throw 'Motion-proof MP4 was not created.' }
+          if ((Get-Item -LiteralPath $motion).Length -lt 100000) { throw 'Motion-proof MP4 is suspiciously small.' }
+
       - name: Write generation manifest
         shell: pwsh
         run: |
@@ -113,6 +123,8 @@ jobs:
             frame_end = 672
             text_baked_in = $false
             audio_baked_in = $false
+            motion_contract = 'object-space-keyframed-v1'
+            motion_preview = 'build/magenheim-motion-preview.mp4'
             source_assets = @(
               'assets/models/source/dark-throne.blend',
               'assets/models/source/nowhere-king-sword-firmament.blend',
@@ -129,6 +141,7 @@ jobs:
             assets/cinematics/peace-was-only-the-beginning/source/magenheim-peace-cinematic.blend
             assets/cinematics/peace-was-only-the-beginning/manifest.json
             build/cinematic-previews/*.png
+            build/magenheim-motion-preview.mp4
           if-no-files-found: error
           retention-days: 7
 
