@@ -83,7 +83,7 @@ jobs:
       - name: Render actual Blackstone review views
         shell: pwsh
         run: |
-          & $env:MAGENHEIM_BLENDER --background --factory-startup --python tools/render-blackstone-throne-review.py
+          & $env:MAGENHEIM_BLENDER --background --factory-startup --python-exit-code 1 --python tools/render-blackstone-throne-review.py
           if ($LASTEXITCODE -ne 0) { throw 'Blackstone Throne review rendering failed.' }
 
       - name: Enforce Blackstone output scope
@@ -123,7 +123,7 @@ jobs:
           git add -- assets/models/source assets/models/glb assets/models/runtime assets/models/textures
           git add -- assets/models/catalog.json assets/models/catalog.tsv
           git add -- assets/textures/underworld/blackstone assets/material-source/blackstone assets/generated.manifest.json
-          git add -- dist/blackstone-throne-review
+          git add -f -- dist/blackstone-throne-review
           if (git diff --cached --quiet) { throw 'No Blackstone assets were staged.' }
           git commit -m "Generate Blackstone Throne structure assets ($env:GITHUB_RUN_ID)"
           git push origin "HEAD:refs/heads/$branch"
