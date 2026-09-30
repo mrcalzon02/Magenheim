@@ -61,16 +61,17 @@ internal sealed class UnderworldToolRegistrar:IDisposable
 
         var item=new CustomItem(d.Prefab,donor);var shared=item.ItemDrop.m_itemData.m_shared;
         shared.m_name=d.Name;shared.m_description=d.GameplayRole;shared.m_maxStackSize=1;
-        shared.m_value=0;shared.m_dlc=string.Empty;shared.m_icons=new[]{EarthAssets.Icon(d.ModelId)};
+        shared.m_value=0;shared.m_dlc=string.Empty;
+        if(EarthAssets.IconExists(d.ModelId))shared.m_icons=new[]{EarthAssets.Icon(d.ModelId)};
 
         if(d.Prefab==DivingBellPrefab)
         {
             shared.m_armor=10f;shared.m_armorPerLevel=2f;shared.m_maxQuality=4;
-            ModelAssets.LoadSkinnedEquipment(item.ItemPrefab,d.ModelId);
+            if(ModelAssets.Exists(d.ModelId))ModelAssets.LoadSkinnedEquipment(item.ItemPrefab,d.ModelId);
         }
         else
         {
-            var root=ModelAssets.Load(item.ItemPrefab,d.ModelId,item:true);
+            var root=ModelAssets.Exists(d.ModelId)?ModelAssets.Load(item.ItemPrefab,d.ModelId,item:true):item.ItemPrefab;
             if(d.Prefab==SporelightPrefab)
             {
                 shared.m_useDurability=false;shared.m_damages=new HitData.DamageTypes();shared.m_damagesPerLevel=new HitData.DamageTypes();
