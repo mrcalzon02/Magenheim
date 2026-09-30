@@ -525,11 +525,11 @@ Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the cur
   encounter authority, passage/traversal system and deterministic return path. The location uses
   the reserved Fracture Zones biome bit, is partitioned out of Surface generation, and is required
   by Underworld startup catalog validation.
-- [x] **Establish generic biome-dungeon production authority — SOURCE COMPLETE 0.0.155.**
-  One dungeon program exists per canonical biome. Ordinary biome dungeons require 15-20 large
-  authored room families reused 2-3 times per run; deterministic topology is branching with bounded
-  loops/cross-links. Deep Fracture remains a bespoke exception and cannot be routed through the
-  generic planner.
+- [x] **Establish generic biome-dungeon production authority — SOURCE COMPLETE 0.0.155, SUPERSEDED ARCHITECTURE.**
+  The original 15-20 bespoke-room-family ordinary-dungeon concept established the catalog and
+  topology seam, but its architecture has since been superseded by expanded vanilla donor reuse.
+  Deep Fracture remains the bespoke exception. See `docs/DEEP_DUNGEON_EXPANSION.md` for the active
+  implementation and gate sequence.
 - [ ] **Live-accept Underworld Deep Fracture placement and return.**
   Verify fresh-world Fracture Zones placement, no Surface leakage of the Underworld-only location,
   full interior build, encounters, host/client agreement, save/reload, return to the owning
@@ -547,6 +547,9 @@ Current unfinished asset/gameplay inventory is in `CLOSEOUT.md`. Execute the cur
   CreatureSpawner/SpawnArea inhabitants, replaces chest/pickable/mineable/destructible loot with
   biome resources, and clones donor entrances into the owning native Underworld biome. The five
   catalog entries remain Planned pending compile/runtime acceptance.
+- [ ] **Execute the Deep Dungeon Expansion gate sequence.**
+  `docs/DEEP_DUNGEON_EXPANSION.md` is the durable implementation plan. Clear DDE-00 through
+  DDE-12 per donor, promote independently at DDE-13, then run DDE-14 regression closure.
 - [ ] **Compile and live-accept expanded vanilla dungeon reuse before RuntimeReady promotion.**
   Verify all five donor families on fresh Underworld seeds: recognizable vanilla construction,
   >=1.5x room dimensions, >=3.5x live donor room-count bounds, no overlap/truncation, only owning
