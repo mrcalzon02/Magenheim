@@ -9,3 +9,4 @@ attempt=5 vanilla-prefab-lifecycle
 attempt=6 optional-dverger-chassis
 attempt=7 donor-collection-fix
 attempt=8 donor-verify-fix
+attempt=9 donor-actors-style-throne-reframe
