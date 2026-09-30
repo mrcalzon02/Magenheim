@@ -96,17 +96,22 @@ vanilla room's linear size**.
 
 This means all of the following must agree:
 
-- cloned room root transform;
+- a Magenheim-owned uniform scale root for the donor room's visible/structural child content;
+- an **unscaled `Room` root**, because Valheim placement reads raw connection-local coordinates;
+- `RoomConnection.localPosition` expanded by the same linear factor while connections remain direct
+  `Room` children;
 - visible geometry;
-- `RoomConnection` world spacing;
 - door geometry;
 - `Room.m_size` generator collision/packing bounds;
 - generator tile/grid spacing where applicable;
 - vertical clearances;
 - AI navigation through doors, stairs, drops and ledges.
 
-Scaling only the visible transform is insufficient. The dungeon generator must understand the
-larger physical footprint or rooms can overlap even when the art looks correct.
+Scaling the `Room` root itself is specifically prohibited: Valheim's dungeon placement math does
+not apply that root scale when reading connection-local positions, which makes rendered openings
+disagree with procedural placement. Scaling only visible geometry is likewise insufficient. The
+connection positions, structural content and packing bounds must describe the same larger physical
+room.
 
 ### 4.2 Minimum exploration size: 3.5x live donor room budget
 
@@ -282,7 +287,7 @@ The gate identifiers in this document are authoritative and intentionally match 
 |---|---|---|---|
 | DDE-00 | Source-enforced; execution evidence pending | `verify-deep-dungeon-expansion-gate0.py` is wired into normal build and production preflight | Successful execution in the current build/Valheim environment |
 | DDE-01 | Tooling implemented; live evidence pending | `magenheim_underworld donors` captures a live donor census for all five families | Installed-game census succeeds and evidence is reviewed |
-| DDE-02..DDE-10 | Static prerequisites implemented; live evidence pending | `verify-deep-dungeon-expansion-source-prerequisites.py` guards clone/scale/count/ecology/reward/worldgen/return source seams | Each donor passes its corresponding installed-game gates |
+| DDE-02..DDE-10 | Static prerequisites + live audit harness implemented; live evidence pending | `verify-deep-dungeon-expansion-source-prerequisites.py` guards source seams; `magenheim_underworld dde audit` inspects loaded private rooms, connection-safe scale, ecology, rewards, lore stripping and owning-biome registration | Each donor passes its corresponding installed-game gates |
 | DDE-11 | Source evidence harness implemented; live evidence pending | `magenheim_underworld dde` writes in-dungeon snapshots with generation fingerprint, network-view validity, peer count and harvest/population state | Save/reload, reconnect and two-peer dungeon cases pass with compared snapshots |
 | DDE-12 | Generation instrumentation implemented; live balance/performance pending | Automatic generation evidence records elapsed generation time and managed-memory delta; `TESTING.md` defines the broader measurement pass | Economy and installed-game performance measurements are acceptable |
 | DDE-13 | Blocked | Promotion remains explicit and per-family | A single donor has DDE-00..DDE-12 evidence and its catalog row is deliberately promoted |
