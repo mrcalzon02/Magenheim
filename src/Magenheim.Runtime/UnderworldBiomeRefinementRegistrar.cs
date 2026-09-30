@@ -83,8 +83,10 @@ internal sealed class UnderworldBiomeRefinementRegistrar : IDisposable
         shared.m_consumeStatusEffect = null;
         var model = UnderworldResourceVisuals.ModelFor(definition.Prefab)
             ?? throw new InvalidOperationException("Missing authored Underworld refinement visual mapping: " + definition.Prefab);
-        shared.m_icons = new[] { EarthAssets.Icon(model) };
-        UnderworldResourceVisuals.Apply(item.ItemPrefab, model);
+        if (EarthAssets.IconExists(model))
+            shared.m_icons = new[] { EarthAssets.Icon(model) };
+        if (ModelAssets.Exists(model))
+            UnderworldResourceVisuals.Apply(item.ItemPrefab, model);
 
         if (!ItemManager.Instance.AddItem(item))
             throw new InvalidOperationException("Jotunn refused Underworld refinement item " + definition.Prefab);
