@@ -95,14 +95,14 @@ internal sealed class UnderworldDungeonPlacementRuntime : MonoBehaviour
         {
             _state = PlacementState.WaitingForNativeGeneration;
             _diagnostic =
-                "Runtime-ready Underworld dungeon positions are missing locally; waiting for the authoritative server.";
+                "Admitted Underworld dungeon positions are missing locally; waiting for the authoritative server.";
             return;
         }
 
         _running = true;
         _state = PlacementState.Reconciling;
         _diagnostic =
-            "Reconciling missing runtime-ready Underworld dungeon positions through native Valheim placement.";
+            "Reconciling missing admitted Underworld dungeon positions through native Valheim placement.";
         StartCoroutine(Reconcile(audit.Missing));
     }
 
@@ -176,12 +176,12 @@ internal sealed class UnderworldDungeonPlacementRuntime : MonoBehaviour
                             string.Equals(PrefabName(x.m_location), dungeon.PrefabName, StringComparison.Ordinal))
                 .ToArray();
 
-            if (dungeon.Status != UnderworldDungeonStatus.RuntimeReady)
+            if (!UnderworldVanillaDungeonCandidatePolicy.IsWorldgenAdmitted(dungeon))
             {
                 if (locations.Length != 0 || instances.Length != 0)
                     invalid.Add(
                         $"{dungeon.DisplayName} is Planned but detached worldgen contains " +
-                        $"{locations.Length} catalog row(s) and {instances.Length} placement(s)");
+                        $"{locations.Length} catalog row(s) and {instances.Length} placement(s) without candidate admission");
                 continue;
             }
 
