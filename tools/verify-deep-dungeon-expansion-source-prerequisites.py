@@ -14,6 +14,8 @@ def require(ok,msg):
 registrar=(RUNTIME/"UnderworldVanillaDungeonRegistrar.cs").read_text()
 diagnostics=(RUNTIME/"UnderworldVanillaDungeonGenerationDiagnostics.cs").read_text()
 dev_commands=(RUNTIME/"UnderworldDevCommands.cs").read_text()
+candidate_audit=(RUNTIME/"UnderworldVanillaDungeonCandidateAudit.cs").read_text()
+room_audit_metadata=(RUNTIME/"UnderworldVanillaDungeonRoomAuditMetadata.cs").read_text()
 room_policy=(RUNTIME/"UnderworldVanillaDungeonRoomPolicy.cs").read_text()
 ecology=(RUNTIME/"UnderworldVanillaDungeonEcologyPolicy.cs").read_text()
 rewards=(RUNTIME/"UnderworldVanillaDungeonRewardPolicy.cs").read_text()
@@ -49,6 +51,15 @@ require("room.m_size = new Vector3Int(" in registrar,
         "DDE-03 Room.m_size is not scaled with visible geometry")
 require("clone.transform.localScale *= scale" not in registrar,
         "DDE-03 incorrectly scales the Room root and would desynchronize PlaceRoom connection math")
+for token,label in (
+    ("DonorRoomSize","donor room-size provenance"),
+    ("DonorConnectionLocalPositions","donor connection provenance"),
+    ("LinearScale","donor scale provenance"),
+):
+    require(token in room_audit_metadata,"DDE-03 live audit metadata missing "+label)
+require("auditMetadata.DonorRoomSize = room.m_size" in registrar and
+        "auditMetadata.DonorConnectionLocalPositions = room.GetConnections()" in registrar,
+        "DDE-03 donor provenance is not captured before scaling")
 require("clone.transform.localScale *= (float)profile.LinearRoomScale" in registrar,
         "DDE-03 donor door clone is not scaled")
 require("generator.m_tileWidth *= (float)profile.LinearRoomScale" in registrar,
@@ -206,6 +217,18 @@ for token,label in (
 require('case "dde":' in dev_commands and
         "CaptureRuntimeSnapshot(player" in dev_commands,
         "DDE-11/12 developer snapshot command is not wired")
+
+for token,label in (
+    ("UnderworldVanillaDungeonCandidateAudit.Capture","developer candidate-audit command"),
+    ("Magenheim_DDE_ScaleRoot","live scale-root audit"),
+    ("DonorConnectionLocalPositions","live donor-connection audit"),
+    ("CreatureSpawner retains non-biome creature prefab","live ecology ownership audit"),
+    ("retains non-biome reward prefab","live reward ownership audit"),
+    ("Surface Vegvisir components remain","live Surface-lore audit"),
+    ("Expanded donor location biome","live owning-biome audit"),
+):
+    target = dev_commands if token == "UnderworldVanillaDungeonCandidateAudit.Capture" else candidate_audit
+    require(token in target,"DDE live candidate audit missing "+label)
 
 # Catalog may remain Planned until live gates are complete.
 for name in ("FungalForest","BlackwaterDeep","SulfurousWastes","FrozenCaverns","GreatDecay"):
