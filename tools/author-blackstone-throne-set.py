@@ -79,8 +79,9 @@ def palette():
       "stone":material("blackstone.basalt","blackstone-basalt-albedo.png","blackstone-basalt",0.02,.78),
       "void":material("blackstone.voidstone","blackstone-voidstone-albedo.png","blackstone-voidstone",0.05,.66),
       "bronze":material("blackstone.royal-bronze","blackstone-bronze-albedo.png","blackstone-royal-bronze",.80,.32),
-      "cloth":material("blackstone.banner-cloth","blackstone-banner-sun-albedo.png","blackstone-banner-cloth",0,.82,double_sided=True),
-      "ember":material("blackstone.ember","blackstone-ember-albedo.png","blackstone-ember",.05,.22,(1.0,.18,.025),double_sided=True),
+      "cloth":material("blackstone.banner-cloth","blackstone-banner-sun-albedo.png","blackstone-banner-cloth",0,.88,double_sided=True),
+      "ember":material("blackstone.ember","blackstone-ember-albedo.png","blackstone-ember",.05,.28,(.55,.07,.01),double_sided=True),
+      "flame":material("blackstone.flame","blackstone-flame-albedo.png","blackstone-flame",0,.20,(1.0,.20,.025),double_sided=True),
     }
 
 def finish(o,name,mat,collision=True,bevel=.0,uv=.65):
@@ -118,6 +119,40 @@ def rock(name,pos,scale,mat,collision=True,seed=0):
     bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
     return finish(o,name,mat,collision,.03,.75)
 
+def banner_cloth(name,top_center,width,height,mat,scale=1.0):
+    """Weighted hanging standard with explicit one-tile UVs and modeled folds."""
+    ox,top_y,oz=top_center
+    cols=10; rows=12
+    verts=[]; faces=[]; uvs=[]
+    for row in range(rows+1):
+        v=row/rows
+        y=top_y-v*height*scale
+        for col in range(cols+1):
+            u=col/cols
+            xn=u*2.0-1.0
+            taper=1.0-.08*v
+            x=ox+xn*(width*.5*scale)*taper
+            hem=(.38*(abs(xn)**1.55)*scale) if row==rows else 0.0
+            fold=(.105*math.sin(u*math.tau*3.0)+.028*math.sin(u*math.tau*6.0))*scale*(.30+.70*v)
+            verts.append(wloc(x,y+hem,oz+fold))
+            uvs.append((u,1.0-v))
+    stride=cols+1
+    for row in range(rows):
+        for col in range(cols):
+            a=row*stride+col; b=a+1; d=(row+1)*stride+col; c=d+1
+            faces.extend(((a,d,c),(a,c,b)))
+    mesh=bpy.data.meshes.new(name+"Mesh")
+    mesh.from_pydata(verts,[],faces); mesh.update()
+    obj=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(obj)
+    obj["game_node_path"]=name; obj["game_collision"]=False; obj["game_crystal"]=json.dumps(None)
+    mesh.materials.append(mat)
+    layer=mesh.uv_layers.new(name="BlackstoneUV")
+    for poly in mesh.polygons:
+        for loop_index in poly.loop_indices:
+            vi=mesh.loops[loop_index].vertex_index
+            layer.data[loop_index].uv=uvs[vi]
+    return obj
+
 def ray_boxes_floor(prefix,center,r1,r2,height,width,mat,count=16):
     cx,cy,cz=center
     for i in range(count):
@@ -145,28 +180,40 @@ def add_finial(prefix,pos,mat,scale=1.0):
 
 def build_throne(m,prefix="Throne",origin=(0,0,0),scale=1.0):
     ox,oy,oz=origin
-    box(prefix+"_Plinth",(ox,oy+.25*scale,oz),(5.8*scale,.5*scale,4.1*scale),m["void"],collision=True,bevel=.08*scale)
-    box(prefix+"_Step",(ox,oy+.62*scale,oz-1.35*scale),(4.8*scale,.28*scale,1.1*scale),m["stone"],collision=True,bevel=.05*scale)
-    box(prefix+"_Seat",(ox,oy+1.28*scale,oz+.10*scale),(2.6*scale,.44*scale,2.1*scale),m["stone"],collision=True,bevel=.08*scale)
-    box(prefix+"_Back",(ox,oy+4.25*scale,oz+.95*scale),(3.1*scale,6.2*scale,.72*scale),m["void"],collision=True,bevel=.10*scale)
+    box(prefix+"_Plinth",(ox,oy+.24*scale,oz),(5.5*scale,.48*scale,3.9*scale),m["void"],collision=True,bevel=.08*scale)
+    box(prefix+"_Step",(ox,oy+.58*scale,oz-1.34*scale),(4.7*scale,.24*scale,1.05*scale),m["stone"],collision=True,bevel=.045*scale)
+    box(prefix+"_SeatBase",(ox,oy+1.00*scale,oz-.05*scale),(2.75*scale,.34*scale,2.00*scale),m["void"],collision=True,bevel=.065*scale)
+    box(prefix+"_Seat",(ox,oy+1.27*scale,oz-.10*scale),(2.35*scale,.28*scale,1.72*scale),m["stone"],collision=True,bevel=.10*scale)
+    box(prefix+"_BackCore",(ox,oy+4.25*scale,oz+.82*scale),(2.18*scale,5.85*scale,.54*scale),m["void"],collision=True,bevel=.075*scale)
+    box(prefix+"_BackInset",(ox,oy+4.10*scale,oz+.50*scale),(1.58*scale,4.70*scale,.18*scale),m["stone"],collision=False,bevel=.045*scale)
     for side in (-1,1):
-        x=ox+side*1.85*scale
-        box(f"{prefix}_Arm_{'L' if side<0 else 'R'}",(x,oy+2.0*scale,oz-.05*scale),(.68*scale,2.25*scale,2.6*scale),m["stone"],collision=True,bevel=.08*scale)
-        box(f"{prefix}_Pier_{'L' if side<0 else 'R'}",(ox+side*2.45*scale,oy+4.35*scale,oz+.75*scale),(.56*scale,7.4*scale,.70*scale),m["stone"],collision=True,bevel=.05*scale)
-        cone(f"{prefix}_Crown_{'L' if side<0 else 'R'}",(ox+side*2.45*scale,oy+8.25*scale,oz+.75*scale),.34*scale,0,1.45*scale,m["stone"],6,True,bevel=.025)
-    for i,xoff in enumerate((-1.30,-.65,0,.65,1.30)):
-        h=(2.0+abs(2-i)*.55)*scale
-        box(f"{prefix}_Spine_{i+1}",(ox+xoff*scale,oy+6.4*scale+h*.25,oz+1.30*scale),(.23*scale,h,.32*scale),m["stone"],collision=False,bevel=.025*scale)
-        cone(f"{prefix}_SpineTip_{i+1}",(ox+xoff*scale,oy+6.4*scale+h*.78,oz+1.30*scale),.16*scale,0,.58*scale,m["stone"],5,False,bevel=.01)
-    add_sun(prefix+"_Sigil",(ox,oy+5.65*scale,oz+.54*scale),m["bronze"],.72*scale)
+        label="L" if side<0 else "R"
+        box(f"{prefix}_Wing_{label}",(ox+side*1.48*scale,oy+4.10*scale,oz+.90*scale),(.52*scale,4.95*scale,.52*scale),m["stone"],collision=True,bevel=.045*scale)
+        box(f"{prefix}_Pier_{label}",(ox+side*2.23*scale,oy+4.20*scale,oz+.78*scale),(.50*scale,6.65*scale,.62*scale),m["void"],collision=True,bevel=.045*scale)
+        cone(f"{prefix}_Crown_{label}",(ox+side*2.23*scale,oy+8.05*scale,oz+.78*scale),.33*scale,0,1.38*scale,m["stone"],6,True,bevel=.022)
+        box(f"{prefix}_Arm_{label}",(ox+side*1.48*scale,oy+1.86*scale,oz-.18*scale),(.38*scale,1.42*scale,2.15*scale),m["stone"],collision=True,bevel=.075*scale)
+        box(f"{prefix}_ArmCap_{label}",(ox+side*1.48*scale,oy+2.60*scale,oz-.18*scale),(.48*scale,.12*scale,2.05*scale),m["bronze"],collision=False,bevel=.025*scale)
+        box(f"{prefix}_FrontPost_{label}",(ox+side*1.48*scale,oy+1.05*scale,oz-1.00*scale),(.42*scale,1.65*scale,.42*scale),m["void"],collision=True,bevel=.045*scale)
+        add_finial(f"{prefix}_FrontFinial_{label}",(ox+side*1.48*scale,oy+1.98*scale,oz-1.00*scale),m["bronze"],.44*scale)
+    for i,xoff in enumerate((-1.18,-.59,0,.59,1.18)):
+        h=(1.55+(2-abs(2-i))*.42)*scale
+        base_y=oy+6.45*scale
+        box(f"{prefix}_Spine_{i+1}",(ox+xoff*scale,base_y+h*.42,oz+1.18*scale),(.20*scale,h,.28*scale),m["stone"],collision=False,bevel=.02*scale)
+        cone(f"{prefix}_SpineTip_{i+1}",(ox+xoff*scale,base_y+h+.28*scale,oz+1.18*scale),.15*scale,0,.62*scale,m["stone"],5,False,bevel=.008)
+    cone(prefix+"_Apex",(ox,oy+8.55*scale,oz+1.18*scale),.42*scale,0,1.60*scale,m["void"],6,False,bevel=.015)
+    add_sun(prefix+"_Sigil",(ox,oy+5.05*scale,oz+.49*scale),m["bronze"],.64*scale)
 
 def build_banner(m,prefix="Banner",origin=(0,0,0),scale=1.0):
     ox,oy,oz=origin
-    box(prefix+"_Pole",(ox,oy+3.1*scale,oz),(.16*scale,6.2*scale,.16*scale),m["bronze"],collision=True,bevel=.025)
-    box(prefix+"_Crossbar",(ox,oy+5.75*scale,oz),(3.1*scale,.14*scale,.18*scale),m["bronze"],collision=False,bevel=.02)
-    box(prefix+"_Cloth",(ox,oy+3.45*scale,oz+.08*scale),(2.55*scale,4.25*scale,.08*scale),m["cloth"],collision=False,bevel=.015)
-    add_finial(prefix+"_Top",(ox,oy+6.35*scale,oz),m["bronze"],.72*scale)
-    add_sun(prefix+"_RaisedSigil",(ox,oy+3.9*scale,oz+.18*scale),m["bronze"],.45*scale)
+    half=1.78*scale
+    for side in (-1,1):
+        label="L" if side<0 else "R"
+        x=ox+side*half
+        box(f"{prefix}_Foot_{label}",(x,oy+.18*scale,oz),(.72*scale,.36*scale,.72*scale),m["void"],collision=True,bevel=.055*scale)
+        box(f"{prefix}_Pole_{label}",(x,oy+3.20*scale,oz),(.20*scale,6.25*scale,.20*scale),m["bronze"],collision=True,bevel=.025*scale)
+        add_finial(f"{prefix}_Top_{label}",(x,oy+6.48*scale,oz),m["bronze"],.62*scale)
+    box(prefix+"_Crossbar",(ox,oy+5.92*scale,oz),(3.95*scale,.18*scale,.24*scale),m["bronze"],collision=False,bevel=.025*scale)
+    banner_cloth(prefix+"_Cloth",(ox,oy+5.72*scale,oz+.10*scale),3.28,5.02,m["cloth"],scale)
 
 def build_seat(m,prefix="Seat",origin=(0,0,0),scale=1.0):
     ox,oy,oz=origin
@@ -180,16 +227,19 @@ def build_seat(m,prefix="Seat",origin=(0,0,0),scale=1.0):
 
 def build_brazier(m,prefix="Brazier",origin=(0,0,0),scale=1.0,flame=True):
     ox,oy,oz=origin
-    box(prefix+"_Foot",(ox,oy+.15*scale,oz),(1.65*scale,.30*scale,1.65*scale),m["void"],collision=True,bevel=.07)
-    box(prefix+"_Plinth",(ox,oy+.50*scale,oz),(1.28*scale,.42*scale,1.28*scale),m["stone"],collision=True,bevel=.05)
-    box(prefix+"_Column",(ox,oy+1.35*scale,oz),(.72*scale,1.30*scale,.72*scale),m["stone"],collision=True,bevel=.05)
-    box(prefix+"_Bowl",(ox,oy+2.18*scale,oz),(1.75*scale,.42*scale,1.75*scale),m["bronze"],collision=True,bevel=.07)
-    for side in (-1,1):
-        box(f"{prefix}_LipX_{side}",(ox+side*.94*scale,oy+2.33*scale,oz),(.14*scale,.27*scale,1.95*scale),m["bronze"],collision=False,bevel=.02)
-        box(f"{prefix}_LipZ_{side}",(ox,oy+2.33*scale,oz+side*.94*scale),(1.95*scale,.27*scale,.14*scale),m["bronze"],collision=False,bevel=.02)
+    cyl(prefix+"_Foot",(ox,oy+.14*scale,oz),.78*scale,.28*scale,m["void"],8,True,.045*scale)
+    cyl(prefix+"_Plinth",(ox,oy+.43*scale,oz),.61*scale,.30*scale,m["stone"],8,True,.035*scale)
+    cyl(prefix+"_Column",(ox,oy+1.28*scale,oz),.31*scale,1.38*scale,m["stone"],8,True,.035*scale)
+    cyl(prefix+"_Collar",(ox,oy+1.91*scale,oz),.47*scale,.18*scale,m["bronze"],8,False,.025*scale)
+    cyl(prefix+"_Basin",(ox,oy+2.20*scale,oz),.93*scale,.34*scale,m["bronze"],12,True,.045*scale)
+    cyl(prefix+"_CoalBed",(ox,oy+2.39*scale,oz),.70*scale,.08*scale,m["ember"],12,False,.015*scale)
+    for i,a in enumerate((0,math.pi/2,math.pi,math.pi*1.5)):
+        x=ox+math.cos(a)*.72*scale; z=oz+math.sin(a)*.72*scale
+        box(f"{prefix}_Brace_{i+1}",(x,oy+2.03*scale,z),(.13*scale,.46*scale,.34*scale),m["bronze"],rot=(0,-a,0),collision=False,bevel=.018*scale)
     if flame:
-        for i,(dx,dz,h) in enumerate(((0,0,1.2),(.28,.08,.85),(-.22,-.12,.92),(.10,-.26,.72))):
-            cone(f"{prefix}_Flame_{i+1}",(ox+dx*scale,oy+(2.62+h*.45)*scale,oz+dz*scale),(.28 if i==0 else .18)*scale,0,h*scale,m["ember"],7,False,rot=(0,0,(i*17)%31),bevel=0)
+        for i,(dx,dz,h,r) in enumerate(((0,0,.82,.22),(.22,.05,.56,.14),(-.18,-.09,.64,.16))):
+            cone(f"{prefix}_Flame_{i+1}",(ox+dx*scale,oy+(2.45+h*.46)*scale,oz+dz*scale),
+                 r*scale,0,h*scale,m["flame"],7,False,rot=(0,0,(i*.31)),bevel=0)
 
 def build_stair(m,prefix="Stair",origin=(0,0,0),scale=1.0):
     ox,oy,oz=origin

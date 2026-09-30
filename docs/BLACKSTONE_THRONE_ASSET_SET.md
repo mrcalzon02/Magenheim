@@ -92,3 +92,16 @@ runtime lights, and at least ~49 meters of total vertical envelope from abyss ma
 Live acceptance is still separate: Valheim traversal, collision feel, camera readability, boss
 movement/leash behavior, multiplayer ownership, save/reload, and the phase-specific
 extinguish/relight presentation cannot be proven by Blender export alone.
+
+
+## Visual usability revision
+
+The Cycles acceptance plates exposed hero-prop quality failures that topology checks alone could not
+catch. Banner revision 2 replaces the rigid wallpaper panel with a weighted twin-standard assembly,
+folded/tapered cloth, one non-repeating 0..1 heraldic field and one restrained eclipsed sun. The
+raised duplicate sigil is forbidden. The throne now uses a narrower seat, layered back, wings,
+capped arms and central apex. Braziers use an octagonal vessel, coal bed, collar and clean emissive
+flame family instead of square trays with noisy ember-clump flames.
+
+The verifier now treats these as production requirements: banner hardware, cloth vertex/fold depth,
+single-tile UV range, throne silhouette parts and brazier vessel parts must all pass before admission.

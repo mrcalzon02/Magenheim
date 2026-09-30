@@ -67,6 +67,29 @@ for model_id in IDS:
     magic,version,length=struct.unpack_from("<III",data)
     if magic!=0x46546C67 or version!=2 or length!=len(data): raise SystemExit(f"{model_id}: invalid GLB container")
 
+banner_doc=json.loads((RUNTIME/"blackstone-banner.model.json").read_text())
+banner_names=[p["name"] for p in banner_doc["parts"]]
+cloth=next((p for p in banner_doc["parts"] if p["name"]=="Banner_Cloth"),None)
+if cloth is None: raise SystemExit("blackstone-banner: authored folded cloth missing")
+if any("RaisedSigil" in n for n in banner_names): raise SystemExit("blackstone-banner: duplicate raised sigil returned")
+if not {"Banner_Pole_L","Banner_Pole_R","Banner_Foot_L","Banner_Foot_R","Banner_Crossbar"}.issubset(set(banner_names)):
+    raise SystemExit("blackstone-banner: twin-standard support hardware incomplete")
+if len(cloth.get("vertices") or [])<100: raise SystemExit("blackstone-banner: cloth is still a rigid low-detail panel")
+uv=cloth.get("uv") or []; us=[p[0] for p in uv]; vs=[p[1] for p in uv]
+if not uv or min(us)<-1e-4 or max(us)>1.0001 or min(vs)<-1e-4 or max(vs)>1.0001:
+    raise SystemExit("blackstone-banner: cloth UVs escape the single 0..1 heraldic field")
+if max(us)-min(us)<.99 or max(vs)-min(vs)<.99: raise SystemExit("blackstone-banner: cloth does not consume the full heraldic texture")
+zs=[p[2] for p in cloth["vertices"]]
+if max(zs)-min(zs)<.12: raise SystemExit("blackstone-banner: cloth has no modeled fold depth")
+
+throne_doc=json.loads((RUNTIME/"blackstone-throne.model.json").read_text()); throne_names=[p["name"] for p in throne_doc["parts"]]
+for required in ("Throne_BackCore","Throne_BackInset","Throne_Apex","Throne_ArmCap_L","Throne_ArmCap_R"):
+    if required not in throne_names: raise SystemExit("blackstone-throne: hero silhouette part missing: "+required)
+
+brazier_doc=json.loads((RUNTIME/"blackstone-brazier.model.json").read_text()); brazier_names=[p["name"] for p in brazier_doc["parts"]]
+for required in ("Brazier_Basin","Brazier_CoalBed","Brazier_Collar","Brazier_Flame_1"):
+    if required not in brazier_names: raise SystemExit("blackstone-brazier: ceremonial vessel part missing: "+required)
+
 site=json.loads((RUNTIME/"dark-throne.model.json").read_text())
 names=[p["name"] for p in site["parts"]]
 requirements={
@@ -128,7 +151,7 @@ if min(ys)>-19.0 or max(ys)<30.0 or max(ys)-min(ys)<49.0:
 art=ROOT/"assets"/"textures"/"underworld"/"blackstone"
 required_art={
  "blackstone-basalt-albedo.png","blackstone-voidstone-albedo.png","blackstone-bronze-albedo.png",
- "blackstone-banner-sun-albedo.png","blackstone-sun-sigil.png","blackstone-ember-albedo.png",
+ "blackstone-banner-sun-albedo.png","blackstone-sun-sigil.png","blackstone-ember-albedo.png","blackstone-flame-albedo.png",
 }
 missing=sorted(name for name in required_art if not (art/name).is_file())
 if missing: raise SystemExit("Blackstone 2D source artwork missing: "+", ".join(missing))
@@ -139,9 +162,10 @@ required_pbr={
  "blackstone-royal-bronze-normal.png","blackstone-royal-bronze-metallic-smoothness.png",
  "blackstone-banner-cloth-normal.png","blackstone-banner-cloth-metallic-smoothness.png",
  "blackstone-ember-normal.png","blackstone-ember-metallic-smoothness.png","blackstone-ember-emission.png",
+ "blackstone-flame-normal.png","blackstone-flame-metallic-smoothness.png","blackstone-flame-emission.png",
 }
 missing=sorted(name for name in required_pbr if not (pbr/name).is_file())
 if missing: raise SystemExit("Blackstone owned PBR source maps missing: "+", ".join(missing))
 
 print("VERIFIED Blackstone Throne set:",len(IDS),"real Blender/GLB/runtime triplets,",len(site["parts"]),
-      "assembled parts, four playable elevation tiers, cathedral wall/buttress envelope, abyss foundation, topology/winding/UV/albedo/PBR checks")
+      "assembled parts, four playable elevation tiers, cathedral wall/buttress envelope, abyss foundation, hero-prop usability gates, topology/winding/UV/albedo/PBR checks")
