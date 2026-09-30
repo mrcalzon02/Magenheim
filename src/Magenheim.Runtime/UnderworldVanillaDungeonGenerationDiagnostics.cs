@@ -32,6 +32,9 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         int TargetMinimum,
         int TargetMaximum,
         int MaximumDepth,
+        int CombatSocketRooms,
+        int ActiveEncounterRooms,
+        int QuietCombatRooms,
         int ActiveCreatureSpawners,
         int CreatureSpawnerSockets,
         int ActiveSpawnAreas,
@@ -101,6 +104,22 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 .ToArray();
 
             var metrics = GraphMetrics(rooms);
+            var combatSocketRooms = 0;
+            var activeEncounterRooms = 0;
+            foreach (var room in rooms)
+            {
+                var roomSpawners = room.GetComponentsInChildren<CreatureSpawner>(true);
+                var roomAreas = room.GetComponentsInChildren<SpawnArea>(true);
+                if (roomSpawners.Length == 0 && roomAreas.Length == 0)
+                    continue;
+
+                combatSocketRooms++;
+                if (roomSpawners.Any(value => value && value.enabled) ||
+                    roomAreas.Any(value => value && value.enabled))
+                    activeEncounterRooms++;
+            }
+            var quietCombatRooms = combatSocketRooms - activeEncounterRooms;
+
             var creatureSpawnerComponents = generator.GetComponentsInChildren<CreatureSpawner>(true);
             var creatureSpawners = creatureSpawnerComponents.Length;
             var activeCreatureSpawners = creatureSpawnerComponents.Count(value => value && value.enabled);
@@ -123,6 +142,7 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 $"required={required.Count - missingRequired.Length}/{required.Count} " +
                 $"branch-depth={metrics.MaximumDepth} components={metrics.Components} " +
                 $"connections={metrics.ConnectionEdges} dead-ends={metrics.DeadEnds} " +
+                $"encounter-rooms={activeEncounterRooms}/{combatSocketRooms} quiet-combat-rooms={quietCombatRooms} " +
                 $"creature-spawners={activeCreatureSpawners}/{creatureSpawners} " +
                 $"spawn-areas={activeSpawnAreas}/{spawnAreas} " +
                 $"containers={containers} pickables={pickables} mineables={mineables} " +
@@ -143,6 +163,9 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 generator,
                 missingRequired,
                 metrics,
+                combatSocketRooms,
+                activeEncounterRooms,
+                quietCombatRooms,
                 creatureSpawners,
                 activeCreatureSpawners,
                 spawnAreas,
@@ -171,6 +194,9 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
                 generator.m_minRooms,
                 generator.m_maxRooms,
                 metrics.MaximumDepth,
+                combatSocketRooms,
+                activeEncounterRooms,
+                quietCombatRooms,
                 activeCreatureSpawners,
                 creatureSpawners,
                 activeSpawnAreas,
@@ -194,6 +220,9 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         DungeonGenerator generator,
         IReadOnlyList<string> missingRequired,
         GraphReport graph,
+        int combatSocketRooms,
+        int activeEncounterRooms,
+        int quietCombatRooms,
         int creatureSpawners,
         int activeCreatureSpawners,
         int spawnAreas,
@@ -242,6 +271,9 @@ internal static class UnderworldVanillaDungeonGenerationDiagnostics
         text.AppendLine("graph_maximum_depth=" + graph.MaximumDepth.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("graph_connection_edges=" + graph.ConnectionEdges.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("graph_dead_ends=" + graph.DeadEnds.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("combat_socket_rooms=" + combatSocketRooms.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("active_encounter_rooms=" + activeEncounterRooms.ToString(CultureInfo.InvariantCulture));
+        text.AppendLine("quiet_combat_rooms=" + quietCombatRooms.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("creature_spawners=" + creatureSpawners.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("active_creature_spawners=" + activeCreatureSpawners.ToString(CultureInfo.InvariantCulture));
         text.AppendLine("spawn_areas=" + spawnAreas.ToString(CultureInfo.InvariantCulture));
