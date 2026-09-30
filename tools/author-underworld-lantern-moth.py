@@ -133,5 +133,6 @@ arm['host_family']='HOST-INSECT-FLY'; arm['production_span_m']=round(span,3); ar
 arm['material_language']='fungal-charcoal-chitin+soft-thorax+pale-membrane+localized-wing-light'
 arm['silhouette_contract']='four-independent-wings+fuzzy-thorax+paired-antennae+six-legs;never-bat-body'
 arm['planned_actions']='Hover,Flight,BankLeft,BankRight,Land,GroundIdle,Takeoff,AlertFlee,Hit,Death'
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-lantern-moth'; sc['magenheim_skinning']='rigid-segment-weighted'
 bpy.context.view_layer.objects.active=arm; arm.select_set(True); bpy.ops.wm.save_as_mainfile(filepath=str(OUT))
 print(f'AUTHORED Lantern Moth source: span={span:.3f}m meshes={len(meshes)} -> {OUT}')
