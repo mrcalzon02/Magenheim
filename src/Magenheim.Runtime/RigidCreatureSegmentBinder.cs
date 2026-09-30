@@ -367,7 +367,15 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
 
         if (_humanoid is not null && _humanoid.InAttack())
             return Find("attackfront") ??
+                   Find("crusherattack") ??
+                   Find("cutterattack") ??
+                   Find("clawleft") ??
+                   Find("clawright") ??
+                   Find("tailstrike") ??
+                   Find("pressurerelease") ??
                    Find("bite") ??
+                   Find("lunge") ??
+                   Find("ram") ??
                    Find("heavyslam") ??
                    Find("slam") ??
                    Find("sweep") ??
@@ -378,9 +386,13 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
                    ChooseIdle();
 
         if (HorizontalSpeedSquared() > .035f)
-            return Find("scuttle") ??
+            return Find("sprint") ??
+                   Find("cruise") ??
+                   Find("swimforward") ??
+                   Find("scuttle") ??
                    Find("walk") ??
                    Find("flight") ??
+                   Find("glide") ??
                    Find("crawl") ??
                    _current ??
                    ChooseIdle();
@@ -389,12 +401,16 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
     }
 
     private RigidCreatureSegmentBinder.ActionClip ChooseIdle() =>
+        Find("swimidle") ??
+        Find("attachedidle") ??
+        Find("lureidle") ??
         Find("hover") ??
         Find("clingidle") ??
         Find("concealidle") ??
         Find("groundidle") ??
         Find("idle") ??
         Find("grazeroot") ??
+        Find("glide") ??
         _clips[0];
 
     private RigidCreatureSegmentBinder.ActionClip? Find(string token)
