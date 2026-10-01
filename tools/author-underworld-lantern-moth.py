@@ -80,6 +80,7 @@ parts={}
 def keep(o,bone):
     parts[o.name]=bone
     if not o.data.uv_layers: planar_uv(o)
+    else: o.data.uv_layers.active.name='LanternMothUV'
     return o
 
 keep(organic('LM_Thorax',(0,0,.105),(.075,.105,.07),thorax,3),'Thorax')

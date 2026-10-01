@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """Verify Lantern Moth custom-body source; this gate intentionally rejects Bat-like stand-ins."""
 from pathlib import Path
-from PIL import Image
+import struct
 import bpy
 ROOT=Path(__file__).resolve().parents[1]
 MODEL=ROOT/'assets/models/source/underworld-creature-lantern-moth.blend'
 TEX=ROOT/'assets/textures/underworld/creatures/lantern-moth'
+def png_size(path):
+    data=path.read_bytes()
+    if data[:8] != b'\x89PNG\r\n\x1a\n' or data[12:16] != b'IHDR':
+        raise RuntimeError(f'Invalid PNG header: {path}')
+    return struct.unpack('>II', data[16:24])
 if not MODEL.exists(): raise RuntimeError(f'Missing {MODEL}')
 bpy.ops.wm.open_mainfile(filepath=str(MODEL))
 arm=bpy.data.objects.get('RIG_LanternMoth_HOST_INSECT_FLY')
@@ -30,7 +35,7 @@ for suffix,end in expected.items():
 for stem in ('thorax-fuzz','abdomen-chitin','wing-membrane','antenna','eye'):
     for kind in ('albedo','roughness','normal'):
         p=TEX/f'{stem}-{kind}.png'
-        if not p.exists() or Image.open(p).size!=(1024,1024): raise RuntimeError(f'Invalid texture {p}')
+        if not p.exists() or png_size(p)!=(1024,1024): raise RuntimeError(f'Invalid texture {p}')
 em=TEX/'wing-membrane-emission.png'
-if not em.exists() or Image.open(em).size!=(1024,1024): raise RuntimeError('Wing emission mask missing')
+if not em.exists() or png_size(em)!=(1024,1024): raise RuntimeError('Wing emission mask missing')
 print(f'VERIFIED Lantern Moth custom-body source: {span:.3f}m span, four wings, fuzzy thorax, paired antennae, six legs, {len(expected)} actions; donor-Bat silhouette rejected')

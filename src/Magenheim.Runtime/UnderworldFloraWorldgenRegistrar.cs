@@ -17,13 +17,6 @@ internal sealed class UnderworldFloraWorldgenRegistrar : IDisposable
 {
     private const string NativeTreeDonor = "YggaShoot1";
 
-    private static readonly IReadOnlyDictionary<string, string> ModelBySpecies =
-        new Dictionary<string, string>(StringComparer.Ordinal)
-        {
-            ["magenheim.underworld.flora.glowcap"] = "underworld-flora-fungal-glowcap",
-            ["magenheim.underworld.flora.spirestalk"] = "underworld-flora-fungal-spirestalk",
-        };
-
     private readonly UnderworldFloraDefinitionSet _definitions;
     private readonly ManualLogSource _log;
     private bool _subscribed;
@@ -59,7 +52,8 @@ internal sealed class UnderworldFloraWorldgenRegistrar : IDisposable
                     continue;
                 }
 
-                if (!ModelBySpecies.TryGetValue(species.Id, out var modelId))
+                var speciesName = species.Id.Substring("magenheim.underworld.flora.".Length);
+                if (!UnderworldFloraHarvest.All.TryGetValue(speciesName, out var harvest))
                 {
                     _log.LogWarning(
                         $"Underworld flora '{species.Id}' is not registered: no verified authored runtime model is mapped.");
@@ -73,7 +67,7 @@ internal sealed class UnderworldFloraWorldgenRegistrar : IDisposable
                     ?? throw new InvalidOperationException(
                         $"Unable to clone native flora donor '{NativeTreeDonor}' for '{species.PrefabName}'.");
 
-                ModelAssets.Load(prefab, modelId, item: false);
+                UnderworldFloraHarvest.Configure(prefab, speciesName, harvest);
 
                 var config = new VegetationConfig
                 {

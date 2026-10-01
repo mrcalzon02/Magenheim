@@ -69,7 +69,7 @@ for model_id, target in sorted(WEAPON_TARGETS.items()):
             f'+/-{WEAPON_TOLERANCE:.2f} (drift {measured - target:+.2f}m)')
 
 staves = sorted(p.name[:-len('.model.json')] for p in RUNTIME.glob('*.model.json')
-          if 'staff' in p.name.lower())
+          if p.name.startswith(('staff-', 'Magenheim_Staff_')))
 if len(staves) != 32:
     failures.append(f'Expected 32 staff models, found {len(staves)}.')
 for model_id in staves:
@@ -80,6 +80,13 @@ for model_id in staves:
         failures.append(
             f'{model_id}: longest axis {measured:.2f}m is outside the '
             f'{STAFF_MINIMUM:.2f}-{STAFF_MAXIMUM:.2f}m staff reference band')
+
+# Underworld derivatives are additional equipment, outside the 8 x 4 elemental roster.
+for path in RUNTIME.glob('underworld-weapon-*staff.model.json'):
+    model_id = path.name[:-len('.model.json')]
+    measured = longest_axis(model_id)
+    if not STAFF_MINIMUM <= measured <= STAFF_MAXIMUM:
+        failures.append(f'{model_id}: derivative staff scale {measured:.2f}m is outside the reference band')
 
 # A weapon must never out-reach the staff family's own maximum; that is the shape of the
 # defect this gate exists to catch.

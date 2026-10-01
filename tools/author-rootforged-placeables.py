@@ -42,9 +42,15 @@ def tube(name,points,radii,mat,sides=12,collision=True):
  # Keep bark/metal detail at a stable world scale. Short members use one full tile; long beams
  # repeat rather than stretching 512px of source art across four or eight metres.
  v_tiles=max(1.0,path_length/1.75)
+ previous_tangent=None;previous_side=None
  for k,p in enumerate(points):
   tangent=(points[min(k+1,len(points)-1)]-points[max(0,k-1)]).normalized()
-  side=Vector((0,1,0));up=tangent.cross(side).normalized()
+  if previous_tangent is None:
+   reference=Vector((1,0,0)) if abs(tangent.y)>.9 else Vector((0,1,0))
+   side=(reference-tangent*reference.dot(tangent)).normalized()
+  else:
+   side=previous_tangent.rotation_difference(tangent)@previous_side
+  up=tangent.cross(side).normalized();previous_tangent=tangent.copy();previous_side=side.copy()
   for j in range(sides):
    angle=math.tau*j/sides;r=radii[k]*(1+.055*math.sin(j*3.1+k*.43))
    vs.append(p+r*(math.cos(angle)*side+math.sin(angle)*up))
@@ -75,7 +81,10 @@ def detail_tube(name,points,radius,mat,sides=8):
 
 
 def path_axis(kind,w,h,t):
- if kind==5:return Vector(((w-.8)*(t-.5),0,.36+(h-.72)*math.sin(math.pi*t)))
+ # A narrow sinusoidal arch has a crown curvature radius smaller than its own iron
+ # straps. The inner strap folds back through itself. A parabolic crown preserves
+ # the same span/rise while leaving enough curvature radius for the complete section.
+ if kind==5:return Vector(((w-.8)*(t-.5),0,.36+(h-.72)*4*t*(1-t)))
  if kind==3:return Vector((0,0,h*t))
  return Vector((w*(t-.5),0,.5))
 

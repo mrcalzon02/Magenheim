@@ -1,16 +1,29 @@
 #!/usr/bin/env python3
 """Render neutral + biome-context review images for the one-run production scope."""
-import bpy,json,math
+import bpy,json,math,sys
 from pathlib import Path
 from mathutils import Vector,Matrix
 ROOT=Path(__file__).resolve().parents[1]
 MODELS=ROOT/"assets"/"models"
-OUT=ROOT/"dist"/"underworld-production-review"/"renders"
+requested=set(sys.argv[sys.argv.index('--')+1:]) if '--' in sys.argv else set()
+review_root=ROOT/'dist'/('underworld-selected-review' if requested else 'underworld-production-review')
+OUT=review_root/"renders"
 OUT.mkdir(parents=True,exist_ok=True)
 scope=json.loads((ROOT/"tools"/"underworld-production-scope.json").read_text())
 catalog=json.loads((MODELS/"catalog.json").read_text())
+if requested:
+    # Targeted payload gates admit additions before the next whole-library catalog refresh.
+    # Reviews may read those real triplets without rewriting that global validation artifact.
+    known={entry['id'] for entry in catalog}
+    for model_id in sorted(requested-known):
+        source=MODELS/'source'/(model_id+'.blend')
+        if source.parent != MODELS/'source' or not all((MODELS/folder/(model_id+suffix)).is_file()
+                for folder,suffix in (('source','.blend'),('glb','.glb'),('runtime','.model.json'))):
+            raise RuntimeError('Selected review has no authored source/export triplet: '+model_id)
+        catalog.append({'id':model_id,'source':'source/'+source.name})
 
 def admitted(model_id):
+    if requested: return model_id in requested
     return any(model_id.startswith(prefix) for prefix in scope["review_prefixes"])
 
 def group(model_id):
@@ -44,7 +57,7 @@ def context(model_id):
 def render(entry,condition):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc=bpy.context.scene
-    sc.render.engine="BLENDER_EEVEE_NEXT"
+    sc.render.engine="BLENDER_EEVEE"
     sc.render.resolution_x=sc.render.resolution_y=320
     sc.render.resolution_percentage=100
     sc.render.image_settings.file_format="PNG"
@@ -87,10 +100,12 @@ def render(entry,condition):
     print("RENDERED",entry["id"],condition,flush=True)
 
 selected=sorted((e for e in catalog if admitted(e["id"])),key=lambda e:e["id"])
-if len(selected)!=150: raise RuntimeError(f"Production review scope must contain exactly 150 admitted models, found {len(selected)}")
+if requested:
+    if {entry['id'] for entry in selected} != requested: raise RuntimeError('Selected review contains unknown models')
+elif len(selected)!=150: raise RuntimeError(f"Production review scope must contain exactly 150 admitted models, found {len(selected)}")
 index=[]
 for entry in selected:
     for condition in ("neutral","context"): render(entry,condition)
     index.append({"id":entry["id"],"group":group(entry["id"])})
-(ROOT/"dist"/"underworld-production-review"/"index.json").write_text(json.dumps(index,indent=2)+"\n")
+(review_root/"index.json").write_text(json.dumps(index,indent=2)+"\n")
 print("RENDERED production review",len(selected),"models x 2 lighting conditions",flush=True)

@@ -123,14 +123,14 @@ try {
     }
     # Creature source fidelity gates require Blender rather than Python's standard runtime.
     # They inspect only Magenheim-owned source art and never mutate vanilla/foreign content.
-    foreach ($creatureGate in @('verify-stone-guardian','verify-underworld-sporeling','verify-fungal-junctions')) { # TEMP: committed capcrawler .blend predates the repaired production-detail source; regenerate before restoring this gate
+    foreach ($creatureGate in @('verify-stone-guardian','verify-underworld-sporeling','verify-underworld-capcrawler','verify-fungal-junctions')) {
         & "$PSScriptRoot/tools/blender.ps1" $creatureGate
         if ($LASTEXITCODE -ne 0) { throw "Creature source validation failed: $creatureGate" }
     }
     # Gameplay-scale review plates are authoritative local acceptance for authored creatures:
     # source metrics alone cannot prove silhouette, ground contact, material separation or motion
     # readability. Each renderer clears stale plates and requires a complete fresh review set.
-    foreach ($reviewGate in @('render-underworld-sporeling-review')) { # TEMP: committed capcrawler .blend predates the repaired production-detail source; regenerate before restoring this gate
+    foreach ($reviewGate in @('render-underworld-sporeling-review','render-underworld-capcrawler-review')) {
         & "$PSScriptRoot/tools/blender.ps1" $reviewGate
         if ($LASTEXITCODE -ne 0) { throw "Creature visual review rendering failed: $reviewGate" }
     }
@@ -179,7 +179,7 @@ try {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'icon.png') -Destination $package -Force
     New-Item -ItemType Directory -Force -Path "$package/assets/earth", "$package/docs/validation" | Out-Null
     Copy-Item -Path "$PSScriptRoot/assets/earth/*preview.png" -Destination "$package/assets/earth" -Force
-    foreach ($record in @('2026-09-14-earth-content-package.md', '2026-09-14-workshop-content.md', '2026-09-15-inventory-changed-reflection-repair.md')) { Copy-Item -LiteralPath "$PSScriptRoot/docs/validation/$record" -Destination "$package/docs/validation" -Force }
+    foreach ($record in @('2026-09-14-earth-content-package.md', '2026-09-14-workshop-content.md', '2026-09-15-inventory-changed-reflection-repair.md', '2026-09-30-0.0.158-integrated-candidate.md')) { Copy-Item -LiteralPath "$PSScriptRoot/docs/validation/$record" -Destination "$package/docs/validation" -Force }
     $manifest = @{ name='Magenheim'; version_number=$pluginVersion; website_url='https://github.com/mrcalzon02/Magenheim'; description=[string]$release.description; dependencies=@('denikson-BepInExPack_Valheim-5.4.2350','ValheimModding-Jotunn-2.30.0','ValheimModding-JsonDotNET-13.0.4') }
     $manifest | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $package 'manifest.json')
     $hashes = @(Get-ChildItem -LiteralPath $package -File -Recurse | Sort-Object FullName | ForEach-Object { [ordered]@{ path=$_.FullName.Substring($package.Length + 1).Replace('\','/'); sha256=(Get-FileHash -LiteralPath $_.FullName).Hash } })

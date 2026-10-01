@@ -7,8 +7,9 @@ internal static class TrueBlacksmithingConfig
 {
     private const string Section = "Modules.TrueBlacksmithing";
     private static ConfigEntry<bool>? _enabled;
+    private static bool _startupEnabled;
 
-    internal static bool Enabled => _enabled?.Value ?? false;
+    internal static bool Enabled => _startupEnabled;
 
     internal static void Configure(ConfigFile config)
     {
@@ -21,5 +22,6 @@ internal static class TrueBlacksmithingConfig
             "Enable the optional True Blacksmithing manufacturing overhaul. Restart required. "
             + "The fail-safe fallback is mandatory: if the subsystem cannot activate cleanly, "
             + "Magenheim must retain or restore its baseline crafting behavior for that session.");
+        _startupEnabled = _enabled.Value;
     }
 }

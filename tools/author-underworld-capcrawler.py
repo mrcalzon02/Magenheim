@@ -86,7 +86,7 @@ def action_fcurves(act):
  return curves
 
 def action(name,end,poses):
- act=bpy.data.actions.new(name); arm.animation_data_create(); arm.animation_data.action=act
+ act=bpy.data.actions.new(name); act.use_fake_user=True; arm.animation_data_create(); arm.animation_data.action=act
  for frame,bone_poses in poses.items():
   for bname,rot in bone_poses.items():
    pb=arm.pose.bones.get(bname)
@@ -115,9 +115,12 @@ action('Capcrawler_Hit',16,{1:neutral,5:{'Body':(.10,0,.12)},16:neutral})
 action('Capcrawler_Stagger',30,{1:neutral,8:{'Body':(.20,0,.25),'Mandible_L':(.10,0,.18),'Mandible_R':(.10,0,-.18)},18:{'Body':(-.08,0,-.10)},30:neutral})
 action('Capcrawler_Death',54,{1:neutral,16:{'Body':(.12,0,.10)},30:{'Body':(.35,0,.55),'Mandible_L':(.25,0,.20),'Mandible_R':(.25,0,-.20)},54:{'Body':(.15,0,1.42),'Mandible_L':(.55,0,.35),'Mandible_R':(.55,0,-.35)}})
 arm.animation_data.action=None
+for bone in arm.pose.bones:
+ bone.rotation_euler=(0,0,0);bone.location=(0,0,0);bone.scale=(1,1,1)
 for name,bname in parts.items():
  o=bpy.data.objects[name]; mod=o.modifiers.new('CapcrawlerArmature','ARMATURE'); mod.object=arm; vg=o.vertex_groups.new(name=bname); vg.add(range(len(o.data.vertices)),1.0,'REPLACE'); o.parent=arm
 meshes=[o for o in bpy.context.scene.objects if o.type=='MESH']
+bpy.context.view_layer.update()
 if len(meshes)<60: raise RuntimeError(f'Capcrawler detail regression: {len(meshes)} mesh parts')
 for o in meshes:
  uv=o.data.uv_layers.get('CapcrawlerUV')

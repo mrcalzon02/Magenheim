@@ -13,7 +13,7 @@ namespace Magenheim.Runtime;
 internal sealed class FractureDeepSigilFamily : IUnderworldBiomeStructureFamily
 {
     private const int FamilySalt = 0x6A31C5E9;
-    private const string CanonicalBiomeId = "magenheim.underworld.biome.fracture";
+    private const string CanonicalBiomeId = "magenheim.underworld.biome.fracture_zones";
     public string Kind => "fracture-deep-sigil";
     public UnderworldTerrainBiome Biome => UnderworldTerrainBiome.FractureZones;
     public int PlacementSlot => 5;

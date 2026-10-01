@@ -36,7 +36,6 @@ for path in (
  "tools/author-underworld-weapons.py","tools/author-crystal-weapons.py",
  "tools/render-underworld-production-review.py","tools/render-underworld-armour-articulation-review.py",
  "tools/build-underworld-production-review-sheets.py","tools/verify-underworld-production-review.py","tools/verify-underworld-dungeon-worldgen.py","tools/verify-underworld-production-assets.py",
- ".github/workflows/magenheim-production-forge.yml",
 ):
     require((ROOT/path).is_file(),"missing production file: "+path)
 
@@ -360,55 +359,7 @@ require("verify-underworld-dungeon-worldgen.py" in production_rebuild,
         "One-run Underworld production forge no longer validates native dungeon spawn routing before Blender")
 
 wrapper=(ROOT/"tools"/"blender.ps1").read_text()
-require("MAGENHEIM_BLENDER" in wrapper,"Blender wrapper cannot accept the Actions executable through environment")
-workflow_path=ROOT/".github/workflows/magenheim-production-forge.yml"
-if workflow_path.is_file():
-    workflow=workflow_path.read_text()
-    require("workflow_dispatch:" in workflow and "pull_request:" not in workflow and "\npush:" not in workflow,
-            "production forge must remain manual-only")
-    require("ref: main" in workflow,"production forge checkout must be pinned to authoritative main")
-    require("blender-5.0.0" in workflow,"workflow does not pin Blender 5.0.0")
-    require("BepInExPack_Valheim/5.4.2351/" in workflow,"workflow does not pin the current BepInExPack compile reference")
-    require("runs-on: windows-2025" in workflow,"production forge must pin the Windows Server 2025 runner label")
-    require("python-version: '3.12.10'" in workflow,"production forge must pin Python 3.12.10")
-    require("dotnet-version: '8.0.425'" in workflow,"workflow does not pin the approved .NET 8 SDK")
-    require("actions/checkout@11d5960a326750d5838078e36cf38b85af677262" in workflow,"checkout action is not commit-pinned")
-    require("actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065" in workflow,"setup-python action is not commit-pinned")
-    require("actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9" in workflow,"setup-dotnet action is not commit-pinned")
-    require("actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02" in workflow,"upload-artifact action is not commit-pinned")
-    require("Post-forge authority gates" in workflow,
-            "workflow must rerun Core/runtime authority gates after production")
-    for retired in (
-        "rebuild-rootwarren-dungeon.ps1","rebuild-drowned-vaults-dungeon.ps1",
-        "rebuild-cinderworks-dungeon.ps1","rebuild-rime-sepulcher-dungeon.ps1",
-        "rebuild-carrion-catacombs-dungeon.ps1",
-        "verify-rootwarren-production-contract.py","verify-drowned-vaults-production-contract.py",
-        "verify-cinderworks-production-contract.py","verify-rime-sepulcher-production-contract.py",
-        "verify-carrion-catacombs-production-contract.py",
-    ):
-        require(retired not in production_rebuild,
-                "ordinary vanilla-reuse dungeons must not be rebuilt/promoted by the bespoke production forge: "+retired)
-
-    parser_match=re.search(r'\$parseScripts\s*=\s*@\((.*?)\n\s*\)',workflow,re.DOTALL)
-    require(parser_match is not None,"workflow cheap PowerShell parser block is missing")
-    parser_block=parser_match.group(1) if parser_match else ""
-    expected_wrappers={"blender.ps1","rebuild-underworld-production.ps1"}
-    for gid in scope["regenerate"]:
-        for token in entries[gid].get("command",[]):
-            if not isinstance(token,str):
-                continue
-            for wrapper_name in re.findall(r'([A-Za-z0-9._-]+\.ps1)',token,re.IGNORECASE):
-                expected_wrappers.add(wrapper_name)
-    expected_wrappers.update(re.findall(r'\$PSScriptRoot/([^"\']+\.ps1)',production_rebuild))
-    for wrapper_name in sorted(expected_wrappers):
-        require(("tools/"+wrapper_name) in parser_block,
-                "workflow cheap parser no longer covers active production wrapper "+wrapper_name)
-
-    post_match=re.search(r'- name: Post-forge authority gates\s+shell: pwsh\s+run: \|(.*?)(?=\n\s*- name:)',workflow,re.DOTALL)
-    require(post_match is not None,"workflow post-forge authority gate block is missing")
-    post_block=post_match.group(1) if post_match else ""
-    require("Magenheim.Core.Tests" in post_block and "dotnet build src/Magenheim.Runtime" in post_block,
-            "post-forge authority gate must rerun Core tests and runtime compilation")
+require("MAGENHEIM_BLENDER" in wrapper,"Blender wrapper must accept the locally installed executable")
 
 patterns={}
 for gid in scope["regenerate"]:

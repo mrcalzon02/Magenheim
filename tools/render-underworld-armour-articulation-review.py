@@ -73,7 +73,7 @@ def render(model_id):
         if obj.type in {"CAMERA","LIGHT"}:
             bpy.data.objects.remove(obj,do_unlink=True)
 
-    scene.render.engine="BLENDER_EEVEE_NEXT"
+    scene.render.engine="BLENDER_EEVEE"
     scene.render.resolution_x=SIZE
     scene.render.resolution_y=SIZE
     scene.render.resolution_percentage=100

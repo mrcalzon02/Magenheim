@@ -20,11 +20,16 @@ bpy.context.view_layer.objects.active=arm; arm.select_set(True); bpy.context.vie
 ACTIONS={'Idle':48,'Scuttle':28,'TurnLeft':24,'TurnRight':24,'AttackLeft':22,'AttackRight':22,'FrontStrike':20,'Guard':32,'Ram':30,'Hit':16,'Stagger':30,'Death':56}
 LEGS=tuple(f'{s}{i}' for s in ('L','R') for i in (1,2,3)); SEGS=('Upper','Lower','Foot')
 
+def action_fcurves(action):
+ direct=getattr(action,'fcurves',None)
+ if direct is not None:return list(direct)
+ return [fc for layer in action.layers for strip in layer.strips for bag in strip.channelbags for fc in bag.fcurves]
+
 def reset():
     for p in arm.pose.bones:
         p.rotation_mode='XYZ'; p.rotation_euler=(0,0,0); p.location=(0,0,0); p.scale=(1,1,1)
 def action(name):
-    a=bpy.data.actions.get('BC_'+name) or bpy.data.actions.new('BC_'+name); a.use_fake_user=True
+    a=bpy.data.actions.get('BC_'+name) or bpy.data.actions.new('BC_'+name); a.use_fake_user=True; a.frame_start=1; a.frame_end=ACTIONS[name]
     if arm.animation_data is None: arm.animation_data_create()
     arm.animation_data.action=a; reset(); return a
 def key(bone,frame,rot=None,loc=None):
@@ -95,7 +100,7 @@ for f,roll,drop in ((1,0,0),(16,16,-.03),(32,48,-.10),(45,76,-.18),(56,86,-.22))
     for tag in LEGS: key(tag+'_Upper',f,(min(42,roll*.44),0,0)); key(tag+'_Lower',f,(-min(48,roll*.50),0,0)); key(tag+'_Foot',f,(min(22,roll*.22),0,0))
 
 # Structural contract gates.
-def bone_has(a,b): return any(('pose.bones["%s"]'%b) in fc.data_path for fc in a.fcurves)
+def bone_has(a,b): return any(('pose.bones["%s"]'%b) in fc.data_path for fc in action_fcurves(a))
 missing=[n for n in ACTIONS if bpy.data.actions.get('BC_'+n) is None]
 if missing: raise RuntimeError(f'Missing Basalt Crawler actions: {missing}')
 sc=bpy.data.actions['BC_Scuttle']; absent=[f'{t}_{s}' for t in LEGS for s in SEGS if not bone_has(sc,f'{t}_{s}')]
@@ -103,7 +108,7 @@ if absent: raise RuntimeError(f'Scuttle missing six-leg deformation stages: {abs
 for n in ('Guard','Ram'):
     if not bone_has(bpy.data.actions['BC_'+n],'Brow'): raise RuntimeError(f'{n} does not articulate Brow guard surface')
 for a in [bpy.data.actions['BC_'+n] for n in ACTIONS]:
-    if any('pose.bones["Root"]' in fc.data_path and 'location' in fc.data_path for fc in a.fcurves): raise RuntimeError(f'{a.name} illegally animates Root.location')
+    if any('pose.bones["Root"]' in fc.data_path and 'location' in fc.data_path for fc in action_fcurves(a)): raise RuntimeError(f'{a.name} illegally animates Root.location')
 arm['action_contract']=','.join(ACTIONS)
 sc=bpy.context.scene; sc['magenheim_authored_actions']=','.join('BC_'+name for name in ACTIONS); sc['magenheim_skinning']='rigid-segment-weighted'
 arm['animation_fidelity']='alternating-tripod low scuttle; heavy mirrored pivots; whole-body lateral/frontal strikes; physical brow shutter guard; braced in-place ram; lithic flank collapse'

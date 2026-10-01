@@ -54,7 +54,7 @@ for s in ('L','R'):
   if bpy.data.objects[f'Capcrawler_{s}_Leg{i}B'].vertex_groups.get(f'{s}_Tibia{i}') is None: raise RuntimeError(f'{s}{i}: distal leg is not tibia-bound')
   if bpy.data.objects[f'Capcrawler_{s}_FootPad{i}'].vertex_groups.get(f'{s}_Tarsus{i}') is None: raise RuntimeError(f'{s}{i}: foot pad is not tarsus-bound')
 for side,sign in (('L',-1),('R',1)):
- side_scutes=[o for o in scutes if f'_{side}' in o.name]
+ side_scutes=[o for o in scutes if o.name.startswith(f'Capcrawler_RimScute_{side}')]
  if len(side_scutes)!=3: raise RuntimeError(f'{side} fungal rim incomplete')
  centers=[(world_bounds(o)[0][0]+world_bounds(o)[1][0])*.5 for o in side_scutes]
  if sign<0 and max(centers)>-bw*.40: raise RuntimeError('Left rim scutes collapsed into body')

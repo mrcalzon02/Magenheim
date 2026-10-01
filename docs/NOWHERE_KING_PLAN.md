@@ -1,6 +1,13 @@
 # Magenheim — The Nowhere King Implementation Plan
 
 Status: Durable implementation authority
+
+**2026-09-30 progression correction (0.0.158):** The final encounter belongs to the native
+Underworld Great Decay, after all six Deepstones are mounted and awakened. Surface Queen defeat
+opens Deep Gate entry; historical King victories preserve access for existing saves. The older
+Mistlands-first placement and King-before-Underworld wording below is superseded. Throne and
+discovery prefab IDs remain unchanged for save readability. Replacement rewards consume a real
+King trophy at the Crown Reliquary; trophies themselves are encounter-only.
 Scope: Dark Throne location, Nowhere King boss, encounter, persistence, combat, presentation, drops, trophy, Null Mantle, and Scepter of Inversion
 Related authority: `MISTLANDS_CRYSTAL_FOES_PLAN.md` owns the reusable Mistlands crystal-spawner system consumed by the Dark Throne.
 

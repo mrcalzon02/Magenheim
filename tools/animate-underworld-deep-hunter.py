@@ -18,6 +18,15 @@ if not arm or arm.get('magenheim_asset')!='deep-hunter' or arm.get('host_rig')!=
 CHAIN=['Spine_1','Spine_2','Spine_3','Spine_4','Spine_5','Tail_1','Tail_2']
 GAINS=[.16,.25,.38,.56,.78,1.05,1.38]
 
+def action_fcurves(action):
+ direct=getattr(action,'fcurves',None)
+ if direct is not None:return list(direct)
+ out=[]
+ for layer in getattr(action,'layers',()):
+  for strip in getattr(layer,'strips',()):
+   for bag in getattr(strip,'channelbags',()):out.extend(bag.fcurves)
+ return out
+
 def clear():
     for p in arm.pose.bones:
         p.rotation_mode='XYZ'; p.rotation_euler=(0,0,0); p.location=(0,0,0); p.scale=(1,1,1)
@@ -25,7 +34,7 @@ def clear():
 def action(name,end,poses):
     old=bpy.data.actions.get(name)
     if old: bpy.data.actions.remove(old)
-    a=bpy.data.actions.new(name); arm.animation_data_create(); arm.animation_data.action=a; clear()
+    a=bpy.data.actions.new(name); a.use_fake_user=True; arm.animation_data_create(); arm.animation_data.action=a; clear()
     for frame,pose in poses.items():
         for bone,data in pose.items():
             p=arm.pose.bones.get(bone)
@@ -74,11 +83,11 @@ names=['DeepHunter_SwimIdle','DeepHunter_Cruise','DeepHunter_Sprint','DeepHunter
 for name in names:
     a=bpy.data.actions.get(name)
     if not a: raise RuntimeError(f'Missing action {name}')
-    for fc in getattr(a,'fcurves',[]): 
+    for fc in action_fcurves(a): 
         if 'pose.bones["Root"].location' in fc.data_path: raise RuntimeError(f'{name}: Root translation forbidden')
 for name in ['DeepHunter_Cruise','DeepHunter_Sprint','DeepHunter_TailStrike']:
     a=bpy.data.actions[name]
-    groups={g.name for g in a.groups}
+    groups={fc.group.name for fc in action_fcurves(a) if fc.group is not None}
     missing=[b for b in CHAIN if b not in groups]
     if missing: raise RuntimeError(f'{name}: missing seven-stage deformation {missing}')
 arm.animation_data.action=None

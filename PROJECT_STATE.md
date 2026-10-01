@@ -1,4 +1,31 @@
-# Current source candidate - 0.0.155 (2026-09-29)
+# Current source candidate - 0.0.158 (2026-09-30)
+
+Authoritative main was reconciled against GitHub at 2c16f25f74364d2596ce82e62674c4ebd40d2d89.
+Source/release metadata was 0.0.157, installed assembly 0.0.156, and schema remains 5. Earlier
+0.0.155 ordinary-dungeon Planned statements below are historical: all five donor families are now
+RuntimeReady alongside the separate Deep Fracture lane.
+
+0.0.158 repairs seven compilation errors, corridor endpoints enclosed by packed room cells,
+stale absolute-elevation test assumptions, native final-arena placement and the progression loop
+that previously put the King before Underworld entry. Surface Queen defeat opens entry; existing
+King victories preserve access. The Great Decay King requires all six mounted/awakened Deepstones.
+Royal replacement recipes require earned trophies at the Crown Reliquary; trophy fabrication is
+removed. Runtime peer fingerprints include the release and final-progression policy.
+
+The existing production framework has generated the fourteen missing raw material models,
+eighteen refined material models, three geothermal vent models and forty material icons. Broader
+production and acceptance evidence belongs in the execution record, not an inferred release claim.
+Six native biome boss encounters now use authored apex bodies, canonical trophy drops, prerequisite
+Deepstones and persistent native boss ZDOs. Six authored arena layouts are bound to their actual
+locations; Rift Titan identities now match canonical data. Five flora species gain native
+harvest lifecycles, with six authored felling fragments and three late-biome standing models.
+All seven ordinary Fracture creatures now have their own model/rig/action payloads.
+
+True Blacksmithing remains optional/default-disabled and its actual manufacturing is incomplete.
+Its rollback now retains failed restoration entries, retries at teardown and rejects subsequent
+mutations; the master switch is captured at startup.
+
+# Historical source candidate - 0.0.155 (2026-09-29)
 
 Deep structure work is now active. The established Deep Fracture expedition is admitted as a sparse
 Underworld Fracture Zones dungeon: six entrances, 1.4 km minimum similar-site spacing, reusing the

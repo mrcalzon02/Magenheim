@@ -24,6 +24,15 @@ JOINT=mat('Shellback_JointTissue',(.11,.075,.06),.54)
 BELLY=mat('Shellback_VulnerableUnderside',(.24,.15,.105),.61)
 CLAW=mat('Shellback_HeavyClaw',(.095,.12,.105),.79)
 EYE=mat('Shellback_Eye',(.018,.022,.018),.30)
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from magenheim_creature_pbr import bind as bind_creature_pbr
+bind_creature_pbr(bpy,bpy.data.materials['Shellback_LaminateShell'],'abyss-shellback','laminated-shell')
+bind_creature_pbr(bpy,bpy.data.materials['Shellback_MineralEdge'],'abyss-shellback','mineral-rim-keel')
+bind_creature_pbr(bpy,bpy.data.materials['Shellback_JointTissue'],'abyss-shellback','joint-tissue')
+bind_creature_pbr(bpy,bpy.data.materials['Shellback_VulnerableUnderside'],'abyss-shellback','vulnerable-underside')
+bind_creature_pbr(bpy,bpy.data.materials['Shellback_HeavyClaw'],'abyss-shellback','heavy-claw')
+bind_creature_pbr(bpy,bpy.data.materials['Shellback_Eye'],'abyss-shellback','eye')
 parts={}
 def uv(o):
     layer=o.data.uv_layers.new(name='AbyssShellbackUV'); xs=[v.co.x for v in o.data.vertices]; ys=[v.co.y for v in o.data.vertices]
@@ -32,7 +41,7 @@ def uv(o):
         for li in p.loop_indices:
             co=o.data.vertices[o.data.loops[li].vertex_index].co; layer.data[li].uv=((co.x-xmin)/dx,(co.y-ymin)/dy)
 def ico(name,loc,scale,material,bone,sub=3):
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub+1,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale
     bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(material); uv(o); parts[name]=bone; return o
 def seg(name,a,b,r,material,bone,verts=14):
     a,b=Vector(a),Vector(b); d=b-a; bpy.ops.mesh.primitive_cylinder_add(vertices=verts,radius=r,depth=d.length,location=(a+b)/2); o=bpy.context.object; o.name=name

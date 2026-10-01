@@ -2,7 +2,26 @@
 
 **Magic begins as geology.**
 
-## 0.0.155 testing candidate
+## 0.0.158 integrated completion candidate
+
+The Deep Gate opens after the Surface Queen is defeated; existing worlds with a recorded Nowhere
+King victory retain access. New Dark Throne and royal boss-stone placement belongs to the native
+Underworld Great Decay. The King becomes available after all six Deepstones have their trophies
+mounted and Deep Boons awakened. The final arena participates in native placement reconciliation
+without joining or replacing either dungeon architecture lane.
+
+All five ordinary expanded-vanilla dungeon families are RuntimeReady together. Deep Fracture retains
+its separate twenty-district architecture. The production pass supplies all 22 raw and 18 refined material visuals, three geothermal vent
+families, and all 42 ordinary creature bodies through the existing Blender production path. Royal replacement equipment now
+requires a genuine King trophy at the Crown Reliquary; the trophy itself is encounter-only.
+
+This remains a testing candidate, not a finished-release claim. True Blacksmithing manufacturing,
+rock-face flora, final reward appearance and integrated game/multiplayer acceptance remain explicit
+completion work. Six native boss encounters and authored arenas now connect trophies to Deepstones;
+five harvestable flora species use native destruction and species-specific yields.
+See the current closeout and validation record for observed build, asset and installation evidence.
+
+## Historical 0.0.155 source checkpoint (superseded dungeon admission)
 
 Deep structure work is now active. The existing Deep Fracture expedition is admitted as a sparse
 Fracture Zones dungeon inside the Underworld: six entrances per world, at least 1.4 km apart, using

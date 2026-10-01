@@ -65,15 +65,15 @@ public static class UnderworldWorldIdentityFactory
 }
 
 /// <summary>
-/// The unlock consumes the existing durable Dark Throne encounter lifecycle. It does not
-/// introduce a second Nowhere King completion flag.
+/// Surface admission precedes the Underworld final encounter. Historical King victories
+/// remain an access migration for existing saves.
 /// </summary>
 public static class UnderworldUnlockRules
 {
-    public static bool IsUnlocked(DarkThroneEncounterSnapshot encounter)
+    public static bool IsUnlocked(bool queenDefeated, DarkThroneEncounterSnapshot encounter)
     {
         if (encounter is null) throw new ArgumentNullException(nameof(encounter));
         encounter.Validate();
-        return encounter.Lifecycle == DarkThroneEncounterLifecycle.Defeated;
+        return queenDefeated || encounter.Lifecycle == DarkThroneEncounterLifecycle.Defeated;
     }
 }

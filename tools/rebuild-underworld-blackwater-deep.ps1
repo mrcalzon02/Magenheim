@@ -22,5 +22,5 @@ if ($LASTEXITCODE -ne 0) { throw 'Blackwater authoring failed.' }
 if ($LASTEXITCODE -ne 0) { throw 'Blackwater source verification failed.' }
 & "$PSScriptRoot/blender.ps1" export-model-assets @ids
 if ($LASTEXITCODE -ne 0) { throw 'Blackwater export failed.' }
-& python "$PSScriptRoot/verify-model-assets.py"
+& python "$PSScriptRoot/verify-model-assets.py" @ids
 if ($LASTEXITCODE -ne 0) { throw 'Blackwater model verification failed.' }

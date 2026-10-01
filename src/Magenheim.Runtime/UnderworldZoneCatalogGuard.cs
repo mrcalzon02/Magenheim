@@ -218,7 +218,9 @@ internal static class UnderworldZoneCatalogGuard
     private static bool IsMagenheimOwned(string name) =>
         !string.IsNullOrWhiteSpace(name) &&
         (name.StartsWith(OwnedPrefix, StringComparison.Ordinal) ||
-         name.StartsWith(OwnedGeodePrefix, StringComparison.Ordinal));
+         name.StartsWith(OwnedGeodePrefix, StringComparison.Ordinal) ||
+         string.Equals(name, Magenheim.Core.DarkThrone.DarkThroneLocationCatalog.DarkThrone.PrefabName, StringComparison.Ordinal) ||
+         string.Equals(name, NowhereKingBossStoneRegistrar.LocationPrefabName, StringComparison.Ordinal));
 
     private static string Display(string name) =>
         string.IsNullOrWhiteSpace(name) ? "<unnamed>" : name;

@@ -33,9 +33,18 @@ for name,end in expected.items():
     if int(a.frame_start)!=1 or int(a.frame_end)!=end: raise RuntimeError(f'{name}: frame contract regression {a.frame_start}-{a.frame_end}')
 
 CHAIN=['Spine_1','Spine_2','Spine_3','Spine_4','Tail_1','Tail_2']
+def action_fcurves(action):
+ direct=getattr(action,'fcurves',None)
+ if direct is not None:return list(direct)
+ out=[]
+ for layer in getattr(action,'layers',()):
+  for strip in getattr(layer,'strips',()):
+   for bag in getattr(strip,'channelbags',()):out.extend(bag.fcurves)
+ return out
+
 def curves(action,bone,index=None):
     found=[]
-    for fc in action.fcurves:
+    for fc in action_fcurves(action):
         if f'pose.bones["{bone}"]' in fc.data_path and (index is None or fc.array_index==index): found.append(fc)
     return found
 def peak(action,bone,index=2):

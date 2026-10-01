@@ -145,14 +145,14 @@ internal sealed class TrueBlacksmithingModule : IDisposable
             + exception);
 
         _mutationJournal?.RollbackAll();
-        _mutationJournal = null;
+        if (_mutationJournal?.HasPendingRollback != true) _mutationJournal = null;
         _state = TrueBlacksmithingModuleState.Faulted;
     }
 
     public void Dispose()
     {
         _mutationJournal?.RollbackAll();
-        _mutationJournal = null;
+        if (_mutationJournal?.HasPendingRollback != true) _mutationJournal = null;
 
         if (_state != TrueBlacksmithingModuleState.Faulted)
         {

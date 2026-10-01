@@ -6,30 +6,19 @@ import csv,json,math,struct,hashlib,zlib,sys
 _texture_range={}
 
 def _png_luminance_range(png):
- """Smallest and largest sampled channel value in an 8-bit PNG."""
- pos=8;idat=b'';width=height=colour=0
- while pos<len(png):
-  length=struct.unpack('>I',png[pos:pos+4])[0];kind=png[pos+4:pos+8];body=png[pos+8:pos+8+length]
-  if kind==b'IHDR':width,height,_depth,colour=struct.unpack('>IIBB',body[:10])
-  elif kind==b'IDAT':idat+=body
-  elif kind==b'IEND':break
-  pos+=12+length
- channels={0:1,2:3,4:2,6:4}.get(colour)
- if channels is None or not idat:return (0,255)
- raw=zlib.decompress(idat);stride=width*channels;values=[];previous=bytearray(stride);offset=0
- for y in range(height):
-  filter_type=raw[offset];offset+=1;line=bytearray(raw[offset:offset+stride]);offset+=stride
-  for x in range(stride):
-   left=line[x-channels] if x>=channels else 0;up=previous[x];corner=previous[x-channels] if x>=channels else 0
-   if filter_type==1:line[x]=(line[x]+left)&255
-   elif filter_type==2:line[x]=(line[x]+up)&255
-   elif filter_type==3:line[x]=(line[x]+((left+up)>>1))&255
-   elif filter_type==4:
-    predictor=left+up-corner;da,db,dc=abs(predictor-left),abs(predictor-up),abs(predictor-corner)
-    line[x]=(line[x]+(left if (da<=db and da<=dc) else (up if db<=dc else corner)))&255
-  if y%16==0:values.extend(line[0:stride:channels*4])
-  previous=line
- return (min(values),max(values)) if values else (0,255)
+ """Inspect every red-channel pixel with Pillow's native PNG decoder.
+
+ The old Python filter reconstruction dominated verification of the new 2048px creature
+ maps. This preserves the tonal-range requirement and checks all pixels instead of a sparse
+ sample, while retaining normal PNG decoder validation for malformed images.
+ """
+ from io import BytesIO
+ from PIL import Image
+ with Image.open(BytesIO(png)) as image:
+  assert image.format == 'PNG', 'Texture must be PNG'
+  image.load()
+  return image.convert('RGB').getchannel('R').getextrema()
+
 
 root=Path(__file__).resolve().parents[1];assets=root/'assets/models'
 selected=set(sys.argv[1:])

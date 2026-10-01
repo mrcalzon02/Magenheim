@@ -25,6 +25,16 @@ MOUTH=mat('DeepHunter_OralTissue',(.145,.035,.032),.48)
 TOOTH=mat('DeepHunter_Tooth',(.58,.55,.43),.44)
 SCAR=mat('DeepHunter_ScarTissue',(.19,.085,.072),.64)
 EYE=mat('DeepHunter_Eye',(.055,.075,.065),.25)
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from magenheim_creature_pbr import bind as bind_creature_pbr
+bind_creature_pbr(bpy,bpy.data.materials['DeepHunter_DorsalHide'],'deep-hunter','dorsal-hide')
+bind_creature_pbr(bpy,bpy.data.materials['DeepHunter_VentralHide'],'deep-hunter','ventral-hide')
+bind_creature_pbr(bpy,bpy.data.materials['DeepHunter_FinTissue'],'deep-hunter','fin-tissue')
+bind_creature_pbr(bpy,bpy.data.materials['DeepHunter_OralTissue'],'deep-hunter','oral-tissue')
+bind_creature_pbr(bpy,bpy.data.materials['DeepHunter_Tooth'],'deep-hunter','mineralized-teeth')
+bind_creature_pbr(bpy,bpy.data.materials['DeepHunter_ScarTissue'],'deep-hunter','old-scar')
+bind_creature_pbr(bpy,bpy.data.materials['DeepHunter_Eye'],'deep-hunter','recessed-eye')
 parts={}
 def uv(o):
     layer=o.data.uv_layers.new(name='DeepHunterUV'); xs=[v.co.x for v in o.data.vertices]; ys=[v.co.y for v in o.data.vertices]
@@ -33,7 +43,7 @@ def uv(o):
         for li in p.loop_indices:
             co=o.data.vertices[o.data.loops[li].vertex_index].co; layer.data[li].uv=((co.x-xmin)/dx,(co.y-ymin)/dy)
 def ico(name,loc,scale,material,bone,sub=3):
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub+1,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale
     bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(material); uv(o); parts[name]=bone; return o
 def mesh(name,verts,faces,material,bone):
     me=bpy.data.meshes.new(name+'Mesh'); me.from_pydata(verts,[],faces); me.update(); o=bpy.data.objects.new(name,me); bpy.context.collection.objects.link(o); me.materials.append(material); uv(o); parts[name]=bone; return o

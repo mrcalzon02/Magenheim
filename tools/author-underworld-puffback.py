@@ -18,23 +18,30 @@ def uv(o):
  return o
 
 def organic(name,loc,scale,material,sub=2):
- bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale; bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(material); return uv(o)
+ bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=max(sub,3),radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale; bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(material); return uv(o)
 def seg(name,a,b,r,material):
  d=Vector(b)-Vector(a); bpy.ops.mesh.primitive_cylinder_add(vertices=16,radius=r,depth=d.length,location=(Vector(a)+Vector(b))/2); o=bpy.context.object; o.name=name; o.rotation_mode='QUATERNION'; o.rotation_quaternion=Vector((0,0,1)).rotation_difference(d.normalized()); o.data.materials.append(material); return uv(o)
 
 bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
 hide=mat('PuffbackRootHide',(.20,.16,.11),.86); bladder=mat('PuffbackSporeBladder',(.45,.36,.20),.62); plate=mat('PuffbackFungalPlate',(.31,.25,.15),.78); gill=mat('PuffbackVentGill',(.62,.47,.25),.55)
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from magenheim_creature_pbr import bind as bind_creature_pbr
+bind_creature_pbr(bpy,bpy.data.materials['PuffbackRootHide'],'puffback','root-hide')
+bind_creature_pbr(bpy,bpy.data.materials['PuffbackSporeBladder'],'puffback','spore-bladder')
+bind_creature_pbr(bpy,bpy.data.materials['PuffbackFungalPlate'],'puffback','fungal-plate')
+bind_creature_pbr(bpy,bpy.data.materials['PuffbackVentGill'],'puffback','vent-gill')
 parts={}
 def keep(o,b): parts[o.name]=b; return o
 # Heavy, front-loaded neutral herbivore silhouette. The bladder is a modeled body mass, not painted detail.
-keep(organic('Puffback_Chest',(0,.20,1.34),(.70,.92,.60),hide,3),'Spine_2'); keep(organic('Puffback_Pelvis',(0,-.70,1.28),(.62,.68,.56),hide,3),'Pelvis')
-keep(seg('Puffback_Neck',(0,.78,1.42),(0,1.12,1.28),.34,hide),'Neck'); keep(organic('Puffback_Head',(0,1.30,1.18),(.48,.55,.38),hide,3),'Head')
+keep(organic('Puffback_Chest',(0,.20,1.34),(.70,.92,.60),hide,4),'Spine_2'); keep(organic('Puffback_Pelvis',(0,-.70,1.28),(.62,.68,.56),hide,4),'Pelvis')
+keep(seg('Puffback_Neck',(0,.78,1.42),(0,1.12,1.28),.34,hide),'Neck'); keep(organic('Puffback_Head',(0,1.30,1.18),(.48,.55,.38),hide,4),'Head')
 # Broad rooting muzzle and two hornlike fungal brow plates make the head readable during charge.
 keep(organic('Puffback_Muzzle',(0,1.70,1.04),(.46,.38,.25),hide,2),'Head')
 for side in (-1,1):
  s='L' if side<0 else 'R'; keep(seg(f'Puffback_BrowPlate_{s}',(side*.24,1.36,1.40),(side*.43,1.57,1.48),.10,plate),'Head')
 # Massive dorsal spore bladder plus secondary lobes; all are real silhouette geometry.
-keep(organic('Puffback_Bladder_Main',(0,-.18,1.92),(.88,1.04,.72),bladder,3),'Bladder_Main')
+keep(organic('Puffback_Bladder_Main',(0,-.18,1.92),(.88,1.04,.72),bladder,4),'Bladder_Main')
 for i,(loc,scale) in enumerate((((-.52,-.25,1.78),(.42,.55,.44)),((.50,-.34,1.80),(.40,.50,.42)),((0,-.78,1.72),(.52,.48,.40))),1): keep(organic(f'Puffback_Bladder_Lobe_{i}',loc,scale,bladder,2),'Bladder_Main')
 # Layered cap plates protect the bladder base without turning it into an armored combat beast.
 for i,(loc,scale) in enumerate((((-.48,.12,1.68),(.48,.34,.09)),((.47,.02,1.66),(.46,.32,.09)),((-.38,-.63,1.60),(.40,.30,.08)),((.38,-.68,1.58),(.38,.28,.08))),1): keep(organic(f'Puffback_BackPlate_{i}',loc,scale,plate,2),'Spine_2')

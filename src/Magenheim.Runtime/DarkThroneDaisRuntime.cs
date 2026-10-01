@@ -22,6 +22,10 @@ internal sealed class DarkThroneDaisRuntime : MonoBehaviour, Hoverable, Interact
         _interactionAnchor=interactionAnchor;
     }
     private Transform InteractionAnchor=>_interactionAnchor!=null?_interactionAnchor:transform;
+    internal string EncounterIdentity => _encounter?.EncounterIdentity ?? string.Empty;
+    internal bool IsWithinInteractionRange(Player player) => player != null &&
+        player.gameObject.scene.handle == gameObject.scene.handle &&
+        Vector3.Distance(player.transform.position, InteractionAnchor.position) <= 5f;
 
     public string GetHoverName()=>"Dark Throne";
     public float GetHoverOffset()=>0f;
@@ -34,7 +38,7 @@ internal sealed class DarkThroneDaisRuntime : MonoBehaviour, Hoverable, Interact
             return UnderworldCompatibility.IsAvailable
                 ? "Dark Throne\n[Use] Awaken the runes\n[Use + Malicious Blood] Summon the Nowhere King"
                 : "Dark Throne\n[Use + Malicious Blood] Summon the Nowhere King";
-        return "Dark Throne\nThe blackstone runes are dormant.";
+        return "Dark Throne\nAwaken all six Deepstones to face the Nowhere King.";
     }
 
     public bool Interact(Humanoid user,bool hold,bool alt)
@@ -54,9 +58,39 @@ internal sealed class DarkThroneDaisRuntime : MonoBehaviour, Hoverable, Interact
         if(user==null||item==null||_encounter==null||_encounter.IsKingActive||!_encounter.HasBeenDefeated)return false;
         if(item.m_dropPrefab==null||item.m_dropPrefab.name!=MaliciousBloodPrefabName)return false;
         if(!user.GetInventory().ContainsItem(item)||item.m_stack<1||Vector3.Distance(user.transform.position,InteractionAnchor.position)>5f)return false;
-        if(!_encounter.TryResummonKing())return false;
-        user.GetInventory().RemoveItem(item,1);
-        return true;
+        if(user is not Player player)return false;
+        var submitted = UnderworldDeepstoneInteractionRpc.TryResummonKing(this, player, out var diagnostic);
+        if(!string.IsNullOrEmpty(diagnostic))user.Message(MessageHud.MessageType.Center, diagnostic);
+        return submitted;
+    }
+
+    internal bool TryResummonServer(Player player)
+    {
+        if(ZNet.instance == null || !ZNet.instance.IsServer() || !IsWithinInteractionRange(player) ||
+            _encounter == null || !_encounter.HasBeenDefeated || _encounter.IsKingActive)return false;
+        var inventory = player.GetInventory();
+        var offering = inventory.GetAllItems().Find(item => item.m_stack > 0 && item.m_dropPrefab &&
+            item.m_dropPrefab.name == MaliciousBloodPrefabName);
+        if(offering == null)return false;
+        var restore = offering.Clone();
+        restore.m_stack = 1;
+        if(!inventory.RemoveItem(offering, 1))return false;
+        try
+        {
+            if(_encounter.TryResummonKing())return true;
+        }
+        catch(System.Exception exception)
+        {
+            Debug.LogError("Dark Throne repeat summon failed: " + exception);
+            // A native King may already have been created before presentation binding failed.
+            if(_encounter.IsKingActive)return true;
+        }
+        if(!inventory.AddItem(restore))
+        {
+            var dropped = ItemDrop.DropItem(restore, 1, player.transform.position + Vector3.up, Quaternion.identity);
+            if(dropped == null)Debug.LogError("Dark Throne could not restore or drop the rejected Malicious Blood offering.");
+        }
+        return false;
     }
 
 }

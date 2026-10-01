@@ -4,17 +4,43 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.155 by Local** and start its description with
-**0.0.155: Admits the existing 20-district Deep Fracture as a sparse Fracture Zones dungeon in the Underworld**.
+show **Magenheim v0.0.158 by Local** and start its description with
+**0.0.158: Moves the final Dark Throne into Great Decay after all six Deepstones**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.155]` before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.158]` and the runtime image line reports
+`checkpoint UW-158` with the actual assembly path before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
 is under `BepInEx/plugins/Local-Magenheim/Magenheim`. Launching vanilla Steam
 does not use this profile. Exit the game before rebuilding or installing.
+
+## Integrated progression regression - 0.0.158
+
+Use a disposable world. Before Queen defeat, natural Deep Gate entry must refuse. After Queen
+defeat it must enter the paired native Underworld without a King kill. Return, save/reload and
+reconnect; Surface generation, map data and inventory must survive. Existing King-unlocked saves
+must retain access.
+
+Verify all five ordinary dungeon families together, the separate Deep Fracture, all six boss arenas
+and the unique Great Decay Dark Throne. Each biome boss must spawn once when approached after its
+prerequisite Deepstones, drop its canonical boss trophy, and remain defeated through reload.
+Harvest Glowcap, Spirestalk, Cinderstalk, Rimecap and Rotbloom; check authored falling logs/stumps or
+collapse fragments, correct owned yields and persistent removal. `magenheim_underworld dungeons` must include the Dark Throne
+placement audit. Before all six Deepstones are awakened the new throne remains dormant. Mount all
+six real boss trophies through the authorized interaction path, then revisit the throne and exercise
+all three King phases, gravity inversion, disengagement/reset, death, reward release and reload.
+
+Royal reward recipes must appear at the Crown Reliquary and require the actual King trophy;
+the paired Last Argument must consume Firmament and Null Gate. No recipe may fabricate a trophy.
+Test the actual Hateful Blood offering used by the throne for repeat fights from host and client, reward uniqueness and interrupted release.
+These multiplayer/reward outcomes require live evidence and are not established by compilation.
+
+True Blacksmithing disabled must preserve baseline recipes. Manufacturing with the switch enabled
+is still incomplete; do not mark it accepted based on an inert Ready state. Offline injected-failure
+tests cover partial mutation, rollback order, failed restoration retry and circuit-breaker rejection.
 
 ## Ground feature acceptance - 0.0.108
 

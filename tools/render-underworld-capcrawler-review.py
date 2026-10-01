@@ -12,7 +12,7 @@ if not MODEL.exists(): raise RuntimeError(f'Missing authored Capcrawler: {MODEL}
 bpy.ops.wm.open_mainfile(filepath=str(MODEL))
 sc=bpy.context.scene
 if sc.get('magenheim_model_id')!='underworld-creature-capcrawler': raise RuntimeError('Wrong review model')
-if sc.get('magenheim_fidelity')!='production-creature-r5': raise RuntimeError('Review requires production-creature-r5')
+if sc.get('magenheim_fidelity')!='production-creature-r7': raise RuntimeError('Review requires production-creature-r7')
 arm=next((o for o in sc.objects if o.type=='ARMATURE'),None)
 if not arm: raise RuntimeError('Capcrawler armature missing')
 

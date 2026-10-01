@@ -47,7 +47,7 @@ def fcurves(act):
     for layer in getattr(act,'layers',[]):
         for strip in getattr(layer,'strips',[]):
             bag=getattr(strip,'channelbag',None)
-            if bag: curves.extend(list(bag.fcurves))
+            if bag is not None and hasattr(bag,"fcurves"): curves.extend(list(bag.fcurves))
             for bag in getattr(strip,'channelbags',[]): curves.extend(list(bag.fcurves))
     return curves
 

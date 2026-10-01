@@ -17,6 +17,13 @@ def mat(name,color,rough=.7,emit=None):
         bs.inputs['Emission Color'].default_value=(*emit,1); bs.inputs['Emission Strength'].default_value=.28
     return m
 SKIN=mat('CaveRay_DorsalSkin',(.055,.075,.08),.74); BELLY=mat('CaveRay_VentralSkin',(.12,.16,.16),.61); FIN=mat('CaveRay_FinMembrane',(.075,.105,.11),.67); EYE=mat('CaveRay_SensoryTissue',(.16,.24,.22),.58,emit=(.10,.34,.29))
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from magenheim_creature_pbr import bind as bind_creature_pbr
+bind_creature_pbr(bpy,bpy.data.materials['CaveRay_DorsalSkin'],'cave-ray','dorsal-hide')
+bind_creature_pbr(bpy,bpy.data.materials['CaveRay_VentralSkin'],'cave-ray','ventral-tissue')
+bind_creature_pbr(bpy,bpy.data.materials['CaveRay_FinMembrane'],'cave-ray','wing-membrane')
+bind_creature_pbr(bpy,bpy.data.materials['CaveRay_SensoryTissue'],'cave-ray','photophore-tissue')
 parts={}
 def uv(o):
     layer=o.data.uv_layers.new(name='CaveRayUV')
@@ -29,7 +36,7 @@ def mesh(name,verts,faces,material,bone):
     me=bpy.data.meshes.new(name+'Mesh'); me.from_pydata(verts,[],faces); me.update(); o=bpy.data.objects.new(name,me); bpy.context.collection.objects.link(o); me.materials.append(material); uv(o); parts[name]=bone; return o
 
 def ico(name,loc,scale,material,bone,sub=3):
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale; bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(material); uv(o); parts[name]=bone; return o
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub+1,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale; bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(material); uv(o); parts[name]=bone; return o
 
 def seg(name,a,b,r,material,bone,verts=12):
     a,b=Vector(a),Vector(b); d=b-a; bpy.ops.mesh.primitive_cylinder_add(vertices=verts,radius=r,depth=d.length,location=(a+b)/2); o=bpy.context.object; o.name=name; o.rotation_mode='QUATERNION'; o.rotation_quaternion=d.to_track_quat('Z','Y'); bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(material); uv(o); parts[name]=bone; return o

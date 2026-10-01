@@ -25,7 +25,7 @@ def curves(act):
 def action(name,end,poses):
  old=bpy.data.actions.get(name)
  if old:bpy.data.actions.remove(old)
- act=bpy.data.actions.new(name); arm.animation_data_create(); arm.animation_data.action=act
+ act=bpy.data.actions.new(name); act.use_fake_user=True; arm.animation_data_create(); arm.animation_data.action=act
  for frame,pose in poses.items():
   for bname,rot in pose.items():
    pb=arm.pose.bones.get(bname)
@@ -48,6 +48,9 @@ action('MycelialStalker_Hit',18,{1:neutral,6:{'Spine':(.12,0,.16),'Head':(-.10,0
 action('MycelialStalker_Stagger',32,{1:neutral,9:{'Spine':(.24,0,.22),'Pelvis':(-.12,0,-.12),'Head':(.16,0,-.20)},20:{'Spine':(-.10,0,-.10)},32:neutral})
 action('MycelialStalker_Death',58,{1:neutral,18:{'Spine':(.20,0,.20),'Pelvis':(.16,0,-.12)},36:{'Spine':(.35,0,1.05),'Pelvis':(.20,0,.55),'Neck':(.30,0,.25),'Jaw_L':(.18,0,.24),'Jaw_R':(.18,0,-.24)},58:{'Spine':(.15,0,1.48),'Pelvis':(.12,0,.82),'Neck':(.42,0,.18),'Head':(.25,0,0)}})
 arm.animation_data.action=None
+for pb in arm.pose.bones:
+ pb.rotation_euler=(0,0,0);pb.location=(0,0,0);pb.scale=(1,1,1)
+bpy.context.view_layer.update()
 sc['magenheim_fidelity']='production-creature-r2'
 sc['magenheim_authored_actions']='MycelialStalker_ConcealIdle,MycelialStalker_Crouch,MycelialStalker_Walk,MycelialStalker_Pounce,MycelialStalker_FailedPounceRetreat,MycelialStalker_Hit,MycelialStalker_Stagger,MycelialStalker_Death'; sc['magenheim_skinning']='rigid-segment-weighted'
 bpy.context.preferences.filepaths.save_version=0

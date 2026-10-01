@@ -253,7 +253,8 @@ internal static class UnderworldVanillaDungeonEcologyPolicy
             profile.DungeonId,
             roomName,
             roomIndex,
-            "encounter-room-active");
+            "encounter-room-active",
+            0);
     }
 
     private static bool ShouldActivate(

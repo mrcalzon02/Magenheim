@@ -26,6 +26,9 @@ internal sealed class TrueBlacksmithingMutationJournal : IDisposable
     private readonly ManualLogSource _logger;
     private readonly List<RollbackEntry> _entries = new List<RollbackEntry>();
     private bool _rolledBack;
+    private bool _rollbackStarted;
+
+    internal bool HasPendingRollback => _entries.Count != 0;
 
     internal TrueBlacksmithingMutationJournal(ManualLogSource logger)
     {
@@ -34,7 +37,7 @@ internal sealed class TrueBlacksmithingMutationJournal : IDisposable
 
     internal void Apply(string description, Action apply, Action rollback)
     {
-        if (_rolledBack)
+        if (_rollbackStarted)
         {
             throw new InvalidOperationException("Cannot apply a True Blacksmithing mutation after rollback.");
         }
@@ -63,6 +66,7 @@ internal sealed class TrueBlacksmithingMutationJournal : IDisposable
     internal void RollbackAll()
     {
         if (_rolledBack) return;
+        _rollbackStarted = true;
 
         for (var index = _entries.Count - 1; index >= 0; index--)
         {
@@ -71,6 +75,7 @@ internal sealed class TrueBlacksmithingMutationJournal : IDisposable
             try
             {
                 entry.Rollback();
+                _entries.RemoveAt(index);
             }
             catch (Exception exception)
             {
@@ -79,8 +84,9 @@ internal sealed class TrueBlacksmithingMutationJournal : IDisposable
             }
         }
 
-        _entries.Clear();
-        _rolledBack = true;
+        // Failed restoration remains available for the next safe teardown attempt. Successful
+        // reversals are removed so retries cannot mutate restored recipes a second time.
+        _rolledBack = _entries.Count == 0;
     }
 
     public void Dispose()

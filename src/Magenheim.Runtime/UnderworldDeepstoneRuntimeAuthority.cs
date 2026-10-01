@@ -19,6 +19,9 @@ internal static class UnderworldDeepstoneRuntimeAuthority
 
     internal static IReadOnlyList<UnderworldBossDefinition> Bosses => RequireDefinitions().Bosses;
 
+    internal static bool CanChallengeNowhereKing => IsConfigured &&
+        ReconstructWorldState().All(stone => stone.TrophyMounted && stone.BoonUnlocked);
+
     internal static void Configure(UnderworldDefinitionSet definitions)
     {
         _definitions = definitions ?? throw new ArgumentNullException(nameof(definitions));

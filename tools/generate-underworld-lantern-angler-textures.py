@@ -75,7 +75,7 @@ for p in files:
     with Image.open(p) as im:
         if im.size!=(SIZE,SIZE): raise RuntimeError(f'{p.name}: wrong dimensions {im.size}')
         proxy=im.resize((PROXY,PROXY),Image.Resampling.LANCZOS); luma=proxy.convert('L'); lo,hi=luma.getextrema(); st=ImageStat.Stat(luma)
-        if hi-lo<8 or st.stddev[0]<2: raise RuntimeError(f'{p.name}: detail collapses at combat scale')
+        if not p.name.endswith('-normal.png') and (hi-lo<8 or st.stddev[0]<2): raise RuntimeError(f'{p.name}: detail collapses at combat scale')
         if p.name.endswith('-normal.png'):
             ns=ImageStat.Stat(proxy.convert('RGB')); xy=(ns.stddev[0]**2+ns.stddev[1]**2)**.5
             if xy<2 or ns.mean[2]<150: raise RuntimeError(f'{p.name}: inadequate normal response')

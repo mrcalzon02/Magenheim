@@ -1,4 +1,4 @@
-"""Verify the unwired Blackwater source contract; this is not visual/game acceptance."""
+"""Verify Blackwater production sources; visual/game acceptance remains separate."""
 import bpy
 import importlib.util
 import json
@@ -29,9 +29,16 @@ for index, (model_id, (_, size)) in enumerate(author.MODELS.items()):
                    for uv in mesh.uv_layers.active.data for c in uv.uv), f'{model_id}: invalid UV'
         assert obj['game_node_path'].startswith(f'magenheim.underworld.{model_id}/'), model_id
         for mat in mesh.materials:
-            image = mat.node_tree.nodes['Atlas'].image
+            shared = model_id in author.RESOURCE_PBR
+            node = mat.node_tree.nodes.get('Magenheim Underworld Albedo' if shared else 'Atlas')
+            assert node is not None, f'{model_id}: missing albedo source'
+            image = node.image
             assert image and tuple(image.size) == (size, size), f'{model_id}: atlas dimensions'
             assert image.packed_file, f'{model_id}: unpacked image'
+            if shared:
+                for suffix in ('Roughness', 'MetallicSmoothness', 'Normal'):
+                    source = mat.node_tree.nodes.get('Magenheim Underworld ' + suffix)
+                    assert source and source.image and source.image.packed_file, f'{model_id}: missing packed {suffix}'
             if model_id == 'underworld-resource-blackwater-pearl':
                 import numpy
                 pixels = numpy.array(image.pixels[:]).reshape(-1, 4)

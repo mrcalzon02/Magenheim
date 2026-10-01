@@ -14,6 +14,7 @@ payloads. Normal production edits should thereafter be made in Blender and expor
 normal Magenheim model pipeline.
 """
 import bpy
+import bmesh
 import json
 from pathlib import Path
 
@@ -75,6 +76,16 @@ def build_part(part):
         for loop_index in polygon.loop_indices:
             vertex_index = mesh.loops[loop_index].vertex_index
             uv_layer.data[loop_index].uv = tuple(uv_rows[vertex_index])
+
+    # Runtime payloads duplicate vertices at UV seams. Weld the editable geometry before
+    # resolving shell orientation; loop UVs retain their individual seam coordinates.
+    editable = bmesh.new()
+    editable.from_mesh(mesh)
+    bmesh.ops.remove_doubles(editable, verts=list(editable.verts), dist=0.000001)
+    bmesh.ops.recalc_face_normals(editable, faces=list(editable.faces))
+    editable.to_mesh(mesh)
+    editable.free()
+    mesh.update()
 
     obj = bpy.data.objects.new(part["name"], mesh)
     bpy.context.collection.objects.link(obj)

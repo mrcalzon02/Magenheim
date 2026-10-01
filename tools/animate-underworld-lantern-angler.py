@@ -18,8 +18,10 @@ def clear():
 def action(name,end,poses):
     old=bpy.data.actions.get(name)
     if old: bpy.data.actions.remove(old)
-    a=bpy.data.actions.new(name); arm.animation_data_create(); arm.animation_data.action=a; clear()
+    a=bpy.data.actions.new(name); a.use_fake_user=True; arm.animation_data_create(); arm.animation_data.action=a; clear()
     for frame,pose in poses.items():
+        if frame in (1,end):
+            pose={**{pb.name:{'r':(0,0,0),'s':(1,1,1)} for pb in arm.pose.bones},**pose}
         for bone,data in pose.items():
             p=arm.pose.bones.get(bone)
             if not p: raise RuntimeError(f'{name}: missing {bone}')
@@ -45,12 +47,12 @@ def lure(ph,amp=.16):
             'Lure_3':R(.13*math.sin(ph-.8),.07*math.cos(ph-.6),amp*math.sin(ph-.9))}
 
 def cycle(amp,lamp):
-    return {1:{**swim(0,amp),**lure(0,lamp)},10:{**swim(math.pi/2,amp),**lure(math.pi/2,lamp)},20:{**swim(math.pi,amp),**lure(math.pi,lamp)},30:{**swim(3*math.pi/2,amp),**lure(3*math.pi/2,lamp)},40:{**swim(2*math.pi,amp),**lure(2*math.pi,lamp)}}
+    return {round(1+39*i/8):{**swim(math.tau*i/8,amp),**lure(math.tau*i/8,lamp)} for i in range(9)}
 
 action('LanternAngler_SwimIdle',40,cycle(.07,.16))
 action('LanternAngler_Cruise',40,cycle(.23,.10))
-action('LanternAngler_BankLeft',30,{1:swim(0,.15),12:{**swim(1.4,.17),'Spine_1':R(.03,-.14,-.16),'Head':R(.02,-.10,-.14),'Fin_L':R(.22,-.28,-.14),'Fin_R':R(-.03,.03,.18)},22:{**swim(2.5,.16),'Spine_1':R(.03,-.18,-.20),'Head':R(.02,-.14,-.18)},30:swim(math.pi,.14)})
-action('LanternAngler_BankRight',30,{1:swim(0,.15),12:{**swim(1.4,.17),'Spine_1':R(.03,.14,.16),'Head':R(.02,.10,.14),'Fin_L':R(.03,-.03,-.18),'Fin_R':R(-.22,.28,.14)},22:{**swim(2.5,.16),'Spine_1':R(.03,.18,.20),'Head':R(.02,.14,.18)},30:swim(math.pi,.14)})
+action('LanternAngler_BankLeft',30,{1:swim(0,.15),12:{**swim(1.4,.17),'Spine_1':R(.03,-.14,-.16),'Head':R(.02,-.10,-.14),'Fin_L':R(.22,-.28,-.14),'Fin_R':R(-.03,.03,.30)},22:{**swim(2.5,.16),'Spine_1':R(.03,-.18,-.20),'Head':R(.02,-.14,-.18)},30:swim(math.pi,.14)})
+action('LanternAngler_BankRight',30,{1:swim(0,.15),12:{**swim(1.4,.17),'Spine_1':R(.03,.14,.16),'Head':R(.02,.10,.14),'Fin_L':R(.03,-.03,-.30),'Fin_R':R(-.22,.28,.14)},22:{**swim(2.5,.16),'Spine_1':R(.03,.18,.20),'Head':R(.02,.14,.18)},30:swim(math.pi,.14)})
 action('LanternAngler_LureIdle',80,{1:{**swim(0,.04),**lure(0,.24)},20:{**swim(.4,.04),**lure(math.pi/2,.24)},40:{**swim(.8,.04),**lure(math.pi,.24)},60:{**swim(1.2,.04),**lure(3*math.pi/2,.24)},80:{**swim(1.6,.04),**lure(2*math.pi,.24)}})
 action('LanternAngler_LureTell',44,{1:lure(0,.12),12:{'Lure_1':R(-.18,.04,.05),'Lure_2':R(-.34,.08,-.12),'Lure_3':R(-.48,.10,-.24)},24:{'Lure_1':R(-.24,.05,.07),'Lure_2':R(-.44,.10,-.18),'Lure_3':R(-.60,.13,-.32)},32:{'Lure_1':R(.10,-.04,-.10),'Lure_2':R(.24,-.08,.18),'Lure_3':R(.38,-.10,.32)},44:lure(0,.12)})
 action('LanternAngler_Bite',34,{1:{},9:{'Head':R(-.06,0,0),'Jaw':R(.42,0,0),'Throat':RS((.10,0,0),(1,1,1.14))},16:{'Head':R(-.12,0,0),'Jaw':R(.68,0,0),'Throat':RS((.18,0,0),(1.08,1.08,1.28))},21:{'Head':R(.08,0,0),'Jaw':R(.08,0,0),'Throat':RS((-.05,0,0),(.96,.96,.94))},34:{}})

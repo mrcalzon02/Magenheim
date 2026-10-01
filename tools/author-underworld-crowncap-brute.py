@@ -19,6 +19,13 @@ def mat(name,color,rough=.7,metal=0.0,emit=None):
         bs.inputs['Emission Color'].default_value=(*emit,1); bs.inputs['Emission Strength'].default_value=.45
     return m
 HIDE=mat('Brute_RootHide',(0.17,.12,.08),.88); PLATE=mat('Brute_CrownPlate',(.28,.20,.09),.82); GILL=mat('Brute_GillTissue',(.36,.13,.09),.62,emit=(.55,.12,.045)); FLESH=mat('Brute_MycelialFlesh',(.38,.34,.23),.72)
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from magenheim_creature_pbr import bind as bind_creature_pbr
+bind_creature_pbr(bpy,bpy.data.materials['Brute_RootHide'],'crowncap-brute','root-hide')
+bind_creature_pbr(bpy,bpy.data.materials['Brute_CrownPlate'],'crowncap-brute','crown-plate')
+bind_creature_pbr(bpy,bpy.data.materials['Brute_GillTissue'],'crowncap-brute','under-cap-gill')
+bind_creature_pbr(bpy,bpy.data.materials['Brute_MycelialFlesh'],'crowncap-brute','mycelial-flesh')
 parts={}
 def uv(o):
     if o.type=='MESH':
@@ -37,7 +44,7 @@ def seg(name,a,b,r,material,bone=None,verts=12):
     return o
 
 # Massive top-heavy fungal biped: broad pelvis/chest, short neck, deliberately oversized arms.
-ico('Pelvis',(0,0,1.18),(.72,.48,.62),HIDE,4,'Pelvis'); ico('Torso',(0,0,1.83),(.82,.52,.82),HIDE,4,'Chest'); ico('UpperTorso',(0,.01,2.30),(.92,.55,.63),FLESH,4,'Chest'); ico('Head',(0,.10,2.67),(.48,.43,.38),FLESH,3,'Head')
+ico('Pelvis',(0,0,1.18),(.72,.48,.62),HIDE,5,'Pelvis'); ico('Torso',(0,0,1.83),(.82,.52,.82),HIDE,5,'Chest'); ico('UpperTorso',(0,.01,2.30),(.92,.55,.63),FLESH,4,'Chest'); ico('Head',(0,.10,2.67),(.48,.43,.38),FLESH,3,'Head')
 # layered crown is silhouette geometry, not a painted cap
 for i,(z,sx,sy) in enumerate([(2.77,1.12,.78),(2.91,.98,.70),(3.03,.79,.58),(3.12,.57,.43)]):
     ico(f'CrownPlate_{i+1}',(0,.02,z),(sx,sy,.14),PLATE,3,'Head')

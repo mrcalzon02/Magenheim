@@ -41,7 +41,8 @@ internal static class UnderworldVanillaDungeonCandidatePolicy
     {
         get
         {
-            const string canonical = "dde-candidate-v2|retired|all-ordinary-runtime-ready";
+            var canonical = "dde-candidate-v2|retired|all-ordinary-runtime-ready|release:" + MagenheimPlugin.PluginVersion
+                + "|entry:queen-or-legacy-king|finale:great-decay-six-deepstones";
             using var sha = SHA256.Create();
             var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(canonical));
             return string.Concat(bytes.Select(value =>

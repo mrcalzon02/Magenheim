@@ -45,6 +45,13 @@ internal static class UnderworldCreaturePrototypes
             "Decay Hound" => "underworld-creature-decay-hound",
             "Graft Warden" => "underworld-creature-graft-warden",
             "Corpse Orchard" => "underworld-creature-corpse-orchard",
+            "Fracture Wisp" => "underworld-creature-fracture-wisp",
+            "Rift Skitter" => "underworld-creature-rift-skitter",
+            "Shardwing" => "underworld-creature-shardwing",
+            "Gravity Leech" => "underworld-creature-gravity-leech",
+            "Chasm Stalker" => "underworld-creature-chasm-stalker",
+            "Stonebound" => "underworld-creature-stonebound",
+            "Rift Colossus" => "underworld-creature-rift-colossus",
             _ => null,
         };
     }

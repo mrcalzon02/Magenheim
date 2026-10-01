@@ -119,7 +119,7 @@ REQUIRED_SNIPPETS = {
         "UnderworldResourceCatalog.All",
         "ValidateUnderworldCatalog",
         "row.m_biome != expectedBiome",
-        "is Planned but has",
+        "UnderworldBossLocationRegistrar.Locations",
     ),
     RUNTIME / "UnderworldDungeonPlacementRuntime.cs": (
         '"m_locationsGenerated"',

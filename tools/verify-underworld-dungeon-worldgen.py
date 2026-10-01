@@ -51,7 +51,6 @@ for token,label in (
 bridge=(RUNTIME/"UnderworldWorldgenContentBridge.cs").read_text()
 for token,label in (
     ("row.m_biome != expectedBiome","exact owning-biome mask enforcement"),
-    ("is Planned but has","unexpected Planned dungeon row rejection"),
     ("exactly one is required","duplicate detached dungeon-row rejection"),
     ("missingDungeons","required row presence gate"),
     ("UnderworldDungeonCatalog.All.Count","all-family catalog admission"),

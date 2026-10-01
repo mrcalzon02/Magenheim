@@ -22,19 +22,27 @@ def uv(o):
  return o
 
 def organic(name,loc,scale,material,sub=2):
- bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale; bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(material); return uv(o)
+ bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=max(sub,3),radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale; bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(material); return uv(o)
 def seg(name,a,b,r,material,verts=16):
  d=Vector(b)-Vector(a); bpy.ops.mesh.primitive_cylinder_add(vertices=verts,radius=r,depth=d.length,location=(Vector(a)+Vector(b))/2); o=bpy.context.object; o.name=name; o.rotation_mode='QUATERNION'; o.rotation_quaternion=Vector((0,0,1)).rotation_difference(d.normalized()); o.data.materials.append(material); return uv(o)
 
 bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
 body=mat('ShelfLurkerRootFlesh',(.17,.14,.10),.88); shelf=mat('ShelfLurkerShelfArmor',(.32,.25,.16),.78); grip=mat('ShelfLurkerGripPad',(.25,.20,.15),.64); sense=mat('ShelfLurkerSensoryCrown',(.48,.38,.20),.58,(.22,.16,.06)); mouth=mat('ShelfLurkerMouthGill',(.38,.20,.15),.62)
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from magenheim_creature_pbr import bind as bind_creature_pbr
+bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerRootFlesh'],'shelf-lurker','root-flesh')
+bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerShelfArmor'],'shelf-lurker','shelf-armor')
+bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerGripPad'],'shelf-lurker','grip-pad')
+bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerSensoryCrown'],'shelf-lurker','sensory-crown')
+bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerMouthGill'],'shelf-lurker','mouth-gill')
 parts={}
 def keep(o,b): parts[o.name]=b; return o
 # Flattened ceiling-hugging torso. Primary silhouette is lateral and radial, never quadruped-like.
 # The two primary body masses use subdivision 4 so the production source genuinely clears its 10k triangle floor.
 keep(organic('ShelfLurker_Torso',(0,0,1.55),(.78,.62,.22),body,4),'Body'); keep(organic('ShelfLurker_Abdomen',(0,-.62,1.58),(.58,.52,.20),body,4),'Abdomen')
 # Layered shelf plates make the animal disappear against fungal overhangs when viewed from below/side.
-for i,(loc,scale) in enumerate((((-.48,.10,1.72),(.55,.34,.07)),((.48,.02,1.71),(.52,.32,.07)),((-.36,-.52,1.72),(.44,.30,.06)),((.36,-.60,1.71),(.42,.28,.06))),1): keep(organic(f'ShelfLurker_DorsalShelf_{i}',loc,scale,shelf,2),'Body' if i<3 else 'Abdomen')
+for i,(loc,scale) in enumerate((((-.48,.10,1.72),(.55,.34,.07)),((.48,.02,1.71),(.52,.32,.07)),((-.36,-.52,1.72),(.44,.30,.06)),((.36,-.60,1.71),(.42,.28,.06))),1): keep(organic(f'ShelfLurker_DorsalShelf_{i}',loc,scale,shelf,4),'Body' if i<3 else 'Abdomen')
 # Downward mouth is modeled geometry, ringed by four fleshy gill-lobes.
 keep(organic('ShelfLurker_Mouth',(0,.38,1.31),(.30,.34,.10),mouth,2),'Head')
 for i,(x,y) in enumerate(((-.23,.38),(.23,.38),(0,.17),(0,.60)),1): keep(organic(f'ShelfLurker_MouthLobe_{i}',(x,y,1.29),(.13,.18,.07),mouth,2),'Head')

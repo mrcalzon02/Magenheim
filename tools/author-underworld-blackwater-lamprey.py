@@ -24,6 +24,14 @@ BELLY=mat('BlackwaterLamprey_VentralHide',(.090,.105,.095),.66)
 ORAL=mat('BlackwaterLamprey_OralTissue',(.205,.080,.072),.55)
 TOOTH=mat('BlackwaterLamprey_Tooth',(.54,.51,.39),.47)
 FIN=mat('BlackwaterLamprey_FinTissue',(.042,.060,.057),.70)
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from magenheim_creature_pbr import bind as bind_creature_pbr
+bind_creature_pbr(bpy,bpy.data.materials['BlackwaterLamprey_DorsalHide'],'blackwater-lamprey','dorsal-hide')
+bind_creature_pbr(bpy,bpy.data.materials['BlackwaterLamprey_VentralHide'],'blackwater-lamprey','ventral-hide')
+bind_creature_pbr(bpy,bpy.data.materials['BlackwaterLamprey_OralTissue'],'blackwater-lamprey','oral-tissue')
+bind_creature_pbr(bpy,bpy.data.materials['BlackwaterLamprey_Tooth'],'blackwater-lamprey','tooth-enamel')
+bind_creature_pbr(bpy,bpy.data.materials['BlackwaterLamprey_FinTissue'],'blackwater-lamprey','fin-tissue')
 parts={}
 
 def uv(o):
@@ -34,7 +42,7 @@ def uv(o):
             co=o.data.vertices[o.data.loops[li].vertex_index].co; layer.data[li].uv=((co.x-xmin)/dx,(co.y-ymin)/dy)
 
 def ico(name,loc,scale,material,bone,sub=3):
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub+1,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale
     bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(material); uv(o); parts[name]=bone; return o
 
 def torus(name,loc,major,minor,material,bone,rot=(math.pi/2,0,0)):

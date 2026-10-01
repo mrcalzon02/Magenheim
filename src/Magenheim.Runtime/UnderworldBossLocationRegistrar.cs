@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using BepInEx.Logging;
 using Jotunn.Configs;
 using Jotunn.Entities;
@@ -16,6 +17,7 @@ internal sealed class UnderworldBossLocationRegistrar : IDisposable
     private readonly UnderworldRuntimeServices _services;
     private readonly ManualLogSource _log;
     private readonly BossLocation[] _locations;
+    internal static IReadOnlyList<BossLocation> Locations { get; private set; } = Array.Empty<BossLocation>();
     private bool _subscribed;
 
     internal UnderworldBossLocationRegistrar(UnderworldRuntimeServices services, ManualLogSource log)
@@ -38,6 +40,7 @@ internal sealed class UnderworldBossLocationRegistrar : IDisposable
             new BossLocation("Magenheim_Underworld_Boss_CarrionCrown",
                 GreatDecayCarrionCrownFamily.CanonicalLocationId, new GreatDecayCarrionCrownFamily(services)),
         };
+        Locations = Array.AsReadOnly(_locations);
 
         UnderworldNativeStructureLocationRuntime.Configure(services, log);
         foreach (var location in _locations)
@@ -76,10 +79,11 @@ internal sealed class UnderworldBossLocationRegistrar : IDisposable
                     BiomeArea = JotunnWorldgenAdapter.MapArea(Magenheim.Core.Worldgen.SpawnArea.All),
                     Quantity = 1,
                     Priotized = true,
-                    ExteriorRadius = 44f,
-                    MinAltitude = -1000f,
+                    ExteriorRadius = 24f,
+                    MinAltitude = location.Family.Biome == UnderworldTerrainBiome.BlackwaterDeep ? -30f : 1f,
+                    MaxAltitude = location.Family.Biome == UnderworldTerrainBiome.BlackwaterDeep ? -5f : 6000f,
                     MinTerrainDelta = 0f,
-                    MaxTerrainDelta = 1000f,
+                    MaxTerrainDelta = 18f,
                     MinDistanceFromSimilar = 0f,
                     Group = "Magenheim_Underworld_Boss_" + location.Family.Biome,
                     ClearArea = true,

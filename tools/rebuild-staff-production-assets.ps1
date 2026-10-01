@@ -37,7 +37,7 @@ $ids = @(
 & "$PSScriptRoot/blender.ps1" export-model-assets @ids
 if ($LASTEXITCODE -ne 0) { throw 'Staff model export failed.' }
 
-python "$PSScriptRoot/verify-model-assets.py"
+python "$PSScriptRoot/verify-model-assets.py" @ids
 if ($LASTEXITCODE -ne 0) { throw 'Staff model catalog verification failed.' }
 
 Write-Host "REBUILT $($ids.Count) staff runtime/GLB exports from authoritative Blender sources."

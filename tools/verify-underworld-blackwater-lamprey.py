@@ -22,9 +22,18 @@ frames={'Lamprey_SwimIdle':72,'Lamprey_Cruise':48,'Lamprey_Sprint':24,'Lamprey_B
 for name,end in frames.items():
     a=bpy.data.actions.get(name)
     if not a or int(a.frame_end)!=end: raise RuntimeError(f'Missing/wrong action: {name}')
+def action_fcurves(action):
+ direct=getattr(action,'fcurves',None)
+ if direct is not None:return list(direct)
+ out=[]
+ for layer in getattr(action,'layers',()):
+  for strip in getattr(layer,'strips',()):
+   for bag in getattr(strip,'channelbags',()):out.extend(bag.fcurves)
+ return out
+
 def values(action,bone):
     a=bpy.data.actions[action]; out=[]
-    for fc in a.fcurves:
+    for fc in action_fcurves(a):
         if f'pose.bones["{bone}"]' in fc.data_path: out.extend(abs(k.co.y) for k in fc.keyframe_points)
     return out
 def peak(action,bone):
@@ -40,7 +49,7 @@ for act in ['Lamprey_Latch','Lamprey_AttachedIdle','Lamprey_Detach']:
 # Art contract deliberately forbids root translation as a fake latch implementation.
 for act in ['Lamprey_Lunge','Lamprey_Latch','Lamprey_AttachedIdle','Lamprey_Detach']:
     a=bpy.data.actions[act]
-    if any('pose.bones["Root"]' in fc.data_path and fc.data_path.endswith('location') for fc in a.fcurves): raise RuntimeError(f'{act}: fake root-translation attachment detected')
+    if any('pose.bones["Root"]' in fc.data_path and fc.data_path.endswith('location') for fc in action_fcurves(a)): raise RuntimeError(f'{act}: fake root-translation attachment detected')
 if peak('Lamprey_Latch','MouthRing')<.20 or peak('Lamprey_Latch','Jaw')<.25: raise RuntimeError('Latch sucker flare/compression too weak')
 if any(not keyed('Lamprey_AttachedIdle',b) for b in chain): raise RuntimeError('Attached idle freezes posterior body')
 if peak('Lamprey_Detach','MouthRing') <= peak('Lamprey_AttachedIdle','MouthRing')*1.5: raise RuntimeError('Detach lacks visible sucker release')

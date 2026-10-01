@@ -1,5 +1,10 @@
 # Underworld Flora, Terrain, Resources and Progression Plan
 
+0.0.158 source candidate: Glowcap, Spirestalk and Cinderstalk now use native felling with owned
+log/stump prefabs; Rimecap and Rotbloom use native destruction/collapse. Their yields are bound to
+the actual resource catalog. Three late-biome standing models and six felling fragments are
+authored/exported. Shelfwood rock-face placement remains unsupported. Live acceptance is pending.
+
 Companion to `UNDERWORLD_DESIGN.md` (what the Underworld is),
 `UNDERWORLD_IMPLEMENTATION_PLAN.md` (how it is built) and
 `UNDERWORLD_ARCHITECTURE_IMPLEMENTATION_PLAN.md` (what the player builds with).

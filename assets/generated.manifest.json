@@ -114,7 +114,9 @@
         "assets/models/source/staff-venom-crystal.blend",
         "assets/models/source/staff-venom-master.blend",
         "assets/models/source/staff-venom-simple.blend"
-      ]
+      ],
+      "generator_sha256": "5c6046899856aaf957826a390233364f5f832475c51bfc2b4c05e678b5d8bfad",
+      "inputs_sha256": "6f1337fc6d24b426dd8b989834db6535137965ea8ea888052cdbd6098f21b5d2"
     },
     {
       "id": "underworld-sporeling-source",
@@ -186,7 +188,9 @@
         "tools/rebuild-crystal-weapons.ps1",
         "tools/export-model-assets.py",
         "tools/model_surface_authoring.py"
-      ]
+      ],
+      "generator_sha256": "c4b57be5c451c6605f3bb19ff39835c19d51de84ca4142e81b606f12017e95d9",
+      "inputs_sha256": "a641f1e18dbedda6e2bde702477ad8e9eb46199c339360f4e829558f56994453"
     },
     {
       "id": "weapon-icons",
@@ -217,7 +221,9 @@
         "tools/author-crystal-weapons.py",
         "tools/magenheim_blender_kit.py",
         "tools/render-weapon-icons.py"
-      ]
+      ],
+      "generator_sha256": "fd69361ac71b4f3c721a35cf2826462c2642f0a35a100146e9f8ee4e247a1bc4",
+      "inputs_sha256": "52f2f21a4a8341c87d5265a1e4dbb2ca6ec554c439a9ca57efba59d863c66fd9"
     },
     {
       "id": "crystal-tier-icons",
@@ -465,7 +471,9 @@
         "tools/model_surface_authoring.py",
         "tools/underworld_material_library.py",
         "tools/generate-underworld-material-textures.py"
-      ]
+      ],
+      "generator_sha256": "121e744986ee6e1034b96ba1339ec6ea4ea2038b47b0ea64abcc50ea71f6427e",
+      "inputs_sha256": "d29f70ef141937572fade5709ce7c58056f114a4e08ac435ae48042500b920f5"
     },
     {
       "id": "rootforged-icons",
@@ -503,7 +511,9 @@
       "inputs": [
         "tools/author-rootforged-placeables.py",
         "tools/render-rootforged-icons.py"
-      ]
+      ],
+      "generator_sha256": "02c67018c0f325db9881f3ca8e4e4bb376a272d8b5189b91b04b21a92152e60a",
+      "inputs_sha256": "08c8b0dcd4c12d71cce7e86478fd215824a13c1254a33b13382afc8b4c473897"
     },
     {
       "id": "underworld-surtling-models",
@@ -599,7 +609,7 @@
         "assets/models/runtime/underworld-resource-understone.model.json"
       ],
       "hash": "generator-only",
-      "generator_sha256": "09ba959e975c1aeec1a3fd369eb75122c8d80f118fa764e02a5f7aeae44dabd5",
+      "generator_sha256": "8ff8b35ccc2b9f64e28998b07c0126b19f8199713527947b77dba95b17e8daa9",
       "output_sha256": {
         "assets/models/glb/underworld-flora-fungal-amber-bed.glb": null,
         "assets/models/glb/underworld-flora-fungal-fern.glb": null,
@@ -685,7 +695,8 @@
         "assets/models/source/underworld-resource-spire-fibre.blend": null,
         "assets/models/source/underworld-resource-understone.blend": null,
         "assets/models/source/underworld-resource-worldroot-timber.blend": null
-      }
+      },
+      "inputs_sha256": "67c2f49386368f8a1947cced304e69148e32377df1715cff634194cd4d6ef335"
     },
     {
       "id": "underworld-resource-icons",
@@ -821,7 +832,7 @@
         "assets/models/runtime/underworld-resource-deep-salt.model.json"
       ],
       "hash": "generator-only",
-      "generator_sha256": "8b47fa99f99077ef872641348f4369e07ea33275ca43c0a0a345196bd72117eb",
+      "generator_sha256": "2aca2e54e0588df206fecc7705996b98268e164a12715dd3cab789bbcb6371ab",
       "output_sha256": {
         "assets/models/glb/underworld-flora-blackwater-brine-fern.glb": null,
         "assets/models/glb/underworld-flora-blackwater-broken-column.glb": null,
@@ -871,7 +882,8 @@
         "assets/models/source/underworld-resource-blackwater-pearl.blend": null,
         "assets/models/source/underworld-resource-deep-salt.blend": null,
         "assets/models/source/underworld-resource-pale-fibre.blend": null
-      }
+      },
+      "inputs_sha256": "67c2f49386368f8a1947cced304e69148e32377df1715cff634194cd4d6ef335"
     },
     {
       "id": "underworld-sky-emission",
@@ -1021,7 +1033,7 @@
         "tools/generate-underworld-material-textures.py"
       ],
       "generator_sha256": "42a30dd0c4177d7f29f078d1b0c7dbb997d8964105633718b296434cfc337d38",
-      "inputs_sha256": "d349ea5c65a794680ca06ed7f573d8679b296b1e84020a8c7732a1cc233d03b3"
+      "inputs_sha256": "fbbae824fc8fce1c147dba974c8c4ad8693c2def040134654cc3d07cb7bf173f"
     },
     {
       "id": "underworld-tool-models",
@@ -1094,7 +1106,7 @@
         "tools/generate-underworld-material-textures.py"
       ],
       "generator_sha256": "ebd3547766c71c0a81f5bde749f943987b4986a835d1da85f70f6f8f7ad73fa2",
-      "inputs_sha256": "48be2be7cb51b2f4fc8952b8c70ea8cf38cc8c33e03e9b9c8adfdb9059a24486"
+      "inputs_sha256": "b9dae5b71b7ae728f38698822e867d53f36226fb860618611568d8eda49332f1"
     },
     {
       "id": "underworld-armour-models",
@@ -1312,7 +1324,7 @@
         "tools/verify-underworld-armour.py"
       ],
       "generator_sha256": "bcb271c957b1d735fb54a26360217e2ab996e504f57c41b708a08b4b6e0acbe9",
-      "inputs_sha256": "b986ea5be6d415ad0a6d386c25d56f56990e741afb7e2fda6ad397b9c709efbf"
+      "inputs_sha256": "639b2e694b53d91f0846cfc53403bfeee20597c980577a46097ab89dfff8d7a5"
     },
     {
       "id": "underworld-material-library",
@@ -1354,7 +1366,7 @@
         "assets/material-source/underworld/decay-spore-normal.png": "5d12502d1d16e068a0d14d87c85ed737edb42231d7f86319e4a33ccf955de64e",
         "assets/material-source/underworld/decay-spore-roughness.png": "7f377663a3f34ee213aad364bd7f4d68782d7b59d1d0c1be8f6c8fe252187915",
         "assets/material-source/underworld/deep-salt-albedo.png": "9814d3fc6560f578c6f7b8b0f8f3c94dc21a79787e1979133788447c892bc04e",
-        "assets/material-source/underworld/deep-salt-emission.png": "509b7e4614e9e6c0804e0b830bef4fdffc97d2e0cf2adb753129a677c6f49982",
+        "assets/material-source/underworld/deep-salt-emission.png": "8b73f84269510d0825b3d26d9f0f3dd174bd453d24e475fd9a667574cbf2bf79",
         "assets/material-source/underworld/deep-salt-metallic-smoothness.png": "d6836af0e939bf49c45f5ad5f5121b6e78e19aa84ec66e175f01ed2ef7be07e8",
         "assets/material-source/underworld/deep-salt-normal.png": "b1868b6680eb28994562a9a1b8694dc4752808aad1d5397517e3244c566f1303",
         "assets/material-source/underworld/deep-salt-roughness.png": "6d51200f56d9dd257e30eaa3fd1327ad323176a158f794b0d491db2b20c493f8",
@@ -1439,7 +1451,7 @@
         "assets/material-source/underworld/worldroot-heartwood-normal.png": "7e2ad3c0273b2170810480a78d6ce39753eb629b184b50e52aebdfec68e091c1",
         "assets/material-source/underworld/worldroot-heartwood-roughness.png": "eec210bd0dab7e389152ca71a3c892542674ae718acbad33dcd528ad0c7a4b34"
       },
-      "generator_sha256": "4c49d017497f85902d9dc28305d806d4e405c3f9fbf97a8293ea7255091439d0"
+      "generator_sha256": "c5ca0c8be8bc57621801b87b8e51556aa1d3b4a8e8b1d0942e935d1db76bdab9"
     },
     {
       "id": "underworld-weapon-models",
@@ -1561,7 +1573,7 @@
         "tools/magenheim_blender_kit.py"
       ],
       "generator_sha256": "1604884e06393d7356a12c01692febf36532e99e60c7ae5bdf5265258a413f75",
-      "inputs_sha256": "9a875bb27ed192465a4aebdd8e5a3d23bd12f50edee219f2329c7fb8218a60c8"
+      "inputs_sha256": "dbf7d555205902e9928e636f17a1416a5dd22fae293593f546766c6dde75c26b"
     },
     {
       "id": "staff-model-exports",
@@ -1639,7 +1651,72 @@
         "assets/models/glb/staff-venom-simple.glb"
       ],
       "hash": "generator-only",
-      "output_sha256": {},
+      "output_sha256": {
+        "assets/models/glb/Magenheim_Staff_Earth_Advanced.glb": null,
+        "assets/models/glb/Magenheim_Staff_Earth_Crystal.glb": null,
+        "assets/models/glb/Magenheim_Staff_Earth_Master.glb": null,
+        "assets/models/glb/Magenheim_Staff_Earth_Simple.glb": null,
+        "assets/models/glb/Magenheim_Staff_Fire_Advanced.glb": null,
+        "assets/models/glb/Magenheim_Staff_Fire_Crystal.glb": null,
+        "assets/models/glb/Magenheim_Staff_Fire_Master.glb": null,
+        "assets/models/glb/Magenheim_Staff_Fire_Simple.glb": null,
+        "assets/models/glb/Magenheim_Staff_Storm_Advanced.glb": null,
+        "assets/models/glb/Magenheim_Staff_Storm_Crystal.glb": null,
+        "assets/models/glb/Magenheim_Staff_Storm_Master.glb": null,
+        "assets/models/glb/Magenheim_Staff_Storm_Simple.glb": null,
+        "assets/models/glb/staff-frost-advanced.glb": null,
+        "assets/models/glb/staff-frost-crystal.glb": null,
+        "assets/models/glb/staff-frost-master.glb": null,
+        "assets/models/glb/staff-frost-simple.glb": null,
+        "assets/models/glb/staff-radiance-advanced.glb": null,
+        "assets/models/glb/staff-radiance-crystal.glb": null,
+        "assets/models/glb/staff-radiance-master.glb": null,
+        "assets/models/glb/staff-radiance-simple.glb": null,
+        "assets/models/glb/staff-seidr-advanced.glb": null,
+        "assets/models/glb/staff-seidr-crystal.glb": null,
+        "assets/models/glb/staff-seidr-master.glb": null,
+        "assets/models/glb/staff-seidr-simple.glb": null,
+        "assets/models/glb/staff-spirit-advanced.glb": null,
+        "assets/models/glb/staff-spirit-crystal.glb": null,
+        "assets/models/glb/staff-spirit-master.glb": null,
+        "assets/models/glb/staff-spirit-simple.glb": null,
+        "assets/models/glb/staff-venom-advanced.glb": null,
+        "assets/models/glb/staff-venom-crystal.glb": null,
+        "assets/models/glb/staff-venom-master.glb": null,
+        "assets/models/glb/staff-venom-simple.glb": null,
+        "assets/models/runtime/Magenheim_Staff_Earth_Advanced.model.json": null,
+        "assets/models/runtime/Magenheim_Staff_Earth_Crystal.model.json": null,
+        "assets/models/runtime/Magenheim_Staff_Earth_Master.model.json": null,
+        "assets/models/runtime/Magenheim_Staff_Earth_Simple.model.json": null,
+        "assets/models/runtime/Magenheim_Staff_Fire_Advanced.model.json": null,
+        "assets/models/runtime/Magenheim_Staff_Fire_Crystal.model.json": null,
+        "assets/models/runtime/Magenheim_Staff_Fire_Master.model.json": null,
+        "assets/models/runtime/Magenheim_Staff_Fire_Simple.model.json": null,
+        "assets/models/runtime/Magenheim_Staff_Storm_Advanced.model.json": null,
+        "assets/models/runtime/Magenheim_Staff_Storm_Crystal.model.json": null,
+        "assets/models/runtime/Magenheim_Staff_Storm_Master.model.json": null,
+        "assets/models/runtime/Magenheim_Staff_Storm_Simple.model.json": null,
+        "assets/models/runtime/staff-frost-advanced.model.json": null,
+        "assets/models/runtime/staff-frost-crystal.model.json": null,
+        "assets/models/runtime/staff-frost-master.model.json": null,
+        "assets/models/runtime/staff-frost-simple.model.json": null,
+        "assets/models/runtime/staff-radiance-advanced.model.json": null,
+        "assets/models/runtime/staff-radiance-crystal.model.json": null,
+        "assets/models/runtime/staff-radiance-master.model.json": null,
+        "assets/models/runtime/staff-radiance-simple.model.json": null,
+        "assets/models/runtime/staff-seidr-advanced.model.json": null,
+        "assets/models/runtime/staff-seidr-crystal.model.json": null,
+        "assets/models/runtime/staff-seidr-master.model.json": null,
+        "assets/models/runtime/staff-seidr-simple.model.json": null,
+        "assets/models/runtime/staff-spirit-advanced.model.json": null,
+        "assets/models/runtime/staff-spirit-crystal.model.json": null,
+        "assets/models/runtime/staff-spirit-master.model.json": null,
+        "assets/models/runtime/staff-spirit-simple.model.json": null,
+        "assets/models/runtime/staff-venom-advanced.model.json": null,
+        "assets/models/runtime/staff-venom-crystal.model.json": null,
+        "assets/models/runtime/staff-venom-master.model.json": null,
+        "assets/models/runtime/staff-venom-simple.model.json": null
+      },
       "inputs": [
         "tools/export-model-assets.py",
         "tools/model_surface_authoring.py",
@@ -1675,7 +1752,9 @@
         "assets/models/source/staff-venom-crystal.blend",
         "assets/models/source/staff-venom-master.blend",
         "assets/models/source/staff-venom-simple.blend"
-      ]
+      ],
+      "generator_sha256": "d0add2d9d2c67e3a517591f1a246b56507a30c39c5a2236afca04570409ff9f1",
+      "inputs_sha256": "afce99f726976de0579a91b8baec8f41395e70eb37ed8d9866b9a616c560225c"
     },
     {
       "id": "underworld-geothermal-vent-models",
@@ -1717,7 +1796,7 @@
         "tools/generate-underworld-material-textures.py"
       ],
       "generator_sha256": "ddbcec5684c692aca6de38d298b87625c0d743f95b6d54b85544e8c3af5f8c5d",
-      "inputs_sha256": "c029655b990bcab69260a3682f379830469eccc8f3d84ecfe61ca9416fe3b657"
+      "inputs_sha256": "e866f2d27fe6dab2de366cabcc94b765b8dcdc12001a120e81e79e2fa7283fd3"
     },
     {
       "id": "underworld-material-item-models",
@@ -1882,7 +1961,7 @@
         "tools/generate-underworld-material-textures.py"
       ],
       "generator_sha256": "a2577d57d4aa92fc0da5f31cc07003ae21c1672aec0376b6cdddc8b902768e8e",
-      "inputs_sha256": "0e02759db9bf9b8a89fb189477112751a8b693412dce414670b1dd14197454ae"
+      "inputs_sha256": "a4859fe5e76bf9631ff5c8882d262e371b4a34294be6c52a5c4852b225faaaee"
     },
     {
       "id": "blackstone-throne-textures",
@@ -1895,24 +1974,28 @@
         "assets/textures/underworld/blackstone/blackstone-*.png",
         "assets/material-source/blackstone/blackstone-*.png"
       ],
-      "generator_sha256": "b4e1520c4e558b838f73353ab2d738163c542b36a80c6b5af7218b24113eefc3",
+      "generator_sha256": "53a153c3ded14a1666fa8adbd142953f3c57b2f4d9af2d9b939bad64a7380180",
       "output_sha256": {
-        "assets/material-source/blackstone/blackstone-banner-cloth-metallic-smoothness.png": "31191c491402d70c689bb89a57ddea24e1a0dbf4beb619a37279a0fdfced01c6",
-        "assets/material-source/blackstone/blackstone-banner-cloth-normal.png": "09ff59d89efc8e3d8b9a6f8170a0332c87ffcbdc32ca89225bdddaf77b74dc4d",
+        "assets/material-source/blackstone/blackstone-banner-cloth-metallic-smoothness.png": "457c9268537a5598bd814f8b862efa60a3ffdafd9b472f97ccb37dbe9ce0f5c4",
+        "assets/material-source/blackstone/blackstone-banner-cloth-normal.png": "74726236a7def5c9d78a68f3630e53647745e01d7b7ff95c4a79e9fc94b43fbf",
         "assets/material-source/blackstone/blackstone-basalt-metallic-smoothness.png": "4e3726af263a9248887ec0920bdca71536ce5dee9008dc25da6313c5f5f7cd4e",
         "assets/material-source/blackstone/blackstone-basalt-normal.png": "7f2851cbb9a214007f67b37f39bf34e3ed785ff476f2ad46512d45ae1080bd04",
         "assets/material-source/blackstone/blackstone-ember-emission.png": "5ec87bc7d2cc13ea95dd5cbbe33ddab19376b8b054f88a3ecab9375673b54061",
         "assets/material-source/blackstone/blackstone-ember-metallic-smoothness.png": "f3552fc3dd3f377148c5b275007ec5fec1781b86080a5e1bfd611dd0f71b9ece",
         "assets/material-source/blackstone/blackstone-ember-normal.png": "e19abdf6bea7d831fed2f4b4699f1dc5a71db3eaa98fdfd00d7fd1e589a0805f",
+        "assets/material-source/blackstone/blackstone-flame-emission.png": "6605d948c9027b0fccde8d4d34d551e0086f4e88416a9ba3f57b14d400998735",
+        "assets/material-source/blackstone/blackstone-flame-metallic-smoothness.png": "b69d8a4cdae0f8a268fd9c0b2127fe79371201147d3a16a04cdcea361c10cc95",
+        "assets/material-source/blackstone/blackstone-flame-normal.png": "a9279d8f59c6fbbc3ef4484843c7617e92568ef439a96209178d25d269a5ee58",
         "assets/material-source/blackstone/blackstone-royal-bronze-metallic-smoothness.png": "7641259f7ebfc8cd567cab8a69b1658d97184d616cedcb1fa644415852bdcc03",
         "assets/material-source/blackstone/blackstone-royal-bronze-normal.png": "f2f4c1a8799a1bc1ba9cf1a432b99ae87171009985baa73a977e8a170f1148f5",
         "assets/material-source/blackstone/blackstone-voidstone-metallic-smoothness.png": "22f4d659dbab3d53e2c502fc5c5bd0f4eeba43677207a0f54411946cd3daf051",
         "assets/material-source/blackstone/blackstone-voidstone-normal.png": "a084eb28dc8040f1ebec5722c2d0084c0cccf6ad1ed08a998af1742d6f01763c",
-        "assets/textures/underworld/blackstone/blackstone-banner-sun-albedo.png": "1c22a046858e7a58dd3744e88c62135fe9c16b9ad4e1a05fb0ce2f22da00182f",
+        "assets/textures/underworld/blackstone/blackstone-banner-sun-albedo.png": "323d61f15738e08fa8330f1efd39c11b21509865953937aacb8e4cdc42ceb103",
         "assets/textures/underworld/blackstone/blackstone-basalt-albedo.png": "1d8ead8188d4e94cbe773fee5d2f771338188434088da5e690ded4cf871e0ec3",
         "assets/textures/underworld/blackstone/blackstone-bronze-albedo.png": "e60607df8e3c4bebeb0f01bc0b2f5adf44df5bc9eb78028d2792d08448c33358",
         "assets/textures/underworld/blackstone/blackstone-ember-albedo.png": "cec0808f77511980c31e0dffc552cd2299eb5ffac47c2d5551718c8ea8aea96b",
-        "assets/textures/underworld/blackstone/blackstone-sun-sigil.png": "2b47cf62079230ffb35885e08234f6c156cad986fa7b78b5ce3492af23e6b68b",
+        "assets/textures/underworld/blackstone/blackstone-flame-albedo.png": "8e9ce8719b6b962d0240b81c223ccb45aebf8f27ef4209182d86e0d5c4a35163",
+        "assets/textures/underworld/blackstone/blackstone-sun-sigil.png": "15835001b1e79adde8951f65d3c198741736efd7bc50e6c923dc81d00cfc36d5",
         "assets/textures/underworld/blackstone/blackstone-voidstone-albedo.png": "504178560763288ed36b0f9de02f4dcb90f051e478d1fc4cb36107530664678c"
       },
       "hash": "bytes"
@@ -1970,14 +2053,14 @@
         "assets/models/glb/dark-throne.glb",
         "assets/models/runtime/dark-throne.model.json"
       ],
-      "generator_sha256": "6d5c262b421919167008026155ecc71cff011bc6d6cc49e2d51af8eb83f6d3a1",
+      "generator_sha256": "0674b461424944d235143eeb87b791054dfe8755f70fe6db0a8344cb59f602d8",
       "inputs": [
         "tools/generate-blackstone-throne-textures.py",
         "tools/export-model-assets.py",
         "tools/rebuild-blackstone-throne-set.ps1",
         "tools/verify-blackstone-throne-set.py"
       ],
-      "inputs_sha256": "931dbd6e29e2a8be168ad23200e597aa3395269db26d11178fa4c1b705e7acf8",
+      "inputs_sha256": "b6e317211c838f96755c98633614f0597e82df0fb7f2166ff0f0f1365141e001",
       "output_sha256": {
         "assets/models/glb/blackstone-arch.glb": null,
         "assets/models/glb/blackstone-attendant-seat.glb": null,
@@ -2023,6 +2106,215 @@
         "assets/models/source/dark-throne.blend": null
       },
       "hash": "generator-only"
+    },
+    {
+      "id": "underworld-progression-flora",
+      "generator": "tools/author-underworld-late-flora.py",
+      "command": [
+        "pwsh",
+        "-NoProfile",
+        "-File",
+        "tools/rebuild-underworld-progression-assets.ps1",
+        "-Family",
+        "flora"
+      ],
+      "inputs": [
+        "tools/rebuild-underworld-progression-assets.ps1",
+        "tools/magenheim_flora_kit.py",
+        "tools/magenheim_blender_kit.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py",
+        "tools/export-model-assets.py"
+      ],
+      "hash": "generator-only",
+      "outputs": [
+        "assets/models/source/underworld-flora-sulfur-cinderstalk.blend",
+        "assets/models/glb/underworld-flora-sulfur-cinderstalk.glb",
+        "assets/models/runtime/underworld-flora-sulfur-cinderstalk.model.json",
+        "assets/models/source/underworld-flora-frozen-rimecap.blend",
+        "assets/models/glb/underworld-flora-frozen-rimecap.glb",
+        "assets/models/runtime/underworld-flora-frozen-rimecap.model.json",
+        "assets/models/source/underworld-flora-decay-rotbloom.blend",
+        "assets/models/glb/underworld-flora-decay-rotbloom.glb",
+        "assets/models/runtime/underworld-flora-decay-rotbloom.model.json",
+        "assets/models/source/underworld-flora-harvest-glowcap-felled.blend",
+        "assets/models/glb/underworld-flora-harvest-glowcap-felled.glb",
+        "assets/models/runtime/underworld-flora-harvest-glowcap-felled.model.json",
+        "assets/models/source/underworld-flora-harvest-glowcap-stump.blend",
+        "assets/models/glb/underworld-flora-harvest-glowcap-stump.glb",
+        "assets/models/runtime/underworld-flora-harvest-glowcap-stump.model.json",
+        "assets/models/source/underworld-flora-harvest-spirestalk-felled.blend",
+        "assets/models/glb/underworld-flora-harvest-spirestalk-felled.glb",
+        "assets/models/runtime/underworld-flora-harvest-spirestalk-felled.model.json",
+        "assets/models/source/underworld-flora-harvest-spirestalk-stump.blend",
+        "assets/models/glb/underworld-flora-harvest-spirestalk-stump.glb",
+        "assets/models/runtime/underworld-flora-harvest-spirestalk-stump.model.json",
+        "assets/models/source/underworld-flora-harvest-cinderstalk-felled.blend",
+        "assets/models/glb/underworld-flora-harvest-cinderstalk-felled.glb",
+        "assets/models/runtime/underworld-flora-harvest-cinderstalk-felled.model.json",
+        "assets/models/source/underworld-flora-harvest-cinderstalk-stump.blend",
+        "assets/models/glb/underworld-flora-harvest-cinderstalk-stump.glb",
+        "assets/models/runtime/underworld-flora-harvest-cinderstalk-stump.model.json"
+      ],
+      "generator_sha256": "6dae8511d052cb3e54d2bcdb88328adf11f074768dba4d2ad7813516d68834e3",
+      "inputs_sha256": "9512888089846e9cd3e999cab3e2ae182d658c6a068c4d9b7fc1bf58cf67fc1d",
+      "output_sha256": {
+        "assets/models/glb/underworld-flora-decay-rotbloom.glb": null,
+        "assets/models/glb/underworld-flora-frozen-rimecap.glb": null,
+        "assets/models/glb/underworld-flora-harvest-cinderstalk-felled.glb": null,
+        "assets/models/glb/underworld-flora-harvest-cinderstalk-stump.glb": null,
+        "assets/models/glb/underworld-flora-harvest-glowcap-felled.glb": null,
+        "assets/models/glb/underworld-flora-harvest-glowcap-stump.glb": null,
+        "assets/models/glb/underworld-flora-harvest-spirestalk-felled.glb": null,
+        "assets/models/glb/underworld-flora-harvest-spirestalk-stump.glb": null,
+        "assets/models/glb/underworld-flora-sulfur-cinderstalk.glb": null,
+        "assets/models/runtime/underworld-flora-decay-rotbloom.model.json": null,
+        "assets/models/runtime/underworld-flora-frozen-rimecap.model.json": null,
+        "assets/models/runtime/underworld-flora-harvest-cinderstalk-felled.model.json": null,
+        "assets/models/runtime/underworld-flora-harvest-cinderstalk-stump.model.json": null,
+        "assets/models/runtime/underworld-flora-harvest-glowcap-felled.model.json": null,
+        "assets/models/runtime/underworld-flora-harvest-glowcap-stump.model.json": null,
+        "assets/models/runtime/underworld-flora-harvest-spirestalk-felled.model.json": null,
+        "assets/models/runtime/underworld-flora-harvest-spirestalk-stump.model.json": null,
+        "assets/models/runtime/underworld-flora-sulfur-cinderstalk.model.json": null,
+        "assets/models/source/underworld-flora-decay-rotbloom.blend": null,
+        "assets/models/source/underworld-flora-frozen-rimecap.blend": null,
+        "assets/models/source/underworld-flora-harvest-cinderstalk-felled.blend": null,
+        "assets/models/source/underworld-flora-harvest-cinderstalk-stump.blend": null,
+        "assets/models/source/underworld-flora-harvest-glowcap-felled.blend": null,
+        "assets/models/source/underworld-flora-harvest-glowcap-stump.blend": null,
+        "assets/models/source/underworld-flora-harvest-spirestalk-felled.blend": null,
+        "assets/models/source/underworld-flora-harvest-spirestalk-stump.blend": null,
+        "assets/models/source/underworld-flora-sulfur-cinderstalk.blend": null
+      }
+    },
+    {
+      "id": "underworld-progression-arenas",
+      "generator": "tools/author-underworld-boss-arenas.py",
+      "command": [
+        "pwsh",
+        "-NoProfile",
+        "-File",
+        "tools/rebuild-underworld-progression-assets.ps1",
+        "-Family",
+        "arenas"
+      ],
+      "inputs": [
+        "tools/rebuild-underworld-progression-assets.ps1",
+        "tools/magenheim_flora_kit.py",
+        "tools/magenheim_blender_kit.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py",
+        "tools/export-model-assets.py"
+      ],
+      "hash": "generator-only",
+      "outputs": [
+        "assets/models/source/underworld-boss-arena-first-bloom.blend",
+        "assets/models/glb/underworld-boss-arena-first-bloom.glb",
+        "assets/models/runtime/underworld-boss-arena-first-bloom.model.json",
+        "assets/models/source/underworld-boss-arena-blackwater-maw.blend",
+        "assets/models/glb/underworld-boss-arena-blackwater-maw.glb",
+        "assets/models/runtime/underworld-boss-arena-blackwater-maw.model.json",
+        "assets/models/source/underworld-boss-arena-furnace-heart.blend",
+        "assets/models/glb/underworld-boss-arena-furnace-heart.glb",
+        "assets/models/runtime/underworld-boss-arena-furnace-heart.model.json",
+        "assets/models/source/underworld-boss-arena-white-silence.blend",
+        "assets/models/glb/underworld-boss-arena-white-silence.glb",
+        "assets/models/runtime/underworld-boss-arena-white-silence.model.json",
+        "assets/models/source/underworld-boss-arena-rift-titan.blend",
+        "assets/models/glb/underworld-boss-arena-rift-titan.glb",
+        "assets/models/runtime/underworld-boss-arena-rift-titan.model.json",
+        "assets/models/source/underworld-boss-arena-carrion-crown.blend",
+        "assets/models/glb/underworld-boss-arena-carrion-crown.glb",
+        "assets/models/runtime/underworld-boss-arena-carrion-crown.model.json"
+      ],
+      "generator_sha256": "2589c6a85b5f00c8771b5920005ebdf542887956f0bbedbfa2224969fd8a2529",
+      "inputs_sha256": "9512888089846e9cd3e999cab3e2ae182d658c6a068c4d9b7fc1bf58cf67fc1d",
+      "output_sha256": {
+        "assets/models/glb/underworld-boss-arena-blackwater-maw.glb": null,
+        "assets/models/glb/underworld-boss-arena-carrion-crown.glb": null,
+        "assets/models/glb/underworld-boss-arena-first-bloom.glb": null,
+        "assets/models/glb/underworld-boss-arena-furnace-heart.glb": null,
+        "assets/models/glb/underworld-boss-arena-rift-titan.glb": null,
+        "assets/models/glb/underworld-boss-arena-white-silence.glb": null,
+        "assets/models/runtime/underworld-boss-arena-blackwater-maw.model.json": null,
+        "assets/models/runtime/underworld-boss-arena-carrion-crown.model.json": null,
+        "assets/models/runtime/underworld-boss-arena-first-bloom.model.json": null,
+        "assets/models/runtime/underworld-boss-arena-furnace-heart.model.json": null,
+        "assets/models/runtime/underworld-boss-arena-rift-titan.model.json": null,
+        "assets/models/runtime/underworld-boss-arena-white-silence.model.json": null,
+        "assets/models/source/underworld-boss-arena-blackwater-maw.blend": null,
+        "assets/models/source/underworld-boss-arena-carrion-crown.blend": null,
+        "assets/models/source/underworld-boss-arena-first-bloom.blend": null,
+        "assets/models/source/underworld-boss-arena-furnace-heart.blend": null,
+        "assets/models/source/underworld-boss-arena-rift-titan.blend": null,
+        "assets/models/source/underworld-boss-arena-white-silence.blend": null
+      }
+    },
+    {
+      "id": "underworld-fracture-creatures",
+      "generator": "tools/author-underworld-fracture-creatures.py",
+      "command": [
+        "pwsh",
+        "-NoProfile",
+        "-Command",
+        "& ./tools/blender.ps1 author-underworld-fracture-creatures; if($LASTEXITCODE -ne 0){exit 1}; & ./tools/blender.ps1 export-model-assets underworld-creature-fracture-wisp underworld-creature-rift-skitter underworld-creature-shardwing underworld-creature-gravity-leech underworld-creature-chasm-stalker underworld-creature-stonebound underworld-creature-rift-colossus; if($LASTEXITCODE -ne 0){exit 1}; python tools/verify-model-assets.py underworld-creature-fracture-wisp underworld-creature-rift-skitter underworld-creature-shardwing underworld-creature-gravity-leech underworld-creature-chasm-stalker underworld-creature-stonebound underworld-creature-rift-colossus; exit $LASTEXITCODE"
+      ],
+      "inputs": [
+        "tools/author-underworld-frozen-creatures.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py",
+        "tools/export-model-assets.py"
+      ],
+      "hash": "generator-only",
+      "outputs": [
+        "assets/models/source/underworld-creature-fracture-wisp.blend",
+        "assets/models/glb/underworld-creature-fracture-wisp.glb",
+        "assets/models/runtime/underworld-creature-fracture-wisp.model.json",
+        "assets/models/source/underworld-creature-rift-skitter.blend",
+        "assets/models/glb/underworld-creature-rift-skitter.glb",
+        "assets/models/runtime/underworld-creature-rift-skitter.model.json",
+        "assets/models/source/underworld-creature-shardwing.blend",
+        "assets/models/glb/underworld-creature-shardwing.glb",
+        "assets/models/runtime/underworld-creature-shardwing.model.json",
+        "assets/models/source/underworld-creature-gravity-leech.blend",
+        "assets/models/glb/underworld-creature-gravity-leech.glb",
+        "assets/models/runtime/underworld-creature-gravity-leech.model.json",
+        "assets/models/source/underworld-creature-chasm-stalker.blend",
+        "assets/models/glb/underworld-creature-chasm-stalker.glb",
+        "assets/models/runtime/underworld-creature-chasm-stalker.model.json",
+        "assets/models/source/underworld-creature-stonebound.blend",
+        "assets/models/glb/underworld-creature-stonebound.glb",
+        "assets/models/runtime/underworld-creature-stonebound.model.json",
+        "assets/models/source/underworld-creature-rift-colossus.blend",
+        "assets/models/glb/underworld-creature-rift-colossus.glb",
+        "assets/models/runtime/underworld-creature-rift-colossus.model.json"
+      ],
+      "generator_sha256": "740335936dd8e78026d08cb95622d943abd73d11bdb0ab12540c2eadf4309a8b",
+      "inputs_sha256": "5b9f34619b2ead8650a56f69ef5c739cbf5df2eb1f8f6138b73fdad89a959f7f",
+      "output_sha256": {
+        "assets/models/glb/underworld-creature-chasm-stalker.glb": null,
+        "assets/models/glb/underworld-creature-fracture-wisp.glb": null,
+        "assets/models/glb/underworld-creature-gravity-leech.glb": null,
+        "assets/models/glb/underworld-creature-rift-colossus.glb": null,
+        "assets/models/glb/underworld-creature-rift-skitter.glb": null,
+        "assets/models/glb/underworld-creature-shardwing.glb": null,
+        "assets/models/glb/underworld-creature-stonebound.glb": null,
+        "assets/models/runtime/underworld-creature-chasm-stalker.model.json": null,
+        "assets/models/runtime/underworld-creature-fracture-wisp.model.json": null,
+        "assets/models/runtime/underworld-creature-gravity-leech.model.json": null,
+        "assets/models/runtime/underworld-creature-rift-colossus.model.json": null,
+        "assets/models/runtime/underworld-creature-rift-skitter.model.json": null,
+        "assets/models/runtime/underworld-creature-shardwing.model.json": null,
+        "assets/models/runtime/underworld-creature-stonebound.model.json": null,
+        "assets/models/source/underworld-creature-chasm-stalker.blend": null,
+        "assets/models/source/underworld-creature-fracture-wisp.blend": null,
+        "assets/models/source/underworld-creature-gravity-leech.blend": null,
+        "assets/models/source/underworld-creature-rift-colossus.blend": null,
+        "assets/models/source/underworld-creature-rift-skitter.blend": null,
+        "assets/models/source/underworld-creature-shardwing.blend": null,
+        "assets/models/source/underworld-creature-stonebound.blend": null
+      }
     }
   ]
 }

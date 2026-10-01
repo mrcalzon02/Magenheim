@@ -25,7 +25,7 @@ def curves(act):
 def action(name,end,poses):
  old=bpy.data.actions.get(name)
  if old:bpy.data.actions.remove(old)
- act=bpy.data.actions.new(name); arm.animation_data_create(); arm.animation_data.action=act
+ act=bpy.data.actions.new(name); act.use_fake_user=True; arm.animation_data_create(); arm.animation_data.action=act
  for frame,pose in poses.items():
   for bname,rot in pose.items():
    pb=arm.pose.bones.get(bname)
@@ -65,6 +65,9 @@ action('CrowncapBrute_HeavyStagger',54,{1:n,8:{'Chest':(-.18,0,.10),'Head':(-.20
 death={'Pelvis':(.30,0,.62),'Spine1':(.46,0,.74),'Chest':(.62,0,.82),'Neck':(.34,0,.18),'Head':(.44,0,.22),'UpperArm_L':(.56,0,.44),'ForeArm_L':(-.34,0,.18),'UpperArm_R':(.62,0,-.38),'ForeArm_R':(-.42,0,-.16),'Thigh_L':(.40,0,.18),'Shin_L':(-.58,0,0),'Thigh_R':(.52,0,-.16),'Shin_R':(-.64,0,0)}
 action('CrowncapBrute_Death',72,{1:n,16:{'Chest':(.12,0,.18),'Head':(-.12,0,-.10)},36:{'Pelvis':(.18,0,.32),'Chest':(.38,0,.48),'UpperArm_L':(.32,0,.28),'UpperArm_R':(.36,0,-.24)},54:death,72:death})
 arm.animation_data.action=None
+for pb in arm.pose.bones:
+ pb.rotation_euler=(0,0,0);pb.location=(0,0,0);pb.scale=(1,1,1)
+bpy.context.view_layer.update()
 arm['production_contract']='production-creature-r2'
 arm['authored_actions']='CrowncapBrute_Idle,CrowncapBrute_Walk,CrowncapBrute_Turn,CrowncapBrute_Alert,CrowncapBrute_SweepLeft,CrowncapBrute_SweepRight,CrowncapBrute_HeavySlam,CrowncapBrute_Hit,CrowncapBrute_HeavyStagger,CrowncapBrute_Death'
 sc['magenheim_authored_actions']=arm['authored_actions']; sc['magenheim_skinning']='rigid-segment-weighted'

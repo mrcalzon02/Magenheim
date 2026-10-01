@@ -11,7 +11,7 @@ namespace Magenheim.Runtime;
 /// </summary>
 internal sealed class FractureSuspendedCourtFamily : IUnderworldLandmarkStructureFamily
 {
-    internal const string CanonicalLocationId = "magenheim.underworld.location.fracture";
+    internal const string CanonicalLocationId = "magenheim.underworld.location.rift_titan";
     private readonly UnderworldRuntimeServices _services;
 
     // cellSize=1 makes every native chunk a legal reservation anchor; Eligible then narrows that

@@ -87,7 +87,9 @@ public static class UnderworldBiomeDungeonSpatialPlanner
             var offset = DirectionOffset(topology.Seed, room.InstanceId);
 
             var placed = false;
-            for (var radius = 1; radius <= 9 && !placed; radius++)
+            // Keep odd grid lanes free. Adjacent packed room cells can surround an endpoint
+            // completely; expanding the search bounds cannot escape that enclosed start.
+            for (var radius = 2; radius <= 18 && !placed; radius += 2)
             {
                 for (var attempt = 0; attempt < PlacementDirections.Length; attempt++)
                 {

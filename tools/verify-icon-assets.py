@@ -267,7 +267,7 @@ def asset_name(model_id: str) -> str:
 
 
 catalog = json.loads(CATALOG.read_text())
-staff_models = [e['id'] for e in catalog if 'staff' in e['id'].lower()]
+staff_models = [e['id'] for e in catalog if e['id'].startswith(('staff-', 'Magenheim_Staff_'))]
 for model_id in sorted(staff_models):
     name = asset_name(model_id)
     if not (ICONS / f'{name}.icon.png').is_file():

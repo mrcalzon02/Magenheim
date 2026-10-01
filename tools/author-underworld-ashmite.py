@@ -25,7 +25,7 @@ def material(name,stem):
     t=n.new('ShaderNodeTexImage'); t.image=image(stem,'normal'); l.new(uv.outputs['UV'],t.inputs['Vector']); nm=n.new('ShaderNodeNormalMap'); l.new(t.outputs['Color'],nm.inputs['Color']); l.new(nm.outputs['Normal'],bs.inputs['Normal']); return m
 
 def organic(name,loc,scale,mat,sub=2,seed=0):
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale; bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub+1,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale; bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
     for v in o.data.vertices: v.co*=1+.035*sin(v.co.x*43+seed)+.025*cos(v.co.y*37-seed)
     o.data.materials.append(mat); return o
 

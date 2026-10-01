@@ -182,7 +182,7 @@ def frame_and_render(entry, out_path: Path) -> tuple[float, float, float]:
 
 def main() -> None:
     catalog = json.loads((MODELS / 'catalog.json').read_text())
-    staff = [e for e in catalog if 'staff' in e['id'].lower()]
+    staff = [e for e in catalog if e['id'].startswith(('staff-', 'Magenheim_Staff_'))]
     if len(staff) != 32:
         raise SystemExit(f'Expected 32 staff models in the catalog, found {len(staff)}.')
 

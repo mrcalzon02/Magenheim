@@ -70,9 +70,15 @@ internal sealed class UnderworldNativeStructureLocationRuntime : MonoBehaviour
         GameObject? content = null;
         try
         {
+            UnderworldBossLocationRegistrar.BossLocation? bossLocation = null;
+            foreach (var boss in UnderworldBossLocationRegistrar.Locations)
+                if (string.Equals(boss.Family.Kind, _familyKind, StringComparison.Ordinal)) bossLocation = boss;
             using (ValheimWorldInstanceExecution.Enter(context))
-                content = family.Compose(transform.position, identity, key);
+                content = bossLocation is null ? family.Compose(transform.position, identity, key) :
+                    UnderworldBiomeBossRegistrar.ComposeArena(bossLocation.CanonicalLocationId, transform.position, transform.rotation);
             content.transform.SetParent(transform, worldPositionStays: true);
+            if (bossLocation is not null)
+                content.AddComponent<UnderworldBiomeBossArenaRuntime>().Bind(bossLocation.CanonicalLocationId);
             _composed = true;
             _log?.LogInfo(
                 $"Composed native Underworld location '{_familyKind}' at chunk {key.X},{key.Z}.");

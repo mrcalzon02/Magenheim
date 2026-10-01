@@ -20,11 +20,20 @@ bpy.context.view_layer.objects.active=arm; arm.select_set(True); bpy.context.vie
 ACTIONS={'Idle':48,'VentIdle':64,'Walk':32,'PackSprint':20,'TurnLeft':24,'TurnRight':24,'Bite':18,'Lunge':24,'PackCall':42,'Hit':16,'Stagger':28,'Death':54}
 LEGS=('FL','FR','HL','HR'); SEGS=('Upper','Lower','Hock','Foot')
 
+def action_fcurves(action):
+ direct=getattr(action,'fcurves',None)
+ if direct is not None:return list(direct)
+ out=[]
+ for layer in getattr(action,'layers',()):
+  for strip in getattr(layer,'strips',()):
+   for bag in getattr(strip,'channelbags',()):out.extend(bag.fcurves)
+ return out
+
 def reset():
     for p in arm.pose.bones:
         p.rotation_mode='XYZ'; p.rotation_euler=(0,0,0); p.location=(0,0,0); p.scale=(1,1,1)
 def action(name,end):
-    a=bpy.data.actions.get('CH_'+name) or bpy.data.actions.new('CH_'+name); a.use_fake_user=True
+    a=bpy.data.actions.get('CH_'+name) or bpy.data.actions.new('CH_'+name); a.use_fake_user=True; a.frame_start=1; a.frame_end=end
     if arm.animation_data is None: arm.animation_data_create()
     arm.animation_data.action=a
     reset(); arm['active_action_contract']=name
@@ -36,7 +45,7 @@ def key(bone,frame,rot=None,loc=None):
 def cyc(name,end,amp,body=2,tail=8):
     action(name,end)
     for f in range(1,end+1,4):
-        phase=2*pi*(f-1)/(end-1)
+        phase=2*pi*(f-1)/(end-1)+pi/8
         # diagonal pairs oppose each other; digitigrade hock/foot provide visible compression and toe-off.
         for tag in LEGS:
             ph=phase+(pi if tag in ('FR','HL') else 0)
@@ -91,12 +100,12 @@ for f,r,p in ((1,0,0),(7,25,-12),(15,-16,16),(22,8,-7),(28,0,0)):
     for tag in LEGS: key(tag+'_Upper',f,(abs(r)*.35,0,0))
 action('Death',54)
 for f,roll,drop in ((1,0,0),(16,18,-.05),(32,58,-.18),(44,82,-.27),(54,88,-.31)):
-    key('Pelvis',f,(0,0,roll),loc=(0,0,drop)); key('Spine',f,(8 if roll else 0,0,roll*.55)); key('Chest',f,(14 if roll else 0,0,roll*.72)); key('Neck',f,(20 if roll else 0,0,-roll*.18)); key('Head',f,(28 if roll else 0,0,-roll*.12)); key('Jaw',f,(18 if roll else 0,0))
+    key('Pelvis',f,(0,0,roll),loc=(0,0,drop)); key('Spine',f,(8 if roll else 0,0,roll*.55)); key('Chest',f,(14 if roll else 0,0,roll*.72)); key('Neck',f,(20 if roll else 0,0,-roll*.18)); key('Head',f,(28 if roll else 0,0,-roll*.12)); key('Jaw',f,(18 if roll else 0,0,0))
     for tag in LEGS: key(tag+'_Upper',f,(min(46,roll*.48),0,0)); key(tag+'_Hock',f,(-min(55,roll*.58),0,0))
 
 # Contract gates: all actions, digitigrade participation, sprint distinctness, no Root translation.
-def paths(a): return {(fc.data_path,fc.array_index) for fc in a.fcurves}
-def bone_has(a,b): return any(('pose.bones["%s"]'%b) in fc.data_path for fc in a.fcurves)
+def paths(a): return {(fc.data_path,fc.array_index) for fc in action_fcurves(a)}
+def bone_has(a,b): return any(('pose.bones["%s"]'%b) in fc.data_path for fc in action_fcurves(a))
 missing=[n for n in ACTIONS if bpy.data.actions.get('CH_'+n) is None]
 if missing: raise RuntimeError(f'Missing actions: {missing}')
 for n in ('Walk','PackSprint'):
@@ -104,7 +113,7 @@ for n in ('Walk','PackSprint'):
     absent=[f'{t}_{s}' for t in LEGS for s in SEGS if not bone_has(a,f'{t}_{s}')]
     if absent: raise RuntimeError(f'{n} missing digitigrade participation: {absent}')
 for a in [bpy.data.actions['CH_'+n] for n in ACTIONS]:
-    if bone_has(a,'Root') and any('location' in fc.data_path and 'Root' in fc.data_path for fc in a.fcurves): raise RuntimeError(f'{a.name} illegally animates Root.location')
+    if bone_has(a,'Root') and any('location' in fc.data_path and 'Root' in fc.data_path for fc in action_fcurves(a)): raise RuntimeError(f'{a.name} illegally animates Root.location')
 arm['action_contract']='Idle,VentIdle,Walk,PackSprint,TurnLeft,TurnRight,Bite,Lunge,PackCall,Hit,Stagger,Death'
 sc=bpy.context.scene; sc['magenheim_authored_actions']=','.join('CH_'+name for name in ACTIONS); sc['magenheim_skinning']='rigid-segment-weighted'
 arm['animation_fidelity']='diagonal quadruped gait; compressed digitigrade pack sprint; segmented tail counterbalance; physical heat-vent idle; jaw-led bite; full-body in-place lunge; throat-presenting pack call'

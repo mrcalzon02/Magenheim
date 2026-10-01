@@ -8,9 +8,8 @@ using Magenheim.Core.Underworld;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Post-victory replacement crafting for the Nowhere King's drops. The Mycelial Bench exists in the
-/// first Underworld tier and is only reachable after the Dark Throne victory unlocks the Underworld,
-/// so these recipes cannot replace the first legitimate boss kill.
+/// Post-victory replacement crafting at the final Underworld station. Replacement rewards
+/// consume a real King trophy; the paired weapon consumes the two earned royal blades.
 /// </summary>
 internal sealed class NowhereKingCraftingRegistrar : IDisposable
 {
@@ -33,10 +32,11 @@ internal sealed class NowhereKingCraftingRegistrar : IDisposable
         if (_registered) return;
         try
         {
-            Require(UnderworldWeaponUpgradeCatalog.MycelialBenchPrefab);
+            Require(UnderworldStationCatalog.CrownReliquaryPrefab);
 
             AddRecipe(
                 NowhereKingRewardRegistrar.FirmamentPrefabName,
+                Cost(NowhereKingRewardRegistrar.TrophyPrefabName, 1),
                 Cost("Magenheim_Weapon_CrystalSword", 1),
                 Cost(UnderworldFungalRefinementCatalog.WorldrootPlank, 10),
                 Cost("Magenheim_Underworld_Resource_Understone", 8),
@@ -45,6 +45,7 @@ internal sealed class NowhereKingCraftingRegistrar : IDisposable
 
             AddRecipe(
                 NowhereKingRewardRegistrar.NullGatePrefabName,
+                Cost(NowhereKingRewardRegistrar.TrophyPrefabName, 1),
                 Cost("Magenheim_Weapon_CrystalSword", 1),
                 Cost(UnderworldFungalRefinementCatalog.WorldrootPlank, 8),
                 Cost("Magenheim_Underworld_Resource_Understone", 12),
@@ -60,22 +61,16 @@ internal sealed class NowhereKingCraftingRegistrar : IDisposable
 
             AddRecipe(
                 NowhereKingRewardRegistrar.NullMantlePrefabName,
+                Cost(NowhereKingRewardRegistrar.TrophyPrefabName, 1),
                 Cost(UnderworldFungalRefinementCatalog.WorldrootPlank, 4),
                 Cost("Magenheim_Underworld_Resource_Understone", 4),
                 Cost(UnderworldFungalRefinementCatalog.SpireCord, 12),
                 Cost(UnderworldFungalRefinementCatalog.CuredGlowcap, 5));
 
-            AddRecipe(
-                NowhereKingRewardRegistrar.TrophyPrefabName,
-                Cost(UnderworldFungalRefinementCatalog.WorldrootPlank, 4),
-                Cost("Magenheim_Underworld_Resource_Understone", 6),
-                Cost(UnderworldFungalRefinementCatalog.SpireCord, 2),
-                Cost(UnderworldFungalRefinementCatalog.CuredGlowcap, 1));
-
             _registered = true;
             _log.LogInfo(
-                "Registered post-Nowhere-King Mycelial Bench recipes for Firmament, Null Gate, " +
-                "the paired Last Argument knives, the Null Mantle and the Nowhere King trophy.");
+                "Registered trophy-backed Crown Reliquary replacements for Firmament, Null Gate, " +
+                "the Null Mantle and assembly of the paired Last Argument knives. The trophy is encounter-only.");
         }
         catch (Exception exception)
         {
@@ -93,8 +88,8 @@ internal sealed class NowhereKingCraftingRegistrar : IDisposable
             Name = "Magenheim_Recipe_PostKing_" + item,
             Item = item,
             Amount = 1,
-            CraftingStation = UnderworldWeaponUpgradeCatalog.MycelialBenchPrefab,
-            RepairStation = UnderworldWeaponUpgradeCatalog.MycelialBenchPrefab,
+            CraftingStation = UnderworldStationCatalog.CrownReliquaryPrefab,
+            RepairStation = UnderworldStationCatalog.CrownReliquaryPrefab,
             MinStationLevel = 1,
             Enabled = true,
         };

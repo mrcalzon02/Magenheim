@@ -25,6 +25,16 @@ SKIN=mat('LanternAngler_DorsalHide',(.025,.037,.041),.82); BELLY=mat('LanternAng
 FIN=mat('LanternAngler_FinTissue',(.035,.055,.058),.72); MOUTH=mat('LanternAngler_OralTissue',(.16,.045,.040),.55)
 TOOTH=mat('LanternAngler_Tooth',(.54,.51,.39),.50); LURE=mat('LanternAngler_LureTissue',(.055,.085,.075),.61)
 LIGHT=mat('LanternAngler_LightOrgan',(.16,.31,.27),.38,(.20,.78,.62),3.2)
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from magenheim_creature_pbr import bind as bind_creature_pbr
+bind_creature_pbr(bpy,bpy.data.materials['LanternAngler_DorsalHide'],'lantern-angler','dorsal-hide')
+bind_creature_pbr(bpy,bpy.data.materials['LanternAngler_VentralHide'],'lantern-angler','ventral-hide')
+bind_creature_pbr(bpy,bpy.data.materials['LanternAngler_FinTissue'],'lantern-angler','fin-tissue')
+bind_creature_pbr(bpy,bpy.data.materials['LanternAngler_OralTissue'],'lantern-angler','oral-throat')
+bind_creature_pbr(bpy,bpy.data.materials['LanternAngler_Tooth'],'lantern-angler','tooth')
+bind_creature_pbr(bpy,bpy.data.materials['LanternAngler_LureTissue'],'lantern-angler','lure-stalk')
+bind_creature_pbr(bpy,bpy.data.materials['LanternAngler_LightOrgan'],'lantern-angler','light-organ')
 parts={}
 def uv(o):
     layer=o.data.uv_layers.new(name='LanternAnglerUV'); xs=[v.co.x for v in o.data.vertices]; ys=[v.co.y for v in o.data.vertices]
@@ -33,7 +43,7 @@ def uv(o):
         for li in p.loop_indices:
             co=o.data.vertices[o.data.loops[li].vertex_index].co; layer.data[li].uv=((co.x-xmin)/dx,(co.y-ymin)/dy)
 def ico(name,loc,scale,material,bone,sub=3):
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub+1,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale
     bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(material); uv(o); parts[name]=bone; return o
 def mesh(name,verts,faces,material,bone):
     me=bpy.data.meshes.new(name+'Mesh'); me.from_pydata(verts,[],faces); me.update(); o=bpy.data.objects.new(name,me); bpy.context.collection.objects.link(o); me.materials.append(material); uv(o); parts[name]=bone; return o

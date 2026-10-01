@@ -41,8 +41,8 @@ def crack_mask(seed):
             ang += rng.uniform(-.12,.12); x += math.cos(ang)*2.2; y += math.sin(ang)*2.2
             if not (2<=x<SIZE-2 and 2<=y<SIZE-2): break
             r=2 if step%7 else 3
-            for yy in range(int(y)-r,int(y)+r+1):
-                for xx in range(int(x)-r,int(x)+r+1):
+            for yy in range(max(0,int(y)-r),min(SIZE,int(y)+r+1)):
+                for xx in range(max(0,int(x)-r),min(SIZE,int(x)+r+1)):
                     d=((xx-x)**2+(yy-y)**2)**.5
                     if d<=r: px[xx,yy]=max(px[xx,yy],clamp(255*(1-d/(r+.01))))
     return im.filter(ImageFilter.GaussianBlur(.65))
@@ -67,9 +67,9 @@ def make_family(stem,base,rough_base,normal_strength,index):
     h=Image.new('L',(SIZE,SIZE)); h.putdata(height); h=h.filter(ImageFilter.GaussianBlur(.55))
     hp=h.load(); n=Image.new('RGB',(SIZE,SIZE)); np=n.load()
     for y in range(SIZE):
-        ym=max(0,y-1); yp=min(SIZE-1,y+1)
+        ym=max(0,y-SIZE//128); yp=min(SIZE-1,y+SIZE//128)
         for x in range(SIZE):
-            xm=max(0,x-1); xp=min(SIZE-1,x+1)
+            xm=max(0,x-SIZE//128); xp=min(SIZE-1,x+SIZE//128)
             dx=(hp[xp,y]-hp[xm,y])/255; dy=(hp[x,yp]-hp[x,ym])/255
             nx=-dx*3.2; ny=-dy*3.2; nz=1.0; inv=1/math.sqrt(nx*nx+ny*ny+nz*nz)
             np[x,y]=(clamp(128+127*nx*inv),clamp(128+127*ny*inv),clamp(128+127*nz*inv))

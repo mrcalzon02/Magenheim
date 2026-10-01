@@ -27,7 +27,7 @@ def curves(act):
 def action(name,end,poses):
  old=bpy.data.actions.get(name)
  if old:bpy.data.actions.remove(old)
- act=bpy.data.actions.new(name); arm.animation_data_create(); arm.animation_data.action=act
+ act=bpy.data.actions.new(name); act.use_fake_user=True; arm.animation_data_create(); arm.animation_data.action=act
  for frame,pose in poses.items():
   for bname,rot in pose.items():
    pb=arm.pose.bones.get(bname)
@@ -87,6 +87,9 @@ for limb in LIMBS:
  death[f'Leg_{limb}_Upper']=(.42,0,side*.34); death[f'Leg_{limb}_Lower']=(-.56,0,-side*.20); death[f'Leg_{limb}_Tarsus']=(.34,0,side*.12); death[f'Leg_{limb}_Grip']=(0,.30,0)
 action('ShelfLurker_Death',58,{1:n,16:{'Body':(.10,0,.32),'Head':(.18,0,.24)},34:{'Body':(.16,0,.78),'Abdomen':(.10,0,.82),'Head':(.26,0,.60)},58:death})
 arm.animation_data.action=None
+for pb in arm.pose.bones:
+ pb.rotation_euler=(0,0,0);pb.location=(0,0,0);pb.scale=(1,1,1)
+bpy.context.view_layer.update()
 sc['magenheim_fidelity']='production-creature-r2'
 sc['magenheim_authored_actions']='ShelfLurker_ClingIdle,ShelfLurker_LateralCrawl,ShelfLurker_Reposition,ShelfLurker_DropPounce,ShelfLurker_Recover,ShelfLurker_Attack,ShelfLurker_Hit,ShelfLurker_Death'; sc['magenheim_skinning']='rigid-segment-weighted'
 sc['magenheim_cling_contract']='six-independent-grip-chains;sequential-release-replant;drop-pounce-without-whole-mesh-rotation'

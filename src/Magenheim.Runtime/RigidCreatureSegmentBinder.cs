@@ -111,7 +111,7 @@ internal static class RigidCreatureSegmentBinder
         foreach (var row in rows)
         {
             var name = (string?)row["name"];
-            if (string.IsNullOrWhiteSpace(name))
+            if (name is null || string.IsNullOrWhiteSpace(name))
                 throw new InvalidOperationException(modelId + " creature rig contains an unnamed bone.");
             if (result.ContainsKey(name))
                 throw new InvalidOperationException(modelId + " creature rig repeats bone '" + name + "'.");
@@ -127,7 +127,7 @@ internal static class RigidCreatureSegmentBinder
         }
 
         foreach (var bone in result.Values)
-            if (!string.IsNullOrWhiteSpace(bone.Parent) && !result.ContainsKey(bone.Parent))
+            if (bone.Parent is not null && !string.IsNullOrWhiteSpace(bone.Parent) && !result.ContainsKey(bone.Parent))
                 throw new InvalidOperationException(
                     modelId + " creature bone '" + bone.Name + "' names missing parent '" + bone.Parent + "'.");
 
@@ -149,7 +149,7 @@ internal static class RigidCreatureSegmentBinder
         foreach (var row in rows)
         {
             var name = (string?)row["name"];
-            if (string.IsNullOrWhiteSpace(name))
+            if (name is null || string.IsNullOrWhiteSpace(name))
                 throw new InvalidOperationException(modelId + " creature action is unnamed.");
             if (!(row["samples"] is JArray samples) || samples.Count == 0)
                 throw new InvalidOperationException(modelId + " creature action '" + name + "' has no samples.");
@@ -230,7 +230,7 @@ internal static class RigidCreatureSegmentBinder
         // rest pose; the new local transform is therefore exactly the rest pose relative to parent.
         foreach (var spec in specs.Values)
         {
-            if (string.IsNullOrWhiteSpace(spec.Parent))
+            if (spec.Parent is null || string.IsNullOrWhiteSpace(spec.Parent))
                 continue;
             var bone = transforms[spec.Name];
             var parent = transforms[spec.Parent];

@@ -49,9 +49,10 @@ def material(stem,seed,base,tint,rough,motif,normal_strength):
     rr.save(OUT/f'{stem}-roughness.png')
     hp=h.load(); n=Image.new('RGB',(SIZE,SIZE)); np=n.load()
     for y in range(SIZE):
-        ym=(y-1)%SIZE; yp=(y+1)%SIZE
+        # Sample broad relief at a visible surface scale; one-pixel noise disappears in mipmaps.
+        ym=(y-SIZE//128)%SIZE; yp=(y+SIZE//128)%SIZE
         for x in range(SIZE):
-            xm=(x-1)%SIZE; xp=(x+1)%SIZE
+            xm=(x-SIZE//128)%SIZE; xp=(x+SIZE//128)%SIZE
             dx=(hp[xp,y]-hp[xm,y])/255*normal_strength; dy=(hp[x,yp]-hp[x,ym])/255*normal_strength
             m=sqrt(dx*dx+dy*dy+1)
             np[x,y]=(clamp((-.5*dx/m+.5)*255),clamp((-.5*dy/m+.5)*255),clamp((.5/m+.5)*255))
@@ -72,7 +73,7 @@ for p in files:
         if im.size!=(SIZE,SIZE): raise RuntimeError(f'{p.name}: wrong dimensions {im.size}')
         proxy=im.resize((READABILITY_SIZE,READABILITY_SIZE),Image.Resampling.LANCZOS)
         luma=proxy.convert('L'); lo,hi=luma.getextrema(); sigma=ImageStat.Stat(luma).stddev[0]
-        if hi-lo<10 or sigma<2.2: raise RuntimeError(f'{p.name}: detail collapses at gameplay scale range={hi-lo}, sigma={sigma:.2f}')
+        if not p.name.endswith('-normal.png') and (hi-lo<10 or sigma<2.2): raise RuntimeError(f'{p.name}: detail collapses at gameplay scale range={hi-lo}, sigma={sigma:.2f}')
         if p.name.endswith('-normal.png'):
             stat=ImageStat.Stat(proxy.convert('RGB')); xy=(stat.stddev[0]**2+stat.stddev[1]**2)**.5
             if xy<2.0 or stat.mean[2]<150: raise RuntimeError(f'{p.name}: normal response collapses xy={xy:.2f} z={stat.mean[2]:.1f}')

@@ -22,6 +22,7 @@ internal static class UnderworldDeepstoneInteractionRpc
 {
     private const int RequestMessage = 1;
     private const int ResponseMessage = 2;
+    private const int ThroneRequestMessage = 3;
     private static readonly UnderworldDeepstoneRequestLedger ReplayLedger = new();
     private static long _nextRequestId;
     private static UnderworldRuntimeServices? _services;
@@ -58,17 +59,60 @@ internal static class UnderworldDeepstoneInteractionRpc
     {
         try
         {
-            if (package.ReadInt() != RequestMessage) yield break;
+            var message = package.ReadInt();
+            if (message != RequestMessage && message != ThroneRequestMessage) yield break;
             var suppliedGeneration = package.ReadLong(); var requestId = package.ReadLong(); var deepstoneId = package.ReadString();
             if (_authority is null || _rpc is null) yield break;
             var generation = _authority.GetPeerSessionGeneration(sender);
             if (generation <= 0L || generation != suppliedGeneration || !_authority.IsPeerMutationAuthorized(sender)) { SendResponse(sender, generation, requestId, false, "Deepstone request belongs to an unauthorized or stale Magenheim session."); yield break; }
             if (!ReplayLedger.TryAdmit(sender, generation, requestId)) { SendResponse(sender, generation, requestId, false, "Duplicate or invalid Deepstone activation request rejected."); yield break; }
-            if (!TryResolvePeerPlayer(sender, out var player, out var diagnostic) || !TryResolveNearbyStone(player, deepstoneId, out var stone, out diagnostic)) { SendResponse(sender, generation, requestId, false, diagnostic); yield break; }
+            if (!TryResolvePeerPlayer(sender, out var player, out var diagnostic)) { SendResponse(sender, generation, requestId, false, diagnostic); yield break; }
+            if (message == ThroneRequestMessage)
+            {
+                var throne = UnityEngine.Object.FindObjectsByType<DarkThroneDaisRuntime>(FindObjectsSortMode.None)
+                    .FirstOrDefault(value => value.EncounterIdentity == deepstoneId && value.IsWithinInteractionRange(player));
+                var resummoned = throne != null && TryResummonKingServer(throne, player);
+                SendResponse(sender, generation, requestId, resummoned,
+                    resummoned ? "The Nowhere King returns." : "The throne could not accept the offering.");
+                yield break;
+            }
+            if (!TryResolveNearbyStone(player, deepstoneId, out var stone, out diagnostic)) { SendResponse(sender, generation, requestId, false, diagnostic); yield break; }
             var applied = TryActivateServer(stone, player, out diagnostic); SendResponse(sender, generation, requestId, applied, diagnostic);
         }
         catch (Exception exception) { _log?.LogError($"Failed to process Deepstone interaction RPC from peer {sender}: {exception}"); }
         yield break;
+    }
+
+    internal static bool TryResummonKing(DarkThroneDaisRuntime throne, Player player, out string diagnostic)
+    {
+        diagnostic = "The throne offering is unavailable.";
+        if (!throne || !player || !throne.IsWithinInteractionRange(player) ||
+            string.IsNullOrEmpty(throne.EncounterIdentity) || ZNet.instance == null) return false;
+        if (ZNet.instance.IsServer())
+        {
+            var applied = TryResummonKingServer(throne, player);
+            diagnostic = applied ? "The Nowhere King returns." : "The throne rejected the offering.";
+            return applied;
+        }
+        if (_rpc == null || _authority == null || !_authority.IsClientMutationAuthorized ||
+            _authority.ClientSessionGeneration <= 0) return false;
+        var package = new ZPackage();
+        package.Write(ThroneRequestMessage);
+        package.Write(_authority.ClientSessionGeneration);
+        package.Write(Interlocked.Increment(ref _nextRequestId));
+        package.Write(throne.EncounterIdentity);
+        _rpc.SendPackage(RuntimeGameApi.ServerPeerId, package);
+        diagnostic = "The throne offering was submitted for server resolution.";
+        return true;
+    }
+
+    private static bool TryResummonKingServer(DarkThroneDaisRuntime throne, Player player)
+    {
+        if (_services == null || !_services.TryResolvePlayerSession(player, out _, out var layer, out _) ||
+            layer != UnderworldLayer.Underworld ||
+            !_services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Underworld, out var context) ||
+            context == null || throne.gameObject.scene.handle != context.Scene.handle) return false;
+        using (ValheimWorldInstanceExecution.Enter(context)) return throne.TryResummonServer(player);
     }
 
     private static IEnumerator ReceiveClientMessage(long sender, ZPackage package)

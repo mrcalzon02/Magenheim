@@ -26,8 +26,8 @@ public sealed record DarkThroneLocationDefinition(
             throw new InvalidOperationException("Dark Throne prefab must use a Magenheim-owned identity.");
         if (string.IsNullOrWhiteSpace(Group) || !Group.StartsWith("magenheim.", StringComparison.Ordinal))
             throw new InvalidOperationException("Dark Throne group must use a Magenheim-owned identity.");
-        if (!string.Equals(Biome, "Mistlands", StringComparison.Ordinal))
-            throw new InvalidOperationException("The Dark Throne is a Mistlands-only location.");
+        if (!string.Equals(Biome, "GreatDecay", StringComparison.Ordinal))
+            throw new InvalidOperationException("The Dark Throne belongs to the Underworld Great Decay.");
         var area = SpawnAreaValidator.Normalize(BiomeArea);
         if (!area.IsValid || area.Area != BiomeArea)
             throw new InvalidOperationException("Dark Throne biome area must be normalized.");
@@ -63,13 +63,13 @@ public static class DarkThroneLocationCatalog
         RegistrationKey: "magenheim.location.dark_throne",
         PrefabName: "Magenheim_DarkThrone",
         Group: "magenheim.dark_throne",
-        Biome: "Mistlands",
+        Biome: "GreatDecay",
         BiomeArea: SpawnArea.All,
         Quantity: 1,
         ExteriorRadius: 44d,
         MinAltitude: 2d,
         MaxTerrainDelta: 18d,
-        MinDistanceFromSimilar: 8192d,
+        MinDistanceFromSimilar: 0d,
         Prioritized: true,
         ClearArea: true,
         RandomRotation: true);

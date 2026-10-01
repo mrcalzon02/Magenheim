@@ -97,6 +97,31 @@ internal static class UnderworldWorldgenContentBridge
     {
         if (!underworld) throw new ArgumentNullException(nameof(underworld));
 
+        foreach (var boss in UnderworldBossLocationRegistrar.Locations)
+        {
+            var rows = 0;
+            foreach (var location in underworld.m_locations)
+            {
+                if (location is null || !string.Equals(location.m_prefab.Name, boss.PrefabName, StringComparison.Ordinal)) continue;
+                if (location.m_biome != UnderworldTerrainRuntime.ToNativeBiome(boss.Family.Biome) || location.m_quantity != 1)
+                    throw new InvalidOperationException("Underworld boss arena must be unique in its owning biome: " + boss.PrefabName);
+                rows++;
+            }
+            if (rows != 1) throw new InvalidOperationException("Missing or duplicate Underworld boss arena catalog row: " + boss.PrefabName);
+        }
+
+        var throneRows = 0;
+        foreach (var location in underworld.m_locations)
+        {
+            if (location is null || !string.Equals(location.m_prefab.Name,
+                Magenheim.Core.DarkThrone.DarkThroneLocationCatalog.DarkThrone.PrefabName, StringComparison.Ordinal)) continue;
+            if (location.m_biome != UnderworldTerrainRuntime.GreatDecayBiome || location.m_quantity != 1)
+                throw new InvalidOperationException("The Dark Throne must be unique and owned by Great Decay.");
+            throneRows++;
+        }
+        if (throneRows != 1)
+            throw new InvalidOperationException("Underworld final arena catalog requires exactly one Dark Throne row.");
+
         var missingResources = new List<string>();
         foreach (var resource in UnderworldResourceCatalog.All)
         {

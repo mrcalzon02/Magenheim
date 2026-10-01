@@ -11,7 +11,7 @@ def wave(phase,amp): return {b:(0,0,amp*(.38+i*.11)*math.sin(phase-i*.68)) for i
 def action(name,end,poses):
     old=bpy.data.actions.get(name)
     if old: bpy.data.actions.remove(old)
-    a=bpy.data.actions.new(name); arm.animation_data_create(); arm.animation_data.action=a
+    a=bpy.data.actions.new(name); a.use_fake_user=True; arm.animation_data_create(); arm.animation_data.action=a
     for f,pose in poses.items():
         for b,r in pose.items():
             p=arm.pose.bones.get(b)

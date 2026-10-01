@@ -1,3 +1,22 @@
+# Development closeout - 0.0.158 integrated completion candidate
+
+This execution reconciles clean local main with GitHub 2c16f25f, source 0.0.157/schema 5 and installed
+0.0.156. The resulting candidate is 0.0.158, checkpoint UW-158. Runtime compilation against the
+installed Valheim/BepInEx succeeds with zero warnings/errors. Core harness: 114,154 assertions,
+plus separately reported module suites. The rollback tests execute the linked runtime journal.
+
+The final progression is Queen -> Deep Gate -> six Deepstones -> Great Decay Dark Throne -> King.
+New throne/discovery rows are instance-only, preserve their established prefab identities, and
+participate in native placement validation/recovery. Existing King victories retain gate access.
+Royal replacement recipes consume trophies at the final station; trophies cannot be crafted.
+
+All 42 ordinary creature species now have authored source/GLB/runtime representations. Six native
+biome boss encounters and their arenas, five harvestable flora species and three late-biome flora
+assets are integrated. Final build and live evidence are recorded in
+`docs/validation/2026-09-30-0.0.158-integrated-candidate.md`. Actual manufacturing for True
+Blacksmithing, final creature/boss/reward art, Shelfwood rockface placement and integrated
+multiplayer/persistence acceptance remain incomplete.
+
 # Development closeout - 0.0.142 Underworld resources, geodes, map display and deployment proof
 
 The repeated 0.0.140-style live exceptions supplied after a local install prove that the running

@@ -184,8 +184,10 @@ internal static class UnderworldTerrainLifecycleTests
             for (var biome = 0; biome < 6; biome++)
                 Assert(highs[biome] - lows[biome] > minimumSpans[biome],
                     $"{(UnderworldTerrainBiome)biome} must have substantial ordinary relief for seed {seed}.");
-            Assert(lows[1] < -100 && lows[4] < -255 && highs[4] > 345,
-                "Basins and ranges must extend past the retired floor and shared clamp.");
+            var fractureLift = UnderworldBiomeTerrain.NominalRegionalLift(UnderworldTerrainBiome.FractureZones);
+            var blackwaterLift = UnderworldBiomeTerrain.NominalRegionalLift(UnderworldTerrainBiome.BlackwaterDeep);
+            Assert(lows[1] - blackwaterLift < -100 && lows[4] - fractureLift < -255 && highs[4] - fractureLift > 345,
+                $"Basins and ranges retain unclipped relief around their progression elevation: Blackwater low={lows[1]}, Fracture low={lows[4]}, high={highs[4]}, lift={fractureLift}.");
             var gateHalfDiagonal = Math.Sqrt(17.89d * 17.89d + 10.04d * 10.04d);
             Assert(UnderworldTerrainLifecycle.GateFoundationRadiusMeters > gateHalfDiagonal,
                 "The flat Deep Gate foundation must contain the measured Aesir gate footprint.");

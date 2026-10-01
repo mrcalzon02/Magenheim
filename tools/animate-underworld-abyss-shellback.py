@@ -15,13 +15,24 @@ LEGS=[f'Leg_{s}_{n}' for s in ('L','R') for n in range(1,5)]
 SHELLS=[f'ShellPlate_{i}' for i in range(1,6)]
 N={}
 
+def action_fcurves(action):
+ direct=getattr(action,'fcurves',None)
+ if direct is not None:return list(direct)
+ out=[]
+ for layer in getattr(action,'layers',()):
+  for strip in getattr(layer,'strips',()):
+   for bag in getattr(strip,'channelbags',()):out.extend(bag.fcurves)
+ return out
+
 def action(name,end,poses):
     old=bpy.data.actions.get(name)
     if old: bpy.data.actions.remove(old)
-    act=bpy.data.actions.new(name); arm.animation_data_create(); arm.animation_data.action=act
+    act=bpy.data.actions.new(name); act.use_fake_user=True; arm.animation_data_create(); arm.animation_data.action=act
     for pb in arm.pose.bones:
         pb.rotation_mode='XYZ'; pb.rotation_euler=(0,0,0); pb.location=(0,0,0); pb.scale=(1,1,1)
     for frame,pose in poses.items():
+        if frame in (1,end):
+            pose={**{pb.name:(0,0,0) for pb in arm.pose.bones},**pose}
         for bone,rot in pose.items():
             pb=arm.pose.bones.get(bone)
             if not pb: raise RuntimeError(f'{name}: missing bone {bone}')
@@ -85,9 +96,12 @@ for suffix in required:
     if not bpy.data.actions.get('AbyssShellback_'+suffix): raise RuntimeError(f'Missing action: {suffix}')
 for act in bpy.data.actions:
     if act.name.startswith('AbyssShellback_'):
-        for fc in act.fcurves:
+        for fc in action_fcurves(act):
             if 'pose.bones["Root"].location' in fc.data_path: raise RuntimeError(f'{act.name}: Root translation forbidden')
 arm.animation_data.action=None
+for pb in arm.pose.bones:
+ pb.rotation_euler=(0,0,0);pb.location=(0,0,0);pb.scale=(1,1,1)
+bpy.context.view_layer.update()
 arm['production_contract']='production-creature-r2'
 arm['authored_actions']=','.join('AbyssShellback_'+x for x in required)
 sc=bpy.context.scene; sc['magenheim_authored_actions']=arm['authored_actions']; sc['magenheim_skinning']='rigid-segment-weighted'

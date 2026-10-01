@@ -135,10 +135,11 @@ internal static class UnderworldDefinitionTests
             DarkThroneEncounterLifecycle.Disengaged,
             1d,
             false);
-        Assert(!UnderworldUnlockRules.IsUnlocked(alive), "The Underworld must remain locked before Nowhere King defeat.");
+        Assert(!UnderworldUnlockRules.IsUnlocked(false, alive), "The Deep Gate remains locked before Surface progression is complete.");
+        Assert(UnderworldUnlockRules.IsUnlocked(true, alive), "Queen defeat must admit Underworld entry before the final King encounter.");
 
         var defeated = DarkThroneEncounterTransitions.Defeat(alive);
-        Assert(UnderworldUnlockRules.IsUnlocked(defeated), "Nowhere King defeat must unlock Underworld eligibility.");
+        Assert(UnderworldUnlockRules.IsUnlocked(false, defeated), "Historical King victories preserve Underworld access for existing saves.");
 
         return assertions;
     }

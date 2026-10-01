@@ -38,7 +38,7 @@ internal sealed class UnderworldCreaturePrototypeRegistrar : IDisposable
 
                 var authoredVisual = string.Empty;
                 var materialCount = 0;
-                if (!string.IsNullOrWhiteSpace(entry.AuthoredModelId) &&
+                if (entry.AuthoredModelId is not null && !string.IsNullOrWhiteSpace(entry.AuthoredModelId) &&
                     ModelAssets.Exists(entry.AuthoredModelId))
                 {
                     authoredVisual = RigidCreatureSegmentBinder.Apply(

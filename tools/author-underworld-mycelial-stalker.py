@@ -31,23 +31,26 @@ def uv(o):
  return o
 
 def organic(name,loc,scale,mat,sub=2):
- bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale; bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(mat); return uv(o)
+ bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=max(sub,3),radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale; bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(mat); return uv(o)
 def seg(name,a,b,r,mat):
  d=Vector(b)-Vector(a); bpy.ops.mesh.primitive_cylinder_add(vertices=16,radius=r,depth=d.length,location=(Vector(a)+Vector(b))/2); o=bpy.context.object; o.name=name; o.rotation_mode='QUATERNION'; o.rotation_quaternion=Vector((0,0,1)).rotation_difference(d.normalized()); o.data.materials.append(mat); return uv(o)
 
 bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
-hide=material('StalkerRootHide','root-hide'); cord=material('StalkerMycelium','mycelium'); shelf=material('StalkerShelfFungus','shelf-fungus'); sense=material('StalkerSensoryTissue','sensory-tissue',True)
+hide=material('StalkerRootHide','root-hide'); cord=material('StalkerMycelium','mycelial-cord'); shelf=material('StalkerShelfFungus','shelf-fungus'); sense=material('StalkerSensoryTissue','sensory-pit',True)
 parts={}
 def keep(o,b): parts[o.name]=b; return o
 # Long, low chest and raised pelvis create a stalking silhouette unlike wolf/boar donors.
-keep(organic('Stalker_Chest',(0,.18,1.12),(.43,.70,.34),hide,3),'Spine'); keep(organic('Stalker_Pelvis',(0,-.62,1.22),(.38,.48,.32),hide,3),'Pelvis')
-keep(seg('Stalker_Neck',(0,.58,1.18),(0,.88,1.34),.22,hide),'Neck'); keep(organic('Stalker_Head',(0,1.02,1.36),(.31,.42,.27),hide,3),'Head')
+keep(organic('Stalker_Chest',(0,.18,1.12),(.43,.70,.34),hide,4),'Spine'); keep(organic('Stalker_Pelvis',(0,-.62,1.22),(.38,.48,.32),hide,4),'Pelvis')
+keep(seg('Stalker_Neck',(0,.58,1.18),(0,.88,1.34),.22,hide),'Neck'); keep(organic('Stalker_Head',(0,1.02,1.36),(.31,.42,.27),hide,4),'Head')
 # Split opening jaw.
 for side in (-1,1): keep(seg(f'Stalker_Jaw_{"L" if side<0 else "R"}',(side*.10,1.22,1.32),(side*.18,1.52,1.25),.075,hide),f'Jaw_{"L" if side<0 else "R"}')
 # Four long rootlike limbs, deliberately high-elbowed and narrow-footed.
 legs=((-.27,.43,1.10,-.46,.50,.55,-.40,.61,.08,'Front_L'),(.27,.43,1.10,.46,.50,.55,.40,.61,.08,'Front_R'),(-.27,-.62,1.17,-.50,-.70,.62,-.43,-.83,.08,'Rear_L'),(.27,-.62,1.17,.50,-.70,.62,.43,-.83,.08,'Rear_R'))
 for hx,hy,hz,kx,ky,kz,fx,fy,fz,n in legs:
  parent='Spine' if n.startswith('Front') else 'Pelvis'; keep(seg(f'Stalker_{n}_Upper',(hx,hy,hz),(kx,ky,kz),.105,hide),f'{n}_Upper'); keep(seg(f'Stalker_{n}_Lower',(kx,ky,kz),(fx,fy,fz),.075,hide),f'{n}_Lower'); keep(organic(f'Stalker_{n}_Foot',(fx,fy,fz),(.12,.20,.055),hide,2),f'{n}_Foot')
+# Split gripping toes carry the same foot articulation as the narrow root pads.
+for hx,hy,hz,kx,ky,kz,fx,fy,fz,n in legs:
+ for toe in (-1,1):keep(seg(f'Stalker_{n}_Toe{toe}',(fx+toe*.06,fy+.08,fz),(fx+toe*.08,fy+.25,.04),.026,cord),f'{n}_Foot')
 # Visible mycelial cord anatomy crossing the torso.
 for i,(a,b) in enumerate((((-.34,-.35,1.30),(.32,.38,1.34)),((.34,-.15,1.18),(-.30,.50,1.16)),((-.28,-.62,1.34),(.26,.02,1.43))),1): keep(seg(f'Stalker_MycelialCord_{i}',a,b,.026,cord),'Spine')
 # Asymmetric shelf growth keeps the silhouette fungal and non-donor-like.

@@ -76,6 +76,9 @@ try {
         if (Test-Path -LiteralPath $path -PathType Leaf) { Copy-Item -LiteralPath $path -Destination $package -Force }
     }
 
+    New-Item -ItemType Directory -Force -Path "$package/docs/validation" | Out-Null
+    Copy-Item -LiteralPath "$PSScriptRoot/docs/validation/2026-09-30-0.0.158-integrated-candidate.md" -Destination "$package/docs/validation" -Force
+
     $manifest = [ordered]@{
         name='Magenheim'
         version_number=$pluginVersion

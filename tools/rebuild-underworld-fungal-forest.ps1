@@ -14,5 +14,5 @@ $ids = @($variants | ForEach-Object { "underworld-flora-fungal-$_" }) + $ids
 if ($LASTEXITCODE -ne 0) { throw 'Fungal Forest authoring failed.' }
 & "$PSScriptRoot/blender.ps1" export-model-assets @ids
 if ($LASTEXITCODE -ne 0) { throw 'Fungal Forest export failed.' }
-& python "$PSScriptRoot/verify-model-assets.py"
+& python "$PSScriptRoot/verify-model-assets.py" @ids
 if ($LASTEXITCODE -ne 0) { throw 'Fungal Forest model verification failed.' }

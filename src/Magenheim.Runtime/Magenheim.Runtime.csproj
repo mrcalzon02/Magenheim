@@ -7,7 +7,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>Magenheim</AssemblyName>
     <RootNamespace>Magenheim.Runtime</RootNamespace>
-<Version>0.0.157</Version>
+<Version>0.0.158</Version>
     <ValheimManagedPath Condition="'$(ValheimManagedPath)' == ''">$(MSBuildThisFileDirectory)../../../valheim_Data/Managed</ValheimManagedPath>
   </PropertyGroup>
 
@@ -40,7 +40,7 @@
           Exclude="../../assets/earth/*preview.png"
           Link="assets/earth/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../assets/models/runtime/*.model.json" Link="assets/models/runtime/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="../../assets/models/textures/*.png" Link="assets/models/textures/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../assets/models/textures/*.png" Exclude="../../assets/models/textures/.staging-*.png" Link="assets/models/textures/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <!-- Authored 256px Underworld PBR terrain families. Keep these as loose packaged assets so
          the runtime can prefer production artwork while retaining procedural textures as fallback. -->
     <None Include="../../assets/textures/underworld/terrain/*.png"

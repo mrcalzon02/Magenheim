@@ -1,6 +1,7 @@
 [CmdletBinding()]
-param([switch]$SkipReview)
+param([switch]$SkipReview,[string]$ResumeFungalAt)
 $ErrorActionPreference='Stop'
+$env:PYTHONUTF8='1'
 $root=Split-Path $PSScriptRoot -Parent
 $scope=Get-Content -LiteralPath "$PSScriptRoot/underworld-production-scope.json" -Raw | ConvertFrom-Json
 
@@ -15,8 +16,13 @@ if($LASTEXITCODE -ne 0){throw 'Underworld dungeon native-worldgen spawn contract
 
 foreach($id in $scope.regenerate){
     Write-Host "=== production generator: $id ==="
-    & python "$PSScriptRoot/verify-generated-freshness.py" --update $id
-    if($LASTEXITCODE -ne 0){throw "Production generator failed: $id"}
+    $freshness = & python "$PSScriptRoot/verify-generated-freshness.py" $id 2>&1
+    if($LASTEXITCODE -eq 0){
+        Write-Host "Verified current production output: $id"
+    }else{
+        & python "$PSScriptRoot/verify-generated-freshness.py" --update $id
+        if($LASTEXITCODE -ne 0){throw "Production generator failed: $id"}
+    }
     if($id -eq 'underworld-material-library'){
         & python "$PSScriptRoot/verify-underworld-material-textures.py"
         if($LASTEXITCODE -ne 0){throw 'Underworld material fidelity gate failed.'}
@@ -36,7 +42,18 @@ $fungalCreatureJobs=@(
     @{Id='underworld-creature-crowncap-brute'; Texture='generate-underworld-crowncap-brute-textures.py'; Author='author-underworld-crowncap-brute'; Animate='animate-underworld-crowncap-brute'; Verify='verify-underworld-crowncap-brute'}
 )
 $fungalCreatureIds=@()
+$resumeReached=[string]::IsNullOrWhiteSpace($ResumeFungalAt)
+if(!$resumeReached -and $ResumeFungalAt -ne 'exports' -and $ResumeFungalAt -notin $fungalCreatureJobs.Id){throw 'Unknown fungal resume identity.'}
 foreach($job in $fungalCreatureJobs){
+    $fungalCreatureIds += $job.Id
+    if(!$resumeReached){
+        if($job.Id -eq $ResumeFungalAt){$resumeReached=$true}else{
+            # Resumption still validates the source previously produced by this campaign.
+            & "$PSScriptRoot/blender.ps1" $job.Verify
+            if($LASTEXITCODE -ne 0){throw "Previously authored source failed resumption: $($job.Id)"}
+            continue
+        }
+    }
     Write-Host "=== Fungal creature production: $($job.Id) ==="
     & python "$PSScriptRoot/$($job.Texture)"
     if($LASTEXITCODE -ne 0){throw "Creature texture generation failed: $($job.Id)"}
@@ -48,7 +65,6 @@ foreach($job in $fungalCreatureJobs){
     }
     & "$PSScriptRoot/blender.ps1" $job.Verify
     if($LASTEXITCODE -ne 0){throw "Creature source verification failed: $($job.Id)"}
-    $fungalCreatureIds += $job.Id
 }
 & "$PSScriptRoot/blender.ps1" export-model-assets @fungalCreatureIds
 if($LASTEXITCODE -ne 0){throw 'Fungal creature runtime export failed.'}

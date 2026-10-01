@@ -21,14 +21,28 @@ internal static class UnderworldProgressionAuthority
     {
         get
         {
-            var zone = ZoneSystem.instance;
-            if (zone == null || !TryResolveIdentity(out var identity)) return false;
-            TryMigrateLegacyState(zone, identity!);
-            return zone.GetGlobalKey(ScopedNowhereKingDefeatedKey(identity!));
+            if (ValheimWorldInstanceExecution.TryGetContext(UnderworldWorldInstanceId.Surface, out var surface) && surface is not null)
+                using (ValheimWorldInstanceExecution.Enter(surface)) return ReadUnlocked();
+            return ReadUnlocked();
         }
     }
 
+    private static bool ReadUnlocked()
+    {
+        var zone = ZoneSystem.instance;
+        if (zone == null || !TryResolveIdentity(out var identity)) return false;
+        TryMigrateLegacyState(zone, identity!);
+        return zone.GetGlobalKey("defeated_queen") || zone.GetGlobalKey(ScopedNowhereKingDefeatedKey(identity!));
+    }
+
     internal static bool UnlockFromNowhereKingVictory()
+    {
+        if (ValheimWorldInstanceExecution.TryGetContext(UnderworldWorldInstanceId.Surface, out var surface) && surface is not null)
+            using (ValheimWorldInstanceExecution.Enter(surface)) return SetVictory();
+        return SetVictory();
+    }
+
+    private static bool SetVictory()
     {
         var zone = ZoneSystem.instance;
         var znet = ZNet.instance;

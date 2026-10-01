@@ -25,6 +25,14 @@ BELLY=mat('Gloomfin_VentralHide',(.105,.125,.120),.63)
 FIN=mat('Gloomfin_FinTissue',(.045,.075,.078),.69)
 MOUTH=mat('Gloomfin_MouthTissue',(.19,.075,.065),.58)
 TOOTH=mat('Gloomfin_Tooth',(.56,.54,.43),.48)
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from magenheim_creature_pbr import bind as bind_creature_pbr
+bind_creature_pbr(bpy,bpy.data.materials['Gloomfin_DorsalHide'],'gloomfin','dorsal-hide')
+bind_creature_pbr(bpy,bpy.data.materials['Gloomfin_VentralHide'],'gloomfin','ventral-hide')
+bind_creature_pbr(bpy,bpy.data.materials['Gloomfin_FinTissue'],'gloomfin','fin-tissue')
+bind_creature_pbr(bpy,bpy.data.materials['Gloomfin_MouthTissue'],'gloomfin','mouth-tissue')
+bind_creature_pbr(bpy,bpy.data.materials['Gloomfin_Tooth'],'gloomfin','tooth-enamel')
 parts={}
 
 def uv(o):
@@ -37,7 +45,7 @@ def uv(o):
             layer.data[li].uv=((co.x-xmin)/dx,(co.y-ymin)/dy)
 
 def ico(name,loc,scale,material,bone,sub=3):
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub+1,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale
     bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(material); uv(o); parts[name]=bone; return o
 
 def mesh(name,verts,faces,material,bone):

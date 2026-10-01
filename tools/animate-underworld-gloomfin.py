@@ -16,7 +16,7 @@ CHAIN=['Spine_1','Spine_2','Spine_3','Spine_4','Tail_1','Tail_2']
 def action(name,end,poses):
     old=bpy.data.actions.get(name)
     if old: bpy.data.actions.remove(old)
-    act=bpy.data.actions.new(name); arm.animation_data_create(); arm.animation_data.action=act
+    act=bpy.data.actions.new(name); act.use_fake_user=True; arm.animation_data_create(); arm.animation_data.action=act
     for frame,pose in poses.items():
         for bone,rot in pose.items():
             pb=arm.pose.bones.get(bone)
@@ -48,6 +48,9 @@ action('Gloomfin_Bite',26,{1:{**wave(0,.10),'Jaw':(0,0,0)},7:{**wave(.8,.16),'Ja
 action('Gloomfin_Hit',18,{1:N,6:{**wave(.9,.18),'Spine_1':(.08,.10,.24),'Head':(-.10,0,-.18),**fins(-.18,.25)},18:N})
 action('Gloomfin_Death',64,{1:N,18:{**wave(.8,.10),'Spine_1':(.18,0,.18),**fins(-.12,-.08)},40:{**wave(1.6,.06),'Spine_1':(.48,0,.62),'Head':(.24,0,.18),**fins(-.38,-.32),'Jaw':(-.18,0,0)},64:{'Spine_1':(.72,0,1.12),'Head':(.38,0,.28),'Fin_L':(-.58,0,0),'Fin_R':(-.52,0,0),'Jaw':(-.28,0,0)}})
 arm.animation_data.action=None
+for pb in arm.pose.bones:
+ pb.rotation_euler=(0,0,0);pb.location=(0,0,0);pb.scale=(1,1,1)
+bpy.context.view_layer.update()
 arm['production_contract']='production-creature-r2'
 arm['authored_actions']='Gloomfin_SwimIdle,Gloomfin_Cruise,Gloomfin_Sprint,Gloomfin_BankLeft,Gloomfin_BankRight,Gloomfin_Bite,Gloomfin_Hit,Gloomfin_Death'
 sc=bpy.context.scene; sc['magenheim_authored_actions']=arm['authored_actions']; sc['magenheim_skinning']='rigid-segment-weighted'

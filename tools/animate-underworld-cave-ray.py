@@ -13,7 +13,7 @@ if not arm or arm.get('magenheim_asset')!='cave-ray' or arm.get('host_rig')!='HO
 def action(name,end,poses):
  old=bpy.data.actions.get(name)
  if old:bpy.data.actions.remove(old)
- act=bpy.data.actions.new(name); arm.animation_data_create(); arm.animation_data.action=act
+ act=bpy.data.actions.new(name); act.use_fake_user=True; arm.animation_data_create(); arm.animation_data.action=act
  for frame,pose in poses.items():
   for bone,rot in pose.items():
    pb=arm.pose.bones.get(bone)
@@ -23,8 +23,8 @@ def action(name,end,poses):
 
 def wings(l,r):
  # Increasing root->tip amplitude keeps the broad membrane alive rather than hinged like an aircraft wing.
- return {'Wing_L_1':(0,l*.34,l*.08),'Wing_L_2':(0,l*.58,l*.12),'Wing_L_3':(0,l*.82,l*.17),
-         'Wing_R_1':(0,r*.34,-r*.08),'Wing_R_2':(0,r*.58,-r*.12),'Wing_R_3':(0,r*.82,-r*.17)}
+ return {'Wing_L_1':(0,l*.45,l*.08),'Wing_L_2':(0,l*.58,l*.12),'Wing_L_3':(0,l*.82,l*.17),
+         'Wing_R_1':(0,r*.45,-r*.08),'Wing_R_2':(0,r*.58,-r*.12),'Wing_R_3':(0,r*.82,-r*.17)}
 def tail(a): return {f'Tail_{i}':(0,0,a*(.45+.11*i)*(-1 if i%2 else 1)) for i in range(1,6)}
 N={}
 action('CaveRay_Glide',72,{1:{**wings(.08,.08),**tail(.05)},24:{**wings(-.04,-.04),**tail(-.07)},48:{**wings(.06,.06),**tail(.06)},72:{**wings(.08,.08),**tail(.05)}})
@@ -37,6 +37,9 @@ action('CaveRay_Flee',30,{1:{**wings(.12,.12),**tail(.10)},7:{**wings(-.55,-.55)
 action('CaveRay_Hit',18,{1:N,6:{**wings(-.24,.31),'Body':(.10,0,.20),'Head':(-.12,0,-.12),**tail(.18)},18:N})
 action('CaveRay_Death',72,{1:N,20:{**wings(-.20,-.16),'Body':(.18,0,.22),**tail(.15)},44:{**wings(-.52,-.46),'Body':(.46,0,.72),'Head':(.30,0,.24),**tail(-.25)},72:{**wings(-.70,-.64),'Body':(.72,0,1.18),'Head':(.48,0,.36),**tail(.30)}})
 arm.animation_data.action=None
+for pb in arm.pose.bones:
+ pb.rotation_euler=(0,0,0);pb.location=(0,0,0);pb.scale=(1,1,1)
+bpy.context.view_layer.update()
 arm['production_contract']='production-creature-r2'
 arm['authored_actions']='CaveRay_Glide,CaveRay_FlapImpulse,CaveRay_BankLeft,CaveRay_BankRight,CaveRay_Dive,CaveRay_Rise,CaveRay_Flee,CaveRay_Hit,CaveRay_Death'
 sc=bpy.context.scene; sc['magenheim_authored_actions']=arm['authored_actions']; sc['magenheim_skinning']='rigid-segment-weighted'

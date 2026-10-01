@@ -43,7 +43,7 @@ internal static class UnderworldFloraTests
         var json = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "foundation.json"));
         var baseline = MagenheimDefinitionLoader.LoadFromJson(json);
         var flora = baseline.UnderworldFlora!;
-        Check(flora.Species.Count == 3);
+        Check(flora.Species.Count == 6);
         var glow = flora.Species.Single(x => x.Id.EndsWith("glowcap", StringComparison.Ordinal));
         var shelf = flora.Species.Single(x => x.Id.EndsWith("shelfwood", StringComparison.Ordinal));
         var sample = new UnderworldFloraTerrainSample(UnderworldLayer.Underworld, glow.BiomeId, true, 1, 0, false, false);

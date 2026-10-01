@@ -203,7 +203,20 @@ internal sealed class UnderworldDungeonPlacementRuntime : MonoBehaviour
         var missing = new List<MissingFamily>();
         var invalid = new List<string>();
 
-        foreach (var dungeon in UnderworldDungeonCatalog.All)
+        // Progression arenas share native recovery with the dungeons. Read the actual registrar's
+        // requirements so missing first-generation arenas cannot silently strand an old save.
+        if (UnderworldBossLocationRegistrar.Locations.Count != 6)
+            throw new InvalidOperationException("Six native Underworld boss arena requirements must be registered.");
+        var requirements = UnderworldDungeonCatalog.All.Select(dungeon => new LocationRequirement(
+            dungeon.DisplayName, dungeon.PrefabName, dungeon.Biome, dungeon.Quantity,
+            dungeon.MinDistanceFromSimilarMeters)).Concat(
+                UnderworldBossLocationRegistrar.Locations.Select(boss => new LocationRequirement(
+                    boss.CanonicalLocationId, boss.PrefabName, boss.Family.Biome, 1, 0d))).Concat(new[]
+        {
+            new LocationRequirement("Dark Throne", Magenheim.Core.DarkThrone.DarkThroneLocationCatalog.DarkThrone.PrefabName,
+                UnderworldTerrainBiome.GreatDecay, 1, 0d),
+        });
+        foreach (var dungeon in requirements)
         {
             var locations = zoneSystem.m_locations
                 .Where(x => x is not null &&
@@ -359,9 +372,12 @@ internal sealed class UnderworldDungeonPlacementRuntime : MonoBehaviour
     }
 
     private sealed record MissingFamily(
-        UnderworldDungeonDefinition Definition,
+        LocationRequirement Definition,
         ZoneSystem.ZoneLocation Location,
         int Found);
+
+    private sealed record LocationRequirement(string DisplayName, string PrefabName,
+        UnderworldTerrainBiome Biome, int Quantity, double MinDistanceFromSimilarMeters);
 
     private sealed record AuditResult(
         IReadOnlyList<FamilyReport> Reports,

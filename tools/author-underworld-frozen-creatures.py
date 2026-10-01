@@ -466,12 +466,13 @@ def validate_outputs():
     if missing: raise RuntimeError('Frozen creature outputs missing: '+', '.join(missing))
     return ids
 
-build_rime_moth()
-build_frost_tick()
-build_quadruped('underworld-creature-iceblind','IB','RIG_Iceblind_HOST_QUADRUPED',armored=False,sensory=True)
-build_pale_burrower()
-build_rimewing()
-build_quadruped('underworld-creature-glacier-stalker','GS','RIG_GlacierStalker_HOST_QUADRUPED',armored=True,sensory=False)
-build_cryolith()
-ids=validate_outputs()
-print('AUTHORED Frozen Caverns creature family: '+', '.join(ids),flush=True)
+if __name__ == "__main__":
+    build_rime_moth()
+    build_frost_tick()
+    build_quadruped('underworld-creature-iceblind','IB','RIG_Iceblind_HOST_QUADRUPED',armored=False,sensory=True)
+    build_pale_burrower()
+    build_rimewing()
+    build_quadruped('underworld-creature-glacier-stalker','GS','RIG_GlacierStalker_HOST_QUADRUPED',armored=True,sensory=False)
+    build_cryolith()
+    ids=validate_outputs()
+    print('AUTHORED Frozen Caverns creature family: '+', '.join(ids),flush=True)

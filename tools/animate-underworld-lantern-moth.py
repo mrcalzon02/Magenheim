@@ -56,8 +56,11 @@ action('LanternMoth_Hit',14,{1:neutral,4:{'Thorax':(.14,0,.25),'ForeWing_L':(0,.
 death={'Thorax':(.45,0,1.10),'Abdomen':(-.35,0,.25),'ForeWing_L':(.15,.12,-.65),'ForeWing_R':(.15,-.12,.65),'HindWing_L':(.10,.08,-.45),'HindWing_R':(.10,-.08,.45)}
 action('LanternMoth_Death',42,{1:neutral,9:down(.30),20:death,42:death})
 arm.animation_data.action=None
+for pb in arm.pose.bones:
+ pb.rotation_euler=(0,0,0);pb.location=(0,0,0);pb.scale=(1,1,1)
+bpy.context.view_layer.update()
 arm['production_contract']='production-creature-r1'
-arm['authored_actions']='Hover,Flight,BankLeft,BankRight,Takeoff,Land,GroundIdle,AlertFlee,Hit,Death'
+arm['authored_actions']=','.join('LanternMoth_'+name for name in ('Hover','Flight','BankLeft','BankRight','Takeoff','Land','GroundIdle','AlertFlee','Hit','Death'))
 sc=bpy.context.scene; sc['magenheim_authored_actions']=arm['authored_actions']; sc['magenheim_skinning']='rigid-segment-weighted'
 bpy.ops.wm.save_as_mainfile(filepath=str(BLEND))
 print('AUTHORED 10 Lantern Moth HOST-INSECT-FLY actions; four-wing flap/bank/landing contract, no root translation')

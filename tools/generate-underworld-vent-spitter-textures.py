@@ -17,7 +17,7 @@ SEED=0x5A17_7E57
 FAMILIES={
     'heat-hide':((76,55,42),198,32),
     'mineral-baffle':((48,45,41),232,45),
-    'pressure-sac':((143,56,39),78,29),
+    'pressure-sac':((163,98,69),78,29),
     'throat-tissue':((119,43,34),91,27),
     'mouth-tissue':((62,25,24),73,22),
     'mineral-tooth':((157,137,94),174,25),
@@ -39,8 +39,8 @@ def fissures(seed,count,width=2):
             ang+=rng.uniform(-.13,.13); x+=math.cos(ang)*2.8; y+=math.sin(ang)*2.8
             if not (3<=x<SIZE-3 and 3<=y<SIZE-3): break
             rad=width+(1 if step%19==0 else 0)
-            for yy in range(int(y)-rad,int(y)+rad+1):
-                for xx in range(int(x)-rad,int(x)+rad+1):
+            for yy in range(max(0,int(y)-rad),min(SIZE,int(y)+rad+1)):
+                for xx in range(max(0,int(x)-rad),min(SIZE,int(x)+rad+1)):
                     d=((xx-x)**2+(yy-y)**2)**.5
                     if d<=rad: px[xx,yy]=max(px[xx,yy],clamp(255*(1-d/(rad+.01))))
     return im.filter(ImageFilter.GaussianBlur(.6))
@@ -63,10 +63,10 @@ def make(stem,base,rough_base,norm,index):
     r=Image.new('L',(SIZE,SIZE)); r.putdata(rough); r.save(OUT/f'{stem}-roughness.png')
     h=Image.new('L',(SIZE,SIZE)); h.putdata(height); h=h.filter(ImageFilter.GaussianBlur(.5)); hp=h.load(); n=Image.new('RGB',(SIZE,SIZE)); np=n.load()
     for y in range(SIZE):
-        ym=max(0,y-1); yp=min(SIZE-1,y+1)
+        ym=max(0,y-SIZE//128); yp=min(SIZE-1,y+SIZE//128)
         for x in range(SIZE):
-            xm=max(0,x-1); xp=min(SIZE-1,x+1); dx=(hp[xp,y]-hp[xm,y])/255; dy=(hp[x,yp]-hp[x,ym])/255
-            nx=-dx*3.2; ny=-dy*3.2; nz=1.; inv=1/math.sqrt(nx*nx+ny*ny+nz*nz)
+            xm=max(0,x-SIZE//128); xp=min(SIZE-1,x+SIZE//128); dx=(hp[xp,y]-hp[xm,y])/255; dy=(hp[x,yp]-hp[x,ym])/255
+            nx=-dx*6.4; ny=-dy*6.4; nz=1.; inv=1/math.sqrt(nx*nx+ny*ny+nz*nz)
             np[x,y]=(clamp(128+127*nx*inv),clamp(128+127*ny*inv),clamp(128+127*nz*inv))
     n.save(OUT/f'{stem}-normal.png')
 

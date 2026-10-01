@@ -92,7 +92,7 @@ for token in retired_tools:
     require(token not in production,
             "DDE-00 retired bespoke ordinary dungeon tooling is active in production: "+token)
 
-require("ordinary vanilla-reuse dungeons must not be rebuilt/promoted" in readiness,
+require("legacy bespoke ordinary dungeon production path is still active" in readiness,
         "DDE-00 production-readiness verifier no longer protects the vanilla-reuse boundary")
 require("DeepFracture" in deep_fracture,
         "DDE-00 Deep Fracture runtime architecture source is missing")

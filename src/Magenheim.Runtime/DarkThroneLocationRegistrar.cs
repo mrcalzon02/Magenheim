@@ -64,7 +64,7 @@ internal sealed class DarkThroneLocationRegistrar : IDisposable
                 throw new InvalidOperationException($"Jotunn refused additive Dark Throne registration for '{_definition.PrefabName}'.");
 
             _registered = true;
-            _log.LogInfo($"Registered unique Dark Throne location '{_definition.PrefabName}' in Mistlands with exterior radius {_definition.ExteriorRadius:0.#}m.");
+            _log.LogInfo($"Registered unique Dark Throne location '{_definition.PrefabName}' in Underworld Great Decay with exterior radius {_definition.ExteriorRadius:0.#}m.");
         }
         catch (Exception exception)
         {
@@ -86,7 +86,7 @@ internal sealed class DarkThroneLocationRegistrar : IDisposable
         _definition.Validate();
         return new LocationConfig
         {
-            Biome = JotunnWorldgenAdapter.MapBiome(_definition.Biome),
+            Biome = UnderworldTerrainRuntime.GreatDecayBiome,
             BiomeArea = JotunnWorldgenAdapter.MapArea(_definition.BiomeArea),
             Quantity = _definition.Quantity,
             Priotized = _definition.Prioritized,

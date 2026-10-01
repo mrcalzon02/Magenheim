@@ -39,8 +39,8 @@ def fissures(seed, count=38):
             ang += rng.uniform(-.10,.10); x += math.cos(ang)*2.5; y += math.sin(ang)*2.5
             if not (2<=x<SIZE-2 and 2<=y<SIZE-2): break
             rad=2 if step%9 else 3
-            for yy in range(int(y)-rad,int(y)+rad+1):
-                for xx in range(int(x)-rad,int(x)+rad+1):
+            for yy in range(max(0,int(y)-rad),min(SIZE,int(y)+rad+1)):
+                for xx in range(max(0,int(x)-rad),min(SIZE,int(x)+rad+1)):
                     d=((xx-x)**2+(yy-y)**2)**.5
                     if d<=rad: px[xx,yy]=max(px[xx,yy],clamp(255*(1-d/(rad+.01))))
     return im.filter(ImageFilter.GaussianBlur(.65))
@@ -65,11 +65,11 @@ def make_family(stem, base, rough_base, normal_strength, index):
     h=Image.new('L',(SIZE,SIZE)); h.putdata(height); h=h.filter(ImageFilter.GaussianBlur(.55)); hp=h.load()
     n=Image.new('RGB',(SIZE,SIZE)); np=n.load()
     for y in range(SIZE):
-        ym=max(0,y-1); yp=min(SIZE-1,y+1)
+        ym=max(0,y-SIZE//128); yp=min(SIZE-1,y+SIZE//128)
         for x in range(SIZE):
-            xm=max(0,x-1); xp=min(SIZE-1,x+1)
+            xm=max(0,x-SIZE//128); xp=min(SIZE-1,x+SIZE//128)
             dx=(hp[xp,y]-hp[xm,y])/255; dy=(hp[x,yp]-hp[x,ym])/255
-            nx=-dx*3.2; ny=-dy*3.2; nz=1.; inv=1/math.sqrt(nx*nx+ny*ny+nz*nz)
+            nx=-dx*6.4; ny=-dy*6.4; nz=1.; inv=1/math.sqrt(nx*nx+ny*ny+nz*nz)
             np[x,y]=(clamp(128+127*nx*inv),clamp(128+127*ny*inv),clamp(128+127*nz*inv))
     n.save(OUT/f'{stem}-normal.png')
 

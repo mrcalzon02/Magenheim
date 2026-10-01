@@ -103,7 +103,7 @@ internal sealed class NowhereKingBossStoneRegistrar : IDisposable
             var definition = DarkThroneLocationCatalog.DarkThrone;
             var config = new LocationConfig
             {
-                Biome = JotunnWorldgenAdapter.MapBiome(definition.Biome),
+                Biome = UnderworldTerrainRuntime.GreatDecayBiome,
                 BiomeArea = JotunnWorldgenAdapter.MapArea(definition.BiomeArea),
                 Quantity = 5,
                 Priotized = false,
@@ -125,7 +125,7 @@ internal sealed class NowhereKingBossStoneRegistrar : IDisposable
 
             _registered = true;
             _log.LogInfo(
-                $"Registered {config.Quantity} Mistlands Nowhere King boss stones revealing " +
+                $"Registered {config.Quantity} Great Decay Nowhere King boss stones revealing " +
                 $"'{DarkThroneLocationCatalog.DarkThrone.PrefabName}'.");
         }
         catch (Exception exception)

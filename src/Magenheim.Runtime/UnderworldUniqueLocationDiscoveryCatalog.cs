@@ -31,9 +31,9 @@ internal static class UnderworldUniqueLocationDiscoveryCatalog
                 "magenheim.underworld.location.first_bloom",
                 UnderworldTerrainBiome.FungalForest,
                 "$magenheim_underworld_motherbed"),
-            ["magenheim.underworld.biome.fracture"] = new(
-                "magenheim.underworld.biome.fracture",
-                "magenheim.underworld.location.fracture",
+            ["magenheim.underworld.biome.fracture_zones"] = new(
+                "magenheim.underworld.biome.fracture_zones",
+                "magenheim.underworld.location.rift_titan",
                 UnderworldTerrainBiome.FractureZones,
                 "$magenheim_underworld_suspended_court"),
             ["magenheim.underworld.biome.sulfurous_wastes"] = new(

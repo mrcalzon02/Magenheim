@@ -1,4 +1,4 @@
 {
-  "version": "0.0.157",
-  "description": "0.0.157: Retires boot-time donor surveys and authoring probes, keeps missing replacement art from blocking Underworld gameplay registration, and accepts the canonical SporeBloom trophy identity."
+  "version": "0.0.158",
+  "description": "0.0.158: Moves the final Dark Throne into Great Decay after all six Deepstones; Queen defeat opens the Deep Gate. Adds six boss encounters, harvestable flora and resource/vent assets; repairs creature exports, royal crafting, routing and rollback."
 }

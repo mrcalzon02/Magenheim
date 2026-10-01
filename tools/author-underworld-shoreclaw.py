@@ -20,6 +20,15 @@ def mat(name,color,rough):
 SHELL=mat('Shoreclaw_ShellArmor',(.10,.14,.13),.82); RIDGE=mat('Shoreclaw_RidgeScute',(.16,.19,.16),.88)
 JOINT=mat('Shoreclaw_JointTissue',(.12,.09,.075),.57); BELLY=mat('Shoreclaw_Underside',(.20,.17,.13),.66)
 CLAW=mat('Shoreclaw_ClawArmor',(.13,.17,.14),.76); EYE=mat('Shoreclaw_Eye',(.025,.03,.025),.34)
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from magenheim_creature_pbr import bind as bind_creature_pbr
+bind_creature_pbr(bpy,bpy.data.materials['Shoreclaw_ShellArmor'],'shoreclaw','shell-armor')
+bind_creature_pbr(bpy,bpy.data.materials['Shoreclaw_RidgeScute'],'shoreclaw','ridge-scute')
+bind_creature_pbr(bpy,bpy.data.materials['Shoreclaw_JointTissue'],'shoreclaw','joint-tissue')
+bind_creature_pbr(bpy,bpy.data.materials['Shoreclaw_Underside'],'shoreclaw','underside')
+bind_creature_pbr(bpy,bpy.data.materials['Shoreclaw_ClawArmor'],'shoreclaw','claw-armor')
+bind_creature_pbr(bpy,bpy.data.materials['Shoreclaw_Eye'],'shoreclaw','eye')
 parts={}
 def uv(o):
     layer=o.data.uv_layers.new(name='ShoreclawUV'); xs=[v.co.x for v in o.data.vertices]; ys=[v.co.y for v in o.data.vertices]
@@ -28,7 +37,7 @@ def uv(o):
         for li in p.loop_indices:
             co=o.data.vertices[o.data.loops[li].vertex_index].co; layer.data[li].uv=((co.x-xmin)/dx,(co.y-ymin)/dy)
 def ico(name,loc,scale,material,bone,sub=3):
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=sub+1,radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale
     bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(material); uv(o); parts[name]=bone; return o
 def seg(name,a,b,r,material,bone,verts=12):
     a,b=Vector(a),Vector(b); d=b-a; bpy.ops.mesh.primitive_cylinder_add(vertices=verts,radius=r,depth=d.length,location=(a+b)/2); o=bpy.context.object; o.name=name
