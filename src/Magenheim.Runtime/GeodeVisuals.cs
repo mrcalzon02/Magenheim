@@ -43,8 +43,15 @@ internal static class GeodeVisuals {
     private const int IconScale = IconSize / IconDesignSize;
     private static readonly Dictionary<string,Sprite> Icons=new(StringComparer.Ordinal);
     internal static void Apply(GameObject prefab,Color interiorTint,float scale=1f,bool worldObject=false) {
-        var root=ModelAssets.Load(prefab,"geode-sample",item:!worldObject,scale:scale);
-        if(worldObject){root.transform.localPosition=new Vector3(0,.5f*scale,0);foreach(var c in prefab.GetComponentsInChildren<Collider>(true))if(!c.isTrigger)c.enabled=false;var collider=prefab.AddComponent<SphereCollider>();collider.center=new Vector3(0,.5f*scale,0);collider.radius=.63f*scale;}
+        // Dropped geodes have dynamic rigidbodies: never construct concave visual colliders.
+        var root=ModelAssets.Load(prefab,"geode-sample",item:!worldObject,scale:scale,createColliders:false);
+        if(worldObject)root.transform.localPosition=new Vector3(0,.5f*scale,0);
+        foreach(var collider in prefab.GetComponentsInChildren<Collider>(true))
+            if(!collider.isTrigger)UnityEngine.Object.DestroyImmediate(collider);
+        var meshes=root.GetComponentsInChildren<MeshFilter>(true).Select(filter=>filter.sharedMesh.bounds).ToArray();
+        var minimum=new Vector3(meshes.Min(b=>b.center.x-b.size.x*.5f),meshes.Min(b=>b.center.y-b.size.y*.5f),meshes.Min(b=>b.center.z-b.size.z*.5f));
+        var maximum=new Vector3(meshes.Max(b=>b.center.x+b.size.x*.5f),meshes.Max(b=>b.center.y+b.size.y*.5f),meshes.Max(b=>b.center.z+b.size.z*.5f));
+        var box=root.AddComponent<BoxCollider>();box.center=(minimum+maximum)*.5f;box.size=maximum-minimum;
         var shell=ShellMaterial();
         foreach(var renderer in root.GetComponentsInChildren<Renderer>(true)) {
             var source=renderer.sharedMaterial;if(source is null)continue;

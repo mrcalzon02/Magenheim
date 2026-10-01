@@ -2,7 +2,15 @@
 
 **Magic begins as geology.**
 
-## 0.0.158 integrated completion candidate
+## 0.0.159 integrated completion candidate
+
+0.0.159 repairs errors observed in the previous boot and the current 0.0.158 live world:
+geodes now use one invisible box collider; biome bosses, expanded dungeon generators,
+decorative scenery network identities and native Drowned Vault water triggers are repaired.
+The candidate passed the full local build. Installation is held at the user's request;
+the current world still runs 0.0.158. A zero-asset-ID exception in ZoneSystem.Start remains
+unresolved and must be checked on the next boot. RuntimeReady below describes catalog
+admission, not successful live registration in the observed 0.0.158 session.
 
 The Deep Gate opens after the Surface Queen is defeated; existing worlds with a recorded Nowhere
 King victory retain access. New Dark Throne and royal boss-stone placement belongs to the native

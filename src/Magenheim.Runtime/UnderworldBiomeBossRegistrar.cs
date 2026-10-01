@@ -61,14 +61,17 @@ internal static class UnderworldBiomeBossRegistrar
                     ?? throw new InvalidOperationException("Missing biome encounter chassis: " + species.Prefab);
                 var clone = PrefabManager.Instance.CreateClonedPrefab(Prefab(encounter), source);
                 clone.transform.localScale *= encounter.Scale;
-                var character = clone.GetComponent<Character>();
+                var character = clone.GetComponent<Character>()
+                    ?? throw new InvalidOperationException("Biome encounter clone lost Character: " + encounter.Name);
                 character.m_name = encounter.Name;
                 character.m_boss = true;
                 character.m_bossOrder = 0;
                 character.m_bossEvent = string.Empty;
                 character.m_defeatSetGlobalKey = DefeatedKey(boss);
                 character.m_health = encounter.Health;
-                clone.GetComponent<MagenheimCreatureCombatScaling>().Configure(encounter.Damage, 140f);
+                var scaling=clone.GetComponent<MagenheimCreatureCombatScaling>();
+                if(!scaling)scaling=clone.AddComponent<MagenheimCreatureCombatScaling>();
+                scaling.Configure(encounter.Damage, 140f);
                 if (species.AuthoredModelId is null || !ModelAssets.Exists(species.AuthoredModelId))
                     throw new InvalidOperationException("Biome encounter is missing authored apex anatomy: " + encounter.Name);
                 var config = new CreatureConfig { Name = encounter.Name };

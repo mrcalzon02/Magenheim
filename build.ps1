@@ -34,6 +34,10 @@ if ($Offline) {
 # failed verification run used to leave Magenheim.Core.dll/Magenheim.dll locked until the terminal
 # itself exited. Run every compiled-assembly PowerShell gate in a disposable child process instead.
 $powerShellHost = (Get-Process -Id $PID -ErrorAction Stop).Path
+# Valheim's net462 Harmony build must initialize inside the Framework CLR, including
+# when the developer launches this build from PowerShell 7.
+$frameworkPowerShell = Join-Path $env:WINDIR 'System32/WindowsPowerShell/v1.0/powershell.exe'
+if (Test-Path -LiteralPath $frameworkPowerShell) { $powerShellHost = $frameworkPowerShell }
 function Invoke-IsolatedPowerShellGate {
     param(
         [Parameter(Mandatory=$true)][string]$ScriptPath,

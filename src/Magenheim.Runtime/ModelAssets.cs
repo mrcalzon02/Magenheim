@@ -172,7 +172,7 @@ internal static class ModelAssets
 
     internal static JToken? CreatureRig(string id) => Document(id)["creatureRig"];
 
-    internal static GameObject Load(GameObject prefab, string id, bool item = false, float scale = 1f, bool hideOriginal = true, bool preserveParticles = false, Transform? parent = null, Material? materialSource = null, Action<string, Transform>? arrange = null)
+    internal static GameObject Load(GameObject prefab, string id, bool item = false, float scale = 1f, bool hideOriginal = true, bool preserveParticles = false, Transform? parent = null, Material? materialSource = null, Action<string, Transform>? arrange = null, bool createColliders = true)
     {
         if (!prefab) throw new ArgumentNullException(nameof(prefab));
         if (scale <= 0 || float.IsNaN(scale) || float.IsInfinity(scale)) throw new ArgumentOutOfRangeException(nameof(scale));
@@ -202,7 +202,7 @@ internal static class ModelAssets
                 part.transform.SetParent(root.transform, false);
                 part.AddComponent<MeshFilter>().sharedMesh = entry.Mesh;
                 part.AddComponent<MeshRenderer>().sharedMaterial = entry.Material;
-                if ((bool?)entry.Data["collider"] == true) part.AddComponent<MeshCollider>().sharedMesh = entry.Mesh;
+                if (createColliders && (bool?)entry.Data["collider"] == true) part.AddComponent<MeshCollider>().sharedMesh = entry.Mesh;
                 arrange?.Invoke((string?)entry.Data["path"] ?? string.Empty, part.transform);
                 if (entry.Data["crystal"] is JObject crystal)
                 {

@@ -23,6 +23,18 @@ foreach(var file in Directory.GetFiles(Path.Combine(AppContext.BaseDirectory,"as
  if(first.GetComponent<MeshRenderer>()!.enabled)throw new Exception("Inherited geometry still visible: "+id);
  count++;
 }
+// Geode rigidbodies require caller-owned primitive collision, while ordinary authored
+// static geometry must retain its mesh collision.
+{
+ var boxed=new GameObject("geode-box-collision");
+ var visual=ModelAssets.Load(boxed,"geode-sample",createColliders:false);
+ if(visual.GetComponentsInChildren<MeshCollider>(true).Length!=0)throw new Exception("Geode visual created concave collision.");
+ if(visual.GetComponentsInChildren<MeshFilter>(true).Length==0)throw new Exception("Geode collider suppression lost its visible mesh.");
+ var normal=new GameObject("geode-default-collision");
+ ModelAssets.Load(normal,"geode-sample");
+ if(normal.GetComponentsInChildren<MeshCollider>(true).Length==0)throw new Exception("Collider opt-out disabled normal model collision.");
+ Console.WriteLine("PASS: caller-owned geode collision suppresses concave colliders without losing art or changing default model collision.");
+}
 // Runtime PBR regression: a payload that declares authored normal, metallic/smoothness and
 // emission maps must survive donor cleanup and reach the final Unity material with the correct
 // color-space intent and shader keywords.

@@ -35,11 +35,18 @@ sc.render.engine='BLENDER_EEVEE_NEXT' if 'BLENDER_EEVEE_NEXT' in _engines else '
 sc.render.resolution_x=768; sc.render.resolution_y=768; sc.render.resolution_percentage=100; sc.render.image_settings.file_format='PNG'; sc.render.film_transparent=False; sc.view_settings.look='AgX - Medium High Contrast'
 arm=next((o for o in sc.objects if o.type=='ARMATURE'),None)
 if not arm: raise RuntimeError('Sporeling review requires one armature')
+arm.data.pose_position='POSE'
 
 def point_camera(loc,target=(0,0,.22)): cam.location=loc; cam.rotation_euler=(Vector(target)-cam.location).to_track_quat('-Z','Y').to_euler()
 def render(name,loc,action=None,frame=1):
+    arm.animation_data_create(); arm.animation_data.action=None
+    for bone in arm.pose.bones:
+        bone.rotation_mode='XYZ'; bone.rotation_euler=(0,0,0); bone.location=(0,0,0); bone.scale=(1,1,1)
     arm.animation_data_create(); arm.animation_data.action=bpy.data.actions.get(action) if action else None
     if action and arm.animation_data.action is None: raise RuntimeError(f'Missing review action {action}')
+    active=arm.animation_data.action
+    if active and hasattr(active,'slots') and len(active.slots)==1:
+        arm.animation_data.action_slot=active.slots[0]
     sc.frame_set(frame); point_camera(loc); path=OUT/f'{name}.png'; sc.render.filepath=str(path); bpy.ops.render.render(write_still=True)
     if not path.exists() or path.stat().st_size<4096: raise RuntimeError(f'{name}: review render missing or suspiciously small')
     print(f'RENDERED {name}.png',flush=True)

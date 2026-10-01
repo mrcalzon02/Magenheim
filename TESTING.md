@@ -4,20 +4,20 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.158 by Local** and start its description with
-**0.0.158: Moves the final Dark Throne into Great Decay after all six Deepstones**.
+show **Magenheim v0.0.159 by Local** and start its description with
+**0.0.159: Moves the final Dark Throne into Great Decay after all six Deepstones**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.158]` and the runtime image line reports
-`checkpoint UW-158` with the actual assembly path before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.159]` and the runtime image line reports
+`checkpoint UW-159` with the actual assembly path before reporting game results.
 Future versions must update `release.json` and this expected version together.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
 is under `BepInEx/plugins/Local-Magenheim/Magenheim`. Launching vanilla Steam
 does not use this profile. Exit the game before rebuilding or installing.
 
-## Integrated progression regression - 0.0.158
+## Integrated progression regression - 0.0.159
 
 Use a disposable world. Before Queen defeat, natural Deep Gate entry must refuse. After Queen
 defeat it must enter the paired native Underworld without a King kill. Return, save/reload and

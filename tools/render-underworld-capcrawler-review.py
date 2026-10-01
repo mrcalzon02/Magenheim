@@ -15,6 +15,7 @@ if sc.get('magenheim_model_id')!='underworld-creature-capcrawler': raise Runtime
 if sc.get('magenheim_fidelity')!='production-creature-r7': raise RuntimeError('Review requires production-creature-r7')
 arm=next((o for o in sc.objects if o.type=='ARMATURE'),None)
 if not arm: raise RuntimeError('Capcrawler armature missing')
+arm.data.pose_position='POSE'
 
 # Never let a failed current render pass by counting plates left by an older review.
 for p in OUT.glob('*.png'): p.unlink()
@@ -44,11 +45,16 @@ point(key); point(fill)
 bpy.ops.object.camera_add(); cam=bpy.context.object; sc.camera=cam; cam.data.lens=58
 
 def render(name,loc,target=(0,0,.20),action=None,frame=1,lens=58):
+ arm.animation_data_create(); arm.animation_data.action=None
+ for bone in arm.pose.bones:
+  bone.rotation_mode='XYZ'; bone.rotation_euler=(0,0,0); bone.location=(0,0,0); bone.scale=(1,1,1)
  cam.data.lens=lens; cam.location=loc; point(cam,target)
  if action:
   act=bpy.data.actions.get(action)
   if not act: raise RuntimeError(f'Missing review action {action}')
-  arm.animation_data_create(); arm.animation_data.action=act; sc.frame_set(frame)
+  arm.animation_data_create(); arm.animation_data.action=act
+  if hasattr(act,'slots') and len(act.slots)==1: arm.animation_data.action_slot=act.slots[0]
+  sc.frame_set(frame)
  else:
   arm.animation_data_create(); arm.animation_data.action=None; sc.frame_set(1)
  sc.render.filepath=str(OUT/f'{name}.png'); bpy.ops.render.render(write_still=True)

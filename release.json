@@ -1,4 +1,4 @@
 {
-  "version": "0.0.158",
-  "description": "0.0.158: Moves the final Dark Throne into Great Decay after all six Deepstones; Queen defeat opens the Deep Gate. Adds six boss encounters, harvestable flora and resource/vent assets; repairs creature exports, royal crafting, routing and rollback."
+  "version": "0.0.159",
+  "description": "0.0.159: Repairs live-world registration failures in biome bosses and expanded vanilla dungeons; restores native scenery network identities and Drowned Vault water triggers. Geodes use one invisible box collider instead of concave mesh collision."
 }

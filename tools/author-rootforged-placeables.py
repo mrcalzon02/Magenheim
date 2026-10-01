@@ -184,7 +184,8 @@ def add_floor_detail(w,h,d,wood,pale):
   detail_tube('end-binding-'+str(edge),pts,.055,pale,9)
  for row,y in enumerate((-d*.30,d*.30)):
   for col,x in enumerate((-w*.38,-w*.13,w*.13,w*.38)):
-   box(f'root-peg-{row}-{col}',(x,y,.98),(.09,.09,.10),pale,False,.025)
+   # Recess pegs below the board plane so envelope fitting cannot lower the walkway.
+   box(f'root-peg-{row}-{col}',(x,y,.94),(.09,.09,.10),pale,False,.025)
  for brace in range(4):
   sx=-1 if brace<2 else 1;sy=-1 if brace%2==0 else 1
   detail_tube('underside-diagonal-'+str(brace),[Vector((sx*w*.42,sy*d*.35,.18)),Vector((0,0,.24)),Vector((-sx*w*.20,-sy*d*.16,.20))],[.055,.07,.035],wood,8)

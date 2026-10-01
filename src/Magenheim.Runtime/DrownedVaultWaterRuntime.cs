@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using HarmonyLib;
 using Jotunn.Managers;
 using Magenheim.Core.Underworld;
 using UnityEngine;
@@ -127,9 +128,11 @@ internal static class DrownedVaultWaterRuntime
         var volume = waterRoot.GetComponent<WaterVolume>()
             ?? throw new InvalidOperationException(
                 "Cloned Drowned Vault water donor lost its WaterVolume component.");
-        var collider = waterRoot.GetComponent<BoxCollider>()
-            ?? throw new InvalidOperationException(
-                "Native Drowned Vault WaterVolume donor must expose its trigger as a root BoxCollider.");
+        // HotSpring1 supplies a native Collider, not necessarily a box. Rectangular dungeon
+        // pools own a box trigger and must replace WaterVolume's already-cached Awake reference.
+        foreach(var old in waterRoot.GetComponents<Collider>())
+            UnityEngine.Object.DestroyImmediate(old);
+        var collider = waterRoot.AddComponent<BoxCollider>();
         var surface = volume.m_waterSurface
             ?? throw new InvalidOperationException(
                 "Native Drowned Vault WaterVolume donor has no configured water-surface renderer.");
@@ -149,6 +152,9 @@ internal static class DrownedVaultWaterRuntime
             targetWidth,
             waterDepth + PlayerCheckAboveSurfaceMeters,
             targetDepth);
+        var cachedCollider=AccessTools.Field(typeof(WaterVolume), "m_collider")
+            ?? throw new MissingFieldException(typeof(WaterVolume).FullName, "m_collider");
+        cachedCollider.SetValue(volume,collider);
 
         var meshSize = filter.sharedMesh.bounds.size;
         if (meshSize.x <= .001f || meshSize.z <= .001f)
@@ -184,9 +190,9 @@ internal static class DrownedVaultWaterRuntime
         var volume = donor.GetComponentInChildren<WaterVolume>(includeInactive: true)
             ?? throw new InvalidOperationException(
                 $"Drowned Vault water donor '{DonorPrefab}' has no WaterVolume.");
-        if (volume.GetComponent<BoxCollider>() is null)
+        if (volume.GetComponent<Collider>() is null)
             throw new InvalidOperationException(
-                $"Drowned Vault water donor '{DonorPrefab}' WaterVolume has no root BoxCollider.");
+                $"Drowned Vault water donor '{DonorPrefab}' WaterVolume has no root Collider.");
         if (volume.m_waterSurface is null ||
             volume.m_waterSurface.GetComponent<MeshFilter>()?.sharedMesh is null)
             throw new InvalidOperationException(

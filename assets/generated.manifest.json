@@ -472,7 +472,7 @@
         "tools/underworld_material_library.py",
         "tools/generate-underworld-material-textures.py"
       ],
-      "generator_sha256": "121e744986ee6e1034b96ba1339ec6ea4ea2038b47b0ea64abcc50ea71f6427e",
+      "generator_sha256": "87c51422dcac21bd2e5a883fc7146783a3617620c341070768adffe0f11c9d12",
       "inputs_sha256": "d29f70ef141937572fade5709ce7c58056f114a4e08ac435ae48042500b920f5"
     },
     {
@@ -513,7 +513,7 @@
         "tools/render-rootforged-icons.py"
       ],
       "generator_sha256": "02c67018c0f325db9881f3ca8e4e4bb376a272d8b5189b91b04b21a92152e60a",
-      "inputs_sha256": "08c8b0dcd4c12d71cce7e86478fd215824a13c1254a33b13382afc8b4c473897"
+      "inputs_sha256": "dd61bf85e0f5b2ec85f4213ab514c33db66578de4ccd5d3738fc2c184c407e74"
     },
     {
       "id": "underworld-surtling-models",

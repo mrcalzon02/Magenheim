@@ -268,6 +268,10 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
                 $"Vanilla entrance '{donorEntrance}' resolved generator '{generator.gameObject.name}', " +
                 $"expected '{profile.DonorGeneratorPrefab}'.");
 
+        // Jotunn's location clone can retain the donor Location's generator reference.
+        var clonedLocation=custom.Prefab.GetComponent<Location>()
+            ?? throw new InvalidOperationException("Cloned dungeon entrance lost Location.");
+        clonedLocation.m_generator=generator;
         ValidateInteriorTransport(profile, donorZone, custom.Prefab, generator);
         var entranceDressing = UnderworldVanillaDungeonBiomeDressingPolicy.ApplyEntrance(
             custom.Prefab,

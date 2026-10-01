@@ -10,7 +10,7 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Native decorative vegetation for biome identity that should not carry donor harvesting,
-/// destruction, drops or persistence. The visuals are stripped donor copies registered under
+/// destruction or drops. Native network persistence is retained for vegetation streaming under
 /// Magenheim-owned identities, so Surface worldgen can partition them from the detached Underworld
 /// catalog without mutating Valheim's original Ashlands prefabs.
 /// </summary>
@@ -77,6 +77,12 @@ internal sealed class UnderworldSceneryVegetationRegistrar : IDisposable
                         spec.Donor,
                         spec.Variant,
                         name);
+
+                    // Native ZoneSystem vegetation requires a registered network identity,
+                    // even when its owned visual deliberately has no harvesting behavior.
+                    var view=prefab.GetComponent<ZNetView>();
+                    if(!view)view=prefab.AddComponent<ZNetView>();
+                    view.m_persistent=true;
 
                     var config = new VegetationConfig
                     {

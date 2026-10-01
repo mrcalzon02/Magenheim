@@ -1,9 +1,25 @@
+# Live-log repair candidate - 0.0.159 (installation held)
+
+Previous-boot Player-prev.log and the current profile LogOutput.log were reviewed on October 1.
+The current world demonstrably loads 0.0.158 / UW-158. 0.0.159 / UW-159 replaces geode concave
+colliders with one invisible box and repairs biome boss scaling component registration,
+expanded dungeon Location.m_generator binding, twelve scenery ZNetView identities and the
+native Drowned Vault water trigger/cache binding. Full local build and regression gates passed.
+The zero-asset-ID ZoneSystem.Start exception remains unresolved; the log omits its originating
+method. No installation or interruption of the current game was performed. User authorization
+to install is required before changing the profile. Native live acceptance remains pending.
+
 # Development closeout - 0.0.158 integrated completion candidate
 
 This execution reconciles clean local main with GitHub 2c16f25f, source 0.0.157/schema 5 and installed
 0.0.156. The resulting candidate is 0.0.158, checkpoint UW-158. Runtime compilation against the
 installed Valheim/BepInEx succeeds with zero warnings/errors. Core harness: 114,154 assertions,
 plus separately reported module suites. The rollback tests execute the linked runtime journal.
+
+Full local build and SHA-256 verified profile installation completed October 1. Package:
+`dist/Local-Magenheim-0.0.158.zip` (395,130,980 bytes). All 531 models imported twice;
+85 explicit patches, 23 dynamic groups/683 targets and direct reflection gates passed.
+Live acceptance is recorded in the validation record; it is distinct from installation.
 
 The final progression is Queen -> Deep Gate -> six Deepstones -> Great Decay Dark Throne -> King.
 New throne/discovery rows are instance-only, preserve their established prefab identities, and
