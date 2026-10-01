@@ -27,8 +27,8 @@ public sealed record UnderworldEquipmentDefinition(
 
 /// <summary>
 /// Stable equipment identities for the six complete Underworld biome tiers.
-/// This is gameplay authority only: wearable runtime admission must not occur until an owned,
-/// correctly skinned attach_skin asset exists for the armour piece.
+/// This is gameplay authority only: wearable visuals clone native equipment donors and retain
+/// their meshes, skinning, cloth and overlays, with owned palette modifications.
 /// </summary>
 public static class UnderworldEquipmentCatalog
 {

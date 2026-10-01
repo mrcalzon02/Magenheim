@@ -212,9 +212,9 @@ require("DETAIL_REVISION=4" in root and "endgame-placeable-r4" in root and "DETA
 stations=(ROOT/"tools"/"author-underworld-stations.py").read_text()
 require("DETAIL_REVISION = 2" in stations and "endgame-station-r2" in stations and "DETAIL_FLOORS =" in stations,
         "Underworld station endgame detail revision 2 regression floor is absent")
-arm=(ROOT/"tools"/"author-underworld-armour.py").read_text()
-require("valheim-player-attach-skin" in arm and "BONE_ORDER=[" in arm,
-        "Underworld armour source rig contract is absent")
+arm=(ROOT/"tools"/"author-underworld-donor-armour.py").read_text()
+require("PALETTES=" in arm and "No mesh construction" in arm,
+        "Native donor armour palette production contract is absent")
 production_rebuild=(ROOT/"tools"/"rebuild-underworld-production.ps1").read_text()
 for creature_id in (
     "underworld-creature-lantern-moth",

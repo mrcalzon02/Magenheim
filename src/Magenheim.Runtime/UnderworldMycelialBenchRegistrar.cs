@@ -98,14 +98,19 @@ internal sealed class UnderworldMycelialBenchRegistrar : IDisposable
         station.m_name = definition.Name;
 
         if (HasAuthoredModel(definition.ModelId))
-            ModelAssets.Load(prefab, definition.ModelId, preserveParticles: definition.PreserveDonorParticles);
+            ModelAssets.Load(prefab, definition.ModelId, preserveParticles: definition.PreserveDonorParticles,
+                createColliders: definition.Prefab != UnderworldStationCatalog.MycelialBenchPrefab);
         else
             ApplyBiomeFallbackAccent(prefab, definition.Biome);
 
-        ConfigureCollider(prefab, definition.Dimensions);
-        var siting = prefab.GetComponent<UnderworldStationPlacementConstraint>()
-            ?? prefab.AddComponent<UnderworldStationPlacementConstraint>();
-        siting.Bind(definition.Prefab);
+        // Mycelial Bench keeps its workbench donor's original colliders and native Piece flags.
+        if (definition.Prefab != UnderworldStationCatalog.MycelialBenchPrefab)
+        {
+            ConfigureCollider(prefab, definition.Dimensions);
+            var siting = prefab.GetComponent<UnderworldStationPlacementConstraint>()
+                ?? prefab.AddComponent<UnderworldStationPlacementConstraint>();
+            siting.Bind(definition.Prefab);
+        }
 
         if (!PieceManager.Instance.AddPiece(custom))
             throw new InvalidOperationException("Jotunn refused Underworld station " + definition.Name + ".");

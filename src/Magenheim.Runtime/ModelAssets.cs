@@ -19,6 +19,9 @@ internal static class ModelAssets
     /// <summary>Installed by the plugin. Kept as a delegate so this file still compiles against
     /// the ModelAssetTests Unity shim, which has no Matrix4x4 and a minimal Bounds.</summary>
     internal static Action<Transform, Renderer[], GameObject, string>? HeldModelAligner { get; set; }
+    // Same native material template as the field-confirmed Crystal Dais. Gameplay donors
+    // supply behavior, never vertex programs for our independent authored meshes.
+    internal static Func<Material?>? SurfaceMaterialProvider { get; set; }
 
     private static readonly Dictionary<string, JObject> Documents = new();
     private static readonly Dictionary<string, Mesh> Meshes = new();
@@ -183,7 +186,9 @@ internal static class ModelAssets
         // from world position and ignores the UVs the exporter writes -- on a Magenheim mesh that
         // renders as a smeared lattice no amount of texture or UV work can correct. Static-rock
         // donors do not, which is why the geode shell reads correctly. See CrystalArchitectureVisuals.
-        var source = materialSource;
+        var source = materialSource ?? (SurfaceMaterialProvider is null ? null :
+            SurfaceMaterialProvider() ?? throw new InvalidOperationException(
+                "Native Rock_4 surface material is unavailable for authored model " + id));
         if (!source) source = original.Where(r => !(r is ParticleSystemRenderer)).Select(r => r.sharedMaterial).FirstOrDefault(m => m);
         if (!source) source = new Material(ResolveSurfaceShader());
         source = Uncouple(source, id);

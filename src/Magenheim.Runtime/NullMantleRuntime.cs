@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Jotunn.Managers;
 using HarmonyLib;
 using UnityEngine;
 
@@ -161,6 +163,15 @@ internal sealed class NullMantleRuntime : MonoBehaviour
         fog.transform.SetParent(_presentation.transform, false);
         fog.transform.localPosition = Vector3.up;
         var particles = fog.AddComponent<ParticleSystem>();
+        // A newly created ParticleSystem uses Unity's unavailable built-in particle material.
+        // Clone a loaded native smoke material, including its texture and supported shader.
+        var fire = PrefabManager.Instance.GetPrefab("fire_pit")
+            ?? throw new InvalidOperationException("Null Mantle smoke donor fire_pit is unavailable.");
+        var smoke = fire.GetComponentsInChildren<ParticleSystemRenderer>(true)
+            .OrderByDescending(r => r.name.IndexOf("smoke", StringComparison.OrdinalIgnoreCase) >= 0)
+            .FirstOrDefault(r => r.sharedMaterial && r.sharedMaterial.mainTexture);
+        if (!smoke) throw new InvalidOperationException("Null Mantle native particle material is unavailable.");
+        fog.GetComponent<ParticleSystemRenderer>().sharedMaterial = new Material(smoke.sharedMaterial);
         var main = particles.main;
         main.startLifetime = 2.4f;
         main.startSpeed = .18f;

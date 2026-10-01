@@ -1,3 +1,13 @@
+# Screenshot repair candidate - 0.0.160 (installation held)
+
+Native donor armor recolors replace raw wearable geometry across 24 armor items and Diving Bell
+Hood. Shared authored model loading uses the field-confirmed Rock_4 material template for beds,
+storage, stations and other custom meshes. Null Mantle fog receives a native particle material;
+only Null Gate Sword receives a +3.5cm grip trim. Mycelial Bench retains native workbench
+placement/collision behavior. Detailed cause, repair and regression evidence are in the validation
+record. Visual acceptance needs the next boot. The current profile remains 0.0.158; do not install
+until the user instructs it. The zero-ID startup exception remains unresolved.
+
 # Live-log repair candidate - 0.0.159 (installation held)
 
 Previous-boot Player-prev.log and the current profile LogOutput.log were reviewed on October 1.

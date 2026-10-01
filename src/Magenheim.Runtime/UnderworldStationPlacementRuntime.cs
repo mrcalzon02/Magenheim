@@ -17,6 +17,8 @@ internal sealed class UnderworldStationPlacementConstraint : MonoBehaviour
     internal bool TryEvaluate(out UnderworldStationPlacementDecision decision)
     {
         if(string.IsNullOrWhiteSpace(_stationPrefab)){decision=UnderworldStationPlacementDecision.Reject("Underworld station siting identity is missing.");return true;}
+        // Also release previously saved/instantiated bench components from the obsolete siting gate.
+        if(_stationPrefab==UnderworldStationCatalog.MycelialBenchPrefab){decision=default;return false;}
         decision=UnderworldStationPlacementRuntime.Evaluate(UnderworldStationCatalog.Require(_stationPrefab),gameObject);
         return true;
     }

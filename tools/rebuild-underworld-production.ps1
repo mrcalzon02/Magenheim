@@ -189,8 +189,8 @@ foreach($gate in @(
 & python "$PSScriptRoot/verify-underworld-production-assets.py"
 if($LASTEXITCODE -ne 0){throw 'Underworld production family/PBR admission gate failed.'}
 
-& "$PSScriptRoot/blender.ps1" verify-underworld-armour
-if($LASTEXITCODE -ne 0){throw 'Underworld armour attach_skin source gate failed.'}
+python -X utf8 "$PSScriptRoot/author-underworld-donor-armour.py" --check
+if($LASTEXITCODE -ne 0){throw 'Native donor armour palette gate failed.'}
 & "$PSScriptRoot/blender.ps1" verify-object-texture-bindings
 if($LASTEXITCODE -ne 0){throw 'Object texture binding gate failed.'}
 
@@ -203,7 +203,6 @@ if(!$SkipReview){
     if(Test-Path -LiteralPath $review){Remove-Item -LiteralPath $review -Recurse -Force}
     & "$PSScriptRoot/blender.ps1" render-underworld-production-review
     if($LASTEXITCODE -ne 0){throw 'Production review render failed.'}
-    & "$PSScriptRoot/blender.ps1" render-underworld-armour-articulation-review
-    if($LASTEXITCODE -ne 0){throw 'Underworld armour articulation review failed.'}
+    # Armour articulation is provided by native donor equipment; accept in the live player rig.
 }
 Write-Host 'PRODUCTION READY: 26 PBR families, 40 raw/refined material items, all 35 ordinary-biome creature bodies, Crystal weapons, 32 elemental staves, 12 Underworld derivatives, Rootforged, stations, tools and armour regenerated and gated. Ordinary Underworld dungeon architecture uses runtime vanilla-donor reuse; creature bodies are authored Blender assets.'

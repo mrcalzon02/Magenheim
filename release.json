@@ -1,4 +1,4 @@
 {
-  "version": "0.0.159",
-  "description": "0.0.159: Repairs live-world registration failures in biome bosses and expanded vanilla dungeons; restores native scenery network identities and Drowned Vault water triggers. Geodes use one invisible box collider instead of concave mesh collision."
+  "version": "0.0.160",
+  "description": "0.0.160: Native donor-based armor recolors; static material repair for beds, storage and stations; native Null Mantle fog; Null Gate Sword-only grip trim; Mycelial Bench uses vanilla workbench placement."
 }

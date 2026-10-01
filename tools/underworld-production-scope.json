@@ -15,7 +15,7 @@
     "rootforged-icons",
     "underworld-station-models",
     "underworld-tool-models",
-    "underworld-armour-models",
+    "underworld-armour-donor-profiles",
     "staff-icons"
   ],
   "verify_only": [
@@ -30,7 +30,6 @@
     "underworld-geothermal-vent-",
     "underworld-station-",
     "underworld-tool-",
-    "underworld-armor-",
     "staff-",
     "Magenheim_Staff_"
   ]

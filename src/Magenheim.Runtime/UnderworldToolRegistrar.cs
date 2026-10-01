@@ -62,12 +62,12 @@ internal sealed class UnderworldToolRegistrar:IDisposable
         var item=new CustomItem(d.Prefab,donor);var shared=item.ItemDrop.m_itemData.m_shared;
         shared.m_name=d.Name;shared.m_description=d.GameplayRole;shared.m_maxStackSize=1;
         shared.m_value=0;shared.m_dlc=string.Empty;
-        if(EarthAssets.IconExists(d.ModelId))shared.m_icons=new[]{EarthAssets.Icon(d.ModelId)};
+        if(d.Prefab!=DivingBellPrefab&&EarthAssets.IconExists(d.ModelId))shared.m_icons=new[]{EarthAssets.Icon(d.ModelId)};
 
         if(d.Prefab==DivingBellPrefab)
         {
             shared.m_armor=10f;shared.m_armorPerLevel=2f;shared.m_maxQuality=4;
-            if(ModelAssets.Exists(d.ModelId))ModelAssets.LoadSkinnedEquipment(item.ItemPrefab,d.ModelId);
+            UnderworldDonorArmour.Apply(item.ItemPrefab, "underworld-armor-palewater-helmet");
         }
         else
         {

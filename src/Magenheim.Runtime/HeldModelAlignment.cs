@@ -152,6 +152,7 @@ internal static class HeldModelAlignment
         ["crystal-weapon-knife"] = new ModelTrim(Vector3.zero, new Vector3(0f, 0f, .15f)),
         ["crystal-weapon-atgeir"] = new ModelTrim(Vector3.zero, new Vector3(0f, 0f, .08f)),
         ["crystal-weapon-spear"] = new ModelTrim(new Vector3(180f, 0f, 0f), new Vector3(0f, 0f, .296f)),
+        ["nowhere-king-sword-null-gate"] = new ModelTrim(Vector3.zero, new Vector3(0f, 0f, .035f)),
     };
 
     /// <summary>A trim entry. Explicitly not a tuple: Magenheim.Runtime has no System.ValueTuple.</summary>
@@ -267,7 +268,7 @@ internal static class HeldModelAlignment
         // attempt to reshape it fixed one weapon by breaking another. Orientation is corrected in
         // the source model, not here.
 
-        if (Trim.TryGetValue(profileId, out var trim))
+        if (Trim.TryGetValue(id, out var trim) || Trim.TryGetValue(profileId, out trim))
         {
             root.transform.localRotation = Quaternion.Euler(trim.Rotation) * root.transform.localRotation;
             root.transform.localPosition += trim.Offset;

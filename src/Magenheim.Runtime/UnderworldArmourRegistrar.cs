@@ -55,8 +55,7 @@ internal sealed class UnderworldArmourRegistrar : IDisposable
         shared.m_maxStackSize=1;
         shared.m_value=0;
         shared.m_dlc=string.Empty;
-        if(EarthAssets.IconExists(definition.ModelId))
-            shared.m_icons=new[]{EarthAssets.Icon(definition.ModelId)};
+        // Keep the donor icon: the archived raw-geometry icon no longer describes this equipment.
         var balance=UnderworldArmourBalanceCatalog.Require(definition.Biome,definition.Slot);
         shared.m_armor=balance.Armor;
         shared.m_armorPerLevel=balance.ArmorPerQuality;
@@ -67,8 +66,7 @@ internal sealed class UnderworldArmourRegistrar : IDisposable
         shared.m_maxDurability=balance.MaxDurability;
         shared.m_durabilityPerLevel=balance.DurabilityPerQuality;
         item.ItemDrop.m_itemData.m_durability=balance.MaxDurability;
-        if(ModelAssets.Exists(definition.ModelId))
-            ModelAssets.LoadSkinnedEquipment(item.ItemPrefab,definition.ModelId);
+        UnderworldDonorArmour.Apply(item.ItemPrefab, definition.ModelId);
 
         if(!ItemManager.Instance.AddItem(item))
             throw new InvalidOperationException("Jotunn refused Underworld armour item "+definition.Prefab);

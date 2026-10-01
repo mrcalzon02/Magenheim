@@ -12,6 +12,27 @@ using Newtonsoft.Json.Linq;
  Console.WriteLine("PASS: vegetation donor shader replaced before authored bed rendering.");
 }
 var count=0;
+// Shader names vary across native donors/mods. A gameplay donor's unrecognized wind
+// shader must never bypass the material template used by the working dais.
+{
+ var template = new Material(Shader.Find("Custom/StaticRock"));
+ ModelAssets.SurfaceMaterialProvider = () => template;
+ foreach(var id in new[]{"crystal-bed-earth","underworld-station-mycelial-bench","crystalline-ice-box"})
+ {
+  if(!ModelAssets.Exists(id)) throw new Exception("Material regression fixture is missing: "+id);
+  var host=HostForUnsafeShader("Custom/UnlistedWindVariant");
+  var loaded=ModelAssets.Load(host,id);
+  if(loaded.GetComponentsInChildren<MeshRenderer>(true).Any(r=>r.sharedMaterial?.shader?.name!="Custom/StaticRock"))
+   throw new Exception("Gameplay donor shader bypassed native static material template: "+id);
+ }
+ ModelAssets.SurfaceMaterialProvider=()=>null;
+ var missingTemplateRejected=false;
+ try { ModelAssets.Load(HostForUnsafeShader("Custom/UnlistedWindVariant"),"crystal-bed-earth"); }
+ catch(InvalidOperationException e) when(e.Message.Contains("Native Rock_4")) { missingTemplateRejected=true; }
+ if(!missingTemplateRejected) throw new Exception("Missing native template silently fell back to an unsafe donor shader.");
+ ModelAssets.SurfaceMaterialProvider=null;
+ Console.WriteLine("PASS: native static material template overrides unrecognized gameplay donor shaders.");
+}
 foreach(var file in Directory.GetFiles(Path.Combine(AppContext.BaseDirectory,"assets/models/runtime"),"*.model.json")) {
  var id=Path.GetFileName(file).Replace(".model.json","");
  GameObject Host(){var h=new GameObject(id);h.AddComponent<Character>();h.AddComponent<ZNetView>();h.AddComponent<MeshRenderer>().sharedMaterial=new Material();var b=new GameObject("body");b.transform.SetParent(h.transform);h.AddComponent<Turret>().m_turretBody=b;return h;}
