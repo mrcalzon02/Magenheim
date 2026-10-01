@@ -141,18 +141,10 @@ internal sealed class UnderworldWeatherVfxRuntime : MonoBehaviour
         _resonanceLight.shadows = LightShadows.None;
         _resonanceLight.enabled = false;
 
-        var shader = Shader.Find("Particles/Standard Unlit") ??
-                     Shader.Find("Legacy Shaders/Particles/Alpha Blended") ??
-                     Shader.Find("Sprites/Default");
-        if (shader is not null)
-        {
-            _particleMaterial = new Material(shader)
-            {
-                name = "Magenheim_Underworld_WeatherParticles"
-            };
-            primaryRoot.GetComponent<ParticleSystemRenderer>().material = _particleMaterial;
-            secondaryRoot.GetComponent<ParticleSystemRenderer>().material = _particleMaterial;
-        }
+        _particleMaterial = NativeEffectMaterials.CreateParticleMaterial();
+        _particleMaterial.name = "Magenheim_Underworld_WeatherParticles";
+        primaryRoot.GetComponent<ParticleSystemRenderer>().sharedMaterial = _particleMaterial;
+        secondaryRoot.GetComponent<ParticleSystemRenderer>().sharedMaterial = _particleMaterial;
 
         ConfigureCommon(_primary);
         ConfigureCommon(_secondary);

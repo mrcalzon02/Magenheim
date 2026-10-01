@@ -257,6 +257,7 @@ internal static class UnderworldCreatureIdentityPass
         particlesRoot.transform.localPosition = new Vector3(0f, height * .55f, 0f);
 
         var particles = particlesRoot.AddComponent<ParticleSystem>();
+        particlesRoot.GetComponent<ParticleSystemRenderer>().sharedMaterial = NativeEffectMaterials.SharedParticleMaterial;
         var main = particles.main;
         main.loop = true;
         main.playOnAwake = true;

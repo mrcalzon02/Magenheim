@@ -9,7 +9,7 @@ internal static class EffectModelAssets
 
     internal static GameObject Create(string id)
     {
-        if (!_source) _source = new Material(Shader.Find("Standard"));
+        if (!_source) _source = ModelAssets.CreateSurfaceMaterial();
         var host = new GameObject(id);
         var renderer = host.AddComponent<MeshRenderer>();
         renderer.sharedMaterial = _source;

@@ -2,14 +2,20 @@
 
 **Magic begins as geology.**
 
-## 0.0.160 integrated completion candidate
+## 0.0.161 integrated completion candidate
 
-0.0.160 retains vanilla armor donor geometry and recolors owned materials/body overlays.
+The follow-up comparison closes material-template bypasses in legacy Earth structures and
+single-mesh world structures. Fifteen mesh-effect material constructors and eight line-effect
+constructors no longer request missing Unity built-in shaders. Weather/species/identity particles
+use loaded native particle materials. The library-wide regression compares all 531 model payloads
+against the safe shader/displacement contract. Weapon grips are unchanged from 0.0.160.
+
+0.0.161 retains vanilla armor donor geometry and recolors owned materials/body overlays.
 Authored placeables use the native Rock_4 material template already confirmed working on the
 Crystal Dais, covering storage, crystal beds and biome stations. Null Mantle fog uses a native
 particle material. Only the Null Gate Sword receives a 3.5 cm grip trim. The Mycelial Bench
 keeps vanilla workbench colliders and placement mechanics. Earlier 0.0.159 log repairs are included.
-Installation remains held; the current live game still runs 0.0.158. The zero-asset-ID exception
+Installation is authorized after the comparison/build checks; live visual acceptance needs a restart. The zero-asset-ID exception
 in ZoneSystem.Start remains unresolved. Native visual and placement acceptance is pending.
 
 The Deep Gate opens after the Surface Queen is defeated; existing worlds with a recorded Nowhere

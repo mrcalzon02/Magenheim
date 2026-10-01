@@ -1063,6 +1063,7 @@ internal sealed class UnderworldCreatureSpecialBehavior : MonoBehaviour
         root.transform.position = owner.position + Vector3.up * .7f;
 
         var particles = root.AddComponent<ParticleSystem>();
+        root.GetComponent<ParticleSystemRenderer>().sharedMaterial = NativeEffectMaterials.SharedParticleMaterial;
         var main = particles.main;
         main.loop = false;
         main.playOnAwake = false;

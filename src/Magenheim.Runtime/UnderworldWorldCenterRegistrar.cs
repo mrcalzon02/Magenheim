@@ -152,8 +152,7 @@ internal static class UnderworldWorldCenterRegistrar
             node,
             binding.ModelId,
             hideOriginal: false,
-            parent: node.transform,
-            materialSource: new Material(ModelAssets.ResolveSurfaceShader()));
+            parent: node.transform);
         return node;
     }
 

@@ -1,4 +1,4 @@
 {
-  "version": "0.0.160",
-  "description": "0.0.160: Native donor-based armor recolors; static material repair for beds, storage and stations; native Null Mantle fog; Null Gate Sword-only grip trim; Mycelial Bench uses vanilla workbench placement."
+  "version": "0.0.161",
+  "description": "0.0.161: Extends native material repair to legacy Earth structures, single-mesh world structures and generated effects; fixes unsupported particle materials. Includes native donor armor, bench placement and sword-only grip repairs."
 }

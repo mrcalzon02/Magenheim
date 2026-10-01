@@ -40,8 +40,6 @@ internal static class ModelAssets
     private static readonly string[] SurfaceShaderNames =
     {
         "Custom/StaticRock",
-        "Custom/Piece",
-        "Custom/Vegetation",
         "Standard",
     };
 
@@ -138,6 +136,30 @@ internal static class ModelAssets
         FindSurfaceShader() ?? throw new InvalidOperationException(
             "No Magenheim surface shader is available; expected one of " + string.Join(", ", SurfaceShaderNames) + ".");
 
+    /// <summary>Supported native template for all independent authored surfaces, including legacy loaders/effects.</summary>
+    internal static Material CreateSurfaceMaterial()
+    {
+        var source = SurfaceMaterialProvider is null ? null : SurfaceMaterialProvider()
+            ?? throw new InvalidOperationException("Native Rock_4 surface material is unavailable.");
+        var material = source ? new Material(source) : new Material(ResolveSurfaceShader());
+        material.color = Color.white;
+        material.mainTexture = Texture2D.whiteTexture;
+        material.mainTextureScale = Vector2.one;
+        material.mainTextureOffset = Vector2.zero;
+        ClearDonorSurfaceState(material);
+        return material;
+    }
+
+    internal static void ClearDonorSurfaceState(Material material)
+    {
+        foreach (var map in DonorMapsToClear)
+            if (material.HasProperty(map)) material.SetTexture(map, null);
+        foreach (var scalar in new[] { "_Parallax", "_Displacement", "_DisplacementStrength", "_HeightScale", "_Tessellation", "_MossBlend", "_MossAlpha", "_AddSnow", "_AddRain" })
+            if (material.HasProperty(scalar)) material.SetFloat(scalar, 0f);
+        foreach (var keyword in new[] { "_NORMALMAP", "_METALLICGLOSSMAP", "_DETAIL_MULX2", "_PARALLAXMAP", "_EMISSION" })
+            material.DisableKeyword(keyword);
+    }
+
     internal static Mesh LoadSingleMesh(string id)
     {
         if (string.IsNullOrEmpty(id) || Path.GetFileName(id) != id) throw new ArgumentException("Invalid model identity.", nameof(id));
@@ -153,7 +175,7 @@ internal static class ModelAssets
         if (string.IsNullOrEmpty(id) || Path.GetFileName(id) != id) throw new ArgumentException("Invalid model identity.", nameof(id));
         var document = Document(id);
         if (!(document["parts"] is JArray parts) || parts.Count != 1) throw new InvalidDataException("Single material asset required: " + id);
-        var source = new Material(ResolveSurfaceShader());
+        var source = CreateSurfaceMaterial();
         return LoadMaterial(id + "/0", parts[0]["material"]!, source);
     }
 
@@ -394,18 +416,7 @@ internal static class ModelAssets
         // crystal facets through unrelated UVs, which is why structural placeables read in game as
         // flat, uniformly lit sheets with a fine speckle while the source looks correct. Only the
         // shader and our own colour/texture should survive.
-        foreach (var map in DonorMapsToClear)
-            if (material.HasProperty(map)) material.SetTexture(map, null);
-        // Custom/StaticRock carries a non-zero parallax scalar independently of its map. Leaving
-        // that donor value behind made UV-authored furniture read as offset, torn triangles even
-        // after the donor texture was cleared. Owned meshes do not author displacement data.
-        foreach (var scalar in new[] { "_Parallax", "_Displacement", "_DisplacementStrength", "_HeightScale", "_Tessellation" })
-            if (material.HasProperty(scalar)) material.SetFloat(scalar, 0f);
-        foreach (var keyword in new[] { "_NORMALMAP", "_METALLICGLOSSMAP", "_DETAIL_MULX2", "_PARALLAXMAP", "_EMISSION" })
-            material.DisableKeyword(keyword);
-        // Moss is blend-driven on Valheim piece shaders, so nulling its texture is not enough.
-        foreach (var blend in new[] { "_MossBlend", "_MossAlpha", "_AddSnow", "_AddRain" })
-            if (material.HasProperty(blend)) material.SetFloat(blend, 0f);
+        ClearDonorSurfaceState(material);
 
         // Owned Underworld PBR maps are exported as explicit runtime references. Apply them only
         // after donor maps/keywords are cleared so a donor can never win by load order.

@@ -33,10 +33,28 @@ var count=0;
  ModelAssets.SurfaceMaterialProvider=null;
  Console.WriteLine("PASS: native static material template overrides unrecognized gameplay donor shaders.");
 }
+var libraryTemplate = new Material(Shader.Find("Custom/StaticRock"));
+libraryTemplate.SetFloat("_Parallax",2f);
+libraryTemplate.SetFloat("_Displacement",3f);
+libraryTemplate.SetTexture("_MossTex",Texture2D.whiteTexture);
+ModelAssets.SurfaceMaterialProvider=()=>libraryTemplate;
+var cleanTemplate=ModelAssets.CreateSurfaceMaterial();
+if(cleanTemplate.shader?.name!="Custom/StaticRock" || cleanTemplate.Floats["_Parallax"]!=0 || cleanTemplate.Floats["_Displacement"]!=0 || cleanTemplate.Textures["_MossTex"]!=null)
+ throw new Exception("Legacy/effect material factory retained donor displacement state.");
+if(libraryTemplate.Floats["_Parallax"]!=2f || libraryTemplate.Textures["_MossTex"]==null)
+ throw new Exception("Material cleanup modified the shared native donor.");
+foreach(var id in new[]{"underworld-descent-monolith","underworld-dais"})
+ if(ModelAssets.LoadSingleMaterial(id).shader?.name!="Custom/StaticRock") throw new Exception("Single-mesh structure bypassed native material template.");
 foreach(var file in Directory.GetFiles(Path.Combine(AppContext.BaseDirectory,"assets/models/runtime"),"*.model.json")) {
  var id=Path.GetFileName(file).Replace(".model.json","");
  GameObject Host(){var h=new GameObject(id);h.AddComponent<Character>();h.AddComponent<ZNetView>();h.AddComponent<MeshRenderer>().sharedMaterial=new Material();var b=new GameObject("body");b.transform.SetParent(h.transform);h.AddComponent<Turret>().m_turretBody=b;return h;}
  var first=Host();var second=Host();ModelAssets.Load(first,id);ModelAssets.Load(second,id);
+ foreach(var renderer in first.GetComponentsInChildren<MeshRenderer>(true).Where(r=>r.enabled))
+ {
+  var material=renderer.sharedMaterial!;
+  if(material.shader?.name!="Custom/StaticRock" || material.Floats["_Parallax"]!=0 || material.Floats["_Displacement"]!=0)
+   throw new Exception("Unsafe shader or inherited displacement in library model: "+id);
+ }
  var a=first.GetComponentsInChildren<MeshFilter>(true);var b=second.GetComponentsInChildren<MeshFilter>(true);
  var expected=((JArray)JObject.Parse(File.ReadAllText(file))["parts"]!).Count;
  if(a.Length!=expected || b.Length!=expected)throw new Exception("Part loss: "+id);
@@ -44,6 +62,8 @@ foreach(var file in Directory.GetFiles(Path.Combine(AppContext.BaseDirectory,"as
  if(first.GetComponent<MeshRenderer>()!.enabled)throw new Exception("Inherited geometry still visible: "+id);
  count++;
 }
+ModelAssets.SurfaceMaterialProvider=null;
+Console.WriteLine($"PASS: {count} library models use the native static template with zero inherited displacement; single-mesh and legacy/effect factories match.");
 // Geode rigidbodies require caller-owned primitive collision, while ordinary authored
 // static geometry must retain its mesh collision.
 {

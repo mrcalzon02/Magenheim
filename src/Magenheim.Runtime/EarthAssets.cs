@@ -74,13 +74,12 @@ internal static class EarthAssets
         var originalRenderers = variants.Length > 0
             ? variants.SelectMany(obj => obj.GetComponentsInChildren<Renderer>(true)).Distinct().ToArray()
             : prefab.GetComponentsInChildren<Renderer>(true);
-        var sourceMaterial = originalRenderers.Select(renderer => renderer.sharedMaterial).FirstOrDefault(material => material);
-        if (!sourceMaterial) throw new InvalidOperationException($"No material source on {prefab.name}.");
 
         var materialKey = string.IsNullOrWhiteSpace(variant) ? asset : asset + "|" + variant;
         if (!Materials.TryGetValue(materialKey, out var material))
         {
-            material = new Material(sourceMaterial) { name = "magenheim." + materialKey + ".material" };
+            material = ModelAssets.CreateSurfaceMaterial();
+            material.name = "magenheim." + materialKey + ".material";
             material.mainTexture = tint.HasValue
                 ? TintedTexture(asset + ".png", variant ?? "tint", tint.Value)
                 : Texture(asset + ".png");

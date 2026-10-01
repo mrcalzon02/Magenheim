@@ -29,7 +29,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
             ring.transform.localScale=new Vector3(.7f+i*.5f,.014f,.7f+i*.5f);
             var collider=ring.GetComponent<Collider>();if(collider)Destroy(collider);
             var renderer=ring.GetComponent<Renderer>();
-            if(renderer){var material=new Material(Shader.Find("Standard"));material.color=color;material.SetFloat("_Metallic",.2f);material.SetFloat("_Glossiness",.45f);renderer.material=material;}
+            if(renderer){var material=ModelAssets.CreateSurfaceMaterial();material.color=color;material.SetFloat("_Metallic",.2f);material.SetFloat("_Glossiness",.45f);renderer.material=material;}
             ring.AddComponent<TerritoryPulse>().Configure(2.6f+i*.45f,.7f+i*.1f);
         }
         for(var i=0;i<8;i++)
@@ -42,7 +42,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
             marker.transform.rotation=Quaternion.Euler(0,i*45f,18f);
             var collider=marker.GetComponent<Collider>();if(collider)Destroy(collider);
             var renderer=marker.GetComponent<Renderer>();
-            if(renderer){var material=new Material(Shader.Find("Standard"));material.color=color;material.SetColor("_EmissionColor",color*.65f);renderer.material=material;}
+            if(renderer){var material=ModelAssets.CreateSurfaceMaterial();material.color=color;material.SetColor("_EmissionColor",color*.65f);renderer.material=material;}
             marker.AddComponent<PulseMarker>().Configure(.85f);
         }
         if(Alignment==ElementalAlignment.Storm)EmitStormNetwork(origin);
@@ -72,7 +72,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
         pool.transform.rotation=Quaternion.Euler(0,yaw,0);
         var collider=pool.GetComponent<Collider>();if(collider)Destroy(collider);
         var renderer=pool.GetComponent<Renderer>();
-        if(renderer){var material=new Material(Shader.Find("Standard"));var color=new Color(.24f,.66f,.13f,.72f);material.color=color;material.SetFloat("_Glossiness",.18f);material.SetColor("_EmissionColor",color*.28f);renderer.material=material;}
+        if(renderer){var material=ModelAssets.CreateSurfaceMaterial();var color=new Color(.24f,.66f,.13f,.72f);material.color=color;material.SetFloat("_Glossiness",.18f);material.SetColor("_EmissionColor",color*.28f);renderer.material=material;}
         pool.AddComponent<VenomPoolLifetime>().Configure(life,1.28f);
     }
     private static void EmitVenomSeep(Vector3 position,Vector3 outward,int seed)
@@ -84,7 +84,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
         seep.transform.rotation=Quaternion.LookRotation(outward,Vector3.up);
         var collider=seep.GetComponent<Collider>();if(collider)Destroy(collider);
         var renderer=seep.GetComponent<Renderer>();
-        if(renderer){var material=new Material(Shader.Find("Standard"));var color=new Color(.3f,.74f,.12f,.78f);material.color=color;material.SetFloat("_Glossiness",.12f);renderer.material=material;}
+        if(renderer){var material=ModelAssets.CreateSurfaceMaterial();var color=new Color(.3f,.74f,.12f,.78f);material.color=color;material.SetFloat("_Glossiness",.12f);renderer.material=material;}
         seep.AddComponent<VenomPoolLifetime>().Configure(3.15f,1.18f);
     }
     private void EmitStormNetwork(Vector3 origin)
@@ -114,7 +114,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
             var fault=new GameObject("Magenheim_WardenEarthFault");
             var line=fault.AddComponent<LineRenderer>();
             line.useWorldSpace=true;line.positionCount=5;line.startWidth=.13f;line.endWidth=.035f;line.startColor=color;line.endColor=new Color(.28f,.19f,.09f,.35f);
-            var material=new Material(Shader.Find("Standard"));material.color=color;material.SetFloat("_Glossiness",.08f);line.material=material;
+            var material=NativeEffectMaterials.CreateParticleMaterial();material.color=color;material.SetFloat("_Glossiness",.08f);line.material=material;
             var delta=end-start;
             line.SetPosition(0,start);
             line.SetPosition(1,start+delta*.24f+side*((i%2==0)?.16f:-.12f));
@@ -136,7 +136,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
         mass.transform.rotation=Quaternion.Euler(10f+(seed%2)*9f,seed*37f,12f);
         var collider=mass.GetComponent<Collider>();if(collider)Destroy(collider);
         var renderer=mass.GetComponent<Renderer>();
-        if(renderer){var material=new Material(Shader.Find("Standard"));material.color=new Color(.39f,.29f,.17f,1f);material.SetFloat("_Glossiness",.06f);renderer.material=material;}
+        if(renderer){var material=ModelAssets.CreateSurfaceMaterial();material.color=new Color(.39f,.29f,.17f,1f);material.SetFloat("_Glossiness",.06f);renderer.material=material;}
         mass.AddComponent<EarthUpheaval>().Configure(outward.normalized,.82f);
     }
     private static void EmitStormArc(Vector3 start,Vector3 end,float bendSeed)
@@ -145,7 +145,7 @@ internal sealed class DeepFractureWardenPulseRuntime:MonoBehaviour
         var line=arc.AddComponent<LineRenderer>();
         line.useWorldSpace=true;line.positionCount=4;line.startWidth=.075f;line.endWidth=.018f;
         var color=new Color(.58f,.52f,1f,.92f);line.startColor=color;line.endColor=new Color(.72f,.68f,1f,.18f);
-        var material=new Material(Shader.Find("Standard"));material.color=color;material.SetColor("_EmissionColor",color*1.35f);line.material=material;
+        var material=NativeEffectMaterials.CreateParticleMaterial();material.color=color;material.SetColor("_EmissionColor",color*1.35f);line.material=material;
         var delta=end-start;var side=Vector3.Cross(Vector3.up,delta.normalized);var bend=.18f+Mathf.Abs(Mathf.Sin(bendSeed))*.22f;
         line.SetPosition(0,start);line.SetPosition(1,start+delta*.33f+side*bend+Vector3.up*.12f);line.SetPosition(2,start+delta*.67f-side*bend*.7f+Vector3.up*.05f);line.SetPosition(3,end);
         arc.AddComponent<StormArcLifetime>().Configure(.22f);

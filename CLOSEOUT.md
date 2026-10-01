@@ -1,3 +1,15 @@
+# Material comparison and installation candidate - 0.0.161
+
+The user authorized installation after a comparison of generated weapons and structures.
+Legacy EarthAssets, single-mesh Underworld structures and 15 effect surface constructors now
+share the native static template/cleanup. Eight line-effect constructors and three previously
+unassigned particle routes use native particle materials. All 531 library payloads participate
+in the shader/displacement regression. Existing armor, placement and sword-only repairs remain.
+No grip or geometry edits were made in this comparison. Live visual acceptance remains pending;
+the zero-ID startup exception remains unresolved. Installation completed with every file checksum verified; launcher entry is 0.0.161 and enabled.
+Previous payload backup: backups/Local-Magenheim-20261001-122758.zip. The validation record
+contains the installed runtime hash and launcher backup. Native next-boot acceptance is pending.
+
 # Screenshot repair candidate - 0.0.160 (installation held)
 
 Native donor armor recolors replace raw wearable geometry across 24 armor items and Diving Bell
