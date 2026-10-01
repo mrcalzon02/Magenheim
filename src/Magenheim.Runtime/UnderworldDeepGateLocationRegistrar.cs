@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using BepInEx.Logging;
 using Jotunn.Configs;
 using Jotunn.Entities;
@@ -10,7 +11,6 @@ namespace Magenheim.Runtime;
 internal sealed class UnderworldDeepGateLocationRegistrar : IDisposable
 {
     internal const string LocationName = "Magenheim_DeepGateSite";
-    private const float FootEmbedMetres = 0.08f;
     private readonly ManualLogSource _log;
     private bool _subscribed;
     private bool _registered;
@@ -49,16 +49,38 @@ internal sealed class UnderworldDeepGateLocationRegistrar : IDisposable
             var gatePrefab = PrefabManager.Instance.GetPrefab(UnderworldDeepGateRegistrar.PrefabName)
                 ?? throw new InvalidOperationException(
                     $"Deep Gate prefab '{UnderworldDeepGateRegistrar.PrefabName}' was not registered before location composition.");
-            var container = ZoneManager.Instance.CreateLocationContainer(LocationName)
+            var donor = FindNativeGateLocation();
+            var nativeClone = donor is null ? null : ZoneManager.Instance.CreateClonedLocation(LocationName, donor.m_prefab.Name);
+            var container = nativeClone?.Prefab ?? ZoneManager.Instance.CreateLocationContainer(LocationName)
                 ?? throw new InvalidOperationException(
                     $"Jotunn could not create Deep Gate location container '{LocationName}'.");
 
-            var gate = UnityEngine.Object.Instantiate(gatePrefab, container.transform, false);
-            gate.name = UnderworldDeepGateRegistrar.PrefabName;
-            // UnderworldDeepGateRegistrar normalizes the visible Aesir foot to local Y=0. Bury it
-            // only a few centimetres so terrain precision cannot leave a daylight seam.
-            gate.transform.localPosition = Vector3.down * FootEmbedMetres;
-            gate.transform.localRotation = Quaternion.identity;
+            var gate = container;
+            if (nativeClone is null)
+            {
+                var arch = UnityEngine.Object.Instantiate(gatePrefab, container.transform, false);
+                arch.name = UnderworldDeepGateRegistrar.PrefabName;
+                arch.transform.localPosition = Vector3.down * .08f;
+                _log.LogWarning("Native cold-biome gate location was not resolved; retained arch fallback. Full gate assembly acceptance remains pending.");
+            }
+            else
+            {
+                // Retain the entire authored exterior: stones, bowl, chains, effects and network
+                // behaviours. Only the destination changes from the vanilla prison to instance 1.
+                foreach (var generator in gate.GetComponentsInChildren<DungeonGenerator>(true))
+                    generator.enabled = false;
+                foreach (var location in gate.GetComponentsInChildren<Location>(true))
+                {
+                    location.m_generator = null;
+                    location.m_hasInterior = false;
+                    location.m_interiorRadius = 0f;
+                    if (location.m_interiorTransform && location.m_interiorTransform.IsChildOf(gate.transform) &&
+                        location.m_interiorTransform != gate.transform)
+                        location.m_interiorTransform.gameObject.SetActive(false);
+                }
+                _log.LogInfo($"Deep Gate copied complete native location '{donor!.m_prefab.Name}', with {gate.GetComponentsInChildren<Teleport>(true).Length} native transport points.");
+            }
+            UnderworldDeepGateRegistrar.TraversalAssembly = container;
 
             var endpoint = gate.GetComponent<UnderworldGateEndpoint>() ?? gate.AddComponent<UnderworldGateEndpoint>();
             endpoint.Role = UnderworldGateRole.EnterUnderworld;
@@ -69,33 +91,39 @@ internal sealed class UnderworldDeepGateLocationRegistrar : IDisposable
             // level 22m-radius foundation instead of accepting the old 8m height delta across 38m,
             // which could place half the monument underground or floating. The location stays
             // upright; random Y rotation remains harmless and gives site variety.
-            var config = new LocationConfig
-            {
-                Biome = ZoneManager.AnyBiomeOf(
-                    Heightmap.Biome.Meadows,
-                    Heightmap.Biome.BlackForest,
-                    Heightmap.Biome.Swamp,
+            var config = donor is null ? new LocationConfig() : new LocationConfig(donor);
+            config.Biome = ZoneManager.AnyBiomeOf(
                     Heightmap.Biome.Mountain,
-                    Heightmap.Biome.Plains,
-                    Heightmap.Biome.Mistlands),
-                BiomeArea = Heightmap.BiomeArea.Everything,
-                Quantity = 6,
-                Priotized = true,
-                ExteriorRadius = 22f,
-                MinAltitude = 8f,
-                MinTerrainDelta = 0f,
-                MaxTerrainDelta = 0.75f,
-                MinDistanceFromSimilar = 3500f,
-                Group = "Magenheim_UnderworldAccess",
-                ClearArea = true,
-                RandomRotation = true,
-                SlopeRotation = false,
-                SnapToWater = false,
-                HasInterior = false,
-            };
+                    Heightmap.Biome.DeepNorth);
+            config.Quantity = 6;
+            config.Priotized = true;
+            config.MinDistance = Mathf.Max(config.MinDistance, 2500f);
+            config.MinDistanceFromSimilar = 3500f;
+            config.Group = "Magenheim_UnderworldAccess";
+            config.HasInterior = false;
+            if (donor is null)
+            {
+                config.ExteriorRadius = 22f;
+                config.MinAltitude = 8f;
+                config.MaxTerrainDelta = .75f;
+                config.ClearArea = true;
+                config.RandomRotation = true;
+            }
 
-            var custom = new CustomLocation(container, fixReference: false, config);
-            if (!ZoneManager.Instance.AddCustomLocation(custom))
+            var custom = nativeClone ?? new CustomLocation(container, fixReference: false, config);
+            if (nativeClone is not null)
+            {
+                // Mutate only our private registered row; native placement fields remain intact.
+                var placement = custom.ZoneLocation;
+                placement.m_biome = config.Biome;
+                placement.m_quantity = config.Quantity;
+                placement.m_prioritized = true;
+                placement.m_minDistance = config.MinDistance;
+                placement.m_minDistanceFromSimilar = config.MinDistanceFromSimilar;
+                placement.m_group = config.Group;
+                placement.m_interiorRadius = 0f;
+            }
+            else if (!ZoneManager.Instance.AddCustomLocation(custom))
                 throw new InvalidOperationException(
                     $"Jotunn refused additive Deep Gate location registration for '{LocationName}'.");
 
@@ -114,6 +142,28 @@ internal sealed class UnderworldDeepGateLocationRegistrar : IDisposable
             Dispose();
         }
     }
+
+    private static ZoneSystem.ZoneLocation? FindNativeGateLocation()
+    {
+        var zone = ZoneSystem.instance;
+        if (!zone) return null;
+        foreach (var row in zone.m_locations.ToArray())
+        {
+            if (row is null || !row.m_enable || !row.m_prefab.IsValid ||
+                (row.m_biome & (Heightmap.Biome.DeepNorth | Heightmap.Biome.Mountain)) == 0)
+                continue;
+            row.m_prefab.Load();
+            try
+            {
+                var prefab = row.m_prefab.Asset;
+                if (prefab && prefab.GetComponentsInChildren<Transform>(true).Any(transform =>
+                        transform.name.StartsWith("LastBossGate", StringComparison.Ordinal)))
+                    return row;
+            }
+            finally { row.m_prefab.Release(); }
+        }
+        return null;
+    }
 }
 
 /// <summary>Client-side presentation follows the server-synchronized global progression key.</summary>
@@ -123,6 +173,18 @@ internal sealed class UnderworldDeepGateProgressionRuntime : MonoBehaviour
     private bool _pinEnsured;
 
     private void Awake() => _endpoint = GetComponent<UnderworldGateEndpoint>();
+
+    private void Start()
+    {
+        if (_endpoint is null || _endpoint.Role != UnderworldGateRole.EnterUnderworld ||
+            gameObject.scene.name.StartsWith("Magenheim_Underworld_", StringComparison.Ordinal) ||
+            UnderworldSurfaceGateMigration.IsAllowed(transform.position)) return;
+        // Old world saves can still load the obsolete placed site. Retire only this owned gate.
+        foreach (var view in GetComponentsInChildren<ZNetView>(true))
+            if (view && view.IsValid() && view.IsOwner() && ZNetScene.instance)
+                ZNetScene.instance.Destroy(view.gameObject);
+        Destroy(gameObject);
+    }
 
     private void Update()
     {

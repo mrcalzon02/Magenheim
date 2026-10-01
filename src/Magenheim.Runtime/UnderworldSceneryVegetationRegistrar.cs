@@ -80,6 +80,9 @@ internal sealed class UnderworldSceneryVegetationRegistrar : IDisposable
 
                     // Native ZoneSystem vegetation requires a registered network identity,
                     // even when its owned visual deliberately has no harvesting behavior.
+                    // ZNetView.Awake destroys itself when no world ZDOMan exists (menu registration).
+                    // Keep the prototype inactive before adding it; instances awaken in a world.
+                    prefab.SetActive(false);
                     var view=prefab.GetComponent<ZNetView>();
                     if(!view)view=prefab.AddComponent<ZNetView>();
                     view.m_persistent=true;
@@ -115,6 +118,9 @@ internal sealed class UnderworldSceneryVegetationRegistrar : IDisposable
                             new CustomVegetation(prefab, fixReference: true, config)))
                         throw new InvalidOperationException(
                             $"Jotunn refused native Underworld scenery registration for '{name}'.");
+                    if (prefab.transform.parent is null || prefab.transform.parent.gameObject.activeInHierarchy)
+                        throw new InvalidOperationException("Scenery prototype must be registered under an inactive prefab container.");
+                    prefab.SetActive(true); // clones awaken in-world; the registered prototype stays inactive in hierarchy
                     prefab = null; // ownership transferred to the registered custom vegetation
                     registered++;
                 }

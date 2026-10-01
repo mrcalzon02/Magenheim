@@ -47,7 +47,9 @@ internal static class UnderworldWorldCenterRegistrar
         root.transform.rotation = Quaternion.identity;
         BuildStandingStones(root.transform);
 
-        var gatePrefab = Jotunn.Managers.PrefabManager.Instance.GetPrefab(UnderworldDeepGateRegistrar.PrefabName)
+        var gatePrefab = UnderworldDeepGateRegistrar.TraversalAssembly
+            ? UnderworldDeepGateRegistrar.TraversalAssembly
+            : Jotunn.Managers.PrefabManager.Instance.GetPrefab(UnderworldDeepGateRegistrar.PrefabName)
             ?? throw new InvalidOperationException("Deep Gate must be registered before the Underworld world center is composed.");
         var gate = UnityEngine.Object.Instantiate(gatePrefab, root.transform, false);
         gate.name = UnderworldDeepGateRegistrar.PrefabName;
@@ -57,6 +59,7 @@ internal static class UnderworldWorldCenterRegistrar
         _gateApproachDistance = 3f;
         foreach (var renderer in gate.GetComponentsInChildren<MeshRenderer>(true))
         {
+            if (!renderer.gameObject.activeInHierarchy) continue;
             var b = renderer.bounds;
             for (var x = -1; x <= 1; x += 2)
             for (var z = -1; z <= 1; z += 2)

@@ -102,7 +102,7 @@ internal static class UnderworldWorldgenContentBridge
             var rows = 0;
             foreach (var location in underworld.m_locations)
             {
-                if (location is null || !string.Equals(location.m_prefab.Name, boss.PrefabName, StringComparison.Ordinal)) continue;
+                if (location is null || !string.Equals(UnderworldZoneCatalogGuard.LocationName(location), boss.PrefabName, StringComparison.Ordinal)) continue;
                 if (location.m_biome != UnderworldTerrainRuntime.ToNativeBiome(boss.Family.Biome) || location.m_quantity != 1)
                     throw new InvalidOperationException("Underworld boss arena must be unique in its owning biome: " + boss.PrefabName);
                 rows++;
@@ -113,7 +113,7 @@ internal static class UnderworldWorldgenContentBridge
         var throneRows = 0;
         foreach (var location in underworld.m_locations)
         {
-            if (location is null || !string.Equals(location.m_prefab.Name,
+            if (location is null || !string.Equals(UnderworldZoneCatalogGuard.LocationName(location),
                 Magenheim.Core.DarkThrone.DarkThroneLocationCatalog.DarkThrone.PrefabName, StringComparison.Ordinal)) continue;
             if (location.m_biome != UnderworldTerrainRuntime.GreatDecayBiome || location.m_quantity != 1)
                 throw new InvalidOperationException("The Dark Throne must be unique and owned by Great Decay.");
@@ -151,7 +151,7 @@ internal static class UnderworldWorldgenContentBridge
             foreach (var location in underworld.m_locations)
             {
                 if (location is null) continue;
-                var name = location.m_prefab.Name ?? string.Empty;
+                var name = UnderworldZoneCatalogGuard.LocationName(location) ?? string.Empty;
                 if (string.Equals(name, dungeon.PrefabName, StringComparison.Ordinal))
                     matches.Add(location);
             }

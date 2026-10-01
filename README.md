@@ -2,7 +2,22 @@
 
 **Magic begins as geology.**
 
-## 0.0.161 integrated completion candidate
+## 0.0.162 runtime repair candidate
+
+Repairs the live 0.0.161 boot: scenery network component lifetime, disabled dungeon-room
+alternatives, child chunk-index admission, invalid soft-reference names, and stale scene view
+indexes. Null Gate alone seats its measured handle centre on the hand. Entry requires the
+vanilla final boss phase (defeated_frozenking_p3); gates generate in Mountains/Deep North
+at least 2.5 km from centre, and old misplaced owned sites migrate without resetting other
+locations or generated zones. Full native gate location cloning preserves exterior controls
+and effects when the installed location resolves; an explicit logged arch fallback remains
+for unresolved native location catalogs. Next-boot gate assembly acceptance is required.
+
+The separate Offline Companions inventory repair initializes the cloned grid drop delegate,
+which is missing in the currently installed DLL. Offline checks and installation hashes do
+not substitute for live visual, inventory, gate, or save/reload acceptance.
+
+## Previous 0.0.161 material comparison
 
 The follow-up comparison closes material-template bypasses in legacy Earth structures and
 single-mesh world structures. Fifteen mesh-effect material constructors and eight line-effect
@@ -18,8 +33,8 @@ keeps vanilla workbench colliders and placement mechanics. Earlier 0.0.159 log r
 Installation is authorized after the comparison/build checks; live visual acceptance needs a restart. The zero-asset-ID exception
 in ZoneSystem.Start remains unresolved. Native visual and placement acceptance is pending.
 
-The Deep Gate opens after the Surface Queen is defeated; existing worlds with a recorded Nowhere
-King victory retain access. New Dark Throne and royal boss-stone placement belongs to the native
+The Deep Gate opens after the final vanilla boss third phase is defeated. Queen and Nowhere
+King victories alone do not unlock entry. New Dark Throne and royal boss-stone placement belongs to the native
 Underworld Great Decay. The King becomes available after all six Deepstones have their trophies
 mounted and Deep Boons awakened. The final arena participates in native placement reconciliation
 without joining or replacing either dungeon architecture lane.

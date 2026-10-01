@@ -80,7 +80,7 @@ internal static class UnderworldZoneCatalogGuard
         {
             var location = surface.m_locations[i];
             if (location is null || !TouchesUnderworldBiome(location.m_biome)) continue;
-            var name = location.m_prefab.Name ?? string.Empty;
+            var name = UnderworldZoneCatalogGuard.LocationName(location) ?? string.Empty;
             if (!IsMagenheimOwned(name)) continue;
             if (!ContainsLocationReference(underworld, location))
                 throw new InvalidOperationException(
@@ -169,7 +169,7 @@ internal static class UnderworldZoneCatalogGuard
             if (location is null) continue;
             var rawMask = (int)location.m_biome;
             if (rawMask >= 0) continue;
-            var name = location.m_prefab.Name ?? string.Empty;
+            var name = UnderworldZoneCatalogGuard.LocationName(location) ?? string.Empty;
             if (IsMagenheimOwned(name)) continue;
             zoneSystem.m_locations.RemoveAt(i);
             removed++;
@@ -195,13 +195,16 @@ internal static class UnderworldZoneCatalogGuard
         foreach (var location in zoneSystem.m_locations)
         {
             if (location is null || !TouchesUnderworldBiome(location.m_biome)) continue;
-            var name = location.m_prefab.Name ?? string.Empty;
+            var name = UnderworldZoneCatalogGuard.LocationName(location) ?? string.Empty;
             if (IsMagenheimOwned(name)) continue;
             throw new InvalidOperationException(
                 $"Underworld biome-flag collision: location '{Display(name)}' explicitly claims Magenheim biome mask {(int)location.m_biome}. " +
                 "The Underworld instance will not start with ambiguous foreign biome ownership.");
         }
     }
+
+    internal static string LocationName(ZoneSystem.ZoneLocation location) =>
+        location.m_prefab.IsValid ? location.m_prefab.Name : location.m_prefabName ?? string.Empty;
 
     private static bool TouchesUnderworldBiome(Heightmap.Biome biome)
     {

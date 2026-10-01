@@ -1,4 +1,4 @@
 {
-  "version": "0.0.161",
-  "description": "0.0.161: Extends native material repair to legacy Earth structures, single-mesh world structures and generated effects; fixes unsupported particle materials. Includes native donor armor, bench placement and sword-only grip repairs."
+  "version": "0.0.162",
+  "description": "0.0.162: Repairs current-world scenery, dungeons, child saves and network views; corrects only Null Gate's grip. Final vanilla boss completion unlocks cold-biome gates, with owned site migration and native assembly cloning."
 }

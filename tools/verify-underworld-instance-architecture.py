@@ -160,7 +160,8 @@ REQUIRED_SNIPPETS = {
         "PreserveSharedSaveSnapshotDuringInstanceCleanup",
         "ValidateBoundNamespace",
         '"deferred:first-save"',
-        "BindParentSavePath(parentPath)",
+        "BindParentSavePath(parentPath, (FileHelpers.FileSource)args[1])",
+        "UnderworldNativeSaveNamespace.ChildDirectory(parentPath, _parentIsCloud == true)",
     ),
     RUNTIME / "UnderworldInstanceAdmissionAudit.cs": (
         "RequireDistinct(surface.World, underworld.World, \"World\")",

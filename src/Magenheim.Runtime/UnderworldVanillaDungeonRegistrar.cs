@@ -125,9 +125,11 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
                     throw new InvalidOperationException(
                         $"Vanilla dungeon room soft reference '{data.m_prefab.Name}' did not load.");
 
-                var clone = UnityEngine.Object.Instantiate(source);
+                // Clone under Jotunn's inactive container so nested ZNetViews cannot allocate
+                // live world ZDOs while this is still a room prototype.
                 var sourceName = data.m_prefab.Name;
-                clone.name = RoomPrefabName(profile, sourceName, index);
+                var clone = PrefabManager.Instance.CreateClonedPrefab(RoomPrefabName(profile, sourceName, index), source)
+                    ?? throw new InvalidOperationException("Could not clone donor room " + sourceName);
 
                 var room = clone.GetComponent<Room>()
                     ?? throw new InvalidOperationException(
@@ -531,6 +533,14 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         {
             if (roomNames.TryGetValue(required, out var replacement))
                 mapped.Add(replacement);
+            else if (DungeonDB.GetRooms().Any(data => data is not null && !data.m_enabled && data.m_prefab.IsValid &&
+                         string.Equals(data.m_prefab.Name, required, StringComparison.Ordinal)))
+            {
+                // Native required lists retain retired alternatives. Those rooms are absent
+                // from vanilla's enabled candidate pool too; retain the enabled alternatives
+                // and the original minimum rather than resurrecting disabled donor geometry.
+                _log.LogInfo($"{profile.DonorDisplayName}: retired required-room alternative '{required}' remains disabled.");
+            }
             else
                 missing.Add(required);
         }

@@ -28,6 +28,7 @@ internal static class UnderworldInstancePersistence
     private static ManualLogSource? _log;
     private static PendingLoad? _pendingLoad;
     private static string? _parentSavePath;
+    private static bool? _parentIsCloud;
     private static bool _freshNamespaceReady;
 
     internal static void Configure(UnderworldRuntimeServices services, ManualLogSource log)
@@ -40,6 +41,7 @@ internal static class UnderworldInstancePersistence
     {
         _pendingLoad = null;
         _parentSavePath = null;
+        _parentIsCloud = null;
         _freshNamespaceReady = false;
     }
 
@@ -49,11 +51,9 @@ internal static class UnderworldInstancePersistence
         if (string.IsNullOrWhiteSpace(parent))
             return "deferred:first-save";
 
-        var normalizedParent = Path.GetFullPath(parent);
+        var normalizedParent = UnderworldNativeSaveNamespace.NormalizeParent(parent!, _parentIsCloud == true);
         var instance = InstancePath(normalizedParent);
-        var prefix = normalizedParent.TrimEnd(
-            Path.DirectorySeparatorChar,
-            Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+        var prefix = normalizedParent.TrimEnd('/') + "/";
 
         if (!instance.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException(
@@ -92,8 +92,19 @@ internal static class UnderworldInstancePersistence
 
         _pendingLoad = null;
         var path = InstancePath(pending.ParentPath);
-        if (!Directory.Exists(path))
+        var fileSource = (FileHelpers.FileSource)pending.Arguments[1];
+        var chunkIndex = path + SaveSystem.MainChunksFileName(false);
+        if (!FileHelpers.Exists(chunkIndex, fileSource))
         {
+            // Zone metadata can create this directory before the first native chunk save.
+            // A directory alone is not a snapshot. Never silently replace orphaned chunk data.
+            var chunks = _parentIsCloud == true
+                ? FileHelpers.GetFiles(fileSource, path, ".chunk", "*")
+                : Directory.Exists(path) ? Directory.GetFiles(path, "*.chunk", SearchOption.AllDirectories) : Array.Empty<string>();
+            if (chunks is null)
+                throw new IOException("Unable to inspect existing Underworld chunk namespace: " + path);
+            if (chunks.Length > 0)
+                throw new InvalidOperationException("Underworld chunk index is missing but chunk data exists: " + path);
             _log?.LogInfo($"No persisted Underworld instance exists yet at '{path}'; starting a new instance namespace.");
             UnderworldZoneInstanceState.NotifyZdosLoaded();
             return;
@@ -113,7 +124,7 @@ internal static class UnderworldInstancePersistence
         // bind the Surface context. ZDOMan.instance is therefore the authoritative identification.
         if (ZDOMan.instance is not null && !ReferenceEquals(source, ZDOMan.instance)) return;
 
-        var boundParentPath = BindParentSavePath(parentPath);
+        var boundParentPath = BindParentSavePath(parentPath, (FileHelpers.FileSource)args[1]);
         _pendingLoad = new PendingLoad(
             (MethodInfo)original,
             boundParentPath,
@@ -142,8 +153,8 @@ internal static class UnderworldInstancePersistence
         if (!IsSurfaceInvocation(source) || args.Length == 0 || args[0] is not string parentPath) return;
         if (!TryGetUnderworld(out var context)) return;
 
-        var path = InstancePath(BindParentSavePath(parentPath));
-        Directory.CreateDirectory(path);
+        var path = InstancePath(BindParentSavePath(parentPath, (FileHelpers.FileSource)args[1]));
+        if (_parentIsCloud != true) Directory.CreateDirectory(path);
         InvokeSnapshotIo(context!, (MethodInfo)original, ReplacePath(args, path));
         _log?.LogDebug($"Saved Underworld instance ZDO chunks inside parent-save namespace '{path}'.");
     }
@@ -246,18 +257,23 @@ internal static class UnderworldInstancePersistence
         return copy;
     }
 
-    private static string BindParentSavePath(string parentPath)
+    private static string BindParentSavePath(string parentPath, FileHelpers.FileSource source)
     {
         if (string.IsNullOrWhiteSpace(parentPath))
             throw new InvalidOperationException("Valheim supplied an empty parent save path.");
 
-        var normalized = Path.GetFullPath(parentPath);
+        var cloud = source == FileHelpers.FileSource.Cloud ||
+            (source == FileHelpers.FileSource.Auto && FileHelpers.CloudStorageSupportedAndEnabled);
+        if (_parentIsCloud.HasValue && _parentIsCloud.Value != cloud)
+            throw new InvalidOperationException("Parent save storage mode changed inside an active world session.");
+        var normalized = UnderworldNativeSaveNamespace.NormalizeParent(parentPath, cloud);
         if (!string.IsNullOrWhiteSpace(_parentSavePath) &&
             !string.Equals(_parentSavePath, normalized, StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException(
                 $"Valheim parent-save path changed inside one active world session: '{_parentSavePath}' -> '{normalized}'.");
 
         _parentSavePath = normalized;
+        _parentIsCloud = cloud;
         return normalized;
     }
 
@@ -266,12 +282,7 @@ internal static class UnderworldInstancePersistence
         if (string.IsNullOrWhiteSpace(parentPath))
             throw new InvalidOperationException("Valheim supplied an empty parent save path.");
 
-        var parent = Path.GetFullPath(parentPath);
-        var instance = Path.GetFullPath(Path.Combine(parent, InstanceDirectoryName, UnderworldDirectoryName));
-        var prefix = parent.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
-        if (!instance.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-            throw new InvalidOperationException("Underworld persistence escaped the parent world save directory.");
-        return instance;
+        return UnderworldNativeSaveNamespace.ChildDirectory(parentPath, _parentIsCloud == true);
     }
 
     internal static bool AllowSharedStaticReset() =>
@@ -342,7 +353,9 @@ internal static class UnderworldInstancePersistence
             // pure persistence work against this detached manager. Do not enter the normal instance
             // execution scope here: that would call Unity SceneManager APIs and rewrite live
             // process-wide world singletons from a worker thread.
-            method.Invoke(context.ZdoMan, arguments);
+            var result = method.Invoke(context.ZdoMan, arguments);
+            if (method.ReturnType == typeof(bool) && result is false)
+                throw new IOException("Native child snapshot write returned failure: " + method.Name);
         }
         catch (TargetInvocationException exception) when (exception.InnerException is not null)
         {

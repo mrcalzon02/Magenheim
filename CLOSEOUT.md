@@ -1,4 +1,23 @@
-# Material comparison and installation candidate - 0.0.161
+# Current runtime repair candidate - 0.0.162
+
+The completed 0.0.161 run contains 27,861 error headers, largely repeated scene-view
+and companion joystick failures. Repairs address the causes rather than hiding exceptions:
+inactive scenery construction, disabled native room alternatives, actual child chunk-index
+admission, guarded soft-reference names, and stale network-view index cleanup with ZDOs retained.
+Only Null Gate changes its grip: the measured handle centre replaces the unsuccessful trim.
+The companion payload initializes its cloned inventory controls and repairs eight joystick calls.
+
+Entry requires the final vanilla third-phase victory, verified from installed boss assets.
+Owned gate sites migrate to Mountains/Deep North beyond 2.5 km without resetting other sites
+or generated zones. The native gate location is cloned when the current catalog resolves it;
+the retained logged arch fallback means full assembly acceptance must be checked next boot.
+Compilation is clean. Full offline validation passed: 114,166 core assertions, 531 model
+payloads, 88 explicit patch targets, 23 dynamic resolvers and installed reflection contracts.
+Cloud/local path handling has twelve new regression checks. Installation receipts are recorded
+in the validation document. Live rendering, companion controls, gate assembly and save/reload
+remain pending.
+
+# Previous material comparison and installation - 0.0.161
 
 The user authorized installation after a comparison of generated weapons and structures.
 Legacy EarthAssets, single-mesh Underworld structures and 15 effect surface constructors now

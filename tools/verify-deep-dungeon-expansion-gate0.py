@@ -60,7 +60,7 @@ require("All.Any(value => value.Status != UnderworldDungeonStatus.RuntimeReady)"
 
 # Vanilla assets are cloned into private identities; they are never modified in place.
 for token in (
-    "UnityEngine.Object.Instantiate(source)",
+    "CreateClonedPrefab(RoomPrefabName(profile, sourceName, index), source)",
     "new CustomRoom(",
     "CreateClonedLocation(",
     "CreateClonedPrefab(",

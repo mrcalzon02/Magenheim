@@ -11,6 +11,7 @@ namespace Magenheim.Runtime;
 internal sealed class UnderworldDeepGateRegistrar : IDisposable
 {
     internal const string PrefabName = "Magenheim_DeepGate";
+    internal static GameObject? TraversalAssembly { get; set; }
     // Verified in the installed SoftRef manifest: Assets/world/Props/DeepNorth/LastBossGate/LastBossGate.prefab.
     private const string GateAssetId = "22a0a0b6f09802a0f861b9789a1bde32";
     private readonly ManualLogSource _log;
@@ -43,15 +44,8 @@ internal sealed class UnderworldDeepGateRegistrar : IDisposable
         if (!donor) throw new InvalidOperationException("Valheim could not load the LastBossGate asset.");
         var gate = PrefabManager.Instance.CreateClonedPrefab(PrefabName, donor);
         if (!gate) throw new InvalidOperationException("Could not clone the Aesir boss gate.");
-        // Copy the native geometry/materials unchanged. Remove boss/network/encounter authority
-        // from this local gate copy, before it can spawn. Never tint the native materials purple.
-        foreach (var component in gate.GetComponentsInChildren<Component>(true).Reverse())
-        {
-            if (!component || component is Transform || component is MeshFilter || component is Renderer ||
-                component is LODGroup || component is Collider || component is Light || component is ParticleSystem)
-                continue;
-            UnityEngine.Object.DestroyImmediate(component);
-        }
+        // Preserve the native components too, including LodFadeInOut and animation/effects.
+        // The complete cold-biome location assembly is bound by the location registrar.
         var renderers = gate.GetComponentsInChildren<Renderer>(true).Where(r => r is not ParticleSystemRenderer).ToArray();
         if (renderers.Length == 0) throw new InvalidOperationException("Aesir gate contains no renderers.");
         // Imported gate geometry is offset inside its mesh. Normalize its visible foot, not just

@@ -28,7 +28,7 @@ catalog=(CORE/"UnderworldDungeonCatalog.cs").read_text()
 
 # Gate 2 — vanilla isolation.
 for token,label in (
-    ("UnityEngine.Object.Instantiate(source)","private donor-room clone"),
+    ("CreateClonedPrefab(RoomPrefabName(profile, sourceName, index), source)","inactive private donor-room clone"),
     ("new CustomRoom(","Magenheim-owned room registration"),
     ("CreateClonedLocation(","Magenheim-owned location clone"),
     ("CreateClonedPrefab(","Magenheim-owned door clone"),

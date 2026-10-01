@@ -152,7 +152,6 @@ internal static class HeldModelAlignment
         ["crystal-weapon-knife"] = new ModelTrim(Vector3.zero, new Vector3(0f, 0f, .15f)),
         ["crystal-weapon-atgeir"] = new ModelTrim(Vector3.zero, new Vector3(0f, 0f, .08f)),
         ["crystal-weapon-spear"] = new ModelTrim(new Vector3(180f, 0f, 0f), new Vector3(0f, 0f, .296f)),
-        ["nowhere-king-sword-null-gate"] = new ModelTrim(Vector3.zero, new Vector3(0f, 0f, .035f)),
     };
 
     /// <summary>A trim entry. Explicitly not a tuple: Magenheim.Runtime has no System.ValueTuple.</summary>
@@ -272,6 +271,17 @@ internal static class HeldModelAlignment
         {
             root.transform.localRotation = Quaternion.Euler(trim.Rotation) * root.transform.localRotation;
             root.transform.localPosition += trim.Offset;
+        }
+
+        if (id == "nowhere-king-sword-null-gate")
+        {
+            // This hilt's grip spans authored Y=-.478..-.072; the origin is above its guard.
+            // Seat the actual grip centre on the hand after rotation, not a guessed axis trim.
+            var grip = root.GetComponentsInChildren<MeshFilter>(true)
+                .FirstOrDefault(filter => filter.name == "grip" && filter.sharedMesh);
+            if (grip is null || !grip) throw new InvalidOperationException("Null Gate has no authored grip mesh.");
+            root.transform.localPosition -= attach.InverseTransformPoint(
+                grip.transform.TransformPoint(grip.sharedMesh.bounds.center));
         }
 
         TryMeasureBounds(attach, root.GetComponentsInChildren<Renderer>(true), root.transform, null, out var seated);

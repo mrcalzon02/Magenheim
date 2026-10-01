@@ -30,9 +30,9 @@ internal static class UnderworldProgressionAuthority
     private static bool ReadUnlocked()
     {
         var zone = ZoneSystem.instance;
-        if (zone == null || !TryResolveIdentity(out var identity)) return false;
-        TryMigrateLegacyState(zone, identity!);
-        return zone.GetGlobalKey("defeated_queen") || zone.GetGlobalKey(ScopedNowhereKingDefeatedKey(identity!));
+        // Verified from installed FrozenKing_p3.prefab Character.m_defeatSetGlobalKey.
+        // Phase one sets defeated_frozenking; only phase three completes the vanilla finale.
+        return zone != null && zone.GetGlobalKey("defeated_frozenking_p3");
     }
 
     internal static bool UnlockFromNowhereKingVictory()
@@ -54,7 +54,8 @@ internal static class UnderworldProgressionAuthority
         return true;
     }
 
-    internal static bool CanUse(UnderworldGateEndpoint endpoint) => endpoint != null && IsUnlocked;
+    internal static bool CanUse(UnderworldGateEndpoint endpoint) => endpoint != null &&
+        (endpoint.Role == UnderworldGateRole.ReturnToSurface || IsUnlocked);
 
     /// <summary>Adds the local player's surface Deep Gate pin after the durable unlock is visible.</summary>
     internal static void EnsureSurfaceGatePin(Vector3 gatePosition)
