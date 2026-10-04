@@ -8,7 +8,7 @@ New references are proposals pending user review. Previously adopted creature sh
 
 | Sheet | Named members |
 |---|---|
-| [Fungal Forest — gathered to worked materials](fungal-materials.png) | Worldroot Timber; Glowcap Flesh; Spire Fibre; Understone; Worldroot Plank; Spire Cord; Cured Glowcap |
+| [Fungal Forest — gathered to worked materials](fungal-materials--v2.png) | Worldroot Timber; Glowcap Flesh; Spire Fibre; Understone; Worldroot Plank; Spire Cord; Cured Glowcap |
 | [Blackwater Deep — gathered to worked materials](blackwater-materials--v2.png) | Blackwater Flowstone; Pale Fibre; Blackwater Pearl; Deep Salt; Flowstone Plate; Pale Cord; Brined Pearl |
 | [Sulfurous Wastes — gathered to worked materials](sulfur-materials--v2.png) | Slagstone; Sulfur; Charred Timber; Emberiron; Emberiron Bar; Tempered Slag; Charred Root Grip |
 | [Frozen Caverns — gathered to worked materials](frozen-materials--v2.png) | Rimewood; Clear Ice; Rimesilver; Rimesilver Bar; Iceglass Lens; Rimewood Laminate |
@@ -30,7 +30,7 @@ New references are proposals pending user review. Previously adopted creature sh
 
 | Sheet | Named members |
 |---|---|
-| [Worldroot Club; Worldroot Bow — Underworld derivatives](fungal-weapon-variants.png) | Worldroot Club; Worldroot Bow |
+| [Worldroot Club; Worldroot Bow — Underworld derivatives](fungal-weapon-variants--v2.png) | Worldroot Club; Worldroot Bow |
 | [Flowstone Maul; Blackwater Harpoon — Underworld derivatives](blackwater-weapon-variants.png) | Flowstone Maul; Blackwater Harpoon |
 | [Emberiron Axe; Emberiron Greatsword — Underworld derivatives](sulfur-weapon-variants.png) | Emberiron Axe; Emberiron Greatsword |
 | [Rimesilver Spear; Icebind Staff — Underworld derivatives](frozen-weapon-variants.png) | Rimesilver Spear; Icebind Staff |
@@ -41,7 +41,7 @@ New references are proposals pending user review. Previously adopted creature sh
 
 | Sheet | Named members |
 |---|---|
-| [Mycelial Bench — working process](fungal-station.png) | Mycelial Bench |
+| [Mycelial Bench — working process](fungal-station--v2.png) | Mycelial Bench |
 | [Tidal Basin — working process](blackwater-station.png) | Tidal Basin |
 | [Furnace Heart Forge — working process](sulfur-station.png) | Furnace Heart Forge |
 | [Silence Table — working process](frozen-station.png) | Silence Table |
@@ -52,7 +52,7 @@ New references are proposals pending user review. Previously adopted creature sh
 
 | Sheet | Named members |
 |---|---|
-| [Sporelight Lantern — functional construction](fungal-tool.png) | Sporelight Lantern |
+| [Sporelight Lantern — functional construction](fungal-tool--v2.png) | Sporelight Lantern |
 | [Diving Bell Hood — functional construction](blackwater-tool.png) | Diving Bell Hood |
 | [Slag Pick — functional construction](sulfur-tool.png) | Slag Pick |
 | [Rime Chisel — functional construction](frozen-tool.png) | Rime Chisel |

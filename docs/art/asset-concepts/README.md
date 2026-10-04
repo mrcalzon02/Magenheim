@@ -27,7 +27,9 @@ fibres and palette across those uses. A Worldroot weapon fitting should look
 made from the Worldroot plank on the bench and related to the harvested trunk.
 Processing changes shape and surface finish, rather than simply increasing glow.
 
-Fungal Forest uses fibrous root, waxy fungal tissue and woven pale cord.
+Fungal Forest uses pale ivory exposed Worldroot flesh, weathered dark exterior
+bark, waxy fungal tissue and woven pale cord. Neutral inspection light must
+show that intrinsic pale wood color; warm illumination can tint it in-world.
 Blackwater uses wet layered stone, nacre, salt and water-shedding fibre.
 Sulfur uses pitted slag, charred root and hammered dark iron. Frozen Caverns
 uses frosted silver, laminated pale root and clear directional ice fractures.

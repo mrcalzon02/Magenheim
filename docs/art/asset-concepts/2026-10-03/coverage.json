@@ -2291,7 +2291,7 @@
     {
       "model_id": "underworld-refined-cured-glowcap",
       "status": "proposed-family",
-      "reference": "fungal-materials.png"
+      "reference": "fungal-materials--v2.png"
     },
     {
       "model_id": "underworld-refined-emberiron-bar",
@@ -2346,7 +2346,7 @@
     {
       "model_id": "underworld-refined-spire-cord",
       "status": "proposed-family",
-      "reference": "fungal-materials.png"
+      "reference": "fungal-materials--v2.png"
     },
     {
       "model_id": "underworld-refined-tempered-slag",
@@ -2361,7 +2361,7 @@
     {
       "model_id": "underworld-refined-worldroot-plank",
       "status": "proposed-family",
-      "reference": "fungal-materials.png"
+      "reference": "fungal-materials--v2.png"
     },
     {
       "model_id": "underworld-resource-blackwater-flowstone",
@@ -2416,7 +2416,7 @@
     {
       "model_id": "underworld-resource-glowcap-flesh",
       "status": "proposed-family",
-      "reference": "fungal-materials.png"
+      "reference": "fungal-materials--v2.png"
     },
     {
       "model_id": "underworld-resource-pale-fibre",
@@ -2451,7 +2451,7 @@
     {
       "model_id": "underworld-resource-spire-fibre",
       "status": "proposed-family",
-      "reference": "fungal-materials.png"
+      "reference": "fungal-materials--v2.png"
     },
     {
       "model_id": "underworld-resource-sulfur",
@@ -2466,12 +2466,12 @@
     {
       "model_id": "underworld-resource-understone",
       "status": "proposed-family",
-      "reference": "fungal-materials.png"
+      "reference": "fungal-materials--v2.png"
     },
     {
       "model_id": "underworld-resource-worldroot-timber",
       "status": "proposed-family",
-      "reference": "fungal-materials.png"
+      "reference": "fungal-materials--v2.png"
     },
     {
       "model_id": "underworld-standing-stone",
@@ -2496,7 +2496,7 @@
     {
       "model_id": "underworld-station-mycelial-bench",
       "status": "proposed-family",
-      "reference": "fungal-station.png"
+      "reference": "fungal-station--v2.png"
     },
     {
       "model_id": "underworld-station-silence-table",
@@ -2596,7 +2596,7 @@
     {
       "model_id": "underworld-tool-sporelight-lantern",
       "status": "proposed-family",
-      "reference": "fungal-tool.png"
+      "reference": "fungal-tool--v2.png"
     },
     {
       "model_id": "underworld-weapon-amber-blade",
@@ -2651,12 +2651,12 @@
     {
       "model_id": "underworld-weapon-worldroot-bow",
       "status": "proposed-family",
-      "reference": "fungal-weapon-variants.png"
+      "reference": "fungal-weapon-variants--v2.png"
     },
     {
       "model_id": "underworld-weapon-worldroot-club",
       "status": "proposed-family",
-      "reference": "fungal-weapon-variants.png"
+      "reference": "fungal-weapon-variants--v2.png"
     }
   ],
   "non_model_foods": [

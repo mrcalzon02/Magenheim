@@ -105,3 +105,15 @@ red lighting in the supplied hall image. The illustrated meter labels are
 proposals, not measured dimensions. Foundation relief uses owned texture maps
 for fine detail while retaining broad stepped stone mass and metal interfaces.
 See rootforged-foundation-receipts.json for the complete edit chain.
+
+## Worldroot material consistency
+
+The Fungal resource, derivative weapon, Mycelial Bench and Sporelight Lantern
+sheets now agree on pale ivory exposed Worldroot wood flesh. Raw bark can remain
+dark and weathered. Wood grain, wear and carved surface detail remain visible.
+These are material corrections, not approved changes to weapon base geometry.
+Spire Cord uses gathered Spirestalk fibre, never fibre extracted from Worldroot.
+The revised bench process label reflects this; disregard its remaining small
+root-clamp annotation mentioning fibre extraction. The clamp shapes timber.
+Registered recipe costs remain authoritative; imagery explains preparation only.
+Full prompts and selected hashes are in worldroot-material-receipts.json.

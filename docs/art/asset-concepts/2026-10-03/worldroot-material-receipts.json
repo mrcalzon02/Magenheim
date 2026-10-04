@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-03",
+  "mode": "built-in imagegen",
+  "outputs": [
+    {
+      "id": "fungal-materials",
+      "prompt": "Use case: precise-object-edit. Magenheim Fungal Forest concept sheet material consistency correction. Preserve this exact sheet layout, object silhouettes, functions, neutral parchment style and named materials. Exposed Worldroot wood FLESH is pale ivory-white, analogous to exposed birch wood, with grey-beige fibrous grain and worn seams; remove golden amber/brown/red from exposed timber and worked Worldroot Plank. Raw root can retain a thin weathered dark bark exterior, but broken/cut interior is unmistakably pale ivory. Do not confuse warm scene lighting with intrinsic wood color. No smooth marble, no bone, no painted plastic, no black-spotted birch bark. Keep Glowcap moss-green fleshy mushroom tissue, Spire fibres pale woven fibres, Understone grey stone and metals dark. No glow increase, no new objects, no geometry change. Correct ONLY Worldroot Timber's exposed broken inner wood, its wood swatches, and Worldroot Plank stock and corresponding closeups. Replace the annotation 'amber core' with 'pale ivory core'. Preserve raw dark bark and moss, all other resource samples, transformation arrows and labels.",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-093070b4-e5f1-4dd8-aadc-ecc8e17ac394.png",
+      "file": "fungal-materials--v2.png",
+      "selected": true,
+      "sha256": "a2393c2ac5a700870b4b86c6839feb11e1b4df81f36ce81b90878d0e2a5e2345",
+      "superseded": "drafts/fungal-materials.png"
+    },
+    {
+      "id": "fungal-weapon-variants",
+      "prompt": "Use case: precise-object-edit. Magenheim Fungal Forest concept sheet material consistency correction. Preserve this exact sheet layout, object silhouettes, functions, neutral parchment style and named materials. Exposed Worldroot wood FLESH is pale ivory-white, analogous to exposed birch wood, with grey-beige fibrous grain and worn seams; remove golden amber/brown/red from exposed timber and worked Worldroot Plank. Raw root can retain a thin weathered dark bark exterior, but broken/cut interior is unmistakably pale ivory. Do not confuse warm scene lighting with intrinsic wood color. No smooth marble, no bone, no painted plastic, no black-spotted birch bark. Keep Glowcap moss-green fleshy mushroom tissue, Spire fibres pale woven fibres, Understone grey stone and metals dark. No glow increase, no new objects, no geometry change. Correct ONLY Worldroot exposed wood and plank swatches across Worldroot Club and Bow; preserve all fittings, cord bindings, grips, head/limb shapes and existing study views. This is material direction only; approved native source ancestry and base dimensions remain authoritative.",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-0e3f8d47-3bc3-411a-a809-49ca0fb3ca42.png",
+      "file": "fungal-weapon-variants--v2.png",
+      "selected": true,
+      "sha256": "a451c804de50660181ce4fc823cd2bb811f5ce31da1fb1080681ad641ddfa921",
+      "superseded": "drafts/fungal-weapon-variants.png"
+    },
+    {
+      "id": "fungal-station",
+      "prompt": "Use case: precise-object-edit. Magenheim Fungal Forest concept sheet material consistency correction. Preserve this exact sheet layout, object silhouettes, functions, neutral parchment style and named materials. Exposed Worldroot wood FLESH is pale ivory-white, analogous to exposed birch wood, with grey-beige fibrous grain and worn seams; remove golden amber/brown/red from exposed timber and worked Worldroot Plank. Raw root can retain a thin weathered dark bark exterior, but broken/cut interior is unmistakably pale ivory. Do not confuse warm scene lighting with intrinsic wood color. No smooth marble, no bone, no painted plastic, no black-spotted birch bark. Keep Glowcap moss-green fleshy mushroom tissue, Spire fibres pale woven fibres, Understone grey stone and metals dark. No glow increase, no new objects, no geometry change. Correct exposed wood in the bench, boards, posts, spool, cutaway and Worldroot inputs/outputs to pale ivory-white while retaining work stains and weathering. Preserve clamp, drying rack, accessible work area and geometry. Correct the inaccurate label 'Clean and extract spire fibre from worldroot' to 'Clean and prepare Spire Fibre'; the fibre is gathered from Spirestalks, not Worldroot. Root clamp holds timber for cleaning and shaping. Do not depict extraction of Spire Fibre from Worldroot.",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-3ca60ba0-152b-4bb7-a71f-00bf64426c3d.png",
+      "file": "fungal-station--v2.png",
+      "selected": true,
+      "sha256": "3189a8d1c211168936a697842f0fec5fceb109471f9d9bf468d0c49eed9446a4",
+      "superseded": "drafts/fungal-station.png"
+    },
+    {
+      "id": "fungal-tool",
+      "prompt": "Use case: precise-object-edit. Magenheim Fungal Forest concept sheet material consistency correction. Preserve this exact sheet layout, object silhouettes, functions, neutral parchment style and named materials. Exposed Worldroot wood FLESH is pale ivory-white, analogous to exposed birch wood, with grey-beige fibrous grain and worn seams; remove golden amber/brown/red from exposed timber and worked Worldroot Plank. Raw root can retain a thin weathered dark bark exterior, but broken/cut interior is unmistakably pale ivory. Do not confuse warm scene lighting with intrinsic wood color. No smooth marble, no bone, no painted plastic, no black-spotted birch bark. Keep Glowcap moss-green fleshy mushroom tissue, Spire fibres pale woven fibres, Understone grey stone and metals dark. No glow increase, no new objects, no geometry change. Correct Worldroot lantern cage, top handle, cap, material sample and all closeups to pale ivory-white exposed wood with local dark weathering only. Keep the TOP-handle carry contract, all silhouettes and subdued protected fungal light unchanged. Handling studies remain illustrative, not a new rig.",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-cc916efe-ea87-4648-a939-099cff4309ac.png",
+      "file": "fungal-tool--v2.png",
+      "selected": true,
+      "sha256": "05866d679f137be59d6341d6c7ecd46cbc5f0b4b3817508c1a51dc68a68c49e2",
+      "superseded": "drafts/fungal-tool.png"
+    }
+  ],
+  "scope": "Material/annotation concept corrections; approved weapon geometry remains authoritative."
+}
