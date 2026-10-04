@@ -1,0 +1,319 @@
+{
+  "generator": "built-in imagegen",
+  "initial": [
+    {
+      "name": "Crowncap Brute",
+      "file": "crowncap-brute.png",
+      "status": "generated",
+      "source": "C:/Users/Admin/.codex/generated_images/01a0fdda-10ea-7ef1-9896-e6775421bc1b/exec-ec673d07-a4ff-415a-ba2e-c525e50dc1bd.png"
+    },
+    {
+      "name": "The First Bloom",
+      "file": "the-first-bloom.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-a35fd8a5-5eb8-430b-b27d-466363759928.png"
+    },
+    {
+      "name": "Deep Hunter",
+      "file": "deep-hunter.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-c3c81593-d310-4ecf-8654-355fa781b0cc.png"
+    },
+    {
+      "name": "The Blackwater Maw",
+      "file": "the-blackwater-maw.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-149cf050-abc7-45d1-9777-cf111abc68a6.png"
+    },
+    {
+      "name": "Furnace Golem",
+      "file": "furnace-golem.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-9c06693b-5790-4734-b73c-0495ddb80087.png"
+    },
+    {
+      "name": "The Furnace Heart",
+      "file": "the-furnace-heart.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-46667a4c-15ee-4e41-b697-fd10151c4bca.png"
+    },
+    {
+      "name": "Cryolith Guardian",
+      "file": "cryolith-guardian.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-658ae44c-e1cb-43b1-9686-4439fb5296f1.png"
+    },
+    {
+      "name": "The White Silence",
+      "file": "the-white-silence.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-1519d6d8-c02e-4f20-8c91-d8821d7078d3.png"
+    },
+    {
+      "name": "Rift Colossus",
+      "file": "rift-colossus.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-6ac99b3e-3fb5-45c4-b43b-a05515f83dad.png"
+    },
+    {
+      "name": "The Rift Titan",
+      "file": "the-rift-titan.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-354cdb49-5a44-404e-850e-9040dfb97557.png"
+    },
+    {
+      "name": "Corpse Orchard",
+      "file": "corpse-orchard.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-4cc216d3-f927-411b-8fca-1b3cd005d35a.png"
+    },
+    {
+      "name": "The Carrion Crown",
+      "file": "the-carrion-crown.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-8a1ea575-89db-4e5e-a3f1-fac4b57483f2.png"
+    },
+    {
+      "name": "Graft Warden",
+      "file": "graft-warden.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-9b3c7450-7694-4e34-92c7-92805e99cede.png"
+    },
+    {
+      "name": "Abyss Shellback",
+      "file": "abyss-shellback.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-3d837cf3-3ca9-4232-bc52-7f94a63402de.png"
+    },
+    {
+      "name": "Puffback",
+      "file": "puffback.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-31da06ef-2bb1-49e8-b790-68b0af025101.png"
+    },
+    {
+      "name": "Shelf Lurker",
+      "file": "shelf-lurker.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-e9485d88-7cbc-44e2-b5bf-fe63d0d7cb19.png"
+    },
+    {
+      "name": "Lantern Moth",
+      "file": "lantern-moth.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-72658e1d-e9a2-4562-84d1-8806fcba3013.png"
+    },
+    {
+      "name": "Sporeling",
+      "file": "sporeling.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-6e2af033-30c9-41da-88bf-1d5ca60d053a.png"
+    },
+    {
+      "name": "Capcrawler",
+      "file": "capcrawler.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-366f0600-cf49-4863-b3a7-3ec6254e0dc1.png"
+    },
+    {
+      "name": "Mycelial Stalker",
+      "file": "mycelial-stalker.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-bd989d93-6c3b-4d6b-aaf2-b17e92da9bc9.png"
+    },
+    {
+      "name": "Cave Ray",
+      "file": "cave-ray.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-c9bb99d2-fdd2-41a9-ba67-ba6025b7da00.png"
+    },
+    {
+      "name": "Gloomfin",
+      "file": "gloomfin.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-0102944e-5f0b-4cd0-9359-e2460d175aa2.png"
+    },
+    {
+      "name": "Blackwater Lamprey",
+      "file": "blackwater-lamprey.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-6ffb8d66-c269-4cc0-924d-abd9dda1ff68.png"
+    },
+    {
+      "name": "Shoreclaw",
+      "file": "shoreclaw.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-8dc0d277-b720-4bdb-bf08-3bc62ecdd78b.png"
+    },
+    {
+      "name": "Lantern Angler",
+      "file": "lantern-angler.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-737f1f71-6f68-4c19-8afd-b5913773c8ac.png"
+    },
+    {
+      "name": "Ashmite",
+      "file": "ashmite.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-559ce1b2-5f4e-45ec-9e41-9e0d7029564d.png"
+    },
+    {
+      "name": "Cinder Hound",
+      "file": "cinder-hound.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-d5ded079-ef5c-4c40-9a48-1891c36c577b.png"
+    },
+    {
+      "name": "Basalt Crawler",
+      "file": "basalt-crawler.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-3dd279da-6111-4d5e-a1dd-e02dd87fdfc8.png"
+    },
+    {
+      "name": "Vent Spitter",
+      "file": "vent-spitter.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-31a3090a-c7cd-495a-8383-4a17f8a5751a.png"
+    },
+    {
+      "name": "Fume Wraith",
+      "file": "fume-wraith.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-80c5328f-fdd1-4125-807b-fefeb02d89fe.png"
+    },
+    {
+      "name": "Magma Leaper",
+      "file": "magma-leaper.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-3f05391d-2171-4a2e-b02e-e02865d0e1ca.png"
+    },
+    {
+      "name": "Rime Moth",
+      "file": "rime-moth.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-d674bbf0-8680-447b-a617-c0e0157bcf48.png"
+    },
+    {
+      "name": "Frost Tick",
+      "file": "frost-tick.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-1dfd2ce7-8c15-4c79-9c90-55f991d1656b.png"
+    },
+    {
+      "name": "Iceblind",
+      "file": "iceblind.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-f85678c8-3dcd-412c-80bd-157ea7071dfe.png"
+    },
+    {
+      "name": "Pale Burrower",
+      "file": "pale-burrower.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-b2f9fa71-26c2-4994-92cc-7799c5ddf6e2.png"
+    },
+    {
+      "name": "Rimewing",
+      "file": "rimewing.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-292d5cf7-625c-47e2-9610-29563bfcd0d5.png"
+    },
+    {
+      "name": "Glacier Stalker",
+      "file": "glacier-stalker.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-7bd74587-9348-4f3a-84b2-5d649884b2ba.png"
+    },
+    {
+      "name": "Fracture Wisp",
+      "file": "fracture-wisp.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-28a5abde-c76b-4455-ba02-34b3f801d94f.png"
+    },
+    {
+      "name": "Rift Skitter",
+      "file": "rift-skitter.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-7ffa6c90-8016-4537-babb-09f726904ffc.png"
+    },
+    {
+      "name": "Shardwing",
+      "file": "shardwing.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-64eb8435-a91b-4e9a-9102-6d1820a07df3.png"
+    },
+    {
+      "name": "Gravity Leech",
+      "file": "gravity-leech.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-51504fd8-74db-4788-9626-b550b5f00abc.png"
+    },
+    {
+      "name": "Chasm Stalker",
+      "file": "chasm-stalker.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-187fce51-8ea4-4e54-ae44-4668f75d23e3.png"
+    },
+    {
+      "name": "Stonebound",
+      "file": "stonebound.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-adf773d9-438f-48fc-991e-9524eb080858.png"
+    },
+    {
+      "name": "Rotling",
+      "file": "rotling.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-240d4d16-2d86-4035-8979-97f9c4bc2465.png"
+    },
+    {
+      "name": "Carrion Bloom",
+      "file": "carrion-bloom.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-d2ecb81f-3433-4f3a-b069-6c5af07874e1.png"
+    },
+    {
+      "name": "Spore Husk",
+      "file": "spore-husk.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-e137240a-03cd-4f4f-b91d-47409b6f4f9b.png"
+    },
+    {
+      "name": "Marrow Creeper",
+      "file": "marrow-creeper.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-44ca7958-ba93-48df-bb44-16179521930e.png"
+    },
+    {
+      "name": "Decay Hound",
+      "file": "decay-hound.png",
+      "status": "generated",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-0423f28f-a3be-473a-a3a0-237dbc83f242.png"
+    }
+  ],
+  "refinements": [
+    {
+      "name": "Abyss Shellback",
+      "file": "abyss-shellback--v2.png",
+      "source": "abyss-shellback.png",
+      "prompt": "Edit this creature concept sheet. Preserve exact title 'ABYSS SHELLBACK', Blackwater palette, barnacled weathered layered shell material, dark grey sheet background, studio lighting, main three-quarter view, smaller front and side structural views and underside close-up. Change BODY PLAN consistently in ALL views: a very heavy low horizontal amphibious shellback arthropod, four stout weight-bearing walking legs in two pairs PLUS two independent massive front pincers, six total articulated limbs. Its broad overlapping shell dome dominates the back and hides a low recessed head. Body length 3–4.5m, low center of mass, guard/brace anatomy, vulnerable flesh underneath and at limb joints. Clearly different from the taller upright Shoreclaw. No upright humanoid torso, no biped stance, no raised human shoulders. Large heavy shell silhouette, not a small recolored crab. Retain restrained light organs; no invented words.",
+      "status": "generated",
+      "generatedSource": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-072cf4c9-53e4-4ff5-aff7-42a8b9a6c7f2.png"
+    },
+    {
+      "name": "Gravity Leech",
+      "file": "gravity-leech--v2.png",
+      "source": "gravity-leech.png",
+      "prompt": "Edit this creature concept sheet to correct its body plan. Preserve exact title 'GRAVITY LEECH', layered grey-violet stone and restrained purple mineral accents, dark background, coherent main three-quarter/front/side structural views and a physical expansion sequence. Replace the crab-like biped/insect body consistently in ALL views with an elongated flexible annulated leech, 0.8–1.3m long, horizontal coiled segmented worm body, no long walking legs, no humanoid shoulders, no scorpion tail. Mineral annuli articulate along the body; short radial gripping hooks around annuli and a circular radial tooth/sucker mouth at the leading end let it cling to stone. Expanded midbody field organ opens as a ring of interlocking mineral plates to telegraph pull-field activation. Show this organ closed then expanded in the small sequence. This is a leech-shaped segmented crawler, NOT a crab, spider or floating humanoid. Make all anatomical views consistent and preserve modelable low-poly and painted-material visual language.",
+      "status": "generated",
+      "generatedSource": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-d9fb39a9-5ecb-43d0-bf14-1e3204609554.png"
+    },
+    {
+      "name": "Rotling",
+      "file": "rotling--v2.png",
+      "source": "rotling.png",
+      "prompt": "Edit this creature concept sheet to correct its locomotion anatomy. Preserve exact title 'ROTLING', rotwood/bone/olive biomass/carrion-amber palette, dark grey background and full main/structural views with scale reference. Replace the humanoid body consistently in ALL views with a SMALL LOW SIX-LEGGED SWARM SCAVENGER 0.45–0.7m long. Exactly six articulated grasping insect-like legs in three pairs, all attached along a low asymmetric compact segmented biomass body. Head at front with biting mandibles, visibly flexible swollen scavenger abdomen, integrated bone splinters and fibrous decaying tissue. No humanoid face, no shoulders, no upright torso, no biped legs, no arms or hands. Side view must visibly show three leg pairs and low abdomen. Human scale silhouette must dwarf this creature. Distinct from the larger long-legged bone-supported Marrow Creeper: Rotling is compact, bloated, asymmetric and scuttling. All views same creature; no new labels other than title.",
+      "status": "generated",
+      "generatedSource": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-dad3b41f-e677-4b4a-b88b-d00dbfbf11b0.png"
+    }
+  ]
+}
