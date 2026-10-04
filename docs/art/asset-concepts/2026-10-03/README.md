@@ -1,6 +1,6 @@
 # Asset reference run — 3 October 2026
 
-63 / 63 sheets generated with built-in imagegen. [Review gallery](gallery.html) · [Design guide](../README.md) · [Coverage ledger](coverage.md) · [Exact prompts](prompts.json)
+64 / 64 sheets generated with built-in imagegen. [Review gallery](gallery.html) · [Design guide](../README.md) · [Coverage ledger](coverage.md) · [Exact prompts](prompts.json)
 
 New references are proposals pending user review. Previously adopted creature sheets and approved weapon bases retain their status.
 
@@ -104,10 +104,11 @@ New references are proposals pending user review. Previously adopted creature sh
 
 | Sheet | Named members |
 |---|---|
-| [Rootforged — joined building kit](rootforged-modular-kit--v2.png) | Worldroot building family; Rootforged arches; Understone foundation/stairs |
+| [Rootforged — joined building kit](rootforged-modular-kit--v5.png) | Worldroot building family; Rootforged arches; Understone foundation/stairs |
 | [Crystal structures — load paths and joints](crystal-building-kit.png) | Crystal architecture; Crystal wardstone; Crystal lighting; Crystal banners |
 | [Blackstone — civic and throne architecture](blackstone-architecture.png) | Blackstone architecture family; Dark throne |
 | [Deep Fractures — enclosed dungeon language](fracture-dungeon-kit.png) | DF-01 through DF-20; Deep Fracture entrance/passage/traversal; Deep Gate |
+| [Monumental Worldroot posts](rootforged-monumental-posts--v2.png) | Separate massive Worldroot post family; Embellished Understone pedestal interfaces |
 
 ## Furniture
 

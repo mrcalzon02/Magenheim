@@ -1,8 +1,8 @@
 {
-  "selected_targets": 63,
-  "unique_target_ids": 63,
-  "unique_selected_files": 63,
-  "unique_selected_image_hashes": 63,
+  "selected_targets": 64,
+  "unique_target_ids": 64,
+  "unique_selected_files": 64,
+  "unique_selected_image_hashes": 64,
   "adopted_creature_targets_reused": 48,
   "exact_creature_name_overlaps": [],
   "deep_fracture_rule": "One target per 13 chassis; eight elemental model versions reuse the chassis target.",

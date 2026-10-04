@@ -56,7 +56,17 @@ strands form beams, pillars, forked columns, braces, curved arch ribs and floor
 supports; the kit must not become ordinary sawn lumber. Natural curves occupy
 the span between deliberate connection endpoints. Bands bind the root bundles
 and Understone stays stone. Use a few thick silhouette strands and painted bark
-detail rather than dense thin tendrils.
+detail rather than dense thin tendrils. Horizontal beams are dense load-bearing
+wood masses with fused root contours, not open rails, lattice or fencing. Retain
+the current floor structure and underbeams; its walking face is flatter and calmer.
+
+Understone foundations and pillar plinths follow the supplied hall reference:
+massive dressed stone blocks, stepped feet/caps, recessed runic and interlace
+relief, and fitted dark metal borders and corner straps. The monumental Worldroot
+posts are a separate solid wood family mounting on those bases; they do not
+replace the entwined-root pillars. Their exposed wood is pale ivory-white, like
+birch wood flesh. The red seen in the source hall is warm illumination, not
+reddish timber albedo. Inspect this material under neutral lighting.
 
 Architecture uses repeatable, measured endpoints and a consistent attachment
 grid. Arches meet the grid on both feet; neighboring floor timbers meet at seams.

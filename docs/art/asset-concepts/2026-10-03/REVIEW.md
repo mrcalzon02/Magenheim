@@ -1,6 +1,6 @@
 # Reference review and selection
 
-This run extends the adopted creature library with 63 proposed sheets. It is a
+This run extends the adopted creature library with 64 proposed sheets. It is a
 design/reference pass only. No runtime models, textures, recipes, statistics,
 colliders, grips, generation rules or installed plugin files were changed.
 
@@ -89,3 +89,19 @@ Generated with built-in imagegen. Exact initial and refinement prompts, selected
 image hashes, source receipts, thumbnails, category overviews, ancestry and
 duplicate/coverage ledgers are stored alongside the full-size PNGs. New sheets
 are proposals pending review; the existing adopted targets keep their status.
+
+## Rootforged foundation and beam correction
+
+Selected kit v5 restores carved and metal-embellished Understone foundations.
+The floor retains its existing frame and underbeams, with a calmer fitted top.
+Horizontal root beams must read as dense load-bearing masses rather than railings.
+Minor illustrative view discrepancies (including end-foot details) are not
+authoritative: production beams have aligned ends and no attached pedestal feet.
+
+The monumental solid Worldroot posts are a separately selected supplemental
+family, not replacements for braided root pillars or a claim of new runtime
+registration. Their pale ivory-white wood flesh is authoritative over the warm
+red lighting in the supplied hall image. The illustrated meter labels are
+proposals, not measured dimensions. Foundation relief uses owned texture maps
+for fine detail while retaining broad stepped stone mass and metal interfaces.
+See rootforged-foundation-receipts.json for the complete edit chain.
