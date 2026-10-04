@@ -9,7 +9,7 @@ New references are proposals pending user review. Previously adopted creature sh
 | Sheet | Named members |
 |---|---|
 | [Fungal Forest — gathered to worked materials](fungal-materials--v2.png) | Worldroot Timber; Glowcap Flesh; Spire Fibre; Understone; Worldroot Plank; Spire Cord; Cured Glowcap |
-| [Blackwater Deep — gathered to worked materials](blackwater-materials--v2.png) | Blackwater Flowstone; Pale Fibre; Blackwater Pearl; Deep Salt; Flowstone Plate; Pale Cord; Brined Pearl |
+| [Blackwater Deep — gathered to worked materials](blackwater-materials--v3.png) | Blackwater Flowstone; Pale Fibre; Blackwater Pearl; Deep Salt; Flowstone Plate; Pale Cord; Brined Pearl |
 | [Sulfurous Wastes — gathered to worked materials](sulfur-materials--v2.png) | Slagstone; Sulfur; Charred Timber; Emberiron; Emberiron Bar; Tempered Slag; Charred Root Grip |
 | [Frozen Caverns — gathered to worked materials](frozen-materials--v2.png) | Rimewood; Clear Ice; Rimesilver; Rimesilver Bar; Iceglass Lens; Rimewood Laminate |
 | [Fracture Zones — gathered to worked materials](fracture-materials--v2.png) | Fracture Crystal; Shardstone; Titanbone; Titanbone Plate; Shardstone Block; Fracture Prism |
@@ -42,7 +42,7 @@ New references are proposals pending user review. Previously adopted creature sh
 | Sheet | Named members |
 |---|---|
 | [Mycelial Bench — working process](fungal-station--v2.png) | Mycelial Bench |
-| [Tidal Basin — working process](blackwater-station.png) | Tidal Basin |
+| [Tidal Basin — working process](blackwater-station--v2.png) | Tidal Basin |
 | [Furnace Heart Forge — working process](sulfur-station.png) | Furnace Heart Forge |
 | [Silence Table — working process](frozen-station.png) | Silence Table |
 | [Anchor Forge — working process](fracture-station.png) | Anchor Forge |
@@ -64,7 +64,7 @@ New references are proposals pending user review. Previously adopted creature sh
 | Sheet | Named members |
 |---|---|
 | [Fungal Forest — vegetation and deposits](fungal-ecology.png) | Glowcap; Spirestalk; Puffcap; Tanglecap; ferns; sporebrush; rootgrass; moss-stone |
-| [Blackwater Deep — vegetation and deposits](blackwater-ecology.png) | Palefinger; pearl caps; brine fern; submerged roots; flowstone spires; rimstone mound; silt ripples |
+| [Blackwater Deep — vegetation and deposits](blackwater-ecology--v2.png) | Palefinger; pearl caps; brine fern; submerged roots; flowstone spires; rimstone mound; silt ripples |
 | [Sulfurous Wastes — vegetation and deposits](sulfur-ecology.png) | Cinderstalk with felled trunk and stump; split/rootbound/crown geothermal vents; sulfur drift banks |
 | [Frozen Caverns — vegetation and deposits](frozen-ecology.png) | Rimecap; rime fans; frozen rootwood and ice/silver seam dressing |
 | [Fracture Zones — vegetation and deposits](fracture-ecology.png) | shale scree; exposed crystal seam; Titanbone deposit and fractured mineral outcrops |

@@ -117,3 +117,32 @@ The revised bench process label reflects this; disregard its remaining small
 root-clamp annotation mentioning fibre extraction. The clamp shapes timber.
 Registered recipe costs remain authoritative; imagery explains preparation only.
 Full prompts and selected hashes are in worldroot-material-receipts.json.
+
+## Blackwater concept review
+
+Three existing sheets were refined, without adding family identities. The Tidal
+Basin preserves the inset bowl and frame-mounted cord reel; its drain and bucket
+sit at the right outer side, leaving the center front approach clear. Illustrated
+access is not proof of runtime collision or interaction reach. Inspect the pale
+Worldroot flesh under residual bark and salt staining using the material guide.
+
+The gathered-to-worked sheet removes misleading positional arrows. Registered
+recipes at the Tidal Basin are:
+- 3 Blackwater Flowstone + 1 Deep Salt produce 2 Flowstone Plate.
+- 4 Pale Fibre + 1 Deep Salt produce 2 Pale Cord.
+- 2 Blackwater Pearl + 1 Deep Salt produce 1 Brined Pearl.
+
+Deep Salt participates in every process; it does not become a pearl by itself.
+Loose pearls retain creamy muted nacre across raw and refined uses. The large
+shell in the raw material study is environmental context, not a pickup mesh or
+proof of shellfish harvesting. Pearl caps are decorative fungal forms: shellfish
+loot is pending in the source resource catalog. Ecology labels now distinguish
+material associations from implemented harvesting. Pale Fibre is sourced from
+bank vegetation; do not invent drops on every Palefinger, fern or submerged root.
+Scale figures concern source studies, not carried item dimensions. Performance
+annotations describe intended production approach, not measured budgets.
+
+The existing Palewater armour, weapon fittings and Diving Bell Hood references
+were retained. Native equipment donor topology and approved weapon source ancestry
+remain authoritative over their illustrative ornaments and proportions.
+Exact edit prompts and hashes are in blackwater-review-receipts.json.

@@ -1706,7 +1706,7 @@
     {
       "model_id": "underworld-boss-arena-blackwater-maw",
       "status": "biome-environment-direction",
-      "reference": "blackwater-ecology.png"
+      "reference": "blackwater-ecology--v2.png"
     },
     {
       "model_id": "underworld-boss-arena-carrion-crown",
@@ -1986,62 +1986,62 @@
     {
       "model_id": "underworld-flora-blackwater-brine-fern",
       "status": "proposed-family",
-      "reference": "blackwater-ecology.png"
+      "reference": "blackwater-ecology--v2.png"
     },
     {
       "model_id": "underworld-flora-blackwater-broken-column",
       "status": "proposed-family",
-      "reference": "blackwater-ecology.png"
+      "reference": "blackwater-ecology--v2.png"
     },
     {
       "model_id": "underworld-flora-blackwater-drowned-root-arch",
       "status": "proposed-family",
-      "reference": "blackwater-ecology.png"
+      "reference": "blackwater-ecology--v2.png"
     },
     {
       "model_id": "underworld-flora-blackwater-fingerstone-rubble",
       "status": "proposed-family",
-      "reference": "blackwater-ecology.png"
+      "reference": "blackwater-ecology--v2.png"
     },
     {
       "model_id": "underworld-flora-blackwater-flowstone-spire",
       "status": "proposed-family",
-      "reference": "blackwater-ecology.png"
+      "reference": "blackwater-ecology--v2.png"
     },
     {
       "model_id": "underworld-flora-blackwater-lakebed-shelf",
       "status": "proposed-family",
-      "reference": "blackwater-ecology.png"
+      "reference": "blackwater-ecology--v2.png"
     },
     {
       "model_id": "underworld-flora-blackwater-palefinger",
       "status": "proposed-family",
-      "reference": "blackwater-ecology.png"
+      "reference": "blackwater-ecology--v2.png"
     },
     {
       "model_id": "underworld-flora-blackwater-pearl-caps",
       "status": "proposed-family",
-      "reference": "blackwater-ecology.png"
+      "reference": "blackwater-ecology--v2.png"
     },
     {
       "model_id": "underworld-flora-blackwater-rimstone-mound",
       "status": "proposed-family",
-      "reference": "blackwater-ecology.png"
+      "reference": "blackwater-ecology--v2.png"
     },
     {
       "model_id": "underworld-flora-blackwater-root-fan",
       "status": "proposed-family",
-      "reference": "blackwater-ecology.png"
+      "reference": "blackwater-ecology--v2.png"
     },
     {
       "model_id": "underworld-flora-blackwater-root-fingers",
       "status": "proposed-family",
-      "reference": "blackwater-ecology.png"
+      "reference": "blackwater-ecology--v2.png"
     },
     {
       "model_id": "underworld-flora-blackwater-wet-stone",
       "status": "proposed-family",
-      "reference": "blackwater-ecology.png"
+      "reference": "blackwater-ecology--v2.png"
     },
     {
       "model_id": "underworld-flora-decay-rotbloom",
@@ -2226,7 +2226,7 @@
     {
       "model_id": "underworld-ground-blackwater-silt-ripples",
       "status": "proposed-family",
-      "reference": "blackwater-ecology.png"
+      "reference": "blackwater-ecology--v2.png"
     },
     {
       "model_id": "underworld-ground-decay-peat-mat",
@@ -2276,7 +2276,7 @@
     {
       "model_id": "underworld-refined-brined-pearl",
       "status": "proposed-family",
-      "reference": "blackwater-materials--v2.png"
+      "reference": "blackwater-materials--v3.png"
     },
     {
       "model_id": "underworld-refined-carrion-amber-seal",
@@ -2301,7 +2301,7 @@
     {
       "model_id": "underworld-refined-flowstone-plate",
       "status": "proposed-family",
-      "reference": "blackwater-materials--v2.png"
+      "reference": "blackwater-materials--v3.png"
     },
     {
       "model_id": "underworld-refined-fracture-prism",
@@ -2321,7 +2321,7 @@
     {
       "model_id": "underworld-refined-pale-cord",
       "status": "proposed-family",
-      "reference": "blackwater-materials--v2.png"
+      "reference": "blackwater-materials--v3.png"
     },
     {
       "model_id": "underworld-refined-rimesilver-bar",
@@ -2366,12 +2366,12 @@
     {
       "model_id": "underworld-resource-blackwater-flowstone",
       "status": "proposed-family",
-      "reference": "blackwater-materials--v2.png"
+      "reference": "blackwater-materials--v3.png"
     },
     {
       "model_id": "underworld-resource-blackwater-pearl",
       "status": "proposed-family",
-      "reference": "blackwater-materials--v2.png"
+      "reference": "blackwater-materials--v3.png"
     },
     {
       "model_id": "underworld-resource-bone-gravel",
@@ -2401,7 +2401,7 @@
     {
       "model_id": "underworld-resource-deep-salt",
       "status": "proposed-family",
-      "reference": "blackwater-materials--v2.png"
+      "reference": "blackwater-materials--v3.png"
     },
     {
       "model_id": "underworld-resource-emberiron",
@@ -2421,7 +2421,7 @@
     {
       "model_id": "underworld-resource-pale-fibre",
       "status": "proposed-family",
-      "reference": "blackwater-materials--v2.png"
+      "reference": "blackwater-materials--v3.png"
     },
     {
       "model_id": "underworld-resource-rimesilver",
@@ -2506,7 +2506,7 @@
     {
       "model_id": "underworld-station-tidal-basin",
       "status": "proposed-family",
-      "reference": "blackwater-station.png"
+      "reference": "blackwater-station--v2.png"
     },
     {
       "model_id": "underworld-surtling-earth-feminine",

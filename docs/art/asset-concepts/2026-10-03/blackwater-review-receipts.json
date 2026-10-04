@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-03",
+  "mode": "built-in imagegen",
+  "scope": "Refine three existing Blackwater family references; no runtime changes or new asset identities.",
+  "outputs": [
+    {
+      "id": "blackwater-materials",
+      "input": "blackwater-materials--v2.png",
+      "file": "blackwater-materials--v3.png",
+      "prompt": "Use case: precise-object-edit. Edit this Blackwater Deep resource concept sheet for accurate material lineage. Keep all seven named resource designs, blue-grey wet layered stone, pale fibres, nacre pearl, chalky salt, neutral parchment style. Top four RAW references remain Blackwater Flowstone, Pale Fibre, Blackwater Pearl, Deep Salt. Bottom three REFINED references remain Flowstone Plate, Pale Cord, Brined Pearl. Remove ALL existing downward arrows because their positional mapping is wrong. No arrows are needed. Add a clean restrained footer labeled 'Tidal Basin recipes' with these EXACT three lines: '3 Blackwater Flowstone + 1 Deep Salt = 2 Flowstone Plate'; '4 Pale Fibre + 1 Deep Salt = 2 Pale Cord'; '2 Blackwater Pearl + 1 Deep Salt = 1 Brined Pearl'. Deep Salt contributes to every refinement; salt alone does not produce a pearl. Make gathered Blackwater Pearl a clearly isolated loose smooth nacre pearl pickup; any shell is secondary environmental context, not the pickup. Its cleaned/brined form retains same creamy muted-iridescent nacre material, not a shell fragment or sliced food. Keep outcrop and plant shapes as source-scale context rather than item size; tiny labels can say 'source study' for these. Preserve named raw and refined forms. No extra foods, monsters, unrelated samples or glow.",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-74cee946-1a49-48d6-abf6-4789c1adb42a.png",
+      "selected": true,
+      "sha256": "e3cab7c95bc6b13966a8bfe8fa3272b4206f5a7f94137efca888b09d937e3753",
+      "superseded": "drafts/blackwater-materials--v2.png"
+    },
+    {
+      "id": "blackwater-station",
+      "input": "blackwater-station.png",
+      "file": "blackwater-station--v2.png",
+      "prompt": "Use case: precise-object-edit. Refine ONLY access and material/context errors on this Tidal Basin working-process concept sheet. Preserve compact handmade joined timber bench, actual deep bowl recessed INTO table with a stone lip, cord reel attached to rear frame, salt-curing trays and preparation surfaces, neutral parchment style and weathering. MOVE the drain outlet, channel and collection bucket away from the CENTER FRONT to the RIGHT OUTER SIDE beneath the curing tray, tucked within the bench side footprint. Update main view, front view, cutaway and drain detail consistently. Front work edge must be accessible from ground level, with clear unobstructed standing/foot space and a modest toe recess; no bucket, spout, rails or tools projecting into approach. Keep basin real with bowl depth visible; not a ring or hoop laid on tabletop. Maintain a simple short side drain, no modern pipes or pumps. Revise scene description from coastal/surface shore to 'Underground brine preparation bench'; these are enclosed cavern resources, not an overworld coastal station. Correct loose Blackwater Pearl input and bowl samples to creamy muted-iridescent nacre matching the Brined Pearl output, with processed pearl cleaner, not a black gemstone. Keep blue-grey Flowstone and chalky Deep Salt. Worked wood has pale Worldroot ivory flesh under salt stains/weathering, not reddish wood; dark residual bark may remain on outer surfaces. Retain all other forms and named materials. Scale marks are illustrative; no claim of runtime reach or collision validation.",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-3efc3c73-211f-4806-b268-705d64cade13.png",
+      "selected": true,
+      "sha256": "b2e36b3b5e540d9e728bf3298bbf6c4c6449c76d4389b8b0836654d226a2aa4c",
+      "superseded": "drafts/blackwater-station.png"
+    },
+    {
+      "id": "blackwater-ecology",
+      "input": "blackwater-ecology.png",
+      "file": "blackwater-ecology--v2.png",
+      "prompt": "Use case: precise-object-edit. Correct this Blackwater Deep underground ecology concept sheet without redesigning its plant/deposit families or layout. Keep Palefinger canopy fungi, pearl caps, brine fern, submerged roots, flowstone spires, rimstone mound, silt ripples, salt seams and grey Understone, multiple scales/cut states, muted blue-grey wet stone, pale fibres and sparse reusable silhouettes. The RIGHT resource column currently invents implemented harvesting rules. Change its header from 'RAW RESOURCE' to 'MATERIAL STUDY'. For Palefinger, brine fern and submerged roots, replace 'From [plant]' claims with 'Pale Fibre: bank vegetation'; they are material associations, not proof each model drops fibre. Pearl caps are decorative nacre-like fungi. Replace its faceted crystal-like pearl cluster with ONE loose creamy muted-iridescent smooth pearl plus small shore silt/stone context, label 'Blackwater Pearl: shore deposits'. Do not label Pearl Caps as pearl producers, shellfish loot remains pending. Flowstone pickup: 'Blackwater Flowstone: shore/lakebed'; salt pickup: 'Deep Salt: shore crusts'. Understone remains unmistakable grey mineral outcrop, not a mushroom. Keep any environment thumbnail enclosed with dark cavern overhead; no opening to a bright surface sky. Textured gills and coarse broad caps, no claim of measured tree-equivalent performance. No conventional surface trees, extra food resources, new harvest functionality or new creature designs.",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-cdf50ff6-9e85-4bbc-a031-e6f88d4c8b75.png",
+      "selected": true,
+      "sha256": "ccf7e6d1b249c15e51049e5680a6063e5c47cf9885bf1192b735af58e92d7ad7",
+      "superseded": "drafts/blackwater-ecology.png"
+    }
+  ],
+  "catalog_sources": [
+    "src/Magenheim.Core/Underworld/UnderworldBiomeRefinementCatalog.cs",
+    "src/Magenheim.Core/Underworld/UnderworldResourceCatalog.cs"
+  ],
+  "retained_without_regeneration": [
+    "blackwater-armour",
+    "blackwater-weapon-variants",
+    "blackwater-tool"
+  ]
+}
