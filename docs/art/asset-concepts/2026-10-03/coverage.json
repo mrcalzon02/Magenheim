@@ -1,0 +1,2667 @@
+{
+  "catalog_sha256": "9388d0eb3a3172358855bac47925b0800fbe47cac887018c1be62eaf3198eb95",
+  "catalog_records": 531,
+  "meaning": "Catalog snapshot, not proof that every source is active at runtime. Family coverage is a direction, not individual approved construction drawings.",
+  "models": [
+    {
+      "model_id": "architecture-crystal-beam-2m",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "architecture-crystal-beam-4m",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "architecture-crystal-beam-8m",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "architecture-crystal-foundation-2m",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "architecture-crystal-foundation-4m",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "architecture-crystal-foundation-8m",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "architecture-crystal-hearth",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "blackstone-arch",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-attendant-seat",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-banner",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-brazier",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-bridge",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-cathedral-wall",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-cliff-edge",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-dais",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-floor-tile",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-gate",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-parapet",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-pillar",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-spire",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-stair",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-terrace",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-throne",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "blackstone-wall-buttress",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "boss-bonemass-rotheart",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "boss-eikthyr-stormheart",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "boss-elder-rootheart",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "boss-fader-ashheart",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "boss-kall-winterheart",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "boss-moder-rimeheart",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "boss-queen-veilheart",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "boss-yagluth-sunheart",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "broken-crown",
+      "status": "preserve-shape-material-direction",
+      "reference": "null-mantle-regalia.png"
+    },
+    {
+      "model_id": "crystal-banner-pennant-earth",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-pennant-fire",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-pennant-frost",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-pennant-radiance",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-pennant-seidr",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-pennant-spirit",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-pennant-storm",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-pennant-venom",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-standard-earth",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-standard-fire",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-standard-frost",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-standard-radiance",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-standard-seidr",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-standard-spirit",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-standard-storm",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-standard-venom",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-swallowtail-earth",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-swallowtail-fire",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-swallowtail-frost",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-swallowtail-radiance",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-swallowtail-seidr",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-swallowtail-spirit",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-swallowtail-storm",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-banner-swallowtail-venom",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-bed-earth",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "crystal-bed-fire",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "crystal-bed-frost",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "crystal-bed-radiance",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "crystal-bed-seidr",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "crystal-bed-spirit",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "crystal-bed-storm",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "crystal-bed-venom",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "crystal-brazier",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-enchanting-dais",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "crystal-lantern",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-sentinel",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-wardstone",
+      "status": "proposed-family",
+      "reference": "crystal-building-kit.png"
+    },
+    {
+      "model_id": "crystal-weapon-atgeir",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "crystal-weapon-axe",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "crystal-weapon-battleaxe",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "crystal-weapon-bow",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "crystal-weapon-crossbow",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "crystal-weapon-greatsword",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "crystal-weapon-knife",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "crystal-weapon-mace",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "crystal-weapon-spear",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "crystal-weapon-sword",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "crystalline-ice-box",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "dark-throne",
+      "status": "proposed-family",
+      "reference": "blackstone-architecture.png"
+    },
+    {
+      "model_id": "decor-crystal-coat-rack",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "decor-crystal-end-table",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "decor-crystal-wall-sconce",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "decor-cut-geode-plaque",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "decor-geode-bowl",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "decor-geode-hearth-mantel",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "decor-geologist-stool",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "decor-mineral-display-case",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "decor-specimen-sideboard",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "decor-strata-map-table",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-AnnoyanceWisp-earth",
+      "status": "proposed-chassis",
+      "reference": "deep-annoyance-wisp.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-AnnoyanceWisp-fire",
+      "status": "proposed-chassis",
+      "reference": "deep-annoyance-wisp.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-AnnoyanceWisp-frost",
+      "status": "proposed-chassis",
+      "reference": "deep-annoyance-wisp.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-AnnoyanceWisp-radiance",
+      "status": "proposed-chassis",
+      "reference": "deep-annoyance-wisp.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-AnnoyanceWisp-seidr",
+      "status": "proposed-chassis",
+      "reference": "deep-annoyance-wisp.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-AnnoyanceWisp-spirit",
+      "status": "proposed-chassis",
+      "reference": "deep-annoyance-wisp.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-AnnoyanceWisp-storm",
+      "status": "proposed-chassis",
+      "reference": "deep-annoyance-wisp.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-AnnoyanceWisp-venom",
+      "status": "proposed-chassis",
+      "reference": "deep-annoyance-wisp.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Burrower-earth",
+      "status": "proposed-chassis",
+      "reference": "deep-burrower.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Burrower-fire",
+      "status": "proposed-chassis",
+      "reference": "deep-burrower.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Burrower-frost",
+      "status": "proposed-chassis",
+      "reference": "deep-burrower.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Burrower-radiance",
+      "status": "proposed-chassis",
+      "reference": "deep-burrower.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Burrower-seidr",
+      "status": "proposed-chassis",
+      "reference": "deep-burrower.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Burrower-spirit",
+      "status": "proposed-chassis",
+      "reference": "deep-burrower.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Burrower-storm",
+      "status": "proposed-chassis",
+      "reference": "deep-burrower.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Burrower-venom",
+      "status": "proposed-chassis",
+      "reference": "deep-burrower.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalHound-earth",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-hound.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalHound-fire",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-hound.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalHound-frost",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-hound.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalHound-radiance",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-hound.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalHound-seidr",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-hound.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalHound-spirit",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-hound.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalHound-storm",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-hound.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalHound-venom",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-hound.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalParasite-earth",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-parasite.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalParasite-fire",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-parasite.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalParasite-frost",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-parasite.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalParasite-radiance",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-parasite.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalParasite-seidr",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-parasite.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalParasite-spirit",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-parasite.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalParasite-storm",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-parasite.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalParasite-venom",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-parasite.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalRevenant-earth",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-revenant.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalRevenant-fire",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-revenant.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalRevenant-frost",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-revenant.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalRevenant-radiance",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-revenant.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalRevenant-seidr",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-revenant.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalRevenant-spirit",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-revenant.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalRevenant-storm",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-revenant.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-CrystalRevenant-venom",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-revenant.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-FacetSentry-earth",
+      "status": "proposed-chassis",
+      "reference": "deep-facet-sentry.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-FacetSentry-fire",
+      "status": "proposed-chassis",
+      "reference": "deep-facet-sentry.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-FacetSentry-frost",
+      "status": "proposed-chassis",
+      "reference": "deep-facet-sentry.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-FacetSentry-radiance",
+      "status": "proposed-chassis",
+      "reference": "deep-facet-sentry.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-FacetSentry-seidr",
+      "status": "proposed-chassis",
+      "reference": "deep-facet-sentry.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-FacetSentry-spirit",
+      "status": "proposed-chassis",
+      "reference": "deep-facet-sentry.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-FacetSentry-storm",
+      "status": "proposed-chassis",
+      "reference": "deep-facet-sentry.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-FacetSentry-venom",
+      "status": "proposed-chassis",
+      "reference": "deep-facet-sentry.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-GeodeCrawler-earth",
+      "status": "proposed-chassis",
+      "reference": "deep-geode-crawler.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-GeodeCrawler-fire",
+      "status": "proposed-chassis",
+      "reference": "deep-geode-crawler.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-GeodeCrawler-frost",
+      "status": "proposed-chassis",
+      "reference": "deep-geode-crawler.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-GeodeCrawler-radiance",
+      "status": "proposed-chassis",
+      "reference": "deep-geode-crawler.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-GeodeCrawler-seidr",
+      "status": "proposed-chassis",
+      "reference": "deep-geode-crawler.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-GeodeCrawler-spirit",
+      "status": "proposed-chassis",
+      "reference": "deep-geode-crawler.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-GeodeCrawler-storm",
+      "status": "proposed-chassis",
+      "reference": "deep-geode-crawler.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-GeodeCrawler-venom",
+      "status": "proposed-chassis",
+      "reference": "deep-geode-crawler.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Shardling-earth",
+      "status": "proposed-chassis",
+      "reference": "deep-shardling.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Shardling-fire",
+      "status": "proposed-chassis",
+      "reference": "deep-shardling.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Shardling-frost",
+      "status": "proposed-chassis",
+      "reference": "deep-shardling.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Shardling-radiance",
+      "status": "proposed-chassis",
+      "reference": "deep-shardling.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Shardling-seidr",
+      "status": "proposed-chassis",
+      "reference": "deep-shardling.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Shardling-spirit",
+      "status": "proposed-chassis",
+      "reference": "deep-shardling.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Shardling-storm",
+      "status": "proposed-chassis",
+      "reference": "deep-shardling.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-Shardling-venom",
+      "status": "proposed-chassis",
+      "reference": "deep-shardling.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneGuardian-earth",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-guardian.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneGuardian-fire",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-guardian.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneGuardian-frost",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-guardian.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneGuardian-radiance",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-guardian.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneGuardian-seidr",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-guardian.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneGuardian-spirit",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-guardian.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneGuardian-storm",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-guardian.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneGuardian-venom",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-guardian.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneSentinel-earth",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-sentinel.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneSentinel-fire",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-sentinel.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneSentinel-frost",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-sentinel.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneSentinel-radiance",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-sentinel.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneSentinel-seidr",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-sentinel.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneSentinel-spirit",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-sentinel.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneSentinel-storm",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-sentinel.png"
+    },
+    {
+      "model_id": "deep-fracture-creature-StoneSentinel-venom",
+      "status": "proposed-chassis",
+      "reference": "deep-stone-sentinel.png"
+    },
+    {
+      "model_id": "deep-fracture-crystal-golem-visual-earth",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-golem.png"
+    },
+    {
+      "model_id": "deep-fracture-crystal-golem-visual-fire",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-golem.png"
+    },
+    {
+      "model_id": "deep-fracture-crystal-golem-visual-frost",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-golem.png"
+    },
+    {
+      "model_id": "deep-fracture-crystal-golem-visual-radiance",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-golem.png"
+    },
+    {
+      "model_id": "deep-fracture-crystal-golem-visual-seidr",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-golem.png"
+    },
+    {
+      "model_id": "deep-fracture-crystal-golem-visual-spirit",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-golem.png"
+    },
+    {
+      "model_id": "deep-fracture-crystal-golem-visual-storm",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-golem.png"
+    },
+    {
+      "model_id": "deep-fracture-crystal-golem-visual-venom",
+      "status": "proposed-chassis",
+      "reference": "deep-crystal-golem.png"
+    },
+    {
+      "model_id": "deep-fracture-deep-colossus-visual-earth",
+      "status": "proposed-chassis",
+      "reference": "deep-deep-colossus.png"
+    },
+    {
+      "model_id": "deep-fracture-deep-colossus-visual-fire",
+      "status": "proposed-chassis",
+      "reference": "deep-deep-colossus.png"
+    },
+    {
+      "model_id": "deep-fracture-deep-colossus-visual-frost",
+      "status": "proposed-chassis",
+      "reference": "deep-deep-colossus.png"
+    },
+    {
+      "model_id": "deep-fracture-deep-colossus-visual-radiance",
+      "status": "proposed-chassis",
+      "reference": "deep-deep-colossus.png"
+    },
+    {
+      "model_id": "deep-fracture-deep-colossus-visual-seidr",
+      "status": "proposed-chassis",
+      "reference": "deep-deep-colossus.png"
+    },
+    {
+      "model_id": "deep-fracture-deep-colossus-visual-spirit",
+      "status": "proposed-chassis",
+      "reference": "deep-deep-colossus.png"
+    },
+    {
+      "model_id": "deep-fracture-deep-colossus-visual-storm",
+      "status": "proposed-chassis",
+      "reference": "deep-deep-colossus.png"
+    },
+    {
+      "model_id": "deep-fracture-deep-colossus-visual-venom",
+      "status": "proposed-chassis",
+      "reference": "deep-deep-colossus.png"
+    },
+    {
+      "model_id": "deep-fracture-entrance",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "deep-fracture-obelisk-warden-visual-earth",
+      "status": "proposed-chassis",
+      "reference": "deep-obelisk-warden.png"
+    },
+    {
+      "model_id": "deep-fracture-obelisk-warden-visual-fire",
+      "status": "proposed-chassis",
+      "reference": "deep-obelisk-warden.png"
+    },
+    {
+      "model_id": "deep-fracture-obelisk-warden-visual-frost",
+      "status": "proposed-chassis",
+      "reference": "deep-obelisk-warden.png"
+    },
+    {
+      "model_id": "deep-fracture-obelisk-warden-visual-radiance",
+      "status": "proposed-chassis",
+      "reference": "deep-obelisk-warden.png"
+    },
+    {
+      "model_id": "deep-fracture-obelisk-warden-visual-seidr",
+      "status": "proposed-chassis",
+      "reference": "deep-obelisk-warden.png"
+    },
+    {
+      "model_id": "deep-fracture-obelisk-warden-visual-spirit",
+      "status": "proposed-chassis",
+      "reference": "deep-obelisk-warden.png"
+    },
+    {
+      "model_id": "deep-fracture-obelisk-warden-visual-storm",
+      "status": "proposed-chassis",
+      "reference": "deep-obelisk-warden.png"
+    },
+    {
+      "model_id": "deep-fracture-obelisk-warden-visual-venom",
+      "status": "proposed-chassis",
+      "reference": "deep-obelisk-warden.png"
+    },
+    {
+      "model_id": "deep-fracture-passage",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "deep-fracture-traversal",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-01",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-02",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-03",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-04",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-05",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-06",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-07",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-08",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-09",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-10",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-11",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-12",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-13",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-14",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-15",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-16",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-17",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-18",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-19",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "DF-20",
+      "status": "proposed-family",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "earth-advanced",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "earth-crystal",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "earth-faceting-wheel",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "earth-fracturing-block",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "earth-geode",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "earth-master",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "earth-resonance-frame",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "earth-rough",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "earth-shards",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "earth-simple",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "earth-structural",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "earth-workstation",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "effect-orb",
+      "status": "shared-effect-direction",
+      "reference": null
+    },
+    {
+      "model_id": "effect-ring",
+      "status": "shared-effect-direction",
+      "reference": null
+    },
+    {
+      "model_id": "effect-shard",
+      "status": "shared-effect-direction",
+      "reference": null
+    },
+    {
+      "model_id": "elemental-focus",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "fate-crystal",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "fate-shard",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "furniture-crystal-bed",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "furniture-crystal-bench",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "furniture-crystal-divider",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "furniture-crystal-throne",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "furniture-geo-desk",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "furniture-geode-chair",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "furniture-geode-pedestal",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "furniture-geode-table",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "furniture-lapidary-cabinet",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "furniture-mineral-shelf",
+      "status": "proposed-family",
+      "reference": "mineral-furniture.png"
+    },
+    {
+      "model_id": "geode-sample",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "Magenheim_Staff_Earth_Advanced",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "Magenheim_Staff_Earth_Crystal",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "Magenheim_Staff_Earth_Master",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "Magenheim_Staff_Earth_Simple",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "Magenheim_Staff_Fire_Advanced",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "Magenheim_Staff_Fire_Crystal",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "Magenheim_Staff_Fire_Master",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "Magenheim_Staff_Fire_Simple",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "Magenheim_Staff_Storm_Advanced",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "Magenheim_Staff_Storm_Crystal",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "Magenheim_Staff_Storm_Master",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "Magenheim_Staff_Storm_Simple",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "norn-spindle",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "nowhere-king-sword-firmament",
+      "status": "preserve-shape-material-direction",
+      "reference": "null-mantle-regalia.png"
+    },
+    {
+      "model_id": "nowhere-king-sword-null-gate",
+      "status": "preserve-shape-material-direction",
+      "reference": "null-mantle-regalia.png"
+    },
+    {
+      "model_id": "passage-stone",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "rootforged-great-column-plinth",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-iron-banded-worldroot-beam-4m",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-iron-banded-worldroot-beam-8m",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-rootforged-arch-rib-4m",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-rootforged-arch-rib-8m",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-understone-foundation-2x2",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-understone-stairs",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-worldroot-beam-2m",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-worldroot-beam-4m",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-worldroot-beam-8m",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-worldroot-floor-4m",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-worldroot-forked-column-8m",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-worldroot-pillar-2m",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-worldroot-pillar-4m",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-worldroot-pillar-8m",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-worldroot-t-brace-4m",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rootforged-worldroot-y-brace-4m",
+      "status": "proposed-family",
+      "reference": "rootforged-modular-kit--v2.png"
+    },
+    {
+      "model_id": "rune-engraver",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "runed-totem",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "runic-keelstone",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "seidr-ritual-focus",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "sentinel-ammo-earth",
+      "status": "shared-effect-direction",
+      "reference": null
+    },
+    {
+      "model_id": "sentinel-ammo-fire",
+      "status": "shared-effect-direction",
+      "reference": null
+    },
+    {
+      "model_id": "sentinel-ammo-frost",
+      "status": "shared-effect-direction",
+      "reference": null
+    },
+    {
+      "model_id": "sentinel-ammo-radiance",
+      "status": "shared-effect-direction",
+      "reference": null
+    },
+    {
+      "model_id": "sentinel-ammo-seidr",
+      "status": "shared-effect-direction",
+      "reference": null
+    },
+    {
+      "model_id": "sentinel-ammo-spirit",
+      "status": "shared-effect-direction",
+      "reference": null
+    },
+    {
+      "model_id": "sentinel-ammo-storm",
+      "status": "shared-effect-direction",
+      "reference": null
+    },
+    {
+      "model_id": "sentinel-ammo-venom",
+      "status": "shared-effect-direction",
+      "reference": null
+    },
+    {
+      "model_id": "spirit-fetish-raven",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "spirit-fetish-warrior",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "spirit-fetish-wolf",
+      "status": "proposed-family",
+      "reference": "arcane-materials-workshop.png"
+    },
+    {
+      "model_id": "staff-frost-advanced",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-frost-crystal",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-frost-master",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-frost-simple",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-radiance-advanced",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-radiance-crystal",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-radiance-master",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-radiance-simple",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-seidr-advanced",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-seidr-crystal",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-seidr-master",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-seidr-simple",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-spirit-advanced",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-spirit-crystal",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-spirit-master",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-spirit-simple",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-venom-advanced",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-venom-crystal",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-venom-master",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "staff-venom-simple",
+      "status": "preserve-approved-base",
+      "reference": null
+    },
+    {
+      "model_id": "underworld-armor-defiant-cape",
+      "status": "native-donor-texture-direction",
+      "reference": "decay-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-defiant-chest",
+      "status": "native-donor-texture-direction",
+      "reference": "decay-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-defiant-helmet",
+      "status": "native-donor-texture-direction",
+      "reference": "decay-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-defiant-legs",
+      "status": "native-donor-texture-direction",
+      "reference": "decay-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-emberiron-cape",
+      "status": "native-donor-texture-direction",
+      "reference": "sulfur-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-emberiron-chest",
+      "status": "native-donor-texture-direction",
+      "reference": "sulfur-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-emberiron-helmet",
+      "status": "native-donor-texture-direction",
+      "reference": "sulfur-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-emberiron-legs",
+      "status": "native-donor-texture-direction",
+      "reference": "sulfur-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-palewater-cape",
+      "status": "native-donor-texture-direction",
+      "reference": "blackwater-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-palewater-chest",
+      "status": "native-donor-texture-direction",
+      "reference": "blackwater-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-palewater-helmet",
+      "status": "native-donor-texture-direction",
+      "reference": "blackwater-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-palewater-legs",
+      "status": "native-donor-texture-direction",
+      "reference": "blackwater-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-rimeward-cape",
+      "status": "native-donor-texture-direction",
+      "reference": "frozen-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-rimeward-chest",
+      "status": "native-donor-texture-direction",
+      "reference": "frozen-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-rimeward-helmet",
+      "status": "native-donor-texture-direction",
+      "reference": "frozen-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-rimeward-legs",
+      "status": "native-donor-texture-direction",
+      "reference": "frozen-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-sporeweave-cape",
+      "status": "native-donor-texture-direction",
+      "reference": "fungal-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-sporeweave-chest",
+      "status": "native-donor-texture-direction",
+      "reference": "fungal-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-sporeweave-helmet",
+      "status": "native-donor-texture-direction",
+      "reference": "fungal-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-sporeweave-legs",
+      "status": "native-donor-texture-direction",
+      "reference": "fungal-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-stoneanchor-cape",
+      "status": "native-donor-texture-direction",
+      "reference": "fracture-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-stoneanchor-chest",
+      "status": "native-donor-texture-direction",
+      "reference": "fracture-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-stoneanchor-helmet",
+      "status": "native-donor-texture-direction",
+      "reference": "fracture-armour.png"
+    },
+    {
+      "model_id": "underworld-armor-stoneanchor-legs",
+      "status": "native-donor-texture-direction",
+      "reference": "fracture-armour.png"
+    },
+    {
+      "model_id": "underworld-boss-arena-blackwater-maw",
+      "status": "biome-environment-direction",
+      "reference": "blackwater-ecology.png"
+    },
+    {
+      "model_id": "underworld-boss-arena-carrion-crown",
+      "status": "biome-environment-direction",
+      "reference": "decay-ecology.png"
+    },
+    {
+      "model_id": "underworld-boss-arena-first-bloom",
+      "status": "biome-environment-direction",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-boss-arena-furnace-heart",
+      "status": "biome-environment-direction",
+      "reference": "sulfur-ecology.png"
+    },
+    {
+      "model_id": "underworld-boss-arena-rift-titan",
+      "status": "biome-environment-direction",
+      "reference": "fracture-ecology.png"
+    },
+    {
+      "model_id": "underworld-boss-arena-white-silence",
+      "status": "biome-environment-direction",
+      "reference": "frozen-ecology.png"
+    },
+    {
+      "model_id": "underworld-creature-abyss-shellback",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/abyss-shellback--v2.png"
+    },
+    {
+      "model_id": "underworld-creature-ashmite",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/ashmite.png"
+    },
+    {
+      "model_id": "underworld-creature-basalt-crawler",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/basalt-crawler.png"
+    },
+    {
+      "model_id": "underworld-creature-blackwater-lamprey",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/blackwater-lamprey.png"
+    },
+    {
+      "model_id": "underworld-creature-capcrawler",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/capcrawler.png"
+    },
+    {
+      "model_id": "underworld-creature-carrion-bloom",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/carrion-bloom.png"
+    },
+    {
+      "model_id": "underworld-creature-cave-ray",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/cave-ray.png"
+    },
+    {
+      "model_id": "underworld-creature-chasm-stalker",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/chasm-stalker.png"
+    },
+    {
+      "model_id": "underworld-creature-cinder-hound",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/cinder-hound.png"
+    },
+    {
+      "model_id": "underworld-creature-corpse-orchard",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/corpse-orchard.png"
+    },
+    {
+      "model_id": "underworld-creature-crowncap-brute",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/crowncap-brute.png"
+    },
+    {
+      "model_id": "underworld-creature-cryolith-guardian",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/cryolith-guardian.png"
+    },
+    {
+      "model_id": "underworld-creature-decay-hound",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/decay-hound.png"
+    },
+    {
+      "model_id": "underworld-creature-deep-hunter",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/deep-hunter.png"
+    },
+    {
+      "model_id": "underworld-creature-fracture-wisp",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/fracture-wisp.png"
+    },
+    {
+      "model_id": "underworld-creature-frost-tick",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/frost-tick.png"
+    },
+    {
+      "model_id": "underworld-creature-fume-wraith",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/fume-wraith.png"
+    },
+    {
+      "model_id": "underworld-creature-furnace-golem",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/furnace-golem.png"
+    },
+    {
+      "model_id": "underworld-creature-glacier-stalker",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/glacier-stalker.png"
+    },
+    {
+      "model_id": "underworld-creature-gloomfin",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/gloomfin.png"
+    },
+    {
+      "model_id": "underworld-creature-graft-warden",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/graft-warden.png"
+    },
+    {
+      "model_id": "underworld-creature-gravity-leech",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/gravity-leech--v2.png"
+    },
+    {
+      "model_id": "underworld-creature-iceblind",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/iceblind.png"
+    },
+    {
+      "model_id": "underworld-creature-lantern-angler",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/lantern-angler.png"
+    },
+    {
+      "model_id": "underworld-creature-lantern-moth",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/lantern-moth.png"
+    },
+    {
+      "model_id": "underworld-creature-magma-leaper",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/magma-leaper.png"
+    },
+    {
+      "model_id": "underworld-creature-marrow-creeper",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/marrow-creeper.png"
+    },
+    {
+      "model_id": "underworld-creature-mycelial-stalker",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/mycelial-stalker.png"
+    },
+    {
+      "model_id": "underworld-creature-pale-burrower",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/pale-burrower.png"
+    },
+    {
+      "model_id": "underworld-creature-puffback",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/puffback.png"
+    },
+    {
+      "model_id": "underworld-creature-rift-colossus",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/rift-colossus.png"
+    },
+    {
+      "model_id": "underworld-creature-rift-skitter",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/rift-skitter.png"
+    },
+    {
+      "model_id": "underworld-creature-rime-moth",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/rime-moth.png"
+    },
+    {
+      "model_id": "underworld-creature-rimewing",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/rimewing.png"
+    },
+    {
+      "model_id": "underworld-creature-rotling",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/rotling--v2.png"
+    },
+    {
+      "model_id": "underworld-creature-shardwing",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/shardwing.png"
+    },
+    {
+      "model_id": "underworld-creature-shelf-lurker",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/shelf-lurker.png"
+    },
+    {
+      "model_id": "underworld-creature-shoreclaw",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/shoreclaw.png"
+    },
+    {
+      "model_id": "underworld-creature-spore-husk",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/spore-husk.png"
+    },
+    {
+      "model_id": "underworld-creature-sporeling",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/sporeling.png"
+    },
+    {
+      "model_id": "underworld-creature-stonebound",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/stonebound.png"
+    },
+    {
+      "model_id": "underworld-creature-vent-spitter",
+      "status": "adopted-individual",
+      "reference": "../../creature-concepts/2026-10-03/vent-spitter.png"
+    },
+    {
+      "model_id": "underworld-dais",
+      "status": "ritual-family-direction",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "underworld-deepstone-bloom",
+      "status": "ritual-family-direction",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "underworld-deepstone-cinder",
+      "status": "ritual-family-direction",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "underworld-deepstone-decay",
+      "status": "ritual-family-direction",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "underworld-deepstone-fracture",
+      "status": "ritual-family-direction",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "underworld-deepstone-rime",
+      "status": "ritual-family-direction",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "underworld-deepstone-tide",
+      "status": "ritual-family-direction",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "underworld-descent-monolith",
+      "status": "ritual-family-direction",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "underworld-flora-blackwater-brine-fern",
+      "status": "proposed-family",
+      "reference": "blackwater-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-blackwater-broken-column",
+      "status": "proposed-family",
+      "reference": "blackwater-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-blackwater-drowned-root-arch",
+      "status": "proposed-family",
+      "reference": "blackwater-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-blackwater-fingerstone-rubble",
+      "status": "proposed-family",
+      "reference": "blackwater-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-blackwater-flowstone-spire",
+      "status": "proposed-family",
+      "reference": "blackwater-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-blackwater-lakebed-shelf",
+      "status": "proposed-family",
+      "reference": "blackwater-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-blackwater-palefinger",
+      "status": "proposed-family",
+      "reference": "blackwater-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-blackwater-pearl-caps",
+      "status": "proposed-family",
+      "reference": "blackwater-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-blackwater-rimstone-mound",
+      "status": "proposed-family",
+      "reference": "blackwater-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-blackwater-root-fan",
+      "status": "proposed-family",
+      "reference": "blackwater-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-blackwater-root-fingers",
+      "status": "proposed-family",
+      "reference": "blackwater-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-blackwater-wet-stone",
+      "status": "proposed-family",
+      "reference": "blackwater-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-decay-rotbloom",
+      "status": "proposed-family",
+      "reference": "decay-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-frozen-rimecap",
+      "status": "proposed-family",
+      "reference": "frozen-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-amber-bed",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-fern",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-glowcap-bent",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-glowcap-elder",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-glowcap-twin",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-glowcap",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-lantern-caps",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-moss-stone",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-nursery-caps",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-puffcap-clustered",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-puffcap-forked",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-puffcap-spreading",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-puffcap",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-root-skirt",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-sapling",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-spirestalk-crooked",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-spirestalk-towered",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-spirestalk-young",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-spirestalk",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-sporebrush",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-tanglecap-splayed",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-tanglecap-woven",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-tanglecap-young",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-fungal-tanglecap",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-harvest-cinderstalk-felled",
+      "status": "proposed-family",
+      "reference": "sulfur-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-harvest-cinderstalk-stump",
+      "status": "proposed-family",
+      "reference": "sulfur-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-harvest-glowcap-felled",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-harvest-glowcap-stump",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-harvest-spirestalk-felled",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-harvest-spirestalk-stump",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-flora-sulfur-cinderstalk",
+      "status": "proposed-family",
+      "reference": "sulfur-ecology.png"
+    },
+    {
+      "model_id": "underworld-geothermal-vent-crown",
+      "status": "proposed-family",
+      "reference": "sulfur-ecology.png"
+    },
+    {
+      "model_id": "underworld-geothermal-vent-rootbound",
+      "status": "proposed-family",
+      "reference": "sulfur-ecology.png"
+    },
+    {
+      "model_id": "underworld-geothermal-vent-split",
+      "status": "proposed-family",
+      "reference": "sulfur-ecology.png"
+    },
+    {
+      "model_id": "underworld-ground-blackwater-silt-ripples",
+      "status": "proposed-family",
+      "reference": "blackwater-ecology.png"
+    },
+    {
+      "model_id": "underworld-ground-decay-peat-mat",
+      "status": "proposed-family",
+      "reference": "decay-ecology.png"
+    },
+    {
+      "model_id": "underworld-ground-fracture-shale-scree",
+      "status": "proposed-family",
+      "reference": "fracture-ecology.png"
+    },
+    {
+      "model_id": "underworld-ground-frozen-rime-fan",
+      "status": "proposed-family",
+      "reference": "frozen-ecology.png"
+    },
+    {
+      "model_id": "underworld-ground-rootgrass-carpet",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-ground-rootgrass-tufts",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-ground-rootgrass-woven",
+      "status": "proposed-family",
+      "reference": "fungal-ecology.png"
+    },
+    {
+      "model_id": "underworld-ground-sulfur-drift-bank",
+      "status": "proposed-family",
+      "reference": "sulfur-ecology.png"
+    },
+    {
+      "model_id": "underworld-ground-sulfur-drift-crescent",
+      "status": "proposed-family",
+      "reference": "sulfur-ecology.png"
+    },
+    {
+      "model_id": "underworld-ground-sulfur-drift-rippled",
+      "status": "proposed-family",
+      "reference": "sulfur-ecology.png"
+    },
+    {
+      "model_id": "underworld-refined-brined-pearl",
+      "status": "proposed-family",
+      "reference": "blackwater-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-refined-carrion-amber-seal",
+      "status": "proposed-family",
+      "reference": "decay-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-refined-charred-root-grip",
+      "status": "proposed-family",
+      "reference": "sulfur-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-refined-cured-glowcap",
+      "status": "proposed-family",
+      "reference": "fungal-materials.png"
+    },
+    {
+      "model_id": "underworld-refined-emberiron-bar",
+      "status": "proposed-family",
+      "reference": "sulfur-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-refined-flowstone-plate",
+      "status": "proposed-family",
+      "reference": "blackwater-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-refined-fracture-prism",
+      "status": "proposed-family",
+      "reference": "fracture-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-refined-iceglass-lens",
+      "status": "proposed-family",
+      "reference": "frozen-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-refined-ossuary-composite",
+      "status": "proposed-family",
+      "reference": "decay-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-refined-pale-cord",
+      "status": "proposed-family",
+      "reference": "blackwater-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-refined-rimesilver-bar",
+      "status": "proposed-family",
+      "reference": "frozen-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-refined-rimewood-laminate",
+      "status": "proposed-family",
+      "reference": "frozen-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-refined-rotwood-laminate",
+      "status": "proposed-family",
+      "reference": "decay-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-refined-shardstone-block",
+      "status": "proposed-family",
+      "reference": "fracture-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-refined-spire-cord",
+      "status": "proposed-family",
+      "reference": "fungal-materials.png"
+    },
+    {
+      "model_id": "underworld-refined-tempered-slag",
+      "status": "proposed-family",
+      "reference": "sulfur-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-refined-titanbone-plate",
+      "status": "proposed-family",
+      "reference": "fracture-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-refined-worldroot-plank",
+      "status": "proposed-family",
+      "reference": "fungal-materials.png"
+    },
+    {
+      "model_id": "underworld-resource-blackwater-flowstone",
+      "status": "proposed-family",
+      "reference": "blackwater-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-blackwater-pearl",
+      "status": "proposed-family",
+      "reference": "blackwater-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-bone-gravel",
+      "status": "proposed-family",
+      "reference": "decay-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-carrion-amber",
+      "status": "proposed-family",
+      "reference": "decay-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-charred-timber",
+      "status": "proposed-family",
+      "reference": "sulfur-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-clear-ice",
+      "status": "proposed-family",
+      "reference": "frozen-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-decay-spore",
+      "status": "proposed-family",
+      "reference": "decay-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-deep-salt",
+      "status": "proposed-family",
+      "reference": "blackwater-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-emberiron",
+      "status": "proposed-family",
+      "reference": "sulfur-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-fracture-crystal",
+      "status": "proposed-family",
+      "reference": "fracture-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-glowcap-flesh",
+      "status": "proposed-family",
+      "reference": "fungal-materials.png"
+    },
+    {
+      "model_id": "underworld-resource-pale-fibre",
+      "status": "proposed-family",
+      "reference": "blackwater-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-rimesilver",
+      "status": "proposed-family",
+      "reference": "frozen-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-rimewood",
+      "status": "proposed-family",
+      "reference": "frozen-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-rotwood",
+      "status": "proposed-family",
+      "reference": "decay-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-shardstone",
+      "status": "proposed-family",
+      "reference": "fracture-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-slagstone",
+      "status": "proposed-family",
+      "reference": "sulfur-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-spire-fibre",
+      "status": "proposed-family",
+      "reference": "fungal-materials.png"
+    },
+    {
+      "model_id": "underworld-resource-sulfur",
+      "status": "proposed-family",
+      "reference": "sulfur-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-titanbone",
+      "status": "proposed-family",
+      "reference": "fracture-materials--v2.png"
+    },
+    {
+      "model_id": "underworld-resource-understone",
+      "status": "proposed-family",
+      "reference": "fungal-materials.png"
+    },
+    {
+      "model_id": "underworld-resource-worldroot-timber",
+      "status": "proposed-family",
+      "reference": "fungal-materials.png"
+    },
+    {
+      "model_id": "underworld-standing-stone",
+      "status": "ritual-family-direction",
+      "reference": "fracture-dungeon-kit.png"
+    },
+    {
+      "model_id": "underworld-station-anchor-forge",
+      "status": "proposed-family",
+      "reference": "fracture-station.png"
+    },
+    {
+      "model_id": "underworld-station-crown-reliquary",
+      "status": "proposed-family",
+      "reference": "decay-station.png"
+    },
+    {
+      "model_id": "underworld-station-furnace-heart-forge",
+      "status": "proposed-family",
+      "reference": "sulfur-station.png"
+    },
+    {
+      "model_id": "underworld-station-mycelial-bench",
+      "status": "proposed-family",
+      "reference": "fungal-station.png"
+    },
+    {
+      "model_id": "underworld-station-silence-table",
+      "status": "proposed-family",
+      "reference": "frozen-station.png"
+    },
+    {
+      "model_id": "underworld-station-tidal-basin",
+      "status": "proposed-family",
+      "reference": "blackwater-station.png"
+    },
+    {
+      "model_id": "underworld-surtling-earth-feminine",
+      "status": "proposed-elemental-anatomy",
+      "reference": "surtlings-earth.png"
+    },
+    {
+      "model_id": "underworld-surtling-earth-masculine",
+      "status": "proposed-elemental-anatomy",
+      "reference": "surtlings-earth.png"
+    },
+    {
+      "model_id": "underworld-surtling-fire-feminine",
+      "status": "proposed-elemental-anatomy",
+      "reference": "surtlings-fire.png"
+    },
+    {
+      "model_id": "underworld-surtling-fire-masculine",
+      "status": "proposed-elemental-anatomy",
+      "reference": "surtlings-fire.png"
+    },
+    {
+      "model_id": "underworld-surtling-radiance-feminine",
+      "status": "proposed-elemental-anatomy",
+      "reference": "surtlings-radiance.png"
+    },
+    {
+      "model_id": "underworld-surtling-radiance-masculine",
+      "status": "proposed-elemental-anatomy",
+      "reference": "surtlings-radiance.png"
+    },
+    {
+      "model_id": "underworld-surtling-umbral-feminine",
+      "status": "proposed-elemental-anatomy",
+      "reference": "surtlings-umbral.png"
+    },
+    {
+      "model_id": "underworld-surtling-umbral-masculine",
+      "status": "proposed-elemental-anatomy",
+      "reference": "surtlings-umbral.png"
+    },
+    {
+      "model_id": "underworld-surtling-water-feminine",
+      "status": "proposed-elemental-anatomy",
+      "reference": "surtlings-water.png"
+    },
+    {
+      "model_id": "underworld-surtling-water-masculine",
+      "status": "proposed-elemental-anatomy",
+      "reference": "surtlings-water.png"
+    },
+    {
+      "model_id": "underworld-surtling-wind-feminine",
+      "status": "proposed-elemental-anatomy",
+      "reference": "surtlings-wind.png"
+    },
+    {
+      "model_id": "underworld-surtling-wind-masculine",
+      "status": "proposed-elemental-anatomy",
+      "reference": "surtlings-wind.png"
+    },
+    {
+      "model_id": "underworld-tool-anchor-spike",
+      "status": "proposed-family",
+      "reference": "fracture-tool.png"
+    },
+    {
+      "model_id": "underworld-tool-defiant-censer",
+      "status": "proposed-family",
+      "reference": "decay-tool.png"
+    },
+    {
+      "model_id": "underworld-tool-diving-bell-hood",
+      "status": "proposed-family",
+      "reference": "blackwater-tool.png"
+    },
+    {
+      "model_id": "underworld-tool-rime-chisel",
+      "status": "proposed-family",
+      "reference": "frozen-tool.png"
+    },
+    {
+      "model_id": "underworld-tool-slag-pick",
+      "status": "proposed-family",
+      "reference": "sulfur-tool.png"
+    },
+    {
+      "model_id": "underworld-tool-sporelight-lantern",
+      "status": "proposed-family",
+      "reference": "fungal-tool.png"
+    },
+    {
+      "model_id": "underworld-weapon-amber-blade",
+      "status": "proposed-family",
+      "reference": "decay-weapon-variants.png"
+    },
+    {
+      "model_id": "underworld-weapon-blackwater-harpoon",
+      "status": "proposed-family",
+      "reference": "blackwater-weapon-variants.png"
+    },
+    {
+      "model_id": "underworld-weapon-crown-sceptre",
+      "status": "proposed-family",
+      "reference": "decay-weapon-variants.png"
+    },
+    {
+      "model_id": "underworld-weapon-emberiron-axe",
+      "status": "proposed-family",
+      "reference": "sulfur-weapon-variants.png"
+    },
+    {
+      "model_id": "underworld-weapon-emberiron-greatsword",
+      "status": "proposed-family",
+      "reference": "sulfur-weapon-variants.png"
+    },
+    {
+      "model_id": "underworld-weapon-flowstone-maul",
+      "status": "proposed-family",
+      "reference": "blackwater-weapon-variants.png"
+    },
+    {
+      "model_id": "underworld-weapon-icebind-staff",
+      "status": "proposed-family",
+      "reference": "frozen-weapon-variants.png"
+    },
+    {
+      "model_id": "underworld-weapon-rimesilver-spear",
+      "status": "proposed-family",
+      "reference": "frozen-weapon-variants.png"
+    },
+    {
+      "model_id": "underworld-weapon-shardstone-crossbow",
+      "status": "proposed-family",
+      "reference": "fracture-weapon-variants.png"
+    },
+    {
+      "model_id": "underworld-weapon-titanbone-atgeir",
+      "status": "proposed-family",
+      "reference": "fracture-weapon-variants.png"
+    },
+    {
+      "model_id": "underworld-weapon-worldroot-bow",
+      "status": "proposed-family",
+      "reference": "fungal-weapon-variants.png"
+    },
+    {
+      "model_id": "underworld-weapon-worldroot-club",
+      "status": "proposed-family",
+      "reference": "fungal-weapon-variants.png"
+    }
+  ],
+  "non_model_foods": [
+    "Glowcap Stew",
+    "Mycelial Broth",
+    "Heartcap Ration"
+  ]
+}

@@ -1,0 +1,1192 @@
+[
+  {
+    "id": "fungal-materials",
+    "name": "Fungal Forest \u2014 gathered to worked materials",
+    "category": "Materials",
+    "biome": "Fungal Forest",
+    "file": "fungal-materials.png",
+    "members": [
+      "Worldroot Timber",
+      "Glowcap Flesh",
+      "Spire Fibre",
+      "Understone",
+      "Worldroot Plank",
+      "Spire Cord",
+      "Cured Glowcap"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Fungal Forest \u2014 gathered to worked materials. Catalog study board with each material clearly isolated and labeled. Raw pickups first row, refined products second row. Show recognizable transformation via matching grain/strata/fibre/nacre, not arbitrary identical colored crystals. Names: Worldroot Timber; Glowcap Flesh; Spire Fibre; Understone; Worldroot Plank; Spire Cord; Cured Glowcap. Material language: amber-brown fibrous root, moss-green waxy fungal tissue, pale woven fibres, grey porous Understone. Raw samples have natural fracture and asymmetry; refined forms show hand worked edges and use-specific stock shapes. Food tissue is sliced meaty mushroom flesh, not a glowing rock.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "b780b0af12764c7c5e89c40341c2833b4d9a815396fb454ba1a5b7f51879ff3d"
+  },
+  {
+    "id": "fungal-armour",
+    "name": "Sporeweave armour set",
+    "category": "Armour",
+    "biome": "Fungal Forest",
+    "file": "fungal-armour.png",
+    "members": [
+      "Sporeweave Helmet",
+      "Sporeweave Chest",
+      "Sporeweave Legs",
+      "Sporeweave Cape"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Sporeweave armour set. Four-piece coordinated set: Helmet, Chest, Legs, Cape; full equipped front/side figure plus four separated material studies. Production constraint: helmet/chest/legs KEEP Valheim native Carapace donor segmented shell silhouette, joints and attachment structure. Design owned surface textures and palette over that donor, NOT a new freely sculpted suit. Cape retains native donor cloth silhouette and rig. amber-brown fibrous root, moss-green waxy fungal tissue, pale woven fibres, grey porous Understone. Materials from Worldroot Plank; Spire Cord; Cured Glowcap. Weather contact points and straps, modest distinguishing texture motifs. No floating spikes, opaque face replacement or impossible cloth. Cape donors by biome: Lox for Fungal, Linen for Blackwater, Ash for Sulfur, Wolf for Frozen, Asksvin for Fracture, TrollHide for Decay.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "92eba4e16fda525c98b6efcf406f1b8685848e878d355505bbc88d197c928030"
+  },
+  {
+    "id": "fungal-weapon-variants",
+    "name": "Worldroot Club; Worldroot Bow \u2014 Underworld derivatives",
+    "category": "Weapon variants",
+    "biome": "Fungal Forest",
+    "file": "fungal-weapon-variants.png",
+    "members": [
+      "Worldroot Club",
+      "Worldroot Bow"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Worldroot Club; Worldroot Bow \u2014 Underworld derivatives. Two clearly labeled derivative weapon design studies: Worldroot Club; Worldroot Bow. Retain established crystal-grade weapon/staff ancestry, blade or head silhouette and functional grip. This sheet explores local material fittings, wraps and sockets rather than redesigning approved base weapons. amber-brown fibrous root, moss-green waxy fungal tissue, pale woven fibres, grey porous Understone. Upgrade materials: Worldroot Plank; Spire Cord; Cured Glowcap. Integrated collars follow the shaft/head junction; cords hold useful plates, no disconnected cubes. For Icebind Staff retain frost crystal staff identity. Show grip clearance with neutral hand study, fingers centered on handle not guard. Each weapon visible complete in side view; counterpart three-quarter material detail. Do not present these speculative proportions as approval to change base geometry.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "2c55e686aede7da6160ffc245a35246164789bd06bda3ba6f785269b3a91f28b"
+  },
+  {
+    "id": "fungal-station",
+    "name": "Mycelial Bench \u2014 working process",
+    "category": "Stations",
+    "biome": "Fungal Forest",
+    "file": "fungal-station.png",
+    "members": [
+      "Mycelial Bench"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Mycelial Bench \u2014 working process. One compact bench with three-quarter, front working edge and meaningful cutaway of mechanism. integrated small root clamp and fibre-twisting spool; drying rack for sliced glowcap and a shallow working slab; joined wooden rails, accessible front working edge. amber-brown fibrous root, moss-green waxy fungal tissue, pale woven fibres, grey porous Understone. Scale similar to Valheim crafting station, roughly waist-high work surface, reachable from ground level; accessible front face, unobstructed feet and interaction. About 25% smaller than previous oversized mod tables. Worn corners, joinery and coarse handmade material grain; small asymmetry without random geometry. Clearly show raw inputs Worldroot Timber; Glowcap Flesh; Spire Fibre; Understone becoming Worldroot Plank; Spire Cord; Cured Glowcap. These are visual explanations of registered processes, not new gameplay systems.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "a84e914c0afb82bcd55e65cb8f802d06e0adc7a0d89a6667615ed55538311ef8"
+  },
+  {
+    "id": "fungal-tool",
+    "name": "Sporelight Lantern \u2014 functional construction",
+    "category": "Tools",
+    "biome": "Fungal Forest",
+    "file": "fungal-tool.png",
+    "members": [
+      "Sporelight Lantern"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Sporelight Lantern \u2014 functional construction. One tool reference sheet, complete side/three-quarter views and human handling study. amber-brown fibrous root, moss-green waxy fungal tissue, pale woven fibres, grey porous Understone. Constructed from Worldroot Plank; Spire Cord; Cured Glowcap. Lantern MUST be carried by the TOP handle, with luminous fungus protected in a lower cage, never grasped below base; very restrained light.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "3f782b36e67d93c1e450babb6d4c20c51c86385ae618eded5caab9124648c7a8"
+  },
+  {
+    "id": "fungal-ecology",
+    "name": "Fungal Forest \u2014 vegetation and deposits",
+    "category": "Ecology",
+    "biome": "Fungal Forest",
+    "file": "fungal-ecology.png",
+    "members": [
+      "Glowcap",
+      "Spirestalk",
+      "Puffcap",
+      "Tanglecap",
+      "ferns",
+      "sporebrush",
+      "rootgrass",
+      "moss-stone"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Fungal Forest \u2014 vegetation and deposits. Coherent environment asset kit board: Glowcap, Spirestalk, Puffcap, Tanglecap, ferns, sporebrush, rootgrass, moss-stone. Include each named family at small/medium/large silhouette scale with one cut/felled state where applicable and matching raw resources Worldroot Timber; Glowcap Flesh; Spire Fibre; Understone. amber-brown fibrous root, moss-green waxy fungal tissue, pale woven fibres, grey porous Understone. Underground ecology; NO conventional surface trees. Mineral deposits are distinct harvestable seams/outcrops, especially Understone as grey stone rather than decorative mushrooms. Fungal canopy models must be tree-like in performance: sparse cap silhouette surfaces, gills mostly painted, no many radial fine-geometry layers. Ground scattering reusable cluster cards/simple mesh patches; avoid high-density individual blades. Visual design proposal only, not a generation performance measurement.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "6527c50c06b03a755ef9ed5232d6288950ed32f68447dab5f17e134af26ad8c6"
+  },
+  {
+    "id": "blackwater-materials",
+    "name": "Blackwater Deep \u2014 gathered to worked materials",
+    "category": "Materials",
+    "biome": "Blackwater Deep",
+    "file": "blackwater-materials--v2.png",
+    "members": [
+      "Blackwater Flowstone",
+      "Pale Fibre",
+      "Blackwater Pearl",
+      "Deep Salt",
+      "Flowstone Plate",
+      "Pale Cord",
+      "Brined Pearl"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Blackwater Deep \u2014 gathered to worked materials. Catalog study board with each material clearly isolated and labeled. Raw pickups first row, refined products second row. Show recognizable transformation via matching grain/strata/fibre/nacre, not arbitrary identical colored crystals. Names: Blackwater Flowstone; Pale Fibre; Blackwater Pearl; Deep Salt; Flowstone Plate; Pale Cord; Brined Pearl. Material language: blue-grey layered wet flowstone, pale braided fibres, creamy nacre and chalky salt crusts. Raw samples have natural fracture and asymmetry; refined forms show hand worked edges and use-specific stock shapes. Food tissue is sliced meaty mushroom flesh, not a glowing rock.",
+    "status": "generated",
+    "original_file": "drafts/blackwater-materials.png",
+    "refinement_prompt": "Use case: precise-object-edit. Revise this Magenheim material reference sheet without changing its art style or approved named materials. Catalog accuracy is essential. Remove the entire lower-right sliced mushroom flesh/food sample and its text; there is NO Blackwater food resource in this catalog. Rebalance remaining bottom row to three refined entries: Flowstone Plate, Pale Cord, Brined Pearl. Top row exactly four raw entries Blackwater Flowstone, Pale Fibre, Blackwater Pearl, Deep Salt. Preserve the other named forms, palette and texture studies. Pearl must be visible as the gathered loose pickup, with shell context secondary. Preserve coarse Valheim-compatible painted surface detail, neutral parchment board and readable typography. Do not invent extra catalog entries.",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "daee9b75605288cdc70fd12c696e7753c09511594eb08208b5b7e90fa3a28e98"
+  },
+  {
+    "id": "blackwater-armour",
+    "name": "Palewater armour set",
+    "category": "Armour",
+    "biome": "Blackwater Deep",
+    "file": "blackwater-armour.png",
+    "members": [
+      "Palewater Helmet",
+      "Palewater Chest",
+      "Palewater Legs",
+      "Palewater Cape"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Palewater armour set. Four-piece coordinated set: Helmet, Chest, Legs, Cape; full equipped front/side figure plus four separated material studies. Production constraint: helmet/chest/legs KEEP Valheim native Carapace donor segmented shell silhouette, joints and attachment structure. Design owned surface textures and palette over that donor, NOT a new freely sculpted suit. Cape retains native donor cloth silhouette and rig. blue-grey layered wet flowstone, pale braided fibres, creamy nacre and chalky salt crusts. Materials from Flowstone Plate; Pale Cord; Brined Pearl. Weather contact points and straps, modest distinguishing texture motifs. No floating spikes, opaque face replacement or impossible cloth. Cape donors by biome: Lox for Fungal, Linen for Blackwater, Ash for Sulfur, Wolf for Frozen, Asksvin for Fracture, TrollHide for Decay.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "281b790911238c47de7c229764e842380cbac862940e5f25219a65e034dfaac6"
+  },
+  {
+    "id": "blackwater-weapon-variants",
+    "name": "Flowstone Maul; Blackwater Harpoon \u2014 Underworld derivatives",
+    "category": "Weapon variants",
+    "biome": "Blackwater Deep",
+    "file": "blackwater-weapon-variants.png",
+    "members": [
+      "Flowstone Maul",
+      "Blackwater Harpoon"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Flowstone Maul; Blackwater Harpoon \u2014 Underworld derivatives. Two clearly labeled derivative weapon design studies: Flowstone Maul; Blackwater Harpoon. Retain established crystal-grade weapon/staff ancestry, blade or head silhouette and functional grip. This sheet explores local material fittings, wraps and sockets rather than redesigning approved base weapons. blue-grey layered wet flowstone, pale braided fibres, creamy nacre and chalky salt crusts. Upgrade materials: Flowstone Plate; Pale Cord; Brined Pearl. Integrated collars follow the shaft/head junction; cords hold useful plates, no disconnected cubes. For Icebind Staff retain frost crystal staff identity. Show grip clearance with neutral hand study, fingers centered on handle not guard. Each weapon visible complete in side view; counterpart three-quarter material detail. Do not present these speculative proportions as approval to change base geometry.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "7dce0ee5a6250670456b36997ad4330e99e37b5ce06fda8ade7240cf5f8486e4"
+  },
+  {
+    "id": "blackwater-station",
+    "name": "Tidal Basin \u2014 working process",
+    "category": "Stations",
+    "biome": "Blackwater Deep",
+    "file": "blackwater-station.png",
+    "members": [
+      "Tidal Basin"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Tidal Basin \u2014 working process. One compact bench with three-quarter, front working edge and meaningful cutaway of mechanism. a real recessed basin set INTO the table: visible bowl depth and water, stone lip, drain channel and salt curing trays; cord reel attached to frame; section view proves inset construction. blue-grey layered wet flowstone, pale braided fibres, creamy nacre and chalky salt crusts. Scale similar to Valheim crafting station, roughly waist-high work surface, reachable from ground level; accessible front face, unobstructed feet and interaction. About 25% smaller than previous oversized mod tables. Worn corners, joinery and coarse handmade material grain; small asymmetry without random geometry. Clearly show raw inputs Blackwater Flowstone; Pale Fibre; Blackwater Pearl; Deep Salt becoming Flowstone Plate; Pale Cord; Brined Pearl. These are visual explanations of registered processes, not new gameplay systems.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "d54b6dd13afeb6d5b877ac8822b8e734f9a6a6076441c1725e0517e392bfad1f"
+  },
+  {
+    "id": "blackwater-tool",
+    "name": "Diving Bell Hood \u2014 functional construction",
+    "category": "Tools",
+    "biome": "Blackwater Deep",
+    "file": "blackwater-tool.png",
+    "members": [
+      "Diving Bell Hood"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Diving Bell Hood \u2014 functional construction. One tool reference sheet, complete side/three-quarter views and human handling study. blue-grey layered wet flowstone, pale braided fibres, creamy nacre and chalky salt crusts. Constructed from Flowstone Plate; Pale Cord; Brined Pearl. Wearable diving hood with clear face aperture, closed neck seal and compact weighted rim; no modern scuba equipment; material coating must later fit retained native helmet donor.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "960f65e3d862f8b9726ca78cdea60a65910d8334693cd5025d8c44e4e0eb1886"
+  },
+  {
+    "id": "blackwater-ecology",
+    "name": "Blackwater Deep \u2014 vegetation and deposits",
+    "category": "Ecology",
+    "biome": "Blackwater Deep",
+    "file": "blackwater-ecology.png",
+    "members": [
+      "Palefinger",
+      "pearl caps",
+      "brine fern",
+      "submerged roots",
+      "flowstone spires",
+      "rimstone mound",
+      "silt ripples"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Blackwater Deep \u2014 vegetation and deposits. Coherent environment asset kit board: Palefinger, pearl caps, brine fern, submerged roots, flowstone spires, rimstone mound, silt ripples. Include each named family at small/medium/large silhouette scale with one cut/felled state where applicable and matching raw resources Blackwater Flowstone; Pale Fibre; Blackwater Pearl; Deep Salt. blue-grey layered wet flowstone, pale braided fibres, creamy nacre and chalky salt crusts. Underground ecology; NO conventional surface trees. Mineral deposits are distinct harvestable seams/outcrops, especially Understone as grey stone rather than decorative mushrooms. Fungal canopy models must be tree-like in performance: sparse cap silhouette surfaces, gills mostly painted, no many radial fine-geometry layers. Ground scattering reusable cluster cards/simple mesh patches; avoid high-density individual blades. Visual design proposal only, not a generation performance measurement.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "d7483265235f78472748cdefb5cce46d03c026e0f423f510515d4f287f901b58"
+  },
+  {
+    "id": "sulfur-materials",
+    "name": "Sulfurous Wastes \u2014 gathered to worked materials",
+    "category": "Materials",
+    "biome": "Sulfurous Wastes",
+    "file": "sulfur-materials--v2.png",
+    "members": [
+      "Slagstone",
+      "Sulfur",
+      "Charred Timber",
+      "Emberiron",
+      "Emberiron Bar",
+      "Tempered Slag",
+      "Charred Root Grip"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Sulfurous Wastes \u2014 gathered to worked materials. Catalog study board with each material clearly isolated and labeled. Raw pickups first row, refined products second row. Show recognizable transformation via matching grain/strata/fibre/nacre, not arbitrary identical colored crystals. Names: Slagstone; Sulfur; Charred Timber; Emberiron; Emberiron Bar; Tempered Slag; Charred Root Grip. Material language: sooty charcoal grain, pitted dark slag, dull yellow sulfur crust, hammered black iron with scarce orange heat at working hearth. Raw samples have natural fracture and asymmetry; refined forms show hand worked edges and use-specific stock shapes. Food tissue is sliced meaty mushroom flesh, not a glowing rock.",
+    "status": "generated",
+    "original_file": "drafts/sulfur-materials.png",
+    "refinement_prompt": "Use case: precise-object-edit. Revise this Magenheim material reference sheet without changing its art style or approved named materials. Catalog accuracy is essential. Remove the lower-right Sulfur refined product (food) mushroom and ALL its captions. Sulfur is a raw mineral, NEVER food. Bottom row exactly THREE named refined items: Emberiron Bar, Tempered Slag, Charred Root Grip. Make Charred Root Grip a shaped compact charred rootwood HANDLE GRIP with binding, not a bundle of loose twigs. Top row remains exactly Slagstone, Sulfur, Charred Timber, Emberiron. Rebalance composition. No other materials or foods. Preserve coarse Valheim-compatible painted surface detail, neutral parchment board and readable typography. Do not invent extra catalog entries.",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "9c9b68205cd29c2191ba1d991a0d3abd705dfd8222e46f1bb70b3953f915faaa"
+  },
+  {
+    "id": "sulfur-armour",
+    "name": "Emberiron armour set",
+    "category": "Armour",
+    "biome": "Sulfurous Wastes",
+    "file": "sulfur-armour.png",
+    "members": [
+      "Emberiron Helmet",
+      "Emberiron Chest",
+      "Emberiron Legs",
+      "Emberiron Cape"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Emberiron armour set. Four-piece coordinated set: Helmet, Chest, Legs, Cape; full equipped front/side figure plus four separated material studies. Production constraint: helmet/chest/legs KEEP Valheim native Carapace donor segmented shell silhouette, joints and attachment structure. Design owned surface textures and palette over that donor, NOT a new freely sculpted suit. Cape retains native donor cloth silhouette and rig. sooty charcoal grain, pitted dark slag, dull yellow sulfur crust, hammered black iron with scarce orange heat at working hearth. Materials from Emberiron Bar; Tempered Slag; Charred Root Grip. Weather contact points and straps, modest distinguishing texture motifs. No floating spikes, opaque face replacement or impossible cloth. Cape donors by biome: Lox for Fungal, Linen for Blackwater, Ash for Sulfur, Wolf for Frozen, Asksvin for Fracture, TrollHide for Decay.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "dd534a94f97c9be1973b08c6a4369fa740a02e2f6b01edd2e5dc773d11439cc8"
+  },
+  {
+    "id": "sulfur-weapon-variants",
+    "name": "Emberiron Axe; Emberiron Greatsword \u2014 Underworld derivatives",
+    "category": "Weapon variants",
+    "biome": "Sulfurous Wastes",
+    "file": "sulfur-weapon-variants.png",
+    "members": [
+      "Emberiron Axe",
+      "Emberiron Greatsword"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Emberiron Axe; Emberiron Greatsword \u2014 Underworld derivatives. Two clearly labeled derivative weapon design studies: Emberiron Axe; Emberiron Greatsword. Retain established crystal-grade weapon/staff ancestry, blade or head silhouette and functional grip. This sheet explores local material fittings, wraps and sockets rather than redesigning approved base weapons. sooty charcoal grain, pitted dark slag, dull yellow sulfur crust, hammered black iron with scarce orange heat at working hearth. Upgrade materials: Emberiron Bar; Tempered Slag; Charred Root Grip. Integrated collars follow the shaft/head junction; cords hold useful plates, no disconnected cubes. For Icebind Staff retain frost crystal staff identity. Show grip clearance with neutral hand study, fingers centered on handle not guard. Each weapon visible complete in side view; counterpart three-quarter material detail. Do not present these speculative proportions as approval to change base geometry.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "b21329ca4e39b8d40630eb1e451cf1a2d6496e508aa8881e79b2b80629f5ce21"
+  },
+  {
+    "id": "sulfur-station",
+    "name": "Furnace Heart Forge \u2014 working process",
+    "category": "Stations",
+    "biome": "Sulfurous Wastes",
+    "file": "sulfur-station.png",
+    "members": [
+      "Furnace Heart Forge"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Furnace Heart Forge \u2014 working process. One compact bench with three-quarter, front working edge and meaningful cutaway of mechanism. contained brick/slag hearth, bellows and tongs, Emberiron anvil and quencher; mechanically connected functional forge, heat-resistant compact legs; glow confined to hearth. sooty charcoal grain, pitted dark slag, dull yellow sulfur crust, hammered black iron with scarce orange heat at working hearth. Scale similar to Valheim crafting station, roughly waist-high work surface, reachable from ground level; accessible front face, unobstructed feet and interaction. About 25% smaller than previous oversized mod tables. Worn corners, joinery and coarse handmade material grain; small asymmetry without random geometry. Clearly show raw inputs Slagstone; Sulfur; Charred Timber; Emberiron becoming Emberiron Bar; Tempered Slag; Charred Root Grip. These are visual explanations of registered processes, not new gameplay systems.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "93b94226a475bd0e958698ef08cb32a49cf4495858012ecdd6816cc7f6588929"
+  },
+  {
+    "id": "sulfur-tool",
+    "name": "Slag Pick \u2014 functional construction",
+    "category": "Tools",
+    "biome": "Sulfurous Wastes",
+    "file": "sulfur-tool.png",
+    "members": [
+      "Slag Pick"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Slag Pick \u2014 functional construction. One tool reference sheet, complete side/three-quarter views and human handling study. sooty charcoal grain, pitted dark slag, dull yellow sulfur crust, hammered black iron with scarce orange heat at working hearth. Constructed from Emberiron Bar; Tempered Slag; Charred Root Grip. Heavy purposeful pick with forge-mounted head, pointed mining end and charred bound grip, strong handle-head connection.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "aa7e40574b1fd58245ed01c0c02c9751a15f13fc89df5e5d4789488a3fca6dd9"
+  },
+  {
+    "id": "sulfur-ecology",
+    "name": "Sulfurous Wastes \u2014 vegetation and deposits",
+    "category": "Ecology",
+    "biome": "Sulfurous Wastes",
+    "file": "sulfur-ecology.png",
+    "members": [
+      "Cinderstalk with felled trunk and stump",
+      "split/rootbound/crown geothermal vents",
+      "sulfur drift banks"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Sulfurous Wastes \u2014 vegetation and deposits. Coherent environment asset kit board: Cinderstalk with felled trunk and stump, split/rootbound/crown geothermal vents, sulfur drift banks. Include each named family at small/medium/large silhouette scale with one cut/felled state where applicable and matching raw resources Slagstone; Sulfur; Charred Timber; Emberiron. sooty charcoal grain, pitted dark slag, dull yellow sulfur crust, hammered black iron with scarce orange heat at working hearth. Underground ecology; NO conventional surface trees. Mineral deposits are distinct harvestable seams/outcrops, especially Understone as grey stone rather than decorative mushrooms. Fungal canopy models must be tree-like in performance: sparse cap silhouette surfaces, gills mostly painted, no many radial fine-geometry layers. Ground scattering reusable cluster cards/simple mesh patches; avoid high-density individual blades. Visual design proposal only, not a generation performance measurement.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "e626d0b18779d8a0a174f9e936ed01ecc7769cafcaa3080603454f27668afa48"
+  },
+  {
+    "id": "frozen-materials",
+    "name": "Frozen Caverns \u2014 gathered to worked materials",
+    "category": "Materials",
+    "biome": "Frozen Caverns",
+    "file": "frozen-materials--v2.png",
+    "members": [
+      "Rimewood",
+      "Clear Ice",
+      "Rimesilver",
+      "Rimesilver Bar",
+      "Iceglass Lens",
+      "Rimewood Laminate"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Frozen Caverns \u2014 gathered to worked materials. Catalog study board with each material clearly isolated and labeled. Raw pickups first row, refined products second row. Show recognizable transformation via matching grain/strata/fibre/nacre, not arbitrary identical colored crystals. Names: Rimewood; Clear Ice; Rimesilver; Rimesilver Bar; Iceglass Lens; Rimewood Laminate. Material language: pale blue-grey laminated rootwood, frosted silver, clear ice with directional fractures; teal highlights and dull cloth. Raw samples have natural fracture and asymmetry; refined forms show hand worked edges and use-specific stock shapes. Food tissue is sliced meaty mushroom flesh, not a glowing rock.",
+    "status": "generated",
+    "original_file": "drafts/frozen-materials.png",
+    "refinement_prompt": "Use case: precise-object-edit. Revise this Magenheim material reference sheet without changing its art style or approved named materials. Catalog accuracy is essential. Remove the ENTIRE rightmost column containing Cavern Mushroom and Sliced Mushroom Flesh and their text. Neither is a resource or refined item in this catalog. Rebalance to exactly three top raw entries: Rimewood, Clear Ice, Rimesilver; exactly three bottom refined entries: Rimewood Laminate, Iceglass Lens, Rimesilver Bar. Retain their existing forms, palette, fracture details, texture studies and layout language. No food or additional items. Preserve coarse Valheim-compatible painted surface detail, neutral parchment board and readable typography. Do not invent extra catalog entries.",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "c503cf2f31ba3e81a29ae03c25b0ec101324af8eeae0ddbc34a3557c9af76a86"
+  },
+  {
+    "id": "frozen-armour",
+    "name": "Rimeward armour set",
+    "category": "Armour",
+    "biome": "Frozen Caverns",
+    "file": "frozen-armour.png",
+    "members": [
+      "Rimeward Helmet",
+      "Rimeward Chest",
+      "Rimeward Legs",
+      "Rimeward Cape"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Rimeward armour set. Four-piece coordinated set: Helmet, Chest, Legs, Cape; full equipped front/side figure plus four separated material studies. Production constraint: helmet/chest/legs KEEP Valheim native Carapace donor segmented shell silhouette, joints and attachment structure. Design owned surface textures and palette over that donor, NOT a new freely sculpted suit. Cape retains native donor cloth silhouette and rig. pale blue-grey laminated rootwood, frosted silver, clear ice with directional fractures; teal highlights and dull cloth. Materials from Rimesilver Bar; Iceglass Lens; Rimewood Laminate. Weather contact points and straps, modest distinguishing texture motifs. No floating spikes, opaque face replacement or impossible cloth. Cape donors by biome: Lox for Fungal, Linen for Blackwater, Ash for Sulfur, Wolf for Frozen, Asksvin for Fracture, TrollHide for Decay.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "b051d4b5907fb510236aca8ada72cbe06ea29fd7be469245f8bf6385c1fecee7"
+  },
+  {
+    "id": "frozen-weapon-variants",
+    "name": "Rimesilver Spear; Icebind Staff \u2014 Underworld derivatives",
+    "category": "Weapon variants",
+    "biome": "Frozen Caverns",
+    "file": "frozen-weapon-variants.png",
+    "members": [
+      "Rimesilver Spear",
+      "Icebind Staff"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Rimesilver Spear; Icebind Staff \u2014 Underworld derivatives. Two clearly labeled derivative weapon design studies: Rimesilver Spear; Icebind Staff. Retain established crystal-grade weapon/staff ancestry, blade or head silhouette and functional grip. This sheet explores local material fittings, wraps and sockets rather than redesigning approved base weapons. pale blue-grey laminated rootwood, frosted silver, clear ice with directional fractures; teal highlights and dull cloth. Upgrade materials: Rimesilver Bar; Iceglass Lens; Rimewood Laminate. Integrated collars follow the shaft/head junction; cords hold useful plates, no disconnected cubes. For Icebind Staff retain frost crystal staff identity. Show grip clearance with neutral hand study, fingers centered on handle not guard. Each weapon visible complete in side view; counterpart three-quarter material detail. Do not present these speculative proportions as approval to change base geometry.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "740017a14f28ba7e668d952936f966e0b5c2d5c3aa2eb289ac663307dde26840"
+  },
+  {
+    "id": "frozen-station",
+    "name": "Silence Table \u2014 working process",
+    "category": "Stations",
+    "biome": "Frozen Caverns",
+    "file": "frozen-station.png",
+    "members": [
+      "Silence Table"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Silence Table \u2014 working process. One compact bench with three-quarter, front working edge and meaningful cutaway of mechanism. compact precision lapidary bench, hand-operated padded clamp and fine chisel guides, iceglass lens in a simple supported inspection stand; quiet table without giant ornaments. pale blue-grey laminated rootwood, frosted silver, clear ice with directional fractures; teal highlights and dull cloth. Scale similar to Valheim crafting station, roughly waist-high work surface, reachable from ground level; accessible front face, unobstructed feet and interaction. About 25% smaller than previous oversized mod tables. Worn corners, joinery and coarse handmade material grain; small asymmetry without random geometry. Clearly show raw inputs Rimewood; Clear Ice; Rimesilver becoming Rimesilver Bar; Iceglass Lens; Rimewood Laminate. These are visual explanations of registered processes, not new gameplay systems.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "8e797e9fb32c6c5df7ac4b3a7c0b866e91b0d24e468da68bf6161cc3d18fe858"
+  },
+  {
+    "id": "frozen-tool",
+    "name": "Rime Chisel \u2014 functional construction",
+    "category": "Tools",
+    "biome": "Frozen Caverns",
+    "file": "frozen-tool.png",
+    "members": [
+      "Rime Chisel"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Rime Chisel \u2014 functional construction. One tool reference sheet, complete side/three-quarter views and human handling study. pale blue-grey laminated rootwood, frosted silver, clear ice with directional fractures; teal highlights and dull cloth. Constructed from Rimesilver Bar; Iceglass Lens; Rimewood Laminate. Short precision ice-cutting chisel with a blunt striking butt and honed silver cutting edge, safe visibly usable handle.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "635929a9b8ede536ec0dfa5b0ebf9a2e8b71ed232781d38ee49a872eb5bc1ddc"
+  },
+  {
+    "id": "frozen-ecology",
+    "name": "Frozen Caverns \u2014 vegetation and deposits",
+    "category": "Ecology",
+    "biome": "Frozen Caverns",
+    "file": "frozen-ecology.png",
+    "members": [
+      "Rimecap",
+      "rime fans",
+      "frozen rootwood and ice/silver seam dressing"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Frozen Caverns \u2014 vegetation and deposits. Coherent environment asset kit board: Rimecap, rime fans, frozen rootwood and ice/silver seam dressing. Include each named family at small/medium/large silhouette scale with one cut/felled state where applicable and matching raw resources Rimewood; Clear Ice; Rimesilver. pale blue-grey laminated rootwood, frosted silver, clear ice with directional fractures; teal highlights and dull cloth. Underground ecology; NO conventional surface trees. Mineral deposits are distinct harvestable seams/outcrops, especially Understone as grey stone rather than decorative mushrooms. Fungal canopy models must be tree-like in performance: sparse cap silhouette surfaces, gills mostly painted, no many radial fine-geometry layers. Ground scattering reusable cluster cards/simple mesh patches; avoid high-density individual blades. Visual design proposal only, not a generation performance measurement.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "d9c479b5beea8c8680503f942664f75eced10fc92dc9929f79c2b213131e586e"
+  },
+  {
+    "id": "fracture-materials",
+    "name": "Fracture Zones \u2014 gathered to worked materials",
+    "category": "Materials",
+    "biome": "Fracture Zones",
+    "file": "fracture-materials--v2.png",
+    "members": [
+      "Fracture Crystal",
+      "Shardstone",
+      "Titanbone",
+      "Titanbone Plate",
+      "Shardstone Block",
+      "Fracture Prism"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Fracture Zones \u2014 gathered to worked materials. Catalog study board with each material clearly isolated and labeled. Raw pickups first row, refined products second row. Show recognizable transformation via matching grain/strata/fibre/nacre, not arbitrary identical colored crystals. Names: Fracture Crystal; Shardstone; Titanbone; Titanbone Plate; Shardstone Block; Fracture Prism. Material language: heavy grey stratified shale, aged ivory bone, sparse violet mineral seams; cut prisms remain translucent without excessive glow. Raw samples have natural fracture and asymmetry; refined forms show hand worked edges and use-specific stock shapes. Food tissue is sliced meaty mushroom flesh, not a glowing rock.",
+    "status": "generated",
+    "original_file": "drafts/fracture-materials.png",
+    "refinement_prompt": "Use case: precise-object-edit. Revise this Magenheim material reference sheet without changing its art style or approved named materials. Catalog accuracy is essential. Remove the ENTIRE upper-right Meatshroom food pickup example and all its text and swatches. There is NO Meatshroom resource or food. Rebalance to exactly three raw entries Fracture Crystal, Shardstone, Titanbone and three refined entries Fracture Prism, Shardstone Block, Titanbone Plate. Preserve existing named forms, texture studies and material relationships. No added resources or foods. Preserve coarse Valheim-compatible painted surface detail, neutral parchment board and readable typography. Do not invent extra catalog entries.",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "41a9e0d686bd4fb3d16c18e84ec61c08ee892b208e2cd34989c8984b15bb9cfe"
+  },
+  {
+    "id": "fracture-armour",
+    "name": "Stoneanchor armour set",
+    "category": "Armour",
+    "biome": "Fracture Zones",
+    "file": "fracture-armour.png",
+    "members": [
+      "Stoneanchor Helmet",
+      "Stoneanchor Chest",
+      "Stoneanchor Legs",
+      "Stoneanchor Cape"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Stoneanchor armour set. Four-piece coordinated set: Helmet, Chest, Legs, Cape; full equipped front/side figure plus four separated material studies. Production constraint: helmet/chest/legs KEEP Valheim native Carapace donor segmented shell silhouette, joints and attachment structure. Design owned surface textures and palette over that donor, NOT a new freely sculpted suit. Cape retains native donor cloth silhouette and rig. heavy grey stratified shale, aged ivory bone, sparse violet mineral seams; cut prisms remain translucent without excessive glow. Materials from Titanbone Plate; Shardstone Block; Fracture Prism. Weather contact points and straps, modest distinguishing texture motifs. No floating spikes, opaque face replacement or impossible cloth. Cape donors by biome: Lox for Fungal, Linen for Blackwater, Ash for Sulfur, Wolf for Frozen, Asksvin for Fracture, TrollHide for Decay.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "da151b45242120e503854676210b6e43533bea823f9d3d21d24adb996c319c26"
+  },
+  {
+    "id": "fracture-weapon-variants",
+    "name": "Titanbone Atgeir; Shardstone Crossbow \u2014 Underworld derivatives",
+    "category": "Weapon variants",
+    "biome": "Fracture Zones",
+    "file": "fracture-weapon-variants.png",
+    "members": [
+      "Titanbone Atgeir",
+      "Shardstone Crossbow"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Titanbone Atgeir; Shardstone Crossbow \u2014 Underworld derivatives. Two clearly labeled derivative weapon design studies: Titanbone Atgeir; Shardstone Crossbow. Retain established crystal-grade weapon/staff ancestry, blade or head silhouette and functional grip. This sheet explores local material fittings, wraps and sockets rather than redesigning approved base weapons. heavy grey stratified shale, aged ivory bone, sparse violet mineral seams; cut prisms remain translucent without excessive glow. Upgrade materials: Titanbone Plate; Shardstone Block; Fracture Prism. Integrated collars follow the shaft/head junction; cords hold useful plates, no disconnected cubes. For Icebind Staff retain frost crystal staff identity. Show grip clearance with neutral hand study, fingers centered on handle not guard. Each weapon visible complete in side view; counterpart three-quarter material detail. Do not present these speculative proportions as approval to change base geometry.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "b9d318cc93e9ce804a89237994e705cedd16a740118edab199cefcb4637cabe5"
+  },
+  {
+    "id": "fracture-station",
+    "name": "Anchor Forge \u2014 working process",
+    "category": "Stations",
+    "biome": "Fracture Zones",
+    "file": "fracture-station.png",
+    "members": [
+      "Anchor Forge"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Anchor Forge \u2014 working process. One compact bench with three-quarter, front working edge and meaningful cutaway of mechanism. Titanbone-braced compact heavy forge; upper right hand crank firmly on an axle with bearings and offset hand grip, driving a visible press; small hexagonal sample crystals sit in a tray ON work surface, never in a leg. heavy grey stratified shale, aged ivory bone, sparse violet mineral seams; cut prisms remain translucent without excessive glow. Scale similar to Valheim crafting station, roughly waist-high work surface, reachable from ground level; accessible front face, unobstructed feet and interaction. About 25% smaller than previous oversized mod tables. Worn corners, joinery and coarse handmade material grain; small asymmetry without random geometry. Clearly show raw inputs Fracture Crystal; Shardstone; Titanbone becoming Titanbone Plate; Shardstone Block; Fracture Prism. These are visual explanations of registered processes, not new gameplay systems.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "3f41f314187029bbfe78fb448a3f00f37310e1347e5e6b815f712c030879c499"
+  },
+  {
+    "id": "fracture-tool",
+    "name": "Anchor Spike \u2014 functional construction",
+    "category": "Tools",
+    "biome": "Fracture Zones",
+    "file": "fracture-tool.png",
+    "members": [
+      "Anchor Spike"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Anchor Spike \u2014 functional construction. One tool reference sheet, complete side/three-quarter views and human handling study. heavy grey stratified shale, aged ivory bone, sparse violet mineral seams; cut prisms remain translucent without excessive glow. Constructed from Titanbone Plate; Shardstone Block; Fracture Prism. Deployable grounded spike, heavy bone collar and stone stabilizer foot around a single strong shaft; low center of gravity, grounded placement.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "4ed306cb1ccb9c0444170fe7c1c52882e04b16cb83c0d515c5882a102ab14e75"
+  },
+  {
+    "id": "fracture-ecology",
+    "name": "Fracture Zones \u2014 vegetation and deposits",
+    "category": "Ecology",
+    "biome": "Fracture Zones",
+    "file": "fracture-ecology.png",
+    "members": [
+      "shale scree",
+      "exposed crystal seam",
+      "Titanbone deposit and fractured mineral outcrops"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Fracture Zones \u2014 vegetation and deposits. Coherent environment asset kit board: shale scree, exposed crystal seam, Titanbone deposit and fractured mineral outcrops. Include each named family at small/medium/large silhouette scale with one cut/felled state where applicable and matching raw resources Fracture Crystal; Shardstone; Titanbone. heavy grey stratified shale, aged ivory bone, sparse violet mineral seams; cut prisms remain translucent without excessive glow. Underground ecology; NO conventional surface trees. Mineral deposits are distinct harvestable seams/outcrops, especially Understone as grey stone rather than decorative mushrooms. Fungal canopy models must be tree-like in performance: sparse cap silhouette surfaces, gills mostly painted, no many radial fine-geometry layers. Ground scattering reusable cluster cards/simple mesh patches; avoid high-density individual blades. Visual design proposal only, not a generation performance measurement.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "1db2c260b1d4a8ee91bee8cd69cb08c6ed1100476d4b68b4e6d46e13e6d6c67b"
+  },
+  {
+    "id": "decay-materials",
+    "name": "Great Decay \u2014 gathered to worked materials",
+    "category": "Materials",
+    "biome": "Great Decay",
+    "file": "decay-materials--v2.png",
+    "members": [
+      "Rotwood",
+      "Decay Spore",
+      "Carrion Amber",
+      "Bone Gravel",
+      "Carrion Amber Seal",
+      "Ossuary Composite",
+      "Rotwood Laminate"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Great Decay \u2014 gathered to worked materials. Catalog study board with each material clearly isolated and labeled. Raw pickups first row, refined products second row. Show recognizable transformation via matching grain/strata/fibre/nacre, not arbitrary identical colored crystals. Names: Rotwood; Decay Spore; Carrion Amber; Bone Gravel; Carrion Amber Seal; Ossuary Composite; Rotwood Laminate. Material language: dark red-brown rotten wood, aged yellow bone, translucent honey-red amber, black-green spore staining; dark yet readable. Raw samples have natural fracture and asymmetry; refined forms show hand worked edges and use-specific stock shapes. Food tissue is sliced meaty mushroom flesh, not a glowing rock.",
+    "status": "generated",
+    "original_file": "drafts/decay-materials.png",
+    "refinement_prompt": "Use case: precise-object-edit. Revise this Magenheim material reference sheet without changing its art style or approved named materials. Catalog accuracy is essential. Only correct the Decay Spore raw pickup study: replace meaty sliced mushroom flesh with a small mound of dark green-black dry spore granules/dust, with a modest intact Rotcap cluster behind as SOURCE context. Label Decay Spore, raw spore pickup; replace sliced section/meaty flesh caption with spore grains and source cap. NOT food. Keep Rotwood, Carrion Amber, Bone Gravel, Rotwood Laminate, Carrion Amber Seal and Ossuary Composite exactly present. Preserve overall dark red-brown/amber/bone palette and crafted material language. No new items. Preserve coarse Valheim-compatible painted surface detail, neutral parchment board and readable typography. Do not invent extra catalog entries.",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "8efeb36283298cc46de0efd9d20ae36deb4ab76ce22e71247907c871de15d4ab"
+  },
+  {
+    "id": "decay-armour",
+    "name": "Defiant armour set",
+    "category": "Armour",
+    "biome": "Great Decay",
+    "file": "decay-armour.png",
+    "members": [
+      "Defiant Helmet",
+      "Defiant Chest",
+      "Defiant Legs",
+      "Defiant Cape"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Defiant armour set. Four-piece coordinated set: Helmet, Chest, Legs, Cape; full equipped front/side figure plus four separated material studies. Production constraint: helmet/chest/legs KEEP Valheim native Carapace donor segmented shell silhouette, joints and attachment structure. Design owned surface textures and palette over that donor, NOT a new freely sculpted suit. Cape retains native donor cloth silhouette and rig. dark red-brown rotten wood, aged yellow bone, translucent honey-red amber, black-green spore staining; dark yet readable. Materials from Carrion Amber Seal; Ossuary Composite; Rotwood Laminate. Weather contact points and straps, modest distinguishing texture motifs. No floating spikes, opaque face replacement or impossible cloth. Cape donors by biome: Lox for Fungal, Linen for Blackwater, Ash for Sulfur, Wolf for Frozen, Asksvin for Fracture, TrollHide for Decay.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "db5f62c2fae66fe31c1949b505b5374a6a5d0d50efdf9f19811df129fbcb6a5a"
+  },
+  {
+    "id": "decay-weapon-variants",
+    "name": "Amber Blade; Crown Sceptre \u2014 Underworld derivatives",
+    "category": "Weapon variants",
+    "biome": "Great Decay",
+    "file": "decay-weapon-variants.png",
+    "members": [
+      "Amber Blade",
+      "Crown Sceptre"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Amber Blade; Crown Sceptre \u2014 Underworld derivatives. Two clearly labeled derivative weapon design studies: Amber Blade; Crown Sceptre. Retain established crystal-grade weapon/staff ancestry, blade or head silhouette and functional grip. This sheet explores local material fittings, wraps and sockets rather than redesigning approved base weapons. dark red-brown rotten wood, aged yellow bone, translucent honey-red amber, black-green spore staining; dark yet readable. Upgrade materials: Carrion Amber Seal; Ossuary Composite; Rotwood Laminate. Integrated collars follow the shaft/head junction; cords hold useful plates, no disconnected cubes. For Icebind Staff retain frost crystal staff identity. Show grip clearance with neutral hand study, fingers centered on handle not guard. Each weapon visible complete in side view; counterpart three-quarter material detail. Do not present these speculative proportions as approval to change base geometry.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "9d0d246c3f61f184f5bd9657adb7d32833eed05a7b8ab34530ab778b99609d84"
+  },
+  {
+    "id": "decay-station",
+    "name": "Crown Reliquary \u2014 working process",
+    "category": "Stations",
+    "biome": "Great Decay",
+    "file": "decay-station.png",
+    "members": [
+      "Crown Reliquary"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Crown Reliquary \u2014 working process. One compact bench with three-quarter, front working edge and meaningful cutaway of mechanism. small functional sealing and composite pressing altar-workbench; amber heating cup, fitted bone moulds, press and curing tray; purposeful authority motifs integrated into frame, no unrelated furniture sculptures. dark red-brown rotten wood, aged yellow bone, translucent honey-red amber, black-green spore staining; dark yet readable. Scale similar to Valheim crafting station, roughly waist-high work surface, reachable from ground level; accessible front face, unobstructed feet and interaction. About 25% smaller than previous oversized mod tables. Worn corners, joinery and coarse handmade material grain; small asymmetry without random geometry. Clearly show raw inputs Rotwood; Decay Spore; Carrion Amber; Bone Gravel becoming Carrion Amber Seal; Ossuary Composite; Rotwood Laminate. These are visual explanations of registered processes, not new gameplay systems.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "8c80bd9b003820b8013844670164180dd3f8881f3fc56cc42904c33841180a7d"
+  },
+  {
+    "id": "decay-tool",
+    "name": "Defiant Censer \u2014 functional construction",
+    "category": "Tools",
+    "biome": "Great Decay",
+    "file": "decay-tool.png",
+    "members": [
+      "Defiant Censer"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Defiant Censer \u2014 functional construction. One tool reference sheet, complete side/three-quarter views and human handling study. dark red-brown rotten wood, aged yellow bone, translucent honey-red amber, black-green spore staining; dark yet readable. Constructed from Carrion Amber Seal; Ossuary Composite; Rotwood Laminate. Hand-carried vented censer with secure upper handle, sealed amber chamber and bone grille; controlled dark vapour does not hide silhouette.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "28baed0726ec0f276b4f386fdf0569910941a0cdedf14128387e5e3acdd70aae"
+  },
+  {
+    "id": "decay-ecology",
+    "name": "Great Decay \u2014 vegetation and deposits",
+    "category": "Ecology",
+    "biome": "Great Decay",
+    "file": "decay-ecology.png",
+    "members": [
+      "Rotbloom",
+      "peat mat",
+      "rotting roots",
+      "amber nodules and ossuary bone gravel"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Great Decay \u2014 vegetation and deposits. Coherent environment asset kit board: Rotbloom, peat mat, rotting roots, amber nodules and ossuary bone gravel. Include each named family at small/medium/large silhouette scale with one cut/felled state where applicable and matching raw resources Rotwood; Decay Spore; Carrion Amber; Bone Gravel. dark red-brown rotten wood, aged yellow bone, translucent honey-red amber, black-green spore staining; dark yet readable. Underground ecology; NO conventional surface trees. Mineral deposits are distinct harvestable seams/outcrops, especially Understone as grey stone rather than decorative mushrooms. Fungal canopy models must be tree-like in performance: sparse cap silhouette surfaces, gills mostly painted, no many radial fine-geometry layers. Ground scattering reusable cluster cards/simple mesh patches; avoid high-density individual blades. Visual design proposal only, not a generation performance measurement.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "2c2fcb0f4789320850b6503f5a1b63a32a656b98eb1e57b4ec8e59997081acc4"
+  },
+  {
+    "id": "fungal-foods",
+    "name": "Fungal provisions \u2014 three actual recipes",
+    "category": "Foods",
+    "biome": "Fungal Forest",
+    "file": "fungal-foods.png",
+    "members": [
+      "Glowcap Stew",
+      "Mycelial Broth",
+      "Heartcap Ration"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Fungal provisions \u2014 three actual recipes. Three separate clearly labeled plates and ingredient-to-food studies: Glowcap Stew (Glowcap Flesh, Royal Jelly, Sap), Mycelial Broth (Glowcap Flesh, Jotun Puffs, Sap), Heartcap Ration (Glowcap Flesh, Royal Jelly, Misthare Supreme). Stew is hearty cut fungal tissue in a worn wooden bowl; broth is thinner earthy stock with floating small fungi, ceramic cup/bowl; ration is dense prepared mushroom-heart and meat portion, leaf/fibre wrap. Appetite, readable texture, restrained tiny luminous flecks, no neon soup. All three identifiable at inventory icon size. Do not add unimplemented other-biome foods.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "45b09c62c320df84a8483c5ef0b33b4831252fea338bdbb8b84f20642f5a5e11"
+  },
+  {
+    "id": "deep-annoyance-wisp",
+    "name": "Annoyance Wisp \u2014 Deep Fracture chassis",
+    "category": "Creatures",
+    "biome": "Deep Fractures",
+    "file": "deep-annoyance-wisp.png",
+    "members": [
+      "Annoyance Wisp"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Annoyance Wisp \u2014 Deep Fracture chassis. Dedicated creature design target: tiny floating asymmetric mineral mote with a luminous recessed core and orbiting fragments, no humanoid legs. Hero three-quarter neutral pose, side silhouette, scale figure and anatomy/material callouts. Continuous connected anatomy, attack organ and joint motion clear. Coarse chipped layered stone, rough crystal, dark recessed seams. One neutral earth mineral body and small palette strip for earth/fire/frost/storm/venom/radiance/spirit/seidr alignment. Alignments change material accents, not chassis identity. Retain donor-compatible rig and behavior; resolve generated view inconsistencies before modeling. Different from the Underworld biome creature names already adopted.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "904a5b297f4623c0a58b7f24db877b9a9c52c40bafd2ec0589ccb646446a5cff"
+  },
+  {
+    "id": "deep-geode-crawler",
+    "name": "Geode Crawler \u2014 Deep Fracture chassis",
+    "category": "Creatures",
+    "biome": "Deep Fractures",
+    "file": "deep-geode-crawler.png",
+    "members": [
+      "Geode Crawler"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Geode Crawler \u2014 Deep Fracture chassis. Dedicated creature design target: low six-legged territorial crustacean with opened geode shell over back and jointed walking limbs. Hero three-quarter neutral pose, side silhouette, scale figure and anatomy/material callouts. Continuous connected anatomy, attack organ and joint motion clear. Coarse chipped layered stone, rough crystal, dark recessed seams. One neutral earth mineral body and small palette strip for earth/fire/frost/storm/venom/radiance/spirit/seidr alignment. Alignments change material accents, not chassis identity. Retain donor-compatible rig and behavior; resolve generated view inconsistencies before modeling. Different from the Underworld biome creature names already adopted.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "d1cd3703c163c4e9e6a19d0048ef3b62f58a2d2846aebbda7806fbc1ac81a19f"
+  },
+  {
+    "id": "deep-shardling",
+    "name": "Shardling \u2014 Deep Fracture chassis",
+    "category": "Creatures",
+    "biome": "Deep Fractures",
+    "file": "deep-shardling.png",
+    "members": [
+      "Shardling"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Shardling \u2014 Deep Fracture chassis. Dedicated creature design target: small agile biped with angled crystal plates, crouching skirmisher stance and distinct attack arm. Hero three-quarter neutral pose, side silhouette, scale figure and anatomy/material callouts. Continuous connected anatomy, attack organ and joint motion clear. Coarse chipped layered stone, rough crystal, dark recessed seams. One neutral earth mineral body and small palette strip for earth/fire/frost/storm/venom/radiance/spirit/seidr alignment. Alignments change material accents, not chassis identity. Retain donor-compatible rig and behavior; resolve generated view inconsistencies before modeling. Different from the Underworld biome creature names already adopted.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "991520e4ccd1fb5dfb6fd1400ee42f977b3dd86c520ff3347731be407f22c82f"
+  },
+  {
+    "id": "deep-crystal-parasite",
+    "name": "Crystal Parasite \u2014 Deep Fracture chassis",
+    "category": "Creatures",
+    "biome": "Deep Fractures",
+    "file": "deep-crystal-parasite.png",
+    "members": [
+      "Crystal Parasite"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Crystal Parasite \u2014 Deep Fracture chassis. Dedicated creature design target: compact eight-legged clinging arthropod with radial feeding mouth and crystalline parasite abdomen. Hero three-quarter neutral pose, side silhouette, scale figure and anatomy/material callouts. Continuous connected anatomy, attack organ and joint motion clear. Coarse chipped layered stone, rough crystal, dark recessed seams. One neutral earth mineral body and small palette strip for earth/fire/frost/storm/venom/radiance/spirit/seidr alignment. Alignments change material accents, not chassis identity. Retain donor-compatible rig and behavior; resolve generated view inconsistencies before modeling. Different from the Underworld biome creature names already adopted.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "4d9b58d9665dd2b0f3ef2b3adf4e071e6c720c043a7d1fba889e37bf21515744"
+  },
+  {
+    "id": "deep-crystal-revenant",
+    "name": "Crystal Revenant \u2014 Deep Fracture chassis",
+    "category": "Creatures",
+    "biome": "Deep Fractures",
+    "file": "deep-crystal-revenant.png",
+    "members": [
+      "Crystal Revenant"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Crystal Revenant \u2014 Deep Fracture chassis. Dedicated creature design target: skeletal humanoid soldier with mineral-replaced ribs and limbs, distinguish real joints and weapon arm. Hero three-quarter neutral pose, side silhouette, scale figure and anatomy/material callouts. Continuous connected anatomy, attack organ and joint motion clear. Coarse chipped layered stone, rough crystal, dark recessed seams. One neutral earth mineral body and small palette strip for earth/fire/frost/storm/venom/radiance/spirit/seidr alignment. Alignments change material accents, not chassis identity. Retain donor-compatible rig and behavior; resolve generated view inconsistencies before modeling. Different from the Underworld biome creature names already adopted.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "abeef67483e022185c07e7e0f211651c53b5e01fec47d55fa81715c229ed0d6b"
+  },
+  {
+    "id": "deep-facet-sentry",
+    "name": "Facet Sentry \u2014 Deep Fracture chassis",
+    "category": "Creatures",
+    "biome": "Deep Fractures",
+    "file": "deep-facet-sentry.png",
+    "members": [
+      "Facet Sentry"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Facet Sentry \u2014 Deep Fracture chassis. Dedicated creature design target: compact upright construct with inset sensor aperture, articulated arms, planted stance and precision attack focus. Hero three-quarter neutral pose, side silhouette, scale figure and anatomy/material callouts. Continuous connected anatomy, attack organ and joint motion clear. Coarse chipped layered stone, rough crystal, dark recessed seams. One neutral earth mineral body and small palette strip for earth/fire/frost/storm/venom/radiance/spirit/seidr alignment. Alignments change material accents, not chassis identity. Retain donor-compatible rig and behavior; resolve generated view inconsistencies before modeling. Different from the Underworld biome creature names already adopted.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "472ef765ba89566475dea86b4fc53d5f4f82ba46aeaf55efd111bda82e7be49c"
+  },
+  {
+    "id": "deep-stone-sentinel",
+    "name": "Stone Sentinel \u2014 Deep Fracture chassis",
+    "category": "Creatures",
+    "biome": "Deep Fractures",
+    "file": "deep-stone-sentinel.png",
+    "members": [
+      "Stone Sentinel"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Stone Sentinel \u2014 Deep Fracture chassis. Dedicated creature design target: tall broad gatekeeper with heavy interlocking stone plates, narrow head and firmly planted legs; distinguish from guardian. Hero three-quarter neutral pose, side silhouette, scale figure and anatomy/material callouts. Continuous connected anatomy, attack organ and joint motion clear. Coarse chipped layered stone, rough crystal, dark recessed seams. One neutral earth mineral body and small palette strip for earth/fire/frost/storm/venom/radiance/spirit/seidr alignment. Alignments change material accents, not chassis identity. Retain donor-compatible rig and behavior; resolve generated view inconsistencies before modeling. Different from the Underworld biome creature names already adopted.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "cbadc13bb92d50ff0b4fa7be091ed638e60ebb79582dc1c2e608b2b572d1dfbf"
+  },
+  {
+    "id": "deep-crystal-hound",
+    "name": "Crystal Hound \u2014 Deep Fracture chassis",
+    "category": "Creatures",
+    "biome": "Deep Fractures",
+    "file": "deep-crystal-hound.png",
+    "members": [
+      "Crystal Hound"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Crystal Hound \u2014 Deep Fracture chassis. Dedicated creature design target: lean four-legged pursuit predator, low long canine spine, articulated hind hocks and mineral jaw; crystal fur silhouette restrained. Hero three-quarter neutral pose, side silhouette, scale figure and anatomy/material callouts. Continuous connected anatomy, attack organ and joint motion clear. Coarse chipped layered stone, rough crystal, dark recessed seams. One neutral earth mineral body and small palette strip for earth/fire/frost/storm/venom/radiance/spirit/seidr alignment. Alignments change material accents, not chassis identity. Retain donor-compatible rig and behavior; resolve generated view inconsistencies before modeling. Different from the Underworld biome creature names already adopted.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "461401f9a0d34d7079fca0c2254ddc891dd8f3a190df0078a9fc0cc816f0f6aa"
+  },
+  {
+    "id": "deep-burrower",
+    "name": "Burrower \u2014 Deep Fracture chassis",
+    "category": "Creatures",
+    "biome": "Deep Fractures",
+    "file": "deep-burrower.png",
+    "members": [
+      "Burrower"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Burrower \u2014 Deep Fracture chassis. Dedicated creature design target: horizontal segmented subterranean worm-beast with wedge digging mouth, fore digging limbs and trailing tapered body; show excavation pose. Hero three-quarter neutral pose, side silhouette, scale figure and anatomy/material callouts. Continuous connected anatomy, attack organ and joint motion clear. Coarse chipped layered stone, rough crystal, dark recessed seams. One neutral earth mineral body and small palette strip for earth/fire/frost/storm/venom/radiance/spirit/seidr alignment. Alignments change material accents, not chassis identity. Retain donor-compatible rig and behavior; resolve generated view inconsistencies before modeling. Different from the Underworld biome creature names already adopted.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "c012c89c1c49892c56a469fd3f75e3d2c58c4bf4ad20273baf9b5f9f56652237"
+  },
+  {
+    "id": "deep-stone-guardian",
+    "name": "Stone Guardian \u2014 Deep Fracture chassis",
+    "category": "Creatures",
+    "biome": "Deep Fractures",
+    "file": "deep-stone-guardian.png",
+    "members": [
+      "Stone Guardian"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Stone Guardian \u2014 Deep Fracture chassis. Dedicated creature design target: low wide quadrupedal gatekeeper, buttressed stone limbs, shield-like front head, weight-bearing stone anatomy. Hero three-quarter neutral pose, side silhouette, scale figure and anatomy/material callouts. Continuous connected anatomy, attack organ and joint motion clear. Coarse chipped layered stone, rough crystal, dark recessed seams. One neutral earth mineral body and small palette strip for earth/fire/frost/storm/venom/radiance/spirit/seidr alignment. Alignments change material accents, not chassis identity. Retain donor-compatible rig and behavior; resolve generated view inconsistencies before modeling. Different from the Underworld biome creature names already adopted.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "4aced4e58e81327e085f1b90bdac010c4d8ead0726e2aa2ff6c493389aa37a27"
+  },
+  {
+    "id": "deep-crystal-golem",
+    "name": "Crystal Golem \u2014 Deep Fracture chassis",
+    "category": "Creatures",
+    "biome": "Deep Fractures",
+    "file": "deep-crystal-golem.png",
+    "members": [
+      "Crystal Golem"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Crystal Golem \u2014 Deep Fracture chassis. Dedicated creature design target: massive articulated biped with coherent geode torso, overlapping shoulder plates and weighty mineral hands, not random shard stack. Hero three-quarter neutral pose, side silhouette, scale figure and anatomy/material callouts. Continuous connected anatomy, attack organ and joint motion clear. Coarse chipped layered stone, rough crystal, dark recessed seams. One neutral earth mineral body and small palette strip for earth/fire/frost/storm/venom/radiance/spirit/seidr alignment. Alignments change material accents, not chassis identity. Retain donor-compatible rig and behavior; resolve generated view inconsistencies before modeling. Different from the Underworld biome creature names already adopted.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "37b34eb7defda222f56e390dfc7c468b6affd4adc4729b619ac0a1ba3eda1a12"
+  },
+  {
+    "id": "deep-obelisk-warden",
+    "name": "Obelisk Warden \u2014 Deep Fracture chassis",
+    "category": "Creatures",
+    "biome": "Deep Fractures",
+    "file": "deep-obelisk-warden.png",
+    "members": [
+      "Obelisk Warden"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Obelisk Warden \u2014 Deep Fracture chassis. Dedicated creature design target: stationary living upright obelisk fortification with integrated rooted base, inset core and stone rib shutters; no walking humanoid copy. Hero three-quarter neutral pose, side silhouette, scale figure and anatomy/material callouts. Continuous connected anatomy, attack organ and joint motion clear. Coarse chipped layered stone, rough crystal, dark recessed seams. One neutral earth mineral body and small palette strip for earth/fire/frost/storm/venom/radiance/spirit/seidr alignment. Alignments change material accents, not chassis identity. Retain donor-compatible rig and behavior; resolve generated view inconsistencies before modeling. Different from the Underworld biome creature names already adopted.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "1f1b1fafc685562a0aa5f68bc9bfbe67dd5dcac30186a23217ec77b0a9205ec0"
+  },
+  {
+    "id": "deep-deep-colossus",
+    "name": "Deep Colossus \u2014 Deep Fracture chassis",
+    "category": "Creatures",
+    "biome": "Deep Fractures",
+    "file": "deep-deep-colossus.png",
+    "members": [
+      "Deep Colossus"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Deep Colossus \u2014 Deep Fracture chassis. Dedicated creature design target: huge hunched stratified cavern titan, very long load-bearing arms, thick short legs, torso vault and giant split mineral face; clearly different from Crystal Golem. Hero three-quarter neutral pose, side silhouette, scale figure and anatomy/material callouts. Continuous connected anatomy, attack organ and joint motion clear. Coarse chipped layered stone, rough crystal, dark recessed seams. One neutral earth mineral body and small palette strip for earth/fire/frost/storm/venom/radiance/spirit/seidr alignment. Alignments change material accents, not chassis identity. Retain donor-compatible rig and behavior; resolve generated view inconsistencies before modeling. Different from the Underworld biome creature names already adopted.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "a3ba40273cf13c55f04c83d77c1df8d2d3f02ca23db91ce881498c98c3720e92"
+  },
+  {
+    "id": "surtlings-earth",
+    "name": "Earth Surtlings \u2014 masculine and feminine",
+    "category": "Creatures",
+    "biome": "Underworld elemental",
+    "file": "surtlings-earth.png",
+    "members": [
+      "Earth Surtling Masculine",
+      "Earth Surtling Feminine"
+    ],
+    "prompt": "Use case: stylized-concept. Dedicated Magenheim Underworld elemental Surtling pair production concept sheet. Adult masculine and feminine full-body front and three-quarter studies, same scale ruler, isolated black silhouettes and body construction detail. Restrained coarse Valheim-painted texture language, neutral grey parchment, readable labels. They are elemental intelligences embodied as humanoids: THE ELEMENT IS THE BODY, not a human wearing elemental armour. Element-specific anatomical mass and proportions, not a recolored generic male/female. One recognizable spirit family and reusable humanoid bone-role/animation contracts do NOT mean identical visible bodies. Coherent connected anatomy and clear joint articulation. Integrated opaque elemental pelvic/chest coverage suitable for ordinary gameplay; no nudity, sexual posing or separate normal human skin. At most two major material families and bounded localized glow. Fine grain in owned texture maps; clear silhouette takes precedence over dense particles. Title: Earth Surtlings \u2014 distinct elemental anatomy. MASCULINE: enormous strongman build: barrel chest, THICK broad waist, huge forearms and hands, deep torso, thick neck, massive thighs and calves, wide planted feet; visibly overwhelming mass, NOT a lean bodybuilder or a V-taper. FEMININE: heavy powerful earth-mother build: tall substantial shoulders, broad hips, strong abdomen, thick weight-bearing legs and arms, generous physical mass, unmistakable strength. Elemental surface construction: interlocking basalt/granite/ore stone masses function as musculature, shallow mineral seams, gravel crown, integrated pelvic stone plates, very restrained mineral glow. Motion study: slow costly acceleration and heavy weight-settle. Include a clearly labeled solid black silhouette comparison of these two builds, not extra elemental variants. No other elements on this sheet. Morphology must remain distinguishable if colors and particles are removed.",
+    "status": "generated",
+    "supersedes": "drafts/elemental-surtlings.png",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "5c893c190dbfb6e8b7c89a365d042b676c0348ee226113390e2f77c6e2c7c9b3"
+  },
+  {
+    "id": "surtlings-fire",
+    "name": "Fire Surtlings \u2014 masculine and feminine",
+    "category": "Creatures",
+    "biome": "Underworld elemental",
+    "file": "surtlings-fire.png",
+    "members": [
+      "Fire Surtling Masculine",
+      "Fire Surtling Feminine"
+    ],
+    "prompt": "Use case: stylized-concept. Dedicated Magenheim Underworld elemental Surtling pair production concept sheet. Adult masculine and feminine full-body front and three-quarter studies, same scale ruler, isolated black silhouettes and body construction detail. Restrained coarse Valheim-painted texture language, neutral grey parchment, readable labels. They are elemental intelligences embodied as humanoids: THE ELEMENT IS THE BODY, not a human wearing elemental armour. Element-specific anatomical mass and proportions, not a recolored generic male/female. One recognizable spirit family and reusable humanoid bone-role/animation contracts do NOT mean identical visible bodies. Coherent connected anatomy and clear joint articulation. Integrated opaque elemental pelvic/chest coverage suitable for ordinary gameplay; no nudity, sexual posing or separate normal human skin. At most two major material families and bounded localized glow. Fine grain in owned texture maps; clear silhouette takes precedence over dense particles. Title: Fire Surtlings \u2014 distinct elemental anatomy. MASCULINE: heroic V-taper, lean muscular torso, powerful defined arms; athletic explosive physique, clearly slimmer than Earth. FEMININE: athletic hourglass with strong shoulders and powerful thighs, balanced muscular motion, never delicate. Elemental surface construction: charcoal-black solidified flame, orange-red heat beneath fissures, obsidian/cinder integrated plates, short male flame crest and streaming female flame plume; no bright full-body fire obscuring anatomy. Motion study: restless weight shifts and explosive attack poses. Include a clearly labeled solid black silhouette comparison of these two builds, not extra elemental variants. No other elements on this sheet. Morphology must remain distinguishable if colors and particles are removed.",
+    "status": "generated",
+    "supersedes": "drafts/elemental-surtlings.png",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "f7bda20664ef550a9b4ec72b9d524bf09aeced55685ba9210291583834ce7a2f"
+  },
+  {
+    "id": "surtlings-water",
+    "name": "Water Surtlings \u2014 masculine and feminine",
+    "category": "Creatures",
+    "biome": "Underworld elemental",
+    "file": "surtlings-water.png",
+    "members": [
+      "Water Surtling Masculine",
+      "Water Surtling Feminine"
+    ],
+    "prompt": "Use case: stylized-concept. Dedicated Magenheim Underworld elemental Surtling pair production concept sheet. Adult masculine and feminine full-body front and three-quarter studies, same scale ruler, isolated black silhouettes and body construction detail. Restrained coarse Valheim-painted texture language, neutral grey parchment, readable labels. They are elemental intelligences embodied as humanoids: THE ELEMENT IS THE BODY, not a human wearing elemental armour. Element-specific anatomical mass and proportions, not a recolored generic male/female. One recognizable spirit family and reusable humanoid bone-role/animation contracts do NOT mean identical visible bodies. Coherent connected anatomy and clear joint articulation. Integrated opaque elemental pelvic/chest coverage suitable for ordinary gameplay; no nudity, sexual posing or separate normal human skin. At most two major material families and bounded localized glow. Fine grain in owned texture maps; clear silhouette takes precedence over dense particles. Title: Water Surtlings \u2014 distinct elemental anatomy. MASCULINE: broad swimmer shoulders, long torso, lean strong limbs and narrow waist, fluid continuous curves rather than rock bulk. FEMININE: powerful swimmer build, pronounced hips, smooth long torso and limbs, continuous current lines. Elemental surface construction: nearly black deep-water opaque core, cyan internal caustics, semi-transparent edges, restrained fin-like current sheets at calves/forearms, water-ribbon crowns and compact nacre/shell fittings; NO blue plastic or stone armour body. Motion study: slow rolling shoulder/hip transfer and drifting currents. Include a clearly labeled solid black silhouette comparison of these two builds, not extra elemental variants. No other elements on this sheet. Morphology must remain distinguishable if colors and particles are removed.",
+    "status": "generated",
+    "supersedes": "drafts/elemental-surtlings.png",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "cc6b5da1a672af87177d9b1c01195914334bc986c712268d0bedba90bd38180f"
+  },
+  {
+    "id": "surtlings-wind",
+    "name": "Wind Surtlings \u2014 masculine and feminine",
+    "category": "Creatures",
+    "biome": "Underworld elemental",
+    "file": "surtlings-wind.png",
+    "members": [
+      "Wind Surtling Masculine",
+      "Wind Surtling Feminine"
+    ],
+    "prompt": "Use case: stylized-concept. Dedicated Magenheim Underworld elemental Surtling pair production concept sheet. Adult masculine and feminine full-body front and three-quarter studies, same scale ruler, isolated black silhouettes and body construction detail. Restrained coarse Valheim-painted texture language, neutral grey parchment, readable labels. They are elemental intelligences embodied as humanoids: THE ELEMENT IS THE BODY, not a human wearing elemental armour. Element-specific anatomical mass and proportions, not a recolored generic male/female. One recognizable spirit family and reusable humanoid bone-role/animation contracts do NOT mean identical visible bodies. Coherent connected anatomy and clear joint articulation. Integrated opaque elemental pelvic/chest coverage suitable for ordinary gameplay; no nudity, sexual posing or separate normal human skin. At most two major material families and bounded localized glow. Fine grain in owned texture maps; clear silhouette takes precedence over dense particles. Title: Wind Surtlings \u2014 distinct elemental anatomy. MASCULINE: lithe runner/climber, narrow waist and shoulders, extremely long lean limbs; visibly light compared with every other element. FEMININE: very lean dancer/acrobatic build, compact torso, long arms and legs, lifted heel and light poised stance. Elemental surface construction: pale semi-solid mist core with localized vapor ribbons and dust currents, silhouette visibly light and narrow, streaming gravity-defying crown, thin elemental sash; no electric lightning, no heavy rock plates. Motion study: quick recovery, current-driven sway and weightless heel lifts. Include a clearly labeled solid black silhouette comparison of these two builds, not extra elemental variants. No other elements on this sheet. Morphology must remain distinguishable if colors and particles are removed.",
+    "status": "generated",
+    "supersedes": "drafts/elemental-surtlings.png",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "43ac75e6da63440d4baab3ddc0bdff8358cc89157061004146b5b276f667d97a"
+  },
+  {
+    "id": "surtlings-radiance",
+    "name": "Radiance Surtlings \u2014 masculine and feminine",
+    "category": "Creatures",
+    "biome": "Underworld elemental",
+    "file": "surtlings-radiance.png",
+    "members": [
+      "Radiance Surtling Masculine",
+      "Radiance Surtling Feminine"
+    ],
+    "prompt": "Use case: stylized-concept. Dedicated Magenheim Underworld elemental Surtling pair production concept sheet. Adult masculine and feminine full-body front and three-quarter studies, same scale ruler, isolated black silhouettes and body construction detail. Restrained coarse Valheim-painted texture language, neutral grey parchment, readable labels. They are elemental intelligences embodied as humanoids: THE ELEMENT IS THE BODY, not a human wearing elemental armour. Element-specific anatomical mass and proportions, not a recolored generic male/female. One recognizable spirit family and reusable humanoid bone-role/animation contracts do NOT mean identical visible bodies. Coherent connected anatomy and clear joint articulation. Integrated opaque elemental pelvic/chest coverage suitable for ordinary gameplay; no nudity, sexual posing or separate normal human skin. At most two major material families and bounded localized glow. Fine grain in owned texture maps; clear silhouette takes precedence over dense particles. Title: Radiance Surtlings \u2014 distinct elemental anatomy. MASCULINE: classical heroic sculpture proportions, symmetrical strong chest and limbs, measured idealized athletic strength; neither Earth bulk nor Wind thinness. FEMININE: statuesque regal classical figure, poised symmetry, long balanced proportions and serene authority. Elemental surface construction: translucent alabaster/ivory mineral body with internal white-gold illumination, concentrated pupil-less eyes, broken radiant crown arcs, spare integrated ceremonial plates; no yellow skin or blinding bloom. Motion study: deliberate symmetrical ceremonial stance and calm controlled movement. Include a clearly labeled solid black silhouette comparison of these two builds, not extra elemental variants. No other elements on this sheet. Morphology must remain distinguishable if colors and particles are removed.",
+    "status": "generated",
+    "supersedes": "drafts/elemental-surtlings.png",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "63e565483c185d06c7989becdef889c07b3e5a3b25b2e4dfb92fbece3757bb5b"
+  },
+  {
+    "id": "surtlings-umbral",
+    "name": "Umbral Surtlings \u2014 masculine and feminine",
+    "category": "Creatures",
+    "biome": "Underworld elemental",
+    "file": "surtlings-umbral.png",
+    "members": [
+      "Umbral Surtling Masculine",
+      "Umbral Surtling Feminine"
+    ],
+    "prompt": "Use case: stylized-concept. Dedicated Magenheim Underworld elemental Surtling pair production concept sheet. Adult masculine and feminine full-body front and three-quarter studies, same scale ruler, isolated black silhouettes and body construction detail. Restrained coarse Valheim-painted texture language, neutral grey parchment, readable labels. They are elemental intelligences embodied as humanoids: THE ELEMENT IS THE BODY, not a human wearing elemental armour. Element-specific anatomical mass and proportions, not a recolored generic male/female. One recognizable spirit family and reusable humanoid bone-role/animation contracts do NOT mean identical visible bodies. Coherent connected anatomy and clear joint articulation. Integrated opaque elemental pelvic/chest coverage suitable for ordinary gameplay; no nudity, sexual posing or separate normal human skin. At most two major material families and bounded localized glow. Fine grain in owned texture maps; clear silhouette takes precedence over dense particles. Title: Umbral Surtlings \u2014 distinct elemental anatomy. MASCULINE: tall lean sharply defined and unnaturally elegant, long limbs, angular shoulders and narrow torso; predatory negative-space silhouette. FEMININE: elongated elegantly predatory form with narrow waist and controlled curves, long limbs and poised stalking posture. Elemental surface construction: matte absorptive dark body with opaque shadow masses, localized faint violet/cold-silver recessed eyes, wispy dark crown and sparse integral shadow regalia; NOT a skeleton recolor or person in a black robe. Keep silhouette readable, no full-body transparent shader. Motion study: quiet measured stalking and unnervingly economical movement. Include a clearly labeled solid black silhouette comparison of these two builds, not extra elemental variants. No other elements on this sheet. Morphology must remain distinguishable if colors and particles are removed.",
+    "status": "generated",
+    "supersedes": "drafts/elemental-surtlings.png",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "4bc8a9ebf5a5f961e67b5d2faeb95e2b6017d9df29eda1c8562a6c10c18f925c"
+  },
+  {
+    "id": "rootforged-modular-kit",
+    "name": "Rootforged \u2014 joined building kit",
+    "category": "Architecture",
+    "biome": "Shared",
+    "file": "rootforged-modular-kit--v2.png",
+    "members": [
+      "Worldroot building family",
+      "Rootforged arches",
+      "Understone foundation/stairs"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Rootforged \u2014 joined building kit. Construction board showing Worldroot 2/4/8m beams and pillars, forked columns, T/Y braces, 4m floor, 4/8m arch ribs, Understone 2x2 foundation, stairs, iron-banded beams and column plinth. Not architectural rendering alone: orthographic endpoint studies and a small assembled bay. Even arch feet both meet grid, symmetric endpoints align 1m/2m attachment grid. Floor underside logs extend to meet adjacent tile logs. Beam wood grain consistent physical scale; axe-cut roughness, bands truly secure members. Real modular joinery, no checkerboard textures.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "3979c740534bae9ba52e578429c16b402b44fd177e719328725e1e6661e8e3d8",
+    "refinement_prompt": "Use case: precise-object-edit. Correct this Rootforged reference sheet to preserve its established identity: the structural members MUST be visibly ENTWINED ROOTS, not sawn straight timber or ordinary wooden beams. Replace the square timber bodies of beams, pillars, forked columns, T/Y braces and arch ribs with two or three substantial winding, braiding, fused Worldroot strands; knotty organic curves and obvious root interweaving run through the entire member. Arch ribs remain natural entwined root curves all the way into BOTH aligned feet. Floor is a stable flattened root-lattice walking surface over interwoven root supports whose ends meet adjacent tiles, not regular sawn plank flooring. Stairs use robust flattened root treads and entwined root stringers. Iron bands genuinely bind the root bundles, never erase their organic silhouette. Understone foundation and plinth remain rough stone, do not turn stone into roots. Preserve 2/4/8m family sizes, modular use, symmetric usable attachment endpoints on the 1m/2m grid and measured connection collars: natural curves between deliberate aligned endpoints. Show main silhouettes clearly, no dense spaghetti or hundreds of fine strands. Preserve neutral parchment style, coarse Valheim material language, readable kit labels and assembled bay. Worn fibrous root bark and roots winding around one another are the core identity. Do not make another lumber kit.",
+    "original_file": "drafts/rootforged-modular-kit.png"
+  },
+  {
+    "id": "crystal-building-kit",
+    "name": "Crystal structures \u2014 load paths and joints",
+    "category": "Architecture",
+    "biome": "Shared",
+    "file": "crystal-building-kit.png",
+    "members": [
+      "Crystal architecture",
+      "Crystal wardstone",
+      "Crystal lighting",
+      "Crystal banners"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Crystal structures \u2014 load paths and joints. Modular crystal structural family: 2/4/8m beams and foundations, pillars/hearth/wardstone/light fittings. Faceted structural mineral with dark iron or stone connection shoes, believable continuous load paths and visibly meeting endpoints. Show vertical, horizontal and perpendicular connection examples with modest joinery overlap. Architecture stays modular and Valheim human-scaled, not giant glowing polygon slab. Geometric contact drawing is a visual intention, not evidence that runtime stability works. Include pennant, standard, swallowtail motifs as texture designs, not geometry-heavy banners.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "038191c86429a63fd7fad34510c1b8704d137c3c638e5208e5512456cf9b5d79"
+  },
+  {
+    "id": "blackstone-architecture",
+    "name": "Blackstone \u2014 civic and throne architecture",
+    "category": "Architecture",
+    "biome": "Shared",
+    "file": "blackstone-architecture.png",
+    "members": [
+      "Blackstone architecture family",
+      "Dark throne"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Blackstone \u2014 civic and throne architecture. Unified kit: cathedral wall and buttress, floor tile, pillar, arch, stair, terrace, parapet, bridge, cliff edge, spire, gate, dais, throne, attendant seat, banner and brazier. Worn dark layered stone with sparse restrained crystal inlays; believable masonry and edges, human door scale, disciplined Nordic underground regal motifs. Show modular bay and small isolated kit pieces. No vast monumental overscaling of usable furniture.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "b7c193fb7e053c123cb209ad1f5cff3cc34f86c29afa36911e1965ac8585978a"
+  },
+  {
+    "id": "mineral-furniture",
+    "name": "Mineral furnishings \u2014 lived-in craftsmanship",
+    "category": "Furniture",
+    "biome": "Shared",
+    "file": "mineral-furniture.png",
+    "members": [
+      "Crystal furniture family",
+      "Geological decor family"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Mineral furnishings \u2014 lived-in craftsmanship. Coherent domestic furnishings board: crystal bed, bench, divider, throne; geode chair/table/pedestal; geo desk, lapidary cabinet, mineral shelf; coat rack, end table, wall sconce, geode bowl, hearth mantel, geologist stool, specimen sideboard, mineral display case, strata map table, cut geode plaque. Wood/stone joinery supports mineral inserts. Draw fitted drawers with inset fronts, seams and pulls, not cubes with handles. Worn surfaces and useful storage, consistent scale. Clearly restrained coarse game texture detail.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "95b0ec22a77a19377434778640bfbaab4112c29818df85ce8a9c3ff72aeb0c45"
+  },
+  {
+    "id": "fracture-dungeon-kit",
+    "name": "Deep Fractures \u2014 enclosed dungeon language",
+    "category": "Architecture",
+    "biome": "Deep Fractures",
+    "file": "fracture-dungeon-kit.png",
+    "members": [
+      "DF-01 through DF-20",
+      "Deep Fracture entrance/passage/traversal",
+      "Deep Gate"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Deep Fractures \u2014 enclosed dungeon language. Underground dungeon visual kit for descent, passage, traversal and 20 chamber families. Core wall/ceiling/floor/doorway vocabulary plus environment variants thermal, rime, conduction, compression, contamination, prism, echo, ossuary and shaping. Sealed roof and controlled recessed illumination. Surface access uses a reused Valheim cave entrance, not homemade exposed corridor piles. Section study shows chambers safely isolated below terrain with roof, no daylight aperture. Deep Gate references the native AESIR GATE shape: tall portal frame with bound stone/wood uprights; never Forge of Potential crafting bench. Exact native gate identity remains authoritative over this illustrative study.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "22e286127c93a0f79fea77a0d117d0136d34ba88993cbea32cbac948761fa19b"
+  },
+  {
+    "id": "arcane-materials-workshop",
+    "name": "Crystal progression \u2014 materials and working tools",
+    "category": "Items",
+    "biome": "Shared",
+    "file": "arcane-materials-workshop.png",
+    "members": [
+      "Crystal resource progression",
+      "Boss hearts",
+      "Arcane working and ritual props"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Crystal progression \u2014 materials and working tools. Design board of geode, rough crystal, shards, simple/advanced/master/crystal grades, elemental focus, fate shard/crystal, geode sample; eight boss heart variants rooted in native boss identities; faceting wheel, fracturing block, resonance frame, crystal enchanting dais, rune engraver, norn spindle, runed totem, runic keelstone, passage stone, seidr ritual focus and raven/wolf/warrior spirit fetishes. Material progression: rough natural fracture -> sorted splinters -> purposeful worked facets -> fitted small rune components, never simply bigger luminous rocks. Native boss icon cues, spare Nordic texture-carved motifs. Tool processes visibly connected. Small readable silhouette studies grouped raw/worked/tools/rituals. Preserve approved staff and crystal weapon identities entirely.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "6583d38e9ffe712c73dd903a861b486926ca11c9afe4127de3b208e8dec544ac"
+  },
+  {
+    "id": "null-mantle-regalia",
+    "name": "Null Mantle and Underworld regalia",
+    "category": "Special equipment",
+    "biome": "Great Decay",
+    "file": "null-mantle-regalia.png",
+    "members": [
+      "Null Mantle",
+      "Broken Crown",
+      "Underworld regalia materials"
+    ],
+    "prompt": "Use case: stylized-concept. Magenheim Valheim mod production reference sheet, landscape parchment-grey background, readable labeled studies, restrained Nordic handmade low-poly silhouettes with deliberately painted coarse texture detail. Main three-quarter view plus useful side/cutaway/material close-up. Honest irregular carving, worn contact surfaces and joinery; no smooth plastic, no sci-fi, no decorative random cubes or blobs. Detail must survive normal gameplay distance. Most microdetail belongs in albedo/normal/roughness textures, not extra geometry. Small neutral human scale silhouette where useful. Readable dark surfaces under neutral light, extremely limited luminous accents; no bloom or blown-out white highlights. This is concept art for later distillation, not a finished runtime mesh. Title: Null Mantle and Underworld regalia. Null Mantle: native cape silhouette retained, owned charcoal-black coarse cloth with dark amber-red hem seals and narrow bone fastenings, wear at hem and shoulder. Front/rear equipped reference plus head close-up; paired red eyes sit ON the eye sockets with sharply bounded dim glow, never behind the head. Strong local wearer darkening while equipped but body silhouette remains readable; annotation effect applies only when equipped. Broken Crown and dark throne motifs harmonize authority without imitating the surface crown. Preserve existing Firmament/Null Gate sword base geometry; show small MATERIAL swatches only for their fittings, do not invent new full swords. Design of presentation does not change gameplay royalty rules.",
+    "status": "generated",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "sha256": "2184f1e1764276cc8e26dae53a8a5305909a7f4aedf64efedff9f530c6989f26"
+  }
+]

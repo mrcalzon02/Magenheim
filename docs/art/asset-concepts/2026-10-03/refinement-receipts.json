@@ -1,0 +1,37 @@
+[
+  {
+    "id": "blackwater-materials",
+    "file": "blackwater-materials--v2.png",
+    "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-2ac23473-fd21-4aad-9581-7b5dfc02417b.png",
+    "prompt": "Use case: precise-object-edit. Revise this Magenheim material reference sheet without changing its art style or approved named materials. Catalog accuracy is essential. Remove the entire lower-right sliced mushroom flesh/food sample and its text; there is NO Blackwater food resource in this catalog. Rebalance remaining bottom row to three refined entries: Flowstone Plate, Pale Cord, Brined Pearl. Top row exactly four raw entries Blackwater Flowstone, Pale Fibre, Blackwater Pearl, Deep Salt. Preserve the other named forms, palette and texture studies. Pearl must be visible as the gathered loose pickup, with shell context secondary. Preserve coarse Valheim-compatible painted surface detail, neutral parchment board and readable typography. Do not invent extra catalog entries.",
+    "status": "generated"
+  },
+  {
+    "id": "sulfur-materials",
+    "file": "sulfur-materials--v2.png",
+    "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-9e5d0025-8e3c-4041-be6d-011426a062ec.png",
+    "prompt": "Use case: precise-object-edit. Revise this Magenheim material reference sheet without changing its art style or approved named materials. Catalog accuracy is essential. Remove the lower-right Sulfur refined product (food) mushroom and ALL its captions. Sulfur is a raw mineral, NEVER food. Bottom row exactly THREE named refined items: Emberiron Bar, Tempered Slag, Charred Root Grip. Make Charred Root Grip a shaped compact charred rootwood HANDLE GRIP with binding, not a bundle of loose twigs. Top row remains exactly Slagstone, Sulfur, Charred Timber, Emberiron. Rebalance composition. No other materials or foods. Preserve coarse Valheim-compatible painted surface detail, neutral parchment board and readable typography. Do not invent extra catalog entries.",
+    "status": "generated"
+  },
+  {
+    "id": "frozen-materials",
+    "file": "frozen-materials--v2.png",
+    "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-21fb1430-8784-4ea3-af58-2e43cf2a3657.png",
+    "prompt": "Use case: precise-object-edit. Revise this Magenheim material reference sheet without changing its art style or approved named materials. Catalog accuracy is essential. Remove the ENTIRE rightmost column containing Cavern Mushroom and Sliced Mushroom Flesh and their text. Neither is a resource or refined item in this catalog. Rebalance to exactly three top raw entries: Rimewood, Clear Ice, Rimesilver; exactly three bottom refined entries: Rimewood Laminate, Iceglass Lens, Rimesilver Bar. Retain their existing forms, palette, fracture details, texture studies and layout language. No food or additional items. Preserve coarse Valheim-compatible painted surface detail, neutral parchment board and readable typography. Do not invent extra catalog entries.",
+    "status": "generated"
+  },
+  {
+    "id": "fracture-materials",
+    "file": "fracture-materials--v2.png",
+    "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-f38617dc-72f9-4890-a479-70e991bbc3d7.png",
+    "prompt": "Use case: precise-object-edit. Revise this Magenheim material reference sheet without changing its art style or approved named materials. Catalog accuracy is essential. Remove the ENTIRE upper-right Meatshroom food pickup example and all its text and swatches. There is NO Meatshroom resource or food. Rebalance to exactly three raw entries Fracture Crystal, Shardstone, Titanbone and three refined entries Fracture Prism, Shardstone Block, Titanbone Plate. Preserve existing named forms, texture studies and material relationships. No added resources or foods. Preserve coarse Valheim-compatible painted surface detail, neutral parchment board and readable typography. Do not invent extra catalog entries.",
+    "status": "generated"
+  },
+  {
+    "id": "decay-materials",
+    "file": "decay-materials--v2.png",
+    "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-9ccc6b4f-1a55-4c48-a78f-27b5a4a4730b.png",
+    "prompt": "Use case: precise-object-edit. Revise this Magenheim material reference sheet without changing its art style or approved named materials. Catalog accuracy is essential. Only correct the Decay Spore raw pickup study: replace meaty sliced mushroom flesh with a small mound of dark green-black dry spore granules/dust, with a modest intact Rotcap cluster behind as SOURCE context. Label Decay Spore, raw spore pickup; replace sliced section/meaty flesh caption with spore grains and source cap. NOT food. Keep Rotwood, Carrion Amber, Bone Gravel, Rotwood Laminate, Carrion Amber Seal and Ossuary Composite exactly present. Preserve overall dark red-brown/amber/bone palette and crafted material language. No new items. Preserve coarse Valheim-compatible painted surface detail, neutral parchment board and readable typography. Do not invent extra catalog entries.",
+    "status": "generated"
+  }
+]

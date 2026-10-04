@@ -1,0 +1,12 @@
+{
+  "selected_targets": 63,
+  "unique_target_ids": 63,
+  "unique_selected_files": 63,
+  "unique_selected_image_hashes": 63,
+  "adopted_creature_targets_reused": 48,
+  "exact_creature_name_overlaps": [],
+  "deep_fracture_rule": "One target per 13 chassis; eight elemental model versions reuse the chassis target.",
+  "surtling_rule": "Six anatomically distinct elemental pair sheets; each covers its masculine/feminine bodies. Shared bone-role contract, not shared visible physique. Original recolor board rejected.",
+  "context_rule": "Materials shown on benches, weapons and armour are use-context studies. The six material sheets govern shared material identity.",
+  "drafts_rule": "Retained drafts are unselected; only generation-manifest.json and gallery selections govern the proposed target."
+}

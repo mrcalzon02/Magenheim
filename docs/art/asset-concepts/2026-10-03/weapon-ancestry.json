@@ -1,0 +1,110 @@
+[
+  {
+    "name": "Worldroot Club",
+    "prefab": "Magenheim_Underworld_Weapon_WorldrootClub",
+    "model_id": "underworld-weapon-worldroot-club",
+    "parent_model_id": "crystal-weapon-mace",
+    "authoritative_parent_source": "../../../../assets/models/source/crystal-weapon-mace.blend",
+    "parent_source_sha256": "13f6f37bc548ad5ac70911986aa3555e710a55bc2fb6472c3a3f23e5bb3a9c67",
+    "rule": "Keep parent geometry, orientation, grip and sockets. New art supplies material/fitting proposals only; illustrated dimensions cannot replace the parent."
+  },
+  {
+    "name": "Worldroot Bow",
+    "prefab": "Magenheim_Underworld_Weapon_WorldrootBow",
+    "model_id": "underworld-weapon-worldroot-bow",
+    "parent_model_id": "crystal-weapon-bow",
+    "authoritative_parent_source": "../../../../assets/models/source/crystal-weapon-bow.blend",
+    "parent_source_sha256": "762c37279b5ae6422243da93818dcb1c6b6bc48357d34cf7d874e5d8db45a7a8",
+    "rule": "Keep parent geometry, orientation, grip and sockets. New art supplies material/fitting proposals only; illustrated dimensions cannot replace the parent."
+  },
+  {
+    "name": "Flowstone Maul",
+    "prefab": "Magenheim_Underworld_Weapon_FlowstoneMaul",
+    "model_id": "underworld-weapon-flowstone-maul",
+    "parent_model_id": "crystal-weapon-mace",
+    "authoritative_parent_source": "../../../../assets/models/source/crystal-weapon-mace.blend",
+    "parent_source_sha256": "13f6f37bc548ad5ac70911986aa3555e710a55bc2fb6472c3a3f23e5bb3a9c67",
+    "rule": "Keep parent geometry, orientation, grip and sockets. New art supplies material/fitting proposals only; illustrated dimensions cannot replace the parent."
+  },
+  {
+    "name": "Blackwater Harpoon",
+    "prefab": "Magenheim_Underworld_Weapon_BlackwaterHarpoon",
+    "model_id": "underworld-weapon-blackwater-harpoon",
+    "parent_model_id": "crystal-weapon-spear",
+    "authoritative_parent_source": "../../../../assets/models/source/crystal-weapon-spear.blend",
+    "parent_source_sha256": "361557c8f15ce3cd49bcd13dc8d375c14887991e297621bef630a60880538ae8",
+    "rule": "Keep parent geometry, orientation, grip and sockets. New art supplies material/fitting proposals only; illustrated dimensions cannot replace the parent."
+  },
+  {
+    "name": "Emberiron Axe",
+    "prefab": "Magenheim_Underworld_Weapon_EmberironAxe",
+    "model_id": "underworld-weapon-emberiron-axe",
+    "parent_model_id": "crystal-weapon-axe",
+    "authoritative_parent_source": "../../../../assets/models/source/crystal-weapon-axe.blend",
+    "parent_source_sha256": "ced4b8d1a48ac676cd0c16ac7d62af05c7762489d9bc19d695dd27968eb04b7e",
+    "rule": "Keep parent geometry, orientation, grip and sockets. New art supplies material/fitting proposals only; illustrated dimensions cannot replace the parent."
+  },
+  {
+    "name": "Emberiron Greatsword",
+    "prefab": "Magenheim_Underworld_Weapon_EmberironGreatsword",
+    "model_id": "underworld-weapon-emberiron-greatsword",
+    "parent_model_id": "crystal-weapon-greatsword",
+    "authoritative_parent_source": "../../../../assets/models/source/crystal-weapon-greatsword.blend",
+    "parent_source_sha256": "e415d8e282317da06cd1605d5e46c434beccd3416edb29b862c9794b3f36ed3b",
+    "rule": "Keep parent geometry, orientation, grip and sockets. New art supplies material/fitting proposals only; illustrated dimensions cannot replace the parent."
+  },
+  {
+    "name": "Rimesilver Spear",
+    "prefab": "Magenheim_Underworld_Weapon_RimesilverSpear",
+    "model_id": "underworld-weapon-rimesilver-spear",
+    "parent_model_id": "crystal-weapon-spear",
+    "authoritative_parent_source": "../../../../assets/models/source/crystal-weapon-spear.blend",
+    "parent_source_sha256": "361557c8f15ce3cd49bcd13dc8d375c14887991e297621bef630a60880538ae8",
+    "rule": "Keep parent geometry, orientation, grip and sockets. New art supplies material/fitting proposals only; illustrated dimensions cannot replace the parent."
+  },
+  {
+    "name": "Icebind Staff",
+    "prefab": "Magenheim_Underworld_Weapon_IcebindStaff",
+    "model_id": "underworld-weapon-icebind-staff",
+    "parent_model_id": "staff-frost-crystal",
+    "authoritative_parent_source": "../../../../assets/models/source/staff-frost-crystal.blend",
+    "parent_source_sha256": "be6d14c7cf0ce46e8a42a70e0aa3ffd32989c6bcce9a557eb932a2e52ec11a81",
+    "rule": "Keep parent geometry, orientation, grip and sockets. New art supplies material/fitting proposals only; illustrated dimensions cannot replace the parent."
+  },
+  {
+    "name": "Titanbone Atgeir",
+    "prefab": "Magenheim_Underworld_Weapon_TitanboneAtgeir",
+    "model_id": "underworld-weapon-titanbone-atgeir",
+    "parent_model_id": "crystal-weapon-atgeir",
+    "authoritative_parent_source": "../../../../assets/models/source/crystal-weapon-atgeir.blend",
+    "parent_source_sha256": "701c85101eedfd27421b3eea8bc4610d159801ceb2fdad62c43923862cd948c1",
+    "rule": "Keep parent geometry, orientation, grip and sockets. New art supplies material/fitting proposals only; illustrated dimensions cannot replace the parent."
+  },
+  {
+    "name": "Shardstone Crossbow",
+    "prefab": "Magenheim_Underworld_Weapon_ShardstoneCrossbow",
+    "model_id": "underworld-weapon-shardstone-crossbow",
+    "parent_model_id": "crystal-weapon-crossbow",
+    "authoritative_parent_source": "../../../../assets/models/source/crystal-weapon-crossbow.blend",
+    "parent_source_sha256": "e9886f072c10315fd4130530f0353c17216885fa2db999dcdb7138822cf1fb45",
+    "rule": "Keep parent geometry, orientation, grip and sockets. New art supplies material/fitting proposals only; illustrated dimensions cannot replace the parent."
+  },
+  {
+    "name": "Amber Blade",
+    "prefab": "Magenheim_Underworld_Weapon_AmberBlade",
+    "model_id": "underworld-weapon-amber-blade",
+    "parent_model_id": "crystal-weapon-sword",
+    "authoritative_parent_source": "../../../../assets/models/source/crystal-weapon-sword.blend",
+    "parent_source_sha256": "f1ada55711d2189bc197f41bfccf2e2b610c9ebeebb9b9af0dc567c41937a63e",
+    "rule": "Keep parent geometry, orientation, grip and sockets. New art supplies material/fitting proposals only; illustrated dimensions cannot replace the parent."
+  },
+  {
+    "name": "Crown Sceptre",
+    "prefab": "Magenheim_Underworld_Weapon_CrownSceptre",
+    "model_id": "underworld-weapon-crown-sceptre",
+    "parent_model_id": "crystal-weapon-mace",
+    "authoritative_parent_source": "../../../../assets/models/source/crystal-weapon-mace.blend",
+    "parent_source_sha256": "13f6f37bc548ad5ac70911986aa3555e710a55bc2fb6472c3a3f23e5bb3a9c67",
+    "rule": "Keep parent geometry, orientation, grip and sockets. New art supplies material/fitting proposals only; illustrated dimensions cannot replace the parent."
+  }
+]

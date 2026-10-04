@@ -1,0 +1,411 @@
+{
+  "generator": "built-in imagegen",
+  "initial": [
+    {
+      "id": "fungal-materials",
+      "file": "fungal-materials.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-e8db6973-2f42-4017-a47c-b0ee16a63dc6.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "fungal-armour",
+      "file": "fungal-armour.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-55a9f221-7992-4969-91c5-a3c4a4d6b7c9.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "fungal-weapon-variants",
+      "file": "fungal-weapon-variants.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-2341aed5-0d62-40cb-81c4-afc789bc55ea.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "fungal-station",
+      "file": "fungal-station.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-f3058193-109d-43f1-9bf5-fcf768f66e64.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "fungal-tool",
+      "file": "fungal-tool.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-88c17e13-78b3-4ac4-90bd-11dd6432e54c.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "fungal-ecology",
+      "file": "fungal-ecology.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-66036919-b572-4ce2-823a-f81f55c4c684.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "blackwater-materials",
+      "file": "drafts/blackwater-materials.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-b46671ab-0d3e-426c-9ea0-cf8b783ebf61.png",
+      "status": "generated",
+      "selection": "unselected draft"
+    },
+    {
+      "id": "blackwater-armour",
+      "file": "blackwater-armour.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-238e9c89-50c2-438e-90a2-22b3562df074.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "blackwater-weapon-variants",
+      "file": "blackwater-weapon-variants.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-bd1a3021-fe1c-4946-b614-4e70da1a1386.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "blackwater-station",
+      "file": "blackwater-station.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-e18511bc-3b7d-45d4-ac82-a420c51c10f1.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "blackwater-tool",
+      "file": "blackwater-tool.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-20d4eecf-6522-4304-aedd-0b8db6a706e0.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "blackwater-ecology",
+      "file": "blackwater-ecology.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-9cb9cd5d-0878-41aa-b66e-f2efb17beab4.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "sulfur-materials",
+      "file": "drafts/sulfur-materials.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-10e92a11-4012-46b7-a7dc-f46f5111ef04.png",
+      "status": "generated",
+      "selection": "unselected draft"
+    },
+    {
+      "id": "sulfur-armour",
+      "file": "sulfur-armour.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-a5ba5443-84cd-4113-9d1c-40daa393a625.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "sulfur-weapon-variants",
+      "file": "sulfur-weapon-variants.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-24914610-517a-49a1-a40e-91f0fe2917d7.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "sulfur-station",
+      "file": "sulfur-station.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-18ba6c3d-a718-4ecb-b485-132013b222b2.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "sulfur-tool",
+      "file": "sulfur-tool.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-884779b0-6901-47f0-ae3e-f9ca8b90dd76.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "sulfur-ecology",
+      "file": "sulfur-ecology.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-18771c78-a871-4471-8699-a516e75ed2e2.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "frozen-materials",
+      "file": "drafts/frozen-materials.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-b755e1a0-13b2-4505-b6db-46bd5d6ebb51.png",
+      "status": "generated",
+      "selection": "unselected draft"
+    },
+    {
+      "id": "frozen-armour",
+      "file": "frozen-armour.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-c35e10f3-0aab-47b1-b602-7eb76050267c.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "frozen-weapon-variants",
+      "file": "frozen-weapon-variants.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-b276eeae-9f0b-4aed-9c17-027cc99b0653.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "frozen-station",
+      "file": "frozen-station.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-c5b9530a-ab58-4a62-ad5e-698db3aabd4a.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "frozen-tool",
+      "file": "frozen-tool.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-9c28b973-83bf-471c-b67d-31357f9a21d6.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "frozen-ecology",
+      "file": "frozen-ecology.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-61848fd7-c93a-400d-baa8-f1551ee64e75.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "fracture-materials",
+      "file": "drafts/fracture-materials.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-6a6e0fc8-4cca-4488-ab58-c7fc4a564cc6.png",
+      "status": "generated",
+      "selection": "unselected draft"
+    },
+    {
+      "id": "fracture-armour",
+      "file": "fracture-armour.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-a765ce67-d35e-421b-b95e-bf737577c52d.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "fracture-weapon-variants",
+      "file": "fracture-weapon-variants.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-c5466f47-e12d-4499-8d45-c8541aebea01.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "fracture-station",
+      "file": "fracture-station.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-d7115fd1-9342-4a43-acea-8edf3461554a.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "fracture-tool",
+      "file": "fracture-tool.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-bac44ea6-08ca-496e-954e-bd3be0453a82.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "fracture-ecology",
+      "file": "fracture-ecology.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-41238a7e-0c67-41ae-9852-ecb66fae4655.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "decay-materials",
+      "file": "drafts/decay-materials.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-608d79bd-975c-42bc-8d59-a5865e128d10.png",
+      "status": "generated",
+      "selection": "unselected draft"
+    },
+    {
+      "id": "decay-armour",
+      "file": "decay-armour.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-ea382af9-232b-4f19-a213-687760d0db51.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "decay-weapon-variants",
+      "file": "decay-weapon-variants.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-943c87a4-568b-481f-8b09-f4159c94a158.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "decay-station",
+      "file": "decay-station.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-eab1fcca-2ec1-4f6d-b6fa-37d488433225.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "decay-tool",
+      "file": "decay-tool.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-48788a40-92bd-4df3-9f4d-094e770d035e.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "decay-ecology",
+      "file": "decay-ecology.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-e1f7d616-be47-4668-bb58-e8c206d97eca.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "fungal-foods",
+      "file": "fungal-foods.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-602cb7a7-d0d6-4ac0-b082-10cad3001f2d.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "deep-annoyance-wisp",
+      "file": "deep-annoyance-wisp.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-6c3bbdd8-4642-467e-b453-c9030969aede.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "deep-geode-crawler",
+      "file": "deep-geode-crawler.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-c1d19cb9-d407-4eff-9300-e69dce405a7c.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "deep-shardling",
+      "file": "deep-shardling.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-615943f4-a257-40a1-a1bb-58bcb754d554.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "deep-crystal-parasite",
+      "file": "deep-crystal-parasite.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-7783f50c-58b1-444a-a547-966513be4b68.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "deep-crystal-revenant",
+      "file": "deep-crystal-revenant.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-19436047-6c08-4b5f-bbc4-f59ffcc8202c.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "deep-facet-sentry",
+      "file": "deep-facet-sentry.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-8b566028-e081-497b-8fa2-7c7e1dd024b0.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "deep-stone-sentinel",
+      "file": "deep-stone-sentinel.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-44e27eb3-c538-48f5-a1b8-d7ab9158b0d0.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "deep-crystal-hound",
+      "file": "deep-crystal-hound.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-95497ade-9d90-489f-9580-c093170722a7.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "deep-burrower",
+      "file": "deep-burrower.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-cb3abb6f-66d3-4ea1-ace7-588d51fe78ee.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "deep-stone-guardian",
+      "file": "deep-stone-guardian.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-834e4430-c337-4d36-afce-1b4f2117077c.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "deep-crystal-golem",
+      "file": "deep-crystal-golem.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-1566d30f-ca7f-4bcb-b806-937e997b84c2.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "deep-obelisk-warden",
+      "file": "deep-obelisk-warden.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-5ab7f814-9059-4067-899d-923f96d3479f.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "deep-deep-colossus",
+      "file": "deep-deep-colossus.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-ff2bbf16-2490-4db3-baad-1e5ef7639442.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "elemental-surtlings",
+      "file": "drafts/elemental-surtlings.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-ad10efd5-3008-4115-b589-b18469f91da7.png",
+      "status": "generated",
+      "selection": "unselected draft"
+    },
+    {
+      "id": "rootforged-modular-kit",
+      "file": "drafts/rootforged-modular-kit.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-429897e9-7fbe-4e09-ae08-600dbec8ea19.png",
+      "status": "generated",
+      "selection": "unselected draft"
+    },
+    {
+      "id": "crystal-building-kit",
+      "file": "crystal-building-kit.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-5d0a9740-40bc-4c1f-aee7-557d4526898b.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "blackstone-architecture",
+      "file": "blackstone-architecture.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-e4caf5a2-5e16-478e-94d0-fad77969ff6a.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "mineral-furniture",
+      "file": "mineral-furniture.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-1029bbe4-a272-44da-a530-f5bb9762f1ba.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "fracture-dungeon-kit",
+      "file": "fracture-dungeon-kit.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-e1d0d0cd-13b0-46d9-b7ac-e531c67ea135.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "arcane-materials-workshop",
+      "file": "arcane-materials-workshop.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-3761239b-ec06-48fb-9829-6872372b8ddb.png",
+      "status": "generated",
+      "selection": "selected"
+    },
+    {
+      "id": "null-mantle-regalia",
+      "file": "null-mantle-regalia.png",
+      "source": "C:\\Users\\Admin\\.codex\\generated_images\\01a0fdda-10ea-7ef1-9896-e6775421bc1b\\exec-ee4617f8-32e5-4f18-89e1-eebc2d5e2a16.png",
+      "status": "generated",
+      "selection": "selected"
+    }
+  ]
+}

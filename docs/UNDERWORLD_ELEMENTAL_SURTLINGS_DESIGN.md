@@ -46,14 +46,21 @@ Across every element, preserve enough common structure that players recognize th
 
 ## 2. Production architecture
 
-Build Surtlings as **two master humanoid body meshes plus six elemental geometry/material kits**.
+Build Surtlings as **six anatomically distinct elemental pair families**: twelve
+visible body variants sharing humanoid bone-role and animation contracts.
 
-The two primary body meshes are:
+On 3 October 2026 the user reaffirmed that the element determines physical build:
+Earth has enormous strongman/earth-mother mass, Fire athletic power, Water swimmer
+proportions, Wind a very light runner/dancer build, Radiance classical symmetry,
+and Umbral elongated predatory elegance. Each element has its own masculine and
+feminine proportion profiles. A common animation template remains reusable;
+one generic visible male/female body with six palettes does not satisfy this design.
 
-1. feminine adult Surtling;
-2. masculine adult Surtling.
-
-The six elemental kits then modify proportions, surface construction, replacement geometry, hair/crown treatment, particles, materials, armor/regalia and idle presentation.
+The [six elemental pair concept sheets](art/asset-concepts/2026-10-03/gallery.html)
+supersede the rejected combined palette board. Keep element-specific proportions,
+surface construction, hair/crown treatment, regalia and idle presentation coherent
+with the silhouette table below. The selected reference manifest governs current
+art, with prior drafts retained separately.
 
 ### 2.1 Skeleton
 

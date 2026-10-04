@@ -1,0 +1,91 @@
+# Reference review and selection
+
+This run extends the adopted creature library with 63 proposed sheets. It is a
+design/reference pass only. No runtime models, textures, recipes, statistics,
+colliders, grips, generation rules or installed plugin files were changed.
+
+## Catalog accuracy and duplicate control
+
+Six material sheets govern the 22 gathered and 18 refined Underworld resources.
+Six armor boards cover the four-piece sets; six paired weapon boards cover the
+twelve registered Underworld upgrades. Six station boards, six tool sheets and
+six ecology boards complete each biome's visual lineage. One food board shows
+the three actually registered Fungal provisions, with their recipe ingredients.
+Other-biome foods are not proposed as implemented content.
+
+Thirteen Deep Fracture chassis receive individual anatomy studies. Their eight
+elemental model versions reuse those targets. Twelve elemental Surtlings use
+six anatomically distinct pair sheets. The original uniform-body palette board
+was rejected by the user: Earth must show enormous strongman mass, with the
+other elements following their own physical archetypes. Common humanoid bone
+roles and registration infrastructure remain reusable; visible bodies do not.
+The already adopted 42 ordinary Underworld creatures
+and six bosses are reused, without regenerating another competing set. Shared
+architecture, furniture, arcane item progression and regalia use family boards.
+The model coverage ledger maps the 531-record source snapshot; it deliberately
+distinguishes family direction from individual construction drawings and does
+not assert that legacy/retired catalog sources are currently admitted at runtime.
+
+The selected target IDs and filenames are unique. New creature names were checked
+against the adopted set: no exact overlap. A resource shown as input on a bench
+or as an armor fitting is a use-context study, not a second resource design.
+Only the selected manifest and gallery govern current references. Unselected
+drafts are separated in `drafts/` and carry an explicit warning.
+
+## Corrections made during review
+
+The initial Blackwater, Sulfur, Frozen and Fracture material images incorrectly
+added unnamed or invented mushroom foods. Selected `--v2` revisions remove those
+entries and retain only the catalog members. Sulfur is a mineral, not food.
+The Charred Root Grip revision shows a shaped bound grip rather than loose twigs.
+The Great Decay revision makes Decay Spore a granular spore pickup, with Rotcap
+source context; it is not sliced flesh. Initial prompts and revision prompts are
+both preserved, and the rejected originals are not shown in the gallery.
+
+The user also rejected Rootforged's ordinary timber interpretation. Its selected
+revision restores substantial entwined root bodies throughout the kit while
+retaining deliberate modular endpoints, aligned arch feet and adjacent floor
+support connections. The earlier lumber sheet is unselected.
+
+The user's supplied atmosphere reference is preserved unchanged under
+`references/`. It establishes a dark green Underworld with localized warm
+orange vertical light and enclosed depth, rather than bright white surface sky.
+
+The station studies show distinct working processes: fibre extraction/twisting
+and fungal drying, a genuinely recessed salt-curing basin, a contained forge
+hearth and bellows, a precision clamp/lens/chisel arrangement, a bearing-mounted
+crank press with samples on the tabletop, and amber/composite sealing work.
+Wear follows the work, instead of arbitrary blobs or decorative cubes. The
+illustrated mechanisms explain form; they do not introduce new gameplay systems.
+
+## Interpretation limits before modeling
+
+Armor illustrations sometimes embellish the retained donor shape. Use their
+surface/material studies; do not copy unsupported ornaments, new cloth topology,
+helmet shapes or body overlays. Native Carapace and the registered cape/hood
+donors remain authoritative. Cape palette strips that appear on more than one
+set sheet are shared context, not separately selected armor variants.
+
+Weapon artwork supplies proposed material fittings, not measured replacement
+base geometry. The twelve parent relationships and source hashes are recorded
+in `weapon-ancestry.json`. Approved crystal/staff source dimensions, grip points,
+orientations and sockets override any illustrated discrepancy.
+
+Native cave entrance and Aesir `LastBossGate` remain preserved native identities.
+Do not reconstruct their geometry from the dungeon kit illustration. That board
+governs enclosed walls, ceilings, chamber dressing and transition language;
+any gate sketch is illustrative context, never an alternative gate target.
+
+Handmade wear and texture detail need distillation. Grain, fine cracks, fibres,
+gills and small pits belong mainly in owned maps. Diagram labels, scale figures,
+cutaways and views are not CAD: resolve view disagreements and measure the
+production dimensions before construction. Scattering density, rendering cost,
+structural contacts, interaction reach and animated anatomy need their own
+measured production checks. This run does not claim those live checks passed.
+
+## Preservation
+
+Generated with built-in imagegen. Exact initial and refinement prompts, selected
+image hashes, source receipts, thumbnails, category overviews, ancestry and
+duplicate/coverage ledgers are stored alongside the full-size PNGs. New sheets
+are proposals pending review; the existing adopted targets keep their status.
