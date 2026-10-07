@@ -12,7 +12,7 @@ REQ_ACTIONS={'Capcrawler_Idle':72,'Capcrawler_Scuttle':24,'Capcrawler_Turn':30,'
 if not MODEL.exists(): raise RuntimeError(f'Missing model: {MODEL}')
 bpy.ops.wm.open_mainfile(filepath=str(MODEL)); sc=bpy.context.scene
 if sc.get('magenheim_model_id')!='underworld-creature-capcrawler' or sc.get('magenheim_host_rig')!='HOST-LOW-CRAWLER': raise RuntimeError('Wrong model/host identity')
-if sc.get('magenheim_fidelity')!='production-creature-r7': raise RuntimeError('Expected production-creature-r7')
+if sc.get('magenheim_fidelity')!='production-creature-r8': raise RuntimeError('Expected production-creature-r8')
 if sc.get('magenheim_leg_rig')!='coxa+tibia+tarsus-per-leg': raise RuntimeError('Three-joint leg rig contract missing')
 if sc.get('magenheim_carapace_language')!='layered-fungal-rim-scutes+crown+dorsal-shelves': raise RuntimeError('Layered fungal carapace contract missing')
 if sc.get('magenheim_fungal_signature')!='4-dorsal-shelf-plates+3-spore-nodules': raise RuntimeError('Fungal silhouette signature contract missing')
@@ -41,6 +41,22 @@ bw,bl,bh=span(body); cw,cl,ch=span(cap)
 if cw < bw*1.15 or cl < bl*1.05: raise RuntimeError(f'Carapace no longer overhangs body: cap={cw:.3f}x{cl:.3f}, body={bw:.3f}x{bl:.3f}')
 if ch > cw*.42: raise RuntimeError(f'Carapace too domed for low-crawler silhouette: {ch/cw:.2f}')
 gills=[o for o in meshes if o.name.startswith('Capcrawler_Gill_')]; mandibles=[o for o in meshes if o.name.startswith('Capcrawler_Mandible_')]; distal=[o for o in meshes if o.name.startswith('Capcrawler_') and o.name.endswith('B')]; pads=[o for o in meshes if '_FootPad' in o.name]; claws=[o for o in meshes if '_Claw' in o.name]; scutes=[o for o in meshes if o.name.startswith('Capcrawler_RimScute_')]; shelves=[o for o in meshes if o.name.startswith('Capcrawler_ShelfPlate_')]; nodules=[o for o in meshes if o.name.startswith('Capcrawler_SporeNodule_')]; crown=bpy.data.objects.get('Capcrawler_CrownPlate')
+# Physical jaws must retain the distinctive bilateral inward-hooked silhouette.
+denticles=[o for o in meshes if o.name.startswith('Capcrawler_Denticle_')]
+arches=[o for o in meshes if o.name.startswith('Capcrawler_JawArc_')]
+if len(denticles)!=6 or len(arches)!=4: raise RuntimeError(f'Jaw anatomy regression: teeth={len(denticles)} curved_segments={len(arches)}')
+for side in ('L','R'):
+ teeth=[o for o in denticles if o.name.startswith(f'Capcrawler_Denticle_{side}')]
+ arcs=[o for o in arches if o.name.startswith(f'Capcrawler_JawArc_{side}')]
+ if len(teeth)!=3 or len(arcs)!=2: raise RuntimeError(f'{side}: incomplete hooked mandible')
+ for part in teeth+arcs+[bpy.data.objects[f'Capcrawler_Mandible_{side}']]:
+  if part.vertex_groups.get('Mandible_'+side) is None: raise RuntimeError(f'{part.name}: jaw bone binding lost')
+  if not part.data.materials or part.data.materials[0].name!='CapcrawlerMandible': raise RuntimeError(f'{part.name}: jaw material lost')
+ if max(world_bounds(o)[1][1] for o in arcs) < .50: raise RuntimeError(f'{side}: jaw no longer projects past frontal carapace')
+ def center_x(o):
+  lo,hi=world_bounds(o); return abs((lo[0]+hi[0])*.5)
+ if center_x(bpy.data.objects[f'Capcrawler_JawArc_{side}2']) >= center_x(bpy.data.objects[f'Capcrawler_JawArc_{side}1'])-.004:
+  raise RuntimeError(f'{side}: distal mandible no longer hooks inward')
 if len(gills)!=5 or len(mandibles)!=2 or len(distal)!=8: raise RuntimeError(f'Anatomy regression: gills={len(gills)} mandibles={len(mandibles)} distal_legs={len(distal)}')
 if len(pads)!=8 or len(claws)!=8: raise RuntimeError(f'Ground anatomy regression: pads={len(pads)} claws={len(claws)}')
 if len(scutes)!=6 or not crown: raise RuntimeError(f'Layered armor regression: rim_scutes={len(scutes)} crown={bool(crown)}')
@@ -95,4 +111,4 @@ for name in ('Capcrawler_Scuttle','Capcrawler_Turn'):
    if not any(f'pose.bones["{s}_Tarsus{i}"]' in p for p in paths): raise RuntimeError(f'{name}: {s}_Tarsus{i} lacks gait articulation')
 for name in ('Capcrawler_Scuttle','Capcrawler_AttackFront','Capcrawler_Death'):
  if len(action_fcurves(actions[name]))<6: raise RuntimeError(f'{name}: insufficient articulation')
-print(f'VERIFIED Capcrawler r7 source gate: meshes={len(meshes)} triangles={triangles} bones={len(bones)} materials={len(mats)} actions={len(REQ_ACTIONS)} extent={extent} fungal_shelves={len(shelves)} spore_nodules={len(nodules)} three_joint_legs=8',flush=True)
+print(f'VERIFIED Capcrawler r8 source gate: meshes={len(meshes)} triangles={triangles} bones={len(bones)} materials={len(mats)} actions={len(REQ_ACTIONS)} extent={extent} fungal_shelves={len(shelves)} spore_nodules={len(nodules)} three_joint_legs=8',flush=True)
