@@ -96,6 +96,10 @@ internal sealed class UnderworldMycelialBenchRegistrar : IDisposable
         var station = prefab.GetComponent<CraftingStation>()
             ?? throw new InvalidOperationException(definition.DonorPrefab + " lost CraftingStation behavior.");
         station.m_name = definition.Name;
+        // Scale the complete native assembly so art, collision and accessory transforms agree.
+        prefab.transform.localScale *= .75f;
+        station.m_hoverOffset *= .75f;
+        station.m_useDistance = Mathf.Max(station.m_useDistance, 2.5f);
 
         if (HasAuthoredModel(definition.ModelId))
             ModelAssets.Load(prefab, definition.ModelId, preserveParticles: definition.PreserveDonorParticles,
@@ -107,9 +111,6 @@ internal sealed class UnderworldMycelialBenchRegistrar : IDisposable
         if (definition.Prefab != UnderworldStationCatalog.MycelialBenchPrefab)
         {
             ConfigureCollider(prefab, definition.Dimensions);
-            var siting = prefab.GetComponent<UnderworldStationPlacementConstraint>()
-                ?? prefab.AddComponent<UnderworldStationPlacementConstraint>();
-            siting.Bind(definition.Prefab);
         }
 
         if (!PieceManager.Instance.AddPiece(custom))
@@ -136,10 +137,22 @@ internal sealed class UnderworldMycelialBenchRegistrar : IDisposable
             if (!collider.isTrigger) collider.enabled = false;
 
         var colliderObject = new GameObject("Magenheim_Underworld_Station_Collider");
+        colliderObject.layer = LayerMask.NameToLayer("piece");
         colliderObject.transform.SetParent(prefab.transform, false);
         var boxCollider = colliderObject.AddComponent<BoxCollider>();
-        boxCollider.center = new Vector3(0f, dimensions.HeightMeters * 0.5f, 0f);
-        boxCollider.size = new Vector3(dimensions.WidthMeters, dimensions.HeightMeters, dimensions.DepthMeters);
+        if (prefab.name == UnderworldStationCatalog.TidalBasinPrefab)
+        {
+            // Fit the basin body, leaving the open space below the salt racks accessible.
+            boxCollider.center = new Vector3(0f, .48f, 0f);
+            boxCollider.size = new Vector3(2.7f, .96f, 2.7f);
+            var station = prefab.GetComponent<CraftingStation>();
+            station.m_useDistance = Mathf.Max(station.m_useDistance, 2.5f);
+        }
+        else
+        {
+            boxCollider.center = new Vector3(0f, dimensions.HeightMeters * 0.5f, 0f);
+            boxCollider.size = new Vector3(dimensions.WidthMeters, dimensions.HeightMeters, dimensions.DepthMeters);
+        }
     }
 
     private static void ApplyBiomeFallbackAccent(GameObject prefab, UnderworldTerrainBiome biome)

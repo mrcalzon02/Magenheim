@@ -25,6 +25,8 @@ for e in pieces:
   assert not any(abs(v[0])>expected[0]*.25 and v[1]<expected[1]*.35 for v in points),(mid,'blocked lower clearance')
   assert sum('trunk-root-' in p['name'] for p in data['parts'])==3,(mid,'missing braided trunk')
  if e['Kind']==9:
+  joists=[p for p in data['parts'] if p['name'].startswith('floor-joist-')]
+  assert len(joists)==3 and all(abs(min(v[0] for v in p['vertices'])+expected[0]/2)<.015 and abs(max(v[0] for v in p['vertices'])-expected[0]/2)<.015 for p in joists),(mid,'joists do not meet adjacent floor edges')
   boards=[p for p in data['parts'] if p['name'].startswith('split-root-board-')]
   assert len(boards)==8 and all(p['collider'] for p in boards),(mid,'missing walkable boards')
   assert all(abs(max(v[1] for v in p['vertices'])-expected[1])<.02 for p in boards),(mid,'uneven walking surface')
@@ -36,6 +38,10 @@ for e in pieces:
   assert all(.20<b-a<.30 for a,b in zip([0]+tops,tops)),(mid,'unsafe step rise')
   assert all(b>a for a,b in zip(centers,centers[1:])),(mid,'stairs must rise toward positive Z')
  if e['Kind']==5:
+  feet=[p for p in data['parts'] if p['name'].startswith('arch-modular-foot-')]
+  assert len(feet)==2 and all(p['collider'] for p in feet),(mid,'missing modular arch sockets')
+  assert all(abs(min(v[1] for v in p['vertices']))<.015 for p in feet),(mid,'uneven arch socket planes')
+  assert all(abs(max(v[0] for v in p['vertices'])-min(v[0] for v in p['vertices'])-1)<.04 for p in feet),(mid,'arch socket does not fit 1m grid')
   # Open passage beneath the crown, not a solid slab across the walk-through area.
   assert not any(abs(v[0])<.35 and v[1]<expected[1]*.45 for v in points),(mid,'blocked arch opening')
  with Image.open(R/'assets/earth'/f'{mid}.icon.png') as im:assert im.size==(256,256) and im.mode=='RGBA'

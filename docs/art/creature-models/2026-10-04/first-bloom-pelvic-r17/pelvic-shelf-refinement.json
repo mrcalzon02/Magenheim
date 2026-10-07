@@ -1,0 +1,13 @@
+{
+  "changed_components": [
+    "LimbBracketThighL0",
+    "LimbBracketThighL1",
+    "LimbBracketThighR0",
+    "LimbBracketThighR1"
+  ],
+  "triangles_added": 0,
+  "interpretation": "overlapping lower-torso mushroom shelves flaring over hip joints",
+  "root_vertices_per_shelf": 20,
+  "weight": "Chest 1.0 for whole shelves and their seated roots",
+  "preserved": "accepted hips, chest, lower legs and feet"
+}

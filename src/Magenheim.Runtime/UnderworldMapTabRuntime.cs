@@ -83,6 +83,19 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
 
     internal static void NotifyVanillaMapLoaded(Minimap map) => _instance?.OnVanillaMapLoaded(map);
 
+    internal static void PrepareInitialWorldMap() => _instance?.PrepareInitialMap();
+
+    internal static bool InitialMapGenerationPending => _instance?._underworldGenerationPending == true;
+
+    private void PrepareInitialMap()
+    {
+        if (!_map || _surface is null || _underworld is not null ||
+            _services is null || !_services.WorldInstances.TryGetContext(
+                UnderworldWorldInstanceId.Underworld, out var context) || context is null) return;
+        _log?.LogInfo("Preparing Underworld Minimap during initial world loading, before Deep Gate travel.");
+        EnsureUnderworldState(_map);
+    }
+
     internal static MapBindingScope? BeginPhysicalMapOperation(Minimap map)
     {
         var runtime = _instance;
@@ -181,6 +194,7 @@ internal sealed class UnderworldMapTabRuntime : MonoBehaviour
 
         BuildTabs(map);
         _log?.LogInfo("Bound Overworld and Underworld tabs to the single vanilla Minimap runtime.");
+        PrepareInitialMap();
     }
 
     private void Update()
@@ -722,6 +736,15 @@ internal static class UnderworldMinimapLoadMapDataPatch
     [HarmonyPriority(Priority.Last)]
     private static void Postfix(Minimap __instance) =>
         UnderworldMapTabRuntime.NotifyVanillaMapLoaded(__instance);
+}
+
+// A modded asynchronous map generator may finish over multiple frames. Keep Valheim's
+// initial respawn/loading screen until it has published, without owning a second loader.
+[HarmonyPatch(typeof(Game), "UpdateRespawn")]
+internal static class UnderworldInitialMapLoadingPatch
+{
+    private static bool Prefix() => !UnderworldMapTabRuntime.InitialMapGenerationPending &&
+        !UnderworldZoneSystemStartIsolationPatch.InitialLocationGenerationPending;
 }
 
 [HarmonyPatch(typeof(Minimap), nameof(Minimap.SaveMapData))]

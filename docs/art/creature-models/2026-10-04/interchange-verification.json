@@ -1,0 +1,50 @@
+[
+  {
+    "id": "underworld-boss-first-bloom",
+    "portable_glb_bytes": 24358768,
+    "meshes": 23,
+    "materials": 4,
+    "images": 13,
+    "result": "PASS portable rest-pose interchange"
+  },
+  {
+    "id": "underworld-boss-blackwater-maw",
+    "portable_glb_bytes": 32155368,
+    "meshes": 16,
+    "materials": 5,
+    "images": 16,
+    "result": "PASS portable rest-pose interchange"
+  },
+  {
+    "id": "underworld-boss-furnace-heart",
+    "portable_glb_bytes": 12333556,
+    "meshes": 22,
+    "materials": 2,
+    "images": 7,
+    "result": "PASS portable rest-pose interchange"
+  },
+  {
+    "id": "underworld-boss-white-silence",
+    "portable_glb_bytes": 13308988,
+    "meshes": 21,
+    "materials": 2,
+    "images": 7,
+    "result": "PASS portable rest-pose interchange"
+  },
+  {
+    "id": "underworld-boss-rift-titan",
+    "portable_glb_bytes": 12983744,
+    "meshes": 14,
+    "materials": 2,
+    "images": 7,
+    "result": "PASS portable rest-pose interchange"
+  },
+  {
+    "id": "underworld-boss-carrion-crown",
+    "portable_glb_bytes": 31203936,
+    "meshes": 10,
+    "materials": 5,
+    "images": 16,
+    "result": "PASS portable rest-pose interchange"
+  }
+]

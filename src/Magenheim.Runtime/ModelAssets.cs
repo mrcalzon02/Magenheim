@@ -179,6 +179,12 @@ internal static class ModelAssets
         return LoadMaterial(id + "/0", parts[0]["material"]!, source);
     }
 
+    internal static Material LoadPrimaryMaterial(string id)
+    {
+        var document = Document(id);
+        return LoadMaterial(id + "/0", document["parts"]![0]!["material"]!, CreateSurfaceMaterial());
+    }
+
     /// <summary>A model payload, parsed once and cached. Mesh arrays are dropped after first load.</summary>
     private static JObject Document(string id)
     {
@@ -264,6 +270,13 @@ internal static class ModelAssets
             {
                 foreach (var renderer in original) if (!preserveParticles || !(renderer is ParticleSystemRenderer)) renderer.enabled = false;
                 foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled = false;
+            }
+            if (id.StartsWith("underworld-flora-fungal-", StringComparison.Ordinal))
+            {
+                var renderers = root.GetComponentsInChildren<Renderer>(true);
+                var lod = root.AddComponent<LODGroup>();
+                lod.SetLODs(new[] { new LOD(.10f, renderers) });
+                lod.RecalculateBounds();
             }
             return root;
         }

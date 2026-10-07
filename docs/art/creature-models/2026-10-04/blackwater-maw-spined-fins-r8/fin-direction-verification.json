@@ -1,0 +1,50 @@
+{
+  "result": "PASS dorsals sweep tailward; pectoral and pelvic roots are separate",
+  "paired_root_separation_metres": 3.0705371059869466,
+  "parts": [
+    {
+      "part": "PleatedPectoralL",
+      "kind": "pelvic_root",
+      "root_mean_y": -1.8205461502075195
+    },
+    {
+      "part": "PleatedPectoralR",
+      "kind": "pelvic_root",
+      "root_mean_y": -1.8205461502075195
+    },
+    {
+      "part": "ForwardPectoralL",
+      "kind": "forward_pectoral_root",
+      "root_mean_y": 1.2468799682039964
+    },
+    {
+      "part": "ForwardPectoralR",
+      "kind": "forward_pectoral_root",
+      "root_mean_y": 1.2531019433548576
+    },
+    {
+      "part": "AnteriorDorsalFin",
+      "kind": "dorsal_root",
+      "root_mean_y": 1.068502046740972,
+      "tip_y_relative_to_leading_root": -0.5591678619384766
+    },
+    {
+      "part": "MainSecondDorsalFin",
+      "kind": "dorsal_root",
+      "root_mean_y": -0.7074241539320121,
+      "tip_y_relative_to_leading_root": -0.5684136487543583
+    },
+    {
+      "part": "AftDorsalFin",
+      "kind": "dorsal_root",
+      "root_mean_y": -2.1731126445990343,
+      "tip_y_relative_to_leading_root": -0.5591678619384766
+    },
+    {
+      "part": "CaudalDorsalFin",
+      "kind": "dorsal_root",
+      "root_mean_y": -3.4033332696327796,
+      "tip_y_relative_to_leading_root": -0.5591678619384766
+    }
+  ]
+}

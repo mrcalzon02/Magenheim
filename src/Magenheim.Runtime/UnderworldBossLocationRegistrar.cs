@@ -80,6 +80,7 @@ internal sealed class UnderworldBossLocationRegistrar : IDisposable
                     Quantity = 1,
                     Priotized = true,
                     ExteriorRadius = 24f,
+                    MinDistance = 512f,
                     MinAltitude = location.Family.Biome == UnderworldTerrainBiome.BlackwaterDeep ? -30f : 1f,
                     MaxAltitude = location.Family.Biome == UnderworldTerrainBiome.BlackwaterDeep ? -5f : 6000f,
                     MinTerrainDelta = 0f,

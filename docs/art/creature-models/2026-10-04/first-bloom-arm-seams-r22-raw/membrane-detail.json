@@ -1,0 +1,9 @@
+{
+  "join_width_scale": 1.5,
+  "lower_panel_width_scale": 3.000000134013317,
+  "lower_panel_increase_percent": 200,
+  "height_and_depth": "retained",
+  "arch_intersecting_triangle_pairs": 58,
+  "triangles_added": 0,
+  "texture_detail": "shallow tissue folds, fine pores and subtle fibrous pigmentation baked into the existing 512px atlas"
+}

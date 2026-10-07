@@ -73,6 +73,12 @@ internal sealed class UnderworldNativeStructureLocationRuntime : MonoBehaviour
             UnderworldBossLocationRegistrar.BossLocation? bossLocation = null;
             foreach (var boss in UnderworldBossLocationRegistrar.Locations)
                 if (string.Equals(boss.Family.Kind, _familyKind, StringComparison.Ordinal)) bossLocation = boss;
+            if (bossLocation is not null && UnderworldArrivalBossMigration.AtArrival(transform.position))
+            {
+                _log?.LogInfo("Retired obsolete arrival-area boss location proxy: " + bossLocation.PrefabName);
+                _composed = true;
+                return;
+            }
             using (ValheimWorldInstanceExecution.Enter(context))
                 content = bossLocation is null ? family.Compose(transform.position, identity, key) :
                     UnderworldBiomeBossRegistrar.ComposeArena(bossLocation.CanonicalLocationId, transform.position, transform.rotation);

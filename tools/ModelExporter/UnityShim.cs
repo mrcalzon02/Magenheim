@@ -19,6 +19,8 @@ public class Object
 
 public class Component : Object
 {
+    public string tag { get => gameObject.tag; set => gameObject.tag = value; }
+    public bool CompareTag(string value) => tag == value;
     public GameObject gameObject = null!;
     public Transform transform => gameObject.transform;
     public T[] GetComponentsInChildren<T>(bool includeInactive=false) where T:Component => gameObject.GetComponentsInChildren<T>(includeInactive);
@@ -48,6 +50,7 @@ public class GameObject : Object
         go.AddComponent<MeshRenderer>().sharedMaterial=new Material();go.AddComponent<BoxCollider>();return go;
     }
     public int layer;
+    public string tag = "Untagged";
     public bool activeSelf { get; private set; } = true;
     public Transform transform { get; }
 
@@ -175,6 +178,7 @@ public struct Vector3
     public static Vector3 operator *(float s,Vector3 a)=>a*s;
     public static Vector3 operator /(Vector3 a,float s)=>new(a.x/s,a.y/s,a.z/s);
     public static Vector3 Scale(Vector3 a,Vector3 b)=>new(a.x*b.x,a.y*b.y,a.z*b.z);
+    public static Vector3 Max(Vector3 a,Vector3 b)=>new(MathF.Max(a.x,b.x),MathF.Max(a.y,b.y),MathF.Max(a.z,b.z));
     public static float Dot(Vector3 a,Vector3 b)=>a.x*b.x+a.y*b.y+a.z*b.z;
     public static Vector3 Cross(Vector3 a,Vector3 b)=>new(a.y*b.z-a.z*b.y,a.z*b.x-a.x*b.z,a.x*b.y-a.y*b.x);
     public static Vector3 Lerp(Vector3 a,Vector3 b,float t)=>a+(b-a)*Mathf.Clamp01(t);
@@ -270,7 +274,11 @@ public class Renderer:Component
 }
 public class MeshRenderer:Renderer{}
 public class SkinnedMeshRenderer:Renderer{public Mesh? sharedMesh;public Transform[] bones=Array.Empty<Transform>();public Transform? rootBone;}
-public class ParticleSystemRenderer:Renderer{} public class LODGroup:Component{public bool enabled=true;}
+public class ParticleSystemRenderer:Renderer{}
+public struct LOD { public float screenRelativeTransitionHeight; public Renderer[] renderers;
+ public LOD(float height,Renderer[] value){screenRelativeTransitionHeight=height;renderers=value;} }
+public class LODGroup:Component { public bool enabled=true; private LOD[] lods=Array.Empty<LOD>();
+ public void SetLODs(LOD[] value)=>lods=value; public LOD[] GetLODs()=>lods; public void RecalculateBounds(){} }
 public class Light:Component{public Color color;public float intensity;public float range;}
 
 public class Material:Object

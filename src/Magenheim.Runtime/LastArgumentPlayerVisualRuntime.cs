@@ -38,17 +38,20 @@ internal sealed class LastArgumentPlayerVisualRuntime : MonoBehaviour
             return;
         }
 
-        if (_offHand is null) BuildOffHand();
+        if (!_offHand) BuildOffHand();
     }
 
     private void BuildOffHand()
     {
-        var skeleton = HumanoidSegmentBinder.DonorSkeleton.Resolve(gameObject);
-        _leftHand = skeleton["LeftHand"];
-        _leftForearm = skeleton["LeftForeArm"];
-        if (_leftHand is null || _leftForearm is null)
+        // Valheim's rig is not guaranteed to use Unity's Humanoid avatar mode.
+        // VisEquipment already owns the authoritative hand attachment transforms.
+        var equipment = GetComponentInChildren<VisEquipment>(true);
+        if (!equipment || !equipment.m_leftHand) return;
+        _leftHand = equipment.m_leftHand;
+        _leftForearm = _leftHand.parent;
+        if (!_leftForearm)
             throw new InvalidOperationException(
-                "The Last Argument paired presentation requires Valheim LeftHand and LeftForeArm bones.");
+                "The Last Argument requires the native left-hand attachment parent.");
 
         _offHand = ModelAssets.Load(
             gameObject,
@@ -74,6 +77,9 @@ internal sealed class LastArgumentPlayerVisualRuntime : MonoBehaviour
         blade.localPosition = Vector3.zero;
         blade.localRotation = Quaternion.Inverse(hand.rotation) * world;
         blade.localScale = Vector3.one * PlayerBladeScale;
+        // The paired left blade bypasses held-item alignment. Its authored origin is at
+        // the guard; move the grip centre onto the hand using the same seating as the right.
+        HeldModelAlignment.SeatGrip(hand, blade.gameObject, NowhereKingRewardRegistrar.NullGateModelId);
     }
 
     private void Clear()

@@ -127,7 +127,45 @@ internal sealed class UnderworldResourceRegistrar : IDisposable
             catch (Exception error) { _log.LogError("Underworld resource " + entry.Name + ": " + error); }
         }
         _log.LogInfo($"Underworld resources: {items}/{UnderworldResourceCatalog.All.Count} items and {pickups} native ZoneSystem vegetation pickups registered across six Underworld-only biome flags. Placement and picked-state persistence are Valheim-owned.");
+        RegisterUnderstoneDeposit();
         PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent;
+    }
+
+    private void RegisterUnderstoneDeposit()
+    {
+        const string name = "Magenheim_Underworld_UnderstoneDeposit";
+        if (PrefabManager.Instance.GetPrefab(name)) return;
+        var donor = PrefabManager.Instance.GetPrefab("MineRock_Stone")
+            ?? throw new InvalidOperationException("Understone deposit requires native MineRock_Stone.");
+        var prefab = PrefabManager.Instance.CreateClonedPrefab(name, donor);
+        var mine = prefab.GetComponent<MineRock>()
+            ?? throw new InvalidOperationException("Understone deposit lost native MineRock behavior.");
+        mine.m_name = "Understone deposit";
+        mine.m_minToolTier = 0;
+        mine.m_dropItems = new DropTable
+        {
+            m_dropMin=2, m_dropMax=4, m_dropChance=1f,
+            m_drops = new System.Collections.Generic.List<DropTable.DropData>
+            {
+                new() {m_item=PrefabManager.Instance.GetPrefab("Magenheim_Underworld_Resource_Understone"),
+                    m_stackMin=1,m_stackMax=1,m_weight=1f,m_dontScale=true}
+            }
+        };
+        var material = ModelAssets.LoadPrimaryMaterial("underworld-resource-understone");
+        foreach (var renderer in prefab.GetComponentsInChildren<MeshRenderer>(true))
+        {
+            var slots = renderer.sharedMaterials;
+            for (var i=0;i<slots.Length;i++) slots[i]=material;
+            renderer.sharedMaterials=slots;
+        }
+        if (!ZoneManager.Instance.AddCustomVegetation(new CustomVegetation(prefab, false,
+            new VegetationConfig {Biome=UnderworldTerrainRuntime.FungalForestBiome,
+                BiomeArea=Heightmap.BiomeArea.Everything,Min=1,Max=3,MinAltitude=1,MaxAltitude=1200,
+                MinOceanDepth=0,MaxOceanDepth=0,MinTilt=0,MaxTilt=45,MinTerrainDelta=0,MaxTerrainDelta=200,
+                TerrainDeltaRadius=4,ScaleMin=.8f,ScaleMax=1.2f,GroupSizeMin=1,GroupSizeMax=1,
+                BlockCheck=true,ForcePlacement=false})))
+            throw new InvalidOperationException("Understone deposit vegetation registration refused.");
+        _log.LogInfo("Registered mineable Understone deposits with native rock hit areas and owned Understone texture/yield.");
     }
 
     public void Dispose()

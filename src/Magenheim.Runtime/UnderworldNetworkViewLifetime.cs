@@ -15,10 +15,29 @@ internal static class UnderworldNetworkViewLifetimePatch
 {
     private static void Prefix(Dictionary<ZDO, ZNetView> ___m_instances)
     {
+        var context = ValheimWorldInstanceExecution.Active;
+        var earmark = (byte)(Time.frameCount & 255);
         List<ZDO>? stale = null;
         foreach (var pair in ___m_instances)
         {
-            if (pair.Value && pair.Value.GetZDO() is not null) continue;
+            if (pair.Value && pair.Value.GetZDO() is { } zdo)
+            {
+                // Native RemoveObjects enumerates the shared ZNetScene index, but its
+                // nearby-ZDO lists contain only the manager currently being streamed.
+                // Preserve views belonging to the other native scene using Valheim's
+                // own keep-earmark; do not unload/delete another world's objects.
+                // Teleport moves the player transform before ZSyncTransform publishes
+                // the matching ZDO position. The destination streaming list can omit
+                // the current local character during that native handoff. It must never
+                // be unloaded like an out-of-range prop.
+                if ((Player.m_localPlayer && pair.Value.gameObject == Player.m_localPlayer.gameObject) ||
+                    (context is not null &&
+                    pair.Value.gameObject.scene.handle != context.Scene.handle &&
+                    ValheimWorldInstanceExecution.TryGetContextForScene(
+                        pair.Value.gameObject.scene.handle, out var other) && other is not null))
+                    zdo.TempRemoveEarmark = earmark;
+                continue;
+            }
             (stale ??= new List<ZDO>()).Add(pair.Key);
         }
         if (stale is null) return;

@@ -67,6 +67,9 @@ internal static class UnderworldResourceVisuals
         var solids = new List<Collider>();
         foreach (var collider in prefab.GetComponentsInChildren<Collider>(true))
             if (!collider.isTrigger) solids.Add(collider);
+        // Donor interaction colliders can be on a child with a different layer from
+        // the prefab root. Preserve that raycast layer when moving collision to root.
+        var interactionLayer = solids.Count > 0 ? solids[0].gameObject.layer : prefab.layer;
         var visual = ModelAssets.Load(prefab, model);
         var filters = visual.GetComponentsInChildren<MeshFilter>(true);
         if (filters.Length == 0) throw new InvalidOperationException($"Resource model {model} has no geometry.");
@@ -86,8 +89,16 @@ internal static class UnderworldResourceVisuals
         }
         foreach (var collider in solids) UnityEngine.Object.DestroyImmediate(collider);
         var box = prefab.AddComponent<BoxCollider>();
+        box.gameObject.layer = interactionLayer;
         box.center = bounds.center;
         box.size = Vector3.Max(bounds.size, Vector3.one * 0.05f);
+        if (prefab.GetComponent<Pickable>())
+        {
+            // Flesh is only 18 cm tall. Give stationary pickups an accessible native-style
+            // interaction volume above the ground instead of a tiny mesh-tight target.
+            box.size = Vector3.Max(box.size, new Vector3(.4f, .5f, .4f));
+            box.center = new Vector3(bounds.center.x, bounds.min.y + box.size.y * .5f, bounds.center.z);
+        }
         return visual;
     }
 }

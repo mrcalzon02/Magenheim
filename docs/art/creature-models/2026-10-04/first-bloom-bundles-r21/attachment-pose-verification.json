@@ -1,0 +1,39 @@
+{
+  "result": "PASS",
+  "action": "CrowncapBrute_SweepLeft",
+  "samples": [
+    {
+      "sample": 0,
+      "frame": 1,
+      "max_outside_distance_metres": 0,
+      "outside_contacts": []
+    },
+    {
+      "sample": 0.25,
+      "frame": 10,
+      "max_outside_distance_metres": 0,
+      "outside_contacts": []
+    },
+    {
+      "sample": 0.5,
+      "frame": 20,
+      "max_outside_distance_metres": 0,
+      "outside_contacts": []
+    },
+    {
+      "sample": 0.75,
+      "frame": 29,
+      "max_outside_distance_metres": 0,
+      "outside_contacts": []
+    },
+    {
+      "sample": 1,
+      "frame": 38,
+      "max_outside_distance_metres": 0,
+      "outside_contacts": []
+    }
+  ],
+  "max_outside_distance_metres": 0,
+  "tolerance_metres": 0.001,
+  "scope": "five inherited Blender attack frames; all vertices strictly inside supports in rest geometry; native animation unverified"
+}

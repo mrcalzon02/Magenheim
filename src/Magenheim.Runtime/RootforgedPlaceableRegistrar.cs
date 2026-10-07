@@ -45,7 +45,9 @@ internal sealed class RootforgedPlaceableRegistrar : IDisposable
     {
         var stone = definition.Kind == UnderworldBuildPieceKind.Foundation || definition.Kind == UnderworldBuildPieceKind.Plinth || definition.Kind == UnderworldBuildPieceKind.Stairs;
         var reinforced = definition.Tier == UnderworldBuildTier.RootforgedIron;
-        var donor = stone ? "stone_floor_2x2" : reinforced ? "woodiron_beam" : "wood_pole_log";
+        // Use the same plain native pole as the visible crystal-beam family. The
+        // authored root supplies all geometry; its tier selects native support below.
+        var donor = stone ? "stone_floor_2x2" : "wood_pole";
         var source = PrefabManager.Instance.GetPrefab(donor);
         if (!source || !source.GetComponent<Piece>() || !source.GetComponent<WearNTear>())
             throw new InvalidOperationException($"Construction donor {donor} unavailable.");
@@ -64,7 +66,10 @@ internal sealed class RootforgedPlaceableRegistrar : IDisposable
         var prefab = custom.PiecePrefab;
         var donorColliders = prefab.GetComponentsInChildren<Collider>(true);
         var collisionLayer = donorColliders.FirstOrDefault(c => !c.isTrigger)?.gameObject.layer ?? prefab.layer;
-        foreach (var collider in donorColliders) collider.enabled = false;
+        foreach (var collider in donorColliders) UnityEngine.Object.DestroyImmediate(collider);
+        // Donor LODGroups otherwise re-enable their obsolete renderers in live instances.
+        foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) UnityEngine.Object.DestroyImmediate(lod);
+        foreach (var fade in prefab.GetComponentsInChildren<LodFadeInOut>(true)) UnityEngine.Object.DestroyImmediate(fade);
         var visual = ModelAssets.Load(prefab, ModelId(definition), materialSource: CrystalArchitectureVisuals.SurfaceDonorMaterial());
         var collisionRoot = new GameObject("rootforged-collision") { layer = collisionLayer };
         collisionRoot.transform.SetParent(prefab.transform, false);
@@ -75,8 +80,11 @@ internal sealed class RootforgedPlaceableRegistrar : IDisposable
             UnityEngine.Object.DestroyImmediate(collider);
         }
         var wear = prefab.GetComponent<WearNTear>();
+        wear.m_supports = true;
         wear.m_materialType = stone ? WearNTear.MaterialType.Stone : reinforced ? WearNTear.MaterialType.Iron : WearNTear.MaterialType.HardWood;
+        wear.m_comOffset = new Vector3(0f, definition.Dimensions.HeightMeters * .5f, 0f);
         wear.m_new = visual;
+        visual.SetActive(true);
         wear.m_worn = UnityEngine.Object.Instantiate(visual, prefab.transform);
         wear.m_broken = UnityEngine.Object.Instantiate(visual, prefab.transform);
         wear.m_worn.name = "rootforged-worn"; wear.m_broken.name = "rootforged-weathered";
@@ -84,6 +92,13 @@ internal sealed class RootforgedPlaceableRegistrar : IDisposable
         wear.m_worn.SetActive(false); wear.m_broken.SetActive(false);
         wear.m_fragmentRoots = new[] { wear.m_new, wear.m_worn, wear.m_broken };
         ConfigureSnaps(prefab, definition);
+        // Keep the exact authored mesh collision for walking/placement, but let
+        // native ClosestPoint resolve connections at the recessed root joints.
+        foreach (var snap in prefab.GetComponentsInChildren<Transform>(true))
+            if (snap.parent == prefab.transform && snap.CompareTag("snappoint"))
+                ConstructionJointContacts.Add(collisionRoot, snap.localPosition);
+        if (visual.GetComponentsInChildren<MeshRenderer>(false).Length == 0)
+            throw new InvalidOperationException("Rootforged new-state visual has no active renderers: " + definition.PrefabName);
         if (!PieceManager.Instance.AddPiece(custom)) throw new InvalidOperationException("Jotunn rejected " + definition.PrefabName);
     }
     private static void Darken(GameObject root, float amount)
@@ -144,7 +159,10 @@ internal sealed class RootforgedPlaceableRegistrar : IDisposable
                 if (definition.Kind == UnderworldBuildPieceKind.TBrace) Snap(0,height,0);
                 break;
             case UnderworldBuildPieceKind.ArchRib:
-                Snap(-width*.5f+.4f,0,0); Snap(width*.5f-.4f,0,0);
+                foreach (var side in new[] {-1f,1f})
+                    foreach (var x in new[] {width*.5f-1f,width*.5f-.5f,width*.5f})
+                        foreach (var z in new[] {-depth*.5f,0f,depth*.5f})
+                            Snap(side*x,0,z);
                 Snap(0,height,0); Snap(0,height-.5f,0);
                 Snap(-width*.25f,height*.7f,0); Snap(width*.25f,height*.7f,0);
                 break;

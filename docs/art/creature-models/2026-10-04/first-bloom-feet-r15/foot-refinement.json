@@ -1,0 +1,24 @@
+{
+  "changed_components": [
+    "GroundButtressL0",
+    "GroundButtressL1",
+    "GroundButtressL2",
+    "GroundButtressL3",
+    "GroundButtressL4",
+    "RootSkirtL0",
+    "RootSkirtL1",
+    "RootSkirtL2",
+    "GroundButtressR0",
+    "GroundButtressR1",
+    "GroundButtressR2",
+    "GroundButtressR3",
+    "GroundButtressR4",
+    "RootSkirtR0",
+    "RootSkirtR1",
+    "RootSkirtR2"
+  ],
+  "triangles_added": 0,
+  "method": "existing loops reshaped into unequal crooked root fans, flattened knuckles and staggered low fungal brackets",
+  "rig": "original Foot_L and Foot_R weights retained except ten ankle-root rings seated with matching host weights",
+  "chest": "unchanged r13 anatomy; hidden faces reaudited before final trim"
+}

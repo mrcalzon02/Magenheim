@@ -96,8 +96,35 @@ internal static class RigidCreatureSegmentBinder
         var character = prefab.GetComponent<Character>()
             ?? throw new InvalidOperationException(prefab.name + " has no Character for creature visual driving.");
         var driver = root.AddComponent<RigidCreaturePresentationDriver>();
+        driver.ModelId = modelId;
         driver.Bind(character, transforms, rest, restPosition, restScale, clips, fps);
         return transforms.Count + " bones / " + clips.Count + " authored action(s)";
+    }
+
+    internal static void RebindClone(RigidCreaturePresentationDriver driver, string modelId)
+    {
+        var rig = ModelAssets.CreatureRig(modelId)
+            ?? throw new InvalidOperationException("Missing creature rig for spawned clone: " + modelId);
+        var specs = ParseBones(rig, modelId);
+        var bones = new Dictionary<string, Transform>(StringComparer.Ordinal);
+        var rest = new Dictionary<string, Quaternion>(StringComparer.Ordinal);
+        var positions = new Dictionary<string, Vector3>(StringComparer.Ordinal);
+        var scales = new Dictionary<string, Vector3>(StringComparer.Ordinal);
+        foreach (var bone in driver.GetComponentsInChildren<Transform>(true))
+        {
+            const string prefix = "magenheim.creature-bone.";
+            if (!bone.name.StartsWith(prefix, StringComparison.Ordinal)) continue;
+            var name = bone.name.Substring(prefix.Length);
+            if (!specs.ContainsKey(name)) continue;
+            bones.Add(name, bone);
+            rest.Add(name, bone.localRotation);
+            positions.Add(name, bone.localPosition);
+            scales.Add(name, bone.localScale);
+        }
+        if (bones.Count != specs.Count)
+            throw new InvalidOperationException("Spawned creature clone lost authored bones: " + modelId);
+        driver.Bind(driver.GetComponentInParent<Character>(), bones, rest, positions, scales,
+            ParseActions(rig, specs, modelId), (float?)rig["fps"] ?? 24f);
     }
 
     private static IReadOnlyDictionary<string, BoneSpec> ParseBones(
@@ -319,6 +346,15 @@ internal static class RigidCreatureSegmentBinder
 
 internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
 {
+    // Unity does not clone the private runtime dictionaries/action lists. Rebuild them
+    // against the spawned clone's own bones from a serialized model identity.
+    [SerializeField] internal string ModelId = string.Empty;
+    private void Awake() => EnsureInitialized();
+    private void EnsureInitialized()
+    {
+        if (_clips is null && !string.IsNullOrWhiteSpace(ModelId))
+            RigidCreatureSegmentBinder.RebindClone(this, ModelId);
+    }
     private Character _character = null!;
     private Humanoid? _humanoid;
     private Rigidbody? _body;
@@ -353,12 +389,16 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
         _fps = fps;
         _humanoid = character.GetComponent<Humanoid>();
         _body = character.GetComponent<Rigidbody>();
-        _lastHealth = character.GetHealth();
+        // Registered prefab prototypes have no initialized Character.m_nview yet.
+        // GetHealth reads that live network view; use the authored health until spawn.
+        _lastHealth = character.m_health;
         Select(ChooseIdle());
     }
 
     internal void PlayOneShot(string token)
     {
+        EnsureInitialized();
+        if (_clips is null) return;
         if (string.IsNullOrWhiteSpace(token))
             return;
         var clip = Find(token);

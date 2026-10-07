@@ -1,0 +1,37 @@
+{
+  "concept": "docs/art/creature-concepts/2026-10-03/the-first-bloom.png",
+  "concept_sha256": "97a4832ccdb35971d59bbe47fc586572ae50821c9854cd0c234905300f2ba8de",
+  "observations": [
+    {
+      "region": "Whole silhouette",
+      "pilot_gap": "Broad hat stack and humanoid face dominate.",
+      "revision": "Eight tapering asymmetric brackets around a branching crown; remove eyes and smiling jaw.",
+      "remaining": "Bracket shapes still need more individual edge wear and variation."
+    },
+    {
+      "region": "Chest focus",
+      "pilot_gap": "Two flat bright chest plates cover a solid trunk.",
+      "revision": "Cut a real aperture through the trunk; recess an oval chamber behind 22 curved ribs and a central amber organ.",
+      "remaining": "Core illumination and rib integration need native shader/pose review."
+    },
+    {
+      "region": "Draped tissue",
+      "pilot_gap": "Concept hanging pale webbing is absent.",
+      "revision": "Add thickness-bearing tapered curtains and sparse branching scaffold, seated beneath the canopy.",
+      "remaining": "Tissue still reads as ribbons in close-up; finer branching and frayed edges need another texture/geometry pass."
+    },
+    {
+      "region": "Legs and ground contact",
+      "pilot_gap": "Bare segmented legs and narrow toe fans.",
+      "revision": "Narrow the bow-legged rest stance, layer fungal brackets down both legs, add hip forks and five spreading ground buttresses per foot.",
+      "remaining": "Root-to-ground masses and hip transitions still need more organic integration."
+    },
+    {
+      "region": "Materials",
+      "pilot_gap": "Smooth tan caps, uniform bark and bright chest stripes.",
+      "revision": "Darker bark with directional grain, ochre/moss cap pigmentation, pale undersides and isolated amber emission; bake to one 512px atlas.",
+      "remaining": "512px texel allocation, seams and close-range crispness need continued review."
+    }
+  ],
+  "visual_acceptance": "iteration candidate; not final concept fidelity or live acceptance"
+}

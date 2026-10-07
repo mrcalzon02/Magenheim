@@ -53,8 +53,8 @@ internal static class UnderworldRareCellMassifTests
             Assert(occupied > 0, "representative seeds must contain at least one rare massif cell");
             Assert(occupied < probes * .12d,
                 "rare massif coverage must stay sparse rather than replacing ordinary biome terrain");
-            Assert(maxLift > 1200d,
-                "rare massif interiors must create an inordinately tall terrain variant");
+            Assert(maxLift > 240d && maxLift <= 660d,
+                "rare massif interiors retain broad relief at one fifth of the previous amplitude");
 
             // A selected high point must belong to a broad lifted cell, not a needle. Nearby probes
             // should still receive substantial lift from the same Voronoi-cell interior.

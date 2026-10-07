@@ -1,0 +1,14 @@
+{
+  "forward_pitch_degrees": 12,
+  "recess_authored_metres": 0.125,
+  "lower_authored_metres": 0.07,
+  "pivot": [
+    0.0,
+    0.11999999731779099,
+    1.399999976158142
+  ],
+  "method": "rigid cavity/fan pitch with smooth front-torso transition and reseated full flange",
+  "triangles_added": 0,
+  "lower_cavity_authored_z": 1.37348473072052,
+  "hip_joint_authored_z": 1.1799999475479126
+}

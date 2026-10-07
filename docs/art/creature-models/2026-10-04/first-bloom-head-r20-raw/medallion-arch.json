@@ -1,0 +1,9 @@
+{
+  "medallion_width_scale": 1.25,
+  "medallion_height_scale": 1.25,
+  "medallion_depth_scale": 1,
+  "arch_method": "bring the two existing lowest frills together",
+  "arch_intersecting_triangle_pairs": 61,
+  "triangles_added": 0,
+  "attachment_records": 122
+}

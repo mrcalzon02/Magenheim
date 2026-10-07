@@ -252,12 +252,30 @@ internal static class HeldModelAlignment
     internal static void Apply(Transform attach, Renderer[] donorRenderers, GameObject root, string id, Action<string>? log)
     {
         if (attach is null || root is null) return;
-        if (!TryMeasureBounds(attach, donorRenderers, null, root.transform, out var donor)) return;
-        if (!TryMeasureBounds(attach, root.GetComponentsInChildren<Renderer>(true), root.transform, null, out var replacement)) return;
         var profileId = AlignmentProfile.TryGetValue(id, out var inheritedProfile) ? inheritedProfile : id;
-        var correction = Measure(attach, donor, replacement,
-            ForwardAxisOverride.TryGetValue(profileId, out var declared) ? declared : (int?)null);
-        root.transform.localRotation = correction * root.transform.localRotation;
+        var ancestor = attach.GetComponentsInChildren<Transform>(true)
+            .FirstOrDefault(node => node != root.transform && node.parent == attach &&
+                node.gameObject.name == "magenheim." + profileId + ".visual");
+        var referenceRenderers = ancestor ? ancestor!.GetComponentsInChildren<Renderer>(true) : donorRenderers;
+        if (!TryMeasureBounds(attach, referenceRenderers, null, root.transform, out var donor)) return;
+        if (!TryMeasureBounds(attach, root.GetComponentsInChildren<Renderer>(true), root.transform, null, out var replacement)) return;
+        Quaternion correction;
+        if (ancestor)
+        {
+            // Custom weapon upgrades clone an already aligned crystal chassis. Hidden
+            // native meshes are still present: measuring their union can flip axes or
+            // relearn an already seated pose. Carry the approved authored frame forward.
+            correction = ancestor!.localRotation;
+            root.transform.localRotation = correction;
+            root.transform.localPosition = ancestor.localPosition *
+                (root.transform.localScale.x / ancestor.localScale.x);
+        }
+        else
+        {
+            correction = Measure(attach, donor, replacement,
+                ForwardAxisOverride.TryGetValue(profileId, out var declared) ? declared : (int?)null);
+            root.transform.localRotation = correction * root.transform.localRotation;
+        }
 
         // No seating offset: models are placed exactly as authored. Magenheim hafts put the grip
         // on the local origin, which is the attach point, and the axe -- confirmed correct in game
@@ -267,25 +285,36 @@ internal static class HeldModelAlignment
         // attempt to reshape it fixed one weapon by breaking another. Orientation is corrected in
         // the source model, not here.
 
-        if (Trim.TryGetValue(id, out var trim) || Trim.TryGetValue(profileId, out trim))
+        if (!ancestor && (Trim.TryGetValue(id, out var trim) || Trim.TryGetValue(profileId, out trim)))
         {
             root.transform.localRotation = Quaternion.Euler(trim.Rotation) * root.transform.localRotation;
             root.transform.localPosition += trim.Offset;
         }
 
-        if (id == "nowhere-king-sword-null-gate")
+        if (id == "crystal-weapon-sword" ||
+            id == "nowhere-king-sword-null-gate" || id == "nowhere-king-sword-firmament" ||
+            id == "underworld-weapon-amber-blade")
         {
-            // This hilt's grip spans authored Y=-.478..-.072; the origin is above its guard.
-            // Seat the actual grip centre on the hand after rotation, not a guessed axis trim.
-            var grip = root.GetComponentsInChildren<MeshFilter>(true)
-                .FirstOrDefault(filter => filter.name == "grip" && filter.sharedMesh);
-            if (grip is null || !grip) throw new InvalidOperationException("Null Gate has no authored grip mesh.");
-            root.transform.localPosition -= attach.InverseTransformPoint(
-                grip.transform.TransformPoint(grip.sharedMesh.bounds.center));
+            SeatGrip(attach, root, id);
+        }
+        else if (id == "underworld-tool-sporelight-lantern")
+        {
+            SeatGrip(attach, root, id, "handle-crown");
         }
 
         TryMeasureBounds(attach, root.GetComponentsInChildren<Renderer>(true), root.transform, null, out var seated);
         Report(log, id, correction, donor, seated);
+    }
+
+    internal static void SeatGrip(Transform attach, GameObject root, string id, string partName = "grip")
+    {
+        // These grips span authored Y=-.478..-.072: the old origin is at the guard.
+        // Transform the grip centre after rotation and scaling, including the paired .43 scale.
+        var grip = root.GetComponentsInChildren<MeshFilter>(true)
+            .FirstOrDefault(filter => filter.gameObject.name == partName && filter.sharedMesh);
+        if (grip is null || !grip) throw new InvalidOperationException(id + " has no authored grip mesh.");
+        root.transform.localPosition -= attach.InverseTransformPoint(
+            grip.transform.TransformPoint(grip.sharedMesh.bounds.center));
     }
 
     internal static void Report(Action<string>? log, string id, Quaternion rotation, Bounds donor = default, Bounds seated = default)

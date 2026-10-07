@@ -18,7 +18,10 @@ internal sealed class DeepFractureInteriorBinder : IDeepFractureInteriorBinder
         var existing = anchor.Cast<Transform>().SingleOrDefault(transform => string.Equals(transform.name, InteriorRootName, StringComparison.Ordinal));
         if (existing is not null) throw new InvalidOperationException("Deep Fracture interior authority is already attached to this entrance; duplicate binders are refused.");
         DeepFractureSurfaceTravel.AttachSurfacePortal(anchor);
-        var root = new GameObject(InteriorRootName);root.transform.SetParent(anchor, worldPositionStays: false);root.transform.localPosition = Vector3.zero;root.transform.localRotation = Quaternion.identity;root.AddComponent<ZNetView>();root.AddComponent<DeepFractureEncounterAuthority>();root.AddComponent<DeepFractureInteriorRuntime>();
+        var root = new GameObject(InteriorRootName);root.transform.SetParent(anchor, worldPositionStays: false);root.transform.localPosition = Vector3.down * 2048f;root.transform.localRotation = Quaternion.identity;root.AddComponent<DeepFractureEncounterAuthority>();root.AddComponent<DeepFractureInteriorRuntime>();
+        var location = locationContainer.GetComponent<Location>();
+        location.m_useCustomInteriorTransform = true;
+        location.m_interiorTransform = root.transform;
         return new DeepFractureInteriorBinding(true, checked((float)DeepFractureExpeditionPlanner.MaximumSupportedInteriorRadius()), InteriorEnvironment);
     }
 }
@@ -30,7 +33,8 @@ internal sealed class DeepFractureInteriorRuntime : MonoBehaviour
     {
         if (_built) return;
         var authority = GetComponent<DeepFractureEncounterAuthority>() ?? throw new InvalidOperationException("Deep Fracture interior has no persistent encounter authority.");
-        var seed = StableLocationSeed(transform.position);var expedition = DeepFractureExpeditionPlanner.Build(seed);var districts = BuildDistricts(expedition.Interior, authority, seed);DeepFracturePassageAssembler.Assemble(transform, expedition.Interior);BuildTraversalLinks(expedition.Interior);
+        // Keep the previous entrance seed point even after replacing the exterior/moving rooms.
+        var seed = StableLocationSeed(transform.parent.parent.TransformPoint(new Vector3(0f, 1.15f, -1.2f)));var expedition = DeepFractureExpeditionPlanner.Build(seed);var districts = BuildDistricts(expedition.Interior, authority, seed);DeepFracturePassageAssembler.Assemble(transform, expedition.Interior);BuildTraversalLinks(expedition.Interior);
         var descent = districts.TryGetValue("DF-01", out var descentDistrict) ? descentDistrict : throw new InvalidOperationException("Deep Fracture expedition did not place required DF-01 Fracture Descent district.");
         DeepFractureSurfaceTravel.Bind(transform, descent);_built = true;
     }

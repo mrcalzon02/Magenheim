@@ -1,0 +1,8 @@
+{
+  "rim_vertices": 48,
+  "result": "all outer front/back flange vertices seated in torso shell",
+  "max_authored_displacement_metres": 0.0423951161509899,
+  "triangles_added": 0,
+  "method": "intersecting supported flange, not a topology weld",
+  "support": "HollowCathedralTrunk"
+}

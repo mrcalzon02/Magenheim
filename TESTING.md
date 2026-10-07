@@ -4,14 +4,55 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.162 by Local** and start its description with
-**0.0.162: Repairs current-world scenery**.
+show **Magenheim v0.0.176 by Local** and start its description with
+**0.0.176: Repairs Underworld cavern visibility**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.162]` and the runtime image line reports
-`checkpoint UW-162` with the actual assembly path before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.176]` and the runtime image line reports
+`Runtime image 0.0.176` with the actual assembly path before reporting game results.
 Future versions must update `release.json` and this expected version together.
+
+For 0.0.176, use a fresh disposable world to inspect the enlarged 10,500 m-radius
+Underworld and one-fifth regional relief/massifs. Existing placed objects retain saved
+positions; no generated zones or player builds are deleted. Confirm no Surface scenery,
+standing stones or Yggdrasil is drawn inside the cavern, the authored roof is visible,
+all six map colors work, and no boss arena occupies arrival. Test arrival migration on
+an older world separately. Inspect custom forest cover/variants, mine Understone,
+pick Glowcap Flesh from the ground and collect its dropped item. Measure frame rate in
+equivalent native-tree and mushroom stands: reduced mesh counts do not establish FPS parity.
+
+Also verify normal appearance with no helmet and with the vanilla crown.
+Equip the Null Mantle, remove it, switch helmets, and repeat while changing other
+gear: darkening and eyes must appear only while the native helmet slot holds the
+Mantle, and normal body/gear colors must return after removal.
+
+Also retry the saved world that reported an invalid chunk header:
+the existing Underworld chunks must load without that rejection. Then load a fresh
+disposable world: both location generation passes
+must finish, initial loading must release, and no GenerateLocationsTimeSliced
+exception may occur. Then enter/return through the gate.
+
+Also inspect Underworld resources as ground pickups, dropped items and
+inventory icons. Sulfur must read as mineral crust, Carrion Amber as resin nodules,
+Clear Ice as broken plates, Bone Gravel as bone fragments, and ores as mineral
+veins embedded in rock. Confirm picking and inventory stacking still work.
+
+Also test the vanilla crown and Null Mantle against Surface and Underworld
+creatures separately: each must cause native crown flight only in its respective
+world. Check the Underworld Royalty status, turning/crouching red eyes, strong body
+darkening and normal appearance after unequipping, including gear changed while
+wearing the Mantle. Native boss/faction exclusions remain unchanged.
+
+Also confirm the Sporelight Lantern is held by its top handle and the base
+Crystal Sword by its grip. Inspect a Deep Fracture: only the native Frost Cave exterior
+should be above terrain; enter and return, check completed corridors and restrained lighting.
+Use `devcommands` then `findtp Magenheim_DeepGateSite` for gate inspection.
+Load a fresh disposable world and confirm Underworld map generation finishes
+as part of initial loading. Enter and return through the Deep Gate: the native portal
+screen must display, fade away after destination readiness, and reveal a usable world
+view in both directions. Check Overworld/Underworld map tabs and saved exploration.
+Camera scope regression tests do not establish live black-screen resolution.
 
 Install the candidate ZIP into a disposable r2modman profile, then launch **Modded**. The plugin
 is under `BepInEx/plugins/Local-Magenheim/Magenheim`. Launching vanilla Steam
@@ -41,6 +82,22 @@ These multiplayer/reward outcomes require live evidence and are not established 
 True Blacksmithing disabled must preserve baseline recipes. Manufacturing with the switch enabled
 is still incomplete; do not mark it accepted based on an inert Ready state. Offline injected-failure
 tests cover partial mutation, rollback order, failed restoration retry and circuit-breaker rejection.
+
+## True Blacksmithing development census — 0.0.167
+
+The subsystem is not yet ready for the plan's integrated manufacturing campaign.
+The optional switch remains default-disabled, and enabling it does not activate a
+partial manufacturing conversion. See `true-blacksmithing/DEVELOPMENT_STATE.md`.
+
+With native `devcommands` enabled, `magenheim_blacksmithing status` validates the
+shipped catalog/grammar and reports the module state. After registration in an
+existing world, `magenheim_blacksmithing catalog` records the actual ObjectDB
+equipment routes and ingredients to a new file under
+`BepInEx/config/Magenheim/true-blacksmithing/`. This is a read-only census, not a
+gameplay manufacturing test. It does not change recipes or consume resources.
+The registered Magenheim/vanilla snapshot must be reconciled before concrete
+component budgets and replacement routes are frozen. Foreign route observations
+are evidence only and do not authorize converting foreign recipes.
 
 ## Ground feature acceptance - 0.0.108
 

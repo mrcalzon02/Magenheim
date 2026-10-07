@@ -42,7 +42,7 @@ internal sealed class UnderworldArmourRegistrar : IDisposable
 
     private static void RegisterOne(UnderworldEquipmentDefinition definition)
     {
-        var donor=Donor(definition.Slot);
+        var donor=Donor(definition);
         RequirePrefab(donor);RequirePrefab(definition.StationPrefab);
         foreach(var cost in definition.Costs)RequirePrefab(cost.Prefab);
         if(PrefabManager.Instance.GetPrefab(definition.Prefab)||CustomItem.IsCustomItem(definition.Prefab))
@@ -55,7 +55,8 @@ internal sealed class UnderworldArmourRegistrar : IDisposable
         shared.m_maxStackSize=1;
         shared.m_value=0;
         shared.m_dlc=string.Empty;
-        // Keep the donor icon: the archived raw-geometry icon no longer describes this equipment.
+        // Render the owned native donor and its materials; retired procedural armour
+        // sources and unchanged vanilla icons do not describe this equipment.
         var balance=UnderworldArmourBalanceCatalog.Require(definition.Biome,definition.Slot);
         shared.m_armor=balance.Armor;
         shared.m_armorPerLevel=balance.ArmorPerQuality;
@@ -70,6 +71,7 @@ internal sealed class UnderworldArmourRegistrar : IDisposable
 
         if(!ItemManager.Instance.AddItem(item))
             throw new InvalidOperationException("Jotunn refused Underworld armour item "+definition.Prefab);
+        NativeEquipmentIcons.Apply(item.ItemPrefab);
 
         var recipe=new RecipeConfig{
             Name="Magenheim_Recipe_"+definition.Prefab,Item=definition.Prefab,Amount=1,
@@ -81,11 +83,19 @@ internal sealed class UnderworldArmourRegistrar : IDisposable
             throw new InvalidOperationException("Jotunn refused Underworld armour recipe "+recipe.Name);
     }
 
-    private static string Donor(UnderworldEquipmentSlot slot)=>slot switch{
+    private static string Donor(UnderworldEquipmentDefinition definition)=>definition.Slot switch{
         UnderworldEquipmentSlot.Helmet=>"HelmetCarapace",
         UnderworldEquipmentSlot.Chest=>"ArmorCarapaceChest",
         UnderworldEquipmentSlot.Legs=>"ArmorCarapaceLegs",
-        UnderworldEquipmentSlot.Cape=>"CapeFeather",
+        UnderworldEquipmentSlot.Cape=>definition.Biome switch {
+            UnderworldTerrainBiome.FungalForest=>"CapeLox",
+            UnderworldTerrainBiome.BlackwaterDeep=>"CapeLinen",
+            UnderworldTerrainBiome.SulfurousWastes=>"CapeAsh",
+            UnderworldTerrainBiome.FrozenCaverns=>"CapeWolf",
+            UnderworldTerrainBiome.FractureZones=>"CapeAsksvin",
+            UnderworldTerrainBiome.GreatDecay=>"CapeTrollHide",
+            _=>throw new InvalidOperationException("Unknown cape biome."),
+        },
         _=>throw new InvalidOperationException("Tool is not an armour equipment slot."),
     };
 

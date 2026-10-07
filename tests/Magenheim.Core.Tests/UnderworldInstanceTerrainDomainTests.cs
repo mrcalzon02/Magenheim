@@ -13,7 +13,7 @@ internal static class UnderworldInstanceTerrainDomainTests
         }
 
         var domain = UnderworldInstanceTerrainDomain.CreateDefault();
-        Assert(domain.RadiusMeters == 8000d, "Default instance radius is canonical.");
+        Assert(domain.RadiusMeters == 10500d, "Underworld outer radius matches installed Surface waterEdge.");
         Assert(domain.Contains(0d, 0d, 0d), "Instance origin belongs to native terrain domain.");
         Assert(!domain.Contains(domain.RadiusMeters + 1d, 0d, 0d), "Coordinates outside native radius are rejected.");
         Assert(!domain.Contains(0d, domain.MaximumY + 1d, 0d), "Coordinates above native vertical domain are rejected.");

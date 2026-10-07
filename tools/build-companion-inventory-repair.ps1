@@ -15,7 +15,7 @@ foreach ($name in @('PatchCompanions','AuditCompanions')) {
     if ($LASTEXITCODE -ne 0) { throw "$name compilation failed." }
 }
 Copy-Item -LiteralPath $cecil -Destination $dist -Force
-$package = Join-Path $dist 'Local-CompanionInventoryRepair-1.3.0-local2'
+$package = Join-Path $dist 'Local-CompanionInventoryRepair-1.3.0-local3'
 $plugin = Join-Path $package 'BepInEx/plugins/ProfMags-Offline_Companions'
 New-Item -ItemType Directory -Force -Path $plugin | Out-Null
 $output = Join-Path $plugin 'Companions.dll'
@@ -27,9 +27,9 @@ if ($LASTEXITCODE -ne 0) { throw 'Companion repair audit failed.' }
 if ($LASTEXITCODE -eq 0) { throw 'Unpatched negative control unexpectedly passed.' }
 @{
     originalHash = (Get-FileHash -LiteralPath $original).Hash
-    expectedInstalledHash = 'DC77D292A9A3B532C0C9DD05014BCC01A766D9D4EB8CB0568BF5F1460AD74EE4'
+    expectedInstalledHash = '5EBD40C7059792623C3A4CF638BD2655F9A45EBECCD1F30EAC29047EA13F9DA3'
     repairedHash = (Get-FileHash -LiteralPath $output).Hash
 } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $package 'repair-receipt.json')
-'Local Offline Companions 1.3.0 repair: initializes cloned grid Player and CanDropDragOntoItem state. Preserves the vendor version and inventory data. Use the guarded installer; it backs up the current DLL. Live empty-slot, equip, transfer and reopening acceptance remains required.' | Set-Content -LiteralPath (Join-Path $package 'README.txt')
+'Local Offline Companions 1.3.0 repair: initializes cloned grid Player and CanDropDragOntoItem state through reflection on the private native container field. Preserves vendor version and inventory data. Live inventory acceptance remains required.' | Set-Content -LiteralPath (Join-Path $package 'README.txt')
 Compress-Archive -Path "$package/*" -DestinationPath "$package.zip" -Force
 Write-Output "Built and audited $package.zip"

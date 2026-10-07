@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Author missing raw and all refined Underworld inventory material models."""
-import json,math,sys
+import json,math,sys,random
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from underworld_material_library import bind_underworld_material
@@ -10,7 +10,7 @@ from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/"assets"/"models"/"source"
 SPECS=json.loads((ROOT/"tools"/"underworld-material-item-specs.json").read_text())
-REVISION="underworld-material-items-r1"
+REVISION="underworld-material-items-r2"
 MIN_PARTS=8
 
 def mat(model,semantic,index):
@@ -32,6 +32,12 @@ def finish(o,path,m):
 def cube(path,loc,scale,m,bevel=.015,rot=(0,0,0)):
     bpy.ops.mesh.primitive_cube_add(size=1,location=loc,rotation=rot);o=bpy.context.object;o.scale=scale
     bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
+    if path.startswith("fractured-ice-"):
+        rng=random.Random(path)
+        for vertex in o.data.vertices:
+            vertex.co.x *= rng.uniform(.70,1.22)
+            vertex.co.y *= rng.uniform(.70,1.24)
+            vertex.co.z *= rng.uniform(.80,1.15)
     if bevel:
         mod=o.modifiers.new("worked-edge","BEVEL");mod.width=bevel;mod.segments=2
     return finish(o,path,m)
@@ -39,6 +45,9 @@ def cube(path,loc,scale,m,bevel=.015,rot=(0,0,0)):
 def rock(path,loc,scale,m,rot=(0,0,0)):
     bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2,radius=1,location=loc);o=bpy.context.object
     o.scale=scale;o.rotation_euler=rot;bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
+    rng=random.Random(path)
+    for vertex in o.data.vertices:
+        vertex.co *= rng.uniform(.82,1.12)
     return finish(o,path,m)
 
 def cyl(path,loc,radius,depth,m,rot=(0,0,0),vertices=12):
@@ -71,23 +80,45 @@ def build(form,a,b):
         for i in range(3): cone("inclusion-"+str(i),((i-1)*.05,-.025,.08),.018,.004,.07,b,vertices=7)
     elif form=="crystal":
         for i in range(7):
-            ang=i*math.tau/7;r=0 if i==0 else .055
-            cone("crystal-"+str(i),(math.cos(ang)*r,math.sin(ang)*r,.075),.048 if i==0 else .032,.005,.15+.02*(i%3),a,(.06*math.sin(ang),.06*math.cos(ang),ang),6)
+            ang=i*2.39996;r=0 if i==0 else .040+.008*(i%3)
+            cone("crystal-"+str(i),(math.cos(ang)*r,math.sin(ang)*r,.063+.010*(i%3)),.042 if i==0 else .027,.012 if i%3==0 else .003,.105+.027*(i%4),a,(.24*math.sin(ang),.20*math.cos(ang),ang),6)
         for i in range(4): rock("matrix-"+str(i),((i-1.5)*.04,.035*(-1 if i%2 else 1),.025),(.042,.034,.024),b)
     elif form=="bundle":
         pts=((-0.055,-.04),(0.055,-.04),(-.055,.04),(.055,.04))
         for i,(x,y) in enumerate(pts):cyl("member-"+str(i),(x,y,.16),.037,.32,a,(0,.06*(i-1.5),0),10)
         for j,z in enumerate((.075,.235)):torus("binding-"+str(j),(0,0,z),.086,.011,b)
-        for i,(x,y) in enumerate(pts):cube("end-key-"+str(i),(x,y,.31),(.014,.014,.022),b,.005)
+        for i,(x,y) in enumerate(pts):
+            cyl("split-heartwood-"+str(i),(x,y,.313),.024,.009,b,vertices=9)
+            tube("branch-scar-"+str(i),(x,y,.115),(x+.050,y+.015,.135),.010,a,8)
     elif form=="ore":
+        rock("host-rock",(0,0,.066),(.125,.095,.067),b,(.12,.21,.18))
+        for i in range(3):
+            ang=i*2.1;rock("attached-matrix-"+str(i),(math.cos(ang)*.076,math.sin(ang)*.054,.052),(.062,.049,.045),b,(i*.27,i*.16,ang))
         for i in range(7):
-            ang=i*2.2;r=.055+.012*(i%2);rock("ore-"+str(i),(math.cos(ang)*r,math.sin(ang)*r,.05),(.058,.047,.043),b,(i*.17,i*.11,ang))
-        for i in range(5):
-            ang=i*math.tau/5;rock("vein-"+str(i),(math.cos(ang)*.07,math.sin(ang)*.07,.075),(.025,.017,.017),a)
+            ang=i*2.39996;rock("embedded-vein-"+str(i),(math.cos(ang)*.070,math.sin(ang)*.053,.096),(.035,.013,.017),a,(.18,i*.17,ang))
+    elif form=="amber":
+        for i in range(4):
+            ang=i*2.4;rock("resin-nodule-"+str(i),(math.cos(ang)*.052,math.sin(ang)*.041,.045+i*.008),(.067,.052,.043),a,(i*.31,.14,ang))
+        for i in range(3):
+            tube("buried-remnant-"+str(i),((i-1)*.035,-.015,.087),((i-1)*.035+.018,.020,.095),.005,b,7)
+        rock("weathered-crust",(.005,.006,.016),(.096,.073,.020),b)
+    elif form=="sulfur":
+        rock("vent-matrix",(0,0,.046),(.11,.083,.047),b,(.08,.14,.25))
+        for i in range(7):
+            ang=i*2.39996;rock("sulfur-crust-"+str(i),(math.cos(ang)*.060,math.sin(ang)*.046,.075),(.037,.026,.014),a,(.08,.12,ang))
+    elif form=="ice":
+        for i in range(6):
+            ang=i*2.39996;cube("fractured-ice-"+str(i),(math.cos(ang)*.046,math.sin(ang)*.046,.025+i*.016),(.105,.044,.020),a,0,(i*.13,.21,ang))
+        for i in range(4):rock("frozen-inclusion-"+str(i),((i-1.5)*.035,.025,.027),(.024,.017,.011),b)
+    elif form=="bonechips":
+        for i in range(7):
+            ang=i*2.39996;r=.045+.014*(i%3)
+            cone("broken-shaft-"+str(i),(math.cos(ang)*r,math.sin(ang)*r,.032+.009*(i%2)),.015,.007,.070,a,(.75,.4,ang),7)
+        for i in range(3):rock("joint-fragment-"+str(i),((i-1)*.047,.022,.032),(.024,.019,.017),a,(i*.7,.22,.18))
     elif form=="bone":
         for i in range(5):
             x=(i-2)*.038;tube("bone-"+str(i),(x,-.06,.035),(x+.02,.07,.16+.012*(i%2)),.017,a,9)
-        for i,z in enumerate((.055,.088,.121,.154)):torus("bone-bind-"+str(i),(0,0,z),.075,.009,b)
+        for i in range(5):rock("worn-joint-"+str(i),((i-2)*.038+.018,.062,.150+.012*(i%2)),(.024,.020,.027),a)
     elif form=="spores":
         for i in range(6):
             ang=i*math.tau/6;x,y=math.cos(ang)*.065,math.sin(ang)*.065
@@ -155,8 +186,16 @@ def author(model_id):
     build(form,mat(model_id,primary,"primary"),mat(model_id,secondary,"secondary"))
     meshes=[o for o in bpy.context.scene.objects if o.type=="MESH"]
     if len(meshes)<MIN_PARTS:raise RuntimeError(model_id+": inventory detail regression")
+    if model_id.startswith("underworld-resource-"):
+        for mesh in meshes:
+            if any(token in mesh.name for token in ("member-","stem-","cap-","binding-")):
+                rng=random.Random(model_id+mesh.name)
+                for vertex in mesh.data.vertices:
+                    vertex.co.x += rng.uniform(-.002,.002)
+                    vertex.co.y += rng.uniform(-.002,.002)
+                    vertex.co.z += rng.uniform(-.003,.003)
     scene=bpy.context.scene;scene["model_id"]=model_id;scene["magenheim_family"]="underworld_material_item"
-    scene["magenheim_material_item_form"]=form;scene["magenheim_fidelity"]="endgame-material-item-r1"
+    scene["magenheim_material_item_form"]=form;scene["magenheim_fidelity"]=REVISION
     scene["magenheim_detail_parts"]=len(meshes);scene["runtime_lights"]="[]"
     bpy.context.preferences.filepaths.save_version=0
     bpy.ops.wm.save_as_mainfile(filepath=str(SOURCE/(model_id+".blend")),compress=True)

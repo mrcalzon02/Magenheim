@@ -1,0 +1,380 @@
+[
+  {
+    "name": "The First Bloom",
+    "kind": "boss",
+    "status": "construction study authored; refinement and acceptance pending",
+    "source": "assets/models/source/underworld-boss-first-bloom.blend",
+    "concept": "docs/art/creature-concepts/2026-10-03/the-first-bloom.png"
+  },
+  {
+    "name": "The Blackwater Maw",
+    "kind": "boss",
+    "status": "construction study authored; refinement and acceptance pending",
+    "source": "assets/models/source/underworld-boss-blackwater-maw.blend",
+    "concept": "docs/art/creature-concepts/2026-10-03/the-blackwater-maw.png"
+  },
+  {
+    "name": "The Furnace Heart",
+    "kind": "boss",
+    "status": "construction study authored; refinement and acceptance pending",
+    "source": "assets/models/source/underworld-boss-furnace-heart.blend",
+    "concept": "docs/art/creature-concepts/2026-10-03/the-furnace-heart.png"
+  },
+  {
+    "name": "The White Silence",
+    "kind": "boss",
+    "status": "construction study authored; refinement and acceptance pending",
+    "source": "assets/models/source/underworld-boss-white-silence.blend",
+    "concept": "docs/art/creature-concepts/2026-10-03/the-white-silence.png"
+  },
+  {
+    "name": "The Rift Titan",
+    "kind": "boss",
+    "status": "construction study authored; refinement and acceptance pending",
+    "source": "assets/models/source/underworld-boss-rift-titan.blend",
+    "concept": "docs/art/creature-concepts/2026-10-03/the-rift-titan.png"
+  },
+  {
+    "name": "The Carrion Crown",
+    "kind": "boss",
+    "status": "construction study authored; refinement and acceptance pending",
+    "source": "assets/models/source/underworld-boss-carrion-crown.blend",
+    "concept": "docs/art/creature-concepts/2026-10-03/the-carrion-crown.png"
+  },
+  {
+    "name": "Deep Hunter",
+    "kind": "creature",
+    "size_band": "6–9m",
+    "biome": "Blackwater Deep",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/deep-hunter.png"
+  },
+  {
+    "name": "Corpse Orchard",
+    "kind": "creature",
+    "size_band": "4–7m crown",
+    "biome": "Great Decay",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/corpse-orchard.png"
+  },
+  {
+    "name": "Rift Colossus",
+    "kind": "creature",
+    "size_band": "4–5.5m",
+    "biome": "Fracture Zones",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/rift-colossus.png"
+  },
+  {
+    "name": "Abyss Shellback",
+    "kind": "creature",
+    "size_band": "3–4.5m",
+    "biome": "Blackwater Deep",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/abyss-shellback--v2.png"
+  },
+  {
+    "name": "Furnace Golem",
+    "kind": "creature",
+    "size_band": "3.2–4m",
+    "biome": "Sulfurous Wastes",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/furnace-golem.png"
+  },
+  {
+    "name": "Graft Warden",
+    "kind": "creature",
+    "size_band": "3–4m",
+    "biome": "Great Decay",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/graft-warden.png"
+  },
+  {
+    "name": "Cave Ray",
+    "kind": "creature",
+    "size_band": "2.5–4m span",
+    "biome": "Blackwater Deep",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/cave-ray.png"
+  },
+  {
+    "name": "Cryolith Guardian",
+    "kind": "creature",
+    "size_band": "3–3.8m",
+    "biome": "Frozen Caverns",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/cryolith-guardian.png"
+  },
+  {
+    "name": "Rimewing",
+    "kind": "creature",
+    "size_band": "2.5–3.5m span",
+    "biome": "Frozen Caverns",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/rimewing.png"
+  },
+  {
+    "name": "Crowncap Brute",
+    "kind": "creature",
+    "size_band": "2.8–3.4m tall",
+    "biome": "Fungal Forest",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/crowncap-brute.png"
+  },
+  {
+    "name": "Chasm Stalker",
+    "kind": "creature",
+    "size_band": "2.5–3.2m standing reach",
+    "biome": "Fracture Zones",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/chasm-stalker.png"
+  },
+  {
+    "name": "Shardwing",
+    "kind": "creature",
+    "size_band": "2–3m span",
+    "biome": "Fracture Zones",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/shardwing.png"
+  },
+  {
+    "name": "Shelf Lurker",
+    "kind": "creature",
+    "size_band": "1.8–2.4m reach",
+    "biome": "Fungal Forest",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/shelf-lurker.png"
+  },
+  {
+    "name": "Lantern Angler",
+    "kind": "creature",
+    "size_band": "1.8–2.4m",
+    "biome": "Blackwater Deep",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/lantern-angler.png"
+  },
+  {
+    "name": "Stonebound",
+    "kind": "creature",
+    "size_band": "1.8–2.4m",
+    "biome": "Fracture Zones",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/stonebound.png"
+  },
+  {
+    "name": "Fume Wraith",
+    "kind": "creature",
+    "size_band": "1.8–2.3m visual height",
+    "biome": "Sulfurous Wastes",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/fume-wraith.png"
+  },
+  {
+    "name": "Pale Burrower",
+    "kind": "creature",
+    "size_band": "1.5–2.2m",
+    "biome": "Frozen Caverns",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/pale-burrower.png"
+  },
+  {
+    "name": "Spore Husk",
+    "kind": "creature",
+    "size_band": "1.7–2.1m",
+    "biome": "Great Decay",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/spore-husk.png"
+  },
+  {
+    "name": "Puffback",
+    "kind": "creature",
+    "size_band": "1.6–1.9m shoulder",
+    "biome": "Fungal Forest",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/puffback.png"
+  },
+  {
+    "name": "Glacier Stalker",
+    "kind": "creature",
+    "size_band": "1.5–1.8m shoulder",
+    "biome": "Frozen Caverns",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/glacier-stalker.png"
+  },
+  {
+    "name": "Shoreclaw",
+    "kind": "creature",
+    "size_band": "1.2–1.7m",
+    "biome": "Blackwater Deep",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/shoreclaw.png"
+  },
+  {
+    "name": "Vent Spitter",
+    "kind": "creature",
+    "size_band": "1.3–1.7m",
+    "biome": "Sulfurous Wastes",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/vent-spitter.png"
+  },
+  {
+    "name": "Iceblind",
+    "kind": "creature",
+    "size_band": "1.3–1.6m shoulder",
+    "biome": "Frozen Caverns",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/iceblind.png"
+  },
+  {
+    "name": "Carrion Bloom",
+    "kind": "creature",
+    "size_band": "1–1.6m tall",
+    "biome": "Great Decay",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/carrion-bloom.png"
+  },
+  {
+    "name": "Mycelial Stalker",
+    "kind": "creature",
+    "size_band": "1.2–1.5m shoulder",
+    "biome": "Fungal Forest",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/mycelial-stalker.png"
+  },
+  {
+    "name": "Gloomfin",
+    "kind": "creature",
+    "size_band": "1.0–1.5m",
+    "biome": "Blackwater Deep",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/gloomfin.png"
+  },
+  {
+    "name": "Basalt Crawler",
+    "kind": "creature",
+    "size_band": "1.0–1.5m",
+    "biome": "Sulfurous Wastes",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/basalt-crawler.png"
+  },
+  {
+    "name": "Decay Hound",
+    "kind": "creature",
+    "size_band": "1.2–1.5m shoulder",
+    "biome": "Great Decay",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/decay-hound.png"
+  },
+  {
+    "name": "Cinder Hound",
+    "kind": "creature",
+    "size_band": "1.1–1.4m shoulder",
+    "biome": "Sulfurous Wastes",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/cinder-hound.png"
+  },
+  {
+    "name": "Magma Leaper",
+    "kind": "creature",
+    "size_band": "1.0–1.4m body",
+    "biome": "Sulfurous Wastes",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/magma-leaper.png"
+  },
+  {
+    "name": "Gravity Leech",
+    "kind": "creature",
+    "size_band": "0.8–1.3m",
+    "biome": "Fracture Zones",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/gravity-leech--v2.png"
+  },
+  {
+    "name": "Marrow Creeper",
+    "kind": "creature",
+    "size_band": "0.8–1.2m",
+    "biome": "Great Decay",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/marrow-creeper.png"
+  },
+  {
+    "name": "Capcrawler",
+    "kind": "creature",
+    "size_band": "0.8–1.1m long",
+    "biome": "Fungal Forest",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/capcrawler.png"
+  },
+  {
+    "name": "Blackwater Lamprey",
+    "kind": "creature",
+    "size_band": "0.7–1.1m",
+    "biome": "Blackwater Deep",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/blackwater-lamprey.png"
+  },
+  {
+    "name": "Rift Skitter",
+    "kind": "creature",
+    "size_band": "0.7–1.0m",
+    "biome": "Fracture Zones",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/rift-skitter.png"
+  },
+  {
+    "name": "Lantern Moth",
+    "kind": "creature",
+    "size_band": "0.45–0.7m span",
+    "biome": "Fungal Forest",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/lantern-moth.png"
+  },
+  {
+    "name": "Rime Moth",
+    "kind": "creature",
+    "size_band": "0.45–0.7m span",
+    "biome": "Frozen Caverns",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/rime-moth.png"
+  },
+  {
+    "name": "Rotling",
+    "kind": "creature",
+    "size_band": "0.45–0.7m",
+    "biome": "Great Decay",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/rotling--v2.png"
+  },
+  {
+    "name": "Fracture Wisp",
+    "kind": "creature",
+    "size_band": "0.35–0.6m core",
+    "biome": "Fracture Zones",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/fracture-wisp.png"
+  },
+  {
+    "name": "Sporeling",
+    "kind": "creature",
+    "size_band": "0.35–0.55m",
+    "biome": "Fungal Forest",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/sporeling.png"
+  },
+  {
+    "name": "Frost Tick",
+    "kind": "creature",
+    "size_band": "0.3–0.5m",
+    "biome": "Frozen Caverns",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/frost-tick.png"
+  },
+  {
+    "name": "Ashmite",
+    "kind": "creature",
+    "size_band": "0.25–0.45m",
+    "biome": "Sulfurous Wastes",
+    "status": "concept adaptation queued",
+    "concept": "docs/art/creature-concepts/2026-10-03/ashmite.png"
+  }
+]

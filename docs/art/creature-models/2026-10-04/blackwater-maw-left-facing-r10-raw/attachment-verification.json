@@ -1,0 +1,341 @@
+{
+  "result": "PASS",
+  "endpoints": 116,
+  "retained_actions": 13,
+  "sampled_poses": 65,
+  "max_outside_distance_metres": 0,
+  "tolerance_metres": 0.001,
+  "samples": [
+    {
+      "action": "REST",
+      "frame": 0,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_SwimIdle",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_SwimIdle",
+      "frame": 17,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_SwimIdle",
+      "frame": 32,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_SwimIdle",
+      "frame": 48,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_SwimIdle",
+      "frame": 64,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Cruise",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Cruise",
+      "frame": 13,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Cruise",
+      "frame": 24,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Cruise",
+      "frame": 36,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Cruise",
+      "frame": 48,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Sprint",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Sprint",
+      "frame": 9,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Sprint",
+      "frame": 16,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Sprint",
+      "frame": 24,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Sprint",
+      "frame": 32,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_TurnLeft",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_TurnLeft",
+      "frame": 10,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_TurnLeft",
+      "frame": 18,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_TurnLeft",
+      "frame": 27,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_TurnLeft",
+      "frame": 36,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_TurnRight",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_TurnRight",
+      "frame": 10,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_TurnRight",
+      "frame": 18,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_TurnRight",
+      "frame": 27,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_TurnRight",
+      "frame": 36,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Bite",
+      "frame": 8,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Bite",
+      "frame": 11,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Bite",
+      "frame": 14,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Bite",
+      "frame": 17,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Bite",
+      "frame": 20,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Ram",
+      "frame": 14,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Ram",
+      "frame": 19,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Ram",
+      "frame": 24,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Ram",
+      "frame": 29,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Ram",
+      "frame": 34,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Breach",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Breach",
+      "frame": 12,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Breach",
+      "frame": 24,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Breach",
+      "frame": 35,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Breach",
+      "frame": 46,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_BreachRecover",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_BreachRecover",
+      "frame": 11,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_BreachRecover",
+      "frame": 22,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_BreachRecover",
+      "frame": 32,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_BreachRecover",
+      "frame": 42,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_TailStrike",
+      "frame": 12,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_TailStrike",
+      "frame": 17,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_TailStrike",
+      "frame": 22,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_TailStrike",
+      "frame": 27,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_TailStrike",
+      "frame": 32,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Hit",
+      "frame": 6,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Hit",
+      "frame": 8,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Hit",
+      "frame": 10,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Hit",
+      "frame": 11,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Hit",
+      "frame": 13,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Stagger",
+      "frame": 10,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Stagger",
+      "frame": 13,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Stagger",
+      "frame": 16,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Stagger",
+      "frame": 19,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Stagger",
+      "frame": 22,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Death",
+      "frame": 24,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Death",
+      "frame": 40,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Death",
+      "frame": 56,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Death",
+      "frame": 72,
+      "outside_contacts": []
+    },
+    {
+      "action": "DeepHunter_Death",
+      "frame": 88,
+      "outside_contacts": []
+    }
+  ],
+  "scope": "saved rest and five Blender samples per retained action; ray containment with independent closed-support winding check for ambiguous hits; native and every-frame acceptance pending"
+}

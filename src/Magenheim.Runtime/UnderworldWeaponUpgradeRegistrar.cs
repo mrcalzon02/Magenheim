@@ -12,7 +12,7 @@ namespace Magenheim.Runtime;
 /// <summary>
 /// Registers all twelve Underworld weapon upgrades. The source prefab is always the
 /// required Magenheim crystal-grade chassis, so attack behavior, held alignment and the existing
-/// authored weapon silhouette are inherited before biome materials visibly accent that chassis.
+/// grip and attack behavior are inherited before owned biome models replace its working silhouette.
 /// </summary>
 internal sealed class UnderworldWeaponUpgradeRegistrar : IDisposable
 {
@@ -72,8 +72,8 @@ internal sealed class UnderworldWeaponUpgradeRegistrar : IDisposable
         shared.m_name = definition.Name;
         shared.m_description =
             "A " + definition.Biome +
-            " reworking of its Magenheim crystal-grade predecessor. The crystal weapon remains the structural chassis; " +
-            "biome materials are added around that inherited design rather than replacing the progression that came before.";
+            " reworking of its Magenheim crystal-grade predecessor, forged into a new working profile with " +
+            "the metals, stone and organic materials of the deep biomes.";
         shared.m_value = 0;
         shared.m_dlc = string.Empty;
 

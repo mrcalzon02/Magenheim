@@ -6,3 +6,7 @@ $rootModelIds = @(Get-ChildItem "$PSScriptRoot/../assets/models/source/rootforge
 if ($LASTEXITCODE -ne 0) { throw 'Rootforged export failed.' }
 & python "$PSScriptRoot/verify-model-assets.py" @rootModelIds
 if ($LASTEXITCODE -ne 0) { throw 'Rootforged model verification failed.' }
+& "$PSScriptRoot/blender.ps1" render-rootforged-icons
+if ($LASTEXITCODE -ne 0) { throw 'Rootforged icon rendering failed.' }
+& python "$PSScriptRoot/verify-rootforged-assets.py"
+if ($LASTEXITCODE -ne 0) { throw 'Rootforged catalog verification failed.' }

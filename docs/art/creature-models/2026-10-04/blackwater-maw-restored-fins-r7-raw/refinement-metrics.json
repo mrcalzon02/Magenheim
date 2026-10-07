@@ -1,0 +1,28 @@
+{
+  "id": "underworld-boss-blackwater-maw-restored-fins-r7-raw",
+  "source": "assets/models/studies/underworld-boss-blackwater-maw-restored-fins-r7-raw.blend",
+  "triangles": 7216,
+  "donor_triangles": 4872,
+  "soft_cap": 7308,
+  "ratio": 1.4811165845648604,
+  "previous_triangles": 31412,
+  "reduction_percent": 77.02788743155482,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "category_triangles": {
+    "body": 1292,
+    "skull": 452,
+    "jaw": 376,
+    "mouth-folds": 576,
+    "sensory": 720,
+    "fangs": 1936,
+    "armor": 288,
+    "fins": 1368,
+    "gills": 208
+  },
+  "rig": "retained deep-hunter baseline; mixed weights at trunk and limb roots",
+  "texture_bake": "owned procedural scales, cracked cheek armor, fleshy mouth folds and cyan light organs baked to one 512px atlas",
+  "status": "art candidate; live performance and deformation acceptance pending",
+  "study_length_metres": 10.520155906677246
+}

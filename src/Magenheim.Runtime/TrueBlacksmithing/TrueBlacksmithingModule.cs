@@ -1,6 +1,7 @@
 using System;
 using BepInEx.Configuration;
 using BepInEx.Logging;
+using Jotunn.Managers;
 
 namespace Magenheim.Runtime.TrueBlacksmithing;
 
@@ -59,7 +60,9 @@ internal sealed class TrueBlacksmithingModule : IDisposable
                     "True Blacksmithing is configured on and is waiting for its production activation plan.");
             }
 
-            return new TrueBlacksmithingModule(logger, state);
+            var module = new TrueBlacksmithingModule(logger, state);
+            CommandManager.Instance.AddConsoleCommand(new BlacksmithingCatalogCommand(module, logger));
+            return module;
         }
         catch (Exception exception)
         {

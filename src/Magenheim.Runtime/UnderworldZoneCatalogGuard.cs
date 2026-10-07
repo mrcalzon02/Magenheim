@@ -43,6 +43,9 @@ internal static class UnderworldZoneCatalogGuard
 
         var locations = RemoveOwnedUnderworldLocationsFromSurface(surface, underworld);
         var vegetation = RemoveOwnedUnderworldVegetationFromSurface(surface, underworld);
+        // Removing catalog rows does not remove derivatives already recorded in the
+        // parent save's location index. Restore those sites through native donor rows.
+        UnderworldSurfaceDungeonIsolation.RepairSavedInstances(surface);
         if (locations > 0 || vegetation > 0)
             _log?.LogInfo(
                 $"Partitioned native worldgen catalogs after Underworld cloning: removed {locations} " +
@@ -62,6 +65,9 @@ internal static class UnderworldZoneCatalogGuard
         var wildcardLocations = RemoveForeignImplicitWildcardLocations(zoneSystem);
         ValidateVegetationOwnership(zoneSystem);
         ValidateLocationOwnership(zoneSystem);
+        var surfaceLocations = UnderworldNativeLocationPreparation.Prepare(zoneSystem.m_locations);
+        if (surfaceLocations > 0)
+            _log?.LogInfo($"Excluded {surfaceLocations} Surface-only locations from Underworld generation; owned locations use native zone sampling.");
         UnderworldWorldgenContentBridge.ValidateUnderworldCatalog(zoneSystem);
 
         if (duplicateVegetation > 0)

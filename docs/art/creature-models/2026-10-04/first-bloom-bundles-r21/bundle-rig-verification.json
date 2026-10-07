@@ -1,0 +1,6 @@
+{
+  "result": "PASS unchanged saved skeleton",
+  "bones": 22,
+  "max_coordinate_difference": 7.152557373046875e-07,
+  "scope": "bone hierarchy and rest transforms within 5e-6 float32 rescaling roundoff; head/shoulder mesh weights intentionally revised"
+}

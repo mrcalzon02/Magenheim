@@ -13,6 +13,11 @@ namespace Magenheim.Runtime;
 [HarmonyPatch(typeof(ZoneSystem), "Start")]
 internal static class UnderworldZoneSystemStartIsolationPatch
 {
+    private static readonly FieldInfo LocationsGenerated = AccessTools.Field(typeof(ZoneSystem), "m_locationsGenerated")
+        ?? throw new MissingFieldException(typeof(ZoneSystem).FullName, "m_locationsGenerated");
+    internal static bool InitialLocationGenerationPending =>
+        ValheimWorldInstanceExecution.TryGetContext(Magenheim.Core.Underworld.UnderworldWorldInstanceId.Underworld, out var context) &&
+        context is not null && context.ZoneSystem && !(bool)LocationsGenerated.GetValue(context.ZoneSystem);
     private static readonly MethodInfo ValidateVegetation =
         AccessTools.Method(typeof(ZoneSystem), "ValidateVegetation")
         ?? throw new MissingMethodException(typeof(ZoneSystem).FullName, "ValidateVegetation");
@@ -52,6 +57,10 @@ internal static class UnderworldZoneSystemStartIsolationPatch
             var fixedTime = Time.fixedTime;
             StartTime.SetValue(__instance, fixedTime);
             LastFixedTime.SetValue(__instance, fixedTime);
+            // Game starts location generation only on the Surface singleton. The
+            // detached native world must start its own iterator too; otherwise its
+            // Update returns forever and native portal IsAreaReady never succeeds.
+            __instance.GenerateLocationsIfNeeded();
 
             // Deliberately skip:
             //   * ZRoutedRpc.m_onNewPeer subscription

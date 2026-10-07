@@ -1,0 +1,10 @@
+"""Checked upper-leg and lower-torso comparison against accepted feet r15."""
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1]
+source=(ROOT/'tools/build-first-bloom-feet-review.py').read_text()
+for old,new in [('first-bloom-feet-r15','first-bloom-hips-r16'),('first-bloom-trim-r14','first-bloom-feet-r15'),('8830','8824'),('8810','8830'),('8,830','8,824'),('1.423','1.422'),('132','142'),('revision 15','revision 16'),('Revision 15','Revision 16'),('revision 14','revision 15'),('Revision 14','Revision 15'),('root feet','root hips'),('root-feet review','root-hips review'),('foot-refinement.json','hip-refinement.json')]:
+ source=source.replace(old,new)
+source=source.replace('The existing foot loops now form broader root fans with unequal crooked toes, lower contact pads, and flattened, staggered fungal brackets around the ankles. All ten root bases are seated into the leg surface with matching skin weights. The approved chest shaping is preserved.', 'The upper legs now flare into fuller hip roots with explicit torso contacts. Their upper fungal brackets sit closer to the joints. Four long hip straps have been reshaped into shorter branching buttresses attached at both ends. The lower torso forms a raised arch between the legs, replacing its straight hanging apron. The accepted chest and feet shaping is preserved.')
+source=source.replace('No new triangles were added during foot shaping. Reauditing buried geometry removes 422 triangles from the untrimmed model; retaining the new ankle contacts leaves 20 more triangles than revision 15.', 'No new triangles were added during shaping. Reauditing buried geometry removes 428 triangles from the untrimmed model. The final study has six fewer triangles than revision 15. Ten new hip attachment rings are validated with the previous contacts.')
+source=source.replace("[('feet-front','Root spread from the front'),('feet-angle','Root fans and ankle transition'),('feet-side','Foot depth and bracket profile')]", "[('hips-front','Hip roots and raised groin arch'),('hips-angle','Upper legs and lower torso'),('hips-side','Hip connection in profile')]")
+exec(compile(source,str(__file__),'exec'))

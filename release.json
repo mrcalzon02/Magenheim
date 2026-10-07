@@ -1,4 +1,4 @@
 {
-  "version": "0.0.162",
-  "description": "0.0.162: Repairs current-world scenery, dungeons, child saves and network views; corrects only Null Gate's grip. Final vanilla boss completion unlocks cold-biome gates, with owned site migration and native assembly cloning."
+  "version": "0.0.176",
+  "description": "0.0.176: Repairs Underworld cavern visibility, map colors, terrain scale, arrival bosses and Null Mantle equipment checks. Adds Understone deposits and authored forest scattering; reduces mushroom geometry to native tree budgets."
 }

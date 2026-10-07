@@ -7,7 +7,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AssemblyName>Magenheim</AssemblyName>
     <RootNamespace>Magenheim.Runtime</RootNamespace>
-<Version>0.0.162</Version>
+<Version>0.0.176</Version>
     <ValheimManagedPath Condition="'$(ValheimManagedPath)' == ''">$(MSBuildThisFileDirectory)../../../valheim_Data/Managed</ValheimManagedPath>
   </PropertyGroup>
 
@@ -54,6 +54,9 @@
           CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../default-data/foundation.json"
           Link="default-data/foundation.json"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../true-blacksmithing/data/*.json"
+          Link="default-data/true-blacksmithing/%(Filename)%(Extension)"
           CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><Nullable>enable</Nullable><LangVersion>latest</LangVersion>
+    <WorldScopeSource Condition="'$(WorldScopeSource)' == ''">../../src/Magenheim.Runtime/ValheimWorldInstanceExecution.cs</WorldScopeSource>
+  </PropertyGroup>
+  <ItemGroup><Compile Include="$(WorldScopeSource)" Link="ValheimWorldInstanceExecution.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="../../src/Magenheim.Runtime/UnderworldNetworkViewLifetime.cs" Link="UnderworldNetworkViewLifetime.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="../../src/Magenheim.Runtime/UnderworldTeleportBiomeDiscovery.cs" Link="UnderworldTeleportBiomeDiscovery.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="../../src/Magenheim.Runtime/UnderworldZoneSystemStartIsolation.cs" Link="UnderworldZoneSystemStartIsolation.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="../../src/Magenheim.Runtime/WorldRoyaltyRuntime.cs" Link="WorldRoyaltyRuntime.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="../../src/Magenheim.Runtime/UnderworldNativeLocationPreparation.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="../../src/Magenheim.Runtime/NullMantleEquipmentState.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="../../src/Magenheim.Runtime/UnderworldSceneVisibility.cs" /></ItemGroup>
+</Project>

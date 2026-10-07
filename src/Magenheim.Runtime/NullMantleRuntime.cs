@@ -14,7 +14,10 @@ internal sealed class NullMantleRuntime : MonoBehaviour
     private const float ActiveSeconds = 6f;
 
     private readonly List<Sample> _samples = new();
-    private readonly Dictionary<Renderer, Material[]> _originalMaterials = new();
+    private readonly Dictionary<Renderer, MaterialPropertyBlock[]> _originalBlocks = new();
+    private readonly List<Material> _effectMaterials = new();
+    private Transform? _eyes;
+    private Transform? _eyeAnchor;
 
     private GameObject? _presentation;
     private DamageType _active = DamageType.None;
@@ -39,11 +42,15 @@ internal sealed class NullMantleRuntime : MonoBehaviour
 
     internal void SetEquipped(bool equipped)
     {
-        if (equipped)
+        if (equipped && NullMantleEquipmentState.IsEquipped(GetComponent<Player>()))
         {
-            if (_presentation == null) ApplyPresentation();
+            if (_presentation == null)
+            {
+                try { ApplyPresentation(); }
+                catch { RemovePresentation(); throw; }
+            }
         }
-        else if (_presentation != null)
+        else if (_presentation != null || _originalBlocks.Count > 0)
         {
             RemovePresentation();
         }
@@ -51,7 +58,8 @@ internal sealed class NullMantleRuntime : MonoBehaviour
 
     internal void ObserveAndMitigate(HitData hit)
     {
-        if (hit == null || _presentation == null) return;
+        if (hit == null || _presentation == null ||
+            !NullMantleEquipmentState.IsEquipped(GetComponent<Player>())) return;
         var now = Time.time;
         Mitigate(hit, now);
         Add(now, DamageType.Fire, hit.m_damage.m_fire);
@@ -124,45 +132,39 @@ internal sealed class NullMantleRuntime : MonoBehaviour
         _presentation = new GameObject("Magenheim_NullMantle_Form");
         _presentation.transform.SetParent(transform, false);
 
-        foreach (var renderer in GetComponentsInChildren<Renderer>(true))
+        SyncDarkening();
+
+        // EyePos is root-relative in the installed Player prefab. Helmet_attach belongs to
+        // the animated Head bone and therefore follows crouching, attacks and head turns.
+        _eyeAnchor = GetComponentInChildren<VisEquipment>(true)?.m_helmet;
+        if (!_eyeAnchor) throw new InvalidOperationException("Null Mantle requires the native animated helmet attachment.");
+        _eyes = new GameObject("RedEyes").transform;
+        _eyes.SetParent(_presentation.transform, false);
+        var eyeMaterial = ModelAssets.CreateSurfaceMaterial();
+        eyeMaterial.color = new Color(.9f, .002f, .001f);
+        eyeMaterial.EnableKeyword("_EMISSION");
+        eyeMaterial.SetColor("_EmissionColor", new Color(4f, .008f, .004f));
+        _effectMaterials.Add(eyeMaterial);
+        foreach (var side in new[] { -1f, 1f })
         {
-            if (renderer.transform.IsChildOf(_presentation.transform)) continue;
-            var originals = renderer.sharedMaterials;
-            if (originals == null || originals.Length == 0) continue;
-            _originalMaterials[renderer] = originals;
-
-            var replacements = new Material[originals.Length];
-            for (var i = 0; i < originals.Length; i++)
-            {
-                var source = originals[i];
-                if (!source) continue;
-
-                // Keep the authored material maps on the equipped Crown of Valheim and the rest of
-                // the player's gear; the Mantle effect is a reversible palette treatment, not a
-                // substitute texture pass.
-                var material = new Material(source) { name = $"magenheim.null-mantle.equipped.{renderer.name}.{i}" };
-                if (material.HasProperty("_Color")) material.SetColor("_Color", new Color(.018f, .012f, .025f, 1f));
-                replacements[i] = material;
-            }
-            renderer.sharedMaterials = replacements;
+            var eye = EffectModelAssets.Create("effect-orb");
+            eye.name = side < 0 ? "LeftEye" : "RightEye";
+            eye.transform.SetParent(_eyes, false);
+            eye.transform.localPosition = new Vector3(side * .033f, 0f, .012f);
+            eye.transform.localScale = new Vector3(.022f, .012f, .012f);
+            foreach (var collider in eye.GetComponentsInChildren<Collider>(true)) Destroy(collider);
+            foreach (var renderer in eye.GetComponentsInChildren<Renderer>(true)) renderer.sharedMaterial = eyeMaterial;
         }
-
-        // The equipped item is itself cloned from vanilla HelmetCrownofValheim. Do not add a
-        // second hand-built crown here. Only the supernatural presentation is additive.
-        var eyeLight = new GameObject("RedEyes");
-        eyeLight.transform.SetParent(_presentation.transform, false);
-        eyeLight.transform.localPosition = new Vector3(0f, 1.72f, .16f);
-        var light = eyeLight.AddComponent<Light>();
+        var light = _eyes.gameObject.AddComponent<Light>();
         light.color = new Color(.9f, .015f, .01f);
-        light.range = 2.1f;
-        light.intensity = 1.5f;
+        light.range = .35f;
+        light.intensity = .65f;
+        light.shadows = LightShadows.None;
 
         var fog = new GameObject("NowhereFog");
         fog.transform.SetParent(_presentation.transform, false);
         fog.transform.localPosition = Vector3.up;
         var particles = fog.AddComponent<ParticleSystem>();
-        // A newly created ParticleSystem uses Unity's unavailable built-in particle material.
-        // Clone a loaded native smoke material, including its texture and supported shader.
         fog.GetComponent<ParticleSystemRenderer>().sharedMaterial = NativeEffectMaterials.SharedParticleMaterial;
         var main = particles.main;
         main.startLifetime = 2.4f;
@@ -177,15 +179,73 @@ internal sealed class NullMantleRuntime : MonoBehaviour
         shape.radius = 1.15f;
     }
 
+    private void LateUpdate()
+    {
+        if (!NullMantleEquipmentState.IsEquipped(GetComponent<Player>()))
+        {
+            SetEquipped(false);
+            return;
+        }
+        if (!_presentation) return;
+        SyncDarkening();
+        if (_eyes && _eyeAnchor)
+        {
+            // Measured in the installed prefab: native eye height (1.808 m), advanced
+            // 0.11 m to the face, transformed into Helmet_attach's rest coordinate space.
+            _eyes.position = _eyeAnchor.TransformPoint(new Vector3(.00030136f, .03380953f, .05945418f));
+            _eyes.rotation = _eyeAnchor.rotation;
+        }
+    }
+
+    private void SyncDarkening()
+    {
+        if (_presentation == null) return;
+        foreach (var renderer in GetComponentsInChildren<Renderer>(true))
+        {
+            if (renderer.transform.IsChildOf(_presentation.transform)) continue;
+            var materials = renderer.sharedMaterials;
+            if (!_originalBlocks.TryGetValue(renderer, out var originals))
+            {
+                originals = new MaterialPropertyBlock[materials.Length];
+                for (var i = 0; i < originals.Length; i++)
+                {
+                    originals[i] = new MaterialPropertyBlock();
+                    renderer.GetPropertyBlock(originals[i], i);
+                }
+                _originalBlocks[renderer] = originals;
+            }
+            for (var i = 0; i < materials.Length; i++)
+            {
+                var material = materials[i];
+                if (!material) continue;
+                var block = new MaterialPropertyBlock();
+                renderer.GetPropertyBlock(block, i);
+                var black = new Color(.003f, .002f, .006f, 1f);
+                if (material.HasProperty("_Color")) block.SetColor("_Color", black);
+                // Native body tint is separate from the ordinary gear tint.
+                if (material.HasProperty("_SkinColor")) block.SetColor("_SkinColor", black);
+                if (material.HasProperty("_EmissionColor")) block.SetColor("_EmissionColor", Color.black);
+                if (material.HasProperty("_Metallic")) block.SetFloat("_Metallic", 0f);
+                if (material.HasProperty("_Glossiness")) block.SetFloat("_Glossiness", .06f);
+                renderer.SetPropertyBlock(block, i);
+            }
+        }
+    }
+
     private void RemovePresentation()
     {
-        foreach (var pair in _originalMaterials)
-            if (pair.Key != null)
-                pair.Key.sharedMaterials = pair.Value;
+        foreach (var pair in _originalBlocks)
+            if (pair.Key)
+                for (var i = 0; i < Math.Min(pair.Value.Length, pair.Key.sharedMaterials.Length); i++)
+                    pair.Key.SetPropertyBlock(pair.Value[i].isEmpty ? null : pair.Value[i], i);
 
-        _originalMaterials.Clear();
+        foreach (var material in _effectMaterials) if (material) Destroy(material);
+        _effectMaterials.Clear();
+        _originalBlocks.Clear();
         Destroy(_presentation);
         _presentation = null;
+        _eyes = null;
+        _eyeAnchor = null;
         _samples.Clear();
         _active = DamageType.None;
         _activeUntil = 0f;
@@ -193,8 +253,10 @@ internal sealed class NullMantleRuntime : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (_presentation != null) RemovePresentation();
+        RemovePresentation();
     }
+
+    private void OnDisable() => RemovePresentation();
 }
 
 [HarmonyPatch(typeof(Player), "Update", new Type[0])]
@@ -203,14 +265,7 @@ internal static class NullMantleEquipmentPatch
     private static void Postfix(Player __instance)
     {
         if (__instance == null) return;
-        var helmet = __instance.GetInventory().GetAllItems().Find(item =>
-            item.m_equipped && item.m_shared.m_itemType == ItemDrop.ItemData.ItemType.Helmet);
-        var equipped = helmet != null &&
-                       helmet.m_dropPrefab != null &&
-                       string.Equals(
-                           helmet.m_dropPrefab.name,
-                           NowhereKingRewardRegistrar.NullMantlePrefabName,
-                           StringComparison.Ordinal);
+        var equipped = NullMantleEquipmentState.IsEquipped(__instance);
         var runtime = __instance.GetComponent<NullMantleRuntime>();
         if (equipped)
         {

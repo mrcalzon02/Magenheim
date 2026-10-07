@@ -16,7 +16,8 @@ public sealed record UnderworldInstanceTerrainDomain(
     double MaximumY)
 {
     public static UnderworldInstanceTerrainDomain CreateDefault() =>
-        ValidateAndFreeze(8000d, -896d, 8192d);
+        // Installed WorldGenerator.waterEdge: same outer extent as the Surface world.
+        ValidateAndFreeze(10500d, -896d, 8192d);
 
     public static UnderworldInstanceTerrainDomain ValidateAndFreeze(
         double radiusMeters,

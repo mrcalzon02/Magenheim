@@ -29,6 +29,7 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
     private bool _active;
     private FogSnapshot _surfaceFog;
     private readonly UnderworldSkyboxPresentation _skybox = new();
+    private readonly UnderworldSceneVisibility _sceneVisibility = new();
     private bool _skyFailureReported;
     private Camera? _instanceCamera;
     private float _surfaceFarClip;
@@ -86,7 +87,7 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
             return;
         }
 
-        if (Time.unscaledTime < _nextSampleAt) return;
+        if (player.IsTeleporting() || Time.unscaledTime < _nextSampleAt) return;
         _nextSampleAt = Time.unscaledTime + SampleIntervalSeconds;
 
         var position = player.transform.position;
@@ -181,6 +182,33 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
         Shader.SetGlobalColor(FogColorShaderId, _fogColor);
     }
 
+    // GameCamera/EnvMan can overwrite clip and background settings after this component's
+    // LateUpdate. Apply the cavern background at the actual rendering boundary as well.
+    private void OnEnable()
+    {
+        Camera.onPreCull += BeforeCameraRender;
+    }
+    private void BeforeCameraRender(Camera camera)
+    {
+        if (!_active || camera != Camera.main) return;
+        if (camera != _instanceCamera)
+        {
+            RestoreCamera();
+            _instanceCamera = camera;
+            _surfaceFarClip = camera.farClipPlane;
+        }
+        camera.farClipPlane = Mathf.Max(_surfaceFarClip, 22000f);
+        if (_services is not null && _services.WorldInstances.TryGetContext(UnderworldWorldInstanceId.Surface, out var surface) && surface is not null)
+            _sceneVisibility.Apply(surface.Scene.handle);
+        if (_skyFailureReported) return;
+        try { _skybox.Apply(camera); }
+        catch (Exception exception)
+        {
+            _skyFailureReported = true;
+            _log?.LogError($"Underworld skybox could not be applied before rendering: {exception}");
+        }
+    }
+
     private bool TryResolveActivePlayer(out Player? player)
     {
         player = null;
@@ -201,6 +229,7 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
 
     private void Deactivate()
     {
+        _sceneVisibility.Restore();
         if (!_active) return;
         _skybox.Restore();
         _skyFailureReported = false;
@@ -219,7 +248,11 @@ internal sealed class UnderworldAtmosphereRuntime : MonoBehaviour
         _instanceCamera = null;
     }
 
-    private void OnDisable() => Deactivate();
+    private void OnDisable()
+    {
+        Camera.onPreCull -= BeforeCameraRender;
+        Deactivate();
+    }
 
     private void OnDestroy() { Deactivate(); _skybox.Dispose(); }
 

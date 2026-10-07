@@ -1,0 +1,78 @@
+{
+  "result": "PASS",
+  "action": "CrowncapBrute_SweepLeft",
+  "samples": [
+    {
+      "sample": 0,
+      "frame": 1,
+      "max_outside_distance_metres": 0,
+      "outside_contacts": []
+    },
+    {
+      "sample": 0.25,
+      "frame": 10,
+      "max_outside_distance_metres": 0.0006226800614967942,
+      "outside_contacts": [
+        {
+          "tissue": "ChamberRib-1_4",
+          "end": "end",
+          "support": "RecessedChamber",
+          "outside_distance_metres": 0.0006226800614967942
+        }
+      ]
+    },
+    {
+      "sample": 0.5,
+      "frame": 20,
+      "max_outside_distance_metres": 0.0006226858822628856,
+      "outside_contacts": [
+        {
+          "tissue": "ChamberRib-1_4",
+          "end": "end",
+          "support": "RecessedChamber",
+          "outside_distance_metres": 0.0006226858822628856
+        },
+        {
+          "tissue": "VeilCrosslink-10",
+          "end": "start",
+          "support": "ChestVeil-10",
+          "outside_distance_metres": 0.0005129033816047013
+        },
+        {
+          "tissue": "VeilCrosslink-11",
+          "end": "start",
+          "support": "ChestVeil-11",
+          "outside_distance_metres": 0.0005883464473299682
+        },
+        {
+          "tissue": "VeilCrosslink11",
+          "end": "start",
+          "support": "ChestVeil11",
+          "outside_distance_metres": 0.00029785544029437006
+        }
+      ]
+    },
+    {
+      "sample": 0.75,
+      "frame": 29,
+      "max_outside_distance_metres": 0.0006226894329302013,
+      "outside_contacts": [
+        {
+          "tissue": "ChamberRib-1_4",
+          "end": "end",
+          "support": "RecessedChamber",
+          "outside_distance_metres": 0.0006226894329302013
+        }
+      ]
+    },
+    {
+      "sample": 1,
+      "frame": 38,
+      "max_outside_distance_metres": 0,
+      "outside_contacts": []
+    }
+  ],
+  "max_outside_distance_metres": 0.0006226894329302013,
+  "tolerance_metres": 0.001,
+  "scope": "five inherited Blender attack frames; all vertices strictly inside supports in rest geometry; native animation unverified"
+}

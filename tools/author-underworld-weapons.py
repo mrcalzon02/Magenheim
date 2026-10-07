@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Derive all twelve Underworld weapons from authoritative Crystal-grade Blender sources.
 
-Every derivative opens its existing Crystal weapon/staff source, preserves that chassis, grip origin,
-painted atlas and confirmed held envelope, then adds biome-authentic PBR hardware. The derivative is
-rejected if its additions lengthen the chassis or materially expand the cross-section.
+Each revision retains the confirmed grip and attack length, while changing the working
+head/limb silhouette and replacing the crystal chassis surfaces with its biome's actual
+wood, stone, bone or forged metal construction. Authored material maps and hardware
+are shared with the corresponding Underworld resources.
 """
 import json
 import math
@@ -11,13 +12,14 @@ import sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from underworld_material_library import bind_underworld_material
+from model_surface_authoring import semantic_token
 
 import bpy
 from mathutils import Vector
 
 ROOT=Path(__file__).resolve().parents[1]
 SOURCE=ROOT/"assets"/"models"/"source"
-REVISION="underworld-crystal-derivatives-r2"
+REVISION="underworld-crystal-derivatives-r3"
 SOURCE_LENGTH_AXIS=2  # Blender Z; export-model-assets maps this to runtime Y.
 
 SPECS={
@@ -189,20 +191,50 @@ BUILD={
  "amber-blade":amber_blade,"crown-sceptre":crown_sceptre,
 }
 
+def revise_chassis(kind, mats):
+ # Modify mesh coordinates in the existing grip frame. The central grip remains
+ # exact; broader heads and swept limbs make the revision identifiable at distance.
+ widths={"worldroot-club":1.22,"worldroot-bow":1.28,"flowstone-maul":1.38,
+  "blackwater-harpoon":1.42,"emberiron-axe":1.30,"emberiron-greatsword":1.26,
+  "rimesilver-spear":1.34,"icebind-staff":1.32,"titanbone-atgeir":1.32,
+  "shardstone-crossbow":1.28,"amber-blade":1.24,"crown-sceptre":1.30}
+ meshes=[o for o in bpy.context.scene.objects if o.type=="MESH"]
+ for obj in meshes:
+  original=obj.data.materials[0].name.lower()
+  detail=obj.name.rsplit("/",1)[-1].lower()+" "+semantic_token(original)
+  if any(token in detail for token in ("crystal","gem","focus","core","shard")):
+   target=mats[1]
+  elif any(token in detail for token in ("grip","shaft","wood","leather","wrap","stock","handle","binding")):
+   target=mats[2] or mats[0]
+  else:target=mats[0]
+  obj.data.materials.clear();obj.data.materials.append(target)
+  inverse=obj.matrix_world.inverted()
+  for vertex in obj.data.vertices:
+   point=obj.matrix_world@vertex.co
+   weight=min(1,max(0,(abs(point.z)-.16)/.30))
+   point.x*=1+(widths[kind]-1)*weight
+   point.y*=1+(.16 if kind in {"flowstone-maul","shardstone-crossbow","worldroot-club"} else .08)*weight
+   if kind.startswith("worldroot"):
+    point.y+=.025*weight*math.sin(point.z*7)
+   if kind=="titanbone-atgeir" and point.z>.25:
+    point.x+=.026*weight*math.sin(point.z*5)
+   vertex.co=inverse@point
+  obj.data.update()
+
 def author(model_id):
  base_id,kind=SPECS[model_id];base=SOURCE/(base_id+".blend")
  if not base.is_file():raise FileNotFoundError(base)
  bpy.ops.wm.open_mainfile(filepath=str(base))
  base_bounds=bounds();scene=bpy.context.scene
- scene["model_id"]=model_id;scene["derived_from"]=base_id;scene["underworld_weapon_derivation"]="crystal-chassis-plus-biome-accent"
+ scene["model_id"]=model_id;scene["derived_from"]=base_id;scene["underworld_weapon_derivation"]="biome-material-and-working-silhouette-revision"
  scene["underworld_weapon_authoring"]=REVISION
- mats=palette(model_id,kind);BUILD[kind](*mats)
+ mats=palette(model_id,kind);revise_chassis(kind,mats);BUILD[kind](*mats)
  final_bounds=bounds()
- # Preserve the confirmed longitudinal envelope exactly; small transverse growth is permitted only
- # inside a tight absolute/relative tolerance so HeldModelAlignment cannot silently change axis rank.
+ # Preserve longitudinal attack reach and the grip. Distinct heads/limbs may widen,
+ # while the held model must retain its confirmed longitudinal axis.
  for axis in range(3):
   blo,bhi=base_bounds[axis];flo,fhi=final_bounds[axis];span=max(bhi-blo,.001)
-  allowance=.006 if axis==SOURCE_LENGTH_AXIS else max(.012,span*.08)
+  allowance=.006 if axis==SOURCE_LENGTH_AXIS else max(.04,span*.50)
   if flo<blo-allowance or fhi>bhi+allowance:
    raise RuntimeError(f"{model_id}: biome accent expanded source axis {axis} from {blo:.4f}..{bhi:.4f} to {flo:.4f}..{fhi:.4f} (allowance {allowance:.4f}; source length axis={SOURCE_LENGTH_AXIS})")
  scene["runtime_lights"]=scene.get("runtime_lights","[]")

@@ -1,0 +1,10 @@
+{
+  "body": "one continuous spinal surface; painted scale detail with no raised flank blocks",
+  "mouth": "broad near-parallel palate, curved upper tooth bed, U-shaped projecting lower jaw, cheek commissures, raised fleshy mouth floor and rear throat folds; perspective depth is not a flared cone",
+  "fangs": 44,
+  "cheek_plates": 16,
+  "sensory_organs": 9,
+  "fins": "closed pleated pectorals, separate anterior and posterior dorsal membranes, and forked caudal fan",
+  "rig": "retained Deep Hunter skeleton and actions; max two weights per vertex",
+  "quality_bar": "native Serpent plus concept anatomy; art and native acceptance pending"
+}

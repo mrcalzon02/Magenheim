@@ -13,6 +13,7 @@ internal static class Program
         _assertions += UnderworldInstanceContractTests.Run();
         _assertions += UnderworldNativeSaveNamespaceTests.Run();
         _assertions += TrueBlacksmithingFailSafeTests.Run();
+        _assertions += TrueBlacksmithingCatalogTests.Run();
         _assertions += UnderworldInstanceTerrainDomainTests.Run();
         _assertions += UnderworldInstanceChunkTests.Run();
         _assertions += UnderworldRareCellMassifTests.Run();
@@ -24,6 +25,7 @@ internal static class Program
         _assertions += UnderworldWeatherGameplayTests.Run();
         _assertions += UnderworldDungeonCatalogTests.Run();
         _assertions += UnderworldVanillaDungeonReuseCatalogTests.Run();
+        _assertions += UnderworldDungeonBoundaryPolicyTests.Run();
         _assertions += UnderworldBiomeDungeonPlannerTests.Run();
         _assertions += UnderworldFungalRootwarrenCatalogTests.Run();
         _assertions += UnderworldBlackwaterDrownedVaultsCatalogTests.Run();

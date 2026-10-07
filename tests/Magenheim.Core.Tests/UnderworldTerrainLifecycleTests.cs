@@ -180,13 +180,13 @@ internal static class UnderworldTerrainLifecycleTests
                 lows[index] = Math.Min(lows[index], terrain.Height);
                 highs[index] = Math.Max(highs[index], terrain.Height);
             }
-            var minimumSpans = new[] { 110d, 170d, 400d, 550d, 800d, 300d };
+            var minimumSpans = new[] { 22d, 34d, 80d, 110d, 160d, 60d };
             for (var biome = 0; biome < 6; biome++)
                 Assert(highs[biome] - lows[biome] > minimumSpans[biome],
                     $"{(UnderworldTerrainBiome)biome} must have substantial ordinary relief for seed {seed}.");
             var fractureLift = UnderworldBiomeTerrain.NominalRegionalLift(UnderworldTerrainBiome.FractureZones);
             var blackwaterLift = UnderworldBiomeTerrain.NominalRegionalLift(UnderworldTerrainBiome.BlackwaterDeep);
-            Assert(lows[1] - blackwaterLift < -100 && lows[4] - fractureLift < -255 && highs[4] - fractureLift > 345,
+            Assert(lows[1] - blackwaterLift < -20 && lows[4] - fractureLift < -51 && highs[4] - fractureLift > 69,
                 $"Basins and ranges retain unclipped relief around their progression elevation: Blackwater low={lows[1]}, Fracture low={lows[4]}, high={highs[4]}, lift={fractureLift}.");
             var gateHalfDiagonal = Math.Sqrt(17.89d * 17.89d + 10.04d * 10.04d);
             Assert(UnderworldTerrainLifecycle.GateFoundationRadiusMeters > gateHalfDiagonal,
@@ -217,7 +217,7 @@ internal static class UnderworldTerrainLifecycleTests
                 var gateDistance = Math.Abs(x - UnderworldTerrainLifecycle.GateFoundationCenterXMeters);
                 if (gateDistance >= UnderworldTerrainLifecycle.GateFoundationBlendRadiusMeters)
                 {
-                    Assert(Math.Abs(gate.Height - (51 + .55 * UnderworldTerrainNoise.ReliefMetres(seed, x, 0, 0))) < 1e-9,
+                    Assert(Math.Abs(gate.Height - (45 + .2 * (6 + .55 * UnderworldTerrainNoise.ReliefMetres(seed, x, 0, 0)))) < 1e-9,
                         "The protected approach must recover its original fine relief beyond the Deep Gate foundation blend.");
                 }
                 Assert(gate.WaterDepth == 0, "The protected approach stays dry.");

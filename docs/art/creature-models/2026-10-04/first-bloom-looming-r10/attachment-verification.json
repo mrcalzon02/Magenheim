@@ -1,0 +1,976 @@
+{
+  "result": "PASS every saved vein/frame endpoint intersects its designated support",
+  "groups": 61,
+  "endpoints": 121,
+  "checks": [
+    {
+      "tissue": "ChamberRib-1_0",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.03277377039194107
+    },
+    {
+      "tissue": "ChamberRib-1_0",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0036044823937118053
+    },
+    {
+      "tissue": "ChamberRib-1_1",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.03639298677444458
+    },
+    {
+      "tissue": "ChamberRib-1_1",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0008343852241523564
+    },
+    {
+      "tissue": "ChamberRib-1_10",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.031668324023485184
+    },
+    {
+      "tissue": "ChamberRib-1_10",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0029947636649012566
+    },
+    {
+      "tissue": "ChamberRib-1_2",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.03879247605800629
+    },
+    {
+      "tissue": "ChamberRib-1_2",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0002697651507332921
+    },
+    {
+      "tissue": "ChamberRib-1_3",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04243906959891319
+    },
+    {
+      "tissue": "ChamberRib-1_3",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0031233581248670816
+    },
+    {
+      "tissue": "ChamberRib-1_4",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04608487710356712
+    },
+    {
+      "tissue": "ChamberRib-1_4",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.00248529389500618
+    },
+    {
+      "tissue": "ChamberRib-1_5",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04878197982907295
+    },
+    {
+      "tissue": "ChamberRib-1_5",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0034067754168063402
+    },
+    {
+      "tissue": "ChamberRib-1_6",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04528648778796196
+    },
+    {
+      "tissue": "ChamberRib-1_6",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.005289653316140175
+    },
+    {
+      "tissue": "ChamberRib-1_7",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04180009290575981
+    },
+    {
+      "tissue": "ChamberRib-1_7",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0045924680307507515
+    },
+    {
+      "tissue": "ChamberRib-1_8",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.03831424191594124
+    },
+    {
+      "tissue": "ChamberRib-1_8",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.003763717133551836
+    },
+    {
+      "tissue": "ChamberRib-1_9",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.03597643971443176
+    },
+    {
+      "tissue": "ChamberRib-1_9",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.003765604691579938
+    },
+    {
+      "tissue": "ChamberRib1_0",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.03124418668448925
+    },
+    {
+      "tissue": "ChamberRib1_0",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.003476950107142329
+    },
+    {
+      "tissue": "ChamberRib1_1",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0354745127260685
+    },
+    {
+      "tissue": "ChamberRib1_1",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.003442928660660982
+    },
+    {
+      "tissue": "ChamberRib1_10",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.032771725207567215
+    },
+    {
+      "tissue": "ChamberRib1_10",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.002396336756646633
+    },
+    {
+      "tissue": "ChamberRib1_2",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.03834797441959381
+    },
+    {
+      "tissue": "ChamberRib1_2",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0012477347627282143
+    },
+    {
+      "tissue": "ChamberRib1_3",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04186207056045532
+    },
+    {
+      "tissue": "ChamberRib1_3",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.003947494085878134
+    },
+    {
+      "tissue": "ChamberRib1_4",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04537429288029671
+    },
+    {
+      "tissue": "ChamberRib1_4",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0029941422399133444
+    },
+    {
+      "tissue": "ChamberRib1_5",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.048776160925626755
+    },
+    {
+      "tissue": "ChamberRib1_5",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0036631026305258274
+    },
+    {
+      "tissue": "ChamberRib1_6",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0461803562939167
+    },
+    {
+      "tissue": "ChamberRib1_6",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.003703715279698372
+    },
+    {
+      "tissue": "ChamberRib1_7",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04250691086053848
+    },
+    {
+      "tissue": "ChamberRib1_7",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0042639621533453465
+    },
+    {
+      "tissue": "ChamberRib1_8",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.03883032873272896
+    },
+    {
+      "tissue": "ChamberRib1_8",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0037027897778898478
+    },
+    {
+      "tissue": "ChamberRib1_9",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.035757627338171005
+    },
+    {
+      "tissue": "ChamberRib1_9",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.001944617833942175
+    },
+    {
+      "tissue": "ChestVeil-10",
+      "end": "start",
+      "support": "CathedralMantle0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0031131659634411335
+    },
+    {
+      "tissue": "ChestVeil-10",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0011563088046386838
+    },
+    {
+      "tissue": "ChestVeil-11",
+      "end": "start",
+      "support": "CathedralMantle0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.004124217666685581
+    },
+    {
+      "tissue": "ChestVeil-11",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0006614726735278964
+    },
+    {
+      "tissue": "ChestVeil-12",
+      "end": "start",
+      "support": "CathedralMantle0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.003911228384822607
+    },
+    {
+      "tissue": "ChestVeil-12",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0007046706741675735
+    },
+    {
+      "tissue": "ChestVeil10",
+      "end": "start",
+      "support": "CathedralMantle0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.004862847737967968
+    },
+    {
+      "tissue": "ChestVeil10",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0029754694551229477
+    },
+    {
+      "tissue": "ChestVeil11",
+      "end": "start",
+      "support": "CathedralMantle1",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.008492265827953815
+    },
+    {
+      "tissue": "ChestVeil11",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.002124479040503502
+    },
+    {
+      "tissue": "ChestVeil12",
+      "end": "start",
+      "support": "CathedralMantle1",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.00682236859574914
+    },
+    {
+      "tissue": "ChestVeil12",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0021337366197258234
+    },
+    {
+      "tissue": "LimbTissueThighL0",
+      "end": "start",
+      "support": "LimbBracketThighL0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.00110241724178195
+    },
+    {
+      "tissue": "LimbTissueThighL0",
+      "end": "end",
+      "support": "LimbBracketThighL2",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037357460241764784
+    },
+    {
+      "tissue": "LimbTissueThighL1",
+      "end": "start",
+      "support": "LimbBracketThighL2",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0002066659217234701
+    },
+    {
+      "tissue": "LimbTissueThighL1",
+      "end": "end",
+      "support": "RootedThighL",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037356396205723286
+    },
+    {
+      "tissue": "LimbTissueThighR0",
+      "end": "start",
+      "support": "LimbBracketThighR0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0002249656681669876
+    },
+    {
+      "tissue": "LimbTissueThighR0",
+      "end": "end",
+      "support": "LimbBracketThighR2",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.003735689911991358
+    },
+    {
+      "tissue": "LimbTissueThighR1",
+      "end": "start",
+      "support": "LimbBracketThighR2",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.002817313652485609
+    },
+    {
+      "tissue": "LimbTissueThighR1",
+      "end": "end",
+      "support": "RootedThighR",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.00373565754853189
+    },
+    {
+      "tissue": "LimbTissueUpperArmL0",
+      "end": "start",
+      "support": "LimbBracketUpperArmL0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037356631364673376
+    },
+    {
+      "tissue": "LimbTissueUpperArmL0",
+      "end": "end",
+      "support": "LimbBracketUpperArmL2",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.003735703183338046
+    },
+    {
+      "tissue": "LimbTissueUpperArmL1",
+      "end": "start",
+      "support": "LimbBracketUpperArmL2",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0006255976622924209
+    },
+    {
+      "tissue": "LimbTissueUpperArmL1",
+      "end": "end",
+      "support": "LimbBracketUpperArmL4",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.003932527266442776
+    },
+    {
+      "tissue": "LimbTissueUpperArmR0",
+      "end": "start",
+      "support": "LimbBracketUpperArmR0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0066799139603972435
+    },
+    {
+      "tissue": "LimbTissueUpperArmR0",
+      "end": "end",
+      "support": "LimbBracketUpperArmR2",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.003735695267096162
+    },
+    {
+      "tissue": "LimbTissueUpperArmR1",
+      "end": "start",
+      "support": "LimbBracketUpperArmR2",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0007542473613284528
+    },
+    {
+      "tissue": "LimbTissueUpperArmR1",
+      "end": "end",
+      "support": "LimbBracketUpperArmR4",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.003946082666516304
+    },
+    {
+      "tissue": "MantleCurtain0_0",
+      "end": "start",
+      "support": "CathedralMantle0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037355159875005484
+    },
+    {
+      "tissue": "MantleCurtain0_0",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.003113109152764082
+    },
+    {
+      "tissue": "MantleCurtain0_1",
+      "end": "start",
+      "support": "CathedralMantle0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.00011959763651248068
+    },
+    {
+      "tissue": "MantleCurtain0_1",
+      "end": "end",
+      "support": "RecessedChamber",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.003113084239885211
+    },
+    {
+      "tissue": "MantleCurtain0_2",
+      "end": "start",
+      "support": "CathedralMantle0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.003735898295417428
+    },
+    {
+      "tissue": "MantleCurtain0_2",
+      "end": "end",
+      "support": "ChamberRib-1_9",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0031131040304899216
+    },
+    {
+      "tissue": "MantleCurtain1_0",
+      "end": "start",
+      "support": "CathedralMantle1",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037357707042247057
+    },
+    {
+      "tissue": "MantleCurtain1_0",
+      "end": "end",
+      "support": "HollowCathedralTrunk",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.003113182494416833
+    },
+    {
+      "tissue": "MantleCurtain1_1",
+      "end": "start",
+      "support": "CathedralMantle1",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0017989202169701457
+    },
+    {
+      "tissue": "MantleCurtain1_1",
+      "end": "end",
+      "support": "HollowCathedralTrunk",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0031131834257394075
+    },
+    {
+      "tissue": "MantleCurtain1_2",
+      "end": "start",
+      "support": "CathedralMantle1",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037354540545493364
+    },
+    {
+      "tissue": "MantleCurtain1_2",
+      "end": "end",
+      "support": "LimbBracketUpperArmR0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.004670304711908102
+    },
+    {
+      "tissue": "MantleCurtain2_0",
+      "end": "start",
+      "support": "CathedralMantle2",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037358347326517105
+    },
+    {
+      "tissue": "MantleCurtain2_0",
+      "end": "end",
+      "support": "CathedralMantle0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037356761749833822
+    },
+    {
+      "tissue": "MantleCurtain2_1",
+      "end": "start",
+      "support": "CathedralMantle2",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.00023208698257803917
+    },
+    {
+      "tissue": "MantleCurtain2_1",
+      "end": "end",
+      "support": "HollowCathedralTrunk",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0031132332514971495
+    },
+    {
+      "tissue": "MantleCurtain2_2",
+      "end": "start",
+      "support": "CathedralMantle2",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037359821144491434
+    },
+    {
+      "tissue": "MantleCurtain2_2",
+      "end": "end",
+      "support": "HollowCathedralTrunk",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.003113159677013755
+    },
+    {
+      "tissue": "MantleCurtain3_0",
+      "end": "start",
+      "support": "CathedralMantle3",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037356496322900057
+    },
+    {
+      "tissue": "MantleCurtain3_0",
+      "end": "end",
+      "support": "CathedralMantle0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037357595283538103
+    },
+    {
+      "tissue": "MantleCurtain3_1",
+      "end": "start",
+      "support": "CathedralMantle3",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0011415741173550487
+    },
+    {
+      "tissue": "MantleCurtain3_1",
+      "end": "end",
+      "support": "HollowCathedralTrunk",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0031131766736507416
+    },
+    {
+      "tissue": "MantleCurtain3_2",
+      "end": "start",
+      "support": "CathedralMantle3",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.004018761683255434
+    },
+    {
+      "tissue": "MantleCurtain3_2",
+      "end": "end",
+      "support": "CathedralMantle1",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037356847897171974
+    },
+    {
+      "tissue": "MantleCurtain4_0",
+      "end": "start",
+      "support": "CathedralMantle4",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0054463851265609264
+    },
+    {
+      "tissue": "MantleCurtain4_0",
+      "end": "end",
+      "support": "CathedralMantle0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037362438160926104
+    },
+    {
+      "tissue": "MantleCurtain4_1",
+      "end": "start",
+      "support": "CathedralMantle4",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.008645812049508095
+    },
+    {
+      "tissue": "MantleCurtain4_1",
+      "end": "end",
+      "support": "CathedralMantle0",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.00373575440607965
+    },
+    {
+      "tissue": "MantleCurtain4_2",
+      "end": "start",
+      "support": "CathedralMantle4",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0012506619095802307
+    },
+    {
+      "tissue": "MantleCurtain4_2",
+      "end": "end",
+      "support": "CathedralMantle1",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037358244881033897
+    },
+    {
+      "tissue": "MantleCurtain5_0",
+      "end": "start",
+      "support": "CathedralMantle5",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.008175227791070938
+    },
+    {
+      "tissue": "MantleCurtain5_0",
+      "end": "end",
+      "support": "CathedralMantle2",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037357702385634184
+    },
+    {
+      "tissue": "MantleCurtain5_1",
+      "end": "start",
+      "support": "CathedralMantle5",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.006584638264030218
+    },
+    {
+      "tissue": "MantleCurtain5_1",
+      "end": "end",
+      "support": "CathedralMantle1",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037353700026869774
+    },
+    {
+      "tissue": "MantleCurtain5_2",
+      "end": "start",
+      "support": "CathedralMantle5",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.002550009870901704
+    },
+    {
+      "tissue": "MantleCurtain5_2",
+      "end": "end",
+      "support": "CathedralMantle1",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0037355965469032526
+    },
+    {
+      "tissue": "VeilCrosslink-10",
+      "end": "start",
+      "support": "ChestVeil-10",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.003112994832918048
+    },
+    {
+      "tissue": "VeilCrosslink-10",
+      "end": "end",
+      "support": "ChamberRib-1_10",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0031130407005548477
+    },
+    {
+      "tissue": "VeilCrosslink-11",
+      "end": "start",
+      "support": "ChestVeil-11",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0031129210256040096
+    },
+    {
+      "tissue": "VeilCrosslink-11",
+      "end": "end",
+      "support": "ChamberRib-1_10",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0031130407005548477
+    },
+    {
+      "tissue": "VeilCrosslink-12",
+      "end": "start",
+      "support": "ChestVeil-12",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0028928567189723253
+    },
+    {
+      "tissue": "VeilCrosslink-12",
+      "end": "end",
+      "support": "ChamberRib-1_10",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0031130407005548477
+    },
+    {
+      "tissue": "VeilCrosslink10",
+      "end": "start",
+      "support": "ChestVeil10",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0018163262866437435
+    },
+    {
+      "tissue": "VeilCrosslink10",
+      "end": "end",
+      "support": "ChamberRib-1_10",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.003113054670393467
+    },
+    {
+      "tissue": "VeilCrosslink11",
+      "end": "start",
+      "support": "ChestVeil11",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.002068239264190197
+    },
+    {
+      "tissue": "VeilCrosslink11",
+      "end": "end",
+      "support": "ChamberRib-1_10",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.003113054670393467
+    },
+    {
+      "tissue": "VeilCrosslink12",
+      "end": "start",
+      "support": "ChestVeil12",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.0031131377909332514
+    },
+    {
+      "tissue": "VeilCrosslink12",
+      "end": "end",
+      "support": "ChamberRib-1_10",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.003113054670393467
+    },
+    {
+      "tissue": "RecessedChamber",
+      "end": "complete_body_flange",
+      "support": "HollowCathedralTrunk",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 48,
+      "center_surface_distance_metres": 0.4922246038913727
+    }
+  ],
+  "scope": "rest geometry; native animation and live contacts remain unverified"
+}

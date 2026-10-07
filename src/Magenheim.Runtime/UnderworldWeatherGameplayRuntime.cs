@@ -46,7 +46,7 @@ internal sealed class UnderworldWeatherGameplayRuntime : MonoBehaviour
         var worldTime = network.GetTimeSeconds();
         foreach (var player in Player.GetAllPlayers())
         {
-            if (player is null || player.IsDead()) continue;
+            if (player is null || player.IsDead() || player.IsTeleporting()) continue;
             if (!services.WorldInstances.TryGetPlayerInstance(player.GetPlayerID(), out var instance) ||
                 !instance.IsUnderworld)
                 continue;

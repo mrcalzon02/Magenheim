@@ -7,7 +7,7 @@
   "underworld-resource-sulfur": [
     "sulfur",
     "slagstone",
-    "crystal"
+    "sulfur"
   ],
   "underworld-resource-charred-timber": [
     "charred-root",
@@ -27,7 +27,7 @@
   "underworld-resource-clear-ice": [
     "clear-ice",
     "rimesilver",
-    "crystal"
+    "ice"
   ],
   "underworld-resource-rimesilver": [
     "rimesilver",
@@ -62,12 +62,12 @@
   "underworld-resource-carrion-amber": [
     "carrion-amber",
     "bone",
-    "crystal"
+    "amber"
   ],
   "underworld-resource-bone-gravel": [
+    "bone",
     "bone-gravel",
-    "rotwood",
-    "rubble"
+    "bonechips"
   ],
   "underworld-refined-worldroot-plank": [
     "worldroot-heartwood",

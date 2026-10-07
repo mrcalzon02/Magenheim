@@ -70,7 +70,19 @@ internal sealed class CrystalArchitectureRegistrar : IDisposable
         custom.Piece.m_dlc = string.Empty;
 
         var visual = CrystalArchitectureVisuals.Apply(prefab, definition.ModelId);
+        foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) UnityEngine.Object.DestroyImmediate(lod);
+        foreach (var fade in prefab.GetComponentsInChildren<LodFadeInOut>(true)) UnityEngine.Object.DestroyImmediate(fade);
         ConfigureWear(prefab, visual, definition.Kind == ArchitectureKind.Hearth ? 650f : 900f);
+        var wear = prefab.GetComponent<WearNTear>();
+        if (wear && definition.Kind != ArchitectureKind.Hearth)
+        {
+            // All structural recipes include iron. Native stone loses all horizontal
+            // support and the short pole donor leaves COM near the foot of an 8m beam.
+            wear.m_materialType = WearNTear.MaterialType.Iron;
+            wear.m_supports = true;
+            wear.m_comOffset = definition.Kind == ArchitectureKind.Beam
+                ? new Vector3(0f, definition.Size * .5f, 0f) : new Vector3(0f, .17f, 0f);
+        }
         ConfigureColliders(prefab, definition);
         ConfigureSnapPoints(prefab, definition);
 
@@ -104,6 +116,7 @@ internal sealed class CrystalArchitectureRegistrar : IDisposable
         wear.m_worn.SetActive(false);
         wear.m_broken.SetActive(false);
         wear.m_health = health;
+        wear.m_materialType = WearNTear.MaterialType.Stone;
         wear.m_fragmentRoots = new[] { wear.m_new, wear.m_worn, wear.m_broken };
     }
 
@@ -132,7 +145,9 @@ internal sealed class CrystalArchitectureRegistrar : IDisposable
     {
         var solids = prefab.GetComponentsInChildren<Collider>(true).Where(collider => !collider.isTrigger).ToArray();
         var layer = solids.Length > 0 ? solids[0].gameObject.layer : prefab.layer;
-        foreach (var collider in solids) collider.enabled = false;
+        // Native WearNTear includes child colliders when calculating support bounds.
+        // Disabled donor shapes must not survive alongside the correctly sized owned shapes.
+        foreach (var collider in solids) UnityEngine.Object.DestroyImmediate(collider);
 
         var root = new GameObject("magenheim.crystal-architecture.collision") { layer = layer };
         root.transform.SetParent(prefab.transform, false);
@@ -159,7 +174,7 @@ internal sealed class CrystalArchitectureRegistrar : IDisposable
                 PlacementSnapAuthority.FitVerticalBeam(prefab, definition.Size);
                 break;
             case ArchitectureKind.Foundation:
-                PlacementSnapAuthority.FitFoundation(prefab, definition.Size);
+                ConstructionJointContacts.FoundationSnaps(prefab, definition.Size, .34f);
                 break;
             case ArchitectureKind.Hearth:
                 PlacementSnapAuthority.AlignToBase(prefab);

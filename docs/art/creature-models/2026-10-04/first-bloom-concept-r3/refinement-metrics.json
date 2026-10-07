@@ -1,0 +1,26 @@
+{
+  "id": "underworld-boss-first-bloom-concept-r3",
+  "source": "assets/models/studies/underworld-boss-first-bloom-concept-r3.blend",
+  "triangles": 9188,
+  "donor_triangles": 6206,
+  "soft_cap": 9309,
+  "ratio": 1.4805027392845633,
+  "previous_triangles": 7940,
+  "reduction_percent": -15.717884130982362,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "category_triangles": {
+    "trunk": 688,
+    "chamber": 1152,
+    "canopy": 2044,
+    "draped-tissue": 808,
+    "limbs": 544,
+    "limb-growth": 3016,
+    "digits": 440,
+    "ground-roots": 496
+  },
+  "rig": "retained crowncap-brute baseline; mixed weights at trunk and limb roots",
+  "texture_bake": "owned procedural bark, moss, ivory and amber material bake; no concept pixels or high-to-low geometry transfer",
+  "status": "art candidate; live performance and deformation acceptance pending"
+}

@@ -106,6 +106,8 @@ try {
     $ErrorActionPreference = 'Continue'
     & $DotNet run --project tests/Magenheim.Core.Tests -c Release @restoreOptions
     if ($LASTEXITCODE -ne 0) { throw 'Core tests failed.' }
+    & $DotNet run --project tools/WorldScopeRegression -c Release @restoreOptions
+    if ($LASTEXITCODE -ne 0) { throw 'World callback scope regression failed.' }
     & python "$PSScriptRoot/tools/verify-model-assets.py"
     if ($LASTEXITCODE -ne 0) { throw 'Model asset validation failed.' }
     & python "$PSScriptRoot/tools/verify-biome-ground-features.py"
@@ -180,10 +182,13 @@ try {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'TESTING.md') -Destination $package -Force
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'README.md') -Destination $package -Force
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'CLOSEOUT.md') -Destination $package -Force
+    New-Item -ItemType Directory -Force -Path "$package/true-blacksmithing" | Out-Null
+    Get-ChildItem -LiteralPath "$PSScriptRoot/true-blacksmithing" -Filter '*.md' -File |
+        Copy-Item -Destination "$package/true-blacksmithing" -Force
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'icon.png') -Destination $package -Force
     New-Item -ItemType Directory -Force -Path "$package/assets/earth", "$package/docs/validation" | Out-Null
     Copy-Item -Path "$PSScriptRoot/assets/earth/*preview.png" -Destination "$package/assets/earth" -Force
-    foreach ($record in @('2026-09-14-earth-content-package.md', '2026-09-14-workshop-content.md', '2026-09-15-inventory-changed-reflection-repair.md', '2026-09-30-0.0.158-integrated-candidate.md')) { Copy-Item -LiteralPath "$PSScriptRoot/docs/validation/$record" -Destination "$package/docs/validation" -Force }
+    foreach ($record in @('2026-09-14-earth-content-package.md', '2026-09-14-workshop-content.md', '2026-09-15-inventory-changed-reflection-repair.md', '2026-09-30-0.0.158-integrated-candidate.md', '2026-10-01-underworld-gate-live-error-repair.md', '2026-10-01-twelve-item-live-repair.md')) { Copy-Item -LiteralPath "$PSScriptRoot/docs/validation/$record" -Destination "$package/docs/validation" -Force }
     $manifest = @{ name='Magenheim'; version_number=$pluginVersion; website_url='https://github.com/mrcalzon02/Magenheim'; description=[string]$release.description; dependencies=@('denikson-BepInExPack_Valheim-5.4.2350','ValheimModding-Jotunn-2.30.0','ValheimModding-JsonDotNET-13.0.4') }
     $manifest | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $package 'manifest.json')
     $hashes = @(Get-ChildItem -LiteralPath $package -File -Recurse | Sort-Object FullName | ForEach-Object { [ordered]@{ path=$_.FullName.Substring($package.Length + 1).Replace('\','/'); sha256=(Get-FileHash -LiteralPath $_.FullName).Hash } })

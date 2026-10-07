@@ -33,7 +33,7 @@ from underworld_material_library import bind_underworld_material  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'assets/models/source'
-REVISION = 'fungal-forest-canopy-variants-3'
+REVISION = 'fungal-forest-canopy-variants-4-native-tree-budget'
 Z = Vector((0.0, 0.0, 1.0))
 
 # ------------------------------------------------------------------------------------------------
@@ -412,6 +412,31 @@ def author(model_id):
     builder, size = MODELS[model_id]
     m = Model(model_id, size, SURFACES)
     builder(m)
+    if model_id.startswith('underworld-flora-fungal-'):
+        # Installed Beech LOD0: 432 triangles; Fir mesh: 596. Keep the more
+        # irregular multi-cap silhouettes below Fir's 596-triangle near-mesh budget.
+        for part in m.parts:
+            part.data.calc_loop_triangles()
+        total = sum(len(part.data.loop_triangles) for part in m.parts)
+        budget = 580 if any(word in model_id for word in ('glowcap', 'spirestalk', 'puffcap', 'tanglecap')) else 400
+        if total > budget:
+            for part in m.parts:
+                bpy.context.view_layer.objects.active = part
+                modifier = part.modifiers.new('NativeTreeDensity', 'DECIMATE')
+                modifier.ratio = budget / total
+                modifier.use_collapse_triangulate = True
+                bpy.ops.object.modifier_apply(modifier=modifier.name)
+                # Collapsed junctions need fresh face normals. Flat normals also
+                # keep narrow concave stalk faces from averaging across a fold.
+                mesh = bmesh.new()
+                mesh.from_mesh(part.data)
+                bmesh.ops.recalc_face_normals(mesh, faces=list(mesh.faces))
+                mesh.to_mesh(part.data)
+                mesh.free()
+                for face in part.data.polygons:
+                    face.use_smooth = False
+                part.data.update()
+                part.data.calc_loop_triangles()
     scene = bpy.context.scene
     scene['model_id'] = model_id
     scene['runtime_lights'] = '[]'

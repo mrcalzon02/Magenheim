@@ -20,16 +20,16 @@ internal static class UnderworldZdoPeerRouter
     private static readonly AsyncLocal<int> Reentry = new();
     private static readonly FieldInfo ObjectsById = AccessTools.Field(typeof(ZDOMan), "m_objectsByID")
         ?? throw new MissingFieldException(typeof(ZDOMan).FullName, "m_objectsByID");
-    private static readonly MethodInfo GetSector = AccessTools.Method(typeof(ZDO), "GetSector", Type.EmptyTypes)
-        ?? throw new MissingMethodException(typeof(ZDO).FullName, "GetSector()");
+    private static readonly MethodInfo GetSectorIndex = AccessTools.Method(typeof(ZDO), "GetSectorIndex", Type.EmptyTypes)
+        ?? throw new MissingMethodException(typeof(ZDO).FullName, "GetSectorIndex()");
+    private static readonly MethodInfo OutsideZones = AccessTools.PropertyGetter(typeof(ZDO), "OutsideZones")
+        ?? throw new MissingMethodException(typeof(ZDO).FullName, "get_OutsideZones()");
     private static readonly MethodInfo AddPeerMethod = AccessTools.Method(typeof(ZDOMan), "AddPeer", new[] { typeof(ZNetPeer) })
         ?? throw new MissingMethodException(typeof(ZDOMan).FullName, "AddPeer(ZNetPeer)");
     private static readonly MethodInfo RemovePeerMethod = AccessTools.Method(typeof(ZDOMan), "RemovePeer", new[] { typeof(ZNetPeer) })
         ?? throw new MissingMethodException(typeof(ZDOMan).FullName, "RemovePeer(ZNetPeer)");
     private static readonly MethodInfo AddToSector = ResolveSectorMethod("AddToSector");
     private static readonly MethodInfo RemoveFromSector = ResolveSectorMethod("RemoveFromSector");
-    private static readonly MethodInfo SectorToIndex = AccessTools.Method(typeof(ZoneSystem), "SectorToIndex", new[] { typeof(Vector2s) })
-        ?? throw new MissingMethodException(typeof(ZoneSystem).FullName, "SectorToIndex(Vector2s)");
     private static readonly FieldInfo? ZNetZdoMan = AccessTools.Field(typeof(ZNet), "m_zdoMan");
 
     private static UnderworldRuntimeServices? _services;
@@ -217,10 +217,12 @@ internal static class UnderworldZdoPeerRouter
         var targetObjects = ObjectsById.GetValue(target) as IDictionary
             ?? throw new InvalidOperationException("Target ZDOMan object index is unavailable.");
 
-        var legacySector = GetSector.Invoke(zdo, Array.Empty<object>())
-            ?? throw new InvalidOperationException("Character ZDO returned no sector.");
-        var sector = SectorToIndex.Invoke(null, new[] { legacySector })
-            ?? throw new InvalidOperationException("Valheim did not convert the character ZDO sector to its native sector index.");
+        // Match the exact index native SetSector/HandleDestroyedZDO use. GetZone's
+        // double intermediate can disagree with GetSectorIndex's float arithmetic
+        // at distant boundaries; removing the wrong bucket leaves a pooled ZDO there.
+        var sector = (bool)OutsideZones.Invoke(zdo, Array.Empty<object>()) ? ZoneSystem.SectorZero :
+            GetSectorIndex.Invoke(zdo, Array.Empty<object>())
+            ?? throw new InvalidOperationException("Character ZDO returned no native sector index.");
 
         RemoveFromSector.Invoke(source, new[] { (object)zdo, sector });
         sourceObjects.Remove(zdo.m_uid);

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "workshops": [
+    {"id":"hand","physicalJob":"Split, bind and fit primitive materials without powered tooling","nativeStation":"","interaction":"RecipeMenu","operations":["HandWork"]},
+    {"id":"knapping","physicalJob":"Strike stone or flint into sharp flakes, heads and points","nativeStation":"","interaction":"RecipeMenu","operations":["Knapping"]},
+    {"id":"carving","physicalJob":"Shape wood into hafts, staves, stocks and shield bodies","nativeStation":"","interaction":"RecipeMenu","operations":["Carving"]},
+    {"id":"leather","physicalJob":"Cure hides and cut or stitch straps, wraps and lining","nativeStation":"","interaction":"RecipeMenu","operations":["Leatherworking"]},
+    {"id":"textile","physicalJob":"Weave, pad and stitch processed fiber into equipment panels","nativeStation":"","interaction":"RecipeMenu","operations":["TextileWork"]},
+    {"id":"casting","physicalJob":"Pour molten nonferrous stock into reusable component forms","nativeStation":"","interaction":"RecipeMenu","operations":["Casting"]},
+    {"id":"hearth","physicalJob":"Heat existing metal stock or worked forms to forging temperature","nativeStation":"forge","interaction":"RecipeMenu","operations":["Heating"]},
+    {"id":"anvil","physicalJob":"Hammer heated stock into working heads, blades and fittings","nativeStation":"","interaction":"RecipeMenu","operations":["Forging"]},
+    {"id":"armorer","physicalJob":"Raise armor plates, form helmets and join mail sections","nativeStation":"","interaction":"RecipeMenu","operations":["ArmourForming"]},
+    {"id":"quench","physicalJob":"Cool a heated hardenable ferrous working form; preserve its material identity","nativeStation":"","interaction":"DirectInteraction","operations":["Quenching"]},
+    {"id":"temper","physicalJob":"Reheat a hardened ferrous form to reduce brittleness where its material supports heat treatment","nativeStation":"forge","interaction":"DirectInteraction","operations":["Tempering"]},
+    {"id":"grinding","physicalJob":"Cut a working edge or remove forging scale from formed metal","nativeStation":"","interaction":"RecipeMenu","operations":["Grinding"]},
+    {"id":"finishing","physicalJob":"Seal, polish or smooth surfaces where this communicates actual construction","nativeStation":"","interaction":"RecipeMenu","operations":["Finishing"]},
+    {"id":"fitting","physicalJob":"Make and fit joints, guards, grips, sockets and fastening assemblies","nativeStation":"piece_workbench","interaction":"RecipeMenu","operations":["Fitting"]},
+    {"id":"assembly","physicalJob":"Join finished components into the original equipment prefab","nativeStation":"piece_workbench","interaction":"RecipeMenu","operations":["Assembly"]},
+    {"id":"exotic","physicalJob":"Bind special materials or enchant an existing mundane assembly at its original progression station","nativeStation":"","interaction":"RecipeMenu","operations":["ExoticTreatment"]}
+  ],
+  "components": [
+    {"id":"primitive-edges","workshop":"knapping","admissionReason":"Knapping changes process and supplies reusable cutting and piercing forms","outputForms":["flakes","primitive blades","axe heads","spear points"]},
+    {"id":"bindings","workshop":"hand","admissionReason":"A reusable joining component distinguishes binding from shaping","outputForms":["fiber bindings"]},
+    {"id":"wood-forms","workshop":"carving","admissionReason":"Reusable forms communicate length and load-bearing construction","outputForms":["short handles","tool hafts","heavy hafts","long shafts","polearm shafts","grip cores","bow staves","crossbow stocks","shield bodies"]},
+    {"id":"hide-forms","workshop":"leather","admissionReason":"Curing, straps and lining are reused across weapon grips, armor and shields","outputForms":["cured hide","straps","grip wraps","harnesses","armor lining","reinforced panels"]},
+    {"id":"textile-forms","workshop":"textile","admissionReason":"Weaving and padding express the textile technology gate","outputForms":["cloth panels","padded components","bow strings"]},
+    {"id":"metal-stock","workshop":"hearth","admissionReason":"Heated stock exists only as the input state required by forging; no redundant ore-to-billet tax","outputForms":["heated stock"]},
+    {"id":"metal-fittings","workshop":"anvil","admissionReason":"Shared small hardware is reused rather than producing an item-specific component for every recipe","outputForms":["rivets","fasteners","rings","guards","pommels","sockets","bosses","rims"]},
+    {"id":"cast-forms","workshop":"casting","admissionReason":"Casting provides materially distinct nonferrous heads and fittings","outputForms":["cast heads","cast fittings","cast plate blanks"]},
+    {"id":"working-forms","workshop":"anvil","admissionReason":"Working geometry distinguishes blade, striking, piercing and digging equipment","outputForms":["knife blades","blade blanks","forged blades","axe heads","pick heads","mace heads","hammer heads","spearheads","polearm heads"]},
+    {"id":"treated-forms","workshop":"quench","admissionReason":"Hardened forms express a real ferrous technology gate and are shared by cutting and piercing tools","outputForms":["hardened blades","hardened cutting heads"]},
+    {"id":"finished-forms","workshop":"grinding","admissionReason":"A usable edge is a distinct transformation from a rough forged or cast form","outputForms":["finished blades","finished heads"]},
+    {"id":"armor-forms","workshop":"armorer","admissionReason":"Plate, helmets and mail require different forming geometry from weapon heads","outputForms":["plate blanks","formed plates","helmet forms","mail rings","mail sections","reinforcement plates","fastening assemblies"]},
+    {"id":"ammo-forms","workshop":"carving","admissionReason":"Batchable ammunition separates reusable shafts and fletching from material-specific heads","outputForms":["arrow shafts","fletching","arrowheads","bolt bodies","bolt heads"]}
+  ],
+  "routes": [
+    {"id":"primitive-bound","materialCondition":"Stone/flint edges or primitive bound wood; no metal heating or quenching","families":["Axe","Pickaxe","Knife","Spear","Mace","Tool"],"operations":["HandWork","Knapping","Carving","Fitting","Assembly"],"components":["primitive-edges","bindings","wood-forms"]},
+    {"id":"cast-nonferrous","materialCondition":"Copper/bronze forms suitable for casting; no ferrous hardening requirement","families":["Axe","Knife","Sword","Mace","Spear","Polearm","Shield","Tool"],"operations":["Casting","Grinding","Fitting","Assembly"],"components":["cast-forms","finished-forms","wood-forms","hide-forms"]},
+    {"id":"forged-cutting","materialCondition":"Hardenable ferrous cutting or piercing forms; tempering only where justified by that material","families":["Axe","Pickaxe","Knife","Sword","Spear","Polearm","Tool"],"operations":["Heating","Forging","Quenching","Tempering","Grinding","Fitting","Assembly"],"components":["metal-stock","working-forms","treated-forms","finished-forms","metal-fittings","wood-forms","hide-forms"]},
+    {"id":"forged-striking","materialCondition":"Forged striking heads; no universal cutting-edge heat treatment","families":["Mace","Hammer"],"operations":["Heating","Forging","Fitting","Assembly"],"components":["metal-stock","working-forms","metal-fittings","wood-forms","hide-forms"]},
+    {"id":"wood-composite","materialCondition":"Wooden or composite bows, stocks and shields; preserve original advanced station gates","families":["Bow","Crossbow","Shield","Tool"],"operations":["Carving","Leatherworking","TextileWork","Fitting","Assembly"],"components":["wood-forms","hide-forms","textile-forms","metal-fittings"]},
+    {"id":"hide-textile-armor","materialCondition":"Hide, leather or padded textile garments; no casting or plate forming","families":["Armour","Utility"],"operations":["Leatherworking","TextileWork","Fitting","Assembly"],"components":["hide-forms","textile-forms"]},
+    {"id":"formed-metal-armor","materialCondition":"Metal helmets, plates, mail or reinforcement; treatment depends on material rather than all armor","families":["Armour"],"operations":["Heating","ArmourForming","Finishing","Fitting","Assembly"],"components":["metal-stock","armor-forms","metal-fittings","hide-forms","textile-forms"]},
+    {"id":"batch-ammunition","materialCondition":"Arrow/bolt batches; manufacture heads by their material route and retain native output batch size","families":["Ammunition"],"operations":["Carving","Fitting","Assembly"],"components":["ammo-forms","bindings"]},
+    {"id":"exotic-equipment","materialCondition":"Magical, crystal, chitin, bone or current endgame materials; preserve original finished prefab, donor chain and progression station","families":["Magical","Utility","Armour","Sword","Knife","Mace","Hammer","Polearm","Spear","Axe","Pickaxe","Bow","Crossbow","Shield","Ammunition","Tool"],"operations":["Fitting","ExoticTreatment","Assembly"],"components":["wood-forms","hide-forms","metal-fittings"]}
+  ]
+}

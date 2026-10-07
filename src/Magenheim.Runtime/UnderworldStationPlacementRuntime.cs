@@ -17,10 +17,10 @@ internal sealed class UnderworldStationPlacementConstraint : MonoBehaviour
     internal bool TryEvaluate(out UnderworldStationPlacementDecision decision)
     {
         if(string.IsNullOrWhiteSpace(_stationPrefab)){decision=UnderworldStationPlacementDecision.Reject("Underworld station siting identity is missing.");return true;}
-        // Also release previously saved/instantiated bench components from the obsolete siting gate.
-        if(_stationPrefab==UnderworldStationCatalog.MycelialBenchPrefab){decision=default;return false;}
-        decision=UnderworldStationPlacementRuntime.Evaluate(UnderworldStationCatalog.Require(_stationPrefab),gameObject);
-        return true;
+        // Existing saves may retain this component. Owned crafting stations now use
+        // normal Valheim placement in either world, as requested by the user.
+        decision=default;
+        return false;
     }
 }
 
@@ -32,6 +32,7 @@ internal static class UnderworldStationPlacementRuntime
     {
         if(station is null)throw new ArgumentNullException(nameof(station));
         if(!ghost)throw new ArgumentNullException(nameof(ghost));
+        // Local footprint is transformed by the placed prefab, including its 75% scale.
         var halfX=station.Dimensions.WidthMeters*.43f;
         var halfZ=station.Dimensions.DepthMeters*.43f;
         var local=new[]{

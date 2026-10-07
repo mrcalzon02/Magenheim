@@ -8,8 +8,8 @@ namespace Magenheim.Runtime;
 
 /// <summary>
 /// Converts enlarged vanilla donor rooms from bare scale/population swaps into recognizably
-/// Underworld-native spaces without replacing their donor room grammar. Dressing is visual-only
-/// unless a deliberately bounded biome hazard volume is attached.
+/// Underworld-native spaces without replacing their donor room grammar. Edible fungal dressing
+/// uses native pickups/felling; other dressing remains visual or a bounded biome hazard.
 /// </summary>
 internal static class UnderworldVanillaDungeonBiomeDressingPolicy
 {
@@ -120,7 +120,8 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
             {
                 if (index < 2)
                 {
-                    visual = UnderworldDonorVisualFactory.Create(
+                    visual = UnderworldDungeonHarvestableDressing.Major(profile.Biome, seed, dressingRoot.transform)
+                        ?? UnderworldDonorVisualFactory.Create(
                         profile.Biome,
                         seed,
                         "Magenheim_DDE_EntranceMajor_" + index);
@@ -128,7 +129,8 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
                 }
                 else
                 {
-                    visual = UnderworldDonorVisualFactory.CreateCover(
+                    visual = UnderworldDungeonHarvestableDressing.Cover(profile.Biome, seed, dressingRoot.transform)
+                        ?? UnderworldDonorVisualFactory.CreateCover(
                         profile.Biome,
                         seed,
                         "Magenheim_DDE_EntranceCover_" + index,
@@ -452,6 +454,13 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
                     replacements[materialIndex] = original!;
                     continue;
                 }
+                // Native darkness/portal masks are engine boundaries, not stone palette art.
+                if (original.name.StartsWith("interior_cube", StringComparison.Ordinal) ||
+                    original.name.StartsWith("exirt_portal", StringComparison.Ordinal))
+                {
+                    replacements[materialIndex] = original;
+                    continue;
+                }
 
                 var material = new Material(original)
                 {
@@ -696,7 +705,8 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
             GameObject visual;
             try
             {
-                visual = UnderworldDonorVisualFactory.Create(
+                visual = UnderworldDungeonHarvestableDressing.Major(profile.Biome, seed, parent)
+                    ?? UnderworldDonorVisualFactory.Create(
                     profile.Biome,
                     seed,
                     "Magenheim_DDE_Major_" + index);
@@ -748,7 +758,8 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
             GameObject? visual;
             try
             {
-                visual = UnderworldDonorVisualFactory.CreateCover(
+                visual = UnderworldDungeonHarvestableDressing.Cover(profile.Biome, seed, parent)
+                    ?? UnderworldDonorVisualFactory.CreateCover(
                     profile.Biome,
                     seed,
                     "Magenheim_DDE_Cover_" + index,
@@ -1201,6 +1212,7 @@ internal static class UnderworldVanillaDungeonBiomeDressingPolicy
 
     private static void StripGameplayCollision(GameObject visual)
     {
+        if (visual.GetComponent<Pickable>() || visual.GetComponent<TreeBase>()) return;
         foreach (var collider in visual.GetComponentsInChildren<Collider>(true))
             UnityEngine.Object.DestroyImmediate(collider);
     }

@@ -11,6 +11,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <Compile Include="../../src/Magenheim.Runtime/Definitions/MagenheimDefinitionLoader.cs" Link="Runtime/MagenheimDefinitionLoader.cs" />
     <Compile Include="../../src/Magenheim.Runtime/TrueBlacksmithing/TrueBlacksmithingMutationJournal.cs" Link="Runtime/TrueBlacksmithingMutationJournal.cs" />
+    <Compile Include="../../src/Magenheim.Runtime/TrueBlacksmithing/ManufacturingDataLoader.cs" Link="Runtime/ManufacturingDataLoader.cs" />
+    <None Include="../../true-blacksmithing/data/*.json" Link="true-blacksmithing/%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../default-data/foundation.json" Link="foundation.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

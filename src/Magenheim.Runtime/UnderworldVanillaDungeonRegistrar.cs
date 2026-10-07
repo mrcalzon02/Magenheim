@@ -305,6 +305,7 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         var zoneScale = (float)(profile.LinearRoomScale * Math.Sqrt(profile.RoomCountMultiplier));
         generator.m_zoneSize *= zoneScale;
         generator.m_tileWidth *= (float)profile.LinearRoomScale;
+        custom.Prefab.AddComponent<UnderworldDungeonInteriorEnvelope>().Bind(generator);
 
         _generators[profile.DungeonId] = generator;
         _donorRequiredRooms[profile.DungeonId] = donorRequired;
@@ -533,13 +534,13 @@ internal sealed class UnderworldVanillaDungeonRegistrar : IDisposable
         {
             if (roomNames.TryGetValue(required, out var replacement))
                 mapped.Add(replacement);
-            else if (DungeonDB.GetRooms().Any(data => data is not null && !data.m_enabled && data.m_prefab.IsValid &&
+            else if (!DungeonDB.GetRooms().Any(data => data is not null && data.m_enabled && data.m_prefab.IsValid &&
                          string.Equals(data.m_prefab.Name, required, StringComparison.Ordinal)))
             {
-                // Native required lists retain retired alternatives. Those rooms are absent
+                // Native required lists retain retired/absent alternatives. Those rooms are absent
                 // from vanilla's enabled candidate pool too; retain the enabled alternatives
                 // and the original minimum rather than resurrecting disabled donor geometry.
-                _log.LogInfo($"{profile.DonorDisplayName}: retired required-room alternative '{required}' remains disabled.");
+                _log.LogInfo($"{profile.DonorDisplayName}: unavailable native required-room alternative '{required}' has no enabled candidate.");
             }
             else
                 missing.Add(required);

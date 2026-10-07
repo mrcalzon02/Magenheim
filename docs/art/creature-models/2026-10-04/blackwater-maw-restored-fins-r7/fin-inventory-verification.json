@@ -1,0 +1,109 @@
+{
+  "result": "PASS saved fin inventory and broad tail area",
+  "dorsals": 4,
+  "lateral_pairs": 2,
+  "tail_fan_area_ratio_to_revision5": 4.663054335515569,
+  "previous_tail": {
+    "kind": "tail_root",
+    "dimensions": [
+      0.12145359814167023,
+      1.142561912536621,
+      3.146944046020508
+    ],
+    "projected_yz_membrane_area": 1.0738143549355934,
+    "triangles": 34
+  },
+  "components": {
+    "PleatedPectoralL": {
+      "kind": "pectoral_root",
+      "dimensions": [
+        1.9500000476837158,
+        3.6409924030303955,
+        0.9810876697301865
+      ],
+      "projected_yz_membrane_area": 1.5787603133857329,
+      "triangles": 180
+    },
+    "PleatedPectoralR": {
+      "kind": "pectoral_root",
+      "dimensions": [
+        1.9474598169326782,
+        3.63964581489563,
+        0.9816468805074692
+      ],
+      "projected_yz_membrane_area": 1.5688489996034838,
+      "triangles": 180
+    },
+    "ForwardPectoralL": {
+      "kind": "forward_pectoral_root",
+      "dimensions": [
+        2.3300899267196655,
+        2.0749551653862,
+        1.4963499754667282
+      ],
+      "projected_yz_membrane_area": 1.8745217609193408,
+      "triangles": 180
+    },
+    "ForwardPectoralR": {
+      "kind": "forward_pectoral_root",
+      "dimensions": [
+        2.3028594255447388,
+        2.0911126732826233,
+        1.5040865391492844
+      ],
+      "projected_yz_membrane_area": 1.8809668024524684,
+      "triangles": 180
+    },
+    "AnteriorDorsalFin": {
+      "kind": "dorsal_root",
+      "dimensions": [
+        0.07232839614152908,
+        1.8386366665363312,
+        1.9594953656196594
+      ],
+      "projected_yz_membrane_area": 1.7957067652802272,
+      "triangles": 94
+    },
+    "MainSecondDorsalFin": {
+      "kind": "dorsal_root",
+      "dimensions": [
+        0.0667864978313446,
+        1.5956610888242722,
+        1.8610297441482544
+      ],
+      "projected_yz_membrane_area": 1.5065069404399476,
+      "triangles": 90
+    },
+    "AftDorsalFin": {
+      "kind": "dorsal_root",
+      "dimensions": [
+        0.05128892883658409,
+        1.407739281654358,
+        1.2096392810344696
+      ],
+      "projected_yz_membrane_area": 0.7529174656736553,
+      "triangles": 88
+    },
+    "CaudalDorsalFin": {
+      "kind": "dorsal_root",
+      "dimensions": [
+        0.05399148911237717,
+        1.1013543605804443,
+        0.577445924282074
+      ],
+      "projected_yz_membrane_area": 0.2860638148282204,
+      "triangles": 84
+    },
+    "BroadCaudalFan": {
+      "kind": "tail_root",
+      "dimensions": [
+        0.11240783333778381,
+        2.0978708267211914,
+        4.265279769897461
+      ],
+      "projected_yz_membrane_area": 5.007254683321273,
+      "triangles": 112
+    }
+  },
+  "scope": "actual saved mesh components and projected membrane area; native animation acceptance pending"
+}

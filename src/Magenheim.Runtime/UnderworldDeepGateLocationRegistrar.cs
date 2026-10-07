@@ -65,6 +65,12 @@ internal sealed class UnderworldDeepGateLocationRegistrar : IDisposable
             }
             else
             {
+                // DN_Bossroom is the verified Aesir entrance. Its prison/boss interior
+                // belongs to vanilla; this owned exterior transports to the paired world.
+                var interior = gate.transform.Find("Interior");
+                if (interior) interior.gameObject.SetActive(false);
+                foreach (var light in gate.GetComponentsInChildren<Light>(true))
+                    if (light.transform.localPosition.y > 3000f) light.gameObject.SetActive(false);
                 // Retain the entire authored exterior: stones, bowl, chains, effects and network
                 // behaviours. Only the destination changes from the vanilla prison to instance 1.
                 foreach (var generator in gate.GetComponentsInChildren<DungeonGenerator>(true))
@@ -115,6 +121,7 @@ internal sealed class UnderworldDeepGateLocationRegistrar : IDisposable
             {
                 // Mutate only our private registered row; native placement fields remain intact.
                 var placement = custom.ZoneLocation;
+                placement.m_enable = true;
                 placement.m_biome = config.Biome;
                 placement.m_quantity = config.Quantity;
                 placement.m_prioritized = true;
@@ -146,23 +153,23 @@ internal sealed class UnderworldDeepGateLocationRegistrar : IDisposable
     private static ZoneSystem.ZoneLocation? FindNativeGateLocation()
     {
         var zone = ZoneSystem.instance;
-        if (!zone) return null;
+        if (!zone) throw new InvalidOperationException("Native ZoneSystem is unavailable for Aesir entrance selection.");
         foreach (var row in zone.m_locations.ToArray())
         {
-            if (row is null || !row.m_enable || !row.m_prefab.IsValid ||
-                (row.m_biome & (Heightmap.Biome.DeepNorth | Heightmap.Biome.Mountain)) == 0)
+            if (row is null || !row.m_prefab.IsValid ||
+                !string.Equals(row.m_prefab.Name, "DN_Bossroom", StringComparison.Ordinal))
                 continue;
             row.m_prefab.Load();
             try
             {
                 var prefab = row.m_prefab.Asset;
-                if (prefab && prefab.GetComponentsInChildren<Transform>(true).Any(transform =>
-                        transform.name.StartsWith("LastBossGate", StringComparison.Ordinal)))
+                if (prefab && prefab.transform.Find("GatewayParent/Gateway")?.GetComponent<Teleport>() &&
+                    prefab.transform.Find("exterior"))
                     return row;
             }
             finally { row.m_prefab.Release(); }
         }
-        return null;
+        throw new InvalidOperationException("Verified Aesir entrance DN_Bossroom with native Gateway is unavailable; refusing an unrelated donor.");
     }
 }
 

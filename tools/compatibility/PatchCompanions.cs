@@ -41,8 +41,28 @@ class PatchCompanions
                 // every slot. Copy the already-bound delegate from InventoryGui.m_containerGrid.
                 var gameInventoryGui = game.MainModule.GetType("InventoryGui");
                 var gameInventoryGrid = game.MainModule.GetType("InventoryGrid");
-                var containerGrid = assembly.MainModule.ImportReference(
-                    gameInventoryGui.Fields.Single(f => f.Name == "m_containerGrid"));
+                // The installed field is private. A direct imported ldfld compiles but
+                // Mono rejects it when BuildUI runs; read through reflection instead.
+                var readContainerGrid = new MethodDefinition("MagenheimReadContainerGrid",
+                    MethodAttributes.Private | MethodAttributes.Static | MethodAttributes.HideBySig,
+                    assembly.MainModule.ImportReference(gameInventoryGrid));
+                readContainerGrid.Parameters.Add(new ParameterDefinition("gui", ParameterAttributes.None,
+                    assembly.MainModule.ImportReference(gameInventoryGui)));
+                panel.Methods.Add(readContainerGrid);
+                var readIl = readContainerGrid.Body.GetILProcessor();
+                readIl.Append(readIl.Create(OpCodes.Ldtoken, assembly.MainModule.ImportReference(gameInventoryGui)));
+                readIl.Append(readIl.Create(OpCodes.Call, assembly.MainModule.ImportReference(
+                    typeof(Type).GetMethod("GetTypeFromHandle"))));
+                readIl.Append(readIl.Create(OpCodes.Ldstr, "m_containerGrid"));
+                readIl.Append(readIl.Create(OpCodes.Ldc_I4, (int)(System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic)));
+                readIl.Append(readIl.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(
+                    typeof(Type).GetMethod("GetField", new[] { typeof(string), typeof(System.Reflection.BindingFlags) }))));
+                readIl.Append(readIl.Create(OpCodes.Ldarg_0));
+                readIl.Append(readIl.Create(OpCodes.Callvirt, assembly.MainModule.ImportReference(
+                    typeof(System.Reflection.FieldInfo).GetMethod("GetValue", new[] { typeof(object) }))));
+                readIl.Append(readIl.Create(OpCodes.Castclass, assembly.MainModule.ImportReference(gameInventoryGrid)));
+                readIl.Append(readIl.Create(OpCodes.Ret));
                 var canDrop = assembly.MainModule.ImportReference(
                     gameInventoryGrid.Fields.Single(f => f.Name == "CanDropDragOntoItem"));
                 var gridField = panel.Fields.Single(f => f.Name == "_grid");
@@ -60,7 +80,7 @@ class PatchCompanions
                 il.InsertBefore(oldTarget, first);
                 il.InsertBefore(oldTarget, il.Create(OpCodes.Ldfld, gridField));
                 il.InsertBefore(oldTarget, il.Create(OpCodes.Ldloc_0));
-                il.InsertBefore(oldTarget, il.Create(OpCodes.Ldfld, containerGrid));
+                il.InsertBefore(oldTarget, il.Create(OpCodes.Call, readContainerGrid));
                 il.InsertBefore(oldTarget, il.Create(OpCodes.Ldfld, canDrop));
                 il.InsertBefore(oldTarget, il.Create(OpCodes.Stfld, canDrop));
                 gridNullBranch.Operand = first;

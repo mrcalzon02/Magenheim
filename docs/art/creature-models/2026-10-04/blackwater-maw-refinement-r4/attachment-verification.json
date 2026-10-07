@@ -1,0 +1,1232 @@
+{
+  "result": "PASS every saved vein/frame endpoint intersects its designated support",
+  "groups": 138,
+  "endpoints": 153,
+  "checks": [
+    {
+      "tissue": "VaultedSkull",
+      "end": "skull_neck",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 36,
+      "center_surface_distance_metres": 0.29476165771484375
+    },
+    {
+      "tissue": "HingedGumBowl",
+      "end": "jaw_hinge",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 36,
+      "center_surface_distance_metres": 0.18333008885383606
+    },
+    {
+      "tissue": "FleshyCommissureL",
+      "end": "upper_cheek",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 8,
+      "center_surface_distance_metres": 0.03919978812336922
+    },
+    {
+      "tissue": "FleshyCommissureL",
+      "end": "lower_cheek",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 8,
+      "center_surface_distance_metres": 0.022344956174492836
+    },
+    {
+      "tissue": "FleshyCommissureR",
+      "end": "upper_cheek",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 8,
+      "center_surface_distance_metres": 0.031340476125478745
+    },
+    {
+      "tissue": "FleshyCommissureR",
+      "end": "lower_cheek",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 8,
+      "center_surface_distance_metres": 0.02444392442703247
+    },
+    {
+      "tissue": "ThroatRuga0",
+      "end": "fold_left",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.02297806739807129
+    },
+    {
+      "tissue": "ThroatRuga0",
+      "end": "fold_right",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.022081851959228516
+    },
+    {
+      "tissue": "ThroatRuga1",
+      "end": "fold_left",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.025782346725463867
+    },
+    {
+      "tissue": "ThroatRuga1",
+      "end": "fold_right",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.025782346725463867
+    },
+    {
+      "tissue": "ThroatRuga2",
+      "end": "fold_left",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.025782346725463867
+    },
+    {
+      "tissue": "ThroatRuga2",
+      "end": "fold_right",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.025782346725463867
+    },
+    {
+      "tissue": "ThroatRuga3",
+      "end": "fold_left",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.025782346725463867
+    },
+    {
+      "tissue": "ThroatRuga3",
+      "end": "fold_right",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.025782346725463867
+    },
+    {
+      "tissue": "ThroatRuga4",
+      "end": "fold_left",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.025782346725463867
+    },
+    {
+      "tissue": "ThroatRuga4",
+      "end": "fold_right",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.025782346725463867
+    },
+    {
+      "tissue": "InnerThroatOrgan",
+      "end": "inner_organ_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.019336700439453125
+    },
+    {
+      "tissue": "UpperFang0",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.03179622069001198
+    },
+    {
+      "tissue": "UpperFang1",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.03503038361668587
+    },
+    {
+      "tissue": "UpperFang2",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.029733091592788696
+    },
+    {
+      "tissue": "UpperFang3",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.034667007625103
+    },
+    {
+      "tissue": "UpperFang4",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.05035330727696419
+    },
+    {
+      "tissue": "UpperFang5",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.020981017500162125
+    },
+    {
+      "tissue": "UpperFang6",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.037484582513570786
+    },
+    {
+      "tissue": "UpperFang7",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.023556306958198547
+    },
+    {
+      "tissue": "UpperFang8",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.015049559064209461
+    },
+    {
+      "tissue": "UpperFang9",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.04114162176847458
+    },
+    {
+      "tissue": "UpperFang10",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.021958591416478157
+    },
+    {
+      "tissue": "UpperFang11",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.022262051701545715
+    },
+    {
+      "tissue": "UpperFang12",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.03438577428460121
+    },
+    {
+      "tissue": "UpperFang13",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.0328986681997776
+    },
+    {
+      "tissue": "UpperFang14",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.03385806456208229
+    },
+    {
+      "tissue": "UpperFang15",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.03182785585522652
+    },
+    {
+      "tissue": "UpperInner0",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.029246727004647255
+    },
+    {
+      "tissue": "UpperInner1",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.033975932747125626
+    },
+    {
+      "tissue": "UpperInner2",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.022408979013562202
+    },
+    {
+      "tissue": "UpperInner3",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.02320435829460621
+    },
+    {
+      "tissue": "UpperInner4",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.025645874440670013
+    },
+    {
+      "tissue": "UpperInner5",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.035350050777196884
+    },
+    {
+      "tissue": "LowerFang0",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.029278665781021118
+    },
+    {
+      "tissue": "LowerFang1",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.029305916279554367
+    },
+    {
+      "tissue": "LowerFang2",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.029310859739780426
+    },
+    {
+      "tissue": "LowerFang3",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.029309116303920746
+    },
+    {
+      "tissue": "LowerFang4",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.02944633550941944
+    },
+    {
+      "tissue": "LowerFang5",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.024822711944580078
+    },
+    {
+      "tissue": "LowerFang6",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.025851881131529808
+    },
+    {
+      "tissue": "LowerFang7",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.0278465636074543
+    },
+    {
+      "tissue": "LowerFang8",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.02744397334754467
+    },
+    {
+      "tissue": "LowerFang9",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.0256577767431736
+    },
+    {
+      "tissue": "LowerFang10",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.02460365556180477
+    },
+    {
+      "tissue": "LowerFang11",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.029182221740484238
+    },
+    {
+      "tissue": "LowerFang12",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.029205983504652977
+    },
+    {
+      "tissue": "LowerFang13",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.029234422370791435
+    },
+    {
+      "tissue": "LowerFang14",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.02925225906074047
+    },
+    {
+      "tissue": "LowerFang15",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.029260560870170593
+    },
+    {
+      "tissue": "LowerInner0",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.0353524312376976
+    },
+    {
+      "tissue": "LowerInner1",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.029316730797290802
+    },
+    {
+      "tissue": "LowerInner2",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.023410195484757423
+    },
+    {
+      "tissue": "LowerInner3",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.02340966835618019
+    },
+    {
+      "tissue": "LowerInner4",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.02922840416431427
+    },
+    {
+      "tissue": "LowerInner5",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.03531229868531227
+    },
+    {
+      "tissue": "CheekPlate-1_0",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.03405464068055153
+    },
+    {
+      "tissue": "CheekPlate-1_1",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.025892188772559166
+    },
+    {
+      "tissue": "CheekPlate-1_2",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04489891603589058
+    },
+    {
+      "tissue": "CheekPlate-1_3",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.03719447925686836
+    },
+    {
+      "tissue": "CheekPlate-1_4",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.03346587345004082
+    },
+    {
+      "tissue": "CheekPlate-1_5",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.027613582089543343
+    },
+    {
+      "tissue": "CheekPlate-1_6",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.03253785893321037
+    },
+    {
+      "tissue": "CheekPlate-1_7",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.03573330119252205
+    },
+    {
+      "tissue": "Sensory-1_0",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.02320420742034912
+    },
+    {
+      "tissue": "Sensory-1_1",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.02405213937163353
+    },
+    {
+      "tissue": "Sensory-1_2",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.023297350853681564
+    },
+    {
+      "tissue": "Sensory-1_3",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.023374449461698532
+    },
+    {
+      "tissue": "CheekPlate1_0",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.031127294525504112
+    },
+    {
+      "tissue": "CheekPlate1_1",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.02531382068991661
+    },
+    {
+      "tissue": "CheekPlate1_2",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.03426237404346466
+    },
+    {
+      "tissue": "CheekPlate1_3",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.040600765496492386
+    },
+    {
+      "tissue": "CheekPlate1_4",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.03168310970067978
+    },
+    {
+      "tissue": "CheekPlate1_5",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04055936262011528
+    },
+    {
+      "tissue": "CheekPlate1_6",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04046741500496864
+    },
+    {
+      "tissue": "CheekPlate1_7",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.031755536794662476
+    },
+    {
+      "tissue": "Sensory1_0",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.023204298689961433
+    },
+    {
+      "tissue": "Sensory1_1",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.023204313591122627
+    },
+    {
+      "tissue": "Sensory1_2",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.023206068202853203
+    },
+    {
+      "tissue": "Sensory1_3",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 6,
+      "center_surface_distance_metres": 0.02320420742034912
+    },
+    {
+      "tissue": "PleatedPectoralL",
+      "end": "pectoral_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 26,
+      "center_surface_distance_metres": 0.04574868083000183
+    },
+    {
+      "tissue": "PleatedPectoralR",
+      "end": "pectoral_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 26,
+      "center_surface_distance_metres": 0.04857733100652695
+    },
+    {
+      "tissue": "RaggedDorsalSail",
+      "end": "dorsal_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 30,
+      "center_surface_distance_metres": 0.07224774360656738
+    },
+    {
+      "tissue": "ForkedCaudalFan",
+      "end": "tail_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.12469591945409775
+    },
+    {
+      "tissue": "RecessedGill-1_0",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.045029524713754654
+    },
+    {
+      "tissue": "RecessedGill-1_0",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04511968046426773
+    },
+    {
+      "tissue": "RecessedGill-1_1",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04511968418955803
+    },
+    {
+      "tissue": "RecessedGill-1_1",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04511944577097893
+    },
+    {
+      "tissue": "RecessedGill-1_2",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.045476481318473816
+    },
+    {
+      "tissue": "RecessedGill-1_2",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04511949047446251
+    },
+    {
+      "tissue": "RecessedGill-1_3",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04511949419975281
+    },
+    {
+      "tissue": "RecessedGill-1_3",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04464177042245865
+    },
+    {
+      "tissue": "RecessedGill1_0",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04511943832039833
+    },
+    {
+      "tissue": "RecessedGill1_0",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04475538432598114
+    },
+    {
+      "tissue": "RecessedGill1_1",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0449652373790741
+    },
+    {
+      "tissue": "RecessedGill1_1",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04511957988142967
+    },
+    {
+      "tissue": "RecessedGill1_2",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.045740433037281036
+    },
+    {
+      "tissue": "RecessedGill1_2",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04511972516775131
+    },
+    {
+      "tissue": "RecessedGill1_3",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.0449407696723938
+    },
+    {
+      "tissue": "RecessedGill1_3",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 5,
+      "center_surface_distance_metres": 0.04511960968375206
+    },
+    {
+      "tissue": "FlankScale-1_0_0",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.5486701130867004
+    },
+    {
+      "tissue": "FlankScale-1_0_1",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.49782243371009827
+    },
+    {
+      "tissue": "FlankScale-1_0_2",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.4826602637767792
+    },
+    {
+      "tissue": "FlankScale-1_0_3",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.45789891481399536
+    },
+    {
+      "tissue": "FlankScale-1_1_0",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.5411512851715088
+    },
+    {
+      "tissue": "FlankScale-1_1_1",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.4877931773662567
+    },
+    {
+      "tissue": "FlankScale-1_1_2",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.4591735899448395
+    },
+    {
+      "tissue": "FlankScale-1_1_3",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.44670847058296204
+    },
+    {
+      "tissue": "FlankScale-1_2_0",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.48479002714157104
+    },
+    {
+      "tissue": "FlankScale-1_2_1",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.4427567422389984
+    },
+    {
+      "tissue": "FlankScale-1_2_2",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.4055750370025635
+    },
+    {
+      "tissue": "FlankScale-1_2_3",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.39668339490890503
+    },
+    {
+      "tissue": "FlankScale-1_3_0",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.4089989960193634
+    },
+    {
+      "tissue": "FlankScale-1_3_1",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.3887825012207031
+    },
+    {
+      "tissue": "FlankScale-1_3_2",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.3421642482280731
+    },
+    {
+      "tissue": "FlankScale-1_3_3",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.33367231488227844
+    },
+    {
+      "tissue": "FlankScale-1_4_0",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.33795711398124695
+    },
+    {
+      "tissue": "FlankScale-1_4_1",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.32402047514915466
+    },
+    {
+      "tissue": "FlankScale-1_4_2",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.2805328667163849
+    },
+    {
+      "tissue": "FlankScale-1_4_3",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.26959431171417236
+    },
+    {
+      "tissue": "FlankScale-1_5_0",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.26451507210731506
+    },
+    {
+      "tissue": "FlankScale-1_5_1",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.24906525015830994
+    },
+    {
+      "tissue": "FlankScale-1_5_2",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.226068913936615
+    },
+    {
+      "tissue": "FlankScale-1_5_3",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.20879057049751282
+    },
+    {
+      "tissue": "FlankScale1_0_0",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.5280331373214722
+    },
+    {
+      "tissue": "FlankScale1_0_1",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.5084648132324219
+    },
+    {
+      "tissue": "FlankScale1_0_2",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.46931764483451843
+    },
+    {
+      "tissue": "FlankScale1_0_3",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.46244531869888306
+    },
+    {
+      "tissue": "FlankScale1_1_0",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.5430112481117249
+    },
+    {
+      "tissue": "FlankScale1_1_1",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.4876942038536072
+    },
+    {
+      "tissue": "FlankScale1_1_2",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.4611106216907501
+    },
+    {
+      "tissue": "FlankScale1_1_3",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.4456269145011902
+    },
+    {
+      "tissue": "FlankScale1_2_0",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.49393096566200256
+    },
+    {
+      "tissue": "FlankScale1_2_1",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.43905457854270935
+    },
+    {
+      "tissue": "FlankScale1_2_2",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.4191153943538666
+    },
+    {
+      "tissue": "FlankScale1_2_3",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.3887366056442261
+    },
+    {
+      "tissue": "FlankScale1_3_0",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.4164624512195587
+    },
+    {
+      "tissue": "FlankScale1_3_1",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.3796430230140686
+    },
+    {
+      "tissue": "FlankScale1_3_2",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.36300474405288696
+    },
+    {
+      "tissue": "FlankScale1_3_3",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.3244783580303192
+    },
+    {
+      "tissue": "FlankScale1_4_0",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.34134650230407715
+    },
+    {
+      "tissue": "FlankScale1_4_1",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.31659385561943054
+    },
+    {
+      "tissue": "FlankScale1_4_2",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.2943302094936371
+    },
+    {
+      "tissue": "FlankScale1_4_3",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.2641957104206085
+    },
+    {
+      "tissue": "FlankScale1_5_0",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.26505228877067566
+    },
+    {
+      "tissue": "FlankScale1_5_1",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.25128552317619324
+    },
+    {
+      "tissue": "FlankScale1_5_2",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.22445234656333923
+    },
+    {
+      "tissue": "FlankScale1_5_3",
+      "end": "scale_root",
+      "support": "ContinuousScaledBody",
+      "all_endpoint_vertices_inside_support": true,
+      "endpoint_vertices": 4,
+      "center_surface_distance_metres": 0.20965340733528137
+    }
+  ],
+  "scope": "rest geometry; native animation and live contacts remain unverified"
+}

@@ -1,0 +1,1720 @@
+{
+  "groups": 84,
+  "endpoints": 148,
+  "records": [
+    {
+      "id": 1,
+      "tissue": "ChamberRib-1_0",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.019382061436772346,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 2,
+      "tissue": "ChamberRib-1_0",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.02756335586309433,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 3,
+      "tissue": "ChamberRib-1_1",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.016649452969431877,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 4,
+      "tissue": "ChamberRib-1_1",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.026139091700315475,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 5,
+      "tissue": "ChamberRib-1_10",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.005741563159972429,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 6,
+      "tissue": "ChamberRib-1_10",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.027563152834773064,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 7,
+      "tissue": "ChamberRib-1_2",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.01205452997237444,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 8,
+      "tissue": "ChamberRib-1_2",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.024266740307211876,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 9,
+      "tissue": "ChamberRib-1_3",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.005930282641202211,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 10,
+      "tissue": "ChamberRib-1_3",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.022949106991291046,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 11,
+      "tissue": "ChamberRib-1_4",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.001279801712371409,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 12,
+      "tissue": "ChamberRib-1_4",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.022736646234989166,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 13,
+      "tissue": "ChamberRib-1_5",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.009053024463355541,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 14,
+      "tissue": "ChamberRib-1_5",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.022800130769610405,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 15,
+      "tissue": "ChamberRib-1_6",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.016826238483190536,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 16,
+      "tissue": "ChamberRib-1_6",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.022736646234989166,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 17,
+      "tissue": "ChamberRib-1_7",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.00991018395870924,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 18,
+      "tissue": "ChamberRib-1_7",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.022949105128645897,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 19,
+      "tissue": "ChamberRib-1_8",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.0027842666022479534,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 20,
+      "tissue": "ChamberRib-1_8",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.024266716092824936,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 21,
+      "tissue": "ChamberRib-1_9",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.0025621100794523954,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 22,
+      "tissue": "ChamberRib-1_9",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.0261390283703804,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 23,
+      "tissue": "ChamberRib1_0",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.019478939473628998,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 24,
+      "tissue": "ChamberRib1_0",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.02756335586309433,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 25,
+      "tissue": "ChamberRib1_1",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.01673952490091324,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 26,
+      "tissue": "ChamberRib1_1",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.02613907866179943,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 27,
+      "tissue": "ChamberRib1_10",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.005718639586120844,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 28,
+      "tissue": "ChamberRib1_10",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.027563152834773064,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 29,
+      "tissue": "ChamberRib1_2",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.01213308796286583,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 30,
+      "tissue": "ChamberRib1_2",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.024266745895147324,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 31,
+      "tissue": "ChamberRib1_3",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.005993434693664312,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 32,
+      "tissue": "ChamberRib1_3",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.022949106991291046,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 33,
+      "tissue": "ChamberRib1_4",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.0012346873991191387,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 34,
+      "tissue": "ChamberRib1_4",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.022736646234989166,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 35,
+      "tissue": "ChamberRib1_5",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.009027363732457161,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 36,
+      "tissue": "ChamberRib1_5",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.022800130769610405,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 37,
+      "tissue": "ChamberRib1_6",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.016820039600133896,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 38,
+      "tissue": "ChamberRib1_6",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.022736646234989166,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 39,
+      "tissue": "ChamberRib1_7",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.00991898961365223,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 40,
+      "tissue": "ChamberRib1_7",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.022949090227484703,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 41,
+      "tissue": "ChamberRib1_8",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.002799498848617077,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 42,
+      "tissue": "ChamberRib1_8",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.024266716092824936,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 43,
+      "tissue": "ChamberRib1_9",
+      "end": "start",
+      "support": "AmberChamberHeart",
+      "support_component": 1,
+      "before_surface_distance": 0.0025421096943318844,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 44,
+      "tissue": "ChamberRib1_9",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.0261390283703804,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      },
+      "anatomy": "pale lamella radiating from central fleshy join into cavity wall"
+    },
+    {
+      "id": 45,
+      "tissue": "ChestVeil-10",
+      "end": "start",
+      "support": "CathedralMantle0",
+      "support_component": 2,
+      "before_surface_distance": 0.021613674238324165,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 46,
+      "tissue": "ChestVeil-10",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.038814619183540344,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 47,
+      "tissue": "ChestVeil-11",
+      "end": "start",
+      "support": "CathedralMantle0",
+      "support_component": 2,
+      "before_surface_distance": 0.037245120853185654,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 48,
+      "tissue": "ChestVeil-11",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.07253188639879227,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 49,
+      "tissue": "ChestVeil-12",
+      "end": "start",
+      "support": "CathedralMantle0",
+      "support_component": 2,
+      "before_surface_distance": 0.04452637583017349,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 50,
+      "tissue": "ChestVeil-12",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.17912396788597107,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 51,
+      "tissue": "ChestVeil10",
+      "end": "start",
+      "support": "CathedralMantle0",
+      "support_component": 2,
+      "before_surface_distance": 0.11240360140800476,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 52,
+      "tissue": "ChestVeil10",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.03756028413772583,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 53,
+      "tissue": "ChestVeil11",
+      "end": "start",
+      "support": "CathedralMantle1",
+      "support_component": 3,
+      "before_surface_distance": 0.04392173886299133,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 54,
+      "tissue": "ChestVeil11",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.07397810369729996,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 55,
+      "tissue": "ChestVeil12",
+      "end": "start",
+      "support": "CathedralMantle1",
+      "support_component": 3,
+      "before_surface_distance": 0.02049240469932556,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 56,
+      "tissue": "ChestVeil12",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.18068933486938477,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 57,
+      "tissue": "LimbTissueThighL0",
+      "end": "start",
+      "support": "LimbBracketThighL0",
+      "support_component": 68,
+      "before_surface_distance": 0.020219162106513977,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Thigh_L": 1.0
+      }
+    },
+    {
+      "id": 58,
+      "tissue": "LimbTissueThighL0",
+      "end": "end",
+      "support": "LimbBracketThighL2",
+      "support_component": 70,
+      "before_surface_distance": 0.008822022937238216,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Shin_L": 1.0
+      }
+    },
+    {
+      "id": 59,
+      "tissue": "LimbTissueThighL1",
+      "end": "start",
+      "support": "LimbBracketThighL2",
+      "support_component": 70,
+      "before_surface_distance": 0.0061156535521149635,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Shin_L": 1.0
+      }
+    },
+    {
+      "id": 60,
+      "tissue": "LimbTissueThighL1",
+      "end": "end",
+      "support": "RootedThighL",
+      "support_component": 126,
+      "before_surface_distance": 0.007515270728617907,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Shin_L": 1.0
+      }
+    },
+    {
+      "id": 61,
+      "tissue": "LimbTissueThighR0",
+      "end": "start",
+      "support": "LimbBracketThighR0",
+      "support_component": 73,
+      "before_surface_distance": 0.023494217544794083,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Thigh_R": 1.0
+      }
+    },
+    {
+      "id": 62,
+      "tissue": "LimbTissueThighR0",
+      "end": "end",
+      "support": "LimbBracketThighR2",
+      "support_component": 75,
+      "before_surface_distance": 0.014087406918406487,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Shin_R": 1.0
+      }
+    },
+    {
+      "id": 63,
+      "tissue": "LimbTissueThighR1",
+      "end": "start",
+      "support": "LimbBracketThighR2",
+      "support_component": 75,
+      "before_surface_distance": 0.009468184784054756,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Shin_R": 1.0
+      }
+    },
+    {
+      "id": 64,
+      "tissue": "LimbTissueThighR1",
+      "end": "end",
+      "support": "RootedThighR",
+      "support_component": 127,
+      "before_surface_distance": 0.014110966585576534,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Shin_R": 1.0
+      }
+    },
+    {
+      "id": 65,
+      "tissue": "LimbTissueUpperArmL0",
+      "end": "start",
+      "support": "LimbBracketUpperArmL0",
+      "support_component": 78,
+      "before_surface_distance": 0.05890769511461258,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "UpperArm_L": 1.0
+      }
+    },
+    {
+      "id": 66,
+      "tissue": "LimbTissueUpperArmL0",
+      "end": "end",
+      "support": "LimbBracketUpperArmL2",
+      "support_component": 80,
+      "before_surface_distance": 0.02708953432738781,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "ForeArm_L": 1.0
+      }
+    },
+    {
+      "id": 67,
+      "tissue": "LimbTissueUpperArmL1",
+      "end": "start",
+      "support": "LimbBracketUpperArmL2",
+      "support_component": 80,
+      "before_surface_distance": 0.015580258332192898,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "ForeArm_L": 1.0
+      }
+    },
+    {
+      "id": 68,
+      "tissue": "LimbTissueUpperArmL1",
+      "end": "end",
+      "support": "LimbBracketUpperArmL4",
+      "support_component": 82,
+      "before_surface_distance": 0.049267519265413284,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "ForeArm_L": 1.0
+      }
+    },
+    {
+      "id": 69,
+      "tissue": "LimbTissueUpperArmR0",
+      "end": "start",
+      "support": "LimbBracketUpperArmR0",
+      "support_component": 83,
+      "before_surface_distance": 0.05591338500380516,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "UpperArm_R": 1.0
+      }
+    },
+    {
+      "id": 70,
+      "tissue": "LimbTissueUpperArmR0",
+      "end": "end",
+      "support": "LimbBracketUpperArmR2",
+      "support_component": 85,
+      "before_surface_distance": 0.005194786470383406,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "ForeArm_R": 1.0
+      }
+    },
+    {
+      "id": 71,
+      "tissue": "LimbTissueUpperArmR1",
+      "end": "start",
+      "support": "LimbBracketUpperArmR2",
+      "support_component": 85,
+      "before_surface_distance": 0.022919204086065292,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "ForeArm_R": 1.0
+      }
+    },
+    {
+      "id": 72,
+      "tissue": "LimbTissueUpperArmR1",
+      "end": "end",
+      "support": "LimbBracketUpperArmR4",
+      "support_component": 87,
+      "before_surface_distance": 0.04677032306790352,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "ForeArm_R": 1.0
+      }
+    },
+    {
+      "id": 73,
+      "tissue": "MantleCurtain0_0",
+      "end": "start",
+      "support": "CathedralMantle0",
+      "support_component": 2,
+      "before_surface_distance": 0.019318655133247375,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 74,
+      "tissue": "MantleCurtain0_0",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.3088732063770294,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 75,
+      "tissue": "MantleCurtain0_1",
+      "end": "start",
+      "support": "CathedralMantle0",
+      "support_component": 2,
+      "before_surface_distance": 0.02230837754905224,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 76,
+      "tissue": "MantleCurtain0_1",
+      "end": "end",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "before_surface_distance": 0.015431162901222706,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 77,
+      "tissue": "MantleCurtain0_2",
+      "end": "start",
+      "support": "CathedralMantle0",
+      "support_component": 2,
+      "before_surface_distance": 0.013975081034004688,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 78,
+      "tissue": "MantleCurtain0_2",
+      "end": "end",
+      "support": "ChamberRib-1_9",
+      "support_component": 20,
+      "before_surface_distance": 0.06851007044315338,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 79,
+      "tissue": "MantleCurtain1_0",
+      "end": "start",
+      "support": "CathedralMantle1",
+      "support_component": 3,
+      "before_surface_distance": 0.024421004578471184,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 80,
+      "tissue": "MantleCurtain1_0",
+      "end": "end",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "before_surface_distance": 0.06715813279151917,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 81,
+      "tissue": "MantleCurtain1_1",
+      "end": "start",
+      "support": "CathedralMantle1",
+      "support_component": 3,
+      "before_surface_distance": 0.02221086621284485,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 82,
+      "tissue": "MantleCurtain1_1",
+      "end": "end",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "before_surface_distance": 0.131547212600708,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 83,
+      "tissue": "MantleCurtain1_2",
+      "end": "start",
+      "support": "CathedralMantle1",
+      "support_component": 3,
+      "before_surface_distance": 0.002395439427345991,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 84,
+      "tissue": "MantleCurtain1_2",
+      "end": "end",
+      "support": "LimbBracketUpperArmR0",
+      "support_component": 83,
+      "before_surface_distance": 0.059005748480558395,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "UpperArm_R": 1.0
+      }
+    },
+    {
+      "id": 85,
+      "tissue": "MantleCurtain2_0",
+      "end": "start",
+      "support": "CathedralMantle2",
+      "support_component": 4,
+      "before_surface_distance": 0.026416147127747536,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 86,
+      "tissue": "MantleCurtain2_0",
+      "end": "end",
+      "support": "CathedralMantle0",
+      "support_component": 2,
+      "before_surface_distance": 0.1338360607624054,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 87,
+      "tissue": "MantleCurtain2_1",
+      "end": "start",
+      "support": "CathedralMantle2",
+      "support_component": 4,
+      "before_surface_distance": 0.027820998802781105,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 88,
+      "tissue": "MantleCurtain2_1",
+      "end": "end",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "before_surface_distance": 0.018647607415914536,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 89,
+      "tissue": "MantleCurtain2_2",
+      "end": "start",
+      "support": "CathedralMantle2",
+      "support_component": 4,
+      "before_surface_distance": 0.0011441028909757733,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 90,
+      "tissue": "MantleCurtain2_2",
+      "end": "end",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "before_surface_distance": 0.0605987124145031,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 91,
+      "tissue": "MantleCurtain3_0",
+      "end": "start",
+      "support": "CathedralMantle3",
+      "support_component": 5,
+      "before_surface_distance": 0.02115483209490776,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 92,
+      "tissue": "MantleCurtain3_0",
+      "end": "end",
+      "support": "CathedralMantle0",
+      "support_component": 2,
+      "before_surface_distance": 0.04667358100414276,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 93,
+      "tissue": "MantleCurtain3_1",
+      "end": "start",
+      "support": "CathedralMantle3",
+      "support_component": 5,
+      "before_surface_distance": 0.03227201849222183,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 94,
+      "tissue": "MantleCurtain3_1",
+      "end": "end",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "before_surface_distance": 0.08624199777841568,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 95,
+      "tissue": "MantleCurtain3_2",
+      "end": "start",
+      "support": "CathedralMantle3",
+      "support_component": 5,
+      "before_surface_distance": 0.0004780181043315679,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 96,
+      "tissue": "MantleCurtain3_2",
+      "end": "end",
+      "support": "CathedralMantle1",
+      "support_component": 3,
+      "before_surface_distance": 0.03858313336968422,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 97,
+      "tissue": "MantleCurtain4_0",
+      "end": "start",
+      "support": "CathedralMantle4",
+      "support_component": 6,
+      "before_surface_distance": 0.0054840631783008575,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 98,
+      "tissue": "MantleCurtain4_0",
+      "end": "end",
+      "support": "CathedralMantle0",
+      "support_component": 2,
+      "before_surface_distance": 0.06404043734073639,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 99,
+      "tissue": "MantleCurtain4_1",
+      "end": "start",
+      "support": "CathedralMantle4",
+      "support_component": 6,
+      "before_surface_distance": 0.017635148018598557,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 100,
+      "tissue": "MantleCurtain4_1",
+      "end": "end",
+      "support": "CathedralMantle0",
+      "support_component": 2,
+      "before_surface_distance": 0.04425796493887901,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 101,
+      "tissue": "MantleCurtain4_2",
+      "end": "start",
+      "support": "CathedralMantle4",
+      "support_component": 6,
+      "before_surface_distance": 0.01544781681150198,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 102,
+      "tissue": "MantleCurtain4_2",
+      "end": "end",
+      "support": "CathedralMantle1",
+      "support_component": 3,
+      "before_surface_distance": 0.03245016932487488,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 103,
+      "tissue": "MantleCurtain5_0",
+      "end": "start",
+      "support": "CathedralMantle5",
+      "support_component": 7,
+      "before_surface_distance": 0.0004350169620011002,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 104,
+      "tissue": "MantleCurtain5_0",
+      "end": "end",
+      "support": "CathedralMantle2",
+      "support_component": 4,
+      "before_surface_distance": 0.016166159883141518,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 105,
+      "tissue": "MantleCurtain5_1",
+      "end": "start",
+      "support": "CathedralMantle5",
+      "support_component": 7,
+      "before_surface_distance": 0.015480921603739262,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 106,
+      "tissue": "MantleCurtain5_1",
+      "end": "end",
+      "support": "CathedralMantle1",
+      "support_component": 3,
+      "before_surface_distance": 0.033854302018880844,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 107,
+      "tissue": "MantleCurtain5_2",
+      "end": "start",
+      "support": "CathedralMantle5",
+      "support_component": 7,
+      "before_surface_distance": 0.021834133192896843,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 108,
+      "tissue": "MantleCurtain5_2",
+      "end": "end",
+      "support": "CathedralMantle1",
+      "support_component": 3,
+      "before_surface_distance": 0.07442546635866165,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 1.0
+      }
+    },
+    {
+      "id": 109,
+      "tissue": "VeilCrosslink-10",
+      "end": "start",
+      "support": "ChestVeil-10",
+      "support_component": 32,
+      "before_surface_distance": 0.01292199082672596,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 0.8381146374839061,
+        "Chest": 0.16188536251609387
+      }
+    },
+    {
+      "id": 110,
+      "tissue": "VeilCrosslink-10",
+      "end": "end",
+      "support": "ChamberRib-1_10",
+      "support_component": 12,
+      "before_surface_distance": 0.11307337135076523,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 111,
+      "tissue": "VeilCrosslink-11",
+      "end": "start",
+      "support": "ChestVeil-11",
+      "support_component": 33,
+      "before_surface_distance": 0.023671112954616547,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 0.8189242302278362,
+        "Chest": 0.1810757697721638
+      }
+    },
+    {
+      "id": 112,
+      "tissue": "VeilCrosslink-11",
+      "end": "end",
+      "support": "ChamberRib-1_10",
+      "support_component": 12,
+      "before_surface_distance": 0.11307337135076523,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 113,
+      "tissue": "VeilCrosslink-12",
+      "end": "start",
+      "support": "ChestVeil-12",
+      "support_component": 34,
+      "before_surface_distance": 0.014624998904764652,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 0.9216321884629831,
+        "Chest": 0.0783678115370169
+      }
+    },
+    {
+      "id": 114,
+      "tissue": "VeilCrosslink-12",
+      "end": "end",
+      "support": "ChamberRib-1_10",
+      "support_component": 12,
+      "before_surface_distance": 0.11307337135076523,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 115,
+      "tissue": "VeilCrosslink10",
+      "end": "start",
+      "support": "ChestVeil10",
+      "support_component": 35,
+      "before_surface_distance": 0.039647649973630905,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 0.7596051854401433,
+        "Chest": 0.24039481455985665
+      }
+    },
+    {
+      "id": 116,
+      "tissue": "VeilCrosslink10",
+      "end": "end",
+      "support": "ChamberRib-1_10",
+      "support_component": 12,
+      "before_surface_distance": 0.11307337135076523,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 117,
+      "tissue": "VeilCrosslink11",
+      "end": "start",
+      "support": "ChestVeil11",
+      "support_component": 36,
+      "before_surface_distance": 0.03515193983912468,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 0.7942092028504856,
+        "Chest": 0.20579079714951443
+      }
+    },
+    {
+      "id": 118,
+      "tissue": "VeilCrosslink11",
+      "end": "end",
+      "support": "ChamberRib-1_10",
+      "support_component": 12,
+      "before_surface_distance": 0.11307337135076523,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 119,
+      "tissue": "VeilCrosslink12",
+      "end": "start",
+      "support": "ChestVeil12",
+      "support_component": 37,
+      "before_surface_distance": 0.007781706750392914,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Head": 0.811771277285132,
+        "Chest": 0.18822872271486793
+      }
+    },
+    {
+      "id": 120,
+      "tissue": "VeilCrosslink12",
+      "end": "end",
+      "support": "ChamberRib-1_10",
+      "support_component": 12,
+      "before_surface_distance": 0.11307337135076523,
+      "endpoint_seating": "each rail/ring vertex embedded separately",
+      "initial_center_contact_weights": {
+        "Chest": 1.0
+      }
+    },
+    {
+      "id": 121,
+      "tissue": "RecessedChamber",
+      "end": "complete_body_flange",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "endpoint_seating": "all 48 front/back outer flange vertices embedded into torso shell with interpolated support weights"
+    },
+    {
+      "id": 122,
+      "tissue": "AmberChamberHeart",
+      "end": "medallion_recessed_base",
+      "support": "RecessedChamber",
+      "support_component": 119,
+      "endpoint_seating": "all eight recessed base vertices seated into cavity wall"
+    },
+    {
+      "id": 123,
+      "tissue": "GroundButtressL0",
+      "end": "ankle_root",
+      "support": "RootedThighL",
+      "support_component": 126,
+      "endpoint_seating": "all six existing root-base vertices embedded in the ankle with matching host weights"
+    },
+    {
+      "id": 124,
+      "tissue": "GroundButtressL1",
+      "end": "ankle_root",
+      "support": "RootedThighL",
+      "support_component": 126,
+      "endpoint_seating": "all six existing root-base vertices embedded in the ankle with matching host weights"
+    },
+    {
+      "id": 125,
+      "tissue": "GroundButtressL2",
+      "end": "ankle_root",
+      "support": "RootedThighL",
+      "support_component": 126,
+      "endpoint_seating": "all six existing root-base vertices embedded in the ankle with matching host weights"
+    },
+    {
+      "id": 126,
+      "tissue": "GroundButtressL3",
+      "end": "ankle_root",
+      "support": "RootedThighL",
+      "support_component": 126,
+      "endpoint_seating": "all six existing root-base vertices embedded in the ankle with matching host weights"
+    },
+    {
+      "id": 127,
+      "tissue": "GroundButtressL4",
+      "end": "ankle_root",
+      "support": "RootedThighL",
+      "support_component": 126,
+      "endpoint_seating": "all six existing root-base vertices embedded in the ankle with matching host weights"
+    },
+    {
+      "id": 128,
+      "tissue": "GroundButtressR0",
+      "end": "ankle_root",
+      "support": "RootedThighR",
+      "support_component": 127,
+      "endpoint_seating": "all six existing root-base vertices embedded in the ankle with matching host weights"
+    },
+    {
+      "id": 129,
+      "tissue": "GroundButtressR1",
+      "end": "ankle_root",
+      "support": "RootedThighR",
+      "support_component": 127,
+      "endpoint_seating": "all six existing root-base vertices embedded in the ankle with matching host weights"
+    },
+    {
+      "id": 130,
+      "tissue": "GroundButtressR2",
+      "end": "ankle_root",
+      "support": "RootedThighR",
+      "support_component": 127,
+      "endpoint_seating": "all six existing root-base vertices embedded in the ankle with matching host weights"
+    },
+    {
+      "id": 131,
+      "tissue": "GroundButtressR3",
+      "end": "ankle_root",
+      "support": "RootedThighR",
+      "support_component": 127,
+      "endpoint_seating": "all six existing root-base vertices embedded in the ankle with matching host weights"
+    },
+    {
+      "id": 132,
+      "tissue": "GroundButtressR4",
+      "end": "ankle_root",
+      "support": "RootedThighR",
+      "support_component": 127,
+      "endpoint_seating": "all six existing root-base vertices embedded in the ankle with matching host weights"
+    },
+    {
+      "id": 133,
+      "tissue": "RootedThighL",
+      "end": "proximal_hip_ring",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "endpoint_seating": "all existing ring vertices embedded with interpolated support weights"
+    },
+    {
+      "id": 134,
+      "tissue": "HipForkL0",
+      "end": "pelvis_root",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "endpoint_seating": "all existing ring vertices embedded with interpolated support weights"
+    },
+    {
+      "id": 135,
+      "tissue": "HipForkL0",
+      "end": "upper_thigh_root",
+      "support": "RootedThighL",
+      "support_component": 126,
+      "endpoint_seating": "all existing ring vertices embedded with interpolated support weights"
+    },
+    {
+      "id": 136,
+      "tissue": "HipForkL1",
+      "end": "pelvis_root",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "endpoint_seating": "all existing ring vertices embedded with interpolated support weights"
+    },
+    {
+      "id": 137,
+      "tissue": "HipForkL1",
+      "end": "upper_thigh_root",
+      "support": "RootedThighL",
+      "support_component": 126,
+      "endpoint_seating": "all existing ring vertices embedded with interpolated support weights"
+    },
+    {
+      "id": 138,
+      "tissue": "RootedThighR",
+      "end": "proximal_hip_ring",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "endpoint_seating": "all existing ring vertices embedded with interpolated support weights"
+    },
+    {
+      "id": 139,
+      "tissue": "HipForkR0",
+      "end": "pelvis_root",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "endpoint_seating": "all existing ring vertices embedded with interpolated support weights"
+    },
+    {
+      "id": 140,
+      "tissue": "HipForkR0",
+      "end": "upper_thigh_root",
+      "support": "RootedThighR",
+      "support_component": 127,
+      "endpoint_seating": "all existing ring vertices embedded with interpolated support weights"
+    },
+    {
+      "id": 141,
+      "tissue": "HipForkR1",
+      "end": "pelvis_root",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "endpoint_seating": "all existing ring vertices embedded with interpolated support weights"
+    },
+    {
+      "id": 142,
+      "tissue": "HipForkR1",
+      "end": "upper_thigh_root",
+      "support": "RootedThighR",
+      "support_component": 127,
+      "endpoint_seating": "all existing ring vertices embedded with interpolated support weights"
+    },
+    {
+      "id": 143,
+      "tissue": "LimbBracketThighL0",
+      "end": "torso_shelf_root",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "endpoint_seating": "both existing central closing rings embedded into torso; entire shelf follows Chest"
+    },
+    {
+      "id": 144,
+      "tissue": "LimbBracketThighL1",
+      "end": "torso_shelf_root",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "endpoint_seating": "both existing central closing rings embedded into torso; entire shelf follows Chest"
+    },
+    {
+      "id": 145,
+      "tissue": "LimbBracketThighR0",
+      "end": "torso_shelf_root",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "endpoint_seating": "both existing central closing rings embedded into torso; entire shelf follows Chest"
+    },
+    {
+      "id": 146,
+      "tissue": "LimbBracketThighR1",
+      "end": "torso_shelf_root",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "endpoint_seating": "both existing central closing rings embedded into torso; entire shelf follows Chest"
+    },
+    {
+      "id": 147,
+      "tissue": "RootedUpperArmL",
+      "end": "compressed_shoulder_root",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "endpoint_seating": "all ten original arm-root vertices embedded in torso with Chest weights; next ring blends toward UpperArm"
+    },
+    {
+      "id": 148,
+      "tissue": "RootedUpperArmR",
+      "end": "compressed_shoulder_root",
+      "support": "HollowCathedralTrunk",
+      "support_component": 59,
+      "endpoint_seating": "all ten original arm-root vertices embedded in torso with Chest weights; next ring blends toward UpperArm"
+    }
+  ]
+}

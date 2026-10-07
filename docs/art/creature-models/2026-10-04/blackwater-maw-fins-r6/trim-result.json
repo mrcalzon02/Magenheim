@@ -1,0 +1,9 @@
+{
+  "before_triangles": 6508,
+  "after_triangles": 5897,
+  "removed_triangles": 611,
+  "removed_faces": 611,
+  "skipped_faces_to_preserve_contact_vertices": 89,
+  "textures": "unchanged atlas pixels and UVs",
+  "method": "whole buried faces removed; partial intersections retained; open boundaries remain inside closed support surfaces"
+}

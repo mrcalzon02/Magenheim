@@ -77,22 +77,16 @@ internal static class UnderworldWorldCenterRegistrar
         return root;
     }
 
-    // Resolve against the actual admitted gate footprint, beyond its frontmost geometry.
-    // The console and real entry gate share this destination; never use the central monolith.
+    // Arrive inside the standing-stone circle, clear of the central monolith.
+    // The return arch remains the route home, not the entry destination.
     internal static Vector3 ResolveEngineCenterPosition()
     {
         if (!_returnGate) throw new InvalidOperationException("Underworld return gate is not ready.");
-        var point = _returnGate.TransformPoint(new Vector3(0f, 0f, _gateApproachDistance));
-        var logical = point;
-        logical.y = 0f;
-        return ResolveTerrainPosition(logical, 0.08f);
+        return ResolveTerrainPosition(new Vector3(0f, 0f, 6f), 0.08f);
     }
 
-    // Entry resolves on the front side of the gate, so face the player back toward the arch rather
-    // than pointing them farther into the approach corridor.
-    internal static Quaternion ArrivalRotation => _returnGate
-        ? Quaternion.LookRotation(-_returnGate.forward, Vector3.up)
-        : Quaternion.identity;
+    // Face the central stones from the arrival position within their circle.
+    internal static Quaternion ArrivalRotation => Quaternion.LookRotation(Vector3.back, Vector3.up);
 
     private static Vector3 ResolveGroundedCenterPosition(Vector3 logical) =>
         ResolveTerrainPosition(logical, 1.25f);

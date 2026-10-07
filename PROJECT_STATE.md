@@ -1,4 +1,16 @@
-# Current source candidate - 0.0.158 (2026-09-30)
+# Current source candidate - 0.0.167 (2026-10-02)
+
+True Blacksmithing development has begun with a typed manufacturing baseline,
+344 serialized vanilla equipment recipes and native per-quality material ledgers,
+sixteen workshop jobs, thirteen component families and nine material-dependent
+route families. Shipped definitions and read-only registered recipe capture are
+implemented. Manufacturing conversion remains inactive/default-disabled until
+the full production graph, assets and authority pass preflight. Gate boundaries
+and remaining work are in `true-blacksmithing/DEVELOPMENT_STATE.md`.
+The 0.0.165/166 repair candidates remain included; live acceptance is still distinct
+from offline checks (see `docs/validation/2026-10-01-twelve-item-live-repair.md`).
+
+# Historical source candidate - 0.0.158 (2026-09-30)
 
 Authoritative main was reconciled against GitHub at 2c16f25f74364d2596ce82e62674c4ebd40d2d89.
 Source/release metadata was 0.0.157, installed assembly 0.0.156, and schema remains 5. Earlier

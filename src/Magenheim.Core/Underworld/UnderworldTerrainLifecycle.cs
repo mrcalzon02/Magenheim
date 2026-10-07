@@ -37,7 +37,7 @@ public static class UnderworldTerrainLifecycle
 {
     public const string BiomeLayoutAlgorithmId = "biome-layout-v2-hex50-voronoi-plasma-rivers";
     public const string EdgeOceanAlgorithmId = "edge-ocean-v1-plasma-shore";
-    public const string RareCellElevationAlgorithmId = "rare-cell-massif-v1-biome-owned";
+    public const string RareCellElevationAlgorithmId = "rare-cell-massif-v2-one-fifth-amplitude";
     public const string GateFoundationAlgorithmId = "deep-gate-foundation-v1-flat-footprint-blend";
     public const double ArrivalProtectionRadiusMeters = 80d;
     public const double GateFoundationCenterXMeters = 36d;
@@ -87,8 +87,8 @@ public static class UnderworldTerrainLifecycle
     public const double RareCellMassifMinRadiusFraction = 0.26d;
     public const double RareCellMassifMaxRadiusFraction = 0.82d;
     public const double RareCellMassifWallBlendMeters = 300d;
-    public const double RareCellMassifMinLiftMeters = 1500d;
-    public const double RareCellMassifMaxLiftMeters = 3300d;
+    public const double RareCellMassifMinLiftMeters = 300d;
+    public const double RareCellMassifMaxLiftMeters = 660d;
 
     public static UnderworldTerrainResult Evaluate(
         UnderworldInstanceTerrainDomain domain,

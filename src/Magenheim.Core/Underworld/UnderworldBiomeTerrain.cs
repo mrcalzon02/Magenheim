@@ -5,7 +5,8 @@ namespace Magenheim.Core.Underworld;
 /// <summary>Metre-scale geography per biome. Amplitudes bound the noise naturally; heights are never clipped.</summary>
 public static class UnderworldBiomeTerrain
 {
-    public const string AlgorithmId = "biome-relief-v4-progression-elevation";
+    public const string AlgorithmId = "biome-relief-v5-one-fifth-amplitude";
+    public const double ReliefScale = .2d;
     private enum Form { Rolling, Ridges, Faults, Basins }
     private sealed record Profile(double Offset, double RegionalLift, Form Form,
         double[] Wavelengths, double[] Amplitudes);
@@ -25,7 +26,7 @@ public static class UnderworldBiomeTerrain
     private static readonly Profile Decay = new(0, 575, Form.Basins,
         new[] { 1800d, 700d, 220d, 100d, 35d, 12d }, new[] { 260d, 145d, 58d, 22d, 10d, 3d });
 
-    public static double NominalRegionalLift(UnderworldTerrainBiome biome) => biome switch
+    public static double NominalRegionalLift(UnderworldTerrainBiome biome) => ReliefScale * (biome switch
     {
         UnderworldTerrainBiome.FungalForest => Forest.RegionalLift,
         UnderworldTerrainBiome.BlackwaterDeep => Blackwater.RegionalLift,
@@ -34,7 +35,7 @@ public static class UnderworldBiomeTerrain
         UnderworldTerrainBiome.FractureZones => Fracture.RegionalLift,
         UnderworldTerrainBiome.GreatDecay => Decay.RegionalLift,
         _ => throw new ArgumentOutOfRangeException(nameof(biome)),
-    };
+    });
 
     public static double HeightDelta(UnderworldTerrainBiome biome, int seed, double x, double z, double regionalWeight)
     {
@@ -66,6 +67,6 @@ public static class UnderworldBiomeTerrain
             total += value * profile.Amplitudes[octave] * (octave < 3 ? regionalWeight : 1d);
             octaveSeed = unchecked((int)UnderworldTerrainNoise.Mix((uint)octaveSeed));
         }
-        return total;
+        return total * ReliefScale;
     }
 }

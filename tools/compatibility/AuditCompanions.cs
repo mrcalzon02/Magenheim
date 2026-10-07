@@ -32,9 +32,18 @@ class AuditCompanions
                 if (canDropStores.Length != 1 ||
                     canDropStores[0].Previous == null || canDropStores[0].Previous.OpCode != OpCodes.Ldfld ||
                     ((FieldReference)canDropStores[0].Previous.Operand).Name != "CanDropDragOntoItem" ||
-                    canDropStores[0].Previous.Previous == null || canDropStores[0].Previous.Previous.OpCode != OpCodes.Ldfld ||
-                    ((FieldReference)canDropStores[0].Previous.Previous.Operand).Name != "m_containerGrid")
+                    canDropStores[0].Previous.Previous == null || canDropStores[0].Previous.Previous.OpCode != OpCodes.Call ||
+                    ((MethodReference)canDropStores[0].Previous.Previous.Operand).Name != "MagenheimReadContainerGrid")
                     throw new InvalidOperationException("Companion inventory clone does not inherit the required item-drop delegate.");
+                var readGrid = panel.Methods.Single(m => m.Name == "MagenheimReadContainerGrid");
+                if (!readGrid.Body.Instructions.Any(i => i.OpCode == OpCodes.Ldstr &&
+                    (string)i.Operand == "m_containerGrid") ||
+                    !readGrid.Body.Instructions.Any(i => i.Operand is MethodReference &&
+                    ((MethodReference)i.Operand).FullName.Contains("FieldInfo::GetValue")) ||
+                    buildUi.Body.Instructions.Any(i => i.Operand is FieldReference &&
+                    ((FieldReference)i.Operand).DeclaringType.FullName == "InventoryGui" &&
+                    ((FieldReference)i.Operand).Name == "m_containerGrid"))
+                    throw new InvalidOperationException("Companion repair still accesses the private native container field directly.");
                 var joystickCalls = assembly.MainModule.GetTypes().SelectMany(t => t.Methods)
                     .Where(m => m.HasBody).SelectMany(m => m.Body.Instructions)
                     .Where(i => i.Operand is MethodReference &&

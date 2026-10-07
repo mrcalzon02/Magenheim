@@ -1,0 +1,33 @@
+{
+  "reference": "user close-up: fleshy joint and distinct curved blade silhouettes",
+  "joints": [
+    {
+      "side": "L",
+      "joints": [
+        "ContinuousScaledBody",
+        "UpperFinJointL"
+      ],
+      "blades": [
+        "ForwardPectoralL",
+        "PleatedPectoralL"
+      ],
+      "shape": "broad curved downward blade plus narrower long rearward blade; separate lower-forward and upper-rear body attachments",
+      "fan_geometry_removed": true
+    },
+    {
+      "side": "R",
+      "joints": [
+        "ContinuousScaledBody",
+        "UpperFinJointR"
+      ],
+      "blades": [
+        "ForwardPectoralR",
+        "PleatedPectoralR"
+      ],
+      "shape": "broad curved downward blade plus narrower long rearward blade; separate lower-forward and upper-rear body attachments",
+      "fan_geometry_removed": true
+    }
+  ],
+  "preserved": "body texture, head and jaws, tailward dorsals and broad tail fan",
+  "scope": "interpretation remains subject to concept review"
+}

@@ -1,5 +1,6 @@
 using System;
 using BepInEx.Logging;
+using HarmonyLib;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using UnityEngine;
@@ -77,9 +78,23 @@ internal sealed class NowhereKingRewardRegistrar : IDisposable
         shared.m_maxStackSize = 1;
         shared.m_weight = 2f;
         shared.m_value = 0;
+        var royalty = shared.m_equipStatusEffect;
+        if (!(royalty is SE_Crowned))
+            throw new InvalidOperationException("Null Mantle requires the native Crown of Valheim royalty effect.");
+        var underworldRoyalty = UnityEngine.Object.Instantiate(royalty);
+        underworldRoyalty.name = "Magenheim_UnderworldRoyalty";
+        // Instantiate also copies the native lazy hash cache. Reset it after renaming,
+        // otherwise ObjectDB/SEMan can still treat this clone as Surface Royalty.
+        AccessTools.Field(typeof(StatusEffect), "m_nameHash").SetValue(underworldRoyalty, 0);
+        underworldRoyalty.m_name = "Underworld Royalty";
+        underworldRoyalty.m_tooltip = "Underworld creatures recognize their sovereign. Surface creatures do not.";
+        if (!ItemManager.Instance.AddStatusEffect(new CustomStatusEffect(underworldRoyalty, fixReference: false)))
+            throw new InvalidOperationException("Jotunn refused Underworld Royalty.");
+        shared.m_equipStatusEffect = underworldRoyalty;
         Darken(item.ItemPrefab, new Color(.012f, .008f, .015f, 1f), "magenheim.null-mantle");
         if (!ItemManager.Instance.AddItem(item))
             throw new InvalidOperationException($"Jotunn refused reward '{NullMantlePrefabName}'.");
+        NativeEquipmentIcons.Apply(item.ItemPrefab);
     }
 
     private static void RegisterTrophy()

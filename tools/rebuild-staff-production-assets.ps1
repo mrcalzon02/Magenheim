@@ -34,8 +34,14 @@ $ids = @(
     'staff-venom-simple'
 )
 
+& "$PSScriptRoot/blender.ps1" repair-staff-source-textures
+if ($LASTEXITCODE -ne 0) { throw 'Staff source texture recovery failed.' }
+& "$PSScriptRoot/blender.ps1" verify-source-texture-paths @ids
+if ($LASTEXITCODE -ne 0) { throw 'Staff source image verification failed.' }
 & "$PSScriptRoot/blender.ps1" export-model-assets @ids
 if ($LASTEXITCODE -ne 0) { throw 'Staff model export failed.' }
+& "$PSScriptRoot/blender.ps1" verify-source-texture-paths @ids
+if ($LASTEXITCODE -ne 0) { throw 'Export lost a staff source image dependency.' }
 
 python "$PSScriptRoot/verify-model-assets.py" @ids
 if ($LASTEXITCODE -ne 0) { throw 'Staff model catalog verification failed.' }

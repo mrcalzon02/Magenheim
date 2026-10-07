@@ -1,0 +1,13 @@
+from pathlib import Path
+import json
+ROOT=Path(__file__).resolve().parents[1]
+OUT=ROOT/'docs/art/creature-models/2026-10-04/first-bloom-shoulders-r19'
+assert json.loads((OUT/'shoulder-rig-verification.json').read_text())['result'].startswith('PASS')
+source=(ROOT/'tools/build-first-bloom-feet-review.py').read_text()
+for old,new in [('first-bloom-feet-r15','first-bloom-shoulders-r19'),('first-bloom-trim-r14','first-bloom-sides-r18'),('8830','8884'),('8810','8880'),('8,830','8,884'),('1.423','1.432'),('132','148'),('revision 15','revision 19'),('Revision 15','Revision 19'),('revision 14','revision 18'),('Revision 14','Revision 18'),('root feet','compressed shoulder joints'),('root-feet review','shoulder review'),('foot-refinement.json','shoulder-refinement.json')]:source=source.replace(old,new)
+source=source.replace('The existing foot loops now form broader root fans with unequal crooked toes, lower contact pads, and flattened, staggered fungal brackets around the ankles. All ten root bases are seated into the leg surface with matching skin weights. The approved chest shaping is preserved.', 'The tops of the arms are compressed inward and slightly back to enter the torso under the mantle. Existing root sections are narrowed, both closing rings are seated into the torso, and the next ring blends toward the original upper-arm bone. The upper two fungal brackets follow the reshaped arms, and their white tissue contacts have been reseated. The original skeleton is unchanged.')
+source=source.replace('both closing rings are seated into the torso','both ten-vertex arm roots are seated into the torso')
+source=source.replace('No new triangles were added during foot shaping. Reauditing buried geometry removes 422 triangles from the untrimmed model; retaining the new ankle contacts leaves 20 more triangles than revision 18.', 'No new triangles were added during shaping. Reaudited buried faces leave 8,884 triangles, four more than revision 18 and below the 9,309 soft cap. The mantle, chest, side hip shelves and central bark strip, lower arms, hands, legs and feet retain their preceding shapes.')
+source=source.replace("[('feet-front','Root spread from the front'),('feet-angle','Root fans and ankle transition'),('feet-side','Foot depth and bracket profile')]", "[('shoulders-front','Compressed arm tops and torso contact'),('shoulders-angle','Shoulders beneath the mantle'),('shoulders-rear','Shoulder roots from behind')]")
+source=source.replace('<h2>Concept reference</h2>','<p><a href="shoulder-rig-verification.json">Unchanged skeleton check</a> · <a href="shoulder-refinement.json">Shoulder shaping measurements</a></p><h2>Concept reference</h2>')
+exec(compile(source,str(__file__),'exec'))

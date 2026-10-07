@@ -58,7 +58,8 @@ def render(entry,condition):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc=bpy.context.scene
     sc.render.engine="BLENDER_EEVEE"
-    sc.render.resolution_x=sc.render.resolution_y=320
+    # Stations need enough review pixels to inspect joinery and recessed tooling.
+    sc.render.resolution_x=sc.render.resolution_y=768 if entry['id'].startswith('underworld-station-') else 320
     sc.render.resolution_percentage=100
     sc.render.image_settings.file_format="PNG"
     sc.render.image_settings.color_mode="RGBA"

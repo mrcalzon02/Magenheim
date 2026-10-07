@@ -1,0 +1,18 @@
+{
+  "id": "underworld-boss-blackwater-maw-teeth-eyes-r13",
+  "source": "assets/models/studies/underworld-boss-blackwater-maw-teeth-eyes-r13.blend",
+  "triangles": 7109,
+  "donor_triangles": 4872,
+  "soft_cap": 7308,
+  "ratio": 1.4591543513957308,
+  "previous_triangles": 7984,
+  "reduction_percent": 10.95941883767535,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "rig": "retained deep-hunter baseline; mixed weights at trunk and limb roots",
+  "texture_bake": "owned procedural scales, cracked cheek armor, fleshy mouth folds and cyan light organs baked to one 512px atlas",
+  "status": "art candidate; live performance and deformation acceptance pending",
+  "study_length_metres": 10.050947189331055,
+  "previous_id": "underworld-boss-blackwater-maw-teeth-eyes-r13-raw"
+}

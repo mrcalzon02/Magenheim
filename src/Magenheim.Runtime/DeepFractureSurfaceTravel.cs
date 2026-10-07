@@ -28,6 +28,9 @@ internal static class DeepFractureSurfaceTravel
         portalObject.transform.SetParent(anchor, false);
         portalObject.transform.localPosition = Vector3.zero;
         portalObject.transform.localRotation = Quaternion.identity;
+        var collider = portalObject.AddComponent<BoxCollider>();
+        collider.center = new Vector3(0f, .8f, 0f);
+        collider.size = new Vector3(.9f, 1.6f, .25f);
         return portalObject.AddComponent<DeepFractureTraversalPortal>();
     }
 
@@ -72,6 +75,9 @@ internal static class DeepFractureSurfaceTravel
         portalObject.transform.SetParent(descentDistrict, false);
         portalObject.transform.localPosition = new Vector3(0f, 1f, 34f);
         portalObject.transform.localRotation = Quaternion.identity;
+        var collider = portalObject.AddComponent<BoxCollider>();
+        collider.center = new Vector3(0f, .8f, 0f);
+        collider.size = new Vector3(.9f, 1.6f, .25f);
         return portalObject.AddComponent<DeepFractureTraversalPortal>();
     }
 }

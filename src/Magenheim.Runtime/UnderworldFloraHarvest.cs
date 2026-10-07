@@ -72,7 +72,7 @@ internal static class UnderworldFloraHarvest
         return prefab;
     }
 
-    private static GameObject ApplyVisual(GameObject prefab, string model, bool moving)
+    internal static GameObject ApplyVisual(GameObject prefab, string model, bool moving)
     {
         // Harvestable canopies must leave walking space under the cap. The inventory-item
         // bounding box helper would enclose the entire tree, so use only authored collidable parts.

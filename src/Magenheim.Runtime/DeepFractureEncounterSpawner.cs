@@ -69,7 +69,6 @@ internal static class DeepFractureEncounterSpawner
 
     private static string ResolvePrefabName(CreatureChassis chassis, ElementalAlignment? alignment)
     {
-        if (!alignment.HasValue) throw new InvalidOperationException($"Deep Fracture runtime creature '{chassis}' has no elemental alignment, but registered runtime families are alignment-specific.");
         var prefix = chassis switch
         {
             CreatureChassis.AnnoyanceWisp => DeepFractureCreatureRegistrar.AnnoyanceWispPrefix,
@@ -87,6 +86,6 @@ internal static class DeepFractureEncounterSpawner
             CreatureChassis.DeepColossus => DeepFractureCreatureRegistrar.DeepColossusPrefix,
             _ => throw new InvalidOperationException($"No runtime Deep Fracture creature family is registered for chassis '{chassis}'.")
         };
-        return prefix + alignment.Value;
+        return prefix + (alignment.HasValue ? alignment.Value.ToString() : "Neutral");
     }
 }

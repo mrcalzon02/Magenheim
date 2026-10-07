@@ -1,0 +1,18 @@
+{
+  "id": "underworld-boss-blackwater-maw-spined-fins-r8",
+  "source": "assets/models/studies/underworld-boss-blackwater-maw-spined-fins-r8.blend",
+  "triangles": 7224,
+  "donor_triangles": 4872,
+  "soft_cap": 7308,
+  "ratio": 1.4827586206896552,
+  "previous_triangles": 8032,
+  "reduction_percent": 10.059760956175301,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "rig": "retained deep-hunter baseline; mixed weights at trunk and limb roots",
+  "texture_bake": "owned procedural scales, cracked cheek armor, fleshy mouth folds and cyan light organs baked to one 512px atlas",
+  "status": "art candidate; live performance and deformation acceptance pending",
+  "study_length_metres": 10.520155906677246,
+  "previous_id": "underworld-boss-blackwater-maw-spined-fins-r8-raw"
+}

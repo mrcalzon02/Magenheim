@@ -691,9 +691,9 @@
     "source": "source/crystal-bed-earth.blend",
     "glb": "glb/crystal-bed-earth.glb",
     "runtime": "runtime/crystal-bed-earth.model.json",
-    "source_sha256": "da2edb4ed9a3c4dfa7e4a021ac4bf93e36f5c12e11a8325c52627c7afdc436fb",
-    "runtime_sha256": "bed8e7a07c669bcf0b620f82c55e124bb06ac0b6be81494cbb23bb749de39028",
-    "glb_sha256": "5dc95307ba29cc026fc02b85adcd46dddb559723786caed5f2510366d0a4fe8e"
+    "source_sha256": "eb55116178487d20d29058920ff44817ae2cd02c98abedcdfd4f7fd2bdbc9110",
+    "runtime_sha256": "be13e4b32723ae85babdf4fcee0a4ea453c784fbfa72ccb7c9c3afeae13031cb",
+    "glb_sha256": "d5348d83ad28dcbbe882676519ad7971eaddb8f864e35a8ec59036d1b18b318c"
   },
   {
     "id": "crystal-bed-fire",
@@ -703,9 +703,9 @@
     "source": "source/crystal-bed-fire.blend",
     "glb": "glb/crystal-bed-fire.glb",
     "runtime": "runtime/crystal-bed-fire.model.json",
-    "source_sha256": "81e47eb32c6d9d6ba88c4eb6164de20926fb6d07787a23c398f39dfad09108da",
-    "runtime_sha256": "c8cbd9ea38c44c4108cf5fae4add2b184b65833162f35c15e8c91d693688cf7e",
-    "glb_sha256": "44fba8f0a4bf575dafd71e5e5c1002b0f2f2019da2159ee462a1edbffba1326a"
+    "source_sha256": "e9876bb2d7c6aa0dd292d38d63fc85d355b793b119be34afce03691df6d0beef",
+    "runtime_sha256": "f36db2969b0428804054619ad0bd1802578b88cf7497c51aab5fb5762e85a73d",
+    "glb_sha256": "0188fccce53776e6748270c22e203816e33fc2a24d22515afa490684095bbc0a"
   },
   {
     "id": "crystal-bed-frost",
@@ -715,9 +715,9 @@
     "source": "source/crystal-bed-frost.blend",
     "glb": "glb/crystal-bed-frost.glb",
     "runtime": "runtime/crystal-bed-frost.model.json",
-    "source_sha256": "3be1e5a4a1627313b3f6c53c9ab09bf55d1fc7c41d49734a3a81f874e6bd4ea8",
-    "runtime_sha256": "84e567f082ea80cf1d9cc4c3553a528b0cedf942a340ed7c724fdd621f79f720",
-    "glb_sha256": "aa2dad30ab927b629fa7e42a9326b6c4bb3ba4e87a62e9cf69a81410d0ac2e0d"
+    "source_sha256": "c231b69eb3adf0c0b3cb502f6ae284699a18ff8bc5caaa81b026abae48c62cd7",
+    "runtime_sha256": "d701c52d69cae53adbd8c5eb0657d0a5d4613080a8a2ec7c1859b8feb5cf730c",
+    "glb_sha256": "0a105cde33862d0addc231a767dbcb51969435bde803c64113bb7c9eb7dedfb1"
   },
   {
     "id": "crystal-bed-radiance",
@@ -727,9 +727,9 @@
     "source": "source/crystal-bed-radiance.blend",
     "glb": "glb/crystal-bed-radiance.glb",
     "runtime": "runtime/crystal-bed-radiance.model.json",
-    "source_sha256": "9481bf081f483a51e8a6b3fab57b1c2ec419db6a2a0b88ad2ed0b5e41f44dd48",
-    "runtime_sha256": "fc5cc56e983a8c7355c871bb72bc65fd9f9ab9066d2cef36a0d956f2395348f3",
-    "glb_sha256": "6cab124c8dee07b0ec754bd7353b8c6c2ad68da670c6493ada5e93c22c103254"
+    "source_sha256": "2083265fce6cf8759b06feb8ae13b04445aed3c9b49803562323b562b4b6f858",
+    "runtime_sha256": "35b2b1aea2da7fa2658377119f8825c9e0e5223658e4949b8149ae9834499306",
+    "glb_sha256": "a2699a7a2108c51422ff4a90234d1e309afb7f3bac84aa26b2abe11d1224546d"
   },
   {
     "id": "crystal-bed-seidr",
@@ -739,9 +739,9 @@
     "source": "source/crystal-bed-seidr.blend",
     "glb": "glb/crystal-bed-seidr.glb",
     "runtime": "runtime/crystal-bed-seidr.model.json",
-    "source_sha256": "2cc05f2fdaefd70a34ce08dce92e69e819e6050f64e34dcdf02179779afc9f3e",
-    "runtime_sha256": "d646b6e62d24cadff45a00b74a85d1945a002f24e13aa4b8fc1db8d6823350cb",
-    "glb_sha256": "be480273516adaf3b8b8f0fa0ae1f12a9943362c4ae1e7182687d00db3e7f61c"
+    "source_sha256": "dc3de4374c00a3200ab1f9aa330b64ab3840ff63e7485f68982e1a9b4e3fa478",
+    "runtime_sha256": "01d5e2884b4593cd4501b9d594cd0c831720df9d4d47507d69730a995b6e9f88",
+    "glb_sha256": "44e725315d19f342786ef17f67641e9a379aad7a124efdd2c5f47e4462cdfb62"
   },
   {
     "id": "crystal-bed-spirit",
@@ -751,9 +751,9 @@
     "source": "source/crystal-bed-spirit.blend",
     "glb": "glb/crystal-bed-spirit.glb",
     "runtime": "runtime/crystal-bed-spirit.model.json",
-    "source_sha256": "533182ae5e5a42182ce5363f74c9fb398ef6a1899700b9e791cd328f065021ae",
-    "runtime_sha256": "6c32cfad0bb3b66d0297be9eaf4872d39e082c7f796007abe25974f394fc8c2b",
-    "glb_sha256": "a593ce32d50adcd8a0e5c4a7947ae3228fde36f1d31fa3196d905c400cfb2ab8"
+    "source_sha256": "ce5b18853155141733ed436c33e558c04cd51c51dc16a54730d58ec9e7a21234",
+    "runtime_sha256": "00948e0500905fc55b49e643b21938577d5bc6f775a711b908f414126a39bb42",
+    "glb_sha256": "15e4167b829d31b8baad6ab00b7d3b2a3023ddb75b74f51f87373e402782ffe8"
   },
   {
     "id": "crystal-bed-storm",
@@ -763,9 +763,9 @@
     "source": "source/crystal-bed-storm.blend",
     "glb": "glb/crystal-bed-storm.glb",
     "runtime": "runtime/crystal-bed-storm.model.json",
-    "source_sha256": "7e9af06021d7f6d76c017558a794ed71a2560be822db4554e3be1241308c9495",
-    "runtime_sha256": "55f96d00040dd91fcd721eaeeb8ae773ee717bc5ebb3e79eedbc17ca6c97ce40",
-    "glb_sha256": "a0d685a5d31af8d0b7bd5f1adfeff34173c48edd60edd565808abe9724d6a63a"
+    "source_sha256": "819c859fc71f243f9ad5e5e8447a29b8b481290ab16b1d6576f6c145745be45a",
+    "runtime_sha256": "d06c2ac4d08fb240bea6fec5948c3bc1b8a5a9999ad6216397b3a078f3671f3e",
+    "glb_sha256": "0ddd44a559350e6a6b905fcf1feb4843e7a104198fb7001332f2fef60f919e75"
   },
   {
     "id": "crystal-bed-venom",
@@ -775,9 +775,9 @@
     "source": "source/crystal-bed-venom.blend",
     "glb": "glb/crystal-bed-venom.glb",
     "runtime": "runtime/crystal-bed-venom.model.json",
-    "source_sha256": "15f65126fdd4e3dfc2762300e875f6d28a716b7b02489d9ce030372553d9b103",
-    "runtime_sha256": "be3c2688f1a155641746dd73e4a62fca0bbc2f2eb789a05f309e96ab553a9097",
-    "glb_sha256": "6e4891b728624cf2ebb39c08dee3727e0a5f24d6cef999db554ab886b86a7111"
+    "source_sha256": "6bbcaf861e51723b4281c8bef627f9d497547ac84794d629bc47103fe3e67c33",
+    "runtime_sha256": "5bd193e263030f485e1b5d4fe096e496e395180391f6b70f4344367bed9bfc01",
+    "glb_sha256": "a085532879446fafc0cb3103cda1d10bca124c8c35c7705305953c08d7089c18"
   },
   {
     "id": "crystal-brazier",
@@ -2395,8 +2395,8 @@
     "source": "source/DF-01.blend",
     "glb": "glb/DF-01.glb",
     "runtime": "runtime/DF-01.model.json",
-    "source_sha256": "bec9aa1ee7b4927cbe2ca2714317ae51d8c7530203d6c8f1f9ace98423be1727",
-    "runtime_sha256": "11bcc55831cf742b0d16f6ea9d6aef6a3edf64365bf764e60772be960595fa45",
+    "source_sha256": "c256fc6d3f38dcae203a011866bb175182e52f5c1980fbcb1a574545d3b2cec1",
+    "runtime_sha256": "e51963d81738cee6289b95ee7ff4f8eba98ea2de504b5e4632073cf47fce4767",
     "glb_sha256": "eb0c0d22deea1f208f81bb907e9aa767526a0324c431c41d0e312bc33e2524f6"
   },
   {
@@ -2407,8 +2407,8 @@
     "source": "source/DF-02.blend",
     "glb": "glb/DF-02.glb",
     "runtime": "runtime/DF-02.model.json",
-    "source_sha256": "4e95f1110791e9f7781086fcf9eae4b93fd82205a8b21cccd566c54d00117cf0",
-    "runtime_sha256": "3b6cdea2be93b30cc3f11057949df7f1d1cbbf903bbd5ffc775708da53583149",
+    "source_sha256": "12519ba56b5145271efb83217e6cf4ce37791bf49430a16ac3875ad343e70e38",
+    "runtime_sha256": "1075e25d751d5feeb21f35fafbfcec870dee5fe57dd5b4ae4d3e10a1c8a20ae7",
     "glb_sha256": "343a74db2ebee0f3753022f635a13183d0704227561cfe5ce7f6c7057007dff9"
   },
   {
@@ -2419,8 +2419,8 @@
     "source": "source/DF-03.blend",
     "glb": "glb/DF-03.glb",
     "runtime": "runtime/DF-03.model.json",
-    "source_sha256": "0ca5b5c7c909c2091f7a35dabc3b0fb1ca79092d0ac23a5abe6ee71d5520f6b6",
-    "runtime_sha256": "ac8d7eeee7b56349cecf9ad69a349ecfda1b4112fb22655e97cbdb8a9a8e51b9",
+    "source_sha256": "968ca6af4c9272d0710008bf29234b89b956ee988d390b0e0df2ea12693b3a5a",
+    "runtime_sha256": "fcdd550e2700a11190c54889a6734839708a39c2566683765abacb62b584b10c",
     "glb_sha256": "ec9718ca35274204b852667b31949c667f772f7cace18ebbe1efe25bf6d10172"
   },
   {
@@ -2431,8 +2431,8 @@
     "source": "source/DF-04.blend",
     "glb": "glb/DF-04.glb",
     "runtime": "runtime/DF-04.model.json",
-    "source_sha256": "1393aa5d87372ded8b5740acfcd5fc4ff1e7bcd9bd31d526169e38e78e248ce5",
-    "runtime_sha256": "7b425636f466923626ce44255cf3cbdff122a44d7ea0592cc5163db9895455ec",
+    "source_sha256": "0e8fa7189670c8aa392a5976c89f4416a833734bf7392c3aebe7e93f9a21cf47",
+    "runtime_sha256": "66dafcd7916934c15442e0439395d5b83bbd357a7d4b559d75f719cf423310f7",
     "glb_sha256": "6d764337c88c0cd3d8d01d50a1ab2560bae06e687d7a7ff4cdc40e098c104173"
   },
   {
@@ -2443,8 +2443,8 @@
     "source": "source/DF-05.blend",
     "glb": "glb/DF-05.glb",
     "runtime": "runtime/DF-05.model.json",
-    "source_sha256": "9572d31b0e505843818d7ac39b66ced245cc4ccefd6fcc02115a9d4da5dc358c",
-    "runtime_sha256": "1b1f21705b18503b02f2eaf574728e7b3e598e568f1bb8a8fdce8f0dc4f6bd8c",
+    "source_sha256": "e6e4907b42c757bb935936c2977509a50ac187139cd2a2275e82627ad6d7cdd0",
+    "runtime_sha256": "e6b0a6534ef64fcf49dcb04995495baf591a36a84a0e1f01aa5f8dc32a6ce178",
     "glb_sha256": "a998d174c0e86e51c38488669fa60e95888f219664f32d8cac7c002c4c869df5"
   },
   {
@@ -2455,8 +2455,8 @@
     "source": "source/DF-06.blend",
     "glb": "glb/DF-06.glb",
     "runtime": "runtime/DF-06.model.json",
-    "source_sha256": "281d7b25771248497b41e6ac9215a1a2ff76ae48ae15b9e13c439fca504bfdb8",
-    "runtime_sha256": "e5c7084ef3e51d80a844ea72452220e2d1398da1964fb6ccba0e49837d285db7",
+    "source_sha256": "44c0666cdd25f8a67b9fdd0d1f1feee3adc9f96028f3164ed728ee1a9bb484a7",
+    "runtime_sha256": "6ec19a7f672688251cfbaf85505c9096ff9779d62a449c9bc3b2aa5eee1b0815",
     "glb_sha256": "8e72f59e8957e84e2e95f39ee42e5796a91689435f965e475af5bf1ec7faf669"
   },
   {
@@ -2467,8 +2467,8 @@
     "source": "source/DF-07.blend",
     "glb": "glb/DF-07.glb",
     "runtime": "runtime/DF-07.model.json",
-    "source_sha256": "49aab2ccc84a1031b2694fc104677bb11a565b17662307974f0de75716278f55",
-    "runtime_sha256": "be76347180c0bdb88377ede1b1533886fda53c8603de241c6473f97f0b0e1cc1",
+    "source_sha256": "ee9081f8ef59a459091bd8920b0775b5eb0f9133770d05478ce9a232ffccb74a",
+    "runtime_sha256": "1299d39c87b9ffab923f27b41b3ea53dcbc9305e525ef6623484d395e7ab577b",
     "glb_sha256": "f093a31a803fb282a98d16c84b218587c6a345da2576870fbb3d1149db78cd9d"
   },
   {
@@ -2479,8 +2479,8 @@
     "source": "source/DF-08.blend",
     "glb": "glb/DF-08.glb",
     "runtime": "runtime/DF-08.model.json",
-    "source_sha256": "2294ddf9802895063bf6cd3c05d76398158ffccf2c8f957ef860857fe6f74980",
-    "runtime_sha256": "795417fbef62976f9024a22ddcb4e04b785028655f50c9300097f78c2b5ccb51",
+    "source_sha256": "8171063fa65628ab3fc7e952f2f9c00271e09a5af229fb84cae8778ef6b27495",
+    "runtime_sha256": "2647cc42e048f3e5de5824bbdc2fe32a9d2f38722d263b69f8264acdb8485998",
     "glb_sha256": "12ee1543902a62a85cc276895b18ca944f4fc8d8071deed89f8978bf454fd8a1"
   },
   {
@@ -2491,8 +2491,8 @@
     "source": "source/DF-09.blend",
     "glb": "glb/DF-09.glb",
     "runtime": "runtime/DF-09.model.json",
-    "source_sha256": "3c2a573657470e772b5efd2a88f1b1ddc69037e1a16c36539c464f2faa37d123",
-    "runtime_sha256": "869132982e995ac6c026b8ddf7349451d8ac48a638e3215247425c910c150f9c",
+    "source_sha256": "a3bb721ddf173b388902e79e8c47e1995ed780231005f5140ad7f980a608c374",
+    "runtime_sha256": "cc3e0d4fd04854fdf7bab38fc7687923196a842887839533fe80337b2767dae7",
     "glb_sha256": "93f71f2d6080513c722d108538e8b43d507dca0beb5dcbbc758c5960b649faf9"
   },
   {
@@ -2503,8 +2503,8 @@
     "source": "source/DF-10.blend",
     "glb": "glb/DF-10.glb",
     "runtime": "runtime/DF-10.model.json",
-    "source_sha256": "14e172017580cfc3a048f23f40c820b6337e958515382d9e6da58f9264f05bb2",
-    "runtime_sha256": "ad3b8d139cce2f2bf8b305ab5f6dd7da22a782085a5132feb65477d4d85deda6",
+    "source_sha256": "6ccda6c01708e40a4c0e9005638932724d6265023fd59575d3541d037e022ca7",
+    "runtime_sha256": "4e2b191e96bad9ef98b03cc07881ca0323e81b3a9771b31efb77ab0efdaeafa0",
     "glb_sha256": "1e059d84f1cdcf114d94ed4a2b308c326f5169d2f5e849473636d92459be688d"
   },
   {
@@ -2515,8 +2515,8 @@
     "source": "source/DF-11.blend",
     "glb": "glb/DF-11.glb",
     "runtime": "runtime/DF-11.model.json",
-    "source_sha256": "89a0a8f0287865b4ea5847c3a15f879e515894c3ef2e14a807e0597542b3b800",
-    "runtime_sha256": "3dbb24e431fe7c49fb4fed7314915fcaa1df87d380c07f10d97270e0ffe18550",
+    "source_sha256": "fbf17b13b09d5ed3ee80d6ae02a5fdddbd2001244bad88d754c0b999eaa85a4f",
+    "runtime_sha256": "8c8b43a4b1cf82c033c1f5e66bd9032d467a9ffddd8326573be7af7014592eae",
     "glb_sha256": "a99fbc7d555169c756e9f9626a1181de28a1b2d140cbfec6b4f52224321791ce"
   },
   {
@@ -2527,8 +2527,8 @@
     "source": "source/DF-12.blend",
     "glb": "glb/DF-12.glb",
     "runtime": "runtime/DF-12.model.json",
-    "source_sha256": "7258e6616ab72963b3d2bedcea4c9259c9dc66991dc1a24441862fc859e482ed",
-    "runtime_sha256": "e3a0f7d60d3cf3e23c4e866a858d40b926e42afc0555968050c525beadaaeaee",
+    "source_sha256": "0b8eca0d1a84974d293fe341417fe031f3e34da0a66acf79b9da632b059f4f31",
+    "runtime_sha256": "7229da040f319c87406fe639b92f26fb115a1bdc99c2eaf1db6ed81a81c84aa3",
     "glb_sha256": "7a9a3522f8a4bc206fc3cd9515417a441e11ad3d3ab58ff7607090ef88f99cc9"
   },
   {
@@ -2539,8 +2539,8 @@
     "source": "source/DF-13.blend",
     "glb": "glb/DF-13.glb",
     "runtime": "runtime/DF-13.model.json",
-    "source_sha256": "a77f7290b515f2a611ac23190e58fbcae68114c49da8f976ccf187ab7362e6d2",
-    "runtime_sha256": "bde26532c6705097ce7cd198cc06923ede2871a0fe6647d8b6d86470eb04f997",
+    "source_sha256": "e4aef3c5bb22c577089d543e829fd4a278914514ed83ce5d9cfc5bdc8692ee59",
+    "runtime_sha256": "6b4ecd8e3302d196c1abc0842ffd07133eb78d033bf6a7ec72be818df44f5e74",
     "glb_sha256": "28b0a06f4e09eeb6ee6ed1357d4ee9565b7988e204740e995b5816858ff1aaee"
   },
   {
@@ -2551,8 +2551,8 @@
     "source": "source/DF-14.blend",
     "glb": "glb/DF-14.glb",
     "runtime": "runtime/DF-14.model.json",
-    "source_sha256": "4d1f2acc0bea36979bba4ae16ae5867fb1ddb0d5175a085fccfbb04c0cf15893",
-    "runtime_sha256": "9763594967093d11146755458fa76168a8784711ca5c131c571322f331a12386",
+    "source_sha256": "4e5dd22ec0df2d9c0a908e337aa8f862258dbd219918d688f2e22f1e525a2d7a",
+    "runtime_sha256": "a6f2e6714dd51a67f9d8c0082a307fa358cb9e77e82e58cdf192b131468820cf",
     "glb_sha256": "5bc1c2d5e4b9902a51519a361ea95dffeedd6d27e7d83b321d366902432c4712"
   },
   {
@@ -2563,8 +2563,8 @@
     "source": "source/DF-15.blend",
     "glb": "glb/DF-15.glb",
     "runtime": "runtime/DF-15.model.json",
-    "source_sha256": "8518a03e959408c9688efcc3aa8eaa98dceaf8d93fdae0d90f8b8e2430daa1c9",
-    "runtime_sha256": "1e55bce1cc36ce4caa06f8d1a4c66b979bd522d7c02d038d5085088617d4fb2f",
+    "source_sha256": "fef4801d742eda0bd2744fb9c8fd9c07e0170b88a60d5d38ed553a66d5fb61ce",
+    "runtime_sha256": "aff77433c4a6909f1d57a2543f6c40dd4e3835991570745896360a486522573b",
     "glb_sha256": "fbdc7102e7c78a3510e3efaf53bcf2ad8eff89d1ea710c65ac14e41dff54bee4"
   },
   {
@@ -2575,8 +2575,8 @@
     "source": "source/DF-16.blend",
     "glb": "glb/DF-16.glb",
     "runtime": "runtime/DF-16.model.json",
-    "source_sha256": "2d36136deb345552a8bed0ef6ce9940ed28b7f47ca99059f08fac8829d60d346",
-    "runtime_sha256": "56a6d6879161ab025c1c35b683bccd885cb1672a8e0ec080abb0ce5e9977256a",
+    "source_sha256": "f4b2afd5c977017de1f4e72552dc017598049731740bcb11b0c34e665d2eee15",
+    "runtime_sha256": "1a9465fd144c2b37fb7548e8832b82ecdab355f246f9caafebc308a6c4a7133a",
     "glb_sha256": "311babd5c34b361da54f6f1c2a28bf84e3048b4629dfff01bfcb5d0fe3a1a6e1"
   },
   {
@@ -2587,8 +2587,8 @@
     "source": "source/DF-17.blend",
     "glb": "glb/DF-17.glb",
     "runtime": "runtime/DF-17.model.json",
-    "source_sha256": "9d31bfe83d7dad5a45a4fe8d28ef1fa984d9d37dd1f9250aa445bfcb559141d8",
-    "runtime_sha256": "eca1b8c9303df7598221dfe15d8678f2d01244fe615fe4486b88be31c0c53f02",
+    "source_sha256": "b7576bf275db6a97f7874bec60426d57e2739b96fde98af4701f2b9a71cc769c",
+    "runtime_sha256": "740b0ebc732e7bd57e26d45467dd95027a61cadcf9f46513c2930275d401fd55",
     "glb_sha256": "adfd81f1272677115332a0b4d9c00c598c6e13feaf9c2b2de180b283d7885114"
   },
   {
@@ -2599,8 +2599,8 @@
     "source": "source/DF-18.blend",
     "glb": "glb/DF-18.glb",
     "runtime": "runtime/DF-18.model.json",
-    "source_sha256": "14151f018c1f83388b922e2b4369322e2db90dc8c5803dfdd2e81cacc8f8c103",
-    "runtime_sha256": "3cfb210ef9c1e55d936b95a33d0099b2e26112769538ba46e1b09f25a1af9bfe",
+    "source_sha256": "2458cd65e1e9dbb95fa1a1320e079e9279e29a1d5ee8031c8d7eca3f3b8d546e",
+    "runtime_sha256": "c9b29e6ceb23a1fe3d15cfdad5ad318f1d27f7a26aa41a56dcf54cdad6643938",
     "glb_sha256": "3806edf5fa0e02858842cfceb55656b858cec4cbccb68b975124c8b10e353d3b"
   },
   {
@@ -2611,8 +2611,8 @@
     "source": "source/DF-19.blend",
     "glb": "glb/DF-19.glb",
     "runtime": "runtime/DF-19.model.json",
-    "source_sha256": "5083787f1a8ede5955cc3fa4f8c283673d0c8dfb3929e0c349a8a72b73097282",
-    "runtime_sha256": "9075facfd2f99d1e3ae139d9d73114327fc88dbd53cdcd714e6b52538a19c835",
+    "source_sha256": "7ecca524a11829b05870f49217aa8ac9f9138f6ae8cc4258907656134a7d8b61",
+    "runtime_sha256": "8de0b940b39c5990ba8caf509e66c89b2ac06df9b68dc7270620cbc26a80345b",
     "glb_sha256": "ae4c5a7c08a20f2814f47e18020595b0494a5fb3f6b638478461bc73a9c65bc6"
   },
   {
@@ -2623,8 +2623,8 @@
     "source": "source/DF-20.blend",
     "glb": "glb/DF-20.glb",
     "runtime": "runtime/DF-20.model.json",
-    "source_sha256": "e804b94ae4d53c8b453e4e09fe37e3463a2fa84316b18aa3f3c08892b712801d",
-    "runtime_sha256": "6a1a89cf7df101140db703f9ec9955cb8b04a3ea295fd6ceaf313347ba9c3399",
+    "source_sha256": "29e7661971e12a5088f8208286800a9e620043968fb1a2063ec409f6942200ce",
+    "runtime_sha256": "f2e4805bc873d27317fe7f965969dfd60ca91607602667c1183c8b8d21d4aa37",
     "glb_sha256": "a07622608122bd8fb45a174f947a8a8fbf3da7a2d09878dea1ce6e4990f0c0ef"
   },
   {
@@ -2983,9 +2983,9 @@
     "source": "source/Magenheim_Staff_Earth_Advanced.blend",
     "glb": "glb/Magenheim_Staff_Earth_Advanced.glb",
     "runtime": "runtime/Magenheim_Staff_Earth_Advanced.model.json",
-    "source_sha256": "2774678e66941f632a5ee9ed94c234f0bd332132df661df7ab4dc5883380649a",
-    "runtime_sha256": "bae67081f419a17fbb9d1613b51e9732f8dad6936fbd18bb5321dbf5e1b40de7",
-    "glb_sha256": "edec2a69f4ae5a46f4949a38fac172082898a9f983970cf19916da667e8fc5cc"
+    "source_sha256": "1ae5f889b27c88584468f59b3fdf9d1c74c7334358b5a70412f4f419ef32379c",
+    "runtime_sha256": "7e04f828b48ff9c3fac3687159af09998c86072a6c7f12bb38309d83d3d77051",
+    "glb_sha256": "1b3c219a54143203276f910b4a952b92ce85bfd160ed171daa722c0ecd673cd6"
   },
   {
     "id": "Magenheim_Staff_Earth_Crystal",
@@ -2995,9 +2995,9 @@
     "source": "source/Magenheim_Staff_Earth_Crystal.blend",
     "glb": "glb/Magenheim_Staff_Earth_Crystal.glb",
     "runtime": "runtime/Magenheim_Staff_Earth_Crystal.model.json",
-    "source_sha256": "7166ee24753d7cac02341303bca81cf854b8a282a430bd592590b2595bea4f3e",
-    "runtime_sha256": "1b9d145eb861ae583b8823e777b1338b147a269efc5ddf02c68f6b142916d578",
-    "glb_sha256": "443f63837b02e83657fdb73ee693414287a9f0f252e47c429558859627a87c43"
+    "source_sha256": "86cf32b127cedf7e9122655d5a95285ae0ac3c36f221e177b5fbafa409f27e5b",
+    "runtime_sha256": "6195dd8fe481072d0446a57c849939f7e6ac90d9d1e9eb2c171f633c4dfb7b9a",
+    "glb_sha256": "d2b8643ef935af48f9dc75f1b3b6ba39c704d20af797e36ebe1ca9add9147cf1"
   },
   {
     "id": "Magenheim_Staff_Earth_Master",
@@ -3007,9 +3007,9 @@
     "source": "source/Magenheim_Staff_Earth_Master.blend",
     "glb": "glb/Magenheim_Staff_Earth_Master.glb",
     "runtime": "runtime/Magenheim_Staff_Earth_Master.model.json",
-    "source_sha256": "8572b04b259b6da54cb50490268fc18c166662ea53d8e507ae8a75784676726a",
-    "runtime_sha256": "91df197935702f4bebcd36a89382d7605af660625817c479b98cfd33062a2c6b",
-    "glb_sha256": "c6dd099cbbb8e14f35946d96e20d67657754228a2427b59eb28d326f79c5c583"
+    "source_sha256": "87ccc4b41aabdadbb9aa710199e0b5ab82c316321438c61d79350faac2e42d3c",
+    "runtime_sha256": "05b3f45466f0326acbeb1ac533b3313717befc6425992dcb5694d957ff57adb9",
+    "glb_sha256": "6e339b9617c834c4a834b2a9c3a04d588709ee7ff761266a84bdf1001a5fa8a3"
   },
   {
     "id": "Magenheim_Staff_Earth_Simple",
@@ -3019,9 +3019,9 @@
     "source": "source/Magenheim_Staff_Earth_Simple.blend",
     "glb": "glb/Magenheim_Staff_Earth_Simple.glb",
     "runtime": "runtime/Magenheim_Staff_Earth_Simple.model.json",
-    "source_sha256": "ad23c1cf01bdce287414410b1ce2c2d7bd89f7f76a1a842387f933ccf3db1101",
-    "runtime_sha256": "b334d6f6901183377d87e25c335e6e75ff39b71472e300f9a87fcde594ad8ec1",
-    "glb_sha256": "c38125694e9198dd19b5802a69af05fc23bdcc1721e9acc5d2d4727d3d4a556e"
+    "source_sha256": "3fd8d61f93545755c02345ffa883b06741c742f81979be601ff0061611a526d8",
+    "runtime_sha256": "bf74e5fb8594255aed807ffe6eea7d309268445f90fb18e165a91ad2bd3644f2",
+    "glb_sha256": "765db3261079631e24805938f1006e305a8717c4a4a918e90926a1d643252564"
   },
   {
     "id": "Magenheim_Staff_Fire_Advanced",
@@ -3031,9 +3031,9 @@
     "source": "source/Magenheim_Staff_Fire_Advanced.blend",
     "glb": "glb/Magenheim_Staff_Fire_Advanced.glb",
     "runtime": "runtime/Magenheim_Staff_Fire_Advanced.model.json",
-    "source_sha256": "5dc45109622b12fde734d44194636b360b1e869582fc0157e199d52234381a2f",
-    "runtime_sha256": "686ea9d7951f0350d1e2e307d6dfa87a48e54d2e79a6c0e284ab10f5c4085a40",
-    "glb_sha256": "8feacc4965bed61f93935f6791604ee1058ba722e487138b65cf0f327c31c119"
+    "source_sha256": "79d6c39ad00b58a59a456e0a352cf0b6714461d5e75f1c692ad845c3c8829177",
+    "runtime_sha256": "23dd3979eb91957963a756c40d1272e606298fd3d91d7049e35c9ac525e361ab",
+    "glb_sha256": "895fb54ce616926642255ad0b62833daab49a5ad898c7fbd5bf4d0e0b95cccef"
   },
   {
     "id": "Magenheim_Staff_Fire_Crystal",
@@ -3043,9 +3043,9 @@
     "source": "source/Magenheim_Staff_Fire_Crystal.blend",
     "glb": "glb/Magenheim_Staff_Fire_Crystal.glb",
     "runtime": "runtime/Magenheim_Staff_Fire_Crystal.model.json",
-    "source_sha256": "0c71e8abbfa35ae2b138275955bd94aca8f76e06e020869731d502802d7e37a7",
-    "runtime_sha256": "0b14dfe875fd2ea8b9902e3ec74224924806b22526f8c2dc808e2b558aa16e3a",
-    "glb_sha256": "386b0d7528d2c06300e90231ce395fd0b5f75ed51b9840a5833dc6f82b17ed6c"
+    "source_sha256": "9f72b9d810adf59b768d40ae97002bca8e669b84a35dc8074b2c96a128e24245",
+    "runtime_sha256": "f6069c0bd756256cbbb78817c485afc0cfa3de0b5c6bff3e88ceb2863f29c425",
+    "glb_sha256": "9d9fd727f994596ae9561e9554f94b6cebd5b7575152774f62ddbfd76ee4c57e"
   },
   {
     "id": "Magenheim_Staff_Fire_Master",
@@ -3055,9 +3055,9 @@
     "source": "source/Magenheim_Staff_Fire_Master.blend",
     "glb": "glb/Magenheim_Staff_Fire_Master.glb",
     "runtime": "runtime/Magenheim_Staff_Fire_Master.model.json",
-    "source_sha256": "112b5076d2e1cb71178f07fa2981309fc4ac10de7c32bb943e546140adc06a85",
-    "runtime_sha256": "13856e2bc5a055b8e2ed89c40251bd12bdb00dc1e5cca2cc02a308a78c755dec",
-    "glb_sha256": "6dad2b0e128fec09827c21c20ee8c27fd1aceb3bbcc8b557c5209299ceb53f5e"
+    "source_sha256": "2bc24d4a656b3d7caa5489eaf9b32575a5c8a88f2388687bfad60a77c20c11a1",
+    "runtime_sha256": "02eea30f34aa7b03e53f17b7e68561096dfec099b62f80e2f5b823f37ab13872",
+    "glb_sha256": "c8cc45e69ba279a8315efe0fcae668a79e8eac155561c9417f9033982d542eb2"
   },
   {
     "id": "Magenheim_Staff_Fire_Simple",
@@ -3067,9 +3067,9 @@
     "source": "source/Magenheim_Staff_Fire_Simple.blend",
     "glb": "glb/Magenheim_Staff_Fire_Simple.glb",
     "runtime": "runtime/Magenheim_Staff_Fire_Simple.model.json",
-    "source_sha256": "eeeebe01f8b7187298303d1a7a7f67d27c876f6ccd6dbc82393ce12db1567c23",
-    "runtime_sha256": "c74dac3f71b538964a03792fdcf8c9b4994d2726b593f5c86479c496a8b2ab85",
-    "glb_sha256": "4e65a41d7f92b2f3834acfaf37fa777b413d30d093baf574f7205c8c59546f92"
+    "source_sha256": "ec344a97e3f107f46bfadde984eebc6d1056fbbbe91fe7f318a85a9669359181",
+    "runtime_sha256": "2b5d71f290aaa418baa92ce12596b5adb48d1ba12cf4306d9fb5f1c01f7dc0dd",
+    "glb_sha256": "cb9698ecaa03669d91f360ab17a38d2725f854664073f6a9837bf30f5b05cae2"
   },
   {
     "id": "Magenheim_Staff_Storm_Advanced",
@@ -3079,9 +3079,9 @@
     "source": "source/Magenheim_Staff_Storm_Advanced.blend",
     "glb": "glb/Magenheim_Staff_Storm_Advanced.glb",
     "runtime": "runtime/Magenheim_Staff_Storm_Advanced.model.json",
-    "source_sha256": "14b20da3aa237beeb0bda8ed4d6d124b5d8bdb6987d1652eada25e091690ead0",
-    "runtime_sha256": "51de27fcf8a4e09a5eecd84a7f6580c4c058df4ade92e20f8b65018df0cc76fb",
-    "glb_sha256": "c8452d28c155a60608e45cc7281cdfb23918774da3317e12c78dbdbbd5e0482e"
+    "source_sha256": "199e9aa6383b81741c2dbbfea31cda067006e907ae47c3bd7a3c8562a7691fb1",
+    "runtime_sha256": "df8637beefb876ffe627eb86b4ab27595f68d623045fdbff1c40f1bec82ee78e",
+    "glb_sha256": "dcfc4581de1ddf429de6eafb864fb50c714e21be462a703368d781f61eb92a95"
   },
   {
     "id": "Magenheim_Staff_Storm_Crystal",
@@ -3091,9 +3091,9 @@
     "source": "source/Magenheim_Staff_Storm_Crystal.blend",
     "glb": "glb/Magenheim_Staff_Storm_Crystal.glb",
     "runtime": "runtime/Magenheim_Staff_Storm_Crystal.model.json",
-    "source_sha256": "6d0e133afac2704bc935d3ad7201856a4da2c4aef8805861025a0d0eb2b47a0c",
-    "runtime_sha256": "52eab8688fe7beed73b8c55c4279765848464fc69c94c6786ec9f441f100713a",
-    "glb_sha256": "f1b1fc84265bb45cfacbf89652a4dae50c358e155f5a0e6451637981db92c179"
+    "source_sha256": "f4f0cbbbd42c83913b09722f0bc912e4a6041283ca54cec60182680b86d0a2c1",
+    "runtime_sha256": "d04cd36ddff2c264e2dc74b485e1a8bc4c802b9210d1163f21b211ade02c5060",
+    "glb_sha256": "04b405e67577f1345c11ef66418af572490316c5648dc63e1dbfb98f150db861"
   },
   {
     "id": "Magenheim_Staff_Storm_Master",
@@ -3103,9 +3103,9 @@
     "source": "source/Magenheim_Staff_Storm_Master.blend",
     "glb": "glb/Magenheim_Staff_Storm_Master.glb",
     "runtime": "runtime/Magenheim_Staff_Storm_Master.model.json",
-    "source_sha256": "74ab97611e77f2b67f6a44e1f0f997e64632f8cbb7536ff10133e7c8e8de55af",
-    "runtime_sha256": "d116cfcf44a404d8b0c6a22a4a69c634f7575a5a4e609d58447e5e34ba8ff80f",
-    "glb_sha256": "18a315be381c8923f790969723647aded3b02379c3580f66256ac745057ddef4"
+    "source_sha256": "c76dc827ef0780776dc74e18be830f8090f454a3f756bf705eeb4497fad1377b",
+    "runtime_sha256": "e160e2f184b0f142c772bc2adbe03757f6a38eaa76e4fabb3389e460fae2248b",
+    "glb_sha256": "ddcaa9690fb8e4654c4d154f93108cded557e272df1cf2c09ab67c8f7155f7b8"
   },
   {
     "id": "Magenheim_Staff_Storm_Simple",
@@ -3115,9 +3115,9 @@
     "source": "source/Magenheim_Staff_Storm_Simple.blend",
     "glb": "glb/Magenheim_Staff_Storm_Simple.glb",
     "runtime": "runtime/Magenheim_Staff_Storm_Simple.model.json",
-    "source_sha256": "170142334535d2ff2c5d4f392290629b496afe856402293083f6858463643f4d",
-    "runtime_sha256": "fe6aeb02903aa86f21e83d7e667945e299cb7e482bf800c22c694c744f1a5109",
-    "glb_sha256": "073c22f11449d19dca915a5cad5afc98d48412a3036120ca15c129df3dd56009"
+    "source_sha256": "ff0eb4a2a6cc4508dd811833da216ff93cfaa3d415d2ae7c31ee47c7e51647c8",
+    "runtime_sha256": "4d518a0456c1d83fcd50ca9fbf326613a8c9cf97eb546169612e4e9a9989522e",
+    "glb_sha256": "12158c3154dfd9b5fd2f55bf1b754da117d3b212ce156a1021b8fefec34774af"
   },
   {
     "id": "norn-spindle",
@@ -3175,9 +3175,9 @@
     "source": "source/rootforged-great-column-plinth.blend",
     "glb": "glb/rootforged-great-column-plinth.glb",
     "runtime": "runtime/rootforged-great-column-plinth.model.json",
-    "source_sha256": "fed726eca426a3155d20b59450e2b698ef63905da75d2e83bdf13183f28eb350",
-    "runtime_sha256": "16e46e9984a58af2e1242c0d67c2e1a454be1e5862c74d64b764939b6f255e1d",
-    "glb_sha256": "d90327cb2a21b318a33891f8e7bb054cfa5adef53d2beb6c8e447f6e4bcb5959"
+    "source_sha256": "3745062d12d0cfc475f6e6123fecbba9aa92b8b9b1bf0ed9ec9f85e25a6aa54b",
+    "runtime_sha256": "a8ea63f7f4f127f58651901f8606a17490d9dde2f81bef1da295f54dcc7cb525",
+    "glb_sha256": "d7792d01f3ff76ad4fc154135a7809db99c29777ff3570865bcdd18667f4a984"
   },
   {
     "id": "rootforged-iron-banded-worldroot-beam-4m",
@@ -3187,9 +3187,9 @@
     "source": "source/rootforged-iron-banded-worldroot-beam-4m.blend",
     "glb": "glb/rootforged-iron-banded-worldroot-beam-4m.glb",
     "runtime": "runtime/rootforged-iron-banded-worldroot-beam-4m.model.json",
-    "source_sha256": "ed7dec7888e34919beef41e9c181e087f219de702b1d76dc6ac9d4a3e274622a",
-    "runtime_sha256": "849f0196566bd5ecd5991f97fa9d4f5e44c42445b6e8ef1d63de84886e449184",
-    "glb_sha256": "d54689228e8e158a4d5005a3c5301e431b623ddc107e1d8301538236dffd46e0"
+    "source_sha256": "95c3e032916dbeb8134c5fc4edd3cc160917158f684b0d7939b914e4e4e4c431",
+    "runtime_sha256": "ca6d70f81db59c36ea09aa00e2b573f2124f88d11bb0fe63e05e0a50e4e7c5c2",
+    "glb_sha256": "ed2d6be02e45aa156a81436baca6f868fce99b68cb12067b72bb76b086000f9f"
   },
   {
     "id": "rootforged-iron-banded-worldroot-beam-8m",
@@ -3199,33 +3199,33 @@
     "source": "source/rootforged-iron-banded-worldroot-beam-8m.blend",
     "glb": "glb/rootforged-iron-banded-worldroot-beam-8m.glb",
     "runtime": "runtime/rootforged-iron-banded-worldroot-beam-8m.model.json",
-    "source_sha256": "7edf4db2212659e65e66feafdc534fed23d7dd60b76d57fcab82f0ff04da5c47",
-    "runtime_sha256": "6da3f8da8566956fa3f4e51b4f15050ceb27636891c531f457224d706e2bffc3",
-    "glb_sha256": "1eee7deccbc1805e581e9393c33fb016c0a6e28b03c9d12514a1602614551404"
+    "source_sha256": "fee39a350b3840c33319e616bc44e5a012d24cefddf5d03f60aa2c250c31fdb2",
+    "runtime_sha256": "7152f713e8a6cadda39f166c90cecd7c0defa4a16d914f2fb368e53be9b993ab",
+    "glb_sha256": "b0a109ccb72b8fecb092ebb10d913a482233f9b5be4bcf00762a6906b314e705"
   },
   {
     "id": "rootforged-rootforged-arch-rib-4m",
-    "parts": 57,
-    "triangles": 11784,
+    "parts": 59,
+    "triangles": 11808,
     "materials": 3,
     "source": "source/rootforged-rootforged-arch-rib-4m.blend",
     "glb": "glb/rootforged-rootforged-arch-rib-4m.glb",
     "runtime": "runtime/rootforged-rootforged-arch-rib-4m.model.json",
-    "source_sha256": "d60c275aaa00ccb9964d038265d677b44f73695ebc649ef5c567f446966448f0",
-    "runtime_sha256": "932d1cf7454f666a4be8bcc1d680077653e8a87941e8ee1cc5ccf1ec2dbd912f",
-    "glb_sha256": "3832a0ebbd3921d057f286548cbe88cdc470a1fb9a5810181475890237317986"
+    "source_sha256": "42941b1347539f51e4fd0bf5108539746892517a45e2553928635b0934c97588",
+    "runtime_sha256": "ea15651700aabcc8a3615d7cf5854b4609b39fb2f0391c01db2167ac7453fcd4",
+    "glb_sha256": "b7efbad68430117e6645d2911f2300a8ef08183aae55534756243d11204e092c"
   },
   {
     "id": "rootforged-rootforged-arch-rib-8m",
-    "parts": 57,
-    "triangles": 14664,
+    "parts": 59,
+    "triangles": 14688,
     "materials": 3,
     "source": "source/rootforged-rootforged-arch-rib-8m.blend",
     "glb": "glb/rootforged-rootforged-arch-rib-8m.glb",
     "runtime": "runtime/rootforged-rootforged-arch-rib-8m.model.json",
-    "source_sha256": "32f26e1b2cc857ca12f91ecddc3ae8edd800bba00738ad20cfae94ed76d49954",
-    "runtime_sha256": "0e55994ccd936c38123dad1b9aee6f41fb56991e70a9eb8467bd3298bda207dc",
-    "glb_sha256": "97ad5f2203554b98bb52e520947ee5433974c6cfc1b27197c43c55c793a4e2b2"
+    "source_sha256": "a5107f942ddf25fe7eb606e7b286147c3cf10d41c0bec186995327e29b78f8dd",
+    "runtime_sha256": "e7e97ab89ed361ae2fca52bf278490029e4f0eaa5ace7a3148d5778edea9497b",
+    "glb_sha256": "a4a7e6825ff58668455fc41998993a0017f0e9c80f521f86eda3056590740fc1"
   },
   {
     "id": "rootforged-understone-foundation-2x2",
@@ -3235,9 +3235,9 @@
     "source": "source/rootforged-understone-foundation-2x2.blend",
     "glb": "glb/rootforged-understone-foundation-2x2.glb",
     "runtime": "runtime/rootforged-understone-foundation-2x2.model.json",
-    "source_sha256": "f6fa1f411d863b0773f3743798cc944af640b21f5867be1d4523201fe0018ec5",
-    "runtime_sha256": "c8ac779953fa3ab9f47da40bef883850cef706938df7d430c28d21bc6e75b99e",
-    "glb_sha256": "fa09d1e9e6efd847e4d29dc28cd2917d245fa2d21ae128c024fe5cf9ba073601"
+    "source_sha256": "f2debba5118d076a05cfd7991d76cb55ba70ee16696e0e0aa159a0e87d736cdb",
+    "runtime_sha256": "8188552ac0187286ff28cc0dee79b1a5fec29d6a8e4f4d7ccd3df5d15e71f9e1",
+    "glb_sha256": "4979106d47649de980256f8db03cb6629c6a825b32dbbe85ad56ca8937497646"
   },
   {
     "id": "rootforged-understone-stairs",
@@ -3247,9 +3247,9 @@
     "source": "source/rootforged-understone-stairs.blend",
     "glb": "glb/rootforged-understone-stairs.glb",
     "runtime": "runtime/rootforged-understone-stairs.model.json",
-    "source_sha256": "41a8efe1c889591e7ba7ad07a560813149860bf8bd7446c5a913435ec668e7d5",
-    "runtime_sha256": "750cd15586d95ae30e77ca5e491b53f7f6f9678ea2237b5fa0bbc609301277ce",
-    "glb_sha256": "6f9b07edb7d2862a78a77cf085e86ce33b053fbe74daaf82a932950be871184f"
+    "source_sha256": "baa1af08e89744f4b3244a2a0085569a20f9132c5509320354d46048ae125d4d",
+    "runtime_sha256": "75fb0e64b4bc1e47a00714e7dffa29079cc87b8038d39887c9981103a14db771",
+    "glb_sha256": "610d638f5e1872762b5e307b061ce77a84e21203ea930fc13be415ed82db9eac"
   },
   {
     "id": "rootforged-worldroot-beam-2m",
@@ -3259,9 +3259,9 @@
     "source": "source/rootforged-worldroot-beam-2m.blend",
     "glb": "glb/rootforged-worldroot-beam-2m.glb",
     "runtime": "runtime/rootforged-worldroot-beam-2m.model.json",
-    "source_sha256": "98343b36a288525f17243a0ad8df679810637d37b321ca148d71313e029874c7",
-    "runtime_sha256": "509e4566e0b43044f414866256ff456d654a39cf47d93fc62572ef09f31ae897",
-    "glb_sha256": "8c4598695589422f60b2f118f6c965254e2c9eabafb661601a7048f9a925a868"
+    "source_sha256": "2392fd70cef0f0042211751854206b3f7b49b95a0d29470b1a199bf0fb945e8a",
+    "runtime_sha256": "9e50c2adbf0ba6e8da92e378f0d21926f79324fbab62db99d19a26fbb1c247cf",
+    "glb_sha256": "cda7f53da972d6a48afd2aace1e97b2aa8725a69897d186a3ea2d4765631f25e"
   },
   {
     "id": "rootforged-worldroot-beam-4m",
@@ -3271,9 +3271,9 @@
     "source": "source/rootforged-worldroot-beam-4m.blend",
     "glb": "glb/rootforged-worldroot-beam-4m.glb",
     "runtime": "runtime/rootforged-worldroot-beam-4m.model.json",
-    "source_sha256": "29a942ba953029e6fbe99c45fa48068fde103a35c17e142d29f5b7bed60914bb",
-    "runtime_sha256": "96ac7e4e9ddd8ce002db9b65e3c82a1eff9ee516742d48944634cfc5c7c3ff4f",
-    "glb_sha256": "3a6230b6a965623c31223a56d9101677f9df9b1742a74d41cd99a8c7364c3a7d"
+    "source_sha256": "fa12079b91a3f2eec9bc3be10795ce2c113a01437a3c7a55b7d9f2af6bb2b945",
+    "runtime_sha256": "d0844dd6c3d24efd93326399733b4a0dfdf05ef78614cb68e5e355a2d6f5562a",
+    "glb_sha256": "23340527940b815fb93bc823284c0c4e015ae7af9b04de3de0685b2aaaf65647"
   },
   {
     "id": "rootforged-worldroot-beam-8m",
@@ -3283,9 +3283,9 @@
     "source": "source/rootforged-worldroot-beam-8m.blend",
     "glb": "glb/rootforged-worldroot-beam-8m.glb",
     "runtime": "runtime/rootforged-worldroot-beam-8m.model.json",
-    "source_sha256": "323967656b3a08c574d850e98cce80543c633d7fe74a3771f89ecab5abd42547",
-    "runtime_sha256": "7a50f05e3ade0d70b18728765b261e63f5b31ec874bb9118e271d61370824c3e",
-    "glb_sha256": "7d1dc62ce9c4ed3fbffce71d1f2c2de7918d2450120bee12f652cb6d3bfe35df"
+    "source_sha256": "50d3dd3f323bcaea9aede9e98d40d819abaf8341dc95a123a822ea33a00a7fbb",
+    "runtime_sha256": "7eb278ee88ebbcd355f5ee4291ebef5e1e12925b850ea5eb222aee40b9651adf",
+    "glb_sha256": "843ae50691f569a4215341c8deef0a51718622f9ec1cf3448c3507105410fe51"
   },
   {
     "id": "rootforged-worldroot-floor-4m",
@@ -3295,9 +3295,9 @@
     "source": "source/rootforged-worldroot-floor-4m.blend",
     "glb": "glb/rootforged-worldroot-floor-4m.glb",
     "runtime": "runtime/rootforged-worldroot-floor-4m.model.json",
-    "source_sha256": "cd7bca6957f3bdeab77bfd0d2616c0d114979bc4354071ede7a8c50714670a9d",
-    "runtime_sha256": "64bb7e29806d8ed4328bce6eb5e7e18c71b4f734d63bcffae6f62ee8d6cafcec",
-    "glb_sha256": "23d89fb18f1535e58134685207ebb93d63abf4d42e6e40b53a2a46bc0d6647b3"
+    "source_sha256": "0a3d6ea18caa903672038e68cbbd77accdd3f50a653bf29672fd843a8ff128aa",
+    "runtime_sha256": "76b92a198eca806da5777ab052c86eb3d32d060e6183c7ebf0e3ecb18c2b1be6",
+    "glb_sha256": "9f6cd9890efcb3702a9e058acb71f9c7c4641512510e4ecb56e26cbfaa916ea2"
   },
   {
     "id": "rootforged-worldroot-forked-column-8m",
@@ -3307,9 +3307,9 @@
     "source": "source/rootforged-worldroot-forked-column-8m.blend",
     "glb": "glb/rootforged-worldroot-forked-column-8m.glb",
     "runtime": "runtime/rootforged-worldroot-forked-column-8m.model.json",
-    "source_sha256": "bfe436c01fb111f94c4ad0038bc434cf13057a4c371a421e99500f7342226e72",
-    "runtime_sha256": "88b53d122374b56a9363b1390ec19feb84968adf80e792535f1b51c40a52d914",
-    "glb_sha256": "7ea27a1e2d4cc2865369c8529725427e2bd65b418e06d22c56d261110c9c9a1f"
+    "source_sha256": "fe8af176cb0f88e6736145680f17348cd2a31473265da5f83654306d6ccfc3f2",
+    "runtime_sha256": "906c138334e8f2e8894857d68a3275f0beecf9cde70cd200391c4272199df4c2",
+    "glb_sha256": "f274125ac49dc07b11d41af2843ab371d74b633f10ca0438f3e5c193aa641c66"
   },
   {
     "id": "rootforged-worldroot-pillar-2m",
@@ -3319,9 +3319,9 @@
     "source": "source/rootforged-worldroot-pillar-2m.blend",
     "glb": "glb/rootforged-worldroot-pillar-2m.glb",
     "runtime": "runtime/rootforged-worldroot-pillar-2m.model.json",
-    "source_sha256": "76892b7e17024e762285be0c361029c447ca86b4a209a1cc2beb12be4fd02698",
-    "runtime_sha256": "faecf6853a609405297379c5c35c1f2411cdc1a397aed1a7130bea3d1af6eef7",
-    "glb_sha256": "d49df32df5ac83028761b74bba58f97e476e0371a203dc7f25662cd964989b5e"
+    "source_sha256": "1fa3d892d109e1612d6dcb72ac1f971b78dbfca8acc14268ed6e1cf5585aa26b",
+    "runtime_sha256": "a0cdd3289d81b8f171b3c06248442fa269243d8d6f4b1bb53a2ed76a93cec406",
+    "glb_sha256": "01ce919ac68e2158395565d4e3f4c0d3ff1dac8b62aa788681cf309ad94e9650"
   },
   {
     "id": "rootforged-worldroot-pillar-4m",
@@ -3331,9 +3331,9 @@
     "source": "source/rootforged-worldroot-pillar-4m.blend",
     "glb": "glb/rootforged-worldroot-pillar-4m.glb",
     "runtime": "runtime/rootforged-worldroot-pillar-4m.model.json",
-    "source_sha256": "8bd7a1511a16f4e52963b5a2dda5d4467556030f214ae01100791719eb048a7a",
-    "runtime_sha256": "f39274e152ed2086de0d44703d61348ddd280a5b1483e00c60d3715e56c96dee",
-    "glb_sha256": "badce2b61d5c137290dd7dd74236196827c23818bb6ac90fd39495623c28a60f"
+    "source_sha256": "77b2b31ba0afbf529650ddd3481bf919392f956d6d72d8c819b20894b447835d",
+    "runtime_sha256": "ca61572826a93c1c0184377299e7ace8717b0fe571bb70640d3e1eb39d9aa264",
+    "glb_sha256": "060f5d1e841bcfb0f0cfd50a262e6972805d52419812c95a6f30adcb5dd65370"
   },
   {
     "id": "rootforged-worldroot-pillar-8m",
@@ -3343,9 +3343,9 @@
     "source": "source/rootforged-worldroot-pillar-8m.blend",
     "glb": "glb/rootforged-worldroot-pillar-8m.glb",
     "runtime": "runtime/rootforged-worldroot-pillar-8m.model.json",
-    "source_sha256": "16ea54cd627e64976f2f016ff4e421e4c995c5f37e6f4408281c232da8044dfc",
-    "runtime_sha256": "ff6ed28e342be362b5f4bec598bd2dac9b8b08f8c8dd26aa13df2cf01c20a52a",
-    "glb_sha256": "ab0891f12f701eb353a8705aca1f155f2d1e3b7b3ddeec2c65be78f7c8ac6db6"
+    "source_sha256": "e83271a30f7656fcc0b0af109494afec15db95908353aa1360e7aacb0f602c0e",
+    "runtime_sha256": "fa5a9d740c23482f78931e47c54d4cc34fa95a4d16ea57a8ca7f23ec4e8930e4",
+    "glb_sha256": "a9ee57eba3519c47927f507b356b8741d925acaa8385ffbfe29ab4f807972a4a"
   },
   {
     "id": "rootforged-worldroot-t-brace-4m",
@@ -3355,9 +3355,9 @@
     "source": "source/rootforged-worldroot-t-brace-4m.blend",
     "glb": "glb/rootforged-worldroot-t-brace-4m.glb",
     "runtime": "runtime/rootforged-worldroot-t-brace-4m.model.json",
-    "source_sha256": "3a5167991f3eec372e228cdfa5996aa17b31c02950c9230e20d479b9dd4e1ec8",
-    "runtime_sha256": "26d2f3eb7a46da1e5214f9dc9daa9f0be41110926ebe9fb22740ac9b923c97fb",
-    "glb_sha256": "d334eca11e8ae4739baac5dc34f90276a230712df6aa37d80a919a38a3bb65fa"
+    "source_sha256": "d72a58fe9b36810b20cc3e7373edd1f7bd0e7e5d6006449d9a068245e4b40ec0",
+    "runtime_sha256": "253edf03f56b0b6f31103269db0d4955cd46d6a35cf538d96d2fd284517c8012",
+    "glb_sha256": "4e1468de41c7aa9f9cab15c014a67cfb1d19fb031f250c68eceb8d19ac9da964"
   },
   {
     "id": "rootforged-worldroot-y-brace-4m",
@@ -3367,9 +3367,9 @@
     "source": "source/rootforged-worldroot-y-brace-4m.blend",
     "glb": "glb/rootforged-worldroot-y-brace-4m.glb",
     "runtime": "runtime/rootforged-worldroot-y-brace-4m.model.json",
-    "source_sha256": "a24e8462a384173d60f71ae0ea7959d00cf650950354e74bc31f6b41ef4080ba",
-    "runtime_sha256": "bf298794166707f58fe08137f6bb9d20389b4ed255182ba46778a499b050bc89",
-    "glb_sha256": "defc6449fdc50dadbd02443364bb9b170839cef49e37532551abda763cdacb6a"
+    "source_sha256": "fa63bc21969ac32b81b008720ccbe82917ebebaf353dd7573110a646b2d45e97",
+    "runtime_sha256": "facfb9d1c1343ef3cb98c13e7604d6c68489e2514b91a015cd78e714cbc4d6c8",
+    "glb_sha256": "f05c1711152910dcdc22c9e1c0150a437a87abff43849b473c9159493394f416"
   },
   {
     "id": "rune-engraver",
@@ -3559,9 +3559,9 @@
     "source": "source/staff-frost-advanced.blend",
     "glb": "glb/staff-frost-advanced.glb",
     "runtime": "runtime/staff-frost-advanced.model.json",
-    "source_sha256": "a44b96ed4043be4a44579f5dc16477c881e25a23e49257c778759b2854a98914",
-    "runtime_sha256": "b68fad5cf7bc371f0e577fc4069be39533622677cd3be092b33440e2e73e9c45",
-    "glb_sha256": "c28f9c7b02f4d575598f13277a1899ad185a8ed4d484b64b0e81dc6ce3098d28"
+    "source_sha256": "b0ebbf83b23d89f95ab9344a87dd1539609c1a7ec4b72dab744dba5ee30053c2",
+    "runtime_sha256": "4e099d645edf4dd1df46546ea68d6f4710d20d26784b2854c0c5cb989ab0b369",
+    "glb_sha256": "e6b185b1619ffcb84a6d2194ccceff98da4b522e318ac282b61743f8d837a817"
   },
   {
     "id": "staff-frost-crystal",
@@ -3571,9 +3571,9 @@
     "source": "source/staff-frost-crystal.blend",
     "glb": "glb/staff-frost-crystal.glb",
     "runtime": "runtime/staff-frost-crystal.model.json",
-    "source_sha256": "5ef73ac9dd1ff0b15d64642542f56b157cbe559f01ec17b43ef0b51d1e3e871a",
-    "runtime_sha256": "61f1487ace573ed267c44ec1b233b0ef2c8e5c3cf59ee4aeddbe58d16e6a8de5",
-    "glb_sha256": "731b58bc2a7715f6acdfe031e22aac8fd5491a9cca382434e1f1287c59dec7fe"
+    "source_sha256": "be6d14c7cf0ce46e8a42a70e0aa3ffd32989c6bcce9a557eb932a2e52ec11a81",
+    "runtime_sha256": "242f34eb4497d0459a0f71041ac22de02aa17f71a7e35afe9604af1c14c07fb6",
+    "glb_sha256": "455e29944363b1942ad9d68682ffc7c440b64ce42c68847560e6a2595660bc0c"
   },
   {
     "id": "staff-frost-master",
@@ -3583,9 +3583,9 @@
     "source": "source/staff-frost-master.blend",
     "glb": "glb/staff-frost-master.glb",
     "runtime": "runtime/staff-frost-master.model.json",
-    "source_sha256": "b5271587b4d94975261db35af5f63fc41831f02c31d309eaca25e9fdeb5c38b7",
-    "runtime_sha256": "64b1401279750181c37717f527fe38c8a9d7c5cfff7201c7692685567d07e982",
-    "glb_sha256": "2fab439f79405c942eea9de07c43badf94d412fb81fddbda6580402063da5411"
+    "source_sha256": "53f335018180efca8f2a9a755415e793525cd240ff9e6d50151bb7f3f868cb15",
+    "runtime_sha256": "431217e68aa38871a4f63b961c6ffa42e15d167c587b91095b8166e4aec8a54e",
+    "glb_sha256": "878a99fbe89e97e2079cc5a8316f22c568933cbc51c6838ebea27c144fadd556"
   },
   {
     "id": "staff-frost-simple",
@@ -3595,9 +3595,9 @@
     "source": "source/staff-frost-simple.blend",
     "glb": "glb/staff-frost-simple.glb",
     "runtime": "runtime/staff-frost-simple.model.json",
-    "source_sha256": "ac3da2e86a4c1179776b82db08d9c99a77d3f028007c2d7fce19f9ce6e124350",
-    "runtime_sha256": "54c4bdce92dc31a4781fed4b610d6e3bf9da467f538eb1d471e2976c25a06dc1",
-    "glb_sha256": "99b3d5e6c27bd21552f0b19745b16aef109a190be706b6a57708e273ebaef998"
+    "source_sha256": "9f2b8397d1e57dd2ca922f842756002d6f28d2a2b95958c1eddb57ad914384f3",
+    "runtime_sha256": "9d10b5f4b456c120786f3a56e1397a57fd72f3303692e066d0b2067d9a0c364a",
+    "glb_sha256": "165762d756b6d3dae7d538d319e4a78d954e5de8dc593e8252805277ee78bcfe"
   },
   {
     "id": "staff-radiance-advanced",
@@ -3607,9 +3607,9 @@
     "source": "source/staff-radiance-advanced.blend",
     "glb": "glb/staff-radiance-advanced.glb",
     "runtime": "runtime/staff-radiance-advanced.model.json",
-    "source_sha256": "654647e0d9d2358214e8607d3c73ba36abcf6f212f246e55c3921201102651d3",
-    "runtime_sha256": "0123bf38987a9e6aa27a0363d36d5713425e5e17651472ba2d75a34ca1a7b847",
-    "glb_sha256": "e3ce227b97b011128bb65ff1bb674ed7826bb498780b7d4116f87879c4b7a7cc"
+    "source_sha256": "bb587735bd53071dd75313ec4a22e6b250fb09609ad74ac62e96158223a3bc79",
+    "runtime_sha256": "1546a5e092b23c6ffd93efaf0becc9590e671392c8cb0b06a86685c282fa7a9b",
+    "glb_sha256": "50d8d0329a67f3c82ddc61d6d93d2327febe6d042dcfb742bd7219ab0202441a"
   },
   {
     "id": "staff-radiance-crystal",
@@ -3619,9 +3619,9 @@
     "source": "source/staff-radiance-crystal.blend",
     "glb": "glb/staff-radiance-crystal.glb",
     "runtime": "runtime/staff-radiance-crystal.model.json",
-    "source_sha256": "2994f65f24770926e89a998fa979d0048273df053bef35d1ff5c5b87af56e557",
-    "runtime_sha256": "1e2f60a70d136aadf36a6d0eaee0fd428117938baae701ded55e075592ce69df",
-    "glb_sha256": "22b3aca2739895f07867f25a80f808643e8a8cb15c753eb717cf42cb780e956f"
+    "source_sha256": "bee3481c4b388be25bcb43f2e9ee53d5134803d5663b461ee63205a9765c8f31",
+    "runtime_sha256": "b919fd29056d8f5d720a807e096c16b2b7456472c4f9ad13b79d22fe0496d86a",
+    "glb_sha256": "e8f871a2d29bb0da03e4f418ec95c0e65ef90fe1532ba7be5e2871449f5b9044"
   },
   {
     "id": "staff-radiance-master",
@@ -3631,9 +3631,9 @@
     "source": "source/staff-radiance-master.blend",
     "glb": "glb/staff-radiance-master.glb",
     "runtime": "runtime/staff-radiance-master.model.json",
-    "source_sha256": "1a23420c55e0a8880b65ace8ddd9e93ec6b543eafa58905c17667075d7341421",
-    "runtime_sha256": "ef76fe5541926b6a750496c1275bd78125252fcc59fc8e66383a2f8b18f3fcb9",
-    "glb_sha256": "f08fbf40e0785cbac52d9e0451407b951f5cd5e350eff7a9826a02971ecdd1e9"
+    "source_sha256": "3f4a44e84ad56fb7281a461d26c092f224891e585e4a0709da31bc19707b5cf7",
+    "runtime_sha256": "4a90a7f4423a95120f09480fdf966661704e099b4545ff72ab73b3f919d3f044",
+    "glb_sha256": "498e3fce7ed6330445cd304536641012e7e9aeb4552e892bea24f1360573622a"
   },
   {
     "id": "staff-radiance-simple",
@@ -3643,9 +3643,9 @@
     "source": "source/staff-radiance-simple.blend",
     "glb": "glb/staff-radiance-simple.glb",
     "runtime": "runtime/staff-radiance-simple.model.json",
-    "source_sha256": "2ab36187acde7f6d3b4de56d62a9c3ea2863b01947ca2b974c9fbd2480e20185",
-    "runtime_sha256": "6db6450df554da96b4c7a2b49ce3fb4b8b30c1c08b79e6ed279b55d2ca505a0b",
-    "glb_sha256": "1a78a0eb31bd300a8ab7bacf80407718d6518519f29a6c10884e1237839af0dc"
+    "source_sha256": "4ad4ee5f2327f27966582cee4fb484cec8af5e86feeacafc88f0c2cf55da51bb",
+    "runtime_sha256": "04b9d6d99554223ceb1ef481e9caf25b88e260bbc6f61b49eff75e499b777252",
+    "glb_sha256": "46024ae3dfbcc2d0ea8c5767bff0c6d70d2cea11b1a900f510195d4302485346"
   },
   {
     "id": "staff-seidr-advanced",
@@ -3655,9 +3655,9 @@
     "source": "source/staff-seidr-advanced.blend",
     "glb": "glb/staff-seidr-advanced.glb",
     "runtime": "runtime/staff-seidr-advanced.model.json",
-    "source_sha256": "512050cf3262ed3ebfff17fed34a0f2a526c54f9c7794c0d9613a19b360b866d",
-    "runtime_sha256": "54493debaeb725de714e249910722c0e169d7b11cb338a8305e6b1da5c4946a0",
-    "glb_sha256": "9bef2fffbdc25508dfb1f54e50ffb9f2cfabbb85ccf3f99dd3b8bb10fa3f2828"
+    "source_sha256": "84f0cd3e400d9682c518e483144a1cae3190acaff9cce41caa1a85fd76d44fd2",
+    "runtime_sha256": "7bdb6b8a32eef9714d0569c0218feed6040db0b5e2d74f84b3bc08f16f0e4631",
+    "glb_sha256": "8b0db5fd69bdc8dc9da56b951b28eb663c77f9dda5828fb068bf0a65af8a47ba"
   },
   {
     "id": "staff-seidr-crystal",
@@ -3667,9 +3667,9 @@
     "source": "source/staff-seidr-crystal.blend",
     "glb": "glb/staff-seidr-crystal.glb",
     "runtime": "runtime/staff-seidr-crystal.model.json",
-    "source_sha256": "fdf90ad5aa9699cac10f530f1b9b8e4af8965569e87a4775ea3ff4b6c3ca616b",
-    "runtime_sha256": "2f2645a43b24853d2d4bf4c1c939474809996da6c02229384770674670f1d149",
-    "glb_sha256": "3d93c711dc313cbf6bfa95d1c97e5e417b1fa09c673be1654ae79946d775e5a4"
+    "source_sha256": "e7579815cc88b33e4ad198aa34adfb48e5b32d18c7b16e83935af74e85b87664",
+    "runtime_sha256": "0da63f2d1298c2242161f0aaab9b159a7284f6d137a11c3e53de1d3db65bdd0b",
+    "glb_sha256": "eb84e6de836b88de3f323a103c826e436347eddf9ebd21d8a38246b80f2e67c5"
   },
   {
     "id": "staff-seidr-master",
@@ -3679,9 +3679,9 @@
     "source": "source/staff-seidr-master.blend",
     "glb": "glb/staff-seidr-master.glb",
     "runtime": "runtime/staff-seidr-master.model.json",
-    "source_sha256": "189e8a3dd115881a4fe03d896173ec213a4a4aa3fa6ce260ec9014d77703c5df",
-    "runtime_sha256": "f94ca824cd7805ab7802102875de659b4af7fb1bbe2848d6a7818e68507ecddb",
-    "glb_sha256": "011bb94daf0896a8654a0c1a029cd24d3ae5e8da25f05878f980d3cdd1ac1906"
+    "source_sha256": "59f1db53642a65e50133ed21decb5802b04ead6a0da984cf4b6a484c39eef741",
+    "runtime_sha256": "1a36b67639a80e5bc6f47d0e3c41f3d44e2e7d28630a163e1e7a3c180de81540",
+    "glb_sha256": "c1c7c9a2f99b83a9eac987a009ff36a2ffb6cba801fffcc0ca6ee08d43cd05e5"
   },
   {
     "id": "staff-seidr-simple",
@@ -3691,9 +3691,9 @@
     "source": "source/staff-seidr-simple.blend",
     "glb": "glb/staff-seidr-simple.glb",
     "runtime": "runtime/staff-seidr-simple.model.json",
-    "source_sha256": "832cea34fa04294a32cd69a5faae7a5af99ac55e09788b999d076c749f5d2cf5",
-    "runtime_sha256": "34e8d5dcad9d46526c793cc87ee11c55b331e892a13246849da9c8eef6cdab2e",
-    "glb_sha256": "81c6a5f335cc1384e3911a441cb441e102a7dee773acfe2daff822133313d2b9"
+    "source_sha256": "34f4b07d8aa1c7a94eefe00f611a9363dd6eefbd03b6d48e2a9be497f5d782d3",
+    "runtime_sha256": "02cc5da7b507326898fdfda8363b5ec8c5b717dae41a6857b5554f6ce66f04a0",
+    "glb_sha256": "6f76cec9c191e6e0a420bc52db3780a5a1f7ba1055824033bf8d12cb188cf728"
   },
   {
     "id": "staff-spirit-advanced",
@@ -3703,9 +3703,9 @@
     "source": "source/staff-spirit-advanced.blend",
     "glb": "glb/staff-spirit-advanced.glb",
     "runtime": "runtime/staff-spirit-advanced.model.json",
-    "source_sha256": "d604d1d7f384a7d4cb6f85864ae23d7703c13f98d17f052c14633916e78f7afa",
-    "runtime_sha256": "ffe86c22775dc43d555bdcd6585fa65666c96c3a25e7c25b6e41dbd64f1e4808",
-    "glb_sha256": "de48393a66562bac007e770896c8a89eb917088e3b537a599a062a36417787ba"
+    "source_sha256": "9240f12965558ea25b91df2628282c8b848fad19982ad5b2c6b705f3a8adb7ec",
+    "runtime_sha256": "007a7a997d68feb095d65bfe0a92fbfca24d3cde56643ae89c57506670a9dd83",
+    "glb_sha256": "b7379912c0a7a0f7c5fdabe4d06f43650d367bce660e0389b912c8cd75aeeaf3"
   },
   {
     "id": "staff-spirit-crystal",
@@ -3715,9 +3715,9 @@
     "source": "source/staff-spirit-crystal.blend",
     "glb": "glb/staff-spirit-crystal.glb",
     "runtime": "runtime/staff-spirit-crystal.model.json",
-    "source_sha256": "f6654bec478615085061dce7b19715c34910cbc07c12eae417da525eeac104f3",
-    "runtime_sha256": "8d1efa5adb0f8189fa45bf705009f3142ce8a7edf31c7431befac5e4081c06e0",
-    "glb_sha256": "4b74cc889584dcbb8ad3eb6089400c4a48b2f5cda04358cc40fc62552047fc38"
+    "source_sha256": "7e8f67f4c2e3384e6b08c48bf04d26d518c0e3d41af8a1738afc07bbd87c2024",
+    "runtime_sha256": "695d7196d9e50ae90b887c141f69e581d8cc666abfddebc63686d204e8441b06",
+    "glb_sha256": "8f07ac5bce92043f23625810be4524273007dc988ba59644f1ebacbee2f5b163"
   },
   {
     "id": "staff-spirit-master",
@@ -3727,9 +3727,9 @@
     "source": "source/staff-spirit-master.blend",
     "glb": "glb/staff-spirit-master.glb",
     "runtime": "runtime/staff-spirit-master.model.json",
-    "source_sha256": "7deab9b1a3baabf30c0e0ee6cef4fcc22065959335c7ad0488c9b61a3843f338",
-    "runtime_sha256": "998554e1e991b3f5f7afbda3149ad5c1a97f6a5011cf14d4b9770b04ba24de88",
-    "glb_sha256": "0abd16b4f969ba3d9af877fa1dc674cb72e1dcc968ca681269c56ed8bf8cb0a5"
+    "source_sha256": "bcf67382da7e822d5233347d72d46bc9a5499d4d3535b30fd2a16834d6c74c53",
+    "runtime_sha256": "5608695feb715f84a1de3c3f08eeee5cde3e5c7b7a90cccd038820aa417702be",
+    "glb_sha256": "80964cd1d0a62c9ed9b0fb38f624c06f41af2535efe54e1b1d58febd56578cb0"
   },
   {
     "id": "staff-spirit-simple",
@@ -3739,9 +3739,9 @@
     "source": "source/staff-spirit-simple.blend",
     "glb": "glb/staff-spirit-simple.glb",
     "runtime": "runtime/staff-spirit-simple.model.json",
-    "source_sha256": "dd41d23a1df2088a9b343b215d5efe7afeb89ff1379ae77376d869e437399a3e",
-    "runtime_sha256": "93da2c3ebe2ff781f274b39376ed31a9bcb196e739e0775f463bc6880aa3b162",
-    "glb_sha256": "5b2d5dc06704a4ab78e86b4484869cd0d08d27f7a3360c55c6f7d4ff9882c719"
+    "source_sha256": "0ccf1e24757456132f06fd63baeb09817d6d5cf43295a2bcc443b67b48e31062",
+    "runtime_sha256": "e179cc27262e3e540d2d3c3b7ff86325c3e91987c68d681a15a157d360c36daf",
+    "glb_sha256": "43381ca54651e728123987d66c16a0b1989f0a4a662d8a72eb2df8da0eb6ce0a"
   },
   {
     "id": "staff-venom-advanced",
@@ -3751,9 +3751,9 @@
     "source": "source/staff-venom-advanced.blend",
     "glb": "glb/staff-venom-advanced.glb",
     "runtime": "runtime/staff-venom-advanced.model.json",
-    "source_sha256": "6b8c4f615eb17244ae118beb1ff0c0607c74535b25097053d103c67a1791af65",
-    "runtime_sha256": "ced7d49a6b15e1e1969efa82be3c024691f8905d0759452faa0abc710cd0ecc0",
-    "glb_sha256": "69c4e4289e31cfd970c695392f02ab362d214c75976a4be2eed4aa880936ae17"
+    "source_sha256": "c8fc492539f41ef9c3d73818fb917733dc20e12741f5940d3c922fc3c82579d6",
+    "runtime_sha256": "ae4ec72cfffe11ef0bb569a14db4ced9e589f5480c0d3c9d06b86878c72efe37",
+    "glb_sha256": "e08bcb55be373e0778bef0b28f95eaeb4130648f89ee6a9eeadaa06f7f0d4e30"
   },
   {
     "id": "staff-venom-crystal",
@@ -3763,9 +3763,9 @@
     "source": "source/staff-venom-crystal.blend",
     "glb": "glb/staff-venom-crystal.glb",
     "runtime": "runtime/staff-venom-crystal.model.json",
-    "source_sha256": "70258c58ba416dce5f1fef5ea3b24682ad41dc726269e4c6e9cc695a040776a2",
-    "runtime_sha256": "5a2840270a00672de7570968553d6e5f1d64a609cabd44459a340e8424ca753a",
-    "glb_sha256": "e42eebd385695294087305c8dab6cf96bea29d2660ec107362c790df33aef17b"
+    "source_sha256": "2fce5232276d7e30c6df49afba9a7cb9dc88a1acfa98444ed0b02302cbf77aae",
+    "runtime_sha256": "9720e287bf9eac63ee8c61c1613533d6a8a91f0bf1e86dce0fadf2767d051ac3",
+    "glb_sha256": "77baa4ad3db1e52e4b01211515e368f5521425e6621280729532bdf0e75576e5"
   },
   {
     "id": "staff-venom-master",
@@ -3775,9 +3775,9 @@
     "source": "source/staff-venom-master.blend",
     "glb": "glb/staff-venom-master.glb",
     "runtime": "runtime/staff-venom-master.model.json",
-    "source_sha256": "114fdb2f8858aa505a9eea104a7a42d87ead5d3f3a49db68df9551fd7c4a28c9",
-    "runtime_sha256": "ab4d45ca9a009f6bea96f994c51b859547f8c8080fd24fa651de710263289e2f",
-    "glb_sha256": "06f3ce84de7b874b00fcd9795af04f4760abb6d7331116c659d14c212a9e7834"
+    "source_sha256": "983e092b5878b0ea0c75c908fc89943259a7adad28cb0f5c48d5486d178d61ba",
+    "runtime_sha256": "aea4604cb8a2c2b17428cad245d640797c499d0eb059e699c35b0d5a916b064a",
+    "glb_sha256": "047402b0074e106f8776379102bf6e7dac6a4c2045678b7d412b0ff696311f3b"
   },
   {
     "id": "staff-venom-simple",
@@ -3787,9 +3787,9 @@
     "source": "source/staff-venom-simple.blend",
     "glb": "glb/staff-venom-simple.glb",
     "runtime": "runtime/staff-venom-simple.model.json",
-    "source_sha256": "29b5510725a0f6c055d7f6a9da5998e5222c006ded47a1118bd927603c7b69c6",
-    "runtime_sha256": "9b37014dd3f9a346b234a63f0cabc6221870ef8680816fa694abe33725e378d2",
-    "glb_sha256": "f0cd1b4af386d9c4707fa840fc033f63b5a4425b4ba7585b5e862846e6949d75"
+    "source_sha256": "83b01761e8e29b596b73fa37f18fcec4b0be3762fa74d9f6fd5a4500a665f652",
+    "runtime_sha256": "fc80038b08b2bd96123b6372af859a1000c0c8602b76e9fbecca619030db4260",
+    "glb_sha256": "97c964bda47f7afcc07a6e1c5651e2030ad38330457d22d65190d7265e4b94f4"
   },
   {
     "id": "underworld-armor-defiant-cape",
@@ -4922,290 +4922,290 @@
   {
     "id": "underworld-flora-fungal-amber-bed",
     "parts": 2,
-    "triangles": 1904,
+    "triangles": 398,
     "materials": 2,
     "source": "source/underworld-flora-fungal-amber-bed.blend",
     "glb": "glb/underworld-flora-fungal-amber-bed.glb",
     "runtime": "runtime/underworld-flora-fungal-amber-bed.model.json",
-    "source_sha256": "75b838d2b1cd839c6d16882496a423f8949c48d30234328308bafb61855841ad",
-    "runtime_sha256": "f9f2d79d8c28668585ffd3914ba936a0fd83ab607124d607ed0247f859bd08f1",
-    "glb_sha256": "1a708c0e1c4229ca17f3d22bd2e5addd5022ff7e4640143c548f9f35b9fab457"
+    "source_sha256": "a2e6346c56daf5c8944ef69b56bc9965962b66339fe136e1a48264bb22cbd2cd",
+    "runtime_sha256": "d3c0fe6cc2b0f368a5f1901305c876e8bacd176e0a00027193641c216e4c00a7",
+    "glb_sha256": "4633cb42284cf7b3a7ddc67b196c2f5e42c04f20a88891bd2bcf4fbc9ec85493"
   },
   {
     "id": "underworld-flora-fungal-fern",
     "parts": 2,
-    "triangles": 856,
+    "triangles": 398,
     "materials": 1,
     "source": "source/underworld-flora-fungal-fern.blend",
     "glb": "glb/underworld-flora-fungal-fern.glb",
     "runtime": "runtime/underworld-flora-fungal-fern.model.json",
-    "source_sha256": "51ce630b37b69be03c6f7f93fbbedf651ff20acc39ecc2741e6b577b386fb865",
-    "runtime_sha256": "41620da54f31eeaef0d4fb9e81f6435b8c8bba1f6259eabeb0c4163d70d70b1f",
-    "glb_sha256": "a9dcf67647e52b281b7d51738c919a9f49032406b9194f0c430359fb2c828837"
+    "source_sha256": "aea06e9ab60f52b54f363520bf361ba4e4e1a480b2a520de746324cdb5e3e610",
+    "runtime_sha256": "377a2813f5b56846700c3acddbb7ef181bd56ea3b4227e8699c425c46c2d16a0",
+    "glb_sha256": "bd1697cb7da56b2f9eef6fd7efca5b0c88ff0d6c354d28809eb9d8b23734d2b3"
   },
   {
     "id": "underworld-flora-fungal-glowcap-bent",
     "parts": 3,
-    "triangles": 7442,
+    "triangles": 578,
     "materials": 3,
     "source": "source/underworld-flora-fungal-glowcap-bent.blend",
     "glb": "glb/underworld-flora-fungal-glowcap-bent.glb",
     "runtime": "runtime/underworld-flora-fungal-glowcap-bent.model.json",
-    "source_sha256": "a3e6064b34db8df274880a4fb8a660c47c21b952424e826341fe249faa78d9a1",
-    "runtime_sha256": "c9f34c466c841773272e5e4a5c4ace5337b456500bfe31a00da38420ba156dc4",
-    "glb_sha256": "8c5f899f5ede62784763c10f8df02c034f6892fe62b3e70afae244050ea3e9b8"
+    "source_sha256": "a44daecca1ab4d7e9e93ea8706c6b5e21ff111725b612270caf9ab6017d03c0c",
+    "runtime_sha256": "c10067494197e9aff42a9c7638f70431fa692d0332ba2ab243ff2e4c56c51a3b",
+    "glb_sha256": "5f76058a7b2320856d9670c5ebfa2ae6a90221d2bc11e9ce34683fc85c450fa8"
   },
   {
     "id": "underworld-flora-fungal-glowcap-elder",
     "parts": 3,
-    "triangles": 9422,
+    "triangles": 576,
     "materials": 3,
     "source": "source/underworld-flora-fungal-glowcap-elder.blend",
     "glb": "glb/underworld-flora-fungal-glowcap-elder.glb",
     "runtime": "runtime/underworld-flora-fungal-glowcap-elder.model.json",
-    "source_sha256": "889478df0815525cd339a79fffeaaa475be132d4d7fd66e29843d61b6c30dcdc",
-    "runtime_sha256": "36c212c378685cd76af82d649fb9cfbdcc37e1e3933cf5d85b71ae22fa5189d1",
-    "glb_sha256": "7a1d7496e0d8c884fd94786102d232ff4f21b5df5283ca3c1b60d4dd02b97586"
+    "source_sha256": "933237ba257a8e73ba5ae580f732d7ea335a172a69e440faabd8d5c3361238bb",
+    "runtime_sha256": "443e69e84c190e37d820c0bae45cec74f53a01f38cd3b9ac3a8d0edc7ceb8191",
+    "glb_sha256": "6a270001b9be55c38bde1142d808d87c7e7bbef037e6d2f1dcbe8d9113a8cd2c"
   },
   {
     "id": "underworld-flora-fungal-glowcap-twin",
     "parts": 3,
-    "triangles": 11618,
+    "triangles": 576,
     "materials": 3,
     "source": "source/underworld-flora-fungal-glowcap-twin.blend",
     "glb": "glb/underworld-flora-fungal-glowcap-twin.glb",
     "runtime": "runtime/underworld-flora-fungal-glowcap-twin.model.json",
-    "source_sha256": "e2d2f09c99588948098eb6790a96518be9eede665f16202be72cf7324b966184",
-    "runtime_sha256": "7ea80b2845016f92fd373a2947e13ea8107a2d4643183f042efbc55ed510bcdd",
-    "glb_sha256": "06a6cde7a2132964e2fc3c5dc417f4ba7b9b8ccfa492ed688ee42fa140f7ba49"
+    "source_sha256": "0d6f3e25a55959871dbedc31ad48bd424324dcbfe24fd97d1a81b47504af4c23",
+    "runtime_sha256": "59f40aed0cc62cfb7e09b9d5cf8a1a921195882773e8aab2b72a67fffb0cbd83",
+    "glb_sha256": "c48241f42f0e6cda3795720e9a74ad920764aff9617e48d46eca26922ad7cc0e"
   },
   {
     "id": "underworld-flora-fungal-glowcap",
     "parts": 4,
-    "triangles": 2776,
+    "triangles": 576,
     "materials": 3,
     "source": "source/underworld-flora-fungal-glowcap.blend",
     "glb": "glb/underworld-flora-fungal-glowcap.glb",
     "runtime": "runtime/underworld-flora-fungal-glowcap.model.json",
-    "source_sha256": "a366a3c99bb33fbfeaf032bce90ad4201ccdc2c9ead83f1fdf2bbf57df8282be",
-    "runtime_sha256": "47d1678fb56ae20282dfeb1dd19895bd6ec6d8874274e56c8755d0aedf668760",
-    "glb_sha256": "8cb304228e848987f0bef5cde2b4158a598a10c91654a90cc379e53b741c3700"
+    "source_sha256": "d036c3cb309b420e47e7bfff7ff6c4a36eb9dd8ae0909edc74f3bf54cb88f7a8",
+    "runtime_sha256": "e2a35c81f6e26b9d46881cdc3c3e0a2e32281079455728d987927007c70a1876",
+    "glb_sha256": "33bc251ab1ceae10268eeb4c8e4dc090587f0ae80cf4cd92cdad1dd253396662"
   },
   {
     "id": "underworld-flora-fungal-lantern-caps",
     "parts": 2,
-    "triangles": 1360,
+    "triangles": 398,
     "materials": 2,
     "source": "source/underworld-flora-fungal-lantern-caps.blend",
     "glb": "glb/underworld-flora-fungal-lantern-caps.glb",
     "runtime": "runtime/underworld-flora-fungal-lantern-caps.model.json",
-    "source_sha256": "fdd1883beec40c913456b357917c6d15cfba4cd60aefcdc5fca2591b377e3842",
-    "runtime_sha256": "967a86b74b549bf5299dee4fba7d509fa6420bf50a43af662d5c9a394cab9189",
-    "glb_sha256": "1322f1dab241d07ebeb1b61c0b88019116f25f132e77bd02e17ee2a9fd4258e5"
+    "source_sha256": "01ba60b7507222e8b9d458d585f9b3c20182d5c169e9b16095a5b7d678862ff3",
+    "runtime_sha256": "874b6c74285b622c638ea8331f4957000947bf150edd0a01b2e2f0a32441b7ed",
+    "glb_sha256": "da81677d71a891fac26a050195797128b6dd10cb8916c73d016850897f92813c"
   },
   {
     "id": "underworld-flora-fungal-moss-stone",
     "parts": 3,
-    "triangles": 872,
+    "triangles": 398,
     "materials": 3,
     "source": "source/underworld-flora-fungal-moss-stone.blend",
     "glb": "glb/underworld-flora-fungal-moss-stone.glb",
     "runtime": "runtime/underworld-flora-fungal-moss-stone.model.json",
-    "source_sha256": "03eabade133957f190e8b056ca8426ea509c8c8a46b22d36d6e19a1b93eacc9f",
-    "runtime_sha256": "d749349a7651d04c1ef637a3ebd8eadfcf3d4a9ed6378959fa77685c8b025dfa",
-    "glb_sha256": "503261da209c6de97b35f7f8b5661cbc0564cae502161e9362979a5e55876c75"
+    "source_sha256": "d3f98815170dc74be637054fb0deda8e9a9e168c6d4cbc67ed1ac5ae9bee2a62",
+    "runtime_sha256": "db1fd9781bf3c950003740a55c4d9f9d6248fd5e58216b2295525f170b49e5b0",
+    "glb_sha256": "ece9365733b9578d2c9bb4ac5b2601ed04bdcfbd20a9bbfab6c6b0b1dfe46a9d"
   },
   {
     "id": "underworld-flora-fungal-nursery-caps",
     "parts": 2,
-    "triangles": 1728,
+    "triangles": 398,
     "materials": 2,
     "source": "source/underworld-flora-fungal-nursery-caps.blend",
     "glb": "glb/underworld-flora-fungal-nursery-caps.glb",
     "runtime": "runtime/underworld-flora-fungal-nursery-caps.model.json",
-    "source_sha256": "12bf8e11ba8440e0278205ea2da152ec06e3c2d0adeb5394feb7ecd444398554",
-    "runtime_sha256": "01ddb8e2452cf4553ca2a89e10d6a30c808b16f43a8c73f8edab1b6eb72d00c3",
-    "glb_sha256": "2acf72cea9aa515d0d200ad32f385fd14aaedfd1941d34450faeb39852650c63"
+    "source_sha256": "e7d7b415ef68d6724eff0801ed3be03495a0d5aa125335db96a96c1e3395d4c2",
+    "runtime_sha256": "def0caccd322a763eb2a56e541c717db9a540d644a753ce1fc6bfed336b9a7a5",
+    "glb_sha256": "ad478a0fd4954fc87b17bdc96d0a8e80b87bbe210ab24d0622a2bcc121a1c194"
   },
   {
     "id": "underworld-flora-fungal-puffcap-clustered",
     "parts": 2,
-    "triangles": 11674,
+    "triangles": 578,
     "materials": 2,
     "source": "source/underworld-flora-fungal-puffcap-clustered.blend",
     "glb": "glb/underworld-flora-fungal-puffcap-clustered.glb",
     "runtime": "runtime/underworld-flora-fungal-puffcap-clustered.model.json",
-    "source_sha256": "56dd25d7472f4e789a3b4635201f43f72abd15acc8c5ca1956ad07c20b71048e",
-    "runtime_sha256": "f99b9d4967cd8eb1e253460be9074c2198fc97b4a7163d8aef89874831d60136",
-    "glb_sha256": "50dcc6bbc13b0aaf9668f9a4d35ecc4bbca8a8cfc259341c3d219974004f7e0e"
+    "source_sha256": "02031effd839dda97b84bd23b0b30396566b6399a9d91a3373af88dd0c603696",
+    "runtime_sha256": "daa784058eb1920d4308ac99a722560ac8160b87901bc11de379bea85fb99d14",
+    "glb_sha256": "e0456f1986ae37d962dcf2892b9a9da787249fe24bd024d0f373dd9cbdf78e6e"
   },
   {
     "id": "underworld-flora-fungal-puffcap-forked",
     "parts": 2,
-    "triangles": 6246,
+    "triangles": 578,
     "materials": 2,
     "source": "source/underworld-flora-fungal-puffcap-forked.blend",
     "glb": "glb/underworld-flora-fungal-puffcap-forked.glb",
     "runtime": "runtime/underworld-flora-fungal-puffcap-forked.model.json",
-    "source_sha256": "f745587871b0b53dd4bc9b30e664304758f75dc4227226cff91cdd8220f59311",
-    "runtime_sha256": "59f20131f6bceff1c3805836914fb4f2ea4be9aee9f3af49d5012235e3927ca4",
-    "glb_sha256": "5fcd188d9c8b698b2e02399ec2b834ec131b6cf9775ac9f40201150eb8a06c00"
+    "source_sha256": "ff3b9fd3dafc40ae8dcd2b47bf1a611c44bbce95e2a8aa3e8d7666aad4f57ad0",
+    "runtime_sha256": "47d13b683423ec27da0a83766b5b0bfd54b02bb03ed0ab07bca7b4eb4490347f",
+    "glb_sha256": "c8aa1ebd52dc5a654b31a54d66dfe0a74686272762d60275de8654f0be9c8c69"
   },
   {
     "id": "underworld-flora-fungal-puffcap-spreading",
     "parts": 2,
-    "triangles": 9690,
+    "triangles": 578,
     "materials": 2,
     "source": "source/underworld-flora-fungal-puffcap-spreading.blend",
     "glb": "glb/underworld-flora-fungal-puffcap-spreading.glb",
     "runtime": "runtime/underworld-flora-fungal-puffcap-spreading.model.json",
-    "source_sha256": "703776015d52f11d1e68f8b824ca3b44836dc0a10ac9f58cbb8869dcf1dc65c4",
-    "runtime_sha256": "6cc40e5733604c6077e91c17927f2bbd242f5d59f6f6760d2701e19de8f7320f",
-    "glb_sha256": "9c42d21349f16178168c68b61f0e103515ad7f5abcdeb5755273768647c123d7"
+    "source_sha256": "c67925cb75379339f371ecdbe516f16c90ac91b1fc0380f5ba572694e14a19f7",
+    "runtime_sha256": "99789091563db2a78a7a42abe934e6499dbba252efe79b73e1bea0e7124cf799",
+    "glb_sha256": "b04781399e89a76dabd8980b0f173c3253b537f6131443eddaa792439c9c1573"
   },
   {
     "id": "underworld-flora-fungal-puffcap",
     "parts": 2,
-    "triangles": 7598,
+    "triangles": 578,
     "materials": 2,
     "source": "source/underworld-flora-fungal-puffcap.blend",
     "glb": "glb/underworld-flora-fungal-puffcap.glb",
     "runtime": "runtime/underworld-flora-fungal-puffcap.model.json",
-    "source_sha256": "664458e3b0947a3e00d944feb88eb4854eadd2a3607ad8c71c9a9226f3e0cc90",
-    "runtime_sha256": "1bb15493d6566a51f54ce03773b490c1df8bb8ffb61340971dc2e5e5cf5273d2",
-    "glb_sha256": "4b7224fcd0c1ac58a4db76c38cfbfcc9a65094f90f9a6c4166fb8185a7317b94"
+    "source_sha256": "1841d2e50c43d525c504583364051778678f9997dd2af4ad7552f9f387505aba",
+    "runtime_sha256": "4d81fa3de17c7ee8047b7f83ed35c16e2880dbdff65a49c00578d20222659335",
+    "glb_sha256": "0db9cb4c3917503d80c253c102c8b6f8f355e6270a6bc9c8a5a56fd1a0041e7d"
   },
   {
     "id": "underworld-flora-fungal-root-skirt",
     "parts": 2,
-    "triangles": 1024,
+    "triangles": 398,
     "materials": 1,
     "source": "source/underworld-flora-fungal-root-skirt.blend",
     "glb": "glb/underworld-flora-fungal-root-skirt.glb",
     "runtime": "runtime/underworld-flora-fungal-root-skirt.model.json",
-    "source_sha256": "c7d1a95f20002a7a9b8e06f7c024c5ec7938e6237d46308cdc7beeaa42746aab",
-    "runtime_sha256": "d6d273da5c967d740a7c044584f3a74dcd3157065d2d6e9c62ffc57ee586ffab",
-    "glb_sha256": "47ab929afae3d54b9ed30aaaeabdf83b5c14676037f4a85c7ef3ce5e1c14a56c"
+    "source_sha256": "f190ac15683f309d9102126396c9b769b2dfc6c91254d9384111623515817aee",
+    "runtime_sha256": "0bcd3970d50cb77eccff26c45c0f447d8c76ad4d810ad40ecdf9dc0725afa1b0",
+    "glb_sha256": "03f6c2788c216d27bd80eba8b842dfea1c5326c4da22a18a2ef2517ee64a8178"
   },
   {
     "id": "underworld-flora-fungal-sapling",
     "parts": 4,
-    "triangles": 2776,
+    "triangles": 396,
     "materials": 3,
     "source": "source/underworld-flora-fungal-sapling.blend",
     "glb": "glb/underworld-flora-fungal-sapling.glb",
     "runtime": "runtime/underworld-flora-fungal-sapling.model.json",
-    "source_sha256": "fc43ced5c2160af36bc5f8f195ffbdab246c8f3f98c5fe0d028572613b222a97",
-    "runtime_sha256": "bf1b8a1ee2eba1eab8e861c527a6755663b0922835773fb953b2e28e8ec76577",
-    "glb_sha256": "409c6cbf67ec5d81c692c7ceb98887bfd43a72c585ea15712df53549e0ebeb1b"
+    "source_sha256": "1c844652153a32ba45864699dc94828b9aa6191b4c2b8a2668f2e738cd62b16f",
+    "runtime_sha256": "8241cd47ec2f02c93a74c060fc7df9b5aa81fc7729a5b2e01adccd9ea8880160",
+    "glb_sha256": "4348af15b45e83992cd0c4dbd0ef84f3de84aa1a6bc2b43070a3556afdf04057"
   },
   {
     "id": "underworld-flora-fungal-spirestalk-crooked",
     "parts": 4,
-    "triangles": 4720,
+    "triangles": 574,
     "materials": 3,
     "source": "source/underworld-flora-fungal-spirestalk-crooked.blend",
     "glb": "glb/underworld-flora-fungal-spirestalk-crooked.glb",
     "runtime": "runtime/underworld-flora-fungal-spirestalk-crooked.model.json",
-    "source_sha256": "596f5ad809a44e2d3ff8089c021fa143a8a848a09da736ed3726a7b9580eac82",
-    "runtime_sha256": "3d7b84b3ae8660f6e1e5db519c2fbdf33254c5512e885ee3591a4b3106c1f5c3",
-    "glb_sha256": "a9dc4835aa4411aff9b2d2e87213581e5f7bfdb50684cfe316305ef7a9c281d2"
+    "source_sha256": "11f09fef61f5c677dd999d5e32db9f43c50093b8c360b6bfc150e1309617cb57",
+    "runtime_sha256": "da6cee02b2e8683b01595b03d6bdf7b685ce9a5918099c7bfa506333cd016c9d",
+    "glb_sha256": "5c3516769e711965f89e7ee6ab3ec39754d645fe1c21bdb0e4608f358d404590"
   },
   {
     "id": "underworld-flora-fungal-spirestalk-towered",
     "parts": 4,
-    "triangles": 7280,
+    "triangles": 576,
     "materials": 3,
     "source": "source/underworld-flora-fungal-spirestalk-towered.blend",
     "glb": "glb/underworld-flora-fungal-spirestalk-towered.glb",
     "runtime": "runtime/underworld-flora-fungal-spirestalk-towered.model.json",
-    "source_sha256": "d37fec4b552b342ba980ba314ae958c520aa844dffabd26e8d85f4d684db41ef",
-    "runtime_sha256": "ca019b578c90f50608598d09f79cd42015f6f23890edac56d16cb6047f187505",
-    "glb_sha256": "aaa694b892277f03efb0daba5812b6651873d0eedc9252ddb17f5582798b282e"
+    "source_sha256": "a1f5d0a5cfc47c1a21674aee3bf3e1116a865bae20be5caa350522391c9e0fb4",
+    "runtime_sha256": "48f7e5445fdfc86c23757d094624bc0607c866b0cffb07ef74d225baac2a7b47",
+    "glb_sha256": "d87f30b7c9c6a2787267fb5c89a3396201b2794317badb00713807bdaf1d99bd"
   },
   {
     "id": "underworld-flora-fungal-spirestalk-young",
     "parts": 4,
-    "triangles": 3440,
+    "triangles": 574,
     "materials": 3,
     "source": "source/underworld-flora-fungal-spirestalk-young.blend",
     "glb": "glb/underworld-flora-fungal-spirestalk-young.glb",
     "runtime": "runtime/underworld-flora-fungal-spirestalk-young.model.json",
-    "source_sha256": "cff6443d5b56118ecd0c06cac99f78af9a2c9be4d6de4219e3327d08d9c588c8",
-    "runtime_sha256": "562e5ccd38b93985dd126a343196731f3fd723cd32d8830ce04e7570c652bd38",
-    "glb_sha256": "5701f69806a849cf006c3e854ae5be2bbf1f3282adac87558a10d34d65632666"
+    "source_sha256": "9270ed067cdf5ae5ee22be9710df572e79f3450da0bd6bef6bb038678aa10233",
+    "runtime_sha256": "8b69eb555f6b504e749f154e8665e4ec7e71a53ba85288a6678e8fe07d62e3f1",
+    "glb_sha256": "21b55bc72a47470aaf87c13fc757d5020ffc79aa9f9a8cf33398fdd539e96d8f"
   },
   {
     "id": "underworld-flora-fungal-spirestalk",
     "parts": 4,
-    "triangles": 4720,
+    "triangles": 574,
     "materials": 3,
     "source": "source/underworld-flora-fungal-spirestalk.blend",
     "glb": "glb/underworld-flora-fungal-spirestalk.glb",
     "runtime": "runtime/underworld-flora-fungal-spirestalk.model.json",
-    "source_sha256": "68e5ac8fe97b54b14fe9cec0dcaee837c12a9579ed9ddf157b7e74c52e9ab460",
-    "runtime_sha256": "a5c0bdc81074a60f3805babd4c8ea5d1ce2172ecf7b6498dac56e518bcc6a2fd",
-    "glb_sha256": "d4196449bd937fe39fe07d1fbf1c8dc9dd49f2e0a6456488f0f0b7de0950e673"
+    "source_sha256": "b7a22a9efbf8f9b7e43cda3eb93929db0d61db9f51d9b49c8d22ef7c3a4478b9",
+    "runtime_sha256": "450adaf45859f1a061e0345b48ac9bf8bb7122330c74307f772e4519c2cd70a5",
+    "glb_sha256": "993d9d7f58edf1f5ccaea84dfd5aa95ae72710046f05c2718c44062fa0aa1f6d"
   },
   {
     "id": "underworld-flora-fungal-sporebrush",
     "parts": 2,
-    "triangles": 1680,
+    "triangles": 398,
     "materials": 2,
     "source": "source/underworld-flora-fungal-sporebrush.blend",
     "glb": "glb/underworld-flora-fungal-sporebrush.glb",
     "runtime": "runtime/underworld-flora-fungal-sporebrush.model.json",
-    "source_sha256": "9836f12a075892107d77c196d1e2577aaa09ebdc78b9da6b449ba3764e94d223",
-    "runtime_sha256": "426aab3ece7112984d1cc0a90003eb51460202c18133500f1d100b0b480c4f95",
-    "glb_sha256": "29b542f2f0fb617d7e559614a6dfdeb24737d78ec4244afc208cf554d48e6b5f"
+    "source_sha256": "450b2b872aa028e27d22e73d75481e4ba22a965565c4efdda3fd124412d058e7",
+    "runtime_sha256": "c38cbdc96f469972431e1899bb689cd4bb882fe6dd7d1780bfa70a3f28301213",
+    "glb_sha256": "8986472f0eecf908a29d32504f8154c569848b248b5d54adc1149639b3fe020b"
   },
   {
     "id": "underworld-flora-fungal-tanglecap-splayed",
     "parts": 4,
-    "triangles": 7440,
+    "triangles": 576,
     "materials": 3,
     "source": "source/underworld-flora-fungal-tanglecap-splayed.blend",
     "glb": "glb/underworld-flora-fungal-tanglecap-splayed.glb",
     "runtime": "runtime/underworld-flora-fungal-tanglecap-splayed.model.json",
-    "source_sha256": "814532176deaa893d11329e32efcbc4cf16276e74a119bd3b4419bf10ce92976",
-    "runtime_sha256": "489dfd6a626078ef59eb0d2ec7d4f8bf9a245766d6571246514ad8557266ae5d",
-    "glb_sha256": "b9f5d299012e676114f8c100fbcd97d7a0b04c5adf8deea9721b135e4777bd83"
+    "source_sha256": "07869d57fd73369c47a1d3f682171f1826b51927a85732cda9caea3df3510a5d",
+    "runtime_sha256": "f6c11c8255811e24b73adfce0f6bf3268b6147fc172a1356fc3daf0f58eed879",
+    "glb_sha256": "727097473dc1b2f7ff949131960222c1c2ecba03f89c5a944f37b0503fa0ca66"
   },
   {
     "id": "underworld-flora-fungal-tanglecap-woven",
     "parts": 4,
-    "triangles": 6704,
+    "triangles": 576,
     "materials": 3,
     "source": "source/underworld-flora-fungal-tanglecap-woven.blend",
     "glb": "glb/underworld-flora-fungal-tanglecap-woven.glb",
     "runtime": "runtime/underworld-flora-fungal-tanglecap-woven.model.json",
-    "source_sha256": "73d69274b6ce8d7bb46b92a8ec578709864f49a6e0c2d7c60190dded7de86756",
-    "runtime_sha256": "68c871f6515f4eff89e19770254119906d8d23f21e3e8f77a2a98e28a4f8a649",
-    "glb_sha256": "b288855609d7fc17436df38fb92f0113a88f5e20db892aec654992e7a561b621"
+    "source_sha256": "649c04d741d2d19ee64ee70689e58e8681da8f159ae0d4fbf4426d2be95563d2",
+    "runtime_sha256": "c25505e9e3c36dfd852561ec1b24abfe51dabd056a45592180058fc4f7d9ce96",
+    "glb_sha256": "cd5ddb363781895d0e59115cbbc2952bf1bcb2b1a84b42a6f6e192a8d49cd47b"
   },
   {
     "id": "underworld-flora-fungal-tanglecap-young",
     "parts": 4,
-    "triangles": 3312,
+    "triangles": 578,
     "materials": 3,
     "source": "source/underworld-flora-fungal-tanglecap-young.blend",
     "glb": "glb/underworld-flora-fungal-tanglecap-young.glb",
     "runtime": "runtime/underworld-flora-fungal-tanglecap-young.model.json",
-    "source_sha256": "ae76a4c6103cce2e3e13a98b0312ca9339240a86c2ce4003c78753c1eec32d4a",
-    "runtime_sha256": "c02de04dcf372b255197c3e4b174eff5d2d6eb6d43d654fabb659e0491ccdbef",
-    "glb_sha256": "067f44701c36a7aa0d77dd0dae6e81be0aa389e12043ea70f1331a20e807ca90"
+    "source_sha256": "0818962a88c485085fad610d4338168cd9bf0b29bc343889ba984462911b5946",
+    "runtime_sha256": "d857fa8d6f5ff4ed7b64bfdb6d05526b426d2796f09d58c194bf11ccf00641e7",
+    "glb_sha256": "39fa9211a5d9d7783bd4b9c46a044c3836361c0b6429a555ba1e082b85967251"
   },
   {
     "id": "underworld-flora-fungal-tanglecap",
     "parts": 4,
-    "triangles": 5008,
+    "triangles": 578,
     "materials": 3,
     "source": "source/underworld-flora-fungal-tanglecap.blend",
     "glb": "glb/underworld-flora-fungal-tanglecap.glb",
     "runtime": "runtime/underworld-flora-fungal-tanglecap.model.json",
-    "source_sha256": "864947dab5f46efb1269e5679e9c72fe693f09959a7d7bd0c8f10f31164c5bbf",
-    "runtime_sha256": "817d79c4df54650cd4433d6e9f172c2c325214a3c1cb843b5de9fc42cc62b316",
-    "glb_sha256": "db3b78d9824b6d3ba7c9222840bc5c7795b1b507498c75ba072d72655c8c34c4"
+    "source_sha256": "763afb1d95d41addd8031a977f42b2694422fb477033a4ac1815072544c3c9e5",
+    "runtime_sha256": "656d83036743b0662dea48a2155e315ccfb8d183a17926442b66a7c70cd9269d",
+    "glb_sha256": "b708387bd6982b0b471348dffa623c7cb2f93f85ce28b29070f33fb1d1552913"
   },
   {
     "id": "underworld-flora-harvest-cinderstalk-felled",
@@ -5455,9 +5455,9 @@
     "source": "source/underworld-refined-brined-pearl.blend",
     "glb": "glb/underworld-refined-brined-pearl.glb",
     "runtime": "runtime/underworld-refined-brined-pearl.model.json",
-    "source_sha256": "c9d2c11e44b19f06afb91102538571ad177c062761b37cabba74441bc9e5b3e4",
-    "runtime_sha256": "73bbb4b9429dafed2fe0d891379a29ca74353be50ef55ccf95c8d86644cbc2f2",
-    "glb_sha256": "8ff3caf55691624f884efc082ebb8e15e7078fece7e58bfda2ce68f4b9d06636"
+    "source_sha256": "49da6b7f6bdf1219f55fd28d09e2a0f4f9981b96a47eb060dade848bb8e58cfd",
+    "runtime_sha256": "5336286003201e44c7584daf5461ab3dd7ffba3e55f329c90f85671cefb8d930",
+    "glb_sha256": "f4442657333822d86bf066e0b0f2f255826ced0bb949ecbec780250f3f3ca4e0"
   },
   {
     "id": "underworld-refined-carrion-amber-seal",
@@ -5467,8 +5467,8 @@
     "source": "source/underworld-refined-carrion-amber-seal.blend",
     "glb": "glb/underworld-refined-carrion-amber-seal.glb",
     "runtime": "runtime/underworld-refined-carrion-amber-seal.model.json",
-    "source_sha256": "ea46811359c5107abd89212f3772c5da76d025c3d6fd1b270810f607dcf08d88",
-    "runtime_sha256": "3a30c1a01f0cf3f53efc9c425b77bcc46a62055976640eb65778ea2a98225164",
+    "source_sha256": "6fb92a65d849a12d6203607feaf773d9a7fe522b6be38967b37509d8807a0095",
+    "runtime_sha256": "99653863b1ab164d14c74d3a6199da23f7fc9f4eb8ac77d1b18e665f5e3153c8",
     "glb_sha256": "c964ee4c82213e68f2aa537d4bf2f1acc36b9e0d391ae30ae0b9914e2e4d05b5"
   },
   {
@@ -5479,7 +5479,7 @@
     "source": "source/underworld-refined-charred-root-grip.blend",
     "glb": "glb/underworld-refined-charred-root-grip.glb",
     "runtime": "runtime/underworld-refined-charred-root-grip.model.json",
-    "source_sha256": "792e7f8e68fed367bceb51653e182485aa9d762989563f5fd6de39829db9fc16",
+    "source_sha256": "96c2ba546ba7703a2638dd2a764090fd0d1667c1ac33ed8bb23d9744075f9f2c",
     "runtime_sha256": "589f2600374960dbfda7074cbf326969f61f3fb9866791a05e5f584ba1f68569",
     "glb_sha256": "f18acf904320ba18d458cbae15c07e9468cb65c49c8e46bd7b6ec8da7c4f9812"
   },
@@ -5491,9 +5491,9 @@
     "source": "source/underworld-refined-cured-glowcap.blend",
     "glb": "glb/underworld-refined-cured-glowcap.glb",
     "runtime": "runtime/underworld-refined-cured-glowcap.model.json",
-    "source_sha256": "f54b86d164226be959bc4fccf690801deaa65b6249791a2da5691f521625ba4c",
-    "runtime_sha256": "95dc00797826d81782dffaf600ec08cbd833422745109040d60709c0144dee09",
-    "glb_sha256": "a9d9a5b6c38d685f11fc91c83f53e7e904943c72e38ee5a09a4ae874b4e1bff8"
+    "source_sha256": "86bd8b2da4999968848057266aee325a747c43a08f5b01c947bcb4bfbe55ae81",
+    "runtime_sha256": "f35b762c1d4b305966db80d383dd5dcaffebe54e4977c566e916c11fab50977c",
+    "glb_sha256": "c36f7f9738ad64d79177cb8c38cbbc9586fb721c5f4616077e6c5b2f2e479972"
   },
   {
     "id": "underworld-refined-emberiron-bar",
@@ -5503,7 +5503,7 @@
     "source": "source/underworld-refined-emberiron-bar.blend",
     "glb": "glb/underworld-refined-emberiron-bar.glb",
     "runtime": "runtime/underworld-refined-emberiron-bar.model.json",
-    "source_sha256": "e0a52a6329b27c3a523a612fd488592fc5e5278e0db77b856b3ea2224648af6d",
+    "source_sha256": "abf0e1f0aff177414228c34c570b16face485fd657c8c57c97efb46c6e129c05",
     "runtime_sha256": "ac63e97695c514f4d2e9dfca5017d7e3d97dd8f84405cd70c6aadc810f7770b8",
     "glb_sha256": "0acb2ddf25c1c70e36b492f82ef6f74436788cb29832294d04ff2a013a56fe86"
   },
@@ -5515,7 +5515,7 @@
     "source": "source/underworld-refined-flowstone-plate.blend",
     "glb": "glb/underworld-refined-flowstone-plate.glb",
     "runtime": "runtime/underworld-refined-flowstone-plate.model.json",
-    "source_sha256": "e0a1d17e5392ca3e5030edb583a5832214b044395946bfb6f15f9c0f128689b3",
+    "source_sha256": "181aa88aca56f7927108272c4255641af8c250d8f39a1c6d9a417c0122bfe854",
     "runtime_sha256": "d20709d4074e9ff6db3679db312e68ec6f30d07d9f2a5ba7df0a9affa2f10786",
     "glb_sha256": "2389de5b3e3287d4d93a02cc264d589060da8ee37894f572be2ae7fe0b22caeb"
   },
@@ -5527,7 +5527,7 @@
     "source": "source/underworld-refined-fracture-prism.blend",
     "glb": "glb/underworld-refined-fracture-prism.glb",
     "runtime": "runtime/underworld-refined-fracture-prism.model.json",
-    "source_sha256": "c7eb3872582913407155fe72cbd33bb15c96b4add4005db5bfb0f7e1f2cb1ed8",
+    "source_sha256": "fdcec71e338bd84de585b0cc2b07bff06b1f0f93032aad29690603fd4704dec6",
     "runtime_sha256": "561e04bc2c4cb71f58b331346b29e241944c4f2f6eca6a5895e021f89db13097",
     "glb_sha256": "6ecc016570daf21e95f5644805621b6fc5ac0ac24027bca8202cc92d0ccdcb9a"
   },
@@ -5539,7 +5539,7 @@
     "source": "source/underworld-refined-iceglass-lens.blend",
     "glb": "glb/underworld-refined-iceglass-lens.glb",
     "runtime": "runtime/underworld-refined-iceglass-lens.model.json",
-    "source_sha256": "017ef74aa682717ac75eb75352687f8247d2abaf8f475a4af4726d7a008cdec8",
+    "source_sha256": "32718e04cb23e2965748c4c0d0ef6182f54d085356269d7db0fb1d5561afbdaa",
     "runtime_sha256": "2c12f434d53931386a06dc31ab335a9ba488e82a0a1f850704db89c9351e9dc4",
     "glb_sha256": "b34e1bc6bfab866139d0db0063c7af9961b1d33dca3db0489dfa19dd4d8a9de6"
   },
@@ -5551,8 +5551,8 @@
     "source": "source/underworld-refined-ossuary-composite.blend",
     "glb": "glb/underworld-refined-ossuary-composite.glb",
     "runtime": "runtime/underworld-refined-ossuary-composite.model.json",
-    "source_sha256": "cd84eb9e7061482871e4dcdc41414bc881b12e223c036459a47ca1ea450fd9ef",
-    "runtime_sha256": "31ca82b05d21c016f1011809fbbbd4bcea9dfc5b93bdbcc8ff5fe5391a718edc",
+    "source_sha256": "7bd44add54faa403919464e55a5dcbeec95a67d0655666c7c83686a4a69a5b31",
+    "runtime_sha256": "57fa67272738fb3567f0928441ab369c1a6a44b499806497fa47c74b34fbac8f",
     "glb_sha256": "a7aa2c8e74d91f3d025c0ad6c85c5df4e12e325b2c3d0aba2c8d6f7c85d260db"
   },
   {
@@ -5563,7 +5563,7 @@
     "source": "source/underworld-refined-pale-cord.blend",
     "glb": "glb/underworld-refined-pale-cord.glb",
     "runtime": "runtime/underworld-refined-pale-cord.model.json",
-    "source_sha256": "6da45a0b20aabe806726f9440a7bf9ac7e937ba0da299c6ba8bda0e7c82eb2c8",
+    "source_sha256": "81147834f37fb3ce3bb5d046abd3c52f459c7a2a4c0b33d6ae49ddb02ae1e767",
     "runtime_sha256": "0cc8fa9509e781722f41aa552024d812015c55d59a83b680eeedf289d3d1322d",
     "glb_sha256": "4a5ddd791f991cbad3ff987e1e65333881dbee765b6eb502596ffc3088251123"
   },
@@ -5575,7 +5575,7 @@
     "source": "source/underworld-refined-rimesilver-bar.blend",
     "glb": "glb/underworld-refined-rimesilver-bar.glb",
     "runtime": "runtime/underworld-refined-rimesilver-bar.model.json",
-    "source_sha256": "3d75a991b1497f95f44cec2c37d6113669c05a1c567843eab4ec919e9736d258",
+    "source_sha256": "4922e3052915c441b4106874fb7da140e95fb4b0ecc157d72b498cde19a94647",
     "runtime_sha256": "7adcc260998dad54b917134a2520b79ea8adcc5e806f175601f34cdc9ec0bc52",
     "glb_sha256": "581e4ff2388f4849f889d179668ec333ccd23dd99c60d11d203f1fb4b8b90ab3"
   },
@@ -5587,7 +5587,7 @@
     "source": "source/underworld-refined-rimewood-laminate.blend",
     "glb": "glb/underworld-refined-rimewood-laminate.glb",
     "runtime": "runtime/underworld-refined-rimewood-laminate.model.json",
-    "source_sha256": "df690215107c3e43a97926d9069ffe60f141a9f0df0839de86d999fdea44bff7",
+    "source_sha256": "08c8597dc6b5d2caaa1c053c05c5bac3f73185bd3eb7c9fc98605c9f1af264f4",
     "runtime_sha256": "f1a232332bdf2ce8eaa53af42627407428e0bd292b37f7f83e2512cbed023dff",
     "glb_sha256": "45e9643403e7da31341027838b7b1762828a24401e60f3c08c47adcd3192a036"
   },
@@ -5599,7 +5599,7 @@
     "source": "source/underworld-refined-rotwood-laminate.blend",
     "glb": "glb/underworld-refined-rotwood-laminate.glb",
     "runtime": "runtime/underworld-refined-rotwood-laminate.model.json",
-    "source_sha256": "046f267882f67e8d72cc69b21c2b9064dd2916f3acf97e4037082fd007e77e60",
+    "source_sha256": "b1b18c87fed40c57d4561bcadcae6109416acf769088390b69ebbc5122f28ae9",
     "runtime_sha256": "5622506d28f63c35ee24929d6686ee11326c6d49708c498c9852b36f0df60b1f",
     "glb_sha256": "1685161c561ff3ba3b35234bd5ce41b1a109f1bffbf12b731835621e84c426c0"
   },
@@ -5611,8 +5611,8 @@
     "source": "source/underworld-refined-shardstone-block.blend",
     "glb": "glb/underworld-refined-shardstone-block.glb",
     "runtime": "runtime/underworld-refined-shardstone-block.model.json",
-    "source_sha256": "fc5fa846469be74d255aacd160356d632edf5ea7f0088ec9e402fb774cb8813b",
-    "runtime_sha256": "979d3c6ca97490176d35ffc7093c90ff44575153ba662d8ff7ec39cb9e2e5c9f",
+    "source_sha256": "a133f57bfd96457cfd63d860378004f7aa4fbf0b7a55430507c9f900f5ba47a8",
+    "runtime_sha256": "e26c75a87044a896d594a0547869ed8b0889f6d5ddfbf9e83b487d67fa31877b",
     "glb_sha256": "1689c9692152e3aa46136f4b44d4a71c11ea2a012ace66e76c449466dbefdad7"
   },
   {
@@ -5623,7 +5623,7 @@
     "source": "source/underworld-refined-spire-cord.blend",
     "glb": "glb/underworld-refined-spire-cord.glb",
     "runtime": "runtime/underworld-refined-spire-cord.model.json",
-    "source_sha256": "a835c4d8792f55c5d873c4720234887aae755b8faca425bc48afe80484adf683",
+    "source_sha256": "2b2fff1a3c447d514c817ad6f31e74ea82aeed98ea918aa76f53fdd2b2c1419b",
     "runtime_sha256": "a7faccb47467fd2b21c91276d8baaa4216c02e0d28cc2b1fffc5f85f05dd9bdd",
     "glb_sha256": "a567a99f93db98c983241981b3d92fab1a787861f0c1fd7f9072d2d2f7ee63fd"
   },
@@ -5635,7 +5635,7 @@
     "source": "source/underworld-refined-tempered-slag.blend",
     "glb": "glb/underworld-refined-tempered-slag.glb",
     "runtime": "runtime/underworld-refined-tempered-slag.model.json",
-    "source_sha256": "38d57300a3f29dba4c70b6e2e541fc06878c340f8357742988bcba49108c58cc",
+    "source_sha256": "ea4dcddf8da387b079677316a6a9cf5668073ca84a0a958f87339808d72325a0",
     "runtime_sha256": "ecb23492491cca3ead59c9d3dc47e1cedcca73018b638e409bf8d3daff5ffbaa",
     "glb_sha256": "4cfaac95e3048e9941a2ad94d8b4eebef446fb5b8a4d2bf5be5d1d2e592ff6f5"
   },
@@ -5647,7 +5647,7 @@
     "source": "source/underworld-refined-titanbone-plate.blend",
     "glb": "glb/underworld-refined-titanbone-plate.glb",
     "runtime": "runtime/underworld-refined-titanbone-plate.model.json",
-    "source_sha256": "8e87c54cd006bba907de5970d9d054be6fe2b16f6340c86052f7cfb90b104eeb",
+    "source_sha256": "bcb0320aef96e74d4d71f3d55bf10a07e59fbdb79474baec35571cca6e609d3b",
     "runtime_sha256": "97a30665a074996272859177cd27e327fd9b3e7e03fd99aef69046d8971fdb7b",
     "glb_sha256": "88619b28e77949f95a8cf819d41ec0d7bb5eb438a0d3ed07c156c4182549ea0d"
   },
@@ -5659,7 +5659,7 @@
     "source": "source/underworld-refined-worldroot-plank.blend",
     "glb": "glb/underworld-refined-worldroot-plank.glb",
     "runtime": "runtime/underworld-refined-worldroot-plank.model.json",
-    "source_sha256": "98f94b7dac0191cdd57fca16273af45bbfa7f7d038789f6125f112b0caddd45a",
+    "source_sha256": "afb1f61f58025fad5f97e3d2cde74aa0397c892382ce022db277f8200d76eb82",
     "runtime_sha256": "6f6f824ca5941fec6625d4bdfd1d38467e2f1dab2a64f60ca4d6e6515e816d34",
     "glb_sha256": "44b92ae86d460aced64febda238c151fc74c412c04e33852b86ff10363e713dc"
   },
@@ -5689,51 +5689,51 @@
   },
   {
     "id": "underworld-resource-bone-gravel",
-    "parts": 13,
-    "triangles": 872,
-    "materials": 2,
+    "parts": 10,
+    "triangles": 408,
+    "materials": 1,
     "source": "source/underworld-resource-bone-gravel.blend",
     "glb": "glb/underworld-resource-bone-gravel.glb",
     "runtime": "runtime/underworld-resource-bone-gravel.model.json",
-    "source_sha256": "d6ad251a667b3df6dc9f5625faba7128e2f89da07d552b3be7bd295bd2737dc9",
-    "runtime_sha256": "f6cc29f6289ddd68328b6f74ec0777c8d3e318de929f0040230b492654a4988a",
-    "glb_sha256": "f9240dcc95b90049390c9890cf4dfe9879fb3b6ef0a8638c55c8732847d62d6f"
+    "source_sha256": "4c5583bb15b90d3e2cf0dab9bd465c987bdee7a1507d08518a7f7eacdba73a64",
+    "runtime_sha256": "33f02ee99c6eab79a20c94f94ab6a5654d8f38699979d91319e9ed5c29c0a821",
+    "glb_sha256": "1814eef4e99a38b2708351d07a5aab02913c9b6e9ee40a942fe637bb02b4dd97"
   },
   {
     "id": "underworld-resource-carrion-amber",
-    "parts": 11,
-    "triangles": 460,
+    "parts": 8,
+    "triangles": 472,
     "materials": 2,
     "source": "source/underworld-resource-carrion-amber.blend",
     "glb": "glb/underworld-resource-carrion-amber.glb",
     "runtime": "runtime/underworld-resource-carrion-amber.model.json",
-    "source_sha256": "5e6490e18d87b3f0d242913c049b2432adcd4751fe61e0bd40a2338ba96e0c4c",
-    "runtime_sha256": "a96bf1677476b81c36ce864179f4a6eb0e54134ebbf6f6a31d58689eb11d1818",
-    "glb_sha256": "e5292366fdebff11eb732f7d1f0edd26d4cc6bd3035ef3275ac32eb8666beddb"
+    "source_sha256": "8f00ab377230792d5cc970322f0dd42f3048c4763f21abef0ba6eccb3cfcf77b",
+    "runtime_sha256": "a8717b302b09b2c087b6517bed2f009a09e87e9952c179233d0739c36620ff6a",
+    "glb_sha256": "8e0dff5aae53fb72eb62e3ffa33d34724e772676bb92271a49d968762eeeb3d5"
   },
   {
     "id": "underworld-resource-charred-timber",
-    "parts": 10,
-    "triangles": 1216,
+    "parts": 14,
+    "triangles": 1024,
     "materials": 2,
     "source": "source/underworld-resource-charred-timber.blend",
     "glb": "glb/underworld-resource-charred-timber.glb",
     "runtime": "runtime/underworld-resource-charred-timber.model.json",
-    "source_sha256": "2b9cf60e7d95959fca9df1ebd81bcd209a20ac63ccc7a01726b5f9421299eca4",
-    "runtime_sha256": "64f9746300aab018ec0ce06bfa0a459b3c1833f79526acb97c1ab8773d2bd830",
-    "glb_sha256": "923bb24c4da67cb5b024faaf2838d0151a824b0a734adefd850ca5c44eb78985"
+    "source_sha256": "1770d1c800e5c4a630c4115aabd45d55de70068afc1a18950f76784d3f31c2f9",
+    "runtime_sha256": "710829e563e9d34b7ddc45bd618ecd0050dcaa215b2e2f817f775a5f724c264c",
+    "glb_sha256": "a51546ad19fa4eb59c03e98de8987db2fbcd3751a044a8949e306545b133b756"
   },
   {
     "id": "underworld-resource-clear-ice",
-    "parts": 11,
-    "triangles": 460,
+    "parts": 10,
+    "triangles": 392,
     "materials": 2,
     "source": "source/underworld-resource-clear-ice.blend",
     "glb": "glb/underworld-resource-clear-ice.glb",
     "runtime": "runtime/underworld-resource-clear-ice.model.json",
-    "source_sha256": "631d1e3f52759ab6e6e5d20790699a9dd8b2bc84b8f6d841d50a5080cb16dc1e",
-    "runtime_sha256": "f6763c640f9faa86bc494431bbe6216d777d1f2160bca62bd23ca484577e185a",
-    "glb_sha256": "3c92b6bef758b6f869d757010009be44a03db5582bfa8a8979985451f865a500"
+    "source_sha256": "01341f006ebaa24ed8c66b4081a9c4a0827352c40ce0aae675dd65e50768780c",
+    "runtime_sha256": "26886b01b97b2d7d12fc531356c80ee9996a4607afbb56c0b88868980b275e92",
+    "glb_sha256": "8d2310cb445b02546378f7976bcaebaa5d4b2d1a6f38cec0862437188a0e2892"
   },
   {
     "id": "underworld-resource-decay-spore",
@@ -5743,9 +5743,9 @@
     "source": "source/underworld-resource-decay-spore.blend",
     "glb": "glb/underworld-resource-decay-spore.glb",
     "runtime": "runtime/underworld-resource-decay-spore.model.json",
-    "source_sha256": "e5543a9aecda4f2e18d58ca3d11abc919907064ddfc40a0c777e0427a964db17",
-    "runtime_sha256": "3fb8343e9aa1a81d646a91c755cf0c4450bdb0f17512d882d9e69b01d9d3a6c9",
-    "glb_sha256": "6c5be6799d085ef72498d41c344090b70b158de1cbc31cf28c8bb9ff7243d0ee"
+    "source_sha256": "c4a3b79beabde3277d5f2170250cd6b43503056eb7340d76d0aa6141b787620c",
+    "runtime_sha256": "8953aaf161c69696d9b99b572d4427b163437802710e617a71e68a4e9f52fc20",
+    "glb_sha256": "6dcd9b4778435e1bb6d2045ba606b44b89841455e53cedd551c4f57184c19c22"
   },
   {
     "id": "underworld-resource-deep-salt",
@@ -5761,15 +5761,15 @@
   },
   {
     "id": "underworld-resource-emberiron",
-    "parts": 12,
-    "triangles": 960,
+    "parts": 11,
+    "triangles": 880,
     "materials": 2,
     "source": "source/underworld-resource-emberiron.blend",
     "glb": "glb/underworld-resource-emberiron.glb",
     "runtime": "runtime/underworld-resource-emberiron.model.json",
-    "source_sha256": "8c27e7cf2e4e1909e3baa08cfb1dfe3d70abcd304a7125923c0b00aca562ae88",
-    "runtime_sha256": "e1a674b01734c6b940558ea02224d02242cda6c0a2137b4d2f9da14705c21ab3",
-    "glb_sha256": "d9d2740ae6888f408a0427d2c8ba2a4ceef865226ee2177891f0babc4e6f0a71"
+    "source_sha256": "714cb79f046140f24c0c9c0b7d75a177b5ffb4a7f33a42b2889ba98ec2261177",
+    "runtime_sha256": "cdb6db6376eca0524fd2dadbe8f5de480390f85b1392202a903cdc5ae6e8f315",
+    "glb_sha256": "a8822d79aa8ac1a22f1f08e34233461eb1d5c1f816044d952987cc3ab8573d91"
   },
   {
     "id": "underworld-resource-fracture-crystal",
@@ -5779,9 +5779,9 @@
     "source": "source/underworld-resource-fracture-crystal.blend",
     "glb": "glb/underworld-resource-fracture-crystal.glb",
     "runtime": "runtime/underworld-resource-fracture-crystal.model.json",
-    "source_sha256": "271ba2480e92e1191f59e955d846f6d21dcb02fda3d04e786b989def34e6a94d",
-    "runtime_sha256": "efc4f14dcc1f27987b760ac0ce75e640488072de5d24ee2aa56df55995a0441b",
-    "glb_sha256": "542aa2574f110467ec386580bb0217a7050f6d51d6524ea941049fb739066abb"
+    "source_sha256": "cf3dd124998609714b56119ac653a9b3f4510eea3433632861aea84e0fccce62",
+    "runtime_sha256": "3b9503f002738dc935f2025340b8fc856b17f1885511c58e498e0f482baec732",
+    "glb_sha256": "db351f7dea704642708f6325bef6fddf8ee4b9e6bb780f13df49ed5aa8fbe0c2"
   },
   {
     "id": "underworld-resource-glowcap-flesh",
@@ -5791,7 +5791,7 @@
     "source": "source/underworld-resource-glowcap-flesh.blend",
     "glb": "glb/underworld-resource-glowcap-flesh.glb",
     "runtime": "runtime/underworld-resource-glowcap-flesh.model.json",
-    "source_sha256": "972573ab683b779df045a76a2a3aa971f48a3b0c28fe2d9ef5b0ae0461dae0ba",
+    "source_sha256": "5f48772d2da29b751c80ea0caed01fc1e65f6f59ddd554c6cbe56c1c223ef054",
     "runtime_sha256": "96e0e8429d7f4a4609dc54bdda0f8f8aedbfb27cf42302a75eba946078a2e4e7",
     "glb_sha256": "3aac8b7e916dd7204afc8dd6cf2a973e83ea8576db8273ad4f707d4d5dd6fe44"
   },
@@ -5809,39 +5809,39 @@
   },
   {
     "id": "underworld-resource-rimesilver",
-    "parts": 12,
-    "triangles": 960,
+    "parts": 11,
+    "triangles": 880,
     "materials": 2,
     "source": "source/underworld-resource-rimesilver.blend",
     "glb": "glb/underworld-resource-rimesilver.glb",
     "runtime": "runtime/underworld-resource-rimesilver.model.json",
-    "source_sha256": "4163069f57f99fbd90c18913965dec2d9f0cb2a78dc339e8c91d37522232b792",
-    "runtime_sha256": "b181fa8d3434e1110f4c68ab9b4665686d1454745343d52fbb3417e5db8ef61b",
-    "glb_sha256": "ce45e7604964801fe7f5fb6967d1db9a19480808d48f1005ef75fe318e71d57c"
+    "source_sha256": "9407ca1f88705cb096a0841a77bb8a4248c3ce4c47b3932d63ce447574db6c14",
+    "runtime_sha256": "5492e1758599f12780433b7668a655a381e8d1edd227abfef64c5dac94141ba7",
+    "glb_sha256": "c95bbb1cde58a3b507168bf3c2e5077916cd17ba08d2f95b1045ef1208ac8e4a"
   },
   {
     "id": "underworld-resource-rimewood",
-    "parts": 10,
-    "triangles": 1216,
+    "parts": 14,
+    "triangles": 1024,
     "materials": 2,
     "source": "source/underworld-resource-rimewood.blend",
     "glb": "glb/underworld-resource-rimewood.glb",
     "runtime": "runtime/underworld-resource-rimewood.model.json",
-    "source_sha256": "28ff95f5bfc5994b0ed06564674fcc0705e56932c35525f241262c63f6bd220c",
-    "runtime_sha256": "af13012e743a487afeb628023d26a4fd511f7e8857c703f7a36bd8c76e853f85",
-    "glb_sha256": "ab0af486d84134af91c540f63d8a1f97c862c04d4e22a519b3addb12584d7d0c"
+    "source_sha256": "f839554fc55197c1028fe6828eb641a1c9aca85ec905d5822d46cbadf6e823b6",
+    "runtime_sha256": "1f17f8ac0ad629da58efe0f090a56ee5f39833ea7ca25f871ac0470f2e03ba35",
+    "glb_sha256": "1951d9ce21af45ea9a6d5bf49e707d342fc5f6470df01fd2f037150d3795a927"
   },
   {
     "id": "underworld-resource-rotwood",
-    "parts": 10,
-    "triangles": 1216,
+    "parts": 14,
+    "triangles": 1024,
     "materials": 2,
     "source": "source/underworld-resource-rotwood.blend",
     "glb": "glb/underworld-resource-rotwood.glb",
     "runtime": "runtime/underworld-resource-rotwood.model.json",
-    "source_sha256": "3679966b8ea8bfc403d07b22eff6282b84b5682981bce2ac2dc93f149294596c",
-    "runtime_sha256": "9a95e195214c4786d74b5ec0a18b6cd802812c7214b9e691466793d6df3b8c9c",
-    "glb_sha256": "541ff16a78888f287ab4f7fb4a4549167a2fc991bbfd60b69100e2f70b27a85e"
+    "source_sha256": "c950d9b15456506d33bab791b119900caf824dc9b9cb6d85583f9e7153e8c544",
+    "runtime_sha256": "b0d345c4163a50cb6989037d53cb131fa96ae7aa0c1c577b19993567d4687398",
+    "glb_sha256": "d3af788d4dde833a9ba55088a966341964b05e161537c6d212c652f40ceab2e4"
   },
   {
     "id": "underworld-resource-shardstone",
@@ -5851,9 +5851,9 @@
     "source": "source/underworld-resource-shardstone.blend",
     "glb": "glb/underworld-resource-shardstone.glb",
     "runtime": "runtime/underworld-resource-shardstone.model.json",
-    "source_sha256": "161df0eda39bfefc8ec851c5a5534a9da37eb60e9ff3875028ca829f7288cfbe",
-    "runtime_sha256": "69330ab44d33f8989995f4de4442cacf1ceb0e732c1ce3ec44fdb093f494faca",
-    "glb_sha256": "6d05f6f1b9a7b967a98cfbf47e3385674887ff623f3b302520993056af0437f3"
+    "source_sha256": "d6091ff93e510ffb33da909af9474b2e13f95ec1d79cd23f5633a2a476b0670b",
+    "runtime_sha256": "5b144224b9a9b265aa37521205ae90d819e4594bc77fbbbefa2664752c953371",
+    "glb_sha256": "5dc81644761cc5d7f83c7715d97fecc0112cbcc5e6b64d5c52d77617c3393d82"
   },
   {
     "id": "underworld-resource-slagstone",
@@ -5863,9 +5863,9 @@
     "source": "source/underworld-resource-slagstone.blend",
     "glb": "glb/underworld-resource-slagstone.glb",
     "runtime": "runtime/underworld-resource-slagstone.model.json",
-    "source_sha256": "947d09b226c4d52bd373d7e9176ccdbeab130b36743105c42d2875fbb3e911e0",
-    "runtime_sha256": "08aa262a26f59ab138aff2c9cc16abba695daa62d60adce9afd3d888d06bfb5f",
-    "glb_sha256": "281739df11e93fc60b4d7cd89a0afbcae23663da6293ec168e3662fd4628bcfb"
+    "source_sha256": "f16aea95e6510c2d49332d561c34db155b886d7eb7a963661306f5650f62f09b",
+    "runtime_sha256": "8f20160defb05a0d168470ebf8122661856e97508da9281da97486075f6dabdc",
+    "glb_sha256": "842180599c2c7165391001dbca1e02b3ea50ea1634feb29ba67092b7b07cbb7a"
   },
   {
     "id": "underworld-resource-spire-fibre",
@@ -5875,33 +5875,33 @@
     "source": "source/underworld-resource-spire-fibre.blend",
     "glb": "glb/underworld-resource-spire-fibre.glb",
     "runtime": "runtime/underworld-resource-spire-fibre.model.json",
-    "source_sha256": "2b46dcb1a24f8b76e671ee9d88326702156b553e94ccb1b4de70ef745a6c3846",
+    "source_sha256": "1335b2f0c4738102c216fd974ad1023107e135406df7b1f76f1df4b872087afe",
     "runtime_sha256": "ebbec50b612ae2492750a26f36ee41d8d94e61d09ee91d47ac360c810f76e570",
     "glb_sha256": "4172bb4461dcd4a5dd55ba14bee2b5fbd0b654776768bb506ad43ae3d3c624ea"
   },
   {
     "id": "underworld-resource-sulfur",
-    "parts": 11,
-    "triangles": 460,
+    "parts": 8,
+    "triangles": 640,
     "materials": 2,
     "source": "source/underworld-resource-sulfur.blend",
     "glb": "glb/underworld-resource-sulfur.glb",
     "runtime": "runtime/underworld-resource-sulfur.model.json",
-    "source_sha256": "19b8481711bb79431e5e9b0de3e538b8e6ff9d0baafceb22b1e2b8ae80ad40f4",
-    "runtime_sha256": "2ad97a1fdf116682aeb1d52839d5a03831fdc9520e338d072b415fecfaaa684e",
-    "glb_sha256": "e88b1755bd94c88ced044700708cb67294b8e1b289ba9cba8fd99621617d9354"
+    "source_sha256": "ecb00c4c73302e7899d09db55a0641b11f2de2dd70534a8ba3a97ea6cbcb9abf",
+    "runtime_sha256": "b8b19c751b9c74ce5abcffcf048ed8e8f3deafd0f4fc89bf27fec151e788fc50",
+    "glb_sha256": "bab6ccdff71dcc65ce4809329444d76430996a3fc72fe7cc5311121bea6bc35c"
   },
   {
     "id": "underworld-resource-titanbone",
-    "parts": 9,
-    "triangles": 1440,
-    "materials": 2,
+    "parts": 10,
+    "triangles": 560,
+    "materials": 1,
     "source": "source/underworld-resource-titanbone.blend",
     "glb": "glb/underworld-resource-titanbone.glb",
     "runtime": "runtime/underworld-resource-titanbone.model.json",
-    "source_sha256": "eb8824667e62664e0528ebba191518c14703d4c0301e8f49947acce20f7ae6a2",
-    "runtime_sha256": "902b807e762353ffcaaebb2026c0c341037a2661668ae4026d8d577635c5995d",
-    "glb_sha256": "c54e1c3a963243c8298c11154aeb1b4b9d88e147de461b027eae5128f96fc336"
+    "source_sha256": "2836c785e8fe1b27288b2709f4f545135f298ab6eeecc6af71b2c779d20285a4",
+    "runtime_sha256": "bd3888d03afbe33484e7a20f11972ac2c1628559d80a737626533d4f369e3f4a",
+    "glb_sha256": "52d43b64c641e2af6da8d3889bc006e50e1b9830cfc3be9658425b4d67b578b5"
   },
   {
     "id": "underworld-resource-understone",
@@ -5911,7 +5911,7 @@
     "source": "source/underworld-resource-understone.blend",
     "glb": "glb/underworld-resource-understone.glb",
     "runtime": "runtime/underworld-resource-understone.model.json",
-    "source_sha256": "0d9b9a5aaab02a0b193c0f208d5aa2a638b20cf82bbd93a965d326ea0ffe4c72",
+    "source_sha256": "ec81aca8962e7c991e93349df4951ddf4daaf1f1527a62fa078f9f795b086fc7",
     "runtime_sha256": "3469168370f868fdd3e26efab6abf7f623305c24ffde1fb25647a8b58bd6492b",
     "glb_sha256": "667509ca6d314de7d6d77f1443094245c07937fb1ea138f59156090ab1c7b0f2"
   },
@@ -5923,7 +5923,7 @@
     "source": "source/underworld-resource-worldroot-timber.blend",
     "glb": "glb/underworld-resource-worldroot-timber.glb",
     "runtime": "runtime/underworld-resource-worldroot-timber.model.json",
-    "source_sha256": "c669b28115e655e19e2242eb621d339dd840e660e7664a9736828424ebd19f44",
+    "source_sha256": "6489bd9c39418a2ad682688d066635609a575df660c3e991ad1b7536bae01499",
     "runtime_sha256": "7fdb9255cea0bf3967979acc469adb0b449f9afa17af2c53cbc9644f398d1960",
     "glb_sha256": "3eb80883f0898538c1daa0cdec95e8dba62f021e639ad01de3809dff1af36843"
   },
@@ -5941,75 +5941,75 @@
   },
   {
     "id": "underworld-station-anchor-forge",
-    "parts": 74,
-    "triangles": 11440,
+    "parts": 69,
+    "triangles": 5420,
     "materials": 4,
     "source": "source/underworld-station-anchor-forge.blend",
     "glb": "glb/underworld-station-anchor-forge.glb",
     "runtime": "runtime/underworld-station-anchor-forge.model.json",
-    "source_sha256": "b2a8b530a7457a620d321f4cb4f44477636195f78cd0f3972f3a7ccf5fec9364",
-    "runtime_sha256": "d11c9d93f6f7c11c716b789ca8d28af0b9e12c6e7dee66c854b4350fb5f4eb04",
-    "glb_sha256": "26c83f7dd33afb5a98be0dde44efc6ae0fb4fcfe3c9469c299c5f1147c6067b3"
+    "source_sha256": "9500050503adcd74d3d138b1d0b6540fd64821d6a57ecfa14ca4d5374bd66741",
+    "runtime_sha256": "e67a24355323a79ea4e78f017829626faf28de3e82b1f16ecdd44e82af50baed",
+    "glb_sha256": "b0b6300c25a5b7d6505cce1da187d4fe81cfc8321da058d531b32c08e13d7a71"
   },
   {
     "id": "underworld-station-crown-reliquary",
-    "parts": 107,
-    "triangles": 12000,
+    "parts": 97,
+    "triangles": 9724,
     "materials": 4,
     "source": "source/underworld-station-crown-reliquary.blend",
     "glb": "glb/underworld-station-crown-reliquary.glb",
     "runtime": "runtime/underworld-station-crown-reliquary.model.json",
-    "source_sha256": "838050f96cfbb0b8775c132ecc3397e945463b3afb3214179aa56e5e7de9caa5",
-    "runtime_sha256": "a91b4f38a040e27fc6cc12c04f558b85a9cb11a5e2637e2f119d5098cd57254e",
-    "glb_sha256": "3b7240ac2c3d37cd7be9f89ee1ec2c3f0bea103a45c8991264708a6fc1a283a4"
+    "source_sha256": "cf2878ae9fa58a39b9f7bd7bfabf42840ba9956589d82a5708befab128d32611",
+    "runtime_sha256": "e4b71934abc4c4683b6894dcaab86febbf1f58cee45bca9b438e73e50bafd564",
+    "glb_sha256": "5209a12c79643ff0ecfefd08694f8592ffb8239abd3ff1f28712c9469a564db8"
   },
   {
     "id": "underworld-station-furnace-heart-forge",
-    "parts": 79,
-    "triangles": 14372,
+    "parts": 95,
+    "triangles": 9860,
     "materials": 4,
     "source": "source/underworld-station-furnace-heart-forge.blend",
     "glb": "glb/underworld-station-furnace-heart-forge.glb",
     "runtime": "runtime/underworld-station-furnace-heart-forge.model.json",
-    "source_sha256": "5b340a4ef612ffec7fd4e149d5a899c6155cbf9fa32a1a55958af0970e4a50e9",
-    "runtime_sha256": "4b1b5f876f04dd715d69495b059827427a942ed4bf6918ee2c5fe7ffb5a83ee4",
-    "glb_sha256": "00f8d06ccb255ac6b37d8b4b08c56b0490d14e566716f47dce6b617c20ed4481"
+    "source_sha256": "dfc3afdde1f8cd5b1c8920387c12821362fa494365f26ffc5a4dd10287348e27",
+    "runtime_sha256": "d23eb20889f1d71379d5549aad2bb71e0086b877ae4d940a66404e8caf937fe7",
+    "glb_sha256": "7e12c3f995211b993614d3db4a6075da447e9831c5d5e459a5d6f6eddfe8c1fc"
   },
   {
     "id": "underworld-station-mycelial-bench",
-    "parts": 81,
-    "triangles": 9044,
+    "parts": 94,
+    "triangles": 10008,
     "materials": 4,
     "source": "source/underworld-station-mycelial-bench.blend",
     "glb": "glb/underworld-station-mycelial-bench.glb",
     "runtime": "runtime/underworld-station-mycelial-bench.model.json",
-    "source_sha256": "cc0474f99dfef1b5579acbe77392bcc55d6eec0ac8a636f64771d034984183e3",
-    "runtime_sha256": "ba4b6812ef5cec8f77e5fcdbf77c9fd841efd695b80b1ced94a4110fd21a7e48",
-    "glb_sha256": "2fa82a2b87f61f7290d159514392f0bd00bc9bb6efe945f7e1faadddaedcbe10"
+    "source_sha256": "770932557b1f2ab3da0f731b647b9ac59198c06823e7fef00be83cb185dbcab7",
+    "runtime_sha256": "38c50dd6d8cea2faaea2e86d0db0db6bd7e11fd0057c7e5575c9a95b317d50c6",
+    "glb_sha256": "56ed9d9b990831d680c77cfdfe7ec3c042f17609a62c8b9d0794ce9569c451d2"
   },
   {
     "id": "underworld-station-silence-table",
-    "parts": 92,
-    "triangles": 8412,
+    "parts": 78,
+    "triangles": 6952,
     "materials": 4,
     "source": "source/underworld-station-silence-table.blend",
     "glb": "glb/underworld-station-silence-table.glb",
     "runtime": "runtime/underworld-station-silence-table.model.json",
-    "source_sha256": "66924def70c1135cf4ae22e2e14fde1860e9dc03124b0873c8f4eb7b832c262c",
-    "runtime_sha256": "3926b17533177dd0d183ac9c325f280bba93242b07e1d4333764e12121e3788e",
-    "glb_sha256": "eb453fc9a48070a8b930f7847552c12448cb33d0ed5e93e3497260a8cf3e8b8a"
+    "source_sha256": "39e0fbc2e6cfd1ecd39e25d0261f84cea9e5e0dcccc40fdedbebbe905a69c088",
+    "runtime_sha256": "c16084afc354ca3d5185402bbd56bf171f488656e47ebd001fe50f0a01b3e855",
+    "glb_sha256": "1ef6a0e890ae8f21e0f8b6217d16f313b102a1b51fc2e2b71580c9e7b212daa0"
   },
   {
     "id": "underworld-station-tidal-basin",
-    "parts": 95,
-    "triangles": 8720,
-    "materials": 4,
+    "parts": 76,
+    "triangles": 4372,
+    "materials": 5,
     "source": "source/underworld-station-tidal-basin.blend",
     "glb": "glb/underworld-station-tidal-basin.glb",
     "runtime": "runtime/underworld-station-tidal-basin.model.json",
-    "source_sha256": "41836d093e8e08abb38f9f3483df62de1ab853d3a9618c33a61f8eef9cee56d6",
-    "runtime_sha256": "58618ba6c90e1fce5ecb20dd7c6efb58da96dd688e21c60d85b267b762a5aeb2",
-    "glb_sha256": "3a55c3e5eb2a261a610132332d2b96e52f9a323147dc4a57c16cf39875bf100f"
+    "source_sha256": "f8187705c2b77e2fe1440441189bee6c9605422ea0c23b7df544ca565d61805e",
+    "runtime_sha256": "dac19cb3cca0244380d10eb069fab1694171580365cef41eec30a1d85a54f5db",
+    "glb_sha256": "50f4d6c026bad19cac8cb52df0f607d37019a109a1471447ed6b8b2bf9188af9"
   },
   {
     "id": "underworld-surtling-earth-feminine",
@@ -6231,144 +6231,144 @@
     "id": "underworld-weapon-amber-blade",
     "parts": 14,
     "triangles": 3040,
-    "materials": 9,
+    "materials": 3,
     "source": "source/underworld-weapon-amber-blade.blend",
     "glb": "glb/underworld-weapon-amber-blade.glb",
     "runtime": "runtime/underworld-weapon-amber-blade.model.json",
-    "source_sha256": "e57f89f8fc2e2e4d18ad7f1528fc91e2caaf602e1bcfe5903dd227c4ede2dc66",
-    "runtime_sha256": "2372eab197a06e9c47e7f2e59923f9cd6c68b131b90ecbf0fb4c0f38ee9f997a",
-    "glb_sha256": "b70224eeaab60db44c220116575d494a7a60d68378fdeb612d665ffa243e78a0"
+    "source_sha256": "9223c8dcdf31be9664fd8ac2ebc38312bb84a9562fb7244eaec67c268590cd85",
+    "runtime_sha256": "7613ae5a420fb6be315d00f80a21794e186de89746b2a8eb8131bb410821dcfc",
+    "glb_sha256": "86951f69dafb10be65def25764aad83a0fbd1989ad1311c07fe8a3561cb7c4f1"
   },
   {
     "id": "underworld-weapon-blackwater-harpoon",
     "parts": 16,
     "triangles": 3128,
-    "materials": 10,
+    "materials": 3,
     "source": "source/underworld-weapon-blackwater-harpoon.blend",
     "glb": "glb/underworld-weapon-blackwater-harpoon.glb",
     "runtime": "runtime/underworld-weapon-blackwater-harpoon.model.json",
-    "source_sha256": "6452a8c8c5e21aa997835d0b119c11012b99fe73e61adbf5b70679b2fc9ab4c0",
-    "runtime_sha256": "a5a738636cb428fc6767fd157932c93b1a046bad4f0189e2ec08a9c6b2e51c77",
-    "glb_sha256": "c9a3abd5d8ec966c3be6fda080d776387b9f86723207e1accb229b2dc5adbdec"
+    "source_sha256": "9b0966ea44772569a2fc145b70312e246271ef03a64433a3dd07f444084ad92a",
+    "runtime_sha256": "01b0221384c8236b9d71a66c3438bc76929b70d27a379a7d66a6830b8a179645",
+    "glb_sha256": "4707147b7515e08ebe061333b62511d6168e6c52ddeab036afa298915d1e2c09"
   },
   {
     "id": "underworld-weapon-crown-sceptre",
     "parts": 26,
     "triangles": 4708,
-    "materials": 14,
+    "materials": 3,
     "source": "source/underworld-weapon-crown-sceptre.blend",
     "glb": "glb/underworld-weapon-crown-sceptre.glb",
     "runtime": "runtime/underworld-weapon-crown-sceptre.model.json",
-    "source_sha256": "c206efd13941420fc451b908574915fafe140de9f276e327ccea993e62f7bdb2",
-    "runtime_sha256": "7cc3d4bd154ce060d2226dbe66be0d7f9d8427834d4f5d7c29a527935319a5e0",
-    "glb_sha256": "45e926f8ed024a84d8ecb8142532b10d91adb102f5a1d5c2e3f987f76a00c3f8"
+    "source_sha256": "cf56b6c913fe8e6729df66d1dfe45659ab334b8a3a9cbb362c5b48c5d542d7a9",
+    "runtime_sha256": "8abf7ad246c04e15ce51400eb83156d42b1534828bf5751853c43e5932deaa76",
+    "glb_sha256": "dee6d92d3d5a8cb88a502d16baca19de4d57369dfa445a55f231edff953324c5"
   },
   {
     "id": "underworld-weapon-emberiron-axe",
     "parts": 15,
     "triangles": 3520,
-    "materials": 10,
+    "materials": 3,
     "source": "source/underworld-weapon-emberiron-axe.blend",
     "glb": "glb/underworld-weapon-emberiron-axe.glb",
     "runtime": "runtime/underworld-weapon-emberiron-axe.model.json",
-    "source_sha256": "2f78be439c923886cf59b76e5a69c82fac51b0b25d5de8141ba16b4df264c263",
-    "runtime_sha256": "d45a8309200006ffec66ace05c135b8eeed1dd89bc5528360d7129040202bdaf",
-    "glb_sha256": "8ac3e9284beea531f740362c4973942ed95ec146f55f53d2f926a455fef8a392"
+    "source_sha256": "b87c24384cf59e937c5463e3b676dfa2ff4f75dc3ae0530b4534dbad9477de0c",
+    "runtime_sha256": "c702d3e3f14ea1b9eeaa9752ba721d0cf2d159749288373bdfc5a32b8611deee",
+    "glb_sha256": "2f159a6c18ba8b2ade49bdc50d03307fc4aa4871282262dcaa487682475c7329"
   },
   {
     "id": "underworld-weapon-emberiron-greatsword",
     "parts": 14,
     "triangles": 3344,
-    "materials": 9,
+    "materials": 3,
     "source": "source/underworld-weapon-emberiron-greatsword.blend",
     "glb": "glb/underworld-weapon-emberiron-greatsword.glb",
     "runtime": "runtime/underworld-weapon-emberiron-greatsword.model.json",
-    "source_sha256": "79d75db038b6489ed9c39d6046e595554a0b13ad2207bb5c61aadd39a91f7e4e",
-    "runtime_sha256": "50d2185c10a5261b8de2851339a016e58ea2a943646b8bc2be9ff42cff294d8e",
-    "glb_sha256": "b1c39bee040e838aae2df9783823e0f15b9f753ab88d83782155ceff062c3d0c"
+    "source_sha256": "6e81012e3e70cccf5391b171c7a45b6194e5647a4da72ef4cb0188000d3c5fd2",
+    "runtime_sha256": "62b710f57c3586ac0b064844dfaa55e96e8107a70f602b8e8af38d406b753351",
+    "glb_sha256": "77890df93e2f95a126f2127e0e9e4d527e342b0c21f24de93153b56a76c7fc7f"
   },
   {
     "id": "underworld-weapon-flowstone-maul",
     "parts": 27,
     "triangles": 5028,
-    "materials": 14,
+    "materials": 3,
     "source": "source/underworld-weapon-flowstone-maul.blend",
     "glb": "glb/underworld-weapon-flowstone-maul.glb",
     "runtime": "runtime/underworld-weapon-flowstone-maul.model.json",
-    "source_sha256": "ca47a99654ea1a32dfd29973fd12d6e4c1b899e4f4d023a7c5448b64bb3c8cb2",
-    "runtime_sha256": "5fa454f17f0d39b548565d8cd5abc9460c76d325dbb2fc653fe244b890d2ff09",
-    "glb_sha256": "5eced8efd92c85942589da6106b468ba4a0d102756085980b51ada9e8281b90b"
+    "source_sha256": "582ec3fc8da87e31ce5a39a5945b74bd0d28fdcb9964841a7531569d3d7f09ce",
+    "runtime_sha256": "832a67a3ed2f3013acd96a9b6180ef13b7d09d99eae99db596c5aa28814ac300",
+    "glb_sha256": "1e37cefa8028ef953a6986101568c0d9092ddb472c5502a91fb30776190ed80c"
   },
   {
     "id": "underworld-weapon-icebind-staff",
     "parts": 15,
-    "triangles": 3236,
-    "materials": 6,
+    "triangles": 3204,
+    "materials": 3,
     "source": "source/underworld-weapon-icebind-staff.blend",
     "glb": "glb/underworld-weapon-icebind-staff.glb",
     "runtime": "runtime/underworld-weapon-icebind-staff.model.json",
-    "source_sha256": "a263f02ae154be40a29abc34b360866aae3dbe09f239881c8c88c7a6070d1ccc",
-    "runtime_sha256": "ac00683097b8906391e8ebc7840b943218b32c0e2268051ec4586a36a447a947",
-    "glb_sha256": "85d6a4823238f69e42f3456c1580a0e6eb70fbeb2665c5913c6b15ba20aa2f2b"
+    "source_sha256": "1df205d3d733d618bc017363e9b504d55be83f8dbd626985d18ff2b4bf872965",
+    "runtime_sha256": "bd668ec7b36d6c1c81ba3a6e348acc40d7244a47e9d48ecbb9d65ae68ae1bab2",
+    "glb_sha256": "2fb979045f04059e854227045e880b542206c09f20ca7ed5e826af4fe59fd545"
   },
   {
     "id": "underworld-weapon-rimesilver-spear",
     "parts": 17,
     "triangles": 3600,
-    "materials": 10,
+    "materials": 3,
     "source": "source/underworld-weapon-rimesilver-spear.blend",
     "glb": "glb/underworld-weapon-rimesilver-spear.glb",
     "runtime": "runtime/underworld-weapon-rimesilver-spear.model.json",
-    "source_sha256": "78c54bf2485a676f9397422c3d06fa5d1f042ae4fca56e2f3cc75b508374f5cc",
-    "runtime_sha256": "d8cea85caea2021910459044e7ed89c325c23b6fd3cd467685b26abc00e3034c",
-    "glb_sha256": "a8494f24046f3d57787706e4a70ffe468c4ad87e5f3c29cc4cb2234daf57695c"
+    "source_sha256": "67d058766495016d78845a68c30f0187199bfd85dbdcd1ce2b86492a7c1a4a08",
+    "runtime_sha256": "3d1169e400915dfb92d4f52dbafcc81398ea32a1b3d90d3769cc8eb5b68c3c67",
+    "glb_sha256": "dadcc3dd4181f53bace5c62aec61547faa6d561f6ff603cc8a729e428d3d7a0a"
   },
   {
     "id": "underworld-weapon-shardstone-crossbow",
     "parts": 19,
     "triangles": 1812,
-    "materials": 13,
+    "materials": 3,
     "source": "source/underworld-weapon-shardstone-crossbow.blend",
     "glb": "glb/underworld-weapon-shardstone-crossbow.glb",
     "runtime": "runtime/underworld-weapon-shardstone-crossbow.model.json",
-    "source_sha256": "d80ce7490f9c4b8ab4205cb59ca5ceb4761a211ef6691ad702f15833b7ce6aea",
-    "runtime_sha256": "8a9df1ed7c3a6bbdaa480088b75d51f07d2c2ac767dbc29c36835f2414f38d21",
-    "glb_sha256": "96a9486c508130c579fc35b5043dbc6a1d96cacd44571ef440bf57eccc460f84"
+    "source_sha256": "92600a9e072d4b1f99aa365edd50d030437002d9b53ea5d53dda3efc11ff074e",
+    "runtime_sha256": "6bdd9a1beeb3b9d63282b18308863cc3d8e77eb44e3e5aa645237b000a38fbd2",
+    "glb_sha256": "58828eb27b2b6209f5c438b36185c96746cd522f5f4facb1c8ed968319461fb2"
   },
   {
     "id": "underworld-weapon-titanbone-atgeir",
     "parts": 18,
     "triangles": 3732,
-    "materials": 13,
+    "materials": 3,
     "source": "source/underworld-weapon-titanbone-atgeir.blend",
     "glb": "glb/underworld-weapon-titanbone-atgeir.glb",
     "runtime": "runtime/underworld-weapon-titanbone-atgeir.model.json",
-    "source_sha256": "6a9e3ef98ad60606b671fd5b57671e2d7063bd3b69c5ced4345bcc0606e0860f",
-    "runtime_sha256": "66fc9381d080c9977162dae805228201050b2b0b18fd5c745922b676b5a76dfe",
-    "glb_sha256": "0fdbbe67e3a4d468b138fad95c0216a3e5fefbf4b3489f1f5864a3b121b7e0db"
+    "source_sha256": "818c312a1d8e3dfcbfa012ac07598b8a5dbc4413a1fa5b0557e920a6b2bb23c0",
+    "runtime_sha256": "6401d07a3f20f96328f0ea309dda03c7f57c1f3b7f34b8f9fa8320e394e19e54",
+    "glb_sha256": "75b632d07b5fbda79c3915f4072d1df55a7dda9cd4d5f68df665c01eca959f14"
   },
   {
     "id": "underworld-weapon-worldroot-bow",
     "parts": 22,
     "triangles": 3672,
-    "materials": 14,
+    "materials": 2,
     "source": "source/underworld-weapon-worldroot-bow.blend",
     "glb": "glb/underworld-weapon-worldroot-bow.glb",
     "runtime": "runtime/underworld-weapon-worldroot-bow.model.json",
-    "source_sha256": "3946641e5dc9c2fedb844b4d2776126f337f37656170e261353e417ed217aa8b",
-    "runtime_sha256": "a1ca1a262c39c0fdf5b69feaee85dda52442665b27902f7ae7b15de2c07f11f7",
-    "glb_sha256": "2b119f45460981fa39424c0c329e19ab46712fece5b09a47c5797c5951e929e8"
+    "source_sha256": "0f130657e6eb2c798b57e7a5b03a55049b7ea584ca923deb76ee68540a393d53",
+    "runtime_sha256": "aaafa6fd3cda5e0508a0c1aa0ad9022e4440ed5b1cabd2830692904dc393ee7c",
+    "glb_sha256": "74fc9ed6968383b5caa7b4e285886de96e1737737083897226862d7609b545aa"
   },
   {
     "id": "underworld-weapon-worldroot-club",
     "parts": 21,
     "triangles": 4132,
-    "materials": 13,
+    "materials": 2,
     "source": "source/underworld-weapon-worldroot-club.blend",
     "glb": "glb/underworld-weapon-worldroot-club.glb",
     "runtime": "runtime/underworld-weapon-worldroot-club.model.json",
-    "source_sha256": "cf99441fceb52ca356ddb8923da7b262aad4f5d9f18d9fbd8a0ecc1f88554639",
-    "runtime_sha256": "29f9c9a572293dff71634c402270bdb225e65b8d9487e26fe88b1752f9f731b1",
-    "glb_sha256": "8e85dbe16283264bd6470e50f98d928524bab517200675fcea15871f2dfb37c8"
+    "source_sha256": "d72c17c519786d65ed64d32f551e7668430f26d5c62d51b5c07ac29b45b7fcb1",
+    "runtime_sha256": "85208e30eacc61abbab5b2b9f9e687ebcc835de8fc529af55000e584a0f4f435",
+    "glb_sha256": "3606ff2d79f202cc5f47ab7ed87fd571a58b1bc739b09b51c269dc1377960cdb"
   }
 ]

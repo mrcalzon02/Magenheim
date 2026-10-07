@@ -105,6 +105,7 @@ internal sealed class UnderworldFloraWorldgenRegistrar : IDisposable
                 registered++;
             }
 
+            RegisterFungalVariantsAndCover();
             _log.LogInfo(
                 $"Registered {registered}/{_definitions.Species.Count} authoritative Underworld flora species " +
                 "through native ZoneSystem vegetation. Unsupported placement contracts remain fail-closed.");
@@ -120,5 +121,52 @@ internal sealed class UnderworldFloraWorldgenRegistrar : IDisposable
         if (!_subscribed) return;
         PrefabManager.OnVanillaPrefabsAvailable -= RegisterContent;
         _subscribed = false;
+    }
+
+    private void RegisterFungalVariantsAndCover()
+    {
+        foreach (var species in new[] { "Glowcap", "Spirestalk" })
+        {
+            var donor = PrefabManager.Instance.GetPrefab("Magenheim_Underworld_" + species)
+                ?? throw new InvalidOperationException("Missing authored canopy donor: " + species);
+            var variants = species == "Glowcap" ? new[] { "bent", "elder", "twin" } :
+                new[] { "young", "towered", "crooked" };
+            foreach (var variant in variants)
+            {
+                var name = "Magenheim_Underworld_Scenery_" + species + "_" + variant;
+                var prefab = PrefabManager.Instance.CreateClonedPrefab(name, donor);
+                // Retain the configured species' native tree, logs, stump and yields.
+                prefab.GetComponent<TreeBase>().m_trunk = UnderworldFloraHarvest.ApplyVisual(prefab,
+                    "underworld-flora-fungal-" + species.ToLowerInvariant() + "-" + variant, false);
+                AddFungalVegetation(prefab, .25f, .75f, 30f);
+            }
+        }
+        foreach (var model in new[] { "fern", "sporebrush", "nursery-caps", "moss-stone",
+                     "amber-bed", "sapling", "lantern-caps", "root-skirt" })
+        {
+            var prefab = new GameObject("Magenheim_Underworld_Scenery_Fungal_" + model);
+            prefab.SetActive(false);
+            prefab.AddComponent<ZNetView>().m_persistent = true;
+            ModelAssets.Load(prefab, "underworld-flora-fungal-" + model);
+            AddFungalVegetation(prefab, .5f, 1.5f, 45f);
+            if (prefab.transform.parent is null || prefab.transform.parent.gameObject.activeInHierarchy)
+                throw new InvalidOperationException("Fungal cover prototype needs an inactive prefab container.");
+            prefab.SetActive(true);
+        }
+        _log.LogInfo("Registered six authored harvestable canopy variants and eight Fungal Forest ground-cover types with native vegetation placement.");
+    }
+
+    private static void AddFungalVegetation(GameObject prefab, float min, float max, float tilt)
+    {
+        if (!ZoneManager.Instance.AddCustomVegetation(new CustomVegetation(prefab, false,
+                new VegetationConfig {
+                    Biome = UnderworldTerrainRuntime.FungalForestBiome,
+                    BiomeArea = Heightmap.BiomeArea.Everything, Min = min, Max = max,
+                    MinAltitude = 1, MaxAltitude = 1200, MinOceanDepth = 0, MaxOceanDepth = 0,
+                    MinTerrainDelta = 0, MaxTerrainDelta = 200, TerrainDeltaRadius = 2,
+                    MinTilt = 0, MaxTilt = tilt, ScaleMin = .9f, ScaleMax = 1.1f,
+                    GroupSizeMin = 1, GroupSizeMax = 1, BlockCheck = true, ForcePlacement = false
+                })))
+            throw new InvalidOperationException("Native Fungal Forest vegetation registration refused: " + prefab.name);
     }
 }

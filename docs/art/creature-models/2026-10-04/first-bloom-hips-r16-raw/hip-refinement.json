@@ -1,0 +1,22 @@
+{
+  "changed_components": [
+    "HipForkL0",
+    "HipForkL1",
+    "HipForkR0",
+    "HipForkR1",
+    "HollowCathedralTrunk",
+    "LimbBracketThighL0",
+    "LimbBracketThighL1",
+    "LimbBracketThighR0",
+    "LimbBracketThighR1",
+    "RootedThighL",
+    "RootedThighR"
+  ],
+  "triangles_added": 0,
+  "new_attachment_rings": 10,
+  "reseated_dependent_vertices": 8,
+  "upper_legs": "fuller proximal roots, narrower upper brackets, explicit pelvis contact",
+  "lower_torso": "raised groin arch and lateral fork instead of straight hanging apron",
+  "preserved": "chest collar, chest shelves, central membrane and lower leg/foot geometry",
+  "method": "existing loop shaping and intersecting supported contacts; not a Boolean union"
+}

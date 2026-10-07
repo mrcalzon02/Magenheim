@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from underworld_material_library import bind_underworld_material
+from worked_surface_authoring import bind_worked_surface
 from mathutils import Vector
 R=Path(__file__).resolve().parents[1]
 entries=json.loads((R/'default-data/foundation.json').read_text())['underworldArchitecture']['pieces']
@@ -21,6 +22,8 @@ def material(name,color,metal=0):
  bs=m.node_tree.nodes.get('Principled BSDF')
  bs.inputs['Base Color'].default_value=(*color,1);bs.inputs['Metallic'].default_value=metal;bs.inputs['Roughness'].default_value=.8 if not metal else .45
  bind_underworld_material(bpy,m,name)
+ if name in ('understone','worldroot-bark','worldroot-heartwood'):
+  bind_worked_surface(bpy,m,wood=name.startswith('worldroot'))
  return m
 
 
@@ -41,7 +44,8 @@ def tube(name,points,radii,mat,sides=12,collision=True):
  path_length=max(cumulative[-1],1e-6)
  # Keep bark/metal detail at a stable world scale. Short members use one full tile; long beams
  # repeat rather than stretching 512px of source art across four or eight metres.
- v_tiles=max(1.0,path_length/1.75)
+ v_tiles=path_length/1.5
+ u_tiles=math.tau*sum(radii)/len(radii)/1.5
  previous_tangent=None;previous_side=None
  for k,p in enumerate(points):
   tangent=(points[min(k+1,len(points)-1)]-points[max(0,k-1)]).normalized()
@@ -58,7 +62,7 @@ def tube(name,points,radii,mat,sides=12,collision=True):
   for j in range(sides):
    fs.append((k*sides+j,k*sides+(j+1)%sides,(k+1)*sides+(j+1)%sides,(k+1)*sides+j))
    u=j/sides;v=cumulative[k]/path_length*v_tiles;v2=cumulative[k+1]/path_length*v_tiles
-   uvs.append([(u,v),((j+1)/sides,v),((j+1)/sides,v2),(u,v2)])
+   uvs.append([(u*u_tiles,v),((j+1)/sides*u_tiles,v),((j+1)/sides*u_tiles,v2),(u*u_tiles,v2)])
  for k,rev in [(0,True),(len(points)-1,False)]:
   ids=list(range(k*sides,(k+1)*sides));ids=ids[::-1] if rev else ids
   fs.append(tuple(ids));uvs.append([(.5+.45*math.cos(math.tau*(i%sides)/sides),.5+.45*math.sin(math.tau*(i%sides)/sides)) for i in ids])
@@ -69,7 +73,11 @@ def box(name,center,size,mat,collision=True,bevel=.035):
  x,y,z=center;a,b,c=[v/2 for v in size]
  vs=[(x+dx*a,y+dy*b,z+dz*c) for dx,dy,dz in [(-1,-1,-1),(1,-1,-1),(1,1,-1),(-1,1,-1),(-1,-1,1),(1,-1,1),(1,1,1),(-1,1,1)]]
  fs=[(0,3,2,1),(4,5,6,7),(0,1,5,4),(1,2,6,5),(2,3,7,6),(3,0,4,7)]
- ob=mesh(name,vs,fs,[[(0,0),(1,0),(1,1),(0,1)]]*6,mat,collision)
+ face_sizes=[(size[0],size[1]),(size[0],size[1]),(size[0],size[2]),
+             (size[1],size[2]),(size[0],size[2]),(size[1],size[2])]
+ # Identical metres per tile on the top, sides, and small joinery blocks.
+ uvs=[[(0,0),(u/1.5,0),(u/1.5,v/1.5),(0,v/1.5)] for u,v in face_sizes]
+ ob=mesh(name,vs,fs,uvs,mat,collision)
  if bevel>0:
   mod=ob.modifiers.new('Worn edges','BEVEL');mod.width=bevel;mod.segments=2
  return ob
@@ -177,10 +185,10 @@ def add_floor_detail(w,h,d,wood,pale):
   y=(i-1)*d*.35;pts=[Vector((-w*.5+w*j/24,y,.25)) for j in range(25)]
   tube('floor-joist-'+str(i),pts,[.24]*25,wood)
  for edge,y in enumerate((-d*.44,d*.44)):
-  pts=[Vector((-w*.46+w*j/24,y,.66)) for j in range(25)]
+  pts=[Vector((-w*.46+w*.92*j/24,y,.66)) for j in range(25)]
   detail_tube('edge-binding-'+str(edge),pts,.055,wood,9)
  for edge,x in enumerate((-w*.44,w*.44)):
-  pts=[Vector((x,-d*.46+d*j/24,.66)) for j in range(25)]
+  pts=[Vector((x,-d*.46+d*.92*j/24,.66)) for j in range(25)]
   detail_tube('end-binding-'+str(edge),pts,.055,pale,9)
  for row,y in enumerate((-d*.30,d*.30)):
   for col,x in enumerate((-w*.38,-w*.13,w*.13,w*.38)):
@@ -359,6 +367,11 @@ for e in entries:
   add_root_surface_detail(kind,w,h,wood,pale)
   if kind in (4,5):add_ironwork(kind,w,h,iron)
  add_cultural_joinery(kind,e['Tier'],w,h,d,wood,pale,iron,stone)
+ if kind==5:
+  # Matched one-metre sockets have flat bottom/end planes, on the same grid
+  # as 1x1 members and the opposing edges of 2x2 supports.
+  for side in (-1,1):
+   box(f'arch-modular-foot-{side}',(side*(w*.5-.5),0,.25),(1,d,.5),wood,True,0)
  # Fit the authored envelope to catalog meters; detail remains inside stable snap planes.
  objects=[o for o in bpy.context.scene.objects if o.type=='MESH']
  floor=DETAIL_FLOORS.get(kind,12)

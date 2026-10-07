@@ -231,12 +231,21 @@ internal static class UnderworldValheimBehaviourInstanceScopePatch
     internal static System.Collections.Generic.IEnumerable<MethodBase> TargetMethods()
     {
         var assembly = typeof(ZoneSystem).Assembly;
+        // A method must have one world-service scope owner. Harmony finalizers from
+        // different patch classes need not unwind in reverse prefix order; overlapping
+        // Surface and player-local ZNetScene scopes can otherwise leave instance 1 ambient.
+        var specialized = new System.Collections.Generic.HashSet<MethodBase>(
+            UnderworldZoneSystemInstanceScopePatch.TargetMethods());
+        specialized.UnionWith(UnderworldSpawnSystemInstanceScopePatch.TargetMethods());
+        specialized.UnionWith(UnderworldCharacterInstanceScopePatch.TargetMethods());
+        specialized.UnionWith(UnderworldZNetSceneInstanceScopePatch.TargetMethods());
         foreach (var type in assembly.GetTypes())
         {
             if (type.IsAbstract || type == typeof(Pathfinding) || !typeof(MonoBehaviour).IsAssignableFrom(type)) continue;
             foreach (var method in type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
             {
-                if (method.IsAbstract || method.ContainsGenericParameters || Array.IndexOf(Names, method.Name) < 0) continue;
+                if (method.IsAbstract || method.ContainsGenericParameters || Array.IndexOf(Names, method.Name) < 0 ||
+                    specialized.Contains(method)) continue;
                 yield return method;
             }
         }
@@ -246,6 +255,13 @@ internal static class UnderworldValheimBehaviourInstanceScopePatch
     {
         __state = null;
         if (__instance is not Component component || !component) return;
+        // The shared camera stays in the Surface scene, but collision/terrain queries
+        // must follow the local player. Its own scene is not the viewed world.
+        if (component is GameCamera && Player.m_localPlayer)
+        {
+            ValheimWorldInstanceExecution.TryEnterScene(Player.m_localPlayer.gameObject.scene.handle, out __state);
+            return;
+        }
         ValheimWorldInstanceExecution.TryEnterScene(component.gameObject.scene.handle, out __state);
     }
 

@@ -64,7 +64,7 @@ internal sealed class UnderworldCreaturePrototypeRegistrar : IDisposable
             }
             catch (Exception exception)
             {
-                _log.LogWarning($"Underworld prototype {entry.Name} unavailable: {exception.Message}");
+                _log.LogWarning($"Underworld prototype {entry.Name} unavailable: {exception}");
             }
         }
         _log.LogInfo($"Registered {registered}/{UnderworldCreaturePrototypes.All.Length} Underworld creatures with native spawns, owned material/VFX identities, combat scaling, home-biome tolerances, progression-resource loot and species trophies. Donor rigs, animations and attack definitions remain intact; donor loot is replaced.");

@@ -1,0 +1,18 @@
+{
+  "id": "underworld-boss-blackwater-maw-face-r12",
+  "source": "assets/models/studies/underworld-boss-blackwater-maw-face-r12.blend",
+  "triangles": 6934,
+  "donor_triangles": 4872,
+  "soft_cap": 7308,
+  "ratio": 1.4232348111658457,
+  "previous_triangles": 7882,
+  "reduction_percent": 12.0274042121289,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "rig": "retained deep-hunter baseline; mixed weights at trunk and limb roots",
+  "texture_bake": "owned procedural scales, cracked cheek armor, fleshy mouth folds and cyan light organs baked to one 512px atlas",
+  "status": "art candidate; live performance and deformation acceptance pending",
+  "study_length_metres": 9.921716213226318,
+  "previous_id": "underworld-boss-blackwater-maw-face-r12-raw"
+}

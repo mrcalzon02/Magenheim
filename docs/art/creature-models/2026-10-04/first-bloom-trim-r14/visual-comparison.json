@@ -1,0 +1,36 @@
+{
+  "result": "PASS small matched-render differences",
+  "comparisons": [
+    {
+      "view": "three-quarter",
+      "mean_absolute_rgb_difference": 0.0002806568223997418,
+      "pixels_changed_by_more_than_five_levels_fraction": 0.0024962962962962964
+    },
+    {
+      "view": "front",
+      "mean_absolute_rgb_difference": 0.0003462809650609215,
+      "pixels_changed_by_more_than_five_levels_fraction": 0.0033617283950617286
+    },
+    {
+      "view": "side",
+      "mean_absolute_rgb_difference": 0.00013573630275155328,
+      "pixels_changed_by_more_than_five_levels_fraction": 0.0007814814814814815
+    },
+    {
+      "view": "detail",
+      "mean_absolute_rgb_difference": 0.0008912773339788591,
+      "pixels_changed_by_more_than_five_levels_fraction": 0.009374074074074075
+    },
+    {
+      "view": "clay",
+      "mean_absolute_rgb_difference": 0.00020392963769870088,
+      "pixels_changed_by_more_than_five_levels_fraction": 0.002182716049382716
+    },
+    {
+      "view": "attack",
+      "mean_absolute_rgb_difference": 0.00021921084483175984,
+      "pixels_changed_by_more_than_five_levels_fraction": 0.0020876543209876544
+    }
+  ],
+  "scope": "six matched views; this is not a proof of all-view visual identity"
+}

@@ -1,0 +1,64 @@
+{
+  "parts": [
+    {
+      "part": "PleatedPectoralL",
+      "structural_rays": 7,
+      "membrane_holes": 2,
+      "profile": "back-swept tapering lateral rays",
+      "membrane": "recessed between raised rays; scalloped torn trailing boundary"
+    },
+    {
+      "part": "PleatedPectoralR",
+      "structural_rays": 7,
+      "membrane_holes": 2,
+      "profile": "back-swept tapering lateral rays",
+      "membrane": "recessed between raised rays; scalloped torn trailing boundary"
+    },
+    {
+      "part": "ForwardPectoralL",
+      "structural_rays": 7,
+      "membrane_holes": 2,
+      "profile": "back-swept tapering lateral rays",
+      "membrane": "recessed between raised rays; scalloped torn trailing boundary"
+    },
+    {
+      "part": "ForwardPectoralR",
+      "structural_rays": 7,
+      "membrane_holes": 2,
+      "profile": "back-swept tapering lateral rays",
+      "membrane": "recessed between raised rays; scalloped torn trailing boundary"
+    },
+    {
+      "part": "AnteriorDorsalFin",
+      "structural_rays": 5,
+      "membrane_holes": 1,
+      "profile": "forward-swept dorsal spines",
+      "membrane": "recessed between raised rays; scalloped torn trailing boundary"
+    },
+    {
+      "part": "MainSecondDorsalFin",
+      "structural_rays": 5,
+      "membrane_holes": 1,
+      "profile": "forward-swept dorsal spines",
+      "membrane": "recessed between raised rays; scalloped torn trailing boundary"
+    },
+    {
+      "part": "AftDorsalFin",
+      "structural_rays": 5,
+      "membrane_holes": 1,
+      "profile": "forward-swept dorsal spines",
+      "membrane": "recessed between raised rays; scalloped torn trailing boundary"
+    },
+    {
+      "part": "CaudalDorsalFin",
+      "structural_rays": 5,
+      "membrane_holes": 1,
+      "profile": "forward-swept dorsal spines",
+      "membrane": "recessed between raised rays; scalloped torn trailing boundary"
+    }
+  ],
+  "tail": "broad two-lobed fan with raised radial supports; previous dimensions preserved",
+  "block_scales": 0,
+  "concept": "swept spines, recessed membranes, real perforations and torn edges",
+  "scope": "anatomical fin surface revision; body, jaw and texture assets preserved"
+}

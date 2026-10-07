@@ -1,0 +1,7 @@
+{
+  "result": "PASS identical source topology and vertex weights",
+  "vertices": 4892,
+  "edges": 8724,
+  "polygons": 4130,
+  "source_faces_and_weights_sha256": "0f8c3602da35dd6c44330df42fcf3e7e807180d4c5d101c5d3bca8e72f469be4"
+}

@@ -1,0 +1,21 @@
+{
+  "cause": "nonplanar closing face at the projected arm root; visible in trimmed and untrimmed model",
+  "repairs": [
+    {
+      "arm": "RootedUpperArmL",
+      "root_radius": 0.02396811647635573,
+      "closing_face": "planar inside one rigid Chest support face",
+      "cap_interior_samples": 40,
+      "root_shift": 0.044843500137074326
+    },
+    {
+      "arm": "RootedUpperArmR",
+      "root_radius": 0.021442520778857097,
+      "closing_face": "planar inside one rigid Chest support face",
+      "cap_interior_samples": 40,
+      "root_shift": 0.04020610861460803
+    }
+  ],
+  "triangles_added": 0,
+  "preserved": "body, crown bundles, beard, caps and lower arm geometry"
+}

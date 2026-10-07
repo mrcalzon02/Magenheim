@@ -20,6 +20,8 @@ internal static class UnderworldInstancePersistence
     private const string UnderworldDirectoryName = "1";
 
     private static readonly AsyncLocal<int> Reentry = new();
+    private static readonly FieldInfo NativePackageReader = AccessTools.Field(typeof(ZPackage), "m_reader")
+        ?? throw new MissingFieldException(typeof(ZPackage).FullName, "m_reader");
     private static readonly AsyncLocal<int> CombinedExtraDataPrepare = new();
     private static readonly AsyncLocal<int> CombinedLookupReentry = new();
     private static readonly AsyncLocal<int> PreserveSharedStaticsDuringInstanceLoad = new();
@@ -30,6 +32,7 @@ internal static class UnderworldInstancePersistence
     private static string? _parentSavePath;
     private static bool? _parentIsCloud;
     private static bool _freshNamespaceReady;
+    private static bool _loadFailed;
 
     internal static void Configure(UnderworldRuntimeServices services, ManualLogSource log)
     {
@@ -43,6 +46,7 @@ internal static class UnderworldInstancePersistence
         _parentSavePath = null;
         _parentIsCloud = null;
         _freshNamespaceReady = false;
+        _loadFailed = false;
     }
 
     internal static string ValidateBoundNamespace()
@@ -90,7 +94,8 @@ internal static class UnderworldInstancePersistence
             return;
         }
 
-        _pendingLoad = null;
+        // A failed admission must never autosave an empty manager over existing chunks.
+        _loadFailed = true;
         var path = InstancePath(pending.ParentPath);
         var fileSource = (FileHelpers.FileSource)pending.Arguments[1];
         var chunkIndex = path + SaveSystem.MainChunksFileName(false);
@@ -104,13 +109,20 @@ internal static class UnderworldInstancePersistence
             if (chunks is null)
                 throw new IOException("Unable to inspect existing Underworld chunk namespace: " + path);
             if (chunks.Length > 0)
-                throw new InvalidOperationException("Underworld chunk index is missing but chunk data exists: " + path);
-            _log?.LogInfo($"No persisted Underworld instance exists yet at '{path}'; starting a new instance namespace.");
-            UnderworldZoneInstanceState.NotifyZdosLoaded();
-            return;
+                RecoverNativeChunkIndex(path, fileSource, chunks, (Version.World)pending.Arguments[2]);
+            else
+            {
+                _pendingLoad = null;
+                _loadFailed = false;
+                _log?.LogInfo($"No persisted Underworld instance exists yet at '{path}'; starting a new instance namespace.");
+                UnderworldZoneInstanceState.NotifyZdosLoaded();
+                return;
+            }
         }
 
         InvokeInstanceLoad(context, pending.Method, ReplacePath(pending.Arguments, path));
+        _pendingLoad = null;
+        _loadFailed = false;
         UnderworldZoneInstanceState.NotifyZdosLoaded();
         _log?.LogInfo($"Loaded Underworld instance ZDO chunks from parent-save namespace '{path}'.");
     }
@@ -137,6 +149,7 @@ internal static class UnderworldInstancePersistence
     internal static void MirrorPrepareSave(ZDOMan source, MethodBase original, object[] args)
     {
         if (!IsSurfaceInvocation(source)) return;
+        if (_loadFailed) return;
         if (!TryGetUnderworld(out var context)) return;
 
         // Build the Underworld manager's own native save clone first. Both managers share Valheim's
@@ -152,6 +165,11 @@ internal static class UnderworldInstancePersistence
     {
         if (!IsSurfaceInvocation(source) || args.Length == 0 || args[0] is not string parentPath) return;
         if (!TryGetUnderworld(out var context)) return;
+        if (_loadFailed)
+        {
+            _log?.LogWarning("Underworld load failed; retaining its saved chunks while Surface saves normally.");
+            return;
+        }
 
         var path = InstancePath(BindParentSavePath(parentPath, (FileHelpers.FileSource)args[1]));
         if (_parentIsCloud != true) Directory.CreateDirectory(path);
@@ -159,9 +177,40 @@ internal static class UnderworldInstancePersistence
         _log?.LogDebug($"Saved Underworld instance ZDO chunks inside parent-save namespace '{path}'.");
     }
 
+    private static void RecoverNativeChunkIndex(string path, FileHelpers.FileSource source,
+        string[] files, Version.World worldVersion)
+    {
+        var mapping = new ChunkSaveMapping();
+        foreach (var file in files)
+        {
+            var name = Path.GetFileName(file.Replace('\\', '/'));
+            if (!name.EndsWith(".chunk", StringComparison.OrdinalIgnoreCase)) continue;
+            if (!UnderworldNativeSaveNamespace.TryParseChunkFileName(name, out var index, out var size, out var version))
+                throw new IOException("Unrecognized native Underworld chunk filename: " + name);
+            var chunk = new ZoneSystem.ChunkIndex(index, size);
+            if (mapping.Chunks.ContainsKey(chunk))
+                throw new IOException("Ambiguous Underworld chunk versions; saved data retained: " + name);
+            using (var saveReader = SaveFileHelper.CreateZPackageForReading(path + name, source))
+            {
+                // CreateZPackageForReading attaches an external reader. ZPackage.Size/GetPos
+                // still describe its unused internal MemoryStream, not this native save file.
+                // Measure the same external stream from which the chunk header was read.
+                var reader = NativePackageReader.GetValue(saveReader.Pkg) as BinaryReader
+                    ?? throw new IOException("Native Underworld save reader unavailable; saved data retained: " + name);
+                var count = UnderworldNativeSaveNamespace.ReadChunkHeader(reader, (ushort)worldVersion);
+                mapping.Chunks.Add(chunk, new ChunkSaveMapping.ChunkInfo(chunk)
+                    { m_version = version, m_numZDOs = count });
+            }
+        }
+        if (mapping.Chunks.Count == 0 || !mapping.Save(path, source))
+            throw new IOException("Native Underworld chunk-index recovery could not be saved: " + path);
+        _log?.LogWarning($"Recovered native Underworld chunk index for {mapping.Chunks.Count} existing chunks at '{path}'. Original chunk payloads were retained.");
+    }
+
     internal static void MirrorSaveCleanup(ZDOMan source, MethodBase original, object[] args)
     {
         if (!IsSurfaceInvocation(source)) return;
+        if (_loadFailed) return;
         if (!TryGetUnderworld(out var context)) return;
 
         // Surface and Underworld have both completed SaveChunks before Valheim reaches SaveCleanup.

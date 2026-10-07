@@ -1,0 +1,17 @@
+{
+  "id": "underworld-boss-blackwater-maw-fins-r6",
+  "source": "assets/models/studies/underworld-boss-blackwater-maw-fins-r6.blend",
+  "triangles": 5897,
+  "donor_triangles": 4872,
+  "soft_cap": 7308,
+  "ratio": 1.2103858784893267,
+  "previous_triangles": 6508,
+  "reduction_percent": 9.388444990780576,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "rig": "retained deep-hunter baseline; mixed weights at trunk and limb roots",
+  "texture_bake": "owned procedural scales, cracked cheek armor, fleshy mouth folds and cyan light organs baked to one 512px atlas",
+  "status": "art candidate; live performance and deformation acceptance pending",
+  "previous_id": "underworld-boss-blackwater-maw-fins-r6-raw"
+}

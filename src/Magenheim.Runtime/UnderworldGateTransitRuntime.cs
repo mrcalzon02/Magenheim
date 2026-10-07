@@ -92,6 +92,10 @@ internal static class UnderworldGateTransitRuntime
                 {
                     target = UnderworldWorldCenterRegistrar.ResolveEngineCenterPosition() + Vector3.up * 1.2f;
                     rotation = UnderworldWorldCenterRegistrar.ArrivalRotation;
+                    var arrivalTerrain = UnderworldTerrainRuntime.SampleInstanceTerrain(target.x, target.y, target.z);
+                    if (!arrivalTerrain.Admitted || arrivalTerrain.Biome != UnderworldTerrainBiome.FungalForest)
+                        throw new InvalidOperationException("The standing-stone arrival is outside the central Fungal country.");
+                    _log?.LogInfo($"Deep Gate standing-stone destination ({target.x:0.##}, {target.y:0.##}, {target.z:0.##}), biome {arrivalTerrain.Biome}.");
                 }
             }
             catch (Exception exception)
@@ -103,9 +107,8 @@ internal static class UnderworldGateTransitRuntime
             var source = new SurfaceAnchor(player.transform.position, player.transform.rotation);
             SurfaceReturn[playerId] = source;
             PersistReturnAnchor(player, source);
-            BeginLocalLoading(player, "Descending into the Underworld…");
-            var entered = TryMovePlayerToInstance(player, targetContext, target, rotation, false, out diagnostic);
-            FinishLocalLoading(player, entered);
+            PrepareLocalPortalTransition(player);
+            var entered = TryMovePlayerToInstance(player, targetContext, target, rotation, out diagnostic);
             if (entered)
             {
                 _log?.LogInfo($"Deep Gate moved player {playerId} into Underworld world instance {identity.DerivedWorldId}.");
@@ -129,15 +132,13 @@ internal static class UnderworldGateTransitRuntime
             return false;
         }
 
-        BeginLocalLoading(player, "Returning to the Surface…");
+        PrepareLocalPortalTransition(player);
         var returned = TryMovePlayerToInstance(
             player,
             surfaceContext,
             returnAnchor.Position + Vector3.up * 0.25f,
             returnAnchor.Rotation,
-            false,
             out diagnostic);
-        FinishLocalLoading(player, returned);
         if (!returned) return false;
 
         SurfaceReturn.Remove(playerId);
@@ -161,11 +162,8 @@ internal static class UnderworldGateTransitRuntime
             diagnostic = $"World instance {targetInstance} is unavailable.";
             return false;
         }
-        BeginLocalLoading(
-            player,
-            targetInstance.IsUnderworld ? "Descending into the Underworld…" : "Returning to the Surface…");
-        var moved = TryMovePlayerToInstance(player, context, targetPosition, targetRotation, false, out diagnostic);
-        FinishLocalLoading(player, moved);
+        PrepareLocalPortalTransition(player);
+        var moved = TryMovePlayerToInstance(player, context, targetPosition, targetRotation, out diagnostic);
         return moved;
     }
 
@@ -174,7 +172,6 @@ internal static class UnderworldGateTransitRuntime
         ValheimWorldInstanceContext target,
         Vector3 targetPosition,
         Quaternion targetRotation,
-        bool distantTeleport,
         out string diagnostic)
     {
         diagnostic = string.Empty;
@@ -201,7 +198,7 @@ internal static class UnderworldGateTransitRuntime
             services.WorldInstances.MovePlayer(playerId, target.InstanceId);
             using (ValheimWorldInstanceExecution.Enter(target))
             {
-                if (!player.TeleportTo(targetPosition, targetRotation, distantTeleport))
+                if (!player.TeleportTo(targetPosition, targetRotation, true))
                     throw new InvalidOperationException("Valheim rejected the target-instance teleport.");
             }
 
@@ -261,15 +258,13 @@ internal static class UnderworldGateTransitRuntime
         }
 
         var rotation = player.transform.rotation;
-        BeginLocalLoading(player, "Returning to the Surface…");
+        PrepareLocalPortalTransition(player);
         var returned = TryMovePlayerToInstance(
             player,
             surfaceContext,
             position + Vector3.up * 0.5f,
             rotation,
-            true,
             out diagnostic);
-        FinishLocalLoading(player, returned);
         if (!returned) return false;
 
         SurfaceReturn.Remove(player.GetPlayerID());
@@ -279,17 +274,24 @@ internal static class UnderworldGateTransitRuntime
         return true;
     }
 
-    private static void BeginLocalLoading(Player player, string caption)
-    {
-        if (_log is null || player != Player.m_localPlayer) return;
-        UnderworldLoadingScreenRuntime.Show(_log, caption);
-    }
-
-    private static void FinishLocalLoading(Player player, bool success)
+    private static void PrepareLocalPortalTransition(Player player)
     {
         if (player != Player.m_localPlayer) return;
-        if (success) UnderworldLoadingScreenRuntime.HideAfterFrames();
-        else UnderworldLoadingScreenRuntime.Hide();
+        // Player.TeleportTo(..., true) drives Hud's native portal animation and fade.
+        // Remove our separate full-screen presenter before native transit takes ownership.
+        UnderworldLoadingScreenRuntime.Hide();
+    }
+
+    internal static void ReportNativeArrival(Player player)
+    {
+        if (player != Player.m_localPlayer ||
+            !ValheimWorldInstanceExecution.TryGetContextForScene(player.gameObject.scene.handle, out var context) ||
+            context is null) return;
+        var camera = Camera.main;
+        _log?.LogInfo($"Native portal transit completed: scene={context.Scene.name}; " +
+            $"player={player.transform.position}; dead={player.IsDead()}; sleeping={player.IsSleeping()}; " +
+            $"camera={(camera ? camera.transform.position.ToString() : "missing")}; " +
+            $"cameraEnabled={(camera && camera.enabled)}. Native HUD now owns the arrival fade.");
     }
 
     internal static string Describe(Player player)

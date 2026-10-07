@@ -2,12 +2,27 @@
 """Gate the authored fallback that closes the 100-model / 1,303-part texture gap."""
 import hashlib
 import json
+import re
 from pathlib import Path
 from PIL import Image, ImageStat
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME = ROOT / "assets" / "models" / "runtime"
 TEXTURES = ROOT / "assets" / "models" / "textures"
+
+def matches_owned_art(actual, expected):
+    if actual == expected:
+        return True
+    # Packed-source export names maps by content to avoid global image-name
+    # collisions. Require a valid content hash AND identical canonical pixels.
+    if not actual or not re.fullmatch(r"[0-9a-f]{16}\.png", actual):
+        return False
+    path = TEXTURES / actual
+    if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest()[:16] != path.stem:
+        return False
+    canonical = Image.open(TEXTURES / expected).convert("RGBA")
+    exported = Image.open(path).convert("RGBA")
+    return canonical.size == exported.size and canonical.tobytes() == exported.tobytes()
 FAMILIES = ("stone", "timber", "metal", "cloth", "bone", "liquid", "leather", "crystal", "generic")
 BASELINE_MODELS = 87
 BASELINE_PARTS = 1048
@@ -258,7 +273,7 @@ for model_id, expected in ITEM_TEXTURE_BINDINGS.items():
         name = material.get("name")
         if name in expected:
             texture = material.get("texture")
-            if texture != expected[name]:
+            if not matches_owned_art(texture, expected[name]):
                 raise SystemExit(f"{model_id}/{name}: expected model-specific texture {expected[name]}, got {texture}")
             path = TEXTURES / texture
             image = Image.open(path)

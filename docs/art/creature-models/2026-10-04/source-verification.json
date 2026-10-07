@@ -1,0 +1,86 @@
+[
+  {
+    "id": "underworld-boss-first-bloom",
+    "dimensions": [
+      3.5844759941101074,
+      1.8842235207557678,
+      4.649999620392919
+    ],
+    "triangles": 12560,
+    "bones": 22,
+    "inherited_actions": 10,
+    "intentional_open_edges": 0,
+    "source_sha256": "49aafe082fa7bd171aa545700f4694f9d1df4195657a321bb9384236d752f7a1",
+    "result": "PASS art integrity; animation retargeting and live checks pending"
+  },
+  {
+    "id": "underworld-boss-blackwater-maw",
+    "dimensions": [
+      5.161013603210449,
+      9.999999523162842,
+      3.5843571424484253
+    ],
+    "triangles": 9236,
+    "bones": 17,
+    "inherited_actions": 13,
+    "intentional_open_edges": 0,
+    "source_sha256": "e1d1833704e623cffd1a82b7cdca68646bf8fb95535b66caf8849952c5fa0877",
+    "result": "PASS art integrity; animation retargeting and live checks pending"
+  },
+  {
+    "id": "underworld-boss-furnace-heart",
+    "dimensions": [
+      4.9854676723480225,
+      2.5101312398910522,
+      5.200000181794167
+    ],
+    "triangles": 3964,
+    "bones": 14,
+    "inherited_actions": 8,
+    "intentional_open_edges": 0,
+    "source_sha256": "17c792f96b484c64f18236c2fa733b47423e48b888776e8b54ef06b760ae4b2b",
+    "result": "PASS art integrity; animation retargeting and live checks pending"
+  },
+  {
+    "id": "underworld-boss-white-silence",
+    "dimensions": [
+      5.241740942001343,
+      2.0428547859191895,
+      5.499999463558197
+    ],
+    "triangles": 3748,
+    "bones": 13,
+    "inherited_actions": 7,
+    "intentional_open_edges": 0,
+    "source_sha256": "c705195a163aeeec5c52ec93c9b4aa30dc656a49a8c12d0229c3f7c28de5f5c5",
+    "result": "PASS art integrity; animation retargeting and live checks pending"
+  },
+  {
+    "id": "underworld-boss-rift-titan",
+    "dimensions": [
+      7.325337171554565,
+      2.3481463193893433,
+      6.999998688697815
+    ],
+    "triangles": 2932,
+    "bones": 8,
+    "inherited_actions": 7,
+    "intentional_open_edges": 0,
+    "source_sha256": "9e290716216bad793d0b42be2583d6cfdfe609ab329f838ad50c70bd0f045275",
+    "result": "PASS art integrity; animation retargeting and live checks pending"
+  },
+  {
+    "id": "underworld-boss-carrion-crown",
+    "dimensions": [
+      7.565473794937134,
+      5.316076278686523,
+      6.7999997437000275
+    ],
+    "triangles": 6188,
+    "bones": 7,
+    "inherited_actions": 5,
+    "intentional_open_edges": 0,
+    "source_sha256": "2fc5089edd1cab46e413414303e8acc6547a78d7815c4a6a5ed4032e79e75014",
+    "result": "PASS art integrity; animation retargeting and live checks pending"
+  }
+]

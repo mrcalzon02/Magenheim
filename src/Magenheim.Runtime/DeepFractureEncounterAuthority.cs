@@ -8,23 +8,26 @@ internal sealed class DeepFractureEncounterAuthority : MonoBehaviour
     private const string ClearedKeyPrefix = "magenheim.fracture.cleared.";
     private ZNetView _view = null!;
 
-    private void Awake() => _view = GetComponent<ZNetView>();
+    // LocationProxy parents the completed location only after Instantiate returns.
+    // Resolve its native persistent view lazily, rather than creating an unregistered
+    // network object for the nested chamber root during prefab construction.
+    private ZNetView View => _view ? _view : (_view = GetComponentInParent<ZNetView>());
 
     internal bool HasAuthority =>
-        _view is not null && _view.IsValid() && _view.IsOwner() &&
+        View && View.IsValid() && View.IsOwner() &&
         ZNet.instance is not null && ZNet.instance.IsServer();
 
     internal bool IsCleared(string identity)
     {
         if (string.IsNullOrWhiteSpace(identity)) throw new ArgumentException("Encounter unit identity is required.", nameof(identity));
-        return _view is not null && _view.IsValid() && _view.GetZDO().GetBool(ClearedKeyPrefix + identity, false);
+        return View && View.IsValid() && View.GetZDO().GetBool(ClearedKeyPrefix + identity, false);
     }
 
     internal void MarkCleared(string identity)
     {
         if (!HasAuthority) return;
         if (string.IsNullOrWhiteSpace(identity)) throw new ArgumentException("Encounter unit identity is required.", nameof(identity));
-        _view.GetZDO().Set(ClearedKeyPrefix + identity, true);
+        View.GetZDO().Set(ClearedKeyPrefix + identity, true);
     }
 }
 

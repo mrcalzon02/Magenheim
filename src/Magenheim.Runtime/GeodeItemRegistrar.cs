@@ -91,6 +91,7 @@ internal sealed class GeodeItemRegistrar : IDisposable
 
         if (!ItemManager.Instance.AddItem(customItem))
             throw new InvalidOperationException($"Jotunn refused geode item '{geode.PrefabName}'.");
+        GeodePileRegistrar.Register(geode, customItem.ItemPrefab);
     }
 
     private static string BuildDisplayName(GeodeDefinition geode) =>

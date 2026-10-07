@@ -1,0 +1,7 @@
+{
+  "middle_fin": "single surface from thick tapered embedded root into long flattened swept blade; independent joint objects removed",
+  "forward_fin": "manually defined broad asymmetric contour and torn trailing boundary; direct torso attachment, no shoulder",
+  "skin": "new owned angular lamellar albedo, darker palette and transverse fin root folds; worn fragments are baked surface detail",
+  "preserved": "head, tooth beds, rounded eyes, torso rig, four dorsal fins, broad tail and separate feelers",
+  "status": "reference-driven art candidate; visual match still requires review"
+}

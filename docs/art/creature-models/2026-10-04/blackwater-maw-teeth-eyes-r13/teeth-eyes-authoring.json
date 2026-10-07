@@ -1,0 +1,271 @@
+{
+  "teeth": [
+    {
+      "part": "UpperFang0",
+      "length_author_units": 0.2394209086894989,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperFang1",
+      "length_author_units": 0.3539882108569145,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperFang2",
+      "length_author_units": 0.4,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperFang3",
+      "length_author_units": 0.3837364614009857,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperFang4",
+      "length_author_units": 0.4,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperFang5",
+      "length_author_units": 0.30754496455192565,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperFang6",
+      "length_author_units": 0.3531634151935577,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperFang7",
+      "length_author_units": 0.3928290009498596,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperFang8",
+      "length_author_units": 0.2564780831336975,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperFang9",
+      "length_author_units": 0.3973271012306213,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperFang10",
+      "length_author_units": 0.30315133929252625,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperFang11",
+      "length_author_units": 0.4,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperFang12",
+      "length_author_units": 0.4,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperFang13",
+      "length_author_units": 0.3450734436511993,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperFang14",
+      "length_author_units": 0.394428513944149,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperFang15",
+      "length_author_units": 0.237759593129158,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperInner0",
+      "length_author_units": 0.11611326336860656,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperInner1",
+      "length_author_units": 0.22685691118240356,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperInner2",
+      "length_author_units": 0.08511126041412354,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperInner3",
+      "length_author_units": 0.13335427045822143,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperInner4",
+      "length_author_units": 0.17503437995910642,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "UpperInner5",
+      "length_author_units": 0.1490619897842407,
+      "profile_rake": "rearward upper fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang0",
+      "length_author_units": 0.20858629092574119,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang1",
+      "length_author_units": 0.29,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang2",
+      "length_author_units": 0.29,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang3",
+      "length_author_units": 0.29,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang4",
+      "length_author_units": 0.29,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang5",
+      "length_author_units": 0.29,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang6",
+      "length_author_units": 0.29,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang7",
+      "length_author_units": 0.29,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang8",
+      "length_author_units": 0.29,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang9",
+      "length_author_units": 0.29,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang10",
+      "length_author_units": 0.29,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang11",
+      "length_author_units": 0.29,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang12",
+      "length_author_units": 0.29,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang13",
+      "length_author_units": 0.29,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang14",
+      "length_author_units": 0.29,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerFang15",
+      "length_author_units": 0.20933834612369537,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerInner0",
+      "length_author_units": 0.10872058559209108,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerInner1",
+      "length_author_units": 0.21110182225704194,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerInner2",
+      "length_author_units": 0.18399638473987578,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerInner3",
+      "length_author_units": 0.23221790552139282,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerInner4",
+      "length_author_units": 0.15989182353019715,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    },
+    {
+      "part": "LowerInner5",
+      "length_author_units": 0.13444523392245172,
+      "profile_rake": "forward lower fang",
+      "root": "original verified gum section retained"
+    }
+  ],
+  "eyes": "eight rounded inset bulbs in asymmetric-size rear cheek clusters; dark socket rim and outward cyan highlight",
+  "scope": "teeth and eyes only; preceding head, scaled neck, low brow, fin and separated feeler corrections retained",
+  "status": "concept review required"
+}

@@ -48,8 +48,8 @@ MOUTH_CLEAR = 9.0       # guaranteed clear height inside a mouth
 # runtime light beneath it so daylight actually spills onto the floor. Not every district
 # gets one: they read as colossal partly because breaking the surface is rare.
 SHAFT_HEIGHT = 16.0
-FISSURE_LIGHT_RANGE = 96.0
-FISSURE_LIGHT_INTENSITY = 6.4
+FISSURE_LIGHT_RANGE = 32.0
+FISSURE_LIGHT_INTENSITY = 0.8
 FISSURE_LIGHT_COLOUR = (0.62, 0.71, 0.86)   # cool skylight against warm cavern rock
 # Lattice spacing is about 2.14 m, so a 1.45 m rise is roughly a 34 degree slope. Valheim
 # players slide above the mid-thirties, so this is the ceiling for a floor that can be

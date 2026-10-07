@@ -116,7 +116,7 @@
         "assets/models/source/staff-venom-simple.blend"
       ],
       "generator_sha256": "5c6046899856aaf957826a390233364f5f832475c51bfc2b4c05e678b5d8bfad",
-      "inputs_sha256": "6f1337fc6d24b426dd8b989834db6535137965ea8ea888052cdbd6098f21b5d2"
+      "inputs_sha256": "b11e1c429ab4eab62ef79fcaecde1b47fdeb94f163c197775cf31a70bfd916ed"
     },
     {
       "id": "underworld-sporeling-source",
@@ -470,10 +470,11 @@
         "tools/export-model-assets.py",
         "tools/model_surface_authoring.py",
         "tools/underworld_material_library.py",
-        "tools/generate-underworld-material-textures.py"
+        "tools/generate-underworld-material-textures.py",
+        "tools/worked_surface_authoring.py"
       ],
-      "generator_sha256": "87c51422dcac21bd2e5a883fc7146783a3617620c341070768adffe0f11c9d12",
-      "inputs_sha256": "d29f70ef141937572fade5709ce7c58056f114a4e08ac435ae48042500b920f5"
+      "generator_sha256": "ca3dfaf06522efb12ac107e2f8c896bfa04fe304482dffc8b5efb0e7e33e0333",
+      "inputs_sha256": "b37ee3196a7a4eb12a658e4a938858bfef43c0d9c0d3bb5eba55cc6f179ee8b2"
     },
     {
       "id": "rootforged-icons",
@@ -513,7 +514,7 @@
         "tools/render-rootforged-icons.py"
       ],
       "generator_sha256": "02c67018c0f325db9881f3ca8e4e4bb376a272d8b5189b91b04b21a92152e60a",
-      "inputs_sha256": "dd61bf85e0f5b2ec85f4213ab514c33db66578de4ccd5d3738fc2c184c407e74"
+      "inputs_sha256": "2f58d19a605a2314e9043c060ed7620d8f1d1942c51cb60f9c2000c63a0b9d82"
     },
     {
       "id": "underworld-surtling-models",
@@ -609,7 +610,7 @@
         "assets/models/runtime/underworld-resource-understone.model.json"
       ],
       "hash": "generator-only",
-      "generator_sha256": "8ff8b35ccc2b9f64e28998b07c0126b19f8199713527947b77dba95b17e8daa9",
+      "generator_sha256": "7f510d56fc7988bb4097e9b75bb80c8368a616464b53656ccd347e232a398424",
       "output_sha256": {
         "assets/models/glb/underworld-flora-fungal-amber-bed.glb": null,
         "assets/models/glb/underworld-flora-fungal-fern.glb": null,
@@ -762,7 +763,7 @@
         "tools/author-underworld-fungal-forest.py",
         "tools/author-underworld-blackwater-deep.py"
       ],
-      "inputs_sha256": "7212de93689d0568e825439851d4fbe44942e80e7f800eeac785004098423823"
+      "inputs_sha256": "1ed23bb9fc5d1c30bf6a26a85581ba6e25fe63055f801ef79ce000712524a0b3"
     },
     {
       "id": "underworld-blackwater-deep-models",
@@ -1026,14 +1027,16 @@
       "hash": "generator-only",
       "inputs": [
         "tools/rebuild-underworld-stations.ps1",
+        "tools/worked_surface_authoring.py",
         "tools/render-underworld-station-icons.py",
         "tools/export-model-assets.py",
         "tools/model_surface_authoring.py",
         "tools/underworld_material_library.py",
-        "tools/generate-underworld-material-textures.py"
+        "tools/generate-underworld-material-textures.py",
+        "tools/station_process_authoring.py"
       ],
-      "generator_sha256": "42a30dd0c4177d7f29f078d1b0c7dbb997d8964105633718b296434cfc337d38",
-      "inputs_sha256": "fbbae824fc8fce1c147dba974c8c4ad8693c2def040134654cc3d07cb7bf173f"
+      "generator_sha256": "e22edd3155cc42dcdabc809d3554ea904b2c05ae97335464e80acad25219ee6e",
+      "inputs_sha256": "fa8f700b91d8dbb7d8fa65e9e941d47150ecbbbd772b21a5b8ab267e2772003d"
     },
     {
       "id": "underworld-tool-models",
@@ -1354,7 +1357,7 @@
         "tools/author-crystal-weapons.py",
         "tools/magenheim_blender_kit.py"
       ],
-      "generator_sha256": "1604884e06393d7356a12c01692febf36532e99e60c7ae5bdf5265258a413f75",
+      "generator_sha256": "0384e49ad85ef41054a02ae1bfd29b7e6fab3e21c568293f88e1037b68cdfc89",
       "inputs_sha256": "dbf7d555205902e9928e636f17a1416a5dd22fae293593f546766c6dde75c26b"
     },
     {
@@ -1535,8 +1538,8 @@
         "assets/models/source/staff-venom-master.blend",
         "assets/models/source/staff-venom-simple.blend"
       ],
-      "generator_sha256": "d0add2d9d2c67e3a517591f1a246b56507a30c39c5a2236afca04570409ff9f1",
-      "inputs_sha256": "afce99f726976de0579a91b8baec8f41395e70eb37ed8d9866b9a616c560225c"
+      "generator_sha256": "7fe970e92ef53e4e7c02df0ade6579dff8ac1925e5fb7383aa426fbd2e661c41",
+      "inputs_sha256": "f9a8c162ea55b66ca47ec46b7f3457121aaa4ee9ee4eb7bf733543efef8f9127"
     },
     {
       "id": "underworld-geothermal-vent-models",
@@ -1742,8 +1745,8 @@
         "tools/underworld_material_library.py",
         "tools/generate-underworld-material-textures.py"
       ],
-      "generator_sha256": "a2577d57d4aa92fc0da5f31cc07003ae21c1672aec0376b6cdddc8b902768e8e",
-      "inputs_sha256": "a4859fe5e76bf9631ff5c8882d262e371b4a34294be6c52a5c4852b225faaaee"
+      "generator_sha256": "7b2831e74600446c9e1b00cb41835e58aebb3aecc4102b8af40eddc97a0f5e88",
+      "inputs_sha256": "952bb7c89744cec48e75f6b4660334c63f0de9a1ec233e37c6793132c54273d0"
     },
     {
       "id": "blackstone-throne-textures",

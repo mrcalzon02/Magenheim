@@ -1,0 +1,18 @@
+{
+  "changed_components": [
+    "LimbBracketUpperArmL0",
+    "LimbBracketUpperArmL1",
+    "LimbBracketUpperArmR0",
+    "LimbBracketUpperArmR1",
+    "RootedUpperArmL",
+    "RootedUpperArmR"
+  ],
+  "triangles_added": 0,
+  "arm_root_inward_shift": 0.21,
+  "arm_root_back_shift": 0.12,
+  "arm_root_section_x_scale": 0.75,
+  "root_vertices_per_arm": 10,
+  "reseated_tissue_vertices": 12,
+  "rig": "unchanged skeleton; Chest roots and two-bone Chest/UpperArm transition",
+  "preserved": "mantle, chest cavity, lateral hip shelves and central bark, lower arms, hands, legs and feet"
+}

@@ -76,7 +76,12 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             return;
         }
 
-        var currentWorldUid = znet.GetWorldUID();
+        // Session lifetime belongs to the parent save, even while a player's callback
+        // presents the child World through ZNet's singleton seam.
+        var currentWorldUid = _services.WorldInstances.TryGetContext(
+            UnderworldWorldInstanceId.Surface, out var surface) && surface is not null
+            ? surface.World.m_uid
+            : znet.GetWorldUID();
         if (!_observedWorldUid.HasValue)
         {
             _observedWorldUid = currentWorldUid;
@@ -200,6 +205,7 @@ internal sealed class UnderworldWorldSessionLifecycle : MonoBehaviour
             _worldCenter = candidate;
             candidate = null;
             _worldCenterInstanceKey = instanceKey;
+            UnderworldMapTabRuntime.PrepareInitialWorldMap();
             UnderworldLoadingScreenRuntime.Hide();
             _log.LogInfo($"Composed Underworld world center directly in native instance scene '{context.Scene.name}'.");
         }

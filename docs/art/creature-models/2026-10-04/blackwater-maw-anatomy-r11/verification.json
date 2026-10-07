@@ -1,0 +1,44 @@
+{
+  "result": "PASS offline geometry, cap, atlas, weights, retained actions and portable skin export",
+  "triangles": 6926,
+  "dimensions": [
+    5.518467903137207,
+    10.289986610412598,
+    4.294776439666748
+  ],
+  "vertices": 4085,
+  "material_slots": 1,
+  "mesh_primitives": 1,
+  "atlas_maps": 4,
+  "atlas_pixels": 512,
+  "uncompressed_rgba_mip_estimate_bytes": 5592405.333333333,
+  "source_sha256": "39630e76d9044e28bdef1ae7c26f19a33f12de1863e6d21978aeaea939a14825",
+  "sampled_pose_bounds": {
+    "0": [
+      5.686908960342407,
+      10.604776859283447,
+      5.017144680023193
+    ],
+    "0.25": [
+      5.691643476486206,
+      10.710561752319336,
+      5.1421284675598145
+    ],
+    "0.5": [
+      5.695436239242554,
+      10.768068313598633,
+      5.315465450286865
+    ],
+    "0.75": [
+      5.690783262252808,
+      10.726284980773926,
+      4.820067405700684
+    ],
+    "1": [
+      5.675839424133301,
+      10.45941162109375,
+      4.824516296386719
+    ]
+  },
+  "limitations": "sampled finite bounds do not prove good deformation; runtime loader admission, GPU compression, LODs and live frame cost unverified"
+}

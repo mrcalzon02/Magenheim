@@ -1,0 +1,107 @@
+[
+  {
+    "id": "underworld-boss-first-bloom-detail-r2",
+    "concept": "docs/art/creature-concepts/2026-10-03/the-first-bloom.png",
+    "concept_sha256": "97a4832ccdb35971d59bbe47fc586572ae50821c9854cd0c234905300f2ba8de",
+    "source": "assets/models/source/underworld-boss-first-bloom-detail-r2.blend",
+    "target_metres": 4.65,
+    "triangles": 91516,
+    "renderers": 31,
+    "materials": [
+      "ivory",
+      "living-gill",
+      "ochre-shelf",
+      "oral-tissue",
+      "root-bark"
+    ],
+    "rig_source": "crowncap-brute",
+    "animation_status": "inherited baseline; retargeting inspection required",
+    "status": "authored construction study; not installed or accepted"
+  },
+  {
+    "id": "underworld-boss-blackwater-maw-detail-r2",
+    "concept": "docs/art/creature-concepts/2026-10-03/the-blackwater-maw.png",
+    "concept_sha256": "5a0a978d2038e3e47dbef289e0011fb9958489d4cbf315de9aa6be577234c0b8",
+    "source": "assets/models/source/underworld-boss-blackwater-maw-detail-r2.blend",
+    "target_metres": 10.0,
+    "triangles": 31412,
+    "renderers": 16,
+    "materials": [
+      "fin-membrane",
+      "ivory",
+      "light-organ",
+      "oral-tissue",
+      "wet-hide"
+    ],
+    "rig_source": "deep-hunter",
+    "animation_status": "inherited baseline; retargeting inspection required",
+    "status": "authored construction study; not installed or accepted"
+  },
+  {
+    "id": "underworld-boss-furnace-heart-detail-r2",
+    "concept": "docs/art/creature-concepts/2026-10-03/the-furnace-heart.png",
+    "concept_sha256": "feec5470e4abf78da89c575c90b211ba26e7d067d8f5d662c159b083dcb4f121",
+    "source": "assets/models/source/underworld-boss-furnace-heart-detail-r2.blend",
+    "target_metres": 5.2,
+    "triangles": 19480,
+    "renderers": 22,
+    "materials": [
+      "basalt",
+      "molten-organ"
+    ],
+    "rig_source": "furnace-golem",
+    "animation_status": "inherited baseline; retargeting inspection required",
+    "status": "authored construction study; not installed or accepted"
+  },
+  {
+    "id": "underworld-boss-white-silence-detail-r2",
+    "concept": "docs/art/creature-concepts/2026-10-03/the-white-silence.png",
+    "concept_sha256": "df9ee8bc3a939dac1e99b18c1673430f5e8efcd30bd1e6dd0c430d8ab8525a70",
+    "source": "assets/models/source/underworld-boss-white-silence-detail-r2.blend",
+    "target_metres": 5.5,
+    "triangles": 13024,
+    "renderers": 21,
+    "materials": [
+      "ancient-ice",
+      "frozen-core"
+    ],
+    "rig_source": "cryolith-guardian",
+    "animation_status": "inherited baseline; retargeting inspection required",
+    "status": "authored construction study; not installed or accepted"
+  },
+  {
+    "id": "underworld-boss-rift-titan-detail-r2",
+    "concept": "docs/art/creature-concepts/2026-10-03/the-rift-titan.png",
+    "concept_sha256": "b605ad324621ed89fe2e4f708e638a40b06946fee4ccc1215a8be8ba9fd94cfa",
+    "source": "assets/models/source/underworld-boss-rift-titan-detail-r2.blend",
+    "target_metres": 7.0,
+    "triangles": 16376,
+    "renderers": 14,
+    "materials": [
+      "binding-prism",
+      "rift-strata"
+    ],
+    "rig_source": "rift-colossus",
+    "animation_status": "inherited baseline; retargeting inspection required",
+    "status": "authored construction study; not installed or accepted"
+  },
+  {
+    "id": "underworld-boss-carrion-crown-detail-r2",
+    "concept": "docs/art/creature-concepts/2026-10-03/the-carrion-crown.png",
+    "concept_sha256": "1c03a01f050d247ff84023c137832443f05f12aa430dc57efc697be6e427b20a",
+    "source": "assets/models/source/underworld-boss-carrion-crown-detail-r2.blend",
+    "target_metres": 6.8,
+    "triangles": 29212,
+    "renderers": 12,
+    "materials": [
+      "amber-organ",
+      "carrion-sepal",
+      "decay-root",
+      "ivory",
+      "oral-tissue"
+    ],
+    "rig_source": "corpse-orchard",
+    "animation_status": "inherited baseline; retargeting inspection required",
+    "status": "authored construction study; not installed or accepted"
+  }
+]

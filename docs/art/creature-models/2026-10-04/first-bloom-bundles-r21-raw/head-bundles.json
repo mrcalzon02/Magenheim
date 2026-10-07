@@ -1,0 +1,21 @@
+{
+  "shoulder_caps": [
+    "CathedralMantle0",
+    "CathedralMantle1",
+    "CathedralMantle2",
+    "CathedralMantle3"
+  ],
+  "head_caps": [
+    "CathedralMantle4",
+    "CathedralMantle5",
+    "CathedralMantle6",
+    "CathedralMantle7"
+  ],
+  "head_cap_count": 4,
+  "shoulder_weight": "Chest",
+  "head_weight": "Head",
+  "beard": "six existing upper curtains rooted in head caps and joining pale chest framework",
+  "triangles_added": 0,
+  "new_attachment_records": 9,
+  "preserved": "body scale, chest cavity, shoulder compression, side hip shelves and central bark, limbs and feet"
+}

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using BepInEx.Logging;
+using HarmonyLib;
 using Magenheim.Core.Underworld;
 using UnityEngine;
 
@@ -16,6 +18,8 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
 {
     private const float PollIntervalSeconds = 0.50f;
     private const string EnvironmentPrefix = "Magenheim_Underworld_";
+    private static readonly FieldInfo ForceEnvironment = AccessTools.Field(typeof(EnvMan), "m_forceEnv")
+        ?? throw new MissingFieldException(typeof(EnvMan).FullName, "m_forceEnv");
 
     private UnderworldRuntimeServices? _services;
     private UnderworldAtmosphereRuntime? _atmosphere;
@@ -55,6 +59,7 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
         }
 
         var manager = EnvMan.instance;
+        if (player.IsTeleporting()) return;
         EnsureRegistered(manager);
 
         var position = player.transform.position;
@@ -559,10 +564,19 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
         }
     }
 
-    private void Deactivate()
+    private void Deactivate(bool updateEnvironment = true)
     {
-        if (_forcedEnvironment.Length > 0 && EnvMan.instance is not null)
-            EnvMan.instance.SetForceEnvironment(string.Empty);
+        var manager = EnvMan.instance;
+        if (_forcedEnvironment.Length > 0 && manager &&
+            string.Equals(ForceEnvironment.GetValue(manager) as string, _forcedEnvironment, StringComparison.Ordinal))
+        {
+            // SetForceEnvironment immediately calls FixedUpdate/SetEnv. During scene teardown
+            // its lights have already been destroyed. Clear only our override; the next native
+            // environment tick owns refreshing any surviving world.
+            if (updateEnvironment && manager.isActiveAndEnabled && ZNet.instance && Game.instance)
+                manager.SetForceEnvironment(string.Empty);
+            else ForceEnvironment.SetValue(manager, string.Empty);
+        }
         _forcedEnvironment = string.Empty;
         _lastBiome = null;
         _hasWeather = false;
@@ -573,13 +587,13 @@ internal sealed class UnderworldWeatherRuntime : MonoBehaviour
         if (player is not null) UnderworldLocalWeatherOverride.Clear(player);
     }
 
-    private void OnDisable() => Deactivate();
+    private void OnDisable() => Deactivate(updateEnvironment: false);
 
     private void OnDestroy()
     {
-        Deactivate();
+        Deactivate(updateEnvironment: false);
         var manager = _registeredManager;
-        if (manager is null) return;
+        if (!manager) return;
 
         for (var index = manager.m_environments.Count - 1; index >= 0; index--)
         {

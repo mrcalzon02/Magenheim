@@ -107,6 +107,86 @@ try {
     }
     Write-Output 'Verified native dungeon placement contracts: m_locationsGenerated, m_locationInstances, and GenerateLocationsTimeSliced.'
 
+    # Exercise recovery using the actual native value-type location entries. A boxed
+    # mutation looked correct in review but failed to persist the repaired donor row.
+    $isolation = $runtime.GetType('Magenheim.Runtime.UnderworldSurfaceDungeonIsolation', $true)
+    [Runtime.CompilerServices.RuntimeHelpers]::RunClassConstructor($isolation.TypeHandle)
+    $entryType = $instancesField.FieldType.GetGenericArguments()[1]
+    if (!$entryType.IsValueType) { throw 'Native LocationInstance value-type contract changed.' }
+    $locationType = $entryType.GetField('m_location', $instanceFlags).FieldType
+    $owned = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($locationType)
+    $donor = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($locationType)
+    $foreign = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($locationType)
+    $testEntries = New-Object System.Collections.Hashtable
+    $saved = [Activator]::CreateInstance($entryType)
+    $entryType.GetField('m_location', $instanceFlags).SetValue($saved, $owned)
+    $entryType.GetField('m_placed', $instanceFlags).SetValue($saved, $true)
+    $testEntries.Add('owned', $saved)
+    $other = [Activator]::CreateInstance($entryType)
+    $entryType.GetField('m_location', $instanceFlags).SetValue($other, $foreign)
+    $testEntries.Add('foreign', $other)
+    $restoreMethod = $isolation.GetMethod('RestoreSavedEntries', [Reflection.BindingFlags]'Static,NonPublic')
+    $delegateType = $restoreMethod.GetParameters()[1].ParameterType
+    $map = { param($value) if ([Object]::ReferenceEquals($value, $owned)) { return $donor }; return $value }.GetNewClosure()
+    $restoreDelegate = [System.Management.Automation.LanguagePrimitives]::ConvertTo($map, $delegateType)
+    $restoreArgs = New-Object 'System.Object[]' 2
+    $restoreArgs[0] = $testEntries.PSObject.BaseObject
+    $restoreArgs[1] = $restoreDelegate.PSObject.BaseObject
+    $repaired = $restoreMethod.Invoke($null, $restoreArgs)
+    if ($repaired -ne 1 -or
+        ![Object]::ReferenceEquals($entryType.GetField('m_location', $instanceFlags).GetValue($testEntries['owned']), $donor) -or
+        !$entryType.GetField('m_placed', $instanceFlags).GetValue($testEntries['owned']) -or
+        ![Object]::Equals($entryType.GetField('m_position', $instanceFlags).GetValue($testEntries['owned']), $entryType.GetField('m_position', $instanceFlags).GetValue($saved)) -or
+        ![Object]::ReferenceEquals($entryType.GetField('m_location', $instanceFlags).GetValue($testEntries['foreign']), $foreign)) {
+        throw 'Saved Surface recovery did not preserve native entries and persist only the owned donor replacement.'
+    }
+    if ($restoreMethod.Invoke($null, $restoreArgs) -ne 0) { throw 'Saved Surface recovery is not idempotent.' }
+    Write-Output 'Verified saved Surface dungeon recovery against native value-type entries: donor persisted, position/placed-state retained, foreign entry unchanged, second pass unchanged.'
+
+    # Exercise the production player-ZDO transfer against the installed native sector
+    # implementation. A float boundary and OutsideZones must not strand pooled ZDOs.
+    $zdoType = $game.GetType('ZDO', $true)
+    $managerType = $game.GetType('ZDOMan', $true)
+    $positionField = $zdoType.GetField('m_position', $instanceFlags)
+    $positionType = $positionField.FieldType
+    $idField = $zdoType.GetField('m_uid', $instanceFlags)
+    $objectsField = $managerType.GetField('m_objectsByID', $instanceFlags)
+    $sectorsField = $managerType.GetField('m_objectsBySector', $instanceFlags)
+    $sectorGetter = $zdoType.GetMethod('GetSectorIndex', $instanceFlags, $null, [Type[]]@(), $null)
+    $outsideSetter = $zdoType.GetMethod('set_OutsideZones', $instanceFlags)
+    $nativeAdd = $managerType.GetMethod('AddToSector', $instanceFlags)
+    $move = $runtime.GetType('Magenheim.Runtime.UnderworldZdoPeerRouter', $true).GetMethod('MoveZdo', [Reflection.BindingFlags]'Static,NonPublic')
+    foreach ($case in @(@(0.0, $false), @(16351.999, $false), @(10.0, $true))) {
+        $zdo = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($zdoType)
+        $position = [Activator]::CreateInstance($positionType)
+        $positionType.GetField('x').SetValue($position, [single]$case[0])
+        $positionField.SetValue($zdo, $position)
+        $outsideSetter.Invoke($zdo, @([bool]$case[1]))
+        $sector = $sectorGetter.Invoke($zdo, @())
+        if ($case[1]) { $sector = $zoneType.GetField('SectorZero', [Reflection.BindingFlags]'Static,Public,NonPublic').GetValue($null) }
+        $sectorNumber = [int]$sector.GetType().GetField('Sector').GetValue($sector)
+        $managers = @()
+        foreach ($number in 1..2) {
+            $manager = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($managerType)
+            $objectsField.SetValue($manager, [Activator]::CreateInstance($objectsField.FieldType))
+            $sectorsField.SetValue($manager, [Array]::CreateInstance($sectorsField.FieldType.GetElementType(), 262145))
+            $managers += $manager
+        }
+        $uid = $idField.GetValue($zdo)
+        $sourceObjects = $objectsField.GetValue($managers[0])
+        $targetObjects = $objectsField.GetValue($managers[1])
+        $sourceObjects.Add($uid, $zdo)
+        $nativeAdd.Invoke($managers[0], @($zdo, $sector))
+        $move.Invoke($null, @($zdo, $managers[0], $managers[1]))
+        $oldBucket = $sectorsField.GetValue($managers[0]).GetValue($sectorNumber)
+        $newBucket = $sectorsField.GetValue($managers[1]).GetValue($sectorNumber)
+        if ($sourceObjects.ContainsKey($uid) -or $oldBucket.Contains($zdo) -or
+            ![Object]::ReferenceEquals($targetObjects[$uid], $zdo) -or !$newBucket.Contains($zdo)) {
+            throw "Native ZDO transfer stranded or duplicated the character at sector $sectorNumber."
+        }
+    }
+    Write-Output 'Verified production ZDO transfer using installed native sectors: ordinary, distant float boundary, and OutsideZones.'
+
     $flags = [Reflection.BindingFlags]'Static,Public,NonPublic'
     $dynamic = 0
     $resolvedCount = 0
@@ -124,6 +204,11 @@ try {
     $metadata = [Mono.Cecil.AssemblyDefinition]::ReadAssembly($RuntimeDll, $reader)
     $gameMetadata = [Mono.Cecil.AssemblyDefinition]::ReadAssembly(
         (Join-Path $GameManagedPath 'assembly_valheim.dll'), $reader)
+    $interior = @($gameMetadata.MainModule.GetType('Character').Methods | Where-Object {
+        $_.Name -eq 'InInterior' -and $_.IsStatic -and $_.Parameters.Count -eq 1 -and $_.Parameters[0].ParameterType.FullName -eq 'UnityEngine.Vector3'
+    })
+    if ($interior.Count -ne 1 -or !@($gameMetadata.MainModule.GetType('Location').Fields | Where-Object Name -eq 's_allLocations').Count) { throw 'Deep Fracture interior native bindings are missing.' }
+    Write-Output 'Verified underground interior native method and Location registry bindings through installed metadata.'
     $resolverNames = @($metadata.MainModule.Types | Where-Object {
         @($_.CustomAttributes | Where-Object { $_.AttributeType.FullName -eq 'HarmonyLib.HarmonyPatch' }).Count -gt 0 -and
         @($_.Methods | Where-Object Name -in @('TargetMethod', 'TargetMethods')).Count -gt 0
@@ -150,6 +235,14 @@ try {
             'OnTriggerEnter','OnTriggerStay','OnTriggerExit',
             'OnCollisionEnter','OnCollisionStay','OnCollisionExit'
         )
+        # Match the production generic resolver's disjoint scope ownership.
+        $specializedCallbacks = @{
+            ZoneSystem = @('Awake','Start','Update','FixedUpdate','LateUpdate')
+            SpawnSystem = @('Awake','Start','Update')
+            Character = @('Update','FixedUpdate','LateUpdate')
+            Player = @('Update','FixedUpdate','LateUpdate')
+            ZNetScene = @('Update')
+        }
         $count = 0
         foreach ($candidateType in $AssemblyDefinition.MainModule.Types) {
             if ($candidateType.IsAbstract) { continue }
@@ -159,6 +252,8 @@ try {
                 if ($candidateMethod.IsStatic -or $candidateMethod.IsAbstract -or
                     $candidateMethod.HasGenericParameters -or
                     $candidateMethod.Name -notin $callbackNames) { continue }
+                if ($ExcludePathfinding -and $specializedCallbacks.ContainsKey($candidateType.FullName) -and
+                    $candidateMethod.Name -in $specializedCallbacks[$candidateType.FullName]) { continue }
                 $count++
             }
         }

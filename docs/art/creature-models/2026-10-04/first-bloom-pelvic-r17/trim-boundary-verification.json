@@ -1,0 +1,4 @@
+{
+  "result": "PASS all saved cut edges remain inside retained closed supports",
+  "internal_boundary_edges": 470
+}

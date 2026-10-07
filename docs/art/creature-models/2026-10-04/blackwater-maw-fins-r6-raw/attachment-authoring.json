@@ -1,0 +1,870 @@
+{
+  "endpoints": 108,
+  "groups": 93,
+  "records": [
+    {
+      "id": 1,
+      "tissue": "VaultedSkull",
+      "end": "skull_neck",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 2,
+      "tissue": "HingedGumBowl",
+      "end": "jaw_hinge",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 3,
+      "tissue": "FleshyCommissureL",
+      "end": "upper_cheek",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 4,
+      "tissue": "FleshyCommissureL",
+      "end": "lower_cheek",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 5,
+      "tissue": "FleshyCommissureR",
+      "end": "upper_cheek",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 6,
+      "tissue": "FleshyCommissureR",
+      "end": "lower_cheek",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 7,
+      "tissue": "PosteriorBuccalWall",
+      "end": "buccal_neck_root",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 8,
+      "tissue": "ThroatRuga0",
+      "end": "fold_left",
+      "support": "PosteriorBuccalWall",
+      "support_component": 48,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 9,
+      "tissue": "ThroatRuga0",
+      "end": "fold_right",
+      "support": "PosteriorBuccalWall",
+      "support_component": 48,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 10,
+      "tissue": "ThroatRuga1",
+      "end": "fold_left",
+      "support": "PosteriorBuccalWall",
+      "support_component": 48,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 11,
+      "tissue": "ThroatRuga1",
+      "end": "fold_right",
+      "support": "PosteriorBuccalWall",
+      "support_component": 48,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 12,
+      "tissue": "ThroatRuga2",
+      "end": "fold_left",
+      "support": "PosteriorBuccalWall",
+      "support_component": 48,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 13,
+      "tissue": "ThroatRuga2",
+      "end": "fold_right",
+      "support": "PosteriorBuccalWall",
+      "support_component": 48,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 14,
+      "tissue": "ThroatRuga3",
+      "end": "fold_left",
+      "support": "PosteriorBuccalWall",
+      "support_component": 48,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 15,
+      "tissue": "ThroatRuga3",
+      "end": "fold_right",
+      "support": "PosteriorBuccalWall",
+      "support_component": 48,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 16,
+      "tissue": "ThroatRuga4",
+      "end": "fold_left",
+      "support": "PosteriorBuccalWall",
+      "support_component": 48,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 17,
+      "tissue": "ThroatRuga4",
+      "end": "fold_right",
+      "support": "PosteriorBuccalWall",
+      "support_component": 48,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 18,
+      "tissue": "InnerThroatOrgan",
+      "end": "inner_organ_root",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 19,
+      "tissue": "RaisedMouthFloor",
+      "end": "mouth_floor_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 20,
+      "tissue": "UpperFang0",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 21,
+      "tissue": "UpperFang1",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 22,
+      "tissue": "UpperFang2",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 23,
+      "tissue": "UpperFang3",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 24,
+      "tissue": "UpperFang4",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 25,
+      "tissue": "UpperFang5",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 26,
+      "tissue": "UpperFang6",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 27,
+      "tissue": "UpperFang7",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 28,
+      "tissue": "UpperFang8",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 29,
+      "tissue": "UpperFang9",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 30,
+      "tissue": "UpperFang10",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 31,
+      "tissue": "UpperFang11",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 32,
+      "tissue": "UpperFang12",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 33,
+      "tissue": "UpperFang13",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 34,
+      "tissue": "UpperFang14",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 35,
+      "tissue": "UpperFang15",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 36,
+      "tissue": "UpperInner0",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 37,
+      "tissue": "UpperInner1",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 38,
+      "tissue": "UpperInner2",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 39,
+      "tissue": "UpperInner3",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 40,
+      "tissue": "UpperInner4",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 41,
+      "tissue": "UpperInner5",
+      "end": "gum_root",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 42,
+      "tissue": "LowerFang0",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 43,
+      "tissue": "LowerFang1",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 44,
+      "tissue": "LowerFang2",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 45,
+      "tissue": "LowerFang3",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 46,
+      "tissue": "LowerFang4",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 47,
+      "tissue": "LowerFang5",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 48,
+      "tissue": "LowerFang6",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 49,
+      "tissue": "LowerFang7",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 50,
+      "tissue": "LowerFang8",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 51,
+      "tissue": "LowerFang9",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 52,
+      "tissue": "LowerFang10",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 53,
+      "tissue": "LowerFang11",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 54,
+      "tissue": "LowerFang12",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 55,
+      "tissue": "LowerFang13",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 56,
+      "tissue": "LowerFang14",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 57,
+      "tissue": "LowerFang15",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 58,
+      "tissue": "LowerInner0",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 59,
+      "tissue": "LowerInner1",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 60,
+      "tissue": "LowerInner2",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 61,
+      "tissue": "LowerInner3",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 62,
+      "tissue": "LowerInner4",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 63,
+      "tissue": "LowerInner5",
+      "end": "gum_root",
+      "support": "HingedGumBowl",
+      "support_component": 22,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 64,
+      "tissue": "CheekPlate-1_0",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 65,
+      "tissue": "CheekPlate-1_1",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 66,
+      "tissue": "CheekPlate-1_2",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 67,
+      "tissue": "CheekPlate-1_3",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 68,
+      "tissue": "CheekPlate-1_4",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 69,
+      "tissue": "CheekPlate-1_5",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 70,
+      "tissue": "CheekPlate-1_6",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 71,
+      "tissue": "CheekPlate-1_7",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 72,
+      "tissue": "Sensory-1_0",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 73,
+      "tissue": "Sensory-1_1",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 74,
+      "tissue": "Sensory-1_2",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 75,
+      "tissue": "Sensory-1_3",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 76,
+      "tissue": "CheekPlate1_0",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 77,
+      "tissue": "CheekPlate1_1",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 78,
+      "tissue": "CheekPlate1_2",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 79,
+      "tissue": "CheekPlate1_3",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 80,
+      "tissue": "CheekPlate1_4",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 81,
+      "tissue": "CheekPlate1_5",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 82,
+      "tissue": "CheekPlate1_6",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 83,
+      "tissue": "CheekPlate1_7",
+      "end": "armor_base",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 84,
+      "tissue": "Sensory1_0",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 85,
+      "tissue": "Sensory1_1",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 86,
+      "tissue": "Sensory1_2",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 87,
+      "tissue": "Sensory1_3",
+      "end": "sensory_socket",
+      "support": "VaultedSkull",
+      "support_component": 94,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 88,
+      "tissue": "PleatedPectoralL",
+      "end": "pectoral_root",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 89,
+      "tissue": "PleatedPectoralR",
+      "end": "pectoral_root",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 90,
+      "tissue": "AnteriorDorsalFin",
+      "end": "dorsal_root",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 91,
+      "tissue": "PosteriorDorsalFin",
+      "end": "dorsal_root",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 92,
+      "tissue": "ForkedCaudalFan",
+      "end": "tail_root",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 93,
+      "tissue": "RecessedGill-1_0",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 94,
+      "tissue": "RecessedGill-1_0",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 95,
+      "tissue": "RecessedGill-1_1",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 96,
+      "tissue": "RecessedGill-1_1",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 97,
+      "tissue": "RecessedGill-1_2",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 98,
+      "tissue": "RecessedGill-1_2",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 99,
+      "tissue": "RecessedGill-1_3",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 100,
+      "tissue": "RecessedGill-1_3",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 101,
+      "tissue": "RecessedGill1_0",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 102,
+      "tissue": "RecessedGill1_0",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 103,
+      "tissue": "RecessedGill1_1",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 104,
+      "tissue": "RecessedGill1_1",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 105,
+      "tissue": "RecessedGill1_2",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 106,
+      "tissue": "RecessedGill1_2",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 107,
+      "tissue": "RecessedGill1_3",
+      "end": "gill_upper",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    },
+    {
+      "id": 108,
+      "tissue": "RecessedGill1_3",
+      "end": "gill_lower",
+      "support": "ContinuousScaledBody",
+      "support_component": 18,
+      "endpoint_seating": "all root ring vertices embedded with actual support weights"
+    }
+  ]
+}

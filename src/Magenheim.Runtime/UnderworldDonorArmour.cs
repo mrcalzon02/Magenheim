@@ -12,6 +12,7 @@ internal static class UnderworldDonorArmour
     internal static void Apply(GameObject prefab, string modelId)
     {
         var tint = UnderworldDonorArmourProfiles.Tint(modelId);
+        var cape = modelId.EndsWith("-cape", StringComparison.Ordinal);
         foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true))
         {
             if (renderer is ParticleSystemRenderer) continue;
@@ -22,7 +23,9 @@ internal static class UnderworldDonorArmour
                 var source = sources[i];
                 if (!source) { owned[i] = source!; continue; }
                 var material = new Material(source) { name = "magenheim.donor-armour." + modelId + "." + source.name };
-                if (material.HasProperty("_Color")) material.color = material.color * tint;
+                if (cape && material.HasProperty("_MainTex") && material.GetTexture("_MainTex") is { } cloth)
+                    material.SetTexture("_MainTex", Recolour(cloth, tint, modelId));
+                else if (material.HasProperty("_Color")) material.color = material.color * tint;
                 owned[i] = material;
             }
             renderer.sharedMaterials = owned;
@@ -61,6 +64,20 @@ internal static class UnderworldDonorArmour
             {
                 var alpha = pixels[i].a;
                 pixels[i] *= tint;
+                if (modelId.EndsWith("-cape", StringComparison.Ordinal) && alpha > .1f)
+                {
+                    var x = i % source.width;
+                    var y = i / source.width;
+                    // Owned woven panels and stitched hems retain the donor's
+                    // alpha, fur relief, UV layout, skinning and cloth behavior.
+                    var u = (float)x / source.width;
+                    var v = (float)y / source.height;
+                    var hem = u < .045f || u > .955f || v < .05f;
+                    var stitch = (x / 5 + y / 5) % 2 == 0;
+                    var rib = x % 24 < 2;
+                    if (hem && stitch) pixels[i] = Color.Lerp(pixels[i], tint * .72f, .65f);
+                    else if (rib) pixels[i] *= .78f;
+                }
                 pixels[i].a = alpha;
             }
             owned.SetPixels(pixels);

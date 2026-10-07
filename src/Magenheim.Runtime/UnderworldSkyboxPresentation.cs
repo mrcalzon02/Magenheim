@@ -25,6 +25,7 @@ internal sealed class UnderworldSkyboxPresentation : IDisposable
     private bool _shaderLoaded;
     private readonly Dictionary<Renderer, bool> _surfaceClouds = new();
     private bool _active;
+    private float _nextTreeScan;
     private GameObject? _haze;
     private Mesh? _hazeSource;
     private Material[] _hazeMaterials = Array.Empty<Material>();
@@ -54,7 +55,9 @@ internal sealed class UnderworldSkyboxPresentation : IDisposable
 
         var manager = EnvMan.instance;
         if (!manager) return;
-        ApplyHaze(manager.m_clouds, camera);
+        // The native cloud shader follows Surface sky globals and can paint an opaque
+        // white veil over the roof. Keep the authored panorama unobscured.
+        HideWorldTree();
         HideClouds(manager.m_clouds);
         HideClouds(manager.m_rainClouds);
         HideClouds(manager.m_rainCloudsDownside);
@@ -233,6 +236,24 @@ internal sealed class UnderworldSkyboxPresentation : IDisposable
         if (!renderer) return;
         if (!_surfaceClouds.ContainsKey(renderer)) _surfaceClouds.Add(renderer, renderer.enabled);
         renderer.enabled = false;
+    }
+
+    private void HideWorldTree()
+    {
+        if (Time.unscaledTime >= _nextTreeScan)
+        {
+            _nextTreeScan = Time.unscaledTime + 1f;
+            // Exact hierarchy names verified in the installed _GameMain asset. Do not
+            // hide biome Yggdrasil roots/shoots or modify unloaded prefab assets.
+            foreach (var root in Resources.FindObjectsOfTypeAll<Transform>())
+            {
+                if (root.name != "YggdrasilBranch" && root.name != "yggdrasil_branch") continue;
+                if (!root.gameObject.scene.IsValid() || !root.gameObject.scene.isLoaded) continue;
+                foreach (var renderer in root.GetComponentsInChildren<Renderer>(true)) HideClouds(renderer);
+            }
+        }
+        foreach (var pair in _surfaceClouds)
+            if (pair.Key) pair.Key.enabled = false;
     }
 
     internal void Restore()

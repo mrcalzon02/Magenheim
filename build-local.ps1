@@ -78,6 +78,11 @@ try {
 
     New-Item -ItemType Directory -Force -Path "$package/docs/validation" | Out-Null
     Copy-Item -LiteralPath "$PSScriptRoot/docs/validation/2026-09-30-0.0.158-integrated-candidate.md" -Destination "$package/docs/validation" -Force
+    Copy-Item -LiteralPath "$PSScriptRoot/docs/validation/2026-10-01-underworld-gate-live-error-repair.md" -Destination "$package/docs/validation" -Force
+    Copy-Item -LiteralPath "$PSScriptRoot/docs/validation/2026-10-01-twelve-item-live-repair.md" -Destination "$package/docs/validation" -Force
+    New-Item -ItemType Directory -Force -Path "$package/true-blacksmithing" | Out-Null
+    Get-ChildItem -LiteralPath "$PSScriptRoot/true-blacksmithing" -Filter '*.md' -File |
+        Copy-Item -Destination "$package/true-blacksmithing" -Force
 
     $manifest = [ordered]@{
         name='Magenheim'

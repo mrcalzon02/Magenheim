@@ -1,0 +1,74 @@
+[
+  {
+    "id": "underworld-boss-first-bloom-detail-r2",
+    "donor": "Troll",
+    "donor_triangles": 6206,
+    "source_triangles": 91516,
+    "source_renderers": 31,
+    "changes": "Rebuilt the plain pelvis/torso into a continuous root trunk; added interlaced load-bearing roots, scarred joints, a recessed facial mask, rolled shelf rims and individual folded gill lamellae.",
+    "art_integrity": "validated separately in source-verification.json",
+    "portable_glb": "PASS embedded geometry/materials/images",
+    "quality_bar": "native donor model detail; file validity and triangle count do not grant acceptance",
+    "acceptance": "revised candidate for matched visual review; runtime, deformation, cost and user acceptance pending"
+  },
+  {
+    "id": "underworld-boss-blackwater-maw-detail-r2",
+    "donor": "Serpent",
+    "donor_triangles": 4872,
+    "source_triangles": 31412,
+    "source_renderers": 16,
+    "changes": "Replaced the pipe-shaped mouth with a closed, thickness-bearing wedge skull and hinged lower jaw. Added uneven fang rows, cheek armor, flank scales, strengthened fin roots and membrane folds.",
+    "art_integrity": "validated separately in source-verification.json",
+    "portable_glb": "PASS embedded geometry/materials/images",
+    "quality_bar": "native donor model detail; file validity and triangle count do not grant acceptance",
+    "acceptance": "revised candidate for matched visual review; runtime, deformation, cost and user acceptance pending"
+  },
+  {
+    "id": "underworld-boss-furnace-heart-detail-r2",
+    "donor": "StoneGolem",
+    "donor_triangles": 1200,
+    "source_triangles": 19480,
+    "source_renderers": 22,
+    "changes": "Replaced beveled blocks with unequal fractured rock profiles; added interlocking shoulder spalls, joint scales, chipped facial armor and narrow molten cracks around the exposed chamber.",
+    "art_integrity": "validated separately in source-verification.json",
+    "portable_glb": "PASS embedded geometry/materials/images",
+    "quality_bar": "native donor model detail; file validity and triangle count do not grant acceptance",
+    "acceptance": "revised candidate for matched visual review; runtime, deformation, cost and user acceptance pending"
+  },
+  {
+    "id": "underworld-boss-white-silence-detail-r2",
+    "donor": "StoneGolem",
+    "donor_triangles": 1200,
+    "source_triangles": 13024,
+    "source_renderers": 21,
+    "changes": "Replaced the square face with a cleft ice mask; layered the mantle with irregular ice blades, fine icicles, overlapping joint shards and a ribbed hollow spine.",
+    "art_integrity": "validated separately in source-verification.json",
+    "portable_glb": "PASS embedded geometry/materials/images",
+    "quality_bar": "native donor model detail; file validity and triangle count do not grant acceptance",
+    "acceptance": "revised candidate for matched visual review; runtime, deformation, cost and user acceptance pending"
+  },
+  {
+    "id": "underworld-boss-rift-titan-detail-r2",
+    "donor": "StoneGolem",
+    "donor_triangles": 1200,
+    "source_triangles": 16376,
+    "source_renderers": 14,
+    "changes": "Rebuilt repeated blocks as distinct fractured strata; added outer broken planes, asymmetric shoulder masses and split crown menhirs surrounding the exposed binding cage.",
+    "art_integrity": "validated separately in source-verification.json",
+    "portable_glb": "PASS embedded geometry/materials/images",
+    "quality_bar": "native donor model detail; file validity and triangle count do not grant acceptance",
+    "acceptance": "revised candidate for matched visual review; runtime, deformation, cost and user acceptance pending"
+  },
+  {
+    "id": "underworld-boss-carrion-crown-detail-r2",
+    "donor": "Greydwarf_Shaman",
+    "donor_triangles": 1422,
+    "source_triangles": 29212,
+    "source_renderers": 12,
+    "changes": "Rebuilt the uniform flower rim into torn overlapping sepals; added a layered tooth crown, grafted branches, torn bark sheaths, ribbed seed capsules and divided root fingers.",
+    "art_integrity": "validated separately in source-verification.json",
+    "portable_glb": "PASS embedded geometry/materials/images",
+    "quality_bar": "native donor model detail; file validity and triangle count do not grant acceptance",
+    "acceptance": "revised candidate for matched visual review; runtime, deformation, cost and user acceptance pending"
+  }
+]

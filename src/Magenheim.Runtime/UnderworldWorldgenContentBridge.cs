@@ -135,6 +135,9 @@ internal static class UnderworldWorldgenContentBridge
                 $"Underworld resource worldgen catalog incomplete: {UnderworldResourceCatalog.All.Count - missingResources.Count}/{UnderworldResourceCatalog.All.Count} required pickup spawners present. Missing: {string.Join(", ", missingResources)}");
 
         var missingVents = new List<string>();
+        if (FindVegetation(underworld, "Magenheim_Underworld_UnderstoneDeposit",
+                UnderworldTerrainRuntime.FungalForestBiome) is null)
+            throw new InvalidOperationException("Underworld catalog is missing its mineable Understone deposit.");
         foreach (var vent in UnderworldGeothermalVentRegistrar.Vents)
             if (FindVegetation(underworld, vent.Prefab, UnderworldTerrainRuntime.ToNativeBiome(UnderworldTerrainBiome.SulfurousWastes)) is null)
                 missingVents.Add(vent.Prefab);

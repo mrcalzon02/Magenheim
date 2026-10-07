@@ -25,3 +25,8 @@ The intended final scope covers primitive crafting, woodworking, knapping, leath
 The finished object should normally remain the actual vanilla or Magenheim prefab. True Blacksmithing changes **how it is made**, not its combat identity.
 
 See [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md) and [FAIL_SAFE_CONTRACT.md](FAIL_SAFE_CONTRACT.md).
+
+Current implementation and remaining gates: [DEVELOPMENT_STATE.md](DEVELOPMENT_STATE.md).
+The shipped catalog and workshop grammar live in `data/`. Developer console
+`magenheim_blacksmithing status|catalog` inspects definitions or records the native
+registered equipment baseline without changing crafting.

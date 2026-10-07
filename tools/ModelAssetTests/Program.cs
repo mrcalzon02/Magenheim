@@ -1,6 +1,49 @@
 using UnityEngine;
 using Magenheim.Runtime;
 using Newtonsoft.Json.Linq;
+// Regression from actual exported geometry: two 2m root pillars snapped end to
+// end leave a gap greater than the installed engine's .15m neighbour tolerance.
+{
+ var path = Path.Combine(AppContext.BaseDirectory,"assets/models/runtime/rootforged-worldroot-pillar-2m.model.json");
+ var parts = ((JArray)JObject.Parse(File.ReadAllText(path))["parts"]!).OfType<JObject>().Where(p=>(bool?)p["collider"]==true);
+ var vertices = parts.SelectMany(p=>((JArray)p["vertices"]!).OfType<JArray>()).ToArray();
+ var bottom = vertices.Min(v=>(float)v[1]!);
+ var top = vertices.Max(v=>(float)v[1]!);
+ if (2f+bottom-top <= .15f) throw new Exception("Recessed-end regression fixture no longer reproduces the reported contact gap.");
+ var contacts = new GameObject("collision") { layer=10 };
+ var lower = ConstructionJointContacts.Add(contacts,new Vector3(0,2,0));
+ var upper = ConstructionJointContacts.Add(contacts,Vector3.zero);
+ // Evaluate touching faces both upright and perpendicular: rotate the upper
+// native box 90 degrees and snap its foot onto the lower pillar's crown.
+ foreach(var rotation in new[]{Quaternion.identity,Quaternion.Euler(0,0,90)})
+ {
+  var half=upper.size*.5f;
+  var axis=rotation*Vector3.up;
+  var upperHalfY=MathF.Abs(axis.y)*half.y+MathF.Abs((rotation*Vector3.right).y)*half.x+MathF.Abs((rotation*Vector3.forward).y)*half.z;
+  if (2f-upperHalfY > lower.center.y+lower.size.y*.5f+.15f)
+   throw new Exception("Native joint boxes fail stacked/perpendicular support overlap.");
+ }
+ // Collision must survive the native visual-state switch.
+ var visual=new GameObject("new");visual.transform.SetParent(contacts.transform.parent);visual.SetActive(false);
+ if(!contacts.activeSelf || contacts.GetComponentsInChildren<BoxCollider>().Length!=2)
+  throw new Exception("Wear visual state removed structural contacts.");
+ Console.WriteLine("PASS: exported recessed root endpoints reproduced; native joint contacts bridge stacked/perpendicular connections.");
+}
+foreach(var size in new[]{2f,4f,8f})
+{
+ var prefab=new GameObject("foundation");
+ var inherited=new GameObject("old-snap") {tag="snappoint"};inherited.transform.SetParent(prefab.transform);
+ ConstructionJointContacts.FoundationSnaps(prefab,size,.34f);
+ var snaps=prefab.GetComponentsInChildren<Transform>(true).Where(t=>t.CompareTag("snappoint")).ToArray();
+ if(inherited.tag!="Untagged" || snaps.Length!=18 || snaps.Any(t=>t.parent!=prefab.transform))
+  throw new Exception("Crystal foundation retains donor snaps or hides native snaps under children.");
+ foreach(var y in new[]{0f,.34f})
+  if(snaps.Count(t=>MathF.Abs(t.localPosition.y-y)<.0001f)!=9)
+   throw new Exception("Crystal foundation lost bottom/top contact planes.");
+ if(snaps.Any(t=>MathF.Abs(t.localPosition.x)>size*.5f || MathF.Abs(t.localPosition.z)>size*.5f))
+  throw new Exception("Crystal foundation snap escapes its solid collision footprint.");
+}
+Console.WriteLine("PASS: 2/4/8m crystal foundations expose 18 native direct-child snaps on separate bottom/top surfaces.");
 // A beehive is the persistent producer donor for Crystal Beds and the Ice Box. Its vegetation
 // shader interprets arbitrary vertex data as wind input and visibly pulls the otherwise-correct
 // model parts apart. Verify this before the shared material cache is populated by the library pass.
@@ -60,9 +103,77 @@ foreach(var file in Directory.GetFiles(Path.Combine(AppContext.BaseDirectory,"as
  if(a.Length!=expected || b.Length!=expected)throw new Exception("Part loss: "+id);
  for(int i=0;i<a.Length;i++){if(!ReferenceEquals(a[i].sharedMesh,b[i].sharedMesh))throw new Exception("Mesh cache failed: "+id);if(a[i].sharedMesh!.uv.Length!=a[i].sharedMesh!.vertices.Length)throw new Exception("UV loss: "+id);}
  if(first.GetComponent<MeshRenderer>()!.enabled)throw new Exception("Inherited geometry still visible: "+id);
+ if(id.StartsWith("underworld-flora-fungal-",StringComparison.Ordinal))
+ {
+  if(a.Sum(m=>m.sharedMesh!.triangles.Length/3)>596) throw new Exception("Fungal mesh exceeds measured native Fir budget: "+id);
+  var lod=first.GetComponentsInChildren<LODGroup>(true).SingleOrDefault();
+  if(lod==null || !lod.enabled || lod.GetLODs().Length!=1 || lod.GetLODs()[0].renderers.Length!=a.Length)
+   throw new Exception("Authored fungus has no active distance-culling group: "+id);
+ }
  count++;
 }
+{
+ var pickup=new GameObject("Glowcap Flesh"){layer=9};
+ pickup.AddComponent<Pickable>();
+ var old=new GameObject("native-interaction"){layer=12};old.transform.SetParent(pickup.transform);
+ old.AddComponent<CapsuleCollider>();
+ UnderworldResourceVisuals.Apply(pickup,"underworld-resource-glowcap-flesh");
+ var box=pickup.GetComponent<BoxCollider>()!;
+ if(pickup.layer!=12 || box.size.y<.5f || box.center.y-box.size.y*.5f<0 || box.size.x<.4f)
+  throw new Exception("Small Glowcap pickup lost its donor interaction layer or above-ground interaction volume.");
+ Console.WriteLine("PASS: tiny authored Glowcap pickup retains interaction layer and accessible above-ground target.");
+}
 ModelAssets.SurfaceMaterialProvider=null;
+// The actual exported grip must land on the hand after both mortal scaling and rotation.
+foreach (var id in new[] { "nowhere-king-sword-firmament", "nowhere-king-sword-null-gate", "underworld-weapon-amber-blade", "crystal-weapon-sword", "underworld-tool-sporelight-lantern" })
+foreach (var scale in new[] { .43f, 1f })
+{
+    var hand = new GameObject("hand");
+    hand.transform.localPosition = new Vector3(3f, 2f, -4f);
+    hand.transform.localRotation = Quaternion.Euler(20f, 35f, 15f);
+    var model = ModelAssets.Load(hand, id, hideOriginal: false, scale: scale);
+    model.transform.localRotation = Quaternion.Euler(90f, 0f, 180f);
+    var partName = id == "underworld-tool-sporelight-lantern" ? "handle-crown" : "grip";
+    var grip = model.GetComponentsInChildren<MeshFilter>(true).Single(m => m.gameObject.name == partName);
+    var before = hand.transform.InverseTransformPoint(grip.transform.TransformPoint(grip.sharedMesh!.bounds.center));
+    HeldModelAlignment.SeatGrip(hand.transform, model, id, partName);
+    var after = hand.transform.InverseTransformPoint(grip.transform.TransformPoint(grip.sharedMesh!.bounds.center));
+    if (after.sqrMagnitude > 1e-8f || before.sqrMagnitude < .01f)
+        throw new Exception("Authored grip seating failed: " + id + " scale=" + scale);
+}
+Console.WriteLine("PASS: ten real-payload grip/lantern-handle seating checks at full and paired scale.");
+foreach (var (id, profile) in new[] {
+    ("worldroot-club", "crystal-weapon-mace"), ("worldroot-bow", "crystal-weapon-bow"),
+    ("flowstone-maul", "crystal-weapon-mace"), ("blackwater-harpoon", "crystal-weapon-spear"),
+    ("emberiron-axe", "crystal-weapon-axe"), ("emberiron-greatsword", "crystal-weapon-greatsword"),
+    ("rimesilver-spear", "crystal-weapon-spear"), ("icebind-staff", "staff-frost-crystal"),
+    ("titanbone-atgeir", "crystal-weapon-atgeir"), ("shardstone-crossbow", "crystal-weapon-crossbow"),
+    ("amber-blade", "crystal-weapon-sword"), ("crown-sceptre", "crystal-weapon-mace") })
+{
+    var host = new GameObject("attach");
+    var hidden = GameObject.CreatePrimitive(PrimitiveType.Cube);
+    hidden.transform.SetParent(host.transform, false);
+    hidden.transform.localScale = new Vector3(15f, 1f, 3f);
+    hidden.GetComponent<MeshRenderer>()!.enabled = false;
+    var ancestor = ModelAssets.Load(host, profile, hideOriginal: false);
+    ancestor.transform.localRotation = Quaternion.Euler(90f, 0f, 17f);
+    ancestor.transform.localPosition = new Vector3(0f, 0f, .18f);
+    var originals = host.GetComponentsInChildren<Renderer>(true);
+    var modelId = "underworld-weapon-" + id;
+    var model = ModelAssets.Load(host, modelId, hideOriginal: false);
+    HeldModelAlignment.Apply(host.transform, originals, model, modelId, null);
+    if (Quaternion.Angle(model.transform.localRotation, ancestor.transform.localRotation) > .01f)
+        throw new Exception("Inherited weapon pose changed due to hidden donor geometry: " + modelId);
+    if (id != "amber-blade" && (model.transform.localPosition-ancestor.transform.localPosition).sqrMagnitude > 1e-8f)
+        throw new Exception("Inherited weapon seating was trimmed twice: " + modelId);
+    if (id == "amber-blade")
+    {
+        var grip = model.GetComponentsInChildren<MeshFilter>(true).Single(m => m.gameObject.name == "grip");
+        if (host.transform.InverseTransformPoint(grip.transform.TransformPoint(grip.sharedMesh!.bounds.center)).sqrMagnitude > 1e-8f)
+            throw new Exception("Amber Blade lost its identity-specific grip seating.");
+    }
+}
+Console.WriteLine("PASS: all twelve Underworld upgrades retain ancestor pose despite hidden donor meshes; trims are not doubled.");
 Console.WriteLine($"PASS: {count} library models use the native static template with zero inherited displacement; single-mesh and legacy/effect factories match.");
 // Geode rigidbodies require caller-owned primitive collision, while ordinary authored
 // static geometry must retain its mesh collision.

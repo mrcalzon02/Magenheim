@@ -1,0 +1,27 @@
+{
+  "id": "underworld-boss-first-bloom-fan-r8",
+  "source": "assets/models/studies/underworld-boss-first-bloom-fan-r8.blend",
+  "triangles": 9252,
+  "donor_triangles": 6206,
+  "soft_cap": 9309,
+  "ratio": 1.4908153399935546,
+  "previous_triangles": 9252,
+  "reduction_percent": 0.0,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "category_triangles": {
+    "trunk": 688,
+    "chamber": 1216,
+    "canopy": 2044,
+    "draped-tissue": 808,
+    "limbs": 544,
+    "limb-growth": 3016,
+    "digits": 440,
+    "ground-roots": 496
+  },
+  "rig": "retained crowncap-brute baseline; mixed weights at trunk and limb roots",
+  "texture_bake": "owned procedural bark, moss, ivory and amber material bake; no concept pixels or high-to-low geometry transfer",
+  "status": "art candidate; live performance and deformation acceptance pending",
+  "previous_id": "underworld-boss-first-bloom-radiating-r7"
+}
