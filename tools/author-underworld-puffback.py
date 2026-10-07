@@ -86,6 +86,24 @@ legs=((-.48,.46,1.28,-.58,.48,.62,-.54,.58,.12,'Front_L'),(.48,.46,1.28,.58,.48,
 for hx,hy,hz,kx,ky,kz,fx,fy,fz,n in legs:
  keep(seg(f'Puffback_{n}_Upper',(hx,hy,hz),(kx,ky,kz),.18,hide),f'{n}_Upper'); keep(seg(f'Puffback_{n}_Lower',(kx,ky,kz),(fx,fy,fz),.15,hide),f'{n}_Lower'); keep(organic(f'Puffback_{n}_Foot',(fx,fy,fz),(.25,.34,.10),hide,2),f'{n}_Foot')
 
+# Twelve broad digging toes and blunt keratin tips; three splayed digits per foot.
+# The front-heavy herbivore remains a grazer, not a clawed predator. These are
+# physical silhouette forms bound to the existing foot bones, not painted marks.
+for hx,hy,hz,kx,ky,kz,fx,fy,fz,n in legs:
+ for j,spread in enumerate((-.17,0,.17),1):
+  center=(fx+spread*.82,fy+.17,.105)
+  bpy.ops.mesh.primitive_uv_sphere_add(segments=16,ring_count=10,location=center)
+  toe=bpy.context.object; toe.name=f'Puffback_{n}_Toe_{j}'
+  toe.scale=(.105,.19,.085); bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
+  toe.data.materials.append(hide); keep(uv(toe),f'{n}_Foot')
+  base=Vector((fx+spread*.85,fy+.27,.095))
+  tip=Vector((fx+spread*1.14,fy+.46,.065)); direction=tip-base
+  bpy.ops.mesh.primitive_cone_add(vertices=16,radius1=.074,radius2=.030,depth=direction.length,location=(base+tip)*.5)
+  hoof=bpy.context.object; hoof.name=f'Puffback_{n}_HoofTip_{j}'
+  hoof.rotation_mode='QUATERNION'
+  hoof.rotation_quaternion=Vector((0,0,1)).rotation_difference(direction.normalized())
+  hoof.data.materials.append(plate); keep(uv(hoof),f'{n}_Foot')
+
 bpy.ops.object.armature_add(enter_editmode=True,location=(0,0,0)); arm=bpy.context.object; arm.name='RIG_Puffback_HOST_QUADRUPED'; eb=arm.data.edit_bones; root=eb[0]; root.name='Root'; root.head=(0,0,0); root.tail=(0,0,.35)
 def bone(n,h,t,p=None): b=eb.new(n); b.head=h; b.tail=t; b.parent=p; return b
 pelvis=bone('Pelvis',(0,-.85,1.22),(0,-.48,1.28),root); s1=bone('Spine_1',(0,-.52,1.28),(0,-.05,1.34),pelvis); s2=bone('Spine_2',(0,-.08,1.34),(0,.55,1.38),s1); neck=bone('Neck',(0,.52,1.38),(0,1.02,1.28),s2); head=bone('Head',(0,1.00,1.28),(0,1.55,1.16),neck); bladder_b=bone('Bladder_Main',(0,-.55,1.65),(0,.10,2.15),s1)

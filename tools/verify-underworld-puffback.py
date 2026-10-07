@@ -47,6 +47,30 @@ for side in ('L','R'):
    material='PuffbackFungalPlate' if obj==rim else 'PuffbackVentGill'
    if not obj.data.materials or obj.data.materials[0].name!=material:
     raise RuntimeError(f'{obj.name}: incorrect discharge material')
+# Digging-foot identity: three separate blunt toes per foot, all driven by the
+# existing foot bone. Check forward reach and lateral spread, not only counts.
+for limb in ('Front_L','Front_R','Rear_L','Rear_R'):
+ toes=[bpy.data.objects.get(f'Puffback_{limb}_Toe_{j}') for j in (1,2,3)]
+ tips=[bpy.data.objects.get(f'Puffback_{limb}_HoofTip_{j}') for j in (1,2,3)]
+ if any(o is None or o.type!='MESH' for o in toes+tips):
+  raise RuntimeError(f'Puffback {limb}: incomplete three-toe digging foot')
+ if not toes[0].location.x < toes[1].location.x < toes[2].location.x:
+  raise RuntimeError(f'Puffback {limb}: digits collapsed laterally')
+ if toes[2].location.x-toes[0].location.x < .25:
+  raise RuntimeError(f'Puffback {limb}: digging-foot spread lost')
+ for toe,tip in zip(toes,tips):
+  if tip.location.y-toe.location.y < .16:
+   raise RuntimeError(f'{tip.name}: blunt hoof tip lacks forward silhouette')
+  for obj,material in ((toe,'PuffbackRootHide'),(tip,'PuffbackFungalPlate')):
+   if obj.parent!=arm or obj.vertex_groups.get(f'{limb}_Foot') is None:
+    raise RuntimeError(f'{obj.name}: missing foot-bone binding')
+   if not any(m.type=='ARMATURE' and m.object==arm for m in obj.modifiers):
+    raise RuntimeError(f'{obj.name}: missing armature modifier')
+   if not obj.data.materials or obj.data.materials[0].name!=material:
+    raise RuntimeError(f'{obj.name}: wrong hoof material')
+   if not obj.data.uv_layers.get('PuffbackUV'):
+    raise RuntimeError(f'{obj.name}: missing authored UV')
+
 expected={'Puffback_GrazeRoot':78,'Puffback_Idle':72,'Puffback_Walk':36,'Puffback_WarningDisplay':48,'Puffback_Charge':30,'Puffback_DefensiveInflate':44,'Puffback_SporePuff':34,'Puffback_Hit':18,'Puffback_Stagger':32,'Puffback_Death':62}
 
 def curves(a):
