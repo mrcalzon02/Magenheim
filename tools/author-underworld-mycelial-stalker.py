@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Author the Fungal Forest Mycelial Stalker production source model and HOST-QUADRUPED rig."""
 from pathlib import Path
-from math import pi, atan2
+from math import pi, atan2, cos, sin
 import bpy
 from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]; OUTDIR=ROOT/'assets/models/source'; OUTDIR.mkdir(parents=True,exist_ok=True)
@@ -53,15 +53,35 @@ keep(seg('Stalker_Neck',(0,.58,1.18),(0,.88,1.34),.22,hide),'Neck'); keep(organi
 for side in (-1,1): keep(seg(f'Stalker_Jaw_{"L" if side<0 else "R"}',(side*.10,1.22,1.32),(side*.18,1.52,1.25),.075,hide),f'Jaw_{"L" if side<0 else "R"}')
 # Four long rootlike limbs, deliberately high-elbowed and narrow-footed.
 legs=((-.27,.43,1.10,-.46,.50,.55,-.40,.61,.08,'Front_L'),(.27,.43,1.10,.46,.50,.55,.40,.61,.08,'Front_R'),(-.27,-.62,1.17,-.50,-.70,.62,-.43,-.83,.08,'Rear_L'),(.27,-.62,1.17,.50,-.70,.62,.43,-.83,.08,'Rear_R'))
+# Tapered root limbs and knotted knees break up the generic quadruped outline.
 for hx,hy,hz,kx,ky,kz,fx,fy,fz,n in legs:
- parent='Spine' if n.startswith('Front') else 'Pelvis'; keep(seg(f'Stalker_{n}_Upper',(hx,hy,hz),(kx,ky,kz),.105,hide),f'{n}_Upper'); keep(seg(f'Stalker_{n}_Lower',(kx,ky,kz),(fx,fy,fz),.075,hide),f'{n}_Lower'); keep(organic(f'Stalker_{n}_Foot',(fx,fy,fz),(.12,.20,.055),hide,2),f'{n}_Foot')
-# Split gripping toes carry the same foot articulation as the narrow root pads.
+ parent='Spine' if n.startswith('Front') else 'Pelvis'
+ keep(tapered(f'Stalker_{n}_Upper',(hx,hy,hz),(kx,ky,kz),.15,.09,hide),f'{n}_Upper')
+ keep(tapered(f'Stalker_{n}_Lower',(kx,ky,kz),(fx,fy,fz),.105,.052,hide),f'{n}_Lower')
+ keep(organic(f'Stalker_{n}_KneeBurl',(kx,ky,kz),(.14,.12,.13),hide,2),f'{n}_Lower')
+ keep(organic(f'Stalker_{n}_Foot',(fx,fy,fz),(.12,.20,.055),hide,2),f'{n}_Foot')
+# Each split toe ends in a downward-hooked physical claw.
 for hx,hy,hz,kx,ky,kz,fx,fy,fz,n in legs:
- for toe in (-1,1):keep(seg(f'Stalker_{n}_Toe{toe}',(fx+toe*.06,fy+.08,fz),(fx+toe*.08,fy+.25,.04),.026,cord),f'{n}_Foot')
+ for toe in (-1,1):
+  base=(fx+toe*.06,fy+.08,fz)
+  bend=(fx+toe*.08,fy+.25,.065)
+  tip=(fx+toe*.12,fy+.36,.015)
+  keep(tapered(f'Stalker_{n}_Toe{toe}',base,bend,.032,.022,cord),f'{n}_Foot')
+  keep(tapered(f'Stalker_{n}_RootClaw{toe}',bend,tip,.024,.002,cord),f'{n}_Foot')
 # Visible mycelial cord anatomy crossing the torso.
 for i,(a,b) in enumerate((((-.34,-.35,1.30),(.32,.38,1.34)),((.34,-.15,1.18),(-.30,.50,1.16)),((-.28,-.62,1.34),(.26,.02,1.43))),1): keep(seg(f'Stalker_MycelialCord_{i}',a,b,.026,cord),'Spine')
-# Asymmetric shelf growth keeps the silhouette fungal and non-donor-like.
-for i,(loc,scale) in enumerate((((-.34,-.20,1.48),(.38,.22,.055)),((.30,-.48,1.49),(.30,.18,.048)),((-.28,.25,1.46),(.25,.16,.045))),1): keep(organic(f'Stalker_Shelf_{i}',loc,scale,shelf,2),'Spine')
+# Three asymmetric shelf brackets have actual overhanging rims and ventral gills.
+for i,(loc,scale) in enumerate((((-.34,-.20,1.48),(.38,.22,.055)),((.30,-.48,1.49),(.30,.18,.048)),((-.28,.25,1.46),(.25,.16,.045))),1):
+ keep(organic(f'Stalker_Shelf_{i}',loc,scale,shelf,2),'Spine')
+ bpy.ops.mesh.primitive_torus_add(major_segments=32,minor_segments=8,major_radius=1.0,minor_radius=.10,location=(loc[0],loc[1],loc[2]-.014))
+ lip=bpy.context.object; lip.name=f'Stalker_ShelfLip_{i}'; lip.scale=(scale[0]*.94,scale[1]*.94,.09)
+ bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); lip.data.materials.append(shelf)
+ keep(uv(lip),'Spine')
+ for rib in range(8):
+  theta=(rib/8)*2*pi
+  inner=(loc[0]+scale[0]*.14*cos(theta),loc[1]+scale[1]*.14*sin(theta),loc[2]-.055)
+  outer=(loc[0]+scale[0]*.82*cos(theta),loc[1]+scale[1]*.82*sin(theta),loc[2]-.047)
+  keep(tapered(f'Stalker_ShelfGill_{i}_{rib}',inner,outer,.012,.005,cord),'Spine')
 # Tapered, branching head fronds retain their silhouette without emission.
 for side in (-1,1):
  s='L' if side<0 else 'R'
@@ -91,5 +111,5 @@ for name,bname in parts.items():
  o=bpy.data.objects[name]; mod=o.modifiers.new('StalkerArmature','ARMATURE'); mod.object=arm; vg=o.vertex_groups.new(name=bname); vg.add(range(len(o.data.vertices)),1,'REPLACE'); o.parent=arm
 meshes=[o for o in bpy.context.scene.objects if o.type=='MESH']; tris=sum(len(p.vertices)-2 for o in meshes for p in o.data.polygons)
 if len(meshes)<30 or tris<7000: raise RuntimeError(f'Stalker source fidelity regression: {len(meshes)} meshes / {tris} tris')
-sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-mycelial-stalker'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='uncommon'; sc['magenheim_host_rig']='HOST-QUADRUPED'; sc['magenheim_shoulder_height_m']=1.35; sc['magenheim_fidelity']='production-creature-r1'; sc['magenheim_uv_contract']='MycelialStalkerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,SenseFX'; sc['magenheim_material_identity']='root-hide+mycelium+shelf-fungus+localized-sensory-emission'; sc['magenheim_silhouette']='lean-low-chest+raised-pelvis+asymmetric-shelves+root-limbs'; sc['magenheim_animation_manifest']='conceal-idle,crouch,walk,pounce,failed-pounce-retreat,hit,stagger,death'; sc['magenheim_skinning']='rigid-segment-weighted'; sc['magenheim_sensory_anatomy']='four-curved-fronds+eight-fork-tips'; sc['magenheim_jaw_detail']='six-jaw-bound-gripping-teeth'
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-mycelial-stalker'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='uncommon'; sc['magenheim_host_rig']='HOST-QUADRUPED'; sc['magenheim_shoulder_height_m']=1.35; sc['magenheim_fidelity']='production-creature-r1'; sc['magenheim_uv_contract']='MycelialStalkerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,SenseFX'; sc['magenheim_material_identity']='root-hide+mycelium+shelf-fungus+localized-sensory-emission'; sc['magenheim_silhouette']='lean-low-chest+raised-pelvis+asymmetric-shelves+root-limbs'; sc['magenheim_animation_manifest']='conceal-idle,crouch,walk,pounce,failed-pounce-retreat,hit,stagger,death'; sc['magenheim_skinning']='rigid-segment-weighted'; sc['magenheim_sensory_anatomy']='four-curved-fronds+eight-fork-tips'; sc['magenheim_jaw_detail']='six-jaw-bound-gripping-teeth'; sc['magenheim_shelf_anatomy']='three-rimmed-brackets+24-ventral-ribs'; sc['magenheim_root_anatomy']='four-tapered-limbs+four-knee-burls+eight-hooked-claws'
 bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(OUT),compress=True); print(f'AUTHORED Mycelial Stalker r1: {len(meshes)} meshes / {len(arm.data.bones)} bones / {tris} tris -> {OUT.name}',flush=True)

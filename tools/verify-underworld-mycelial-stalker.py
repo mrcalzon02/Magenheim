@@ -24,7 +24,42 @@ for o in meshes:
  if len([m for m in o.modifiers if m.type=='ARMATURE' and m.object==arm])!=1:raise RuntimeError(f'{o.name}: armature binding broken')
  if not o.vertex_groups or not any(v.groups for v in o.data.vertices):raise RuntimeError(f'{o.name}: unweighted')
 if len([o for o in meshes if o.name.startswith('Stalker_Shelf_')])!=3:raise RuntimeError('Asymmetric shelf silhouette incomplete')
+if sc.get('magenheim_shelf_anatomy')!='three-rimmed-brackets+24-ventral-ribs':raise RuntimeError('Fungal shelf anatomy contract missing')
+for i in (1,2,3):
+ shelf_obj=bpy.data.objects.get(f'Stalker_Shelf_{i}')
+ lip=bpy.data.objects.get(f'Stalker_ShelfLip_{i}')
+ if not shelf_obj or not lip or lip.type!='MESH' or lip.vertex_groups.get('Spine') is None:
+  raise RuntimeError(f'Shelf {i}: missing rim or incorrect rig binding')
+ if not lip.data.materials or lip.data.materials[0].name!='StalkerShelfFungus':
+  raise RuntimeError(f'Shelf {i}: incorrect rim material')
+ if lip.dimensions.x < shelf_obj.dimensions.x*.88 or lip.dimensions.y < shelf_obj.dimensions.y*.88:
+  raise RuntimeError(f'Shelf {i}: rim no longer extends around fungal bracket')
+ for rib in range(8):
+  o=bpy.data.objects.get(f'Stalker_ShelfGill_{i}_{rib}')
+  if not o or o.type!='MESH' or o.vertex_groups.get('Spine') is None:
+   raise RuntimeError(f'Shelf {i}: missing or unbound underside gill {rib}')
+  if not o.data.materials or o.data.materials[0].name!='StalkerMycelium':
+   raise RuntimeError(f'Shelf {i}: gill {rib} has incorrect material')
+  if o.location.z>=shelf_obj.location.z:
+   raise RuntimeError(f'Shelf {i}: gill {rib} no longer lies beneath the cap')
 if len([o for o in meshes if o.name.startswith('Stalker_MycelialCord_')])!=3:raise RuntimeError('Visible mycelial cord anatomy incomplete')
+if sc.get('magenheim_root_anatomy')!='four-tapered-limbs+four-knee-burls+eight-hooked-claws':
+ raise RuntimeError('Root anatomy contract missing')
+for leg in ('Front_L','Front_R','Rear_L','Rear_R'):
+ for suffix,bone,mat in (('Upper',f'{leg}_Upper','StalkerRootHide'),('Lower',f'{leg}_Lower','StalkerRootHide'),('KneeBurl',f'{leg}_Lower','StalkerRootHide')):
+  o=bpy.data.objects.get(f'Stalker_{leg}_{suffix}')
+  if not o or o.type!='MESH' or o.vertex_groups.get(bone) is None or not o.data.materials or o.data.materials[0].name!=mat:
+   raise RuntimeError(f'{leg}: missing or incorrectly bound {suffix}')
+ for toe in (-1,1):
+  t=bpy.data.objects.get(f'Stalker_{leg}_Toe{toe}')
+  c=bpy.data.objects.get(f'Stalker_{leg}_RootClaw{toe}')
+  for o in (t,c):
+   if not o or o.type!='MESH' or o.vertex_groups.get(f'{leg}_Foot') is None:
+    raise RuntimeError(f'{leg}: missing or unbound root claw {toe}')
+   if not o.data.materials or o.data.materials[0].name!='StalkerMycelium':
+    raise RuntimeError(f'{leg}: root claw material mismatch')
+  if c.location.y<=t.location.y or c.location.z>=t.location.z:
+   raise RuntimeError(f'{leg}: hooked claw lost its forward/downward silhouette')
 if len([o for o in meshes if o.name.startswith('Stalker_SenseNode_')])!=2:raise RuntimeError('Sensory-node anatomy incomplete')
 # Physical sensory crown and gripping teeth must survive the authoring pass.
 if sc.get('magenheim_sensory_anatomy')!='four-curved-fronds+eight-fork-tips':raise RuntimeError('Sensory silhouette contract missing')
