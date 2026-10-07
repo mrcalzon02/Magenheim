@@ -17,12 +17,54 @@ def mat(name,color,rough=.7,emission=None):
 def uv(o):
  me=o.data; layer=me.uv_layers.get('ShelfLurkerUV') or me.uv_layers.new(name='ShelfLurkerUV'); zs=[v.co.z for v in me.vertices]; z0=min(zs); dz=max(max(zs)-z0,1e-6)
  for poly in me.polygons:
-  for li in poly.loop_indices:
-   co=me.vertices[me.loops[li].vertex_index].co; layer.data[li].uv=((atan2(co.y,co.x)/(2*pi)+.5)%1,(co.z-z0)/dz)
+  loops=list(poly.loop_indices)
+  coords=[me.vertices[me.loops[li].vertex_index].co for li in loops]
+  angles=[(atan2(co.y,co.x)/(2*pi)+.5)%1 for co in coords]
+  seam=max(angles)-min(angles)>.5
+  for li,co,u in zip(loops,coords,angles):
+   # Keep each face continuous across the angular texture seam.
+   layer.data[li].uv=(u+1 if seam and u<.5 else u,(co.z-z0)/dz)
  return o
 
 def organic(name,loc,scale,material,sub=2):
  bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=max(sub,3),radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale; bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(material); return uv(o)
+def scalloped_shelf(name,loc,scale,material):
+ """Closed, scalloped, growth-ring shelf rather than a flattened sphere.
+
+ Twelve concentric top/rim/underside loops preserve the fungal silhouette at
+ combat distance; 128 angular segments exceed the prior sphere's triangle
+ density without relying on subdivision modifiers or painted-on overhangs.
+ """
+ profile=((.12,.56),(.22,.59),(.35,.63),(.49,.60),(.64,.51),(.78,.40),
+          (.90,.24),(1.0,.08),(.99,-.20),(.86,-.45),(.61,-.49),(.30,-.42))
+ segments=128
+ rx,ry,rz=scale
+ verts=[(0,0,rz*.55),(0,0,-rz*.40)]
+ for rad,z in profile:
+  for j in range(segments):
+   a=2*pi*j/segments
+   scallop=1+.065*cos(7*a+.30)+.025*cos(13*a-.45)
+   wave=1+(scallop-1)*min(1,rad/.55)
+   verts.append((rx*rad*wave*cos(a),ry*rad*wave*sin(a),
+                 rz*z+.008*rad*cos(5*a)))
+ faces=[]
+ for j in range(segments):
+  faces.append((0,2+j,2+(j+1)%segments))
+ for k in range(len(profile)-1):
+  inner=2+k*segments; outer=inner+segments
+  for j in range(segments):
+   nxt=(j+1)%segments
+   faces.append((inner+j,outer+j,outer+nxt,inner+nxt))
+ last=2+(len(profile)-1)*segments
+ for j in range(segments):
+  faces.append((1,last+(j+1)%segments,last+j))
+ mesh=bpy.data.meshes.new(name+'_Mesh')
+ mesh.from_pydata(verts,[],faces); mesh.update()
+ obj=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(obj)
+ obj.location=loc; mesh.materials.append(material)
+ for poly in mesh.polygons: poly.use_smooth=True
+ return uv(obj)
+
 def seg(name,a,b,r,material,verts=16):
  d=Vector(b)-Vector(a); bpy.ops.mesh.primitive_cylinder_add(vertices=verts,radius=r,depth=d.length,location=(Vector(a)+Vector(b))/2); o=bpy.context.object; o.name=name; o.rotation_mode='QUATERNION'; o.rotation_quaternion=Vector((0,0,1)).rotation_difference(d.normalized()); o.data.materials.append(material); return uv(o)
 
@@ -51,14 +93,14 @@ keep(organic('ShelfLurker_Torso',(0,0,1.55),(.78,.62,.22),body,4),'Body'); keep(
 # Layered shelf plates make the animal disappear against fungal overhangs when viewed from below/side.
 for i,(loc,scale) in enumerate((((-.48,.10,1.72),(.55,.34,.07)),((.48,.02,1.71),(.52,.32,.07)),((-.36,-.52,1.72),(.44,.30,.06)),((.36,-.60,1.71),(.42,.28,.06))),1):
  shelf_bone='Body' if i<3 else 'Abdomen'
- keep(organic(f'ShelfLurker_DorsalShelf_{i}',loc,scale,shelf,4),shelf_bone)
+ keep(scalloped_shelf(f'ShelfLurker_DorsalShelf_{i}',loc,scale,shelf),shelf_bone)
  # Six physical underside lamellae per overhanging shelf: fungal growth,
  # rather than featureless armor disks, remains readable from below.
  for rib in range(6):
   angle=2*pi*rib/6
   direction=Vector((cos(angle),sin(angle),0))
-  start=Vector((loc[0]+direction.x*.07,loc[1]+direction.y*.05,loc[2]-scale[2]-.018))
-  end=Vector((loc[0]+direction.x*scale[0]*.78,loc[1]+direction.y*scale[1]*.78,loc[2]-scale[2]-.026))
+  start=Vector((loc[0]+direction.x*.07,loc[1]+direction.y*.05,loc[2]-scale[2]*.42-.012))
+  end=Vector((loc[0]+direction.x*scale[0]*.78,loc[1]+direction.y*scale[1]*.78,loc[2]-scale[2]*.48-.012))
   keep(seg(f'ShelfLurker_ShelfGill_{i}_{rib+1}',start,end,.014,mouth,10),shelf_bone)
 # Downward mouth is modeled geometry, ringed by four fleshy gill-lobes.
 keep(organic('ShelfLurker_Mouth',(0,.38,1.31),(.30,.34,.10),mouth,2),'Head')

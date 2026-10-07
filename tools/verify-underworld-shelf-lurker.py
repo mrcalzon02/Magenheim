@@ -24,6 +24,36 @@ required={'Root','Body','Abdomen','Head','AttackOrigin','HitCenter','SenseFX'}
 for limb in limbs: required|={f'Leg_{limb}_{j}' for j in ('Upper','Lower','Tarsus','Grip')}
 missing=required-{b.name for b in arm.data.bones}
 if missing: raise RuntimeError('Missing Shelf Lurker bones: '+','.join(sorted(missing)))
+# Production shelf geometry must have a watertight, sculpted rim; a flattened
+# icosphere or a mere painted scallop does not satisfy the silhouette gate.
+from collections import Counter
+from math import hypot
+for index in range(1,5):
+ plate=bpy.data.objects.get(f'ShelfLurker_DorsalShelf_{index}')
+ if plate is None: raise RuntimeError(f'Missing dorsal shelf {index}')
+ mesh=plate.data
+ if len(mesh.vertices)!=1538 or len(mesh.polygons)!=1664:
+  raise RuntimeError(f'{plate.name}: expected 12-ring sculpted shelf (1538 verts / 1664 faces)')
+ if sum(len(p.vertices)-2 for p in mesh.polygons)!=3072:
+  raise RuntimeError(f'{plate.name}: scalloped shelf triangle density regressed')
+ edges=Counter()
+ for face in mesh.polygons:
+  ids=list(face.vertices)
+  if face.area<=1e-9: raise RuntimeError(f'{plate.name}: degenerate shelf face')
+  for j in range(len(ids)):
+   edges[tuple(sorted((ids[j],ids[(j+1)%len(ids)])))]+=1
+ if any(n!=2 for n in edges.values()):
+  raise RuntimeError(f'{plate.name}: open or non-manifold shelf surface')
+ rim=[mesh.vertices[2+7*128+j].co for j in range(128)]
+ lip=[mesh.vertices[2+8*128+j].co for j in range(128)]
+ extents=[hypot(p.x/plate.dimensions.x*2,p.y/plate.dimensions.y*2) for p in rim]
+ # Normalized to the true bounds; 7+13 growth scallops must survive.
+ if max(extents)-min(extents)<.08:
+  raise RuntimeError(f'{plate.name}: lost visible scalloped outer silhouette')
+ if any(rim[j].z-lip[j].z<=.010 for j in range(128)):
+  raise RuntimeError(f'{plate.name}: physical underside lip collapsed')
+ if not mesh.uv_layers.get('ShelfLurkerUV'):
+  raise RuntimeError(f'{plate.name}: sculpted shelf missing UV')
 if len([o for o in meshes if o.name.startswith('ShelfLurker_DorsalShelf_')])!=4: raise RuntimeError('Shelf Lurker requires four modeled dorsal shelf plates')
 if len([o for o in meshes if o.name.endswith('_Grip')])!=6: raise RuntimeError('Shelf Lurker requires six modeled grip pads')
 if len([o for o in meshes if o.name.startswith('ShelfLurker_SensoryFrond_')])!=5: raise RuntimeError('Shelf Lurker sensory crown geometry incomplete')
@@ -80,7 +110,7 @@ for shelf_index in range(1,5):
   if not o.data.materials or o.data.materials[0].name!='ShelfLurkerMouthGill': raise RuntimeError(f'{o.name}: incorrect lamella material')
   if not o.data.uv_layers.get('ShelfLurkerUV') or any(p.area<=1e-8 for p in o.data.polygons): raise RuntimeError(f'{o.name}: invalid gill mesh/UV')
   inner,outer=talon_endpoints(o)
-  if max(inner.z,outer.z)>plate.location.z-.04: raise RuntimeError(f'{o.name}: gill is not beneath its shelf')
+  if max(inner.z,outer.z)>plate.location.z-.025 or min(inner.z,outer.z)<plate.location.z-.085: raise RuntimeError(f'{o.name}: gill is detached from sculpted shelf underside')
 for digit in range(1,9):
  base=bpy.data.objects.get(f'ShelfLurker_MouthBarb_{digit}_Base')
  hook=bpy.data.objects.get(f'ShelfLurker_MouthBarb_{digit}_Hook')
