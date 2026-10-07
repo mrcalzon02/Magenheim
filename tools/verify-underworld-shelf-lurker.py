@@ -73,6 +73,37 @@ for index in range(1,5):
 if len([o for o in meshes if o.name.startswith('ShelfLurker_DorsalShelf_')])!=4: raise RuntimeError('Shelf Lurker requires four modeled dorsal shelf plates')
 if len([o for o in meshes if o.name.endswith('_Grip')])!=6: raise RuntimeError('Shelf Lurker requires six modeled grip pads')
 if len([o for o in meshes if o.name.startswith('ShelfLurker_SensoryFrond_')])!=5: raise RuntimeError('Shelf Lurker sensory crown geometry incomplete')
+# A five-cylinder crown passes an object-count check but is not a production
+# sensory silhouette. Require physically curved, tapered, closed fronds.
+for i in range(1,6):
+ frond=bpy.data.objects.get(f'ShelfLurker_SensoryFrond_{i}')
+ if frond is None: raise RuntimeError(f'Missing sensory frond {i}')
+ mesh=frond.data
+ if len(mesh.vertices)!=108 or len(mesh.polygons)!=98:
+  raise RuntimeError(f'{frond.name}: expected 9x12 curved antenna rings with closed ends')
+ if sum(len(p.vertices)-2 for p in mesh.polygons)!=212:
+  raise RuntimeError(f'{frond.name}: sensory frond triangle density regressed')
+ if frond.parent!=arm or frond.vertex_groups.get('Head') is None:
+  raise RuntimeError(f'{frond.name}: sensory organ not bound to Head')
+ if not any(m.type=='ARMATURE' and m.object==arm for m in frond.modifiers):
+  raise RuntimeError(f'{frond.name}: missing armature modifier')
+ if not mesh.materials or mesh.materials[0].name!='ShelfLurkerSensoryCrown':
+  raise RuntimeError(f'{frond.name}: wrong sensory material')
+ if not mesh.uv_layers.get('ShelfLurkerUV') or any(p.area<=1e-8 for p in mesh.polygons):
+  raise RuntimeError(f'{frond.name}: missing UV or degenerate frond geometry')
+ centers=[]; radii=[]
+ for ring in range(9):
+  points=[mesh.vertices[ring*12+j].co for j in range(12)]
+  center=sum(points,Vector())/12
+  centers.append(center)
+  radii.append(sum((p-center).length for p in points)/12)
+ if radii[-1]>=radii[0]*.25 or any(radii[j+1]>=radii[j] for j in range(8)):
+  raise RuntimeError(f'{frond.name}: sensory tip no longer tapers')
+ if (centers[4]-(centers[0]+centers[8])*.5).length<.07:
+  raise RuntimeError(f'{frond.name}: straight cylinder replaced curved crown')
+ if centers[8].z>centers[0].z-.30:
+  raise RuntimeError(f'{frond.name}: lost downward sensory reach')
+
 # All 18 gripping claws have two tapered, joined sections and their own
 # outward-then-inward silhouette. Verify actual mesh endpoints, not just names.
 talons=[o for o in meshes if '_Talon_' in o.name]

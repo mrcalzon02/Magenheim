@@ -92,6 +92,48 @@ def taper(name,a,b,r0,r1,material):
  o=bpy.context.object; o.name=name; o.rotation_mode='QUATERNION'; o.rotation_quaternion=Vector((0,0,1)).rotation_difference(d.normalized())
  o.data.materials.append(material); return uv(o)
 
+def sensory_frond_path(start,end,bow,steps=8):
+ """Eight curved intervals give the five sensory organs a visible, species-specific profile."""
+ if steps<6: raise ValueError('Sensory frond needs at least six intervals')
+ return [tuple(start[k]+(end[k]-start[k])*i/steps+bow[k]*sin(pi*i/steps)
+               for k in range(3)) for i in range(steps+1)]
+
+def sensory_frond(name,start,end,bow,material):
+ """Watertight, tapering sensory antenna with an actual curved silhouette."""
+ sides=12; steps=8
+ centers=[Vector(p) for p in sensory_frond_path(start,end,bow,steps)]
+ vertices=[]
+ for i,center in enumerate(centers):
+  tangent=(centers[min(i+1,steps)]-centers[max(i-1,0)]).normalized()
+  reference=Vector((0,1,0)) if abs(tangent.y)<.9 else Vector((1,0,0))
+  axis=tangent.cross(reference).normalized()
+  other=tangent.cross(axis).normalized()
+  radius=.047*(1-i/steps)**.9+.006
+  for j in range(sides):
+   a=2*pi*j/sides
+   vertices.append(tuple(center+radius*(axis*cos(a)+other*sin(a))))
+ faces=[]
+ for i in range(steps):
+  for j in range(sides):
+   nxt=(j+1)%sides
+   faces.append((i*sides+j,i*sides+nxt,(i+1)*sides+nxt,(i+1)*sides+j))
+ faces.append(tuple(reversed(range(sides))))
+ faces.append(tuple(steps*sides+j for j in range(sides)))
+ mesh=bpy.data.meshes.new(name+'_Mesh')
+ mesh.from_pydata(vertices,[],faces); mesh.update()
+ obj=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(obj)
+ mesh.materials.append(material)
+ for poly in mesh.polygons: poly.use_smooth=len(poly.vertices)==4
+ layer=mesh.uv_layers.new(name='ShelfLurkerUV')
+ for poly in mesh.polygons:
+  ring_ids=[mesh.loops[li].vertex_index%sides for li in poly.loop_indices]
+  seam=0 in ring_ids and sides-1 in ring_ids
+  for li in poly.loop_indices:
+   idx=mesh.loops[li].vertex_index
+   angular=idx%sides
+   layer.data[li].uv=(1.0 if seam and angular==0 else angular/sides,(idx//sides)/steps)
+ return obj
+
 bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
 body=mat('ShelfLurkerRootFlesh',(.17,.14,.10),.88); shelf=mat('ShelfLurkerShelfArmor',(.32,.25,.16),.78); grip=mat('ShelfLurkerGripPad',(.25,.20,.15),.64); sense=mat('ShelfLurkerSensoryCrown',(.48,.38,.20),.58,(.22,.16,.06)); mouth=mat('ShelfLurkerMouthGill',(.38,.20,.15),.62)
 import sys
@@ -133,7 +175,9 @@ for digit in range(8):
  keep(taper(f'ShelfLurker_MouthBarb_{digit+1}_Base',root,flare,.036,.026,mouth),'Head')
  keep(taper(f'ShelfLurker_MouthBarb_{digit+1}_Hook',flare,point,.026,.004,mouth),'Head')
 # Sensory crown points downward/forward while clinging; restrained glow only here.
-for i,(x,y,z) in enumerate(((-.22,.58,1.52),(.22,.58,1.52),(-.30,.42,1.48),(.30,.42,1.48),(0,.70,1.50)),1): keep(seg(f'ShelfLurker_SensoryFrond_{i}',(x*.55,y-.18,z),(x,y,z-.34),.045,sense,12),'Head')
+for i,(x,y,z) in enumerate(((-.22,.58,1.52),(.22,.58,1.52),(-.30,.42,1.48),(.30,.42,1.48),(0,.70,1.50)),1):
+ bow=(.065 if x>0 else -.065 if x<0 else 0,.105,.035)
+ keep(sensory_frond(f'ShelfLurker_SensoryFrond_{i}',(x*.55,y-.18,z),(x,y,z-.34),bow,sense),'Head')
 # Six long load-bearing limbs. Three per side distinguish it strongly from quadrupeds and provide wall/ceiling grip.
 legs=[]
 for side in (-1,1):
