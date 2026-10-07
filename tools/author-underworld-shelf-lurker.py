@@ -26,6 +26,13 @@ def organic(name,loc,scale,material,sub=2):
 def seg(name,a,b,r,material,verts=16):
  d=Vector(b)-Vector(a); bpy.ops.mesh.primitive_cylinder_add(vertices=verts,radius=r,depth=d.length,location=(Vector(a)+Vector(b))/2); o=bpy.context.object; o.name=name; o.rotation_mode='QUATERNION'; o.rotation_quaternion=Vector((0,0,1)).rotation_difference(d.normalized()); o.data.materials.append(material); return uv(o)
 
+def taper(name,a,b,r0,r1,material):
+ d=Vector(b)-Vector(a)
+ if d.length<=1e-5 or not 0<r1<r0: raise RuntimeError(f'{name}: invalid tapered talon segment')
+ bpy.ops.mesh.primitive_cone_add(vertices=12,radius1=r0,radius2=r1,depth=d.length,location=(Vector(a)+Vector(b))/2)
+ o=bpy.context.object; o.name=name; o.rotation_mode='QUATERNION'; o.rotation_quaternion=Vector((0,0,1)).rotation_difference(d.normalized())
+ o.data.materials.append(material); return uv(o)
+
 bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
 body=mat('ShelfLurkerRootFlesh',(.17,.14,.10),.88); shelf=mat('ShelfLurkerShelfArmor',(.32,.25,.16),.78); grip=mat('ShelfLurkerGripPad',(.25,.20,.15),.64); sense=mat('ShelfLurkerSensoryCrown',(.48,.38,.20),.58,(.22,.16,.06)); mouth=mat('ShelfLurkerMouthGill',(.38,.20,.15),.62)
 import sys
@@ -56,6 +63,14 @@ for side in (-1,1):
   hip=(side*.52,y0,1.56); elbow=(side*1.02,y1,1.22); wrist=(side*1.34,y1+.08,.78); tip=(side*1.48,y1+.12,.54); n=f'{s}_{idx}'
   legs.append((n,hip,elbow,wrist,tip))
   keep(seg(f'ShelfLurker_{n}_Upper',hip,elbow,.115,body),f'Leg_{n}_Upper'); keep(seg(f'ShelfLurker_{n}_Lower',elbow,wrist,.085,body),f'Leg_{n}_Lower'); keep(seg(f'ShelfLurker_{n}_Tarsus',wrist,tip,.060,grip),f'Leg_{n}_Tarsus'); keep(organic(f'ShelfLurker_{n}_Grip',tip,(.18,.24,.055),grip,2),f'Leg_{n}_Grip')
+  # Three hard talons per pad project outward then return inward/downward,
+  # preserving the six-limbed shelf-clinger silhouette under motion.
+  for digit,offset in enumerate((-.15,0,.15),1):
+   talon_root=Vector((tip[0]+side*.035,tip[1]+offset*.70,tip[2]-.02))
+   knuckle=Vector((tip[0]+side*.27,tip[1]+offset,tip[2]-.11))
+   hook=Vector((tip[0]+side*.14,tip[1]+offset*1.15,tip[2]-.25))
+   keep(taper(f'ShelfLurker_{n}_Talon_{digit}_Base',talon_root,knuckle,.052,.035,shelf),f'Leg_{n}_Grip')
+   keep(taper(f'ShelfLurker_{n}_Talon_{digit}_Hook',knuckle,hook,.035,.008,shelf),f'Leg_{n}_Grip')
 
 bpy.ops.object.armature_add(enter_editmode=True,location=(0,0,0)); arm=bpy.context.object; arm.name='RIG_ShelfLurker_HOST_WALL_CLINGER'; eb=arm.data.edit_bones; root=eb[0]; root.name='Root'; root.head=(0,0,0); root.tail=(0,0,.35)
 def bone(n,h,t,p=None): b=eb.new(n); b.head=h; b.tail=t; b.parent=p; return b
@@ -66,6 +81,6 @@ bone('AttackOrigin',(0,.35,1.30),(0,.35,.88),head); bone('HitCenter',(0,0,1.25),
 for name,bname in parts.items():
  o=bpy.data.objects[name]; mod=o.modifiers.new('ShelfLurkerArmature','ARMATURE'); mod.object=arm; vg=o.vertex_groups.new(name=bname); vg.add(range(len(o.data.vertices)),1,'REPLACE'); o.parent=arm
 meshes=[o for o in bpy.context.scene.objects if o.type=='MESH']; tris=sum(len(p.vertices)-2 for o in meshes for p in o.data.polygons)
-if len(meshes)<40 or tris<10000: raise RuntimeError(f'Shelf Lurker source fidelity regression: {len(meshes)} meshes / {tris} tris')
+if len(meshes)<76 or tris<10000: raise RuntimeError(f'Shelf Lurker source fidelity regression: {len(meshes)} meshes / {tris} tris')
 sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-shelf-lurker'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='uncommon'; sc['magenheim_host_rig']='HOST-WALL-CLINGER'; sc['magenheim_reach_m']=2.25; sc['magenheim_fidelity']='production-creature-r1'; sc['magenheim_uv_contract']='ShelfLurkerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,SenseFX'; sc['magenheim_material_identity']='root-flesh+shelf-armor+grip-pad+sensory-crown+mouth-gill'; sc['magenheim_silhouette']='flattened-radial-body+six-long-gripping-limbs+downward-mouth+sensory-crown'; sc['magenheim_animation_manifest']='cling-idle,lateral-crawl,reposition,drop-pounce,recover,attack,hit,death'; sc['magenheim_skinning']='rigid-segment-weighted'
 bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(OUT),compress=True); print(f'AUTHORED Shelf Lurker r1: {len(meshes)} meshes / {len(arm.data.bones)} bones / {tris} tris -> {OUT.name}',flush=True)
