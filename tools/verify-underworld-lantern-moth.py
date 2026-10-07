@@ -21,6 +21,36 @@ if 'never-bat-body' not in arm.get('silhouette_contract',''): raise RuntimeError
 meshes=[o for o in bpy.context.scene.objects if o.type=='MESH']
 wings=[o for o in meshes if o.name.startswith('LM_ForeWing_') or o.name.startswith('LM_HindWing_')]
 if len(wings)!=4: raise RuntimeError(f'Expected four physical wing surfaces, found {len(wings)}')
+veins=[o for o in meshes if o.name.startswith('LM_WingVein_')]
+if len(veins)!=24: raise RuntimeError(f'Expected 24 physical wing vein relief segments, found {len(veins)}')
+for wing in wings:
+    mesh=wing.data
+    if len(mesh.vertices)!=12 or len(mesh.polygons)!=14:
+        raise RuntimeError(f'{wing.name}: closed two-sided membrane topology lost')
+    if any(abs(mesh.vertices[i].co.z-mesh.vertices[i+6].co.z-.003)>1e-5 for i in range(6)):
+        raise RuntimeError(f'{wing.name}: 3 mm membrane rim lost')
+    if sum(p.normal.z>.5 for p in mesh.polygons)!=4 or sum(p.normal.z<-.5 for p in mesh.polygons)!=4:
+        raise RuntimeError(f'{wing.name}: dorsal/ventral winding is not outward')
+    edges={}
+    for poly in mesh.polygons:
+        indices=list(poly.vertices)
+        for i,a in enumerate(indices):
+            key=tuple(sorted((a,indices[(i+1)%len(indices)])))
+            edges[key]=edges.get(key,0)+1
+        if poly.area<=1e-8: raise RuntimeError(f'{wing.name}: degenerate membrane/rim polygon')
+    if any(count!=2 for count in edges.values()):
+        raise RuntimeError(f'{wing.name}: wing membrane has open or nonmanifold edges')
+    if any(not (0<=uv.uv.x<=1 and 0<=uv.uv.y<=1) for uv in mesh.uv_layers['LanternMothUV'].data):
+        raise RuntimeError(f'{wing.name}: membrane/rim UV escaped authored texture')
+for side in ('L','R'):
+    for kind in ('Fore','Hind'):
+        group=[o for o in veins if o.name.startswith(f'LM_WingVein_{side}_{kind}_')]
+        if len(group)!=6: raise RuntimeError(f'{side} {kind} wing relief incomplete')
+        bone=f'{kind}Wing_{side}'
+        for part in group:
+            vg=part.vertex_groups.get(bone)
+            if vg is None or any(not any(g.group==vg.index and g.weight>=.999 for g in v.groups) for v in part.data.vertices):
+                raise RuntimeError(f'{part.name}: vein relief is not rigidly bound to its wing bone')
 if sum(1 for o in meshes if o.name.startswith('LM_ThoraxTuft_'))<10: raise RuntimeError('Fuzzy thorax silhouette lost')
 if sum(1 for o in meshes if o.name.startswith('LM_Antenna'))!=4: raise RuntimeError('Two articulated antenna chains required')
 if sum(1 for o in meshes if o.name.startswith('LM_Leg'))!=12: raise RuntimeError('Six two-segment legs required')
@@ -38,4 +68,4 @@ for stem in ('thorax-fuzz','abdomen-chitin','wing-membrane','antenna','eye'):
         if not p.exists() or png_size(p)!=(1024,1024): raise RuntimeError(f'Invalid texture {p}')
 em=TEX/'wing-membrane-emission.png'
 if not em.exists() or png_size(em)!=(1024,1024): raise RuntimeError('Wing emission mask missing')
-print(f'VERIFIED Lantern Moth custom-body source: {span:.3f}m span, four wings, fuzzy thorax, paired antennae, six legs, {len(expected)} actions; donor-Bat silhouette rejected')
+print(f'VERIFIED Lantern Moth custom-body source: {span:.3f}m span, four closed two-sided wings, 24 raised vein segments, fuzzy thorax, paired antennae, six legs, {len(expected)} actions; donor-Bat silhouette rejected')

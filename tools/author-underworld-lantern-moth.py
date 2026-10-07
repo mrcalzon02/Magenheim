@@ -45,21 +45,59 @@ def segment(name,a,b,r,mat,verts=10):
     bpy.ops.mesh.primitive_cylinder_add(vertices=verts,radius=r,depth=d.length,location=(a+b)*.5)
     o=bpy.context.object; o.name=name; o.rotation_mode='QUATERNION'; o.rotation_quaternion=Vector((0,0,1)).rotation_difference(d.normalized()); o.rotation_mode='XYZ'; o.data.materials.append(mat); return o
 
-def wing(name,side,fore,mat):
+def wing(name,side,fore,mat,vein_mat):
+    """Closed, thin four-wing anatomy with deliberate two-sided UVs and raised veins.
+
+    The donor Bat has no usable moth-wing silhouette. Keep each membrane on its own
+    wing bone, with readable vein relief rather than texture-only structural lines.
+    """
     s=-1 if side=='L' else 1
     if fore:
         pts=[(.045*s,.055,.105),(.16*s,.12,.12),(.31*s,.095,.105),(.285*s,-.015,.095),(.15*s,-.045,.09),(.06*s,.005,.10)]
     else:
         pts=[(.04*s,-.005,.095),(.135*s,-.045,.105),(.24*s,-.11,.095),(.19*s,-.18,.08),(.09*s,-.14,.078),(.045*s,-.06,.09)]
-    verts=[Vector(p) for p in pts]; faces=[(0,1,5),(1,4,5),(1,2,4),(2,3,4)]
-    mesh=bpy.data.meshes.new(name+'Mesh'); mesh.from_pydata(verts,[],faces); mesh.update()
-    o=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(o); o.data.materials.append(mat)
+    top=[Vector((x,y,z+.0015)) for x,y,z in pts]
+    bottom=[Vector((x,y,z-.0015)) for x,y,z in pts]
+    verts=top+bottom
+    triangles=[(0,1,5),(1,4,5),(1,2,4),(2,3,4)]
+    # Mirroring the left/right coordinates reverses winding. Both dorsal surfaces
+    # must face upward; the ventral surfaces must face downward in exported glTF.
+    upper=triangles if s==-1 else [tuple(reversed(t)) for t in triangles]
+    lower=[tuple(reversed(tuple(i+6 for i in t))) for t in upper]
+    rim=[]
+    for i in range(6):
+        j=(i+1)%6
+        rim.append((i,i+6,j+6,j) if s==-1 else (i,j,j+6,i+6))
+    mesh=bpy.data.meshes.new(name+'Mesh')
+    mesh.from_pydata(verts,[],upper+lower+rim)
+    mesh.update()
+    o=bpy.data.objects.new(name,mesh)
+    bpy.context.collection.objects.link(o)
+    o.data.materials.append(mat)
     uv=o.data.uv_layers.new(name='LanternMothUV')
-    for poly in o.data.polygons:
+    perimeter=[0.0]
+    for i in range(6):
+        perimeter.append(perimeter[-1]+(Vector(pts[(i+1)%6])-Vector(pts[i])).length)
+    for pi,poly in enumerate(o.data.polygons):
         for li in poly.loop_indices:
-            v=o.data.vertices[o.data.loops[li].vertex_index].co
-            uv.data[li].uv=(.5+v.x*1.45,.5+v.y*2.1)
-    return o
+            index=o.data.loops[li].vertex_index
+            v=o.data.vertices[index].co
+            if pi<8:
+                uv.data[li].uv=(.5+v.x*1.45,.5+v.y*2.1)
+            else:
+                # Give the actual 3 mm rim a separate narrow UV strip; projecting
+                # both rim levels to the same XY would collapse every side-wall UV.
+                edge=pi-8
+                u=perimeter[edge if index%6==edge else edge+1]/perimeter[-1]
+                uv.data[li].uv=(u,.98 if index<6 else .95)
+    veins=[]
+    kind='Fore' if fore else 'Hind'
+    for i,(a,b) in enumerate(((0,1),(0,2),(0,4))):
+        for face,offset in (('Dorsal',.0023),('Ventral',-.0023)):
+            start=Vector(pts[a]); finish=Vector(pts[b])
+            start.z+=offset; finish.z+=offset
+            veins.append(segment(f'LM_WingVein_{side}_{kind}_{i}_{face}',start,finish,.0015,vein_mat,6))
+    return o,veins
 
 def planar_uv(o,scale=3.0):
     uv=o.data.uv_layers.new(name='LanternMothUV')
@@ -90,8 +128,11 @@ for side in ('L','R'):
     s=-1 if side=='L' else 1
     keep(organic(f'LM_Eye_{side}',(s*.037,.14,.12),(.012,.009,.011),eye,2),'Head')
 for side in ('L','R'):
-    keep(wing(f'LM_ForeWing_{side}',side,True,wingmat),f'ForeWing_{side}')
-    keep(wing(f'LM_HindWing_{side}',side,False,wingmat),f'HindWing_{side}')
+    for fore in (True,False):
+        bone=f'{"Fore" if fore else "Hind"}Wing_{side}'
+        membrane,veins=wing(f'LM_{"Fore" if fore else "Hind"}Wing_{side}',side,fore,wingmat,ant)
+        keep(membrane,bone)
+        for vein in veins: keep(vein,bone)
 for i in range(12):
     a=i*pi*2/12; base=(cos(a)*.055,sin(a)*.07,.145+sin(a*2)*.006); tip=(cos(a)*.085,sin(a)*.105,.17+sin(a*2)*.008)
     keep(segment(f'LM_ThoraxTuft_{i:02d}',base,tip,.006,thorax,8),'Thorax')
