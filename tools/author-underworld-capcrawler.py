@@ -62,7 +62,14 @@ for i,y in enumerate((-.24,-.08,.10,.26),1):
   keep(organic(f'Capcrawler_{s}_Coxa{i}',hip,(.045,.05,.035),plate,2),f'{s}_Coxa{i}'); keep(segment(f'Capcrawler_{s}_Leg{i}A',hip,knee,.027,plate),f'{s}_Coxa{i}'); keep(segment(f'Capcrawler_{s}_Leg{i}B',knee,foot,.020,plate),f'{s}_Tibia{i}')
   keep(organic(f'Capcrawler_{s}_FootPad{i}',foot,(.042,.052,.018),plate,2),f'{s}_Tarsus{i}'); keep(segment(f'Capcrawler_{s}_Claw{i}',foot,toe,.012,mand),f'{s}_Tarsus{i}')
 for side in (-1,1):
- s='L' if side<0 else 'R'; a=(side*.08,.32,.22); b=(side*.13,.47,.17); keep(segment(f'Capcrawler_Mandible_{s}',a,b,.036,mand),f'Mandible_{s}')
+ s='L' if side<0 else 'R'
+ # Paired hooked mandibles and modeled gripping denticles break the smooth frontal silhouette.
+ joints=[(side*.08,.32,.22),(side*.12,.375,.20),(side*.16,.44,.17),(side*.10,.515,.14)]
+ for i in range(3):
+  name=f'Capcrawler_Mandible_{s}' if i==0 else f'Capcrawler_JawArc_{s}{i}'
+  keep(segment(name,joints[i],joints[i+1],(.034,.025,.016)[i],mand),f'Mandible_{s}')
+ for i,(bx,by,bz,tx,ty,tz) in enumerate(((.12,.390,.190,.08,.411,.158),(.145,.430,.169,.104,.450,.139),(.133,.465,.155,.095,.481,.128)),1):
+  keep(segment(f'Capcrawler_Denticle_{s}{i}',(side*bx,by,bz),(side*tx,ty,tz),.009,mand),f'Mandible_{s}')
 for i in range(5):
  x=(i-2)*.065; keep(organic(f'Capcrawler_Gill_{i+1}',(x,.285,.255),(.024,.055,.018),gill,3),'Body')
 
@@ -73,7 +80,7 @@ for i,y in enumerate((-.24,-.08,.10,.26),1):
  for side in (-1,1):
   s='L' if side<0 else 'R'; hip=(side*.20,y,.22); knee=(side*.34,y+(i-2.5)*.018,.13); foot=(side*.43,y+(i-2.5)*.035,.035); toe=(side*.475,foot[1]+.008,.024); c=bone(f'{s}_Coxa{i}',hip,knee,body); t=bone(f'{s}_Tibia{i}',knee,foot,c); bone(f'{s}_Tarsus{i}',foot,toe,t)
 for side in (-1,1):
- s='L' if side<0 else 'R'; bone(f'Mandible_{s}',(side*.08,.32,.22),(side*.13,.47,.17),body)
+ s='L' if side<0 else 'R'; bone(f'Mandible_{s}',(side*.08,.32,.22),(side*.10,.515,.14),body)
 bone('AttackOrigin',(0,.34,.18),(0,.53,.18),body); bone('HitCenter',(0,0,.16),(0,0,.28),root); bone('GillFX',(0,.27,.24),(0,.39,.24),body); bpy.ops.object.mode_set(mode='OBJECT'); arm.show_in_front=True
 
 def action_fcurves(act):
@@ -125,5 +132,5 @@ if len(meshes)<60: raise RuntimeError(f'Capcrawler detail regression: {len(meshe
 for o in meshes:
  uv=o.data.uv_layers.get('CapcrawlerUV')
  if not uv or not uv.data: raise RuntimeError(f'Missing explicit UVs: {o.name}')
-sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-capcrawler'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='common'; sc['magenheim_host_rig']='HOST-LOW-CRAWLER'; sc['magenheim_length_m']=.90; sc['magenheim_width_m']=.98; sc['magenheim_fidelity']='production-creature-r7'; sc['magenheim_skinning']='rigid-segment-weighted'; sc['magenheim_uv_contract']='CapcrawlerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,GillFX'; sc['magenheim_authored_actions']='Capcrawler_Idle,Capcrawler_Scuttle,Capcrawler_Turn,Capcrawler_AttackLeft,Capcrawler_AttackRight,Capcrawler_AttackFront,Capcrawler_Guard,Capcrawler_Hit,Capcrawler_Stagger,Capcrawler_Death'; sc['magenheim_animation_manifest']='idle,scuttle,turn,attack-left,attack-right,attack-front,guard,hit,stagger,death'; sc['magenheim_carapace_language']='layered-fungal-rim-scutes+crown+dorsal-shelves'; sc['magenheim_ground_contact']='8-tarsal-pads+8-terminal-claws'; sc['magenheim_leg_rig']='coxa+tibia+tarsus-per-leg'; sc['magenheim_fungal_signature']='4-dorsal-shelf-plates+3-spore-nodules'
-bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(OUT),compress=True); print(f'AUTHORED Capcrawler r7: {len(meshes)} meshes / {len(arm.data.bones)} bones / fungal silhouette anatomy -> {OUT.name}',flush=True)
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-capcrawler'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='common'; sc['magenheim_host_rig']='HOST-LOW-CRAWLER'; sc['magenheim_length_m']=.90; sc['magenheim_width_m']=.98; sc['magenheim_fidelity']='production-creature-r8'; sc['magenheim_skinning']='rigid-segment-weighted'; sc['magenheim_uv_contract']='CapcrawlerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,GillFX'; sc['magenheim_authored_actions']='Capcrawler_Idle,Capcrawler_Scuttle,Capcrawler_Turn,Capcrawler_AttackLeft,Capcrawler_AttackRight,Capcrawler_AttackFront,Capcrawler_Guard,Capcrawler_Hit,Capcrawler_Stagger,Capcrawler_Death'; sc['magenheim_animation_manifest']='idle,scuttle,turn,attack-left,attack-right,attack-front,guard,hit,stagger,death'; sc['magenheim_carapace_language']='layered-fungal-rim-scutes+crown+dorsal-shelves'; sc['magenheim_ground_contact']='8-tarsal-pads+8-terminal-claws'; sc['magenheim_leg_rig']='coxa+tibia+tarsus-per-leg'; sc['magenheim_fungal_signature']='4-dorsal-shelf-plates+3-spore-nodules'
+bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(OUT),compress=True); print(f'AUTHORED Capcrawler r8: {len(meshes)} meshes / {len(arm.data.bones)} bones / fungal silhouette anatomy -> {OUT.name}',flush=True)
