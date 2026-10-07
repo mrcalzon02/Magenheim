@@ -52,8 +52,24 @@ for index in range(1,5):
   raise RuntimeError(f'{plate.name}: lost visible scalloped outer silhouette')
  if any(rim[j].z-lip[j].z<=.010 for j in range(128)):
   raise RuntimeError(f'{plate.name}: physical underside lip collapsed')
- if not mesh.uv_layers.get('ShelfLurkerUV'):
-  raise RuntimeError(f'{plate.name}: sculpted shelf missing UV')
+ radii=plate.get('magenheim_shelf_uv_radii')
+ if not radii or len(radii)!=2: raise RuntimeError(f'{plate.name}: missing authored shelf UV scale')
+ rx,ry=map(float,radii)
+ if rx<=0 or ry<=0: raise RuntimeError(f'{plate.name}: invalid shelf UV radii')
+ if not (1.9*rx<=plate.dimensions.x<=2.25*rx and 1.9*ry<=plate.dimensions.y<=2.25*ry):
+  raise RuntimeError(f'{plate.name}: cap dimensions diverge from authored UV scale')
+ layer=mesh.uv_layers.get('ShelfLurkerUV')
+ if not layer: raise RuntimeError(f'{plate.name}: sculpted shelf missing UV')
+ # Concentric PBR growth bands must follow the cap radius, not object height
+ # or angular cylindrical mapping (which turns them into unrelated stripes).
+ for poly in mesh.polygons:
+  for li in poly.loop_indices:
+   co=mesh.vertices[mesh.loops[li].vertex_index].co
+   u,v=layer.data[li].uv
+   if abs(u-(.5+co.x/(2.24*rx)))>1e-5 or abs(v-(.5+co.y/(2.24*ry)))>1e-5:
+    raise RuntimeError(f'{plate.name}: fungal growth texture UVs lost radial alignment')
+   if not (0<=u<=1 and 0<=v<=1):
+    raise RuntimeError(f'{plate.name}: scalloped lip exceeds texture atlas')
 if len([o for o in meshes if o.name.startswith('ShelfLurker_DorsalShelf_')])!=4: raise RuntimeError('Shelf Lurker requires four modeled dorsal shelf plates')
 if len([o for o in meshes if o.name.endswith('_Grip')])!=6: raise RuntimeError('Shelf Lurker requires six modeled grip pads')
 if len([o for o in meshes if o.name.startswith('ShelfLurker_SensoryFrond_')])!=5: raise RuntimeError('Shelf Lurker sensory crown geometry incomplete')

@@ -28,6 +28,22 @@ def uv(o):
 
 def organic(name,loc,scale,material,sub=2):
  bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=max(sub,3),radius=1,location=loc); o=bpy.context.object; o.name=name; o.scale=scale; bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); o.data.materials.append(material); return uv(o)
+def shelf_uv(obj,rx,ry):
+ """Project cap growth bands radially rather than wrapping them around height.
+
+ The authored shelf-armor maps use concentric rings about UV (0.5, 0.5).
+ Normalizing each axis by its own cap radius keeps those rings centered on
+ asymmetric shelves. Top and underside intentionally share the same growth
+ coordinates; their material response is continuous around the overhang.
+ """
+ mesh=obj.data
+ layer=mesh.uv_layers.get('ShelfLurkerUV') or mesh.uv_layers.new(name='ShelfLurkerUV')
+ for poly in mesh.polygons:
+  for li in poly.loop_indices:
+   co=mesh.vertices[mesh.loops[li].vertex_index].co
+   layer.data[li].uv=(.5+co.x/(2.24*rx),.5+co.y/(2.24*ry))
+ return obj
+
 def scalloped_shelf(name,loc,scale,material):
  """Closed, scalloped, growth-ring shelf rather than a flattened sphere.
 
@@ -62,8 +78,9 @@ def scalloped_shelf(name,loc,scale,material):
  mesh.from_pydata(verts,[],faces); mesh.update()
  obj=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(obj)
  obj.location=loc; mesh.materials.append(material)
+ obj['magenheim_shelf_uv_radii']=(rx,ry)
  for poly in mesh.polygons: poly.use_smooth=True
- return uv(obj)
+ return shelf_uv(obj,rx,ry)
 
 def seg(name,a,b,r,material,verts=16):
  d=Vector(b)-Vector(a); bpy.ops.mesh.primitive_cylinder_add(vertices=verts,radius=r,depth=d.length,location=(Vector(a)+Vector(b))/2); o=bpy.context.object; o.name=name; o.rotation_mode='QUATERNION'; o.rotation_quaternion=Vector((0,0,1)).rotation_difference(d.normalized()); o.data.materials.append(material); return uv(o)
