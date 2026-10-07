@@ -26,6 +26,29 @@ for o in meshes:
 if len([o for o in meshes if o.name.startswith('Stalker_Shelf_')])!=3:raise RuntimeError('Asymmetric shelf silhouette incomplete')
 if len([o for o in meshes if o.name.startswith('Stalker_MycelialCord_')])!=3:raise RuntimeError('Visible mycelial cord anatomy incomplete')
 if len([o for o in meshes if o.name.startswith('Stalker_SenseNode_')])!=2:raise RuntimeError('Sensory-node anatomy incomplete')
+# Physical sensory crown and gripping teeth must survive the authoring pass.
+if sc.get('magenheim_sensory_anatomy')!='four-curved-fronds+eight-fork-tips':raise RuntimeError('Sensory silhouette contract missing')
+if sc.get('magenheim_jaw_detail')!='six-jaw-bound-gripping-teeth':raise RuntimeError('Physical jaw-detail contract missing')
+fronds=[o for o in meshes if o.name.startswith('Stalker_Frond_')]
+teeth=[o for o in meshes if o.name.startswith('Stalker_JawTooth_')]
+if len(fronds)!=16 or len(teeth)!=6:raise RuntimeError(f'Anatomical silhouette regression: fronds={len(fronds)} teeth={len(teeth)}')
+for side in ('L','R'):
+ for branch in (1,2):
+  for suffix in ('Base','Tip','Fork1','Fork2'):
+   name=f'Stalker_Frond_{side}{branch}_{suffix}'
+   o=bpy.data.objects.get(name)
+   if not o or o.vertex_groups.get('Head') is None or not o.data.materials or o.data.materials[0].name!='StalkerMycelium':
+    raise RuntimeError(f'{name}: missing, unbound or incorrect sensory anatomy')
+ for i in (1,2,3):
+  name=f'Stalker_JawTooth_{side}{i}'
+  o=bpy.data.objects.get(name)
+  if not o or o.vertex_groups.get(f'Jaw_{side}') is None or not o.data.materials or o.data.materials[0].name!='StalkerRootHide':
+   raise RuntimeError(f'{name}: missing, unbound or incorrect gripping tooth')
+def world_extreme(o,axis):
+ from mathutils import Vector
+ return max((o.matrix_world @ Vector(c))[axis] for c in o.bound_box)
+if max(world_extreme(o,2) for o in fronds)<1.79 or max(world_extreme(o,1) for o in fronds)<1.50:
+ raise RuntimeError('Sensory crown no longer breaks the dorsal/frontal silhouette')
 mats={m.name:m for m in bpy.data.materials if m.name in REQ_MATS}
 if set(mats)!=REQ_MATS:raise RuntimeError('Material family incomplete')
 for name,m in mats.items():

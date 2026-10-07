@@ -35,6 +35,13 @@ def organic(name,loc,scale,mat,sub=2):
 def seg(name,a,b,r,mat):
  d=Vector(b)-Vector(a); bpy.ops.mesh.primitive_cylinder_add(vertices=16,radius=r,depth=d.length,location=(Vector(a)+Vector(b))/2); o=bpy.context.object; o.name=name; o.rotation_mode='QUATERNION'; o.rotation_quaternion=Vector((0,0,1)).rotation_difference(d.normalized()); o.data.materials.append(mat); return uv(o)
 
+def tapered(name,a,b,base_radius,tip_radius,mat):
+ d=Vector(b)-Vector(a)
+ if d.length<=1e-5 or not 0<tip_radius<base_radius: raise RuntimeError(f'{name}: invalid tapered anatomy')
+ bpy.ops.mesh.primitive_cone_add(vertices=16,radius1=base_radius,radius2=tip_radius,depth=d.length,location=(Vector(a)+Vector(b))/2)
+ o=bpy.context.object; o.name=name; o.rotation_mode='QUATERNION'; o.rotation_quaternion=Vector((0,0,1)).rotation_difference(d.normalized()); o.data.materials.append(mat)
+ return uv(o)
+
 bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
 hide=material('StalkerRootHide','root-hide'); cord=material('StalkerMycelium','mycelial-cord'); shelf=material('StalkerShelfFungus','shelf-fungus'); sense=material('StalkerSensoryTissue','sensory-pit',True)
 parts={}
@@ -55,9 +62,23 @@ for hx,hy,hz,kx,ky,kz,fx,fy,fz,n in legs:
 for i,(a,b) in enumerate((((-.34,-.35,1.30),(.32,.38,1.34)),((.34,-.15,1.18),(-.30,.50,1.16)),((-.28,-.62,1.34),(.26,.02,1.43))),1): keep(seg(f'Stalker_MycelialCord_{i}',a,b,.026,cord),'Spine')
 # Asymmetric shelf growth keeps the silhouette fungal and non-donor-like.
 for i,(loc,scale) in enumerate((((-.34,-.20,1.48),(.38,.22,.055)),((.30,-.48,1.49),(.30,.18,.048)),((-.28,.25,1.46),(.25,.16,.045))),1): keep(organic(f'Stalker_Shelf_{i}',loc,scale,shelf,2),'Spine')
-# Restrained sensory organs/fronds; only these may emit.
+# Tapered, branching head fronds retain their silhouette without emission.
 for side in (-1,1):
- s='L' if side<0 else 'R'; keep(organic(f'Stalker_SenseNode_{s}',(side*.18,1.28,1.46),(.055,.085,.045),sense,2),'Head'); keep(seg(f'Stalker_Frond_{s}',(side*.15,1.20,1.52),(side*.30,1.48,1.72),.022,cord),'Head')
+ s='L' if side<0 else 'R'
+ keep(organic(f'Stalker_SenseNode_{s}',(side*.18,1.28,1.46),(.055,.085,.045),sense,2),'Head')
+ for branch,offset in ((1,0.0),(2,.085)):
+  root=(side*(.15+offset*.2),1.20-offset*.3,1.52)
+  elbow=(side*(.25+offset*.5),1.39+offset*.2,1.65+offset*.5)
+  tip=(side*(.34+offset*.7),1.51+offset*.4,1.78+offset*.55)
+  keep(tapered(f'Stalker_Frond_{s}{branch}_Base',root,elbow,.025,.016,cord),'Head')
+  keep(tapered(f'Stalker_Frond_{s}{branch}_Tip',elbow,tip,.016,.006,cord),'Head')
+  for fork,offset_y in ((1,-.045),(2,.045)):
+   end=(tip[0]+side*.040,tip[1]+offset_y,tip[2]+(.040 if fork==1 else .014))
+   keep(tapered(f'Stalker_Frond_{s}{branch}_Fork{fork}',tip,end,.008,.002,cord),'Head')
+ for i,(by,bz) in enumerate(((1.31,1.28),(1.39,1.27),(1.47,1.255)),1):
+  root=(side*(.112+.020*i),by,bz)
+  point=(side*(.065+.015*i),by+.025,bz-.065)
+  keep(tapered(f'Stalker_JawTooth_{s}{i}',root,point,.018,.002,hide),f'Jaw_{s}')
 
 bpy.ops.object.armature_add(enter_editmode=True,location=(0,0,0)); arm=bpy.context.object; arm.name='RIG_MycelialStalker_HOST_QUADRUPED'; eb=arm.data.edit_bones; root=eb[0]; root.name='Root'; root.head=(0,0,0); root.tail=(0,0,.3)
 def bone(n,h,t,p=None): b=eb.new(n); b.head=h; b.tail=t; b.parent=p; return b
@@ -70,5 +91,5 @@ for name,bname in parts.items():
  o=bpy.data.objects[name]; mod=o.modifiers.new('StalkerArmature','ARMATURE'); mod.object=arm; vg=o.vertex_groups.new(name=bname); vg.add(range(len(o.data.vertices)),1,'REPLACE'); o.parent=arm
 meshes=[o for o in bpy.context.scene.objects if o.type=='MESH']; tris=sum(len(p.vertices)-2 for o in meshes for p in o.data.polygons)
 if len(meshes)<30 or tris<7000: raise RuntimeError(f'Stalker source fidelity regression: {len(meshes)} meshes / {tris} tris')
-sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-mycelial-stalker'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='uncommon'; sc['magenheim_host_rig']='HOST-QUADRUPED'; sc['magenheim_shoulder_height_m']=1.35; sc['magenheim_fidelity']='production-creature-r1'; sc['magenheim_uv_contract']='MycelialStalkerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,SenseFX'; sc['magenheim_material_identity']='root-hide+mycelium+shelf-fungus+localized-sensory-emission'; sc['magenheim_silhouette']='lean-low-chest+raised-pelvis+asymmetric-shelves+root-limbs'; sc['magenheim_animation_manifest']='conceal-idle,crouch,walk,pounce,failed-pounce-retreat,hit,stagger,death'; sc['magenheim_skinning']='rigid-segment-weighted'
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-mycelial-stalker'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='uncommon'; sc['magenheim_host_rig']='HOST-QUADRUPED'; sc['magenheim_shoulder_height_m']=1.35; sc['magenheim_fidelity']='production-creature-r1'; sc['magenheim_uv_contract']='MycelialStalkerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,SenseFX'; sc['magenheim_material_identity']='root-hide+mycelium+shelf-fungus+localized-sensory-emission'; sc['magenheim_silhouette']='lean-low-chest+raised-pelvis+asymmetric-shelves+root-limbs'; sc['magenheim_animation_manifest']='conceal-idle,crouch,walk,pounce,failed-pounce-retreat,hit,stagger,death'; sc['magenheim_skinning']='rigid-segment-weighted'; sc['magenheim_sensory_anatomy']='four-curved-fronds+eight-fork-tips'; sc['magenheim_jaw_detail']='six-jaw-bound-gripping-teeth'
 bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(OUT),compress=True); print(f'AUTHORED Mycelial Stalker r1: {len(meshes)} meshes / {len(arm.data.bones)} bones / {tris} tris -> {OUT.name}',flush=True)
