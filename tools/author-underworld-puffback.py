@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Author the Fungal Forest Puffback production source model and HOST-QUADRUPED rig."""
 from pathlib import Path
-from math import pi, atan2
+from math import pi, atan2, cos, sin
 import bpy
 from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]; OUTDIR=ROOT/'assets/models/source'; OUTDIR.mkdir(parents=True,exist_ok=True)
@@ -49,6 +49,38 @@ for i,(loc,scale) in enumerate((((-.48,.12,1.68),(.48,.34,.09)),((.47,.02,1.66),
 for side in (-1,1):
  s='L' if side<0 else 'R'
  for i,y in enumerate((-.05,-.34,-.61),1): keep(organic(f'Puffback_Vent_{s}_{i}',(side*.67,y,1.48),(.09,.18,.13),gill,2),'Spine_2')
+# Side-facing fungal discharge collars: closed annular geometry with a true lumen.
+# Four raised lamellae in each opening preserve spore-puff anatomy at combat distance.
+def vent_collar(name,side,y,z,segments=16):
+ if side not in (-1,1) or segments<8: raise ValueError('Invalid collar orientation')
+ rings=((.77,.135),(.77,.205),(.985,.19),(.985,.11))
+ verts=[]
+ for x,radius in rings:
+  for j in range(segments):
+   a=2*pi*j/segments
+   verts.append((side*x,y+radius*cos(a),z+radius*sin(a)))
+ faces=[]
+ for j in range(segments):
+  k=(j+1)%segments
+  for r in range(4):
+   t=(r+1)%4
+   f=(r*segments+j,r*segments+k,t*segments+k,t*segments+j)
+   faces.append(f if side==1 else tuple(reversed(f)))
+ me=bpy.data.meshes.new(name+'_Mesh'); me.from_pydata(verts,[],faces); me.update()
+ o=bpy.data.objects.new(name,me); bpy.context.collection.objects.link(o)
+ me.materials.append(plate)
+ return uv(o)
+
+for side in (-1,1):
+ s='L' if side<0 else 'R'
+ for i,y in enumerate((-.05,-.34,-.61),1):
+  z=1.55
+  keep(vent_collar(f'Puffback_VentRim_{s}_{i}',side,y,z),'Spine_2')
+  for j,offset in enumerate((-.066,-.022,.022,.066),1):
+   half_span=(.10**2-offset**2)**.5
+   a=(side*.997,y-half_span,z+offset)
+   b=(side*.997,y+half_span,z+offset)
+   keep(seg(f'Puffback_VentLamella_{s}_{i}_{j}',a,b,.012,gill),'Spine_2')
 # Heavy articulated feet support the charge silhouette and prevent a scaled-wolf appearance.
 legs=((-.48,.46,1.28,-.58,.48,.62,-.54,.58,.12,'Front_L'),(.48,.46,1.28,.58,.48,.62,.54,.58,.12,'Front_R'),(-.45,-.72,1.22,-.57,-.80,.60,-.53,-.88,.12,'Rear_L'),(.45,-.72,1.22,.57,-.80,.60,.53,-.88,.12,'Rear_R'))
 for hx,hy,hz,kx,ky,kz,fx,fy,fz,n in legs:
