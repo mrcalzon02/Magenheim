@@ -25,6 +25,52 @@ missing=required-{b.name for b in arm.data.bones}
 if missing: raise RuntimeError('Missing Puffback bones: '+','.join(sorted(missing)))
 if len([o for o in meshes if o.name.startswith('Puffback_Bladder_')])<4: raise RuntimeError('Puffback bladder silhouette geometry incomplete')
 if len([o for o in meshes if o.name.startswith('Puffback_Vent_')])!=6: raise RuntimeError('Puffback requires six modeled discharge vents')
+# Fail closed on missing, flattened or detached physical discharge anatomy.
+rims=[o for o in meshes if o.name.startswith('Puffback_VentRim_')]
+lamellae=[o for o in meshes if o.name.startswith('Puffback_VentLamella_')]
+if len(rims)!=6 or len(lamellae)!=24:
+ raise RuntimeError(f'Puffback discharge anatomy incomplete: {len(rims)} collars / {len(lamellae)} ribs')
+for side in ('L','R'):
+ sign=-1 if side=='L' else 1
+ for i in range(1,4):
+  rim=bpy.data.objects.get(f'Puffback_VentRim_{side}_{i}')
+  if rim is None or len(rim.data.polygons)!=64 or any(p.area<=1e-8 for p in rim.data.polygons):
+   raise RuntimeError(f'Puffback_VentRim_{side}_{i}: invalid closed collar topology')
+  if max(sign*v.co.x for v in rim.data.vertices)<.98:
+   raise RuntimeError(f'{rim.name}: missing lateral silhouette projection')
+  names=[f'Puffback_VentLamella_{side}_{i}_{j}' for j in range(1,5)]
+  for name in names:
+   if bpy.data.objects.get(name) is None: raise RuntimeError(f'Missing discharge rib: {name}')
+  for obj in [rim]+[bpy.data.objects[name] for name in names]:
+   if obj.parent!=arm or obj.vertex_groups.get('Spine_2') is None:
+    raise RuntimeError(f'{obj.name}: not rigged to Spine_2')
+   material='PuffbackFungalPlate' if obj==rim else 'PuffbackVentGill'
+   if not obj.data.materials or obj.data.materials[0].name!=material:
+    raise RuntimeError(f'{obj.name}: incorrect discharge material')
+# Digging-foot identity: three separate blunt toes per foot, all driven by the
+# existing foot bone. Check forward reach and lateral spread, not only counts.
+for limb in ('Front_L','Front_R','Rear_L','Rear_R'):
+ toes=[bpy.data.objects.get(f'Puffback_{limb}_Toe_{j}') for j in (1,2,3)]
+ tips=[bpy.data.objects.get(f'Puffback_{limb}_HoofTip_{j}') for j in (1,2,3)]
+ if any(o is None or o.type!='MESH' for o in toes+tips):
+  raise RuntimeError(f'Puffback {limb}: incomplete three-toe digging foot')
+ if not toes[0].location.x < toes[1].location.x < toes[2].location.x:
+  raise RuntimeError(f'Puffback {limb}: digits collapsed laterally')
+ if toes[2].location.x-toes[0].location.x < .25:
+  raise RuntimeError(f'Puffback {limb}: digging-foot spread lost')
+ for toe,tip in zip(toes,tips):
+  if tip.location.y-toe.location.y < .16:
+   raise RuntimeError(f'{tip.name}: blunt hoof tip lacks forward silhouette')
+  for obj,material in ((toe,'PuffbackRootHide'),(tip,'PuffbackFungalPlate')):
+   if obj.parent!=arm or obj.vertex_groups.get(f'{limb}_Foot') is None:
+    raise RuntimeError(f'{obj.name}: missing foot-bone binding')
+   if not any(m.type=='ARMATURE' and m.object==arm for m in obj.modifiers):
+    raise RuntimeError(f'{obj.name}: missing armature modifier')
+   if not obj.data.materials or obj.data.materials[0].name!=material:
+    raise RuntimeError(f'{obj.name}: wrong hoof material')
+   if not obj.data.uv_layers.get('PuffbackUV'):
+    raise RuntimeError(f'{obj.name}: missing authored UV')
+
 expected={'Puffback_GrazeRoot':78,'Puffback_Idle':72,'Puffback_Walk':36,'Puffback_WarningDisplay':48,'Puffback_Charge':30,'Puffback_DefensiveInflate':44,'Puffback_SporePuff':34,'Puffback_Hit':18,'Puffback_Stagger':32,'Puffback_Death':62}
 
 def curves(a):
@@ -58,4 +104,4 @@ if not puff or max(puff)<1.40 or min(puff)>.95: raise RuntimeError('Spore puff l
 warn=scale_values('Puffback_WarningDisplay')
 if not warn or max(warn)<1.15: raise RuntimeError('Warning display does not visibly raise bladder profile')
 if sc.get('magenheim_inflation_tell')!='compress->inflate-before-release;Bladder_Main scale keyed independently': raise RuntimeError('Missing Puffback inflation-tell contract')
-print(f'PASS Puffback r2: {len(meshes)} meshes / {tris} tris / 10 actions / readable inflate->puff tell',flush=True)
+print(f'PASS Puffback r2: {len(meshes)} meshes / {tris} tris / 10 actions / 6 collars / 24 ribs / readable inflate->puff tell',flush=True)

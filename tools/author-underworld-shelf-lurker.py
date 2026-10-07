@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Author the Fungal Forest Shelf Lurker production source model and HOST-WALL-CLINGER rig."""
 from pathlib import Path
-from math import pi, atan2
+from math import pi, atan2, cos, sin
 import bpy
 from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]; OUTDIR=ROOT/'assets/models/source'; OUTDIR.mkdir(parents=True,exist_ok=True)
@@ -26,6 +26,13 @@ def organic(name,loc,scale,material,sub=2):
 def seg(name,a,b,r,material,verts=16):
  d=Vector(b)-Vector(a); bpy.ops.mesh.primitive_cylinder_add(vertices=verts,radius=r,depth=d.length,location=(Vector(a)+Vector(b))/2); o=bpy.context.object; o.name=name; o.rotation_mode='QUATERNION'; o.rotation_quaternion=Vector((0,0,1)).rotation_difference(d.normalized()); o.data.materials.append(material); return uv(o)
 
+def taper(name,a,b,r0,r1,material):
+ d=Vector(b)-Vector(a)
+ if d.length<=1e-5 or not 0<r1<r0: raise RuntimeError(f'{name}: invalid tapered talon segment')
+ bpy.ops.mesh.primitive_cone_add(vertices=12,radius1=r0,radius2=r1,depth=d.length,location=(Vector(a)+Vector(b))/2)
+ o=bpy.context.object; o.name=name; o.rotation_mode='QUATERNION'; o.rotation_quaternion=Vector((0,0,1)).rotation_difference(d.normalized())
+ o.data.materials.append(material); return uv(o)
+
 bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
 body=mat('ShelfLurkerRootFlesh',(.17,.14,.10),.88); shelf=mat('ShelfLurkerShelfArmor',(.32,.25,.16),.78); grip=mat('ShelfLurkerGripPad',(.25,.20,.15),.64); sense=mat('ShelfLurkerSensoryCrown',(.48,.38,.20),.58,(.22,.16,.06)); mouth=mat('ShelfLurkerMouthGill',(.38,.20,.15),.62)
 import sys
@@ -42,10 +49,30 @@ def keep(o,b): parts[o.name]=b; return o
 # The two primary body masses use subdivision 4 so the production source genuinely clears its 10k triangle floor.
 keep(organic('ShelfLurker_Torso',(0,0,1.55),(.78,.62,.22),body,4),'Body'); keep(organic('ShelfLurker_Abdomen',(0,-.62,1.58),(.58,.52,.20),body,4),'Abdomen')
 # Layered shelf plates make the animal disappear against fungal overhangs when viewed from below/side.
-for i,(loc,scale) in enumerate((((-.48,.10,1.72),(.55,.34,.07)),((.48,.02,1.71),(.52,.32,.07)),((-.36,-.52,1.72),(.44,.30,.06)),((.36,-.60,1.71),(.42,.28,.06))),1): keep(organic(f'ShelfLurker_DorsalShelf_{i}',loc,scale,shelf,4),'Body' if i<3 else 'Abdomen')
+for i,(loc,scale) in enumerate((((-.48,.10,1.72),(.55,.34,.07)),((.48,.02,1.71),(.52,.32,.07)),((-.36,-.52,1.72),(.44,.30,.06)),((.36,-.60,1.71),(.42,.28,.06))),1):
+ shelf_bone='Body' if i<3 else 'Abdomen'
+ keep(organic(f'ShelfLurker_DorsalShelf_{i}',loc,scale,shelf,4),shelf_bone)
+ # Six physical underside lamellae per overhanging shelf: fungal growth,
+ # rather than featureless armor disks, remains readable from below.
+ for rib in range(6):
+  angle=2*pi*rib/6
+  direction=Vector((cos(angle),sin(angle),0))
+  start=Vector((loc[0]+direction.x*.07,loc[1]+direction.y*.05,loc[2]-scale[2]-.018))
+  end=Vector((loc[0]+direction.x*scale[0]*.78,loc[1]+direction.y*scale[1]*.78,loc[2]-scale[2]-.026))
+  keep(seg(f'ShelfLurker_ShelfGill_{i}_{rib+1}',start,end,.014,mouth,10),shelf_bone)
 # Downward mouth is modeled geometry, ringed by four fleshy gill-lobes.
 keep(organic('ShelfLurker_Mouth',(0,.38,1.31),(.30,.34,.10),mouth,2),'Head')
 for i,(x,y) in enumerate(((-.23,.38),(.23,.38),(0,.17),(0,.60)),1): keep(organic(f'ShelfLurker_MouthLobe_{i}',(x,y,1.29),(.13,.18,.07),mouth,2),'Head')
+# Eight hooked radial feeding barbs form a downward-facing funnel with a
+# visibly open central aperture during the creature's drop ambush.
+for digit in range(8):
+ angle=2*pi*digit/8
+ direction=Vector((cos(angle),sin(angle),0))
+ root=Vector((direction.x*.23,.38+direction.y*.23,1.29))
+ flare=Vector((direction.x*.30,.38+direction.y*.30,1.13))
+ point=Vector((direction.x*.115,.38+direction.y*.115,.98))
+ keep(taper(f'ShelfLurker_MouthBarb_{digit+1}_Base',root,flare,.036,.026,mouth),'Head')
+ keep(taper(f'ShelfLurker_MouthBarb_{digit+1}_Hook',flare,point,.026,.004,mouth),'Head')
 # Sensory crown points downward/forward while clinging; restrained glow only here.
 for i,(x,y,z) in enumerate(((-.22,.58,1.52),(.22,.58,1.52),(-.30,.42,1.48),(.30,.42,1.48),(0,.70,1.50)),1): keep(seg(f'ShelfLurker_SensoryFrond_{i}',(x*.55,y-.18,z),(x,y,z-.34),.045,sense,12),'Head')
 # Six long load-bearing limbs. Three per side distinguish it strongly from quadrupeds and provide wall/ceiling grip.
@@ -56,6 +83,14 @@ for side in (-1,1):
   hip=(side*.52,y0,1.56); elbow=(side*1.02,y1,1.22); wrist=(side*1.34,y1+.08,.78); tip=(side*1.48,y1+.12,.54); n=f'{s}_{idx}'
   legs.append((n,hip,elbow,wrist,tip))
   keep(seg(f'ShelfLurker_{n}_Upper',hip,elbow,.115,body),f'Leg_{n}_Upper'); keep(seg(f'ShelfLurker_{n}_Lower',elbow,wrist,.085,body),f'Leg_{n}_Lower'); keep(seg(f'ShelfLurker_{n}_Tarsus',wrist,tip,.060,grip),f'Leg_{n}_Tarsus'); keep(organic(f'ShelfLurker_{n}_Grip',tip,(.18,.24,.055),grip,2),f'Leg_{n}_Grip')
+  # Three hard talons per pad project outward then return inward/downward,
+  # preserving the six-limbed shelf-clinger silhouette under motion.
+  for digit,offset in enumerate((-.15,0,.15),1):
+   talon_root=Vector((tip[0]+side*.035,tip[1]+offset*.70,tip[2]-.02))
+   knuckle=Vector((tip[0]+side*.27,tip[1]+offset,tip[2]-.11))
+   hook=Vector((tip[0]+side*.14,tip[1]+offset*1.15,tip[2]-.25))
+   keep(taper(f'ShelfLurker_{n}_Talon_{digit}_Base',talon_root,knuckle,.052,.035,shelf),f'Leg_{n}_Grip')
+   keep(taper(f'ShelfLurker_{n}_Talon_{digit}_Hook',knuckle,hook,.035,.008,shelf),f'Leg_{n}_Grip')
 
 bpy.ops.object.armature_add(enter_editmode=True,location=(0,0,0)); arm=bpy.context.object; arm.name='RIG_ShelfLurker_HOST_WALL_CLINGER'; eb=arm.data.edit_bones; root=eb[0]; root.name='Root'; root.head=(0,0,0); root.tail=(0,0,.35)
 def bone(n,h,t,p=None): b=eb.new(n); b.head=h; b.tail=t; b.parent=p; return b
@@ -66,6 +101,6 @@ bone('AttackOrigin',(0,.35,1.30),(0,.35,.88),head); bone('HitCenter',(0,0,1.25),
 for name,bname in parts.items():
  o=bpy.data.objects[name]; mod=o.modifiers.new('ShelfLurkerArmature','ARMATURE'); mod.object=arm; vg=o.vertex_groups.new(name=bname); vg.add(range(len(o.data.vertices)),1,'REPLACE'); o.parent=arm
 meshes=[o for o in bpy.context.scene.objects if o.type=='MESH']; tris=sum(len(p.vertices)-2 for o in meshes for p in o.data.polygons)
-if len(meshes)<40 or tris<10000: raise RuntimeError(f'Shelf Lurker source fidelity regression: {len(meshes)} meshes / {tris} tris')
+if len(meshes)<116 or tris<10000: raise RuntimeError(f'Shelf Lurker source fidelity regression: {len(meshes)} meshes / {tris} tris')
 sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-shelf-lurker'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='uncommon'; sc['magenheim_host_rig']='HOST-WALL-CLINGER'; sc['magenheim_reach_m']=2.25; sc['magenheim_fidelity']='production-creature-r1'; sc['magenheim_uv_contract']='ShelfLurkerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,SenseFX'; sc['magenheim_material_identity']='root-flesh+shelf-armor+grip-pad+sensory-crown+mouth-gill'; sc['magenheim_silhouette']='flattened-radial-body+six-long-gripping-limbs+downward-mouth+sensory-crown'; sc['magenheim_animation_manifest']='cling-idle,lateral-crawl,reposition,drop-pounce,recover,attack,hit,death'; sc['magenheim_skinning']='rigid-segment-weighted'
 bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(OUT),compress=True); print(f'AUTHORED Shelf Lurker r1: {len(meshes)} meshes / {len(arm.data.bones)} bones / {tris} tris -> {OUT.name}',flush=True)
