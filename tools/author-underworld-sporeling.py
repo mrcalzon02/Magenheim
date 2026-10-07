@@ -45,6 +45,32 @@ def segment(name,a,b,r,mat):
 def cone(name,loc,r,depth,mat,rot=(0,0,0),verts=16):
     bpy.ops.mesh.primitive_cone_add(vertices=verts,radius1=r,radius2=r*.18,depth=depth,location=loc,rotation=rot); o=bpy.context.object; o.name=name; o.data.materials.append(mat); bevel(o,r*.12); return o
 
+def gill_lamella(name,angle,mat):
+    """A closed, radial under-cap fungal gill, not a painted line or floating rod.
+
+    Thin vertical plates run from the cap underside toward its rim. The inward
+    edge embeds into the cap; the outward edge remains visible in side views.
+    Each plate is a closed six-quad prism with outward winding.
+    """
+    radial=Vector((cos(angle),sin(angle),0))
+    tangent=Vector((-sin(angle),cos(angle),0))
+    profile=(
+        (.061,-.004,.309),(.158,-.008,.305),
+        (.158,.008,.305),(.061,.004,.309),
+        (.061,-.004,.280),(.158,-.008,.274),
+        (.158,.008,.274),(.061,.004,.280),
+    )
+    vertices=[tuple(radial*r+tangent*t+Vector((0,0,z))) for r,t,z in profile]
+    faces=((0,1,2,3),(7,6,5,4),(0,4,5,1),
+           (1,5,6,2),(2,6,7,3),(3,7,4,0))
+    mesh=bpy.data.meshes.new(name+'Mesh')
+    mesh.from_pydata(vertices,[],faces)
+    mesh.update()
+    obj=bpy.data.objects.new(name,mesh)
+    bpy.context.collection.objects.link(obj)
+    mesh.materials.append(mat)
+    return obj
+
 def authored_uv(o):
     """Deterministic object-space triplanar-style unwrap written into a real UV layer."""
     uv=o.data.uv_layers.get('SporelingUV') or o.data.uv_layers.new(name='SporelingUV')
@@ -68,6 +94,11 @@ bpy.ops.mesh.primitive_uv_sphere_add(segments=28,ring_count=16,radius=1,location
 for v in cap.data.vertices:
     a=__import__('math').atan2(v.co.y,v.co.x); k=1+.055*sin(a*7)+.022*sin(a*13); v.co.x*=k; v.co.y*=k
 bpy.ops.mesh.primitive_torus_add(major_radius=.142,minor_radius=.012,major_segments=28,minor_segments=8,location=(0,-.04,.314)); lip=bpy.context.object; lip.name='Sporeling_GillRim'; lip.scale.y=1.12; bpy.ops.object.transform_apply(location=False,rotation=False,scale=True); lip.data.materials.append(gill); keep(lip,'Thorax')
+# Sixteen real under-cap lamellae preserve the Sporeling's fungal identity
+# from grazing angles. The chitin crown and glowing gill material remain
+# separate; every plate follows the Thorax bone and receives authored UVs.
+for i in range(16):
+    keep(gill_lamella(f'Sporeling_GillLamella_{i:02d}',2*pi*i/16,gill),'Thorax')
 leg_points={}
 for pair,y in enumerate((.105,0,-.105),1):
     for side in (-1,1):
