@@ -37,6 +37,7 @@ for prefix,count in (('Ashmite_DorsalScute_',5),('Ashmite_SulfurRidge_',10),('As
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ashmite_scute_geometry as ashgeo
+import ashmite_mandible_geometry as mandgeo
 for i in range(1,6):
     obj=bpy.data.objects.get(f'Ashmite_DorsalScute_{i}')
     if not obj or obj.type!='MESH': raise RuntimeError(f'Ashmite scute {i} missing')
@@ -49,6 +50,26 @@ for i in range(1,6):
     layer=obj.data.uv_layers.get('AshmiteUV')
     if not layer or any(not 0<=c<=1 for item in layer.data for c in item.uv):
         raise RuntimeError(f'Ashmite scute {i} radial UVs missing or out of bounds')
+
+# Two sculpted feeding pincers retain existing sockets and bone assignments.
+for side,label in ((-1,'L'),(1,'R')):
+    obj=bpy.data.objects.get(f'Ashmite_Mandible_{label}')
+    if not obj or obj.type!='MESH': raise RuntimeError(f'Ashmite mandible {label} missing')
+    if obj.get('magenheim_ashmite_mandible_contract')!=mandgeo.CONTRACT:
+        raise RuntimeError(f'Ashmite mandible {label} lacks sculpted geometry')
+    if obj.get('magenheim_ashmite_mandible_side')!=side:
+        raise RuntimeError(f'Ashmite mandible {label} side contract mismatch')
+    if len(obj.data.vertices)!=mandgeo.RINGS*mandgeo.SIDES+2:
+        raise RuntimeError(f'Ashmite mandible {label} vertex topology mismatch')
+    tris=sum(len(p.vertices)-2 for p in obj.data.polygons)
+    if tris!=2*mandgeo.RINGS*mandgeo.SIDES:
+        raise RuntimeError(f'Ashmite mandible {label} triangle count mismatch: {tris}')
+    root,_=mandgeo.anchors(side)
+    if any(abs(obj.location[k]-root[k])>1e-6 for k in range(3)):
+        raise RuntimeError(f'Ashmite mandible {label} root attachment drift')
+    layer=obj.data.uv_layers.get('AshmiteUV')
+    if not layer or any(not 0<=c<=1 for item in layer.data for c in item.uv):
+        raise RuntimeError(f'Ashmite mandible {label} UVs missing or out of bounds')
 
 EXPECTED={'Idle':64,'Scavenge':52,'Walk':28,'Scuttle':16,'TurnLeft':22,'TurnRight':22,'Bite':18,'Hit':14,'Stagger':24,'Death':42}
 for suffix,end in EXPECTED.items():

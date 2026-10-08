@@ -7,6 +7,7 @@ from mathutils import Vector
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ashmite_scute_geometry as ashgeo
+import ashmite_mandible_geometry as mandgeo
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'assets/models/source/underworld-creature-ashmite.blend'
@@ -66,7 +67,7 @@ for pair,y in enumerate((.065,0,-.070),1):
         keep(organic(f'Ashmite_{s}_Joint{pair}',hip,(.020,.022,.017),joint,2,40+pair),f'{s}_Coxa{pair}'); keep(segment(f'Ashmite_{s}_Femur{pair}',hip,knee,.014,chitin),f'{s}_Coxa{pair}'); keep(segment(f'Ashmite_{s}_Tibia{pair}',knee,ankle,.011,chitin),f'{s}_Femur{pair}'); keep(segment(f'Ashmite_{s}_Tarsus{pair}',ankle,toe,.007,joint),f'{s}_Tarsus{pair}'); keep(cone(f'Ashmite_{s}_Scraper{pair}',(side*.198,toe[1]+.010,.007),.009,.030,mouth,(pi/2,0,0)),f'{s}_Tarsus{pair}')
 # Robust paired mandibles plus central mineral scraper for vent/carrion scavenging.
 for side in (-1,1):
-    s='L' if side<0 else 'R'; keep(segment(f'Ashmite_Mandible_{s}',(side*.034,.142,.065),(side*.060,.195,.045),.014,mouth),f'Mandible_{s}')
+    s='L' if side<0 else 'R'; keep(mandgeo.sculpted_mandible(f'Ashmite_Mandible_{s}',side,mouth),f'Mandible_{s}')
 keep(cone('Ashmite_VentScraper',(0,.185,.048),.018,.050,sulfur,(pi/2,0,0)),'Jaw')
 for side in (-1,1):
     s='L' if side<0 else 'R'; keep(organic(f'Ashmite_Eye_{s}',(side*.047,.151,.085),(.013,.009,.012),eye,2,70),'Head')
