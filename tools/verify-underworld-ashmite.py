@@ -34,6 +34,8 @@ for prefix,count in (('Ashmite_DorsalScute_',5),('Ashmite_SulfurRidge_',10),('As
     if found!=count: raise RuntimeError(f'{prefix} physical anatomy regression: {found} != {count}')
 
 # Five sculpted heat-fractured scutella must replace spherical placeholders.
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ashmite_scute_geometry as ashgeo
 for i in range(1,6):
     obj=bpy.data.objects.get(f'Ashmite_DorsalScute_{i}')

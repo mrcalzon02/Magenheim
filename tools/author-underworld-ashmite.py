@@ -4,6 +4,8 @@ from pathlib import Path
 from math import pi, sin, cos
 import bpy
 from mathutils import Vector
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ashmite_scute_geometry as ashgeo
 
 ROOT=Path(__file__).resolve().parents[1]
