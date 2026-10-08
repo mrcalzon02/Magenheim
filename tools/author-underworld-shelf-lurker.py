@@ -96,13 +96,6 @@ def scalloped_shelf(name,loc,scale,material):
  return shelf_uv(obj,rx,ry)
 
 
-def taper(name,a,b,r0,r1,material):
- d=Vector(b)-Vector(a)
- if d.length<=1e-5 or not 0<r1<r0: raise RuntimeError(f'{name}: invalid tapered talon segment')
- bpy.ops.mesh.primitive_cone_add(vertices=12,radius1=r0,radius2=r1,depth=d.length,location=(Vector(a)+Vector(b))/2)
- o=bpy.context.object; o.name=name; o.rotation_mode='QUATERNION'; o.rotation_quaternion=Vector((0,0,1)).rotation_difference(d.normalized())
- o.data.materials.append(material); return uv(o)
-
 def sensory_frond_path(start,end,bow,steps=8):
  """Eight curved intervals give the five sensory organs a visible, species-specific profile."""
  if steps<6: raise ValueError('Sensory frond needs at least six intervals')
@@ -190,6 +183,7 @@ from shelf_lurker_gill_geometry import shelf_gill
 from magenheim_creature_pbr import bind as bind_creature_pbr
 from shelf_lurker_limb_geometry import limb_segment
 from shelf_lurker_mouth_geometry import mouth_barb_segment
+from shelf_lurker_talon_geometry import talon_segment
 bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerRootFlesh'],'shelf-lurker','root-flesh')
 bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerShelfArmor'],'shelf-lurker','shelf-armor')
 bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerGripPad'],'shelf-lurker','grip-pad')
@@ -246,8 +240,11 @@ for side in (-1,1):
    talon_root=Vector((tip[0]+side*.035,tip[1]+offset*.70,tip[2]-.02))
    knuckle=Vector((tip[0]+side*.27,tip[1]+offset,tip[2]-.11))
    hook=Vector((tip[0]+side*.14,tip[1]+offset*1.15,tip[2]-.25))
-   keep(taper(f'ShelfLurker_{n}_Talon_{digit}_Base',talon_root,knuckle,.052,.035,shelf),f'Leg_{n}_Grip')
-   keep(taper(f'ShelfLurker_{n}_Talon_{digit}_Hook',knuckle,hook,.035,.008,shelf),f'Leg_{n}_Grip')
+   # Shared near-vertical knuckle tangent, preserving all grip attachments.
+   base_bow=((knuckle.x-talon_root.x)/pi,(knuckle.y-talon_root.y)/pi,0)
+   hook_bow=((knuckle.x-hook.x)/pi,(knuckle.y-hook.y)/pi,0)
+   keep(talon_segment(f'ShelfLurker_{n}_Talon_{digit}_Base',talon_root,knuckle,.052,.035,base_bow,shelf),f'Leg_{n}_Grip')
+   keep(talon_segment(f'ShelfLurker_{n}_Talon_{digit}_Hook',knuckle,hook,.035,.008,hook_bow,shelf),f'Leg_{n}_Grip')
 
 bpy.ops.object.armature_add(enter_editmode=True,location=(0,0,0)); arm=bpy.context.object; arm.name='RIG_ShelfLurker_HOST_WALL_CLINGER'; eb=arm.data.edit_bones; root=eb[0]; root.name='Root'; root.head=(0,0,0); root.tail=(0,0,.35)
 def bone(n,h,t,p=None): b=eb.new(n); b.head=h; b.tail=t; b.parent=p; return b

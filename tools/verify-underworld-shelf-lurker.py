@@ -175,9 +175,9 @@ for i in range(1,6):
 # outward-then-inward silhouette. Verify actual mesh endpoints, not just names.
 talons=[o for o in meshes if '_Talon_' in o.name]
 if len(talons)!=36: raise RuntimeError(f'Shelf Lurker requires 36 talon sections, found {len(talons)}')
-def talon_endpoints(obj):
- zs=[v.co.z for v in obj.data.vertices]
- return (obj.matrix_world @ Vector((0,0,min(zs))),obj.matrix_world @ Vector((0,0,max(zs))))
+def talon_center(obj,ring):
+ mesh=obj.data
+ return sum((mesh.vertices[ring*12+j].co for j in range(12)),Vector())/12
 for limb in limbs:
  pad=bpy.data.objects.get(f'ShelfLurker_{limb}_Grip')
  if pad is None: raise RuntimeError(f'Missing grip pad for {limb}')
@@ -188,8 +188,39 @@ for limb in limbs:
   hook=bpy.data.objects.get(f'ShelfLurker_{limb}_Talon_{digit}_Hook')
   if base is None or hook is None: raise RuntimeError(f'{limb}: incomplete three-claw anatomy')
   for obj in (base,hook):
-   if obj.type!='MESH' or len(obj.data.polygons)<12 or any(p.area<=1e-8 for p in obj.data.polygons):
-    raise RuntimeError(f'{obj.name}: invalid physical talon topology')
+   mesh=obj.data
+   if obj.type!='MESH' or len(mesh.vertices)!=108 or len(mesh.polygons)!=98 or sum(len(p.vertices)-2 for p in mesh.polygons)!=212:
+    raise RuntimeError(f'{obj.name}: expected sculpted 9x12 talon topology')
+   if obj.get('magenheim_talon_contract')!='swept-gripping-talon-9x12':
+    raise RuntimeError(f'{obj.name}: lost curved gripping-claw contract')
+   if any(p.area<=1e-8 for p in mesh.polygons): raise RuntimeError(f'{obj.name}: degenerate talon topology')
+   edges=Counter()
+   for poly in mesh.polygons:
+    ids=list(poly.vertices)
+    for j in range(len(ids)):
+     edges[tuple(sorted((ids[j],ids[(j+1)%len(ids)])))]+=1
+   if any(n!=2 for n in edges.values()): raise RuntimeError(f'{obj.name}: open talon topology')
+   centers=[talon_center(obj,r) for r in (0,4,8)]
+   if (centers[1]-(centers[0]+centers[2])*.5).length<.015:
+    raise RuntimeError(f'{obj.name}: straight cone regression')
+   axes=[]
+   for ring in range(9):
+    c=talon_center(obj,ring)
+    axes.append((mesh.vertices[ring*12].co-c).normalized())
+   if any(a.dot(b)<.866 for a,b in zip(axes,axes[1:])):
+    raise RuntimeError(f'{obj.name}: talon ring frame twists')
+   uv=mesh.uv_layers.get('ShelfLurkerUV')
+   if not uv: raise RuntimeError(f'{obj.name}: missing authored UV')
+   caps=0
+   for poly in mesh.polygons:
+    coords=[tuple(uv.data[li].uv) for li in poly.loop_indices]
+    if any(not (0<=u<=1 and 0<=vv<=1) for u,vv in coords):
+     raise RuntimeError(f'{obj.name}: talon UV exceeds atlas')
+    if len(poly.vertices)>4:
+     caps+=1
+     area=abs(sum(coords[j][0]*coords[(j+1)%len(coords)][1]-coords[(j+1)%len(coords)][0]*coords[j][1] for j in range(len(coords)))/2)
+     if area<.59: raise RuntimeError(f'{obj.name}: collapsed talon cap UV')
+   if caps!=2: raise RuntimeError(f'{obj.name}: missing planar talon cap UVs')
    if obj.parent!=arm or obj.vertex_groups.get(f'Leg_{limb}_Grip') is None:
     raise RuntimeError(f'{obj.name}: not bound to grip bone')
    if not any(m.type=='ARMATURE' and m.object==arm for m in obj.modifiers):
@@ -198,9 +229,11 @@ for limb in limbs:
     raise RuntimeError(f'{obj.name}: wrong hard-talon material')
    if not obj.data.uv_layers.get('ShelfLurkerUV'):
     raise RuntimeError(f'{obj.name}: missing authored UV')
-  start,knuckle=talon_endpoints(base)
-  joint,point=talon_endpoints(hook)
-  if (joint-knuckle).length>.02: raise RuntimeError(f'{limb} claw {digit}: sections detached')
+  start,knuckle=talon_center(base,0),talon_center(base,8)
+  joint,point=talon_center(hook,0),talon_center(hook,8)
+  if (joint-knuckle).length>1e-5: raise RuntimeError(f'{limb} claw {digit}: sections detached')
+  if any((base.data.vertices[8*12+j].co-hook.data.vertices[j].co).length>1e-5 for j in range(12)):
+   raise RuntimeError(f'{limb} claw {digit}: knuckle cross-sections split')
   if sign*(knuckle.x-pad.location.x)<.22: raise RuntimeError(f'{limb} claw {digit}: lost outward silhouette')
   if sign*(point.x-knuckle.x)>-.09: raise RuntimeError(f'{limb} claw {digit}: no inward hook')
   if point.z>pad.location.z-.20: raise RuntimeError(f'{limb} claw {digit}: tip no longer grips below pad')
