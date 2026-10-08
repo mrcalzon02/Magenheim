@@ -138,6 +138,7 @@ bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=Fal
 body=mat('ShelfLurkerRootFlesh',(.17,.14,.10),.88); shelf=mat('ShelfLurkerShelfArmor',(.32,.25,.16),.78); grip=mat('ShelfLurkerGripPad',(.25,.20,.15),.64); sense=mat('ShelfLurkerSensoryCrown',(.48,.38,.20),.58,(.22,.16,.06)); mouth=mat('ShelfLurkerMouthGill',(.38,.20,.15),.62)
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
+from shelf_lurker_gill_geometry import shelf_gill
 from magenheim_creature_pbr import bind as bind_creature_pbr
 bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerRootFlesh'],'shelf-lurker','root-flesh')
 bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerShelfArmor'],'shelf-lurker','shelf-armor')
@@ -160,7 +161,7 @@ for i,(loc,scale) in enumerate((((-.48,.10,1.72),(.55,.34,.07)),((.48,.02,1.71),
   direction=Vector((cos(angle),sin(angle),0))
   start=Vector((loc[0]+direction.x*.07,loc[1]+direction.y*.05,loc[2]-scale[2]*.42-.012))
   end=Vector((loc[0]+direction.x*scale[0]*.78,loc[1]+direction.y*scale[1]*.78,loc[2]-scale[2]*.48-.012))
-  keep(seg(f'ShelfLurker_ShelfGill_{i}_{rib+1}',start,end,.014,mouth,10),shelf_bone)
+  keep(shelf_gill(f'ShelfLurker_ShelfGill_{i}_{rib+1}',start,end,mouth),shelf_bone)
 # Downward mouth is modeled geometry, ringed by four fleshy gill-lobes.
 keep(organic('ShelfLurker_Mouth',(0,.38,1.31),(.30,.34,.10),mouth,2),'Head')
 for i,(x,y) in enumerate(((-.23,.38),(.23,.38),(0,.17),(0,.60)),1): keep(organic(f'ShelfLurker_MouthLobe_{i}',(x,y,1.29),(.13,.18,.07),mouth,2),'Head')
