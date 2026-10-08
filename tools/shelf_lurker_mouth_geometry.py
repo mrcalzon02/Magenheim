@@ -37,12 +37,20 @@ def mouth_barb_mesh_data(start, end, radius_start, radius_end, bow):
         raise ValueError('Mouth barb outside established anatomy')
     if sqrt(sum(v*v for v in c))>.12:
         raise ValueError('Mouth barb curvature exceeds safe clearance')
+    # All eight mouth digits radiate from the established feeding aperture at
+    # (0, .38). Use one species-space outward reference for BOTH halves of a
+    # digit: a tangent-dependent world-axis switch twisted the +/-Y hooks by
+    # 90 degrees, folding their longitudinal UVs and pinching the silhouette.
+    radial=(a[0],a[1]-.38,0.)
+    if sqrt(radial[0]*radial[0]+radial[1]*radial[1])<.08:
+        raise ValueError('Mouth barb root lacks a radial funnel direction')
+    reference=_unit(radial)
     vertices=[]
     for i in range(RINGS):
         t=i/(RINGS-1)
         center=_add(_add(a,_mul(delta,t)),_mul(c,sin(pi*t)))
         tangent=_unit(_add(delta,_mul(c,pi*cos(pi*t))))
-        reference=(0.,1.,0.) if abs(tangent[1])<.90 else (1.,0.,0.)
+        # Stable angular frame across the swept barb and near-vertical joint.
         u=_unit(_cross(reference,tangent))
         v=_cross(tangent,u)
         radius=(1-t)*r0+t*r1

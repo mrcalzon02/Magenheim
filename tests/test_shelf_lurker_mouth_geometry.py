@@ -104,6 +104,22 @@ class MouthGeometryTests(unittest.TestCase):
                 self.assertAlmostEqual(radial,expected,delta=.0005)
             self.assertTrue(all(math.isfinite(v) for vertex in vertices for v in vertex))
 
+    def test_cross_section_frames_never_quarter_turn(self):
+        # The former world-axis threshold turned the +/-Y hooks by 90 degrees
+        # even though their meshes passed manifold and attachment tests.
+        for digit,part,a,b,r0,r1,bow in all_segments():
+            with self.subTest(digit=digit,part=part):
+                vertices,_=mouth_barb_mesh_data(a,b,r0,r1,bow)
+                axes=[]
+                for ring in range(RINGS):
+                    c=center(vertices,ring)
+                    direction=tuple(vertices[ring*SIDES][k]-c[k] for k in range(3))
+                    length=math.sqrt(sum(v*v for v in direction))
+                    axes.append(tuple(v/length for v in direction))
+                for u,v in zip(axes,axes[1:]):
+                    angle=math.degrees(math.acos(max(-1.,min(1.,sum(x*y for x,y in zip(u,v))))))
+                    self.assertLess(angle,30.,'cross-section twist pinches the feeding funnel')
+
     def test_rejects_malformed_or_unsafe_mouth(self):
         a=(.23,.38,1.29); b=(.30,.38,1.13)
         for end,r0,r1,bow in ((a,.036,.026,(0,0,0)),

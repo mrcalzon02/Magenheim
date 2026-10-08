@@ -238,6 +238,14 @@ for digit in range(1,9):
    for k in range(len(ids)):
     edges[tuple(sorted((ids[k],ids[(k+1)%len(ids)])))]+=1
   if any(n!=2 for n in edges.values()): raise RuntimeError(f'{o.name}: nonmanifold mouth barb')
+  # Guard against sudden 90-degree frame switches in the swept mouth.
+  axes=[]
+  for ring in range(9):
+   points=[mesh.vertices[ring*12+j].co for j in range(12)]
+   mid=sum(points,Vector())/12
+   axes.append((points[0]-mid).normalized())
+  if any(a.dot(b)<.866 for a,b in zip(axes,axes[1:])):
+   raise RuntimeError(f'{o.name}: mouth section twists across adjacent rings')
  def center(obj,ring):
   return sum((obj.data.vertices[ring*12+j].co for j in range(12)),Vector())/12
  root,flare=center(base,0),center(base,8)
