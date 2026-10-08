@@ -129,6 +129,21 @@ for i in range(1,6):
   raise RuntimeError(f'{frond.name}: wrong sensory material')
  if not mesh.uv_layers.get('ShelfLurkerUV') or any(p.area<=1e-8 for p in mesh.polygons):
   raise RuntimeError(f'{frond.name}: missing UV or degenerate frond geometry')
+ uv_layer=mesh.uv_layers['ShelfLurkerUV']
+ cap_count=0
+ for poly in mesh.polygons:
+  coords=[tuple(uv_layer.data[li].uv) for li in poly.loop_indices]
+  if any(not (0<=u<=1 and 0<=v<=1) for u,v in coords):
+   raise RuntimeError(f'{frond.name}: sensory crown UVs exceed atlas')
+  if len(poly.vertices)>4:
+   cap_count+=1
+   area=abs(sum(coords[j][0]*coords[(j+1)%len(coords)][1]-
+                coords[(j+1)%len(coords)][0]*coords[j][1] for j in range(len(coords)))/2)
+   if area<.59: raise RuntimeError(f'{frond.name}: sensory crown end-cap UV island collapsed')
+  else:
+   if max(u for u,v in coords)-min(u for u,v in coords)>.09:
+    raise RuntimeError(f'{frond.name}: sensory crown side UV seam discontinuity')
+ if cap_count!=2: raise RuntimeError(f'{frond.name}: expected two mapped sensory crown end caps')
  if frond.get('magenheim_sensory_frame')!='species-x-continuous':
   raise RuntimeError(f'{frond.name}: lost stable sensory frame contract')
  centers=[]; radii=[]; axes=[]

@@ -122,6 +122,18 @@ def sensory_frond_frames(points):
   frames.append((axis,other))
  return frames
 
+def sensory_frond_uv(index,cap,seam,sides=12,steps=8):
+ """Give the sensory crown planar end-cap UVs and continuous longitudinal side UVs.
+
+ Angular-only mapping collapses each 12-gon end cap into a zero-area texture
+ strip, destroying its authored sensory-crown normal/albedo/roughness detail.
+ """
+ ring,angular=divmod(index,sides)
+ if cap:
+  angle=2*pi*angular/sides
+  return (.5+.45*cos(angle),.5+.45*sin(angle))
+ return (1.0 if seam and angular==0 else angular/sides,ring/steps)
+
 def sensory_frond(name,start,end,bow,material):
  """Watertight, tapering sensory antenna with an actual curved silhouette."""
  sides=12; steps=8
@@ -154,7 +166,7 @@ def sensory_frond(name,start,end,bow,material):
   for li in poly.loop_indices:
    idx=mesh.loops[li].vertex_index
    angular=idx%sides
-   layer.data[li].uv=(1.0 if seam and angular==0 else angular/sides,(idx//sides)/steps)
+   layer.data[li].uv=sensory_frond_uv(idx,len(poly.vertices)>4,seam,sides,steps)
  return obj
 
 bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)

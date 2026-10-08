@@ -1,6 +1,6 @@
 """Blender-free anatomical regression for Shelf Lurker sensory crown curvature."""
 import ast
-from math import sin, pi, sqrt
+from math import sin, cos, pi, sqrt
 from pathlib import Path
 import unittest
 
@@ -20,6 +20,13 @@ def frond_frames():
     namespace={'sqrt':sqrt}
     exec(compile(ast.Module(body=[fn],type_ignores=[]),str(AUTHOR),'exec'),namespace)
     return namespace['sensory_frond_frames']
+
+def frond_uv():
+    module=ast.parse(AUTHOR.read_text(encoding='utf-8'))
+    fn=next(n for n in module.body if isinstance(n,ast.FunctionDef) and n.name=='sensory_frond_uv')
+    namespace={'sin':sin,'cos':cos,'pi':pi}
+    exec(compile(ast.Module(body=[fn],type_ignores=[]),str(AUTHOR),'exec'),namespace)
+    return namespace['sensory_frond_uv']
 
 class SensoryCrownTests(unittest.TestCase):
     def test_endpoints_preserved(self):
@@ -79,5 +86,33 @@ class SensoryCrownTests(unittest.TestCase):
         self.assertIn('frames=sensory_frond_frames([tuple(p) for p in centers])',source)
         self.assertIn("obj['magenheim_sensory_frame']='species-x-continuous'",source)
         self.assertNotIn('if abs(tangent.y)<.9',source)
+
+    def test_end_cap_uvs_are_planar_and_have_nonzero_texture_area(self):
+        mapper=frond_uv()
+        for ring in (0,8):
+            points=[mapper(ring*12+j,True,False) for j in range(12)]
+            twice_area=sum(points[j][0]*points[(j+1)%12][1]
+                           -points[(j+1)%12][0]*points[j][1] for j in range(12))
+            self.assertGreater(abs(twice_area)/2,.59)
+            self.assertTrue(all(0<=v<=1 for uv in points for v in uv))
+
+    def test_all_96_side_quads_have_continuous_uv_seams(self):
+        mapper=frond_uv()
+        for ring in range(8):
+            for angular in range(12):
+                following=(angular+1)%12
+                seam=angular==11
+                indices=(ring*12+angular,ring*12+following,
+                         (ring+1)*12+following,(ring+1)*12+angular)
+                coords=[mapper(i,False,seam) for i in indices]
+                self.assertLess(max(u for u,v in coords)-min(u for u,v in coords),.09)
+                self.assertAlmostEqual(max(v for u,v in coords)-min(v for u,v in coords),.125)
+                self.assertTrue(all(0<=value<=1 for uv in coords for value in uv))
+
+    def test_blender_adapter_uses_noncollapsed_cap_uvs(self):
+        source=AUTHOR.read_text(encoding='utf-8')
+        self.assertIn('sensory_frond_uv(idx,len(poly.vertices)>4,seam,sides,steps)',source)
+        verifier=(AUTHOR.parents[0]/'verify-underworld-shelf-lurker.py').read_text(encoding='utf-8')
+        self.assertIn('sensory crown end-cap UV island collapsed',verifier)
 
 if __name__=='__main__': unittest.main()
