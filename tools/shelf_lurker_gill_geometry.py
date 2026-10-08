@@ -1,9 +1,11 @@
 """Shelf Lurker's 24 fungal shelf gills: pure centerline and Blender mesh."""
-from math import pi, sin, cos
+from math import pi, sin, cos, isfinite
 
 def shelf_gill_path(start, end, steps=8):
     """Anchor ends, bow sideways and droop below each shelf."""
     if steps < 6: raise ValueError('Shelf gill needs at least six intervals')
+    if len(start)!=3 or len(end)!=3 or not all(isfinite(float(v)) for v in (*start,*end)):
+        raise ValueError('Gill endpoints must be finite 3D coordinates')
     dx, dy = end[0] - start[0], end[1] - start[1]
     reach = (dx * dx + dy * dy) ** .5
     if reach <= .05: raise ValueError('Shelf gill span is too short')
@@ -18,10 +20,10 @@ def shelf_gill_path(start, end, steps=8):
     return centers
 
 def shelf_gill(name, start, end, material):
-    """Closed 9-ring, 12-sided tapered lamella rather than a straight rod."""
+    """Closed 17-ring, 12-sided lamella with scalloped margins and dorsal vein."""
     import bpy
     from mathutils import Vector
-    sides, steps = 12, 8
+    sides, steps = 12, 16
     centers = [Vector(p) for p in shelf_gill_path(start, end, steps)]
     radial = Vector((end[0]-start[0], end[1]-start[1], 0)).normalized()
     lateral = Vector((-radial.y, radial.x, 0))
@@ -29,10 +31,10 @@ def shelf_gill(name, start, end, material):
     for i, center in enumerate(centers):
         t = i/steps
         fullness = sin(pi*t)**.8
-        width, thick = .008 + .026*fullness, .003 + .007*fullness
+        width, thick = (.008 + .026*fullness)*(1+.115*sin(6*pi*t)*sin(pi*t)), .003 + .007*fullness
         for j in range(sides):
             a = 2*pi*j/sides
-            verts.append(tuple(center + lateral*(width*cos(a)) + Vector((0,0,thick*sin(a)))))
+            verts.append(tuple(center + lateral*(width*cos(a)) + Vector((0,0,thick*sin(a)+.0015*fullness*max(0.,sin(a))**8))))
     faces = []
     for i in range(steps):
         for j in range(sides):
@@ -46,7 +48,7 @@ def shelf_gill(name, start, end, material):
     obj = bpy.data.objects.new(name, mesh)
     bpy.context.collection.objects.link(obj)
     mesh.materials.append(material)
-    obj['magenheim_gill_contract'] = 'swept-lamella-9x12'
+    obj['magenheim_gill_contract'] = 'swept-scalloped-lamella-17x12'
     for poly in mesh.polygons: poly.use_smooth = len(poly.vertices)==4
     layer = mesh.uv_layers.new(name='ShelfLurkerUV')
     for poly in mesh.polygons:

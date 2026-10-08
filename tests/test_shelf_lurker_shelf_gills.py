@@ -44,7 +44,16 @@ class ShelfGillTests(unittest.TestCase):
         ast.parse(author); ast.parse(verifier)
         self.assertIn("keep(shelf_gill(f'ShelfLurker_ShelfGill_",author)
         self.assertNotIn("keep(seg(f'ShelfLurker_ShelfGill_",author)
-        self.assertIn("len(mesh.vertices)!=108 or len(mesh.polygons)!=98",verifier)
+        self.assertIn("len(mesh.vertices)!=204 or len(mesh.polygons)!=194",verifier)
         self.assertIn("non-manifold gill",verifier)
+        self.assertIn("swept-scalloped-lamella-17x12",verifier)
+        self.assertIn("scalloped gill margins collapsed",verifier)
+        self.assertIn("gill dorsal midrib collapsed",verifier)
+
+    def test_scallop_and_vein_are_geometry(self):
+        source=(ROOT/'tools/shelf_lurker_gill_geometry.py').read_text()
+        self.assertIn("sides, steps = 12, 16",source)
+        self.assertIn("sin(6*pi*t)",source)
+        self.assertIn("max(0.,sin(a))**8",source)
 
 if __name__=='__main__': unittest.main()

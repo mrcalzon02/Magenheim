@@ -214,9 +214,9 @@ for shelf_index in range(1,5):
   if o.parent!=arm or o.vertex_groups.get(bone) is None: raise RuntimeError(f'{o.name}: incorrect shelf rig binding')
   if not o.data.materials or o.data.materials[0].name!='ShelfLurkerMouthGill': raise RuntimeError(f'{o.name}: incorrect lamella material')
   mesh=o.data
-  if len(mesh.vertices)!=108 or len(mesh.polygons)!=98 or sum(len(p.vertices)-2 for p in mesh.polygons)!=212:
-   raise RuntimeError(f'{o.name}: expected 9x12 closed fungal lamella')
-  if o.get('magenheim_gill_contract')!='swept-lamella-9x12':
+  if len(mesh.vertices)!=204 or len(mesh.polygons)!=194 or sum(len(p.vertices)-2 for p in mesh.polygons)!=404:
+   raise RuntimeError(f'{o.name}: expected 17x12 scalloped fungal lamella')
+  if o.get('magenheim_gill_contract')!='swept-scalloped-lamella-17x12':
    raise RuntimeError(f'{o.name}: missing swept lamella contract')
   if not mesh.uv_layers.get('ShelfLurkerUV') or any(p.area<=1e-8 for p in mesh.polygons):
    raise RuntimeError(f'{o.name}: invalid gill mesh/UV')
@@ -226,9 +226,19 @@ for shelf_index in range(1,5):
    for j in range(len(ids)):
     edges[tuple(sorted((ids[j],ids[(j+1)%len(ids)])))]+=1
   if any(n!=2 for n in edges.values()): raise RuntimeError(f'{o.name}: non-manifold gill')
-  centers=[sum((mesh.vertices[ring*12+j].co for j in range(12)),Vector())/12 for ring in range(9)]
-  if (centers[-1]-centers[0]).length<.15 or centers[4].z>=min(centers[0].z,centers[-1].z)-.022:
+  centers=[sum((mesh.vertices[ring*12+j].co for j in range(12)),Vector())/12 for ring in range(17)]
+  if (centers[-1]-centers[0]).length<.15 or centers[8].z>=min(centers[0].z,centers[-1].z)-.022:
    raise RuntimeError(f'{o.name}: swept lamella silhouette collapsed')
+  def half_width(ring):
+   p=mesh.vertices[ring*12].co; c=centers[ring]
+   return hypot(p.x-c.x,p.y-c.y)
+  if half_width(12)-half_width(4)<.003:
+   raise RuntimeError(f'{o.name}: scalloped gill margins collapsed')
+  for ring in (4,8,12):
+   dorsal=mesh.vertices[ring*12+3].co.z-centers[ring].z
+   ventral=centers[ring].z-mesh.vertices[ring*12+9].co.z
+   if dorsal-ventral<.0006:
+    raise RuntimeError(f'{o.name}: gill dorsal midrib collapsed')
   heights=[v.co.z for v in mesh.vertices]
   if max(heights)>plate.location.z-.025 or min(heights)<plate.location.z-.11:
    raise RuntimeError(f'{o.name}: lamella detached from shelf underside')
@@ -320,4 +330,4 @@ for limb in limbs:
  if not any(f'pose.bones["Leg_{limb}_Grip"]' in p for p in death): raise RuntimeError(f'Death never releases {limb} grip')
 contract='six-independent-grip-chains;sequential-release-replant;drop-pounce-without-whole-mesh-rotation'
 if sc.get('magenheim_cling_contract')!=contract: raise RuntimeError('Missing Shelf Lurker cling/replant contract')
-print(f'PASS Shelf Lurker r2: {len(meshes)} meshes / {tris} tris / 8 actions / six-chain cling / 18 hooked talons / 24 swept lamellae / drop-pounce readable',flush=True)
+print(f'PASS Shelf Lurker r2: {len(meshes)} meshes / {tris} tris / 8 actions / six-chain cling / 18 hooked talons / 24 scalloped lamellae / drop-pounce readable',flush=True)
