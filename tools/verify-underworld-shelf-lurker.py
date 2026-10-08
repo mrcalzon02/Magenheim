@@ -27,7 +27,57 @@ if missing: raise RuntimeError('Missing Shelf Lurker bones: '+','.join(sorted(mi
 # Production shelf geometry must have a watertight, sculpted rim; a flattened
 # icosphere or a mere painted scallop does not satisfy the silhouette gate.
 from collections import Counter
-from math import hypot
+from math import hypot, pi, cos
+
+# Four fleshy feeding lobes must remain physically sculpted, not four spheres.
+# Preserve their cardinal collar, downward lip, Head rig and MouthGill PBR.
+for index,(x,y) in enumerate(((-.23,.38),(.23,.38),(0,.17),(0,.60)),1):
+ o=bpy.data.objects.get(f'ShelfLurker_MouthLobe_{index}')
+ if o is None: raise RuntimeError(f'Missing feeding lobe {index}')
+ mesh=o.data
+ if (len(mesh.vertices),len(mesh.polygons),sum(len(p.vertices)-2 for p in mesh.polygons))!=(800,770,1596):
+  raise RuntimeError(f'{o.name}: expected 25x32 sculpted feeding lamella')
+ if o.get('magenheim_mouth_lobe_contract')!='downturned-feeding-lamella-25x32':
+  raise RuntimeError(f'{o.name}: feeding-lamella geometry contract missing')
+ if o.parent!=arm or o.vertex_groups.get('Head') is None:
+  raise RuntimeError(f'{o.name}: lost Head attachment')
+ if not any(m.type=='ARMATURE' and m.object==arm for m in o.modifiers):
+  raise RuntimeError(f'{o.name}: missing armature modifier')
+ if not mesh.materials or mesh.materials[0].name!='ShelfLurkerMouthGill':
+  raise RuntimeError(f'{o.name}: incorrect mouth-gill material')
+ uv=mesh.uv_layers.get('ShelfLurkerUV')
+ if uv is None: raise RuntimeError(f'{o.name}: missing authored UVs')
+ edges=Counter(); caps=0
+ for poly in mesh.polygons:
+  if poly.area<=1e-9: raise RuntimeError(f'{o.name}: degenerate lamella face')
+  ids=list(poly.vertices)
+  for j in range(len(ids)):
+   edges[tuple(sorted((ids[j],ids[(j+1)%len(ids)])))]+=1
+  coords=[tuple(uv.data[li].uv) for li in poly.loop_indices]
+  if any(not (0<=u<=1 and 0<=v<=1) for u,v in coords):
+   raise RuntimeError(f'{o.name}: UV outside mouth-gill atlas')
+  if len(ids)>4:
+   caps+=1
+   area=abs(sum(coords[j][0]*coords[(j+1)%len(coords)][1]-
+                coords[(j+1)%len(coords)][0]*coords[j][1] for j in range(len(coords)))/2)
+   if area<.62: raise RuntimeError(f'{o.name}: collapsed mouth-lobe cap UV')
+ if any(n!=2 for n in edges.values()) or caps!=2:
+  raise RuntimeError(f'{o.name}: open lamella or missing end caps')
+ def center(ring):
+  return sum((mesh.vertices[ring*32+j].co for j in range(32)),Vector())/32
+ a,b,m=center(0),center(24),center(12)
+ if abs(hypot(a.x,a.y-.38)-.10)>.002 or abs(hypot(b.x,b.y-.38)-.36)>.002:
+  raise RuntimeError(f'{o.name}: fourfold feeding-collar reach changed')
+ if m.z>(a.z+b.z)*.5-.03 or b.z>=a.z-.05:
+  raise RuntimeError(f'{o.name}: downward-curved feeding lobe collapsed')
+ ux,uy=x/hypot(x,y-.38),(y-.38)/hypot(x,y-.38)
+ tx,ty=-uy,ux
+ def transverse_width(j):
+  p=mesh.vertices[12*32+j].co
+  theta=2*pi*j/32
+  return ((p.x-m.x)*tx+(p.y-m.y)*ty)/cos(theta)
+ if transverse_width(0)-transverse_width(2)<.015:
+  raise RuntimeError(f'{o.name}: physical longitudinal gill flutes collapsed')
 
 # The six gripping feet must have physical underside suction ridges, not
 # flattened primitive spheres with concentric rings painted across cylinder UVs.

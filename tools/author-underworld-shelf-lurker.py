@@ -183,6 +183,7 @@ from shelf_lurker_gill_geometry import shelf_gill
 from magenheim_creature_pbr import bind as bind_creature_pbr
 from shelf_lurker_limb_geometry import limb_segment
 from shelf_lurker_mouth_geometry import mouth_barb_segment
+from shelf_lurker_mouth_lobe_geometry import mouth_lobe
 from shelf_lurker_talon_geometry import talon_segment
 from shelf_lurker_grip_geometry import grip_pad
 bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerRootFlesh'],'shelf-lurker','root-flesh')
@@ -209,7 +210,7 @@ for i,(loc,scale) in enumerate((((-.48,.10,1.72),(.55,.34,.07)),((.48,.02,1.71),
   keep(shelf_gill(f'ShelfLurker_ShelfGill_{i}_{rib+1}',start,end,mouth),shelf_bone)
 # Downward mouth is modeled geometry, ringed by four fleshy gill-lobes.
 keep(organic('ShelfLurker_Mouth',(0,.38,1.31),(.30,.34,.10),mouth,2),'Head')
-for i,(x,y) in enumerate(((-.23,.38),(.23,.38),(0,.17),(0,.60)),1): keep(organic(f'ShelfLurker_MouthLobe_{i}',(x,y,1.29),(.13,.18,.07),mouth,2),'Head')
+for i,(x,y) in enumerate(((-.23,.38),(.23,.38),(0,.17),(0,.60)),1): keep(mouth_lobe(f'ShelfLurker_MouthLobe_{i}',(x,y,1.29),mouth),'Head')
 # Eight hooked radial feeding barbs form a downward-facing funnel with a
 # visibly open central aperture during the creature's drop ambush.
 for digit in range(8):
