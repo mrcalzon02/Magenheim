@@ -139,6 +139,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parent))
 from shelf_lurker_gill_geometry import shelf_gill
 from magenheim_creature_pbr import bind as bind_creature_pbr
 from shelf_lurker_limb_geometry import limb_segment
+from shelf_lurker_mouth_geometry import mouth_barb_segment
 bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerRootFlesh'],'shelf-lurker','root-flesh')
 bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerShelfArmor'],'shelf-lurker','shelf-armor')
 bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerGripPad'],'shelf-lurker','grip-pad')
@@ -172,8 +173,11 @@ for digit in range(8):
  root=Vector((direction.x*.23,.38+direction.y*.23,1.29))
  flare=Vector((direction.x*.30,.38+direction.y*.30,1.13))
  point=Vector((direction.x*.115,.38+direction.y*.115,.98))
- keep(taper(f'ShelfLurker_MouthBarb_{digit+1}_Base',root,flare,.036,.026,mouth),'Head')
- keep(taper(f'ShelfLurker_MouthBarb_{digit+1}_Hook',flare,point,.026,.004,mouth),'Head')
+ # Sweep the existing eight hooked mouth sections through a shared flaring joint.
+ base_bow=(direction.x*.07/pi,direction.y*.07/pi,0)
+ hook_bow=(direction.x*.185/pi,direction.y*.185/pi,0)
+ keep(mouth_barb_segment(f'ShelfLurker_MouthBarb_{digit+1}_Base',root,flare,.036,.026,base_bow,mouth),'Head')
+ keep(mouth_barb_segment(f'ShelfLurker_MouthBarb_{digit+1}_Hook',flare,point,.026,.004,hook_bow,mouth),'Head')
 # Sensory crown points downward/forward while clinging; restrained glow only here.
 for i,(x,y,z) in enumerate(((-.22,.58,1.52),(.22,.58,1.52),(-.30,.42,1.48),(.30,.42,1.48),(0,.70,1.50)),1):
  bow=(.065 if x>0 else -.065 if x<0 else 0,.105,.035)

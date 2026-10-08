@@ -212,21 +212,44 @@ for shelf_index in range(1,5):
   heights=[v.co.z for v in mesh.vertices]
   if max(heights)>plate.location.z-.025 or min(heights)<plate.location.z-.11:
    raise RuntimeError(f'{o.name}: lamella detached from shelf underside')
+# Swept eight-hook feeding anatomy: reject cones, disconnected joints and
+# inward-collapsed funnels. Cone-specific world transform checks do not apply.
 for digit in range(1,9):
  base=bpy.data.objects.get(f'ShelfLurker_MouthBarb_{digit}_Base')
  hook=bpy.data.objects.get(f'ShelfLurker_MouthBarb_{digit}_Hook')
- if base is None or hook is None: raise RuntimeError(f'Mouth barb {digit}: missing geometry')
+ if base is None or hook is None: raise RuntimeError(f'Mouth barb {digit}: missing anatomy')
  for o in (base,hook):
-  if o.parent!=arm or o.vertex_groups.get('Head') is None: raise RuntimeError(f'{o.name}: incorrect Head binding')
-  if not o.data.materials or o.data.materials[0].name!='ShelfLurkerMouthGill': raise RuntimeError(f'{o.name}: incorrect mouth material')
-  if not o.data.uv_layers.get('ShelfLurkerUV') or any(p.area<=1e-8 for p in o.data.polygons): raise RuntimeError(f'{o.name}: invalid mouth mesh/UV')
- root,flare=talon_endpoints(base)
- joint,tip=talon_endpoints(hook)
- if (flare-joint).length>.02: raise RuntimeError(f'Mouth barb {digit}: sections disconnected')
+  mesh=o.data
+  if o.parent!=arm or o.vertex_groups.get('Head') is None:
+   raise RuntimeError(f'{o.name}: incorrect Head binding')
+  if not any(m.type=='ARMATURE' and m.object==arm for m in o.modifiers):
+   raise RuntimeError(f'{o.name}: missing armature modifier')
+  if not mesh.materials or mesh.materials[0].name!='ShelfLurkerMouthGill':
+   raise RuntimeError(f'{o.name}: incorrect mouth material')
+  if o.get('magenheim_mouth_contract')!='swept-mouth-barb-9x12':
+   raise RuntimeError(f'{o.name}: lost curved mouth anatomy')
+  if len(mesh.vertices)!=108 or len(mesh.polygons)!=98 or sum(len(p.vertices)-2 for p in mesh.polygons)!=212:
+   raise RuntimeError(f'{o.name}: wrong swept-barb topology')
+  if not mesh.uv_layers.get('ShelfLurkerUV') or any(p.area<=1e-9 for p in mesh.polygons):
+   raise RuntimeError(f'{o.name}: invalid mouth mesh/UV')
+  edges=Counter()
+  for poly in mesh.polygons:
+   ids=list(poly.vertices)
+   for k in range(len(ids)):
+    edges[tuple(sorted((ids[k],ids[(k+1)%len(ids)])))]+=1
+  if any(n!=2 for n in edges.values()): raise RuntimeError(f'{o.name}: nonmanifold mouth barb')
+ def center(obj,ring):
+  return sum((obj.data.vertices[ring*12+j].co for j in range(12)),Vector())/12
+ root,flare=center(base,0),center(base,8)
+ joint,tip=center(hook,0),center(hook,8)
+ if (flare-joint).length>.001: raise RuntimeError(f'Mouth barb {digit}: separated flare joint')
+ if (center(base,4)-(root+flare)*.5).length<.018 or (center(hook,4)-(joint+tip)*.5).length<.018:
+  raise RuntimeError(f'Mouth barb {digit}: lost curved hook silhouette')
  radial=lambda p: (p.x**2+(p.y-.38)**2)**.5
- if radial(flare)<radial(root)+.045 or radial(tip)>radial(flare)-.13:
-  raise RuntimeError(f'Mouth barb {digit}: lost outward flare or inward funnel')
- if tip.z>1.02: raise RuntimeError(f'Mouth barb {digit}: downward strike silhouette lost')
+ if radial(flare)<radial(root)+.045 or radial(tip)>radial(flare)-.13 or radial(tip)<.10:
+  raise RuntimeError(f'Mouth barb {digit}: lost outward flare or inward open funnel')
+ if not root.z>flare.z>tip.z or tip.z>1.02:
+  raise RuntimeError(f'Mouth barb {digit}: lost downward feeding reach')
 
 expected={'ShelfLurker_ClingIdle':72,'ShelfLurker_LateralCrawl':42,'ShelfLurker_Reposition':52,'ShelfLurker_DropPounce':32,'ShelfLurker_Recover':38,'ShelfLurker_Attack':24,'ShelfLurker_Hit':18,'ShelfLurker_Death':58}
 
