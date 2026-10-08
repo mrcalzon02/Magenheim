@@ -29,6 +29,46 @@ if missing: raise RuntimeError('Missing Shelf Lurker bones: '+','.join(sorted(mi
 from collections import Counter
 from math import hypot
 
+# The six gripping feet must have physical underside suction ridges, not
+# flattened primitive spheres with concentric rings painted across cylinder UVs.
+for limb in limbs:
+ pad=bpy.data.objects.get(f'ShelfLurker_{limb}_Grip')
+ if pad is None: raise RuntimeError(f'{limb}: missing sculpted gripping pad')
+ mesh=pad.data
+ if (len(mesh.vertices),len(mesh.polygons),sum(len(p.vertices)-2 for p in mesh.polygons))!=(770,816,1536):
+  raise RuntimeError(f'{pad.name}: expected 16x48 sculpted suction geometry')
+ if pad.get('magenheim_grip_contract')!='sculpted-suction-pad-16x48':
+  raise RuntimeError(f'{pad.name}: missing suction-pad geometry contract')
+ if pad.parent!=arm or pad.vertex_groups.get(f'Leg_{limb}_Grip') is None:
+  raise RuntimeError(f'{pad.name}: broken grip-bone binding')
+ if not any(m.type=='ARMATURE' and m.object==arm for m in pad.modifiers):
+  raise RuntimeError(f'{pad.name}: missing grip armature modifier')
+ if not mesh.materials or mesh.materials[0].name!='ShelfLurkerGripPad':
+  raise RuntimeError(f'{pad.name}: lost authored grip material')
+ radii=pad.get('magenheim_grip_uv_radii')
+ if not radii or len(radii)!=2: raise RuntimeError(f'{pad.name}: missing radial UV scale')
+ rx,ry=map(float,radii)
+ if rx<=0 or ry<=0: raise RuntimeError(f'{pad.name}: invalid radial UV scale')
+ layer=mesh.uv_layers.get('ShelfLurkerUV')
+ if layer is None: raise RuntimeError(f'{pad.name}: missing grip PBR UVs')
+ edges=Counter()
+ for poly in mesh.polygons:
+  if poly.area<=1e-9: raise RuntimeError(f'{pad.name}: degenerate suction-pad geometry')
+  ids=list(poly.vertices)
+  for j in range(len(ids)):
+   edges[tuple(sorted((ids[j],ids[(j+1)%len(ids)])))]+=1
+  for li in poly.loop_indices:
+   co=mesh.vertices[mesh.loops[li].vertex_index].co
+   u,v=layer.data[li].uv
+   if abs(u-(.5+co.x/(2.12*rx)))>1e-5 or abs(v-(.5+co.y/(2.12*ry)))>1e-5:
+    raise RuntimeError(f'{pad.name}: concentric grip texture no longer aligns with pad')
+   if not (0<u<1 and 0<v<1): raise RuntimeError(f'{pad.name}: grip UV exceeds atlas')
+ if any(n!=2 for n in edges.values()): raise RuntimeError(f'{pad.name}: open suction-pad mesh')
+ # Two underside contact ridges must remain lower than the recessed cavity.
+ def z(ring): return mesh.vertices[2+ring*48].co.z
+ if z(9)>=z(10)-.008 or z(11)>=z(10)-.010 or mesh.vertices[1].co.z<=z(11)+.03:
+  raise RuntimeError(f'{pad.name}: physical suction ridges/cavity collapsed')
+
 # Verify the sculpted six-chain limb silhouette and raised dorsal sclerites.
 for limb in limbs:
  for segment in ('Upper','Lower','Tarsus'):

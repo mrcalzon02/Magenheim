@@ -184,6 +184,7 @@ from magenheim_creature_pbr import bind as bind_creature_pbr
 from shelf_lurker_limb_geometry import limb_segment
 from shelf_lurker_mouth_geometry import mouth_barb_segment
 from shelf_lurker_talon_geometry import talon_segment
+from shelf_lurker_grip_geometry import grip_pad
 bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerRootFlesh'],'shelf-lurker','root-flesh')
 bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerShelfArmor'],'shelf-lurker','shelf-armor')
 bind_creature_pbr(bpy,bpy.data.materials['ShelfLurkerGripPad'],'shelf-lurker','grip-pad')
@@ -233,7 +234,7 @@ for side in (-1,1):
  for idx,(y0,y1) in enumerate(((.38,.58),(-.05,-.02),(-.48,-.62)),1):
   hip=(side*.52,y0,1.56); elbow=(side*1.02,y1,1.22); wrist=(side*1.34,y1+.08,.78); tip=(side*1.48,y1+.12,.54); n=f'{s}_{idx}'
   legs.append((n,hip,elbow,wrist,tip))
-  keep(limb_segment(f'ShelfLurker_{n}_Upper',hip,elbow,.115,body),f'Leg_{n}_Upper'); keep(limb_segment(f'ShelfLurker_{n}_Lower',elbow,wrist,.085,body),f'Leg_{n}_Lower'); keep(limb_segment(f'ShelfLurker_{n}_Tarsus',wrist,tip,.060,grip),f'Leg_{n}_Tarsus'); keep(organic(f'ShelfLurker_{n}_Grip',tip,(.18,.24,.055),grip,2),f'Leg_{n}_Grip')
+  keep(limb_segment(f'ShelfLurker_{n}_Upper',hip,elbow,.115,body),f'Leg_{n}_Upper'); keep(limb_segment(f'ShelfLurker_{n}_Lower',elbow,wrist,.085,body),f'Leg_{n}_Lower'); keep(limb_segment(f'ShelfLurker_{n}_Tarsus',wrist,tip,.060,grip),f'Leg_{n}_Tarsus'); keep(grip_pad(f'ShelfLurker_{n}_Grip',tip,(.18,.24,.055),grip),f'Leg_{n}_Grip')
   # Three hard talons per pad project outward then return inward/downward,
   # preserving the six-limbed shelf-clinger silhouette under motion.
   for digit,offset in enumerate((-.15,0,.15),1):
