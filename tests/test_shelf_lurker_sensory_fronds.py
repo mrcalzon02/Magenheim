@@ -1,6 +1,6 @@
 """Blender-free anatomical regression for Shelf Lurker sensory crown curvature."""
 import ast
-from math import sin, pi
+from math import sin, pi, sqrt
 from pathlib import Path
 import unittest
 
@@ -12,6 +12,14 @@ def frond_path():
     namespace={'sin':sin,'pi':pi}
     exec(compile(ast.Module(body=[fn],type_ignores=[]),str(AUTHOR),'exec'),namespace)
     return namespace['sensory_frond_path']
+
+
+def frond_frames():
+    module=ast.parse(AUTHOR.read_text(encoding='utf-8'))
+    fn=next(n for n in module.body if isinstance(n,ast.FunctionDef) and n.name=='sensory_frond_frames')
+    namespace={'sqrt':sqrt}
+    exec(compile(ast.Module(body=[fn],type_ignores=[]),str(AUTHOR),'exec'),namespace)
+    return namespace['sensory_frond_frames']
 
 class SensoryCrownTests(unittest.TestCase):
     def test_endpoints_preserved(self):
@@ -45,5 +53,31 @@ class SensoryCrownTests(unittest.TestCase):
         self.assertTrue(any(isinstance(n,ast.FunctionDef) and n.name=='sensory_frond' for n in tree.body))
         self.assertIn("keep(sensory_frond(f'ShelfLurker_SensoryFrond_",AUTHOR.read_text(encoding='utf-8'))
         self.assertNotIn("keep(seg(f'ShelfLurker_SensoryFrond_",AUTHOR.read_text(encoding='utf-8'))
+
+    def test_all_five_fronds_keep_continuous_cross_section_frames(self):
+        path=frond_path(); frames=frond_frames()
+        for i,(x,y,z) in enumerate(((-.22,.58,1.52),(.22,.58,1.52),
+                                    (-.30,.42,1.48),(.30,.42,1.48),(0,.70,1.50)),1):
+            bow=(.065 if x>0 else -.065 if x<0 else 0,.105,.035)
+            centers=path((x*.55,y-.18,z),(x,y,z-.34),bow)
+            rings=frames(centers)
+            self.assertEqual(len(rings),9)
+            for j in range(8):
+                dot=sum(a*b for a,b in zip(rings[j][0],rings[j+1][0]))
+                self.assertGreater(dot,.866,f'Frond {i} ring {j}: abrupt twist')
+            for axis,other in rings:
+                self.assertAlmostEqual(sum(v*v for v in axis),1,places=7)
+                self.assertAlmostEqual(sum(v*v for v in other),1,places=7)
+                self.assertAlmostEqual(sum(a*b for a,b in zip(axis,other)),0,places=7)
+
+    def test_degenerate_reference_rejected_without_world_axis_switch(self):
+        with self.assertRaises(ValueError):
+            frond_frames()([(i*.1,0,0) for i in range(9)])
+
+    def test_blender_adapter_uses_stable_frames(self):
+        source=AUTHOR.read_text(encoding='utf-8')
+        self.assertIn('frames=sensory_frond_frames([tuple(p) for p in centers])',source)
+        self.assertIn("obj['magenheim_sensory_frame']='species-x-continuous'",source)
+        self.assertNotIn('if abs(tangent.y)<.9',source)
 
 if __name__=='__main__': unittest.main()

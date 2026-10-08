@@ -96,16 +96,40 @@ def sensory_frond_path(start,end,bow,steps=8):
  return [tuple(start[k]+(end[k]-start[k])*i/steps+bow[k]*sin(pi*i/steps)
                for k in range(3)) for i in range(steps+1)]
 
+def sensory_frond_frames(points):
+ """Stable cross-section frames for the established five-frond sensory crown.
+
+ A tangent-dependent Y/X world-axis switch rotated the central frond's first
+ ring by 90 degrees. All rings now use the same species-space X reference;
+ nearly X-parallel malformed paths fail instead of silently changing axes.
+ This pure function is intentionally testable without Blender.
+ """
+ from math import sqrt
+ if len(points)<7: raise ValueError('Sensory frond needs at least seven ring centers')
+ frames=[]
+ for i in range(len(points)):
+  before=points[max(0,i-1)]; after=points[min(len(points)-1,i+1)]
+  delta=tuple(after[k]-before[k] for k in range(3))
+  length=sqrt(sum(v*v for v in delta))
+  if length<1e-8: raise ValueError('Degenerate sensory frond tangent')
+  tangent=tuple(v/length for v in delta)
+  transverse=sqrt(tangent[1]**2+tangent[2]**2)
+  if transverse<.15: raise ValueError('Sensory frond nearly parallel to stable frame reference')
+  axis=(0.,tangent[2]/transverse,-tangent[1]/transverse)
+  other=(tangent[1]*axis[2]-tangent[2]*axis[1],
+         tangent[2]*axis[0]-tangent[0]*axis[2],
+         tangent[0]*axis[1]-tangent[1]*axis[0])
+  frames.append((axis,other))
+ return frames
+
 def sensory_frond(name,start,end,bow,material):
  """Watertight, tapering sensory antenna with an actual curved silhouette."""
  sides=12; steps=8
  centers=[Vector(p) for p in sensory_frond_path(start,end,bow,steps)]
+ frames=sensory_frond_frames([tuple(p) for p in centers])
  vertices=[]
  for i,center in enumerate(centers):
-  tangent=(centers[min(i+1,steps)]-centers[max(i-1,0)]).normalized()
-  reference=Vector((0,1,0)) if abs(tangent.y)<.9 else Vector((1,0,0))
-  axis=tangent.cross(reference).normalized()
-  other=tangent.cross(axis).normalized()
+  axis,other=(Vector(v) for v in frames[i])
   radius=.047*(1-i/steps)**.9+.006
   for j in range(sides):
    a=2*pi*j/sides
@@ -121,6 +145,7 @@ def sensory_frond(name,start,end,bow,material):
  mesh.from_pydata(vertices,[],faces); mesh.update()
  obj=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(obj)
  mesh.materials.append(material)
+ obj['magenheim_sensory_frame']='species-x-continuous'
  for poly in mesh.polygons: poly.use_smooth=len(poly.vertices)==4
  layer=mesh.uv_layers.new(name='ShelfLurkerUV')
  for poly in mesh.polygons:

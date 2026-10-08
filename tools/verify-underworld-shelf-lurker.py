@@ -129,12 +129,17 @@ for i in range(1,6):
   raise RuntimeError(f'{frond.name}: wrong sensory material')
  if not mesh.uv_layers.get('ShelfLurkerUV') or any(p.area<=1e-8 for p in mesh.polygons):
   raise RuntimeError(f'{frond.name}: missing UV or degenerate frond geometry')
- centers=[]; radii=[]
+ if frond.get('magenheim_sensory_frame')!='species-x-continuous':
+  raise RuntimeError(f'{frond.name}: lost stable sensory frame contract')
+ centers=[]; radii=[]; axes=[]
  for ring in range(9):
   points=[mesh.vertices[ring*12+j].co for j in range(12)]
   center=sum(points,Vector())/12
   centers.append(center)
   radii.append(sum((p-center).length for p in points)/12)
+  axes.append((points[0]-center).normalized())
+ if any(a.dot(b)<.866 for a,b in zip(axes,axes[1:])):
+  raise RuntimeError(f'{frond.name}: abrupt sensory ring rotation twists texture and silhouette')
  if radii[-1]>=radii[0]*.25 or any(radii[j+1]>=radii[j] for j in range(8)):
   raise RuntimeError(f'{frond.name}: sensory tip no longer tapers')
  if (centers[4]-(centers[0]+centers[8])*.5).length<.07:
