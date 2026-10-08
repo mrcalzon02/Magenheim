@@ -2,7 +2,7 @@
 
 Scope: the established Sulfurous Wastes Ashmite only. Replace its two straight 14-sided cylindrical mandibles with inward-returning swept, tapered, physically serrated mouthparts. Keep their original root and tip anchors, Mandible_L/R bone assignments, mouthpart PBR family, Jaw/Scavenge sockets, five scutes, sulfur ridges, six-leg gait and existing action names.
 
-Each pincer has 17 rings x 24 sides, two center cap vertices, 410 vertices, 432 faces and 816 triangles. The pair has 1,632 triangles versus 56 triangles for the two former capped 14-sided cylinders. This is component geometry, not the complete creature or Tick donor count. Each pincer has three inner denticle crests, dorsal keratin keel, stable projected sweep frame and authored cylindrical side UVs with independent cap UVs. Mirror symmetry and outward winding are explicitly tested.
+Each pincer has 17 rings x 24 sides, two center cap vertices, 410 vertices, 432 faces and 816 triangles. The pair has 1,632 triangles versus 104 triangles for the two former capped 14-sided cylinders (52 triangles each: 28 side + 24 cap). This is component geometry, not the complete creature or Tick donor count. Each pincer has three inner denticle crests, dorsal keratin keel, stable projected sweep frame and authored cylindrical side UVs with independent cap UVs. Mirror symmetry and outward winding are explicitly tested.
 
 Offline: five mandible regressions plus five previous scutella regressions passed, with topology, positive volume, anchor retention, envelope, mirror symmetry, physical denticle and keel relief, taper, UV seams and invalid inputs. Python syntax compilation passed.
 
