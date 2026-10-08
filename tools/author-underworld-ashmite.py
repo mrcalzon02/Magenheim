@@ -4,6 +4,7 @@ from pathlib import Path
 from math import pi, sin, cos
 import bpy
 from mathutils import Vector
+import ashmite_scute_geometry as ashgeo
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'assets/models/source/underworld-creature-ashmite.blend'
@@ -37,6 +38,7 @@ def cone(name,loc,r,depth,mat,rot=(0,0,0)):
     bpy.ops.mesh.primitive_cone_add(vertices=14,radius1=r,radius2=r*.12,depth=depth,location=loc,rotation=rot); o=bpy.context.object; o.name=name; o.data.materials.append(mat); return o
 
 def uv(o):
+    if o.data.uv_layers.get('AshmiteUV'): return
     u=o.data.uv_layers.new(name='AshmiteUV')
     for p in o.data.polygons:
         axis=max(range(3),key=lambda i:abs(p.normal[i]))
@@ -52,7 +54,7 @@ def keep(o,b): parts[o.name]=b; return o
 keep(organic('Ashmite_Thorax',(0,0,.085),(.095,.105,.052),chitin,3,1),'Thorax'); keep(organic('Ashmite_Abdomen',(0,-.105,.080),(.105,.125,.060),chitin,3,2),'Abdomen'); keep(organic('Ashmite_Head',(0,.105,.070),(.080,.072,.048),chitin,3,3),'Head')
 # Five physically raised dorsal armor scutes, with sulfur accretion concentrated on fracture ridges.
 for i,y in enumerate((-.155,-.095,-.035,.030,.085),1):
-    z=.135-abs(y)*.10; keep(organic(f'Ashmite_DorsalScute_{i}',(0,y,z),(.092 if i<4 else .075,.047,.018),chitin,2,20+i),'Abdomen' if i<4 else 'Thorax')
+    z=.135-abs(y)*.10; keep(ashgeo.sculpted_scute(f'Ashmite_DorsalScute_{i}',(0,y,z),(.092 if i<4 else .075,.047,.018),chitin,i),'Abdomen' if i<4 else 'Thorax')
     for side in (-1,1): keep(segment(f'Ashmite_SulfurRidge_{i}_{"L" if side<0 else "R"}',(side*.020,y,z+.018),(side*.060,y-.010,z+.025),.006,sulfur,10),'Abdomen' if i<4 else 'Thorax')
 # Six recessed, visibly soft coxal joints and rapid legs. Terminal claws are vent-scraping tools.
 legpts={}

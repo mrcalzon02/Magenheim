@@ -33,6 +33,21 @@ for prefix,count in (('Ashmite_DorsalScute_',5),('Ashmite_SulfurRidge_',10),('As
     found=sum(1 for o in meshes if o.name.startswith(prefix))
     if found!=count: raise RuntimeError(f'{prefix} physical anatomy regression: {found} != {count}')
 
+# Five sculpted heat-fractured scutella must replace spherical placeholders.
+import ashmite_scute_geometry as ashgeo
+for i in range(1,6):
+    obj=bpy.data.objects.get(f'Ashmite_DorsalScute_{i}')
+    if not obj or obj.type!='MESH': raise RuntimeError(f'Ashmite scute {i} missing')
+    if obj.get('magenheim_ashmite_scute_contract')!=ashgeo.CONTRACT:
+        raise RuntimeError(f'Ashmite scute {i} lacks approved sculpted geometry')
+    if len(obj.data.vertices)!=2+ashgeo.RINGS*ashgeo.SIDES:
+        raise RuntimeError(f'Ashmite scute {i} vertex topology mismatch')
+    triangles=sum(len(p.vertices)-2 for p in obj.data.polygons)
+    if triangles!=2048: raise RuntimeError(f'Ashmite scute {i} triangles {triangles} != 2048')
+    layer=obj.data.uv_layers.get('AshmiteUV')
+    if not layer or any(not 0<=c<=1 for item in layer.data for c in item.uv):
+        raise RuntimeError(f'Ashmite scute {i} radial UVs missing or out of bounds')
+
 EXPECTED={'Idle':64,'Scavenge':52,'Walk':28,'Scuttle':16,'TurnLeft':22,'TurnRight':22,'Bite':18,'Hit':14,'Stagger':24,'Death':42}
 for suffix,end in EXPECTED.items():
     act=bpy.data.actions.get('Ashmite_'+suffix)
