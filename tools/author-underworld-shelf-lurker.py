@@ -44,25 +44,37 @@ def shelf_uv(obj,rx,ry):
    layer.data[li].uv=(.5+co.x/(2.24*rx),.5+co.y/(2.24*ry))
  return obj
 
+def shelf_growth_height(ring,angle,rz):
+ """Physical annular growth crests, interrupted by small radial fissures.
+
+ Only three dorsal rings receive relief; the gill-bearing underside is untouched.
+ """
+ strength={2:.18,5:.20,8:.16}.get(ring,0.)
+ if not strength:return 0.
+ waviness=.85+.15*cos(9*angle+ring*.37)
+ fissure=max(0.,cos(13*angle+ring*.53))**14
+ return rz*strength*waviness*(1-.30*fissure)
+
 def scalloped_shelf(name,loc,scale,material):
  """Closed, scalloped, growth-ring shelf rather than a flattened sphere.
 
- Twelve concentric top/rim/underside loops preserve the fungal silhouette at
+ Sixteen concentric top/rim/underside loops preserve the fungal silhouette at
  combat distance; 128 angular segments exceed the prior sphere's triangle
  density without relying on subdivision modifiers or painted-on overhangs.
  """
- profile=((.12,.56),(.22,.59),(.35,.63),(.49,.60),(.64,.51),(.78,.40),
-          (.90,.24),(1.0,.08),(.99,-.20),(.86,-.45),(.61,-.49),(.30,-.42))
+ profile=((.12,.56),(.22,.59),(.32,.64),(.40,.60),(.49,.60),(.60,.53),
+          (.69,.45),(.78,.40),(.86,.28),(.93,.20),(1.0,.08),
+          (.99,-.20),(.86,-.45),(.70,-.50),(.49,-.48),(.30,-.42))
  segments=128
  rx,ry,rz=scale
  verts=[(0,0,rz*.55),(0,0,-rz*.40)]
- for rad,z in profile:
+ for ring,(rad,z) in enumerate(profile):
   for j in range(segments):
    a=2*pi*j/segments
    scallop=1+.065*cos(7*a+.30)+.025*cos(13*a-.45)
    wave=1+(scallop-1)*min(1,rad/.55)
    verts.append((rx*rad*wave*cos(a),ry*rad*wave*sin(a),
-                 rz*z+.008*rad*cos(5*a)))
+                 rz*z+.008*rad*cos(5*a)+shelf_growth_height(ring,a,rz)))
  faces=[]
  for j in range(segments):
   faces.append((0,2+j,2+(j+1)%segments))
@@ -79,6 +91,7 @@ def scalloped_shelf(name,loc,scale,material):
  obj=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(obj)
  obj.location=loc; mesh.materials.append(material)
  obj['magenheim_shelf_uv_radii']=(rx,ry)
+ obj['magenheim_shelf_growth_contract']='three-sculpted-growth-crests-16x128'
  for poly in mesh.polygons: poly.use_smooth=True
  return shelf_uv(obj,rx,ry)
 

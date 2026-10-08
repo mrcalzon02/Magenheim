@@ -70,9 +70,9 @@ for index in range(1,5):
  plate=bpy.data.objects.get(f'ShelfLurker_DorsalShelf_{index}')
  if plate is None: raise RuntimeError(f'Missing dorsal shelf {index}')
  mesh=plate.data
- if len(mesh.vertices)!=1538 or len(mesh.polygons)!=1664:
-  raise RuntimeError(f'{plate.name}: expected 12-ring sculpted shelf (1538 verts / 1664 faces)')
- if sum(len(p.vertices)-2 for p in mesh.polygons)!=3072:
+ if len(mesh.vertices)!=2050 or len(mesh.polygons)!=2176:
+  raise RuntimeError(f'{plate.name}: expected 16-ring sculpted shelf (2050 verts / 2176 faces)')
+ if sum(len(p.vertices)-2 for p in mesh.polygons)!=4096:
   raise RuntimeError(f'{plate.name}: scalloped shelf triangle density regressed')
  edges=Counter()
  for face in mesh.polygons:
@@ -82,14 +82,23 @@ for index in range(1,5):
    edges[tuple(sorted((ids[j],ids[(j+1)%len(ids)])))]+=1
  if any(n!=2 for n in edges.values()):
   raise RuntimeError(f'{plate.name}: open or non-manifold shelf surface')
- rim=[mesh.vertices[2+7*128+j].co for j in range(128)]
- lip=[mesh.vertices[2+8*128+j].co for j in range(128)]
+ rim=[mesh.vertices[2+10*128+j].co for j in range(128)]
+ lip=[mesh.vertices[2+11*128+j].co for j in range(128)]
  extents=[hypot(p.x/plate.dimensions.x*2,p.y/plate.dimensions.y*2) for p in rim]
  # Normalized to the true bounds; 7+13 growth scallops must survive.
  if max(extents)-min(extents)<.08:
   raise RuntimeError(f'{plate.name}: lost visible scalloped outer silhouette')
  if any(rim[j].z-lip[j].z<=.010 for j in range(128)):
   raise RuntimeError(f'{plate.name}: physical underside lip collapsed')
+ if plate.get('magenheim_shelf_growth_contract')!='three-sculpted-growth-crests-16x128':
+  raise RuntimeError(f'{plate.name}: missing physical growth-ring contract')
+ for crest in (2,5,8):
+  for j in range(128):
+   z0=mesh.vertices[2+(crest-1)*128+j].co.z
+   z1=mesh.vertices[2+crest*128+j].co.z
+   z2=mesh.vertices[2+(crest+1)*128+j].co.z
+   if z1-(z0+z2)*.5<=.003:
+    raise RuntimeError(f'{plate.name}: sculpted fungal growth crest collapsed')
  radii=plate.get('magenheim_shelf_uv_radii')
  if not radii or len(radii)!=2: raise RuntimeError(f'{plate.name}: missing authored shelf UV scale')
  rx,ry=map(float,radii)
