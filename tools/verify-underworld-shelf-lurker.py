@@ -28,6 +28,44 @@ if missing: raise RuntimeError('Missing Shelf Lurker bones: '+','.join(sorted(mi
 # icosphere or a mere painted scallop does not satisfy the silhouette gate.
 from collections import Counter
 from math import hypot
+
+# Verify the sculpted six-chain limb silhouette and raised dorsal sclerites.
+for limb in limbs:
+ for segment in ('Upper','Lower','Tarsus'):
+  name=f'ShelfLurker_{limb}_{segment}'
+  o=bpy.data.objects.get(name)
+  if o is None: raise RuntimeError(f'Missing sculpted limb: {name}')
+  mesh=o.data
+  if len(mesh.vertices)!=208 or len(mesh.polygons)!=194 or sum(len(p.vertices)-2 for p in mesh.polygons)!=412:
+   raise RuntimeError(f'{name}: expected 13x16 curved cuticle')
+  if o.get('magenheim_limb_contract')!='curved-sclerite-13x16':
+   raise RuntimeError(f'{name}: lost authored limb anatomy')
+  if o.parent!=arm or o.vertex_groups.get(f'Leg_{limb}_{segment}') is None:
+   raise RuntimeError(f'{name}: broken existing rig attachment')
+  if not mesh.uv_layers.get('ShelfLurkerUV') or not mesh.materials:
+   raise RuntimeError(f'{name}: missing PBR material/UV')
+  edges=Counter()
+  for poly in mesh.polygons:
+   if poly.area<=1e-9: raise RuntimeError(f'{name}: degenerate cuticle')
+   ids=list(poly.vertices)
+   for j in range(len(ids)):
+    edges[tuple(sorted((ids[j],ids[(j+1)%len(ids)])))]+=1
+  if any(n!=2 for n in edges.values()): raise RuntimeError(f'{name}: open cuticle topology')
+  centers=[sum((mesh.vertices[ring*16+j].co for j in range(16)),Vector())/16 for ring in (0,6,12)]
+  bone=arm.data.bones[f'Leg_{limb}_{segment}']
+  if (centers[0]-bone.head_local).length>.001 or (centers[2]-bone.tail_local).length>.001:
+   raise RuntimeError(f'{name}: sculpted limb misses original bone endpoints')
+  if (centers[1]-(centers[0]+centers[2])*.5).length<.025:
+   raise RuntimeError(f'{name}: straight cylinder silhouette regression')
+  for ring in (4,8):
+   center=sum((mesh.vertices[ring*16+j].co for j in range(16)),Vector())/16
+   if (mesh.vertices[ring*16+4].co-center).z<=.02:
+    raise RuntimeError(f'{name}: armored sclerites face downward rather than dorsally')
+   dorsal=(mesh.vertices[ring*16+4].co-center).length
+   ventral=(mesh.vertices[ring*16+12].co-center).length
+   if dorsal<=ventral*1.10:
+    raise RuntimeError(f'{name}: lost physical dorsal sclerite relief')
+
 for index in range(1,5):
  plate=bpy.data.objects.get(f'ShelfLurker_DorsalShelf_{index}')
  if plate is None: raise RuntimeError(f'Missing dorsal shelf {index}')
