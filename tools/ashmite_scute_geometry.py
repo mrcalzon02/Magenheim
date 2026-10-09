@@ -30,7 +30,13 @@ def scute_mesh_data(rx, ry, rz, plate):
             crest=.12*exp(-((x/(rx*.32))**2))*dorsal
             crack=max(0.,cos(6*a+plate*.51+rad*.80))**18
             fracture=.095*crack*dorsal
-            z=rz*(level+crest-fracture)
+            # Rear overlap and lateral load-bearing ridges are physical geometry,
+            # not painted marks. Keep the approved five-scute footprint.
+            trailing=max(0.,-sin(a))**8
+            flank=abs(cos(a))**10
+            rear_lip=.13*trailing*exp(-((rad-.91)/.12)**2)
+            flank_buttress=.075*flank*exp(-((rad-.69)/.19)**2)
+            z=rz*(level+crest-fracture+rear_lip+flank_buttress)
             vertices.append((x,y,z))
     faces=[]
     for j in range(SIDES):
