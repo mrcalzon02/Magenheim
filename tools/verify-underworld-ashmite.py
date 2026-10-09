@@ -39,6 +39,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ashmite_scute_geometry as ashgeo
 import ashmite_mandible_geometry as mandgeo
 import ashmite_scraper_geometry as scrapegeo
+import ashmite_leg_geometry as leggeo
 for i in range(1,6):
     obj=bpy.data.objects.get(f'Ashmite_DorsalScute_{i}')
     if not obj or obj.type!='MESH': raise RuntimeError(f'Ashmite scute {i} missing')
@@ -87,6 +88,36 @@ if not scraper.data.materials or scraper.data.materials[0].name!='Ashmite_Sulfur
 uv=scraper.data.uv_layers.get('AshmiteUV')
 if not uv or any(not 0<=c<=1 for item in uv.data for c in item.uv):
     raise RuntimeError('Ashmite vent scraper authored UV drift')
+
+# Twelve sculpted heat-chitin femora and tibiae preserve the six-leg rig and joints.
+for pair,y in enumerate((.065,0,-.070),1):
+    for side in (-1,1):
+        label='L' if side<0 else 'R'
+        hip=(side*.068,y,.070)
+        knee=(side*.125,y+(.020 if pair==1 else -.008),.048)
+        ankle=(side*.165,y-.012,.018)
+        for kind,start,bone in (('femur',hip,f'{label}_Coxa{pair}'),
+                                ('tibia',knee,f'{label}_Femur{pair}')):
+            name=f'Ashmite_{label}_{kind.capitalize()}{pair}'
+            obj=bpy.data.objects.get(name)
+            if not obj or obj.type!='MESH':
+                raise RuntimeError(f'{name}: missing sculpted leg mesh')
+            if (obj.get('magenheim_ashmite_leg_contract')!=leggeo.CONTRACT or
+                    obj.get('magenheim_ashmite_leg_kind')!=kind):
+                raise RuntimeError(f'{name}: sculpted leg identity drift')
+            if (len(obj.data.vertices)!=leggeo.RINGS*leggeo.SIDES+2 or
+                    sum(len(p.vertices)-2 for p in obj.data.polygons)!=2*leggeo.RINGS*leggeo.SIDES):
+                raise RuntimeError(f'{name}: topology drift')
+            if any(abs(obj.location[k]-start[k])>1e-6 for k in range(3)):
+                raise RuntimeError(f'{name}: original joint anchor drift')
+            if not obj.vertex_groups.get(bone) or not any(
+                    m.type=='ARMATURE' and m.object==arm for m in obj.modifiers):
+                raise RuntimeError(f'{name}: original bone binding drift')
+            if not obj.data.materials or obj.data.materials[0].name!='Ashmite_HeatChitin':
+                raise RuntimeError(f'{name}: heat-chitin material drift')
+            uv=obj.data.uv_layers.get('AshmiteUV')
+            if not uv or any(not 0<=c<=1 for item in uv.data for c in item.uv):
+                raise RuntimeError(f'{name}: authored UV drift')
 
 EXPECTED={'Idle':64,'Scavenge':52,'Walk':28,'Scuttle':16,'TurnLeft':22,'TurnRight':22,'Bite':18,'Hit':14,'Stagger':24,'Death':42}
 for suffix,end in EXPECTED.items():
