@@ -37,6 +37,7 @@ for prefix,count in (('Ashmite_DorsalScute_',5),('Ashmite_SulfurRidge_',10),('As
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ashmite_scute_geometry as ashgeo
+import ashmite_sulfur_ridge_geometry as ridgegeo
 import ashmite_mandible_geometry as mandgeo
 import ashmite_scraper_geometry as scrapegeo
 import ashmite_leg_geometry as leggeo
@@ -53,6 +54,34 @@ for i in range(1,6):
     layer=obj.data.uv_layers.get('AshmiteUV')
     if not layer or any(not 0<=c<=1 for item in layer.data for c in item.uv):
         raise RuntimeError(f'Ashmite scute {i} radial UVs missing or out of bounds')
+
+# Ten sculpted sulfur accretions preserve the scute anchors, materials and rig.
+for index in range(1,6):
+    for side in (-1,1):
+        label='L' if side<0 else 'R'
+        name=f'Ashmite_SulfurRidge_{index}_{label}'
+        obj=bpy.data.objects.get(name)
+        if not obj or obj.type!='MESH':
+            raise RuntimeError(f'{name}: missing sculpted sulfur ridge')
+        if (obj.get('magenheim_ashmite_sulfur_ridge_contract')!=ridgegeo.CONTRACT or
+                obj.get('magenheim_ashmite_sulfur_ridge_side')!=side or
+                obj.get('magenheim_ashmite_sulfur_ridge_index')!=index):
+            raise RuntimeError(f'{name}: sulfur ridge identity drift')
+        anchor,_=ridgegeo.anchors(side,index)
+        if any(abs(obj.location[k]-anchor[k])>1e-6 for k in range(3)):
+            raise RuntimeError(f'{name}: original sulfur ridge anchor drift')
+        if (len(obj.data.vertices)!=ridgegeo.RINGS*ridgegeo.SIDES+2 or
+                sum(len(p.vertices)-2 for p in obj.data.polygons)!=2*ridgegeo.RINGS*ridgegeo.SIDES):
+            raise RuntimeError(f'{name}: sculpted sulfur ridge topology drift')
+        bone='Abdomen' if index<4 else 'Thorax'
+        if not obj.vertex_groups.get(bone) or not any(
+                m.type=='ARMATURE' and m.object==arm for m in obj.modifiers):
+            raise RuntimeError(f'{name}: original bone binding drift')
+        if not obj.data.materials or obj.data.materials[0].name!='Ashmite_SulfurCrust':
+            raise RuntimeError(f'{name}: sulfur crust material drift')
+        uv=obj.data.uv_layers.get('AshmiteUV')
+        if not uv or any(not 0<=c<=1 for item in uv.data for c in item.uv):
+            raise RuntimeError(f'{name}: authored sulfur ridge UV drift')
 
 # Two sculpted feeding pincers retain existing sockets and bone assignments.
 for side,label in ((-1,'L'),(1,'R')):

@@ -7,6 +7,7 @@ from mathutils import Vector
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ashmite_scute_geometry as ashgeo
+import ashmite_sulfur_ridge_geometry as ridgegeo
 import ashmite_mandible_geometry as mandgeo
 import ashmite_scraper_geometry as scrapegeo
 import ashmite_leg_geometry as leggeo
@@ -61,7 +62,7 @@ keep(organic('Ashmite_Thorax',(0,0,.085),(.095,.105,.052),chitin,3,1),'Thorax');
 # Five physically raised dorsal armor scutes, with sulfur accretion concentrated on fracture ridges.
 for i,y in enumerate((-.155,-.095,-.035,.030,.085),1):
     z=.135-abs(y)*.10; keep(ashgeo.sculpted_scute(f'Ashmite_DorsalScute_{i}',(0,y,z),(.092 if i<4 else .075,.047,.018),chitin,i),'Abdomen' if i<4 else 'Thorax')
-    for side in (-1,1): keep(segment(f'Ashmite_SulfurRidge_{i}_{"L" if side<0 else "R"}',(side*.020,y,z+.018),(side*.060,y-.010,z+.025),.006,sulfur,10),'Abdomen' if i<4 else 'Thorax')
+    for side in (-1,1): keep(ridgegeo.sculpted_ridge(f'Ashmite_SulfurRidge_{i}_{"L" if side<0 else "R"}',side,i,sulfur),'Abdomen' if i<4 else 'Thorax')
 # Six recessed, visibly soft coxal joints and rapid legs. Terminal claws are vent-scraping tools.
 legpts={}
 for pair,y in enumerate((.065,0,-.070),1):
