@@ -9,6 +9,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ashmite_scute_geometry as ashgeo
 import ashmite_sulfur_ridge_geometry as ridgegeo
 import ashmite_head_geometry as headgeo
+import ashmite_eye_geometry as eyegeo
 import ashmite_mandible_geometry as mandgeo
 import ashmite_scraper_geometry as scrapegeo
 import ashmite_leg_geometry as leggeo
@@ -75,7 +76,7 @@ for side in (-1,1):
     s='L' if side<0 else 'R'; keep(mandgeo.sculpted_mandible(f'Ashmite_Mandible_{s}',side,mouth),f'Mandible_{s}')
 keep(scrapegeo.sculpted_scraper('Ashmite_VentScraper',sulfur),'Jaw')
 for side in (-1,1):
-    s='L' if side<0 else 'R'; keep(organic(f'Ashmite_Eye_{s}',(side*.047,.151,.085),(.013,.009,.012),eye,2,70),'Head')
+    s='L' if side<0 else 'R'; keep(eyegeo.sculpted_eye(f'Ashmite_Eye_{s}',side,eye),'Head')
 for o in [x for x in bpy.context.scene.objects if x.type=='MESH']: uv(o)
 # Shared HOST-SWARM-HEXAPOD vocabulary retained for runtime compatibility.
 bpy.ops.object.armature_add(enter_editmode=True,location=(0,0,0)); arm=bpy.context.object; arm.name='RIG_Ashmite_HOST_SWARM_HEXAPOD'; eb=arm.data.edit_bones; root=eb[0]; root.name='Root'; root.head=(0,0,0); root.tail=(0,0,.07)

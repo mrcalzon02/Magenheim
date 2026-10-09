@@ -6,6 +6,16 @@ navigation, AI, networking, persistence, damage and gameplay state.
 """
 from pathlib import Path
 import bpy
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+import ashmite_scute_geometry as ashgeo
+import ashmite_sulfur_ridge_geometry as ridgegeo
+import ashmite_head_geometry as headgeo
+import ashmite_mandible_geometry as mandgeo
+import ashmite_scraper_geometry as scrapegeo
+import ashmite_leg_geometry as leggeo
+import ashmite_tarsal_geometry as tarsgeo
+import ashmite_eye_geometry as eyegeo
 
 ROOT=Path(__file__).resolve().parents[1]
 MODEL=ROOT/'assets/models/source/underworld-creature-ashmite.blend'
@@ -51,16 +61,42 @@ head_uv=head.data.uv_layers.get('AshmiteUV')
 if not head_uv or any(not 0<=c<=1 for item in head_uv.data for c in item.uv):
     raise RuntimeError('Ashmite cephalic shield authored UV drift')
 
+# Paired sculpted eyes retain their original Head attachments and PBR materials.
+# Fail closed on old generated sources: exact surface, winding and authored UVs.
+for side,label in ((-1,'L'),(1,'R')):
+    name=f'Ashmite_Eye_{label}'
+    obj=bpy.data.objects.get(name)
+    if not obj or obj.type!='MESH':
+        raise RuntimeError(f'{name}: missing sculpted eye')
+    if (obj.get('magenheim_ashmite_eye_contract')!=eyegeo.CONTRACT or
+            obj.get('magenheim_ashmite_eye_side')!=side):
+        raise RuntimeError(f'{name}: eye identity contract drift')
+    origin=eyegeo.anchor(side)
+    if any(abs(obj.location[k]-origin[k])>1e-6 for k in range(3)):
+        raise RuntimeError(f'{name}: original eye position drift')
+    if not obj.vertex_groups.get('Head') or not any(
+            m.type=='ARMATURE' and m.object==arm for m in obj.modifiers):
+        raise RuntimeError(f'{name}: Head bone attachment drift')
+    if not obj.data.materials or obj.data.materials[0].name!='Ashmite_Eye':
+        raise RuntimeError(f'{name}: eye PBR material drift')
+    verts,faces,uvs=eyegeo.eye_mesh_data(side)
+    if len(obj.data.vertices)!=len(verts) or len(obj.data.polygons)!=len(faces):
+        raise RuntimeError(f'{name}: eye topology drift')
+    if any(any(abs(a-b)>2e-6 for a,b in zip(actual.co,expected))
+           for actual,expected in zip(obj.data.vertices,verts)):
+        raise RuntimeError(f'{name}: sculpted eye surface relief drift')
+    if any(tuple(poly.vertices)!=tuple(face)
+           for poly,face in zip(obj.data.polygons,faces)):
+        raise RuntimeError(f'{name}: eye face winding drift')
+    layer=obj.data.uv_layers.get('AshmiteUV')
+    if not layer:
+        raise RuntimeError(f'{name}: missing authored eye UV')
+    for poly,expected_uvs in zip(obj.data.polygons,uvs):
+        if any(any(abs(a-b)>2e-5 for a,b in zip(layer.data[li].uv,uv))
+               for li,uv in zip(poly.loop_indices,expected_uvs)):
+            raise RuntimeError(f'{name}: authored eye UV drift')
+
 # Five sculpted heat-fractured scutella must replace spherical placeholders.
-import sys
-sys.path.insert(0,str(Path(__file__).resolve().parent))
-import ashmite_scute_geometry as ashgeo
-import ashmite_sulfur_ridge_geometry as ridgegeo
-import ashmite_head_geometry as headgeo
-import ashmite_mandible_geometry as mandgeo
-import ashmite_scraper_geometry as scrapegeo
-import ashmite_leg_geometry as leggeo
-import ashmite_tarsal_geometry as tarsgeo
 for i in range(1,6):
     obj=bpy.data.objects.get(f'Ashmite_DorsalScute_{i}')
     if not obj or obj.type!='MESH': raise RuntimeError(f'Ashmite scute {i} missing')
