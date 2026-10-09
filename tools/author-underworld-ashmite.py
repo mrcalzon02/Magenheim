@@ -8,6 +8,7 @@ import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ashmite_scute_geometry as ashgeo
 import ashmite_sulfur_ridge_geometry as ridgegeo
+import ashmite_head_geometry as headgeo
 import ashmite_mandible_geometry as mandgeo
 import ashmite_scraper_geometry as scrapegeo
 import ashmite_leg_geometry as leggeo
@@ -58,7 +59,7 @@ chitin=material('Ashmite_HeatChitin','heat-chitin'); sulfur=material('Ashmite_Su
 parts={}
 def keep(o,b): parts[o.name]=b; return o
 # 0.36 m long, extremely low center of mass: not a mushroom-insect reskin.
-keep(organic('Ashmite_Thorax',(0,0,.085),(.095,.105,.052),chitin,3,1),'Thorax'); keep(organic('Ashmite_Abdomen',(0,-.105,.080),(.105,.125,.060),chitin,3,2),'Abdomen'); keep(organic('Ashmite_Head',(0,.105,.070),(.080,.072,.048),chitin,3,3),'Head')
+keep(organic('Ashmite_Thorax',(0,0,.085),(.095,.105,.052),chitin,3,1),'Thorax'); keep(organic('Ashmite_Abdomen',(0,-.105,.080),(.105,.125,.060),chitin,3,2),'Abdomen'); keep(headgeo.sculpted_head('Ashmite_Head',chitin),'Head')
 # Five physically raised dorsal armor scutes, with sulfur accretion concentrated on fracture ridges.
 for i,y in enumerate((-.155,-.095,-.035,.030,.085),1):
     z=.135-abs(y)*.10; keep(ashgeo.sculpted_scute(f'Ashmite_DorsalScute_{i}',(0,y,z),(.092 if i<4 else .075,.047,.018),chitin,i),'Abdomen' if i<4 else 'Thorax')

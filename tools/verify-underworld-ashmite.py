@@ -33,11 +33,30 @@ for prefix,count in (('Ashmite_DorsalScute_',5),('Ashmite_SulfurRidge_',10),('As
     found=sum(1 for o in meshes if o.name.startswith(prefix))
     if found!=count: raise RuntimeError(f'{prefix} physical anatomy regression: {found} != {count}')
 
+# Sculpted shovel-shaped cephalic shield preserves existing eyes and feeding-tool rig.
+head=bpy.data.objects.get('Ashmite_Head')
+if not head or head.type!='MESH' or head.get('magenheim_ashmite_head_contract')!=headgeo.CONTRACT:
+    raise RuntimeError('Ashmite sculpted cephalic shield missing')
+if (len(head.data.vertices)!=headgeo.RINGS*headgeo.SIDES+2 or
+        sum(len(p.vertices)-2 for p in head.data.polygons)!=2*headgeo.RINGS*headgeo.SIDES):
+    raise RuntimeError('Ashmite cephalic shield topology drift')
+if any(abs(head.location[k]-headgeo.ORIGIN[k])>1e-6 for k in range(3)):
+    raise RuntimeError('Ashmite Head origin drift')
+if not head.vertex_groups.get('Head') or not any(
+        m.type=='ARMATURE' and m.object==arm for m in head.modifiers):
+    raise RuntimeError('Ashmite Head bone binding drift')
+if not head.data.materials or head.data.materials[0].name!='Ashmite_HeatChitin':
+    raise RuntimeError('Ashmite cephalic shield PBR material drift')
+head_uv=head.data.uv_layers.get('AshmiteUV')
+if not head_uv or any(not 0<=c<=1 for item in head_uv.data for c in item.uv):
+    raise RuntimeError('Ashmite cephalic shield authored UV drift')
+
 # Five sculpted heat-fractured scutella must replace spherical placeholders.
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ashmite_scute_geometry as ashgeo
 import ashmite_sulfur_ridge_geometry as ridgegeo
+import ashmite_head_geometry as headgeo
 import ashmite_mandible_geometry as mandgeo
 import ashmite_scraper_geometry as scrapegeo
 import ashmite_leg_geometry as leggeo
