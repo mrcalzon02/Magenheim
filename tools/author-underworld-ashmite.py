@@ -7,6 +7,9 @@ from mathutils import Vector
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ashmite_scute_geometry as ashgeo
+import ashmite_sulfur_ridge_geometry as ridgegeo
+import ashmite_head_geometry as headgeo
+import ashmite_eye_geometry as eyegeo
 import ashmite_mandible_geometry as mandgeo
 import ashmite_scraper_geometry as scrapegeo
 import ashmite_leg_geometry as leggeo
@@ -57,11 +60,11 @@ chitin=material('Ashmite_HeatChitin','heat-chitin'); sulfur=material('Ashmite_Su
 parts={}
 def keep(o,b): parts[o.name]=b; return o
 # 0.36 m long, extremely low center of mass: not a mushroom-insect reskin.
-keep(organic('Ashmite_Thorax',(0,0,.085),(.095,.105,.052),chitin,3,1),'Thorax'); keep(organic('Ashmite_Abdomen',(0,-.105,.080),(.105,.125,.060),chitin,3,2),'Abdomen'); keep(organic('Ashmite_Head',(0,.105,.070),(.080,.072,.048),chitin,3,3),'Head')
+keep(organic('Ashmite_Thorax',(0,0,.085),(.095,.105,.052),chitin,3,1),'Thorax'); keep(organic('Ashmite_Abdomen',(0,-.105,.080),(.105,.125,.060),chitin,3,2),'Abdomen'); keep(headgeo.sculpted_head('Ashmite_Head',chitin),'Head')
 # Five physically raised dorsal armor scutes, with sulfur accretion concentrated on fracture ridges.
 for i,y in enumerate((-.155,-.095,-.035,.030,.085),1):
     z=.135-abs(y)*.10; keep(ashgeo.sculpted_scute(f'Ashmite_DorsalScute_{i}',(0,y,z),(.092 if i<4 else .075,.047,.018),chitin,i),'Abdomen' if i<4 else 'Thorax')
-    for side in (-1,1): keep(segment(f'Ashmite_SulfurRidge_{i}_{"L" if side<0 else "R"}',(side*.020,y,z+.018),(side*.060,y-.010,z+.025),.006,sulfur,10),'Abdomen' if i<4 else 'Thorax')
+    for side in (-1,1): keep(ridgegeo.sculpted_ridge(f'Ashmite_SulfurRidge_{i}_{"L" if side<0 else "R"}',side,i,sulfur),'Abdomen' if i<4 else 'Thorax')
 # Six recessed, visibly soft coxal joints and rapid legs. Terminal claws are vent-scraping tools.
 legpts={}
 for pair,y in enumerate((.065,0,-.070),1):
@@ -73,7 +76,7 @@ for side in (-1,1):
     s='L' if side<0 else 'R'; keep(mandgeo.sculpted_mandible(f'Ashmite_Mandible_{s}',side,mouth),f'Mandible_{s}')
 keep(scrapegeo.sculpted_scraper('Ashmite_VentScraper',sulfur),'Jaw')
 for side in (-1,1):
-    s='L' if side<0 else 'R'; keep(organic(f'Ashmite_Eye_{s}',(side*.047,.151,.085),(.013,.009,.012),eye,2,70),'Head')
+    s='L' if side<0 else 'R'; keep(eyegeo.sculpted_eye(f'Ashmite_Eye_{s}',side,eye),'Head')
 for o in [x for x in bpy.context.scene.objects if x.type=='MESH']: uv(o)
 # Shared HOST-SWARM-HEXAPOD vocabulary retained for runtime compatibility.
 bpy.ops.object.armature_add(enter_editmode=True,location=(0,0,0)); arm=bpy.context.object; arm.name='RIG_Ashmite_HOST_SWARM_HEXAPOD'; eb=arm.data.edit_bones; root=eb[0]; root.name='Root'; root.head=(0,0,0); root.tail=(0,0,.07)

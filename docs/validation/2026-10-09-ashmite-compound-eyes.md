@@ -1,0 +1,9 @@
+# Ashmite paired compound-eye geometry — candidate, 2026-10-09
+
+Only the two already-established Sulfurous Wastes Ashmite eyes change. The author now calls a Blender-independent sculpted-eye generator in place of the generic perturbed ico-spheres. The new corneal shell uses a restrained twelve-sector physical facet relief, a continuous peripheral socket rim, a recessed lens transition, closed outward topology and explicit seam-safe cylindrical/radial UVs. Existing eye origins (-/+0.047, 0.151, 0.085), ~26 mm width, Head rig assignment, Ashmite_Eye material and five-family 1024px albedo/normal/roughness source set remain unchanged. No new creature, appendage, emission or station/resource art is introduced.
+
+Each new eye contains 866 vertices and 1,728 triangulated faces (18 longitudinal rings x 48 circumferential sections); both eyes total 3,456 triangles. Six Blender-free regression tests cover anchor identity, manifoldness, positive signed volume/outward winding, UV bounds/seam, bilateral identity, envelope and physical rim/groove/facet relief. A procedural orthographic preview was inspected with the existing sculpted head; it is not concept-art approval or a Blender/runtime render.
+
+Root-cause repair: the previous cephalic verifier used headgeo before importing it. Its geometry-module imports now execute before the first head check. The production verifier additionally compares the two generated eye meshes against expected vertices, face winding, UV loops, material and Head binding, rejecting stale .blend sources.
+
+Still blocked from production acceptance: the full approved concept-art silhouette overlay, Blender source regeneration, deformation review of all ten actions, real installed Tick donor triangle/texture measurement, GLB export and Valheim runtime/multiplayer observation. The 1024px source texture resolution is not certified against the unmeasured donor.
