@@ -8,6 +8,7 @@ import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ashmite_scute_geometry as ashgeo
 import ashmite_mandible_geometry as mandgeo
+import ashmite_scraper_geometry as scrapegeo
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'assets/models/source/underworld-creature-ashmite.blend'
@@ -68,7 +69,7 @@ for pair,y in enumerate((.065,0,-.070),1):
 # Robust paired mandibles plus central mineral scraper for vent/carrion scavenging.
 for side in (-1,1):
     s='L' if side<0 else 'R'; keep(mandgeo.sculpted_mandible(f'Ashmite_Mandible_{s}',side,mouth),f'Mandible_{s}')
-keep(cone('Ashmite_VentScraper',(0,.185,.048),.018,.050,sulfur,(pi/2,0,0)),'Jaw')
+keep(scrapegeo.sculpted_scraper('Ashmite_VentScraper',sulfur),'Jaw')
 for side in (-1,1):
     s='L' if side<0 else 'R'; keep(organic(f'Ashmite_Eye_{s}',(side*.047,.151,.085),(.013,.009,.012),eye,2,70),'Head')
 for o in [x for x in bpy.context.scene.objects if x.type=='MESH']: uv(o)

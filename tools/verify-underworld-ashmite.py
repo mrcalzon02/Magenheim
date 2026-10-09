@@ -38,6 +38,7 @@ import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ashmite_scute_geometry as ashgeo
 import ashmite_mandible_geometry as mandgeo
+import ashmite_scraper_geometry as scrapegeo
 for i in range(1,6):
     obj=bpy.data.objects.get(f'Ashmite_DorsalScute_{i}')
     if not obj or obj.type!='MESH': raise RuntimeError(f'Ashmite scute {i} missing')
@@ -70,6 +71,22 @@ for side,label in ((-1,'L'),(1,'R')):
     layer=obj.data.uv_layers.get('AshmiteUV')
     if not layer or any(not 0<=c<=1 for item in layer.data for c in item.uv):
         raise RuntimeError(f'Ashmite mandible {label} UVs missing or out of bounds')
+
+# Ashmite's central vent scraper is an authored sulfurized mouth tool.
+scraper=bpy.data.objects.get('Ashmite_VentScraper')
+if not scraper or scraper.type!='MESH' or scraper.get('magenheim_ashmite_scraper_contract')!=scrapegeo.CONTRACT:
+    raise RuntimeError('Ashmite vent scraper sculpted geometry missing')
+if len(scraper.data.vertices)!=scrapegeo.RINGS*scrapegeo.SIDES+2 or sum(len(p.vertices)-2 for p in scraper.data.polygons)!=2*scrapegeo.RINGS*scrapegeo.SIDES:
+    raise RuntimeError('Ashmite vent scraper topology drift')
+if any(abs(scraper.location[k]-scrapegeo.ORIGIN[k])>1e-6 for k in range(3)):
+    raise RuntimeError('Ashmite vent scraper Jaw anchor drift')
+if not scraper.vertex_groups.get('Jaw') or not any(m.type=='ARMATURE' and m.object==arm for m in scraper.modifiers):
+    raise RuntimeError('Ashmite vent scraper Jaw rig binding drift')
+if not scraper.data.materials or scraper.data.materials[0].name!='Ashmite_SulfurCrust':
+    raise RuntimeError('Ashmite vent scraper sulfur material drift')
+uv=scraper.data.uv_layers.get('AshmiteUV')
+if not uv or any(not 0<=c<=1 for item in uv.data for c in item.uv):
+    raise RuntimeError('Ashmite vent scraper authored UV drift')
 
 EXPECTED={'Idle':64,'Scavenge':52,'Walk':28,'Scuttle':16,'TurnLeft':22,'TurnRight':22,'Bite':18,'Hit':14,'Stagger':24,'Death':42}
 for suffix,end in EXPECTED.items():
