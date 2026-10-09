@@ -24,16 +24,200 @@ required={'Root','Body','Abdomen','Head','AttackOrigin','HitCenter','SenseFX'}
 for limb in limbs: required|={f'Leg_{limb}_{j}' for j in ('Upper','Lower','Tarsus','Grip')}
 missing=required-{b.name for b in arm.data.bones}
 if missing: raise RuntimeError('Missing Shelf Lurker bones: '+','.join(sorted(missing)))
+# Production shelf geometry must have a watertight, sculpted rim; a flattened
+# icosphere or a mere painted scallop does not satisfy the silhouette gate.
+from collections import Counter
+from math import hypot
+
+# The six gripping feet must have physical underside suction ridges, not
+# flattened primitive spheres with concentric rings painted across cylinder UVs.
+for limb in limbs:
+ pad=bpy.data.objects.get(f'ShelfLurker_{limb}_Grip')
+ if pad is None: raise RuntimeError(f'{limb}: missing sculpted gripping pad')
+ mesh=pad.data
+ if (len(mesh.vertices),len(mesh.polygons),sum(len(p.vertices)-2 for p in mesh.polygons))!=(770,816,1536):
+  raise RuntimeError(f'{pad.name}: expected 16x48 sculpted suction geometry')
+ if pad.get('magenheim_grip_contract')!='sculpted-suction-pad-16x48':
+  raise RuntimeError(f'{pad.name}: missing suction-pad geometry contract')
+ if pad.parent!=arm or pad.vertex_groups.get(f'Leg_{limb}_Grip') is None:
+  raise RuntimeError(f'{pad.name}: broken grip-bone binding')
+ if not any(m.type=='ARMATURE' and m.object==arm for m in pad.modifiers):
+  raise RuntimeError(f'{pad.name}: missing grip armature modifier')
+ if not mesh.materials or mesh.materials[0].name!='ShelfLurkerGripPad':
+  raise RuntimeError(f'{pad.name}: lost authored grip material')
+ radii=pad.get('magenheim_grip_uv_radii')
+ if not radii or len(radii)!=2: raise RuntimeError(f'{pad.name}: missing radial UV scale')
+ rx,ry=map(float,radii)
+ if rx<=0 or ry<=0: raise RuntimeError(f'{pad.name}: invalid radial UV scale')
+ layer=mesh.uv_layers.get('ShelfLurkerUV')
+ if layer is None: raise RuntimeError(f'{pad.name}: missing grip PBR UVs')
+ edges=Counter()
+ for poly in mesh.polygons:
+  if poly.area<=1e-9: raise RuntimeError(f'{pad.name}: degenerate suction-pad geometry')
+  ids=list(poly.vertices)
+  for j in range(len(ids)):
+   edges[tuple(sorted((ids[j],ids[(j+1)%len(ids)])))]+=1
+  for li in poly.loop_indices:
+   co=mesh.vertices[mesh.loops[li].vertex_index].co
+   u,v=layer.data[li].uv
+   if abs(u-(.5+co.x/(2.12*rx)))>1e-5 or abs(v-(.5+co.y/(2.12*ry)))>1e-5:
+    raise RuntimeError(f'{pad.name}: concentric grip texture no longer aligns with pad')
+   if not (0<u<1 and 0<v<1): raise RuntimeError(f'{pad.name}: grip UV exceeds atlas')
+ if any(n!=2 for n in edges.values()): raise RuntimeError(f'{pad.name}: open suction-pad mesh')
+ # Two underside contact ridges must remain lower than the recessed cavity.
+ def z(ring): return mesh.vertices[2+ring*48].co.z
+ if z(9)>=z(10)-.008 or z(11)>=z(10)-.010 or mesh.vertices[1].co.z<=z(11)+.03:
+  raise RuntimeError(f'{pad.name}: physical suction ridges/cavity collapsed')
+
+# Verify the sculpted six-chain limb silhouette and raised dorsal sclerites.
+for limb in limbs:
+ for segment in ('Upper','Lower','Tarsus'):
+  name=f'ShelfLurker_{limb}_{segment}'
+  o=bpy.data.objects.get(name)
+  if o is None: raise RuntimeError(f'Missing sculpted limb: {name}')
+  mesh=o.data
+  if len(mesh.vertices)!=208 or len(mesh.polygons)!=194 or sum(len(p.vertices)-2 for p in mesh.polygons)!=412:
+   raise RuntimeError(f'{name}: expected 13x16 curved cuticle')
+  if o.get('magenheim_limb_contract')!='curved-sclerite-13x16':
+   raise RuntimeError(f'{name}: lost authored limb anatomy')
+  if o.parent!=arm or o.vertex_groups.get(f'Leg_{limb}_{segment}') is None:
+   raise RuntimeError(f'{name}: broken existing rig attachment')
+  if not mesh.uv_layers.get('ShelfLurkerUV') or not mesh.materials:
+   raise RuntimeError(f'{name}: missing PBR material/UV')
+  edges=Counter()
+  for poly in mesh.polygons:
+   if poly.area<=1e-9: raise RuntimeError(f'{name}: degenerate cuticle')
+   ids=list(poly.vertices)
+   for j in range(len(ids)):
+    edges[tuple(sorted((ids[j],ids[(j+1)%len(ids)])))]+=1
+  if any(n!=2 for n in edges.values()): raise RuntimeError(f'{name}: open cuticle topology')
+  centers=[sum((mesh.vertices[ring*16+j].co for j in range(16)),Vector())/16 for ring in (0,6,12)]
+  bone=arm.data.bones[f'Leg_{limb}_{segment}']
+  if (centers[0]-bone.head_local).length>.001 or (centers[2]-bone.tail_local).length>.001:
+   raise RuntimeError(f'{name}: sculpted limb misses original bone endpoints')
+  if (centers[1]-(centers[0]+centers[2])*.5).length<.025:
+   raise RuntimeError(f'{name}: straight cylinder silhouette regression')
+  for ring in (4,8):
+   center=sum((mesh.vertices[ring*16+j].co for j in range(16)),Vector())/16
+   if (mesh.vertices[ring*16+4].co-center).z<=.02:
+    raise RuntimeError(f'{name}: armored sclerites face downward rather than dorsally')
+   dorsal=(mesh.vertices[ring*16+4].co-center).length
+   ventral=(mesh.vertices[ring*16+12].co-center).length
+   if dorsal<=ventral*1.10:
+    raise RuntimeError(f'{name}: lost physical dorsal sclerite relief')
+
+for index in range(1,5):
+ plate=bpy.data.objects.get(f'ShelfLurker_DorsalShelf_{index}')
+ if plate is None: raise RuntimeError(f'Missing dorsal shelf {index}')
+ mesh=plate.data
+ if len(mesh.vertices)!=2050 or len(mesh.polygons)!=2176:
+  raise RuntimeError(f'{plate.name}: expected 16-ring sculpted shelf (2050 verts / 2176 faces)')
+ if sum(len(p.vertices)-2 for p in mesh.polygons)!=4096:
+  raise RuntimeError(f'{plate.name}: scalloped shelf triangle density regressed')
+ edges=Counter()
+ for face in mesh.polygons:
+  ids=list(face.vertices)
+  if face.area<=1e-9: raise RuntimeError(f'{plate.name}: degenerate shelf face')
+  for j in range(len(ids)):
+   edges[tuple(sorted((ids[j],ids[(j+1)%len(ids)])))]+=1
+ if any(n!=2 for n in edges.values()):
+  raise RuntimeError(f'{plate.name}: open or non-manifold shelf surface')
+ rim=[mesh.vertices[2+10*128+j].co for j in range(128)]
+ lip=[mesh.vertices[2+11*128+j].co for j in range(128)]
+ extents=[hypot(p.x/plate.dimensions.x*2,p.y/plate.dimensions.y*2) for p in rim]
+ # Normalized to the true bounds; 7+13 growth scallops must survive.
+ if max(extents)-min(extents)<.08:
+  raise RuntimeError(f'{plate.name}: lost visible scalloped outer silhouette')
+ if any(rim[j].z-lip[j].z<=.010 for j in range(128)):
+  raise RuntimeError(f'{plate.name}: physical underside lip collapsed')
+ if plate.get('magenheim_shelf_growth_contract')!='three-sculpted-growth-crests-16x128':
+  raise RuntimeError(f'{plate.name}: missing physical growth-ring contract')
+ for crest in (2,5,8):
+  for j in range(128):
+   z0=mesh.vertices[2+(crest-1)*128+j].co.z
+   z1=mesh.vertices[2+crest*128+j].co.z
+   z2=mesh.vertices[2+(crest+1)*128+j].co.z
+   if z1-(z0+z2)*.5<=.003:
+    raise RuntimeError(f'{plate.name}: sculpted fungal growth crest collapsed')
+ radii=plate.get('magenheim_shelf_uv_radii')
+ if not radii or len(radii)!=2: raise RuntimeError(f'{plate.name}: missing authored shelf UV scale')
+ rx,ry=map(float,radii)
+ if rx<=0 or ry<=0: raise RuntimeError(f'{plate.name}: invalid shelf UV radii')
+ if not (1.9*rx<=plate.dimensions.x<=2.25*rx and 1.9*ry<=plate.dimensions.y<=2.25*ry):
+  raise RuntimeError(f'{plate.name}: cap dimensions diverge from authored UV scale')
+ layer=mesh.uv_layers.get('ShelfLurkerUV')
+ if not layer: raise RuntimeError(f'{plate.name}: sculpted shelf missing UV')
+ # Concentric PBR growth bands must follow the cap radius, not object height
+ # or angular cylindrical mapping (which turns them into unrelated stripes).
+ for poly in mesh.polygons:
+  for li in poly.loop_indices:
+   co=mesh.vertices[mesh.loops[li].vertex_index].co
+   u,v=layer.data[li].uv
+   if abs(u-(.5+co.x/(2.24*rx)))>1e-5 or abs(v-(.5+co.y/(2.24*ry)))>1e-5:
+    raise RuntimeError(f'{plate.name}: fungal growth texture UVs lost radial alignment')
+   if not (0<=u<=1 and 0<=v<=1):
+    raise RuntimeError(f'{plate.name}: scalloped lip exceeds texture atlas')
 if len([o for o in meshes if o.name.startswith('ShelfLurker_DorsalShelf_')])!=4: raise RuntimeError('Shelf Lurker requires four modeled dorsal shelf plates')
 if len([o for o in meshes if o.name.endswith('_Grip')])!=6: raise RuntimeError('Shelf Lurker requires six modeled grip pads')
 if len([o for o in meshes if o.name.startswith('ShelfLurker_SensoryFrond_')])!=5: raise RuntimeError('Shelf Lurker sensory crown geometry incomplete')
+# A five-cylinder crown passes an object-count check but is not a production
+# sensory silhouette. Require physically curved, tapered, closed fronds.
+for i in range(1,6):
+ frond=bpy.data.objects.get(f'ShelfLurker_SensoryFrond_{i}')
+ if frond is None: raise RuntimeError(f'Missing sensory frond {i}')
+ mesh=frond.data
+ if len(mesh.vertices)!=108 or len(mesh.polygons)!=98:
+  raise RuntimeError(f'{frond.name}: expected 9x12 curved antenna rings with closed ends')
+ if sum(len(p.vertices)-2 for p in mesh.polygons)!=212:
+  raise RuntimeError(f'{frond.name}: sensory frond triangle density regressed')
+ if frond.parent!=arm or frond.vertex_groups.get('Head') is None:
+  raise RuntimeError(f'{frond.name}: sensory organ not bound to Head')
+ if not any(m.type=='ARMATURE' and m.object==arm for m in frond.modifiers):
+  raise RuntimeError(f'{frond.name}: missing armature modifier')
+ if not mesh.materials or mesh.materials[0].name!='ShelfLurkerSensoryCrown':
+  raise RuntimeError(f'{frond.name}: wrong sensory material')
+ if not mesh.uv_layers.get('ShelfLurkerUV') or any(p.area<=1e-8 for p in mesh.polygons):
+  raise RuntimeError(f'{frond.name}: missing UV or degenerate frond geometry')
+ uv_layer=mesh.uv_layers['ShelfLurkerUV']
+ cap_count=0
+ for poly in mesh.polygons:
+  coords=[tuple(uv_layer.data[li].uv) for li in poly.loop_indices]
+  if any(not (0<=u<=1 and 0<=v<=1) for u,v in coords):
+   raise RuntimeError(f'{frond.name}: sensory crown UVs exceed atlas')
+  if len(poly.vertices)>4:
+   cap_count+=1
+   area=abs(sum(coords[j][0]*coords[(j+1)%len(coords)][1]-
+                coords[(j+1)%len(coords)][0]*coords[j][1] for j in range(len(coords)))/2)
+   if area<.59: raise RuntimeError(f'{frond.name}: sensory crown end-cap UV island collapsed')
+  else:
+   if max(u for u,v in coords)-min(u for u,v in coords)>.09:
+    raise RuntimeError(f'{frond.name}: sensory crown side UV seam discontinuity')
+ if cap_count!=2: raise RuntimeError(f'{frond.name}: expected two mapped sensory crown end caps')
+ if frond.get('magenheim_sensory_frame')!='species-x-continuous':
+  raise RuntimeError(f'{frond.name}: lost stable sensory frame contract')
+ centers=[]; radii=[]; axes=[]
+ for ring in range(9):
+  points=[mesh.vertices[ring*12+j].co for j in range(12)]
+  center=sum(points,Vector())/12
+  centers.append(center)
+  radii.append(sum((p-center).length for p in points)/12)
+  axes.append((points[0]-center).normalized())
+ if any(a.dot(b)<.866 for a,b in zip(axes,axes[1:])):
+  raise RuntimeError(f'{frond.name}: abrupt sensory ring rotation twists texture and silhouette')
+ if radii[-1]>=radii[0]*.25 or any(radii[j+1]>=radii[j] for j in range(8)):
+  raise RuntimeError(f'{frond.name}: sensory tip no longer tapers')
+ if (centers[4]-(centers[0]+centers[8])*.5).length<.07:
+  raise RuntimeError(f'{frond.name}: straight cylinder replaced curved crown')
+ if centers[8].z>centers[0].z-.30:
+  raise RuntimeError(f'{frond.name}: lost downward sensory reach')
+
 # All 18 gripping claws have two tapered, joined sections and their own
 # outward-then-inward silhouette. Verify actual mesh endpoints, not just names.
 talons=[o for o in meshes if '_Talon_' in o.name]
 if len(talons)!=36: raise RuntimeError(f'Shelf Lurker requires 36 talon sections, found {len(talons)}')
-def talon_endpoints(obj):
- zs=[v.co.z for v in obj.data.vertices]
- return (obj.matrix_world @ Vector((0,0,min(zs))),obj.matrix_world @ Vector((0,0,max(zs))))
+def talon_center(obj,ring):
+ mesh=obj.data
+ return sum((mesh.vertices[ring*12+j].co for j in range(12)),Vector())/12
 for limb in limbs:
  pad=bpy.data.objects.get(f'ShelfLurker_{limb}_Grip')
  if pad is None: raise RuntimeError(f'Missing grip pad for {limb}')
@@ -44,8 +228,39 @@ for limb in limbs:
   hook=bpy.data.objects.get(f'ShelfLurker_{limb}_Talon_{digit}_Hook')
   if base is None or hook is None: raise RuntimeError(f'{limb}: incomplete three-claw anatomy')
   for obj in (base,hook):
-   if obj.type!='MESH' or len(obj.data.polygons)<12 or any(p.area<=1e-8 for p in obj.data.polygons):
-    raise RuntimeError(f'{obj.name}: invalid physical talon topology')
+   mesh=obj.data
+   if obj.type!='MESH' or len(mesh.vertices)!=108 or len(mesh.polygons)!=98 or sum(len(p.vertices)-2 for p in mesh.polygons)!=212:
+    raise RuntimeError(f'{obj.name}: expected sculpted 9x12 talon topology')
+   if obj.get('magenheim_talon_contract')!='swept-gripping-talon-9x12':
+    raise RuntimeError(f'{obj.name}: lost curved gripping-claw contract')
+   if any(p.area<=1e-8 for p in mesh.polygons): raise RuntimeError(f'{obj.name}: degenerate talon topology')
+   edges=Counter()
+   for poly in mesh.polygons:
+    ids=list(poly.vertices)
+    for j in range(len(ids)):
+     edges[tuple(sorted((ids[j],ids[(j+1)%len(ids)])))]+=1
+   if any(n!=2 for n in edges.values()): raise RuntimeError(f'{obj.name}: open talon topology')
+   centers=[talon_center(obj,r) for r in (0,4,8)]
+   if (centers[1]-(centers[0]+centers[2])*.5).length<.015:
+    raise RuntimeError(f'{obj.name}: straight cone regression')
+   axes=[]
+   for ring in range(9):
+    c=talon_center(obj,ring)
+    axes.append((mesh.vertices[ring*12].co-c).normalized())
+   if any(a.dot(b)<.866 for a,b in zip(axes,axes[1:])):
+    raise RuntimeError(f'{obj.name}: talon ring frame twists')
+   uv=mesh.uv_layers.get('ShelfLurkerUV')
+   if not uv: raise RuntimeError(f'{obj.name}: missing authored UV')
+   caps=0
+   for poly in mesh.polygons:
+    coords=[tuple(uv.data[li].uv) for li in poly.loop_indices]
+    if any(not (0<=u<=1 and 0<=vv<=1) for u,vv in coords):
+     raise RuntimeError(f'{obj.name}: talon UV exceeds atlas')
+    if len(poly.vertices)>4:
+     caps+=1
+     area=abs(sum(coords[j][0]*coords[(j+1)%len(coords)][1]-coords[(j+1)%len(coords)][0]*coords[j][1] for j in range(len(coords)))/2)
+     if area<.59: raise RuntimeError(f'{obj.name}: collapsed talon cap UV')
+   if caps!=2: raise RuntimeError(f'{obj.name}: missing planar talon cap UVs')
    if obj.parent!=arm or obj.vertex_groups.get(f'Leg_{limb}_Grip') is None:
     raise RuntimeError(f'{obj.name}: not bound to grip bone')
    if not any(m.type=='ARMATURE' and m.object==arm for m in obj.modifiers):
@@ -54,9 +269,11 @@ for limb in limbs:
     raise RuntimeError(f'{obj.name}: wrong hard-talon material')
    if not obj.data.uv_layers.get('ShelfLurkerUV'):
     raise RuntimeError(f'{obj.name}: missing authored UV')
-  start,knuckle=talon_endpoints(base)
-  joint,point=talon_endpoints(hook)
-  if (joint-knuckle).length>.02: raise RuntimeError(f'{limb} claw {digit}: sections detached')
+  start,knuckle=talon_center(base,0),talon_center(base,8)
+  joint,point=talon_center(hook,0),talon_center(hook,8)
+  if (joint-knuckle).length>1e-5: raise RuntimeError(f'{limb} claw {digit}: sections detached')
+  if any((base.data.vertices[8*12+j].co-hook.data.vertices[j].co).length>1e-5 for j in range(12)):
+   raise RuntimeError(f'{limb} claw {digit}: knuckle cross-sections split')
   if sign*(knuckle.x-pad.location.x)<.22: raise RuntimeError(f'{limb} claw {digit}: lost outward silhouette')
   if sign*(point.x-knuckle.x)>-.09: raise RuntimeError(f'{limb} claw {digit}: no inward hook')
   if point.z>pad.location.z-.20: raise RuntimeError(f'{limb} claw {digit}: tip no longer grips below pad')
@@ -78,24 +295,81 @@ for shelf_index in range(1,5):
   if o is None: raise RuntimeError(f'Shelf {shelf_index}: missing underside rib {rib}')
   if o.parent!=arm or o.vertex_groups.get(bone) is None: raise RuntimeError(f'{o.name}: incorrect shelf rig binding')
   if not o.data.materials or o.data.materials[0].name!='ShelfLurkerMouthGill': raise RuntimeError(f'{o.name}: incorrect lamella material')
-  if not o.data.uv_layers.get('ShelfLurkerUV') or any(p.area<=1e-8 for p in o.data.polygons): raise RuntimeError(f'{o.name}: invalid gill mesh/UV')
-  inner,outer=talon_endpoints(o)
-  if max(inner.z,outer.z)>plate.location.z-.04: raise RuntimeError(f'{o.name}: gill is not beneath its shelf')
+  mesh=o.data
+  if len(mesh.vertices)!=204 or len(mesh.polygons)!=194 or sum(len(p.vertices)-2 for p in mesh.polygons)!=404:
+   raise RuntimeError(f'{o.name}: expected 17x12 scalloped fungal lamella')
+  if o.get('magenheim_gill_contract')!='swept-scalloped-lamella-17x12':
+   raise RuntimeError(f'{o.name}: missing swept lamella contract')
+  if not mesh.uv_layers.get('ShelfLurkerUV') or any(p.area<=1e-8 for p in mesh.polygons):
+   raise RuntimeError(f'{o.name}: invalid gill mesh/UV')
+  edges=Counter()
+  for face in mesh.polygons:
+   ids=list(face.vertices)
+   for j in range(len(ids)):
+    edges[tuple(sorted((ids[j],ids[(j+1)%len(ids)])))]+=1
+  if any(n!=2 for n in edges.values()): raise RuntimeError(f'{o.name}: non-manifold gill')
+  centers=[sum((mesh.vertices[ring*12+j].co for j in range(12)),Vector())/12 for ring in range(17)]
+  if (centers[-1]-centers[0]).length<.15 or centers[8].z>=min(centers[0].z,centers[-1].z)-.022:
+   raise RuntimeError(f'{o.name}: swept lamella silhouette collapsed')
+  def half_width(ring):
+   p=mesh.vertices[ring*12].co; c=centers[ring]
+   return hypot(p.x-c.x,p.y-c.y)
+  if half_width(12)-half_width(4)<.003:
+   raise RuntimeError(f'{o.name}: scalloped gill margins collapsed')
+  for ring in (4,8,12):
+   dorsal=mesh.vertices[ring*12+3].co.z-centers[ring].z
+   ventral=centers[ring].z-mesh.vertices[ring*12+9].co.z
+   if dorsal-ventral<.0006:
+    raise RuntimeError(f'{o.name}: gill dorsal midrib collapsed')
+  heights=[v.co.z for v in mesh.vertices]
+  if max(heights)>plate.location.z-.025 or min(heights)<plate.location.z-.11:
+   raise RuntimeError(f'{o.name}: lamella detached from shelf underside')
+# Swept eight-hook feeding anatomy: reject cones, disconnected joints and
+# inward-collapsed funnels. Cone-specific world transform checks do not apply.
 for digit in range(1,9):
  base=bpy.data.objects.get(f'ShelfLurker_MouthBarb_{digit}_Base')
  hook=bpy.data.objects.get(f'ShelfLurker_MouthBarb_{digit}_Hook')
- if base is None or hook is None: raise RuntimeError(f'Mouth barb {digit}: missing geometry')
+ if base is None or hook is None: raise RuntimeError(f'Mouth barb {digit}: missing anatomy')
  for o in (base,hook):
-  if o.parent!=arm or o.vertex_groups.get('Head') is None: raise RuntimeError(f'{o.name}: incorrect Head binding')
-  if not o.data.materials or o.data.materials[0].name!='ShelfLurkerMouthGill': raise RuntimeError(f'{o.name}: incorrect mouth material')
-  if not o.data.uv_layers.get('ShelfLurkerUV') or any(p.area<=1e-8 for p in o.data.polygons): raise RuntimeError(f'{o.name}: invalid mouth mesh/UV')
- root,flare=talon_endpoints(base)
- joint,tip=talon_endpoints(hook)
- if (flare-joint).length>.02: raise RuntimeError(f'Mouth barb {digit}: sections disconnected')
+  mesh=o.data
+  if o.parent!=arm or o.vertex_groups.get('Head') is None:
+   raise RuntimeError(f'{o.name}: incorrect Head binding')
+  if not any(m.type=='ARMATURE' and m.object==arm for m in o.modifiers):
+   raise RuntimeError(f'{o.name}: missing armature modifier')
+  if not mesh.materials or mesh.materials[0].name!='ShelfLurkerMouthGill':
+   raise RuntimeError(f'{o.name}: incorrect mouth material')
+  if o.get('magenheim_mouth_contract')!='swept-mouth-barb-9x12':
+   raise RuntimeError(f'{o.name}: lost curved mouth anatomy')
+  if len(mesh.vertices)!=108 or len(mesh.polygons)!=98 or sum(len(p.vertices)-2 for p in mesh.polygons)!=212:
+   raise RuntimeError(f'{o.name}: wrong swept-barb topology')
+  if not mesh.uv_layers.get('ShelfLurkerUV') or any(p.area<=1e-9 for p in mesh.polygons):
+   raise RuntimeError(f'{o.name}: invalid mouth mesh/UV')
+  edges=Counter()
+  for poly in mesh.polygons:
+   ids=list(poly.vertices)
+   for k in range(len(ids)):
+    edges[tuple(sorted((ids[k],ids[(k+1)%len(ids)])))]+=1
+  if any(n!=2 for n in edges.values()): raise RuntimeError(f'{o.name}: nonmanifold mouth barb')
+  # Guard against sudden 90-degree frame switches in the swept mouth.
+  axes=[]
+  for ring in range(9):
+   points=[mesh.vertices[ring*12+j].co for j in range(12)]
+   mid=sum(points,Vector())/12
+   axes.append((points[0]-mid).normalized())
+  if any(a.dot(b)<.866 for a,b in zip(axes,axes[1:])):
+   raise RuntimeError(f'{o.name}: mouth section twists across adjacent rings')
+ def center(obj,ring):
+  return sum((obj.data.vertices[ring*12+j].co for j in range(12)),Vector())/12
+ root,flare=center(base,0),center(base,8)
+ joint,tip=center(hook,0),center(hook,8)
+ if (flare-joint).length>.001: raise RuntimeError(f'Mouth barb {digit}: separated flare joint')
+ if (center(base,4)-(root+flare)*.5).length<.018 or (center(hook,4)-(joint+tip)*.5).length<.018:
+  raise RuntimeError(f'Mouth barb {digit}: lost curved hook silhouette')
  radial=lambda p: (p.x**2+(p.y-.38)**2)**.5
- if radial(flare)<radial(root)+.045 or radial(tip)>radial(flare)-.13:
-  raise RuntimeError(f'Mouth barb {digit}: lost outward flare or inward funnel')
- if tip.z>1.02: raise RuntimeError(f'Mouth barb {digit}: downward strike silhouette lost')
+ if radial(flare)<radial(root)+.045 or radial(tip)>radial(flare)-.13 or radial(tip)<.10:
+  raise RuntimeError(f'Mouth barb {digit}: lost outward flare or inward open funnel')
+ if not root.z>flare.z>tip.z or tip.z>1.02:
+  raise RuntimeError(f'Mouth barb {digit}: lost downward feeding reach')
 
 expected={'ShelfLurker_ClingIdle':72,'ShelfLurker_LateralCrawl':42,'ShelfLurker_Reposition':52,'ShelfLurker_DropPounce':32,'ShelfLurker_Recover':38,'ShelfLurker_Attack':24,'ShelfLurker_Hit':18,'ShelfLurker_Death':58}
 
@@ -138,4 +412,4 @@ for limb in limbs:
  if not any(f'pose.bones["Leg_{limb}_Grip"]' in p for p in death): raise RuntimeError(f'Death never releases {limb} grip')
 contract='six-independent-grip-chains;sequential-release-replant;drop-pounce-without-whole-mesh-rotation'
 if sc.get('magenheim_cling_contract')!=contract: raise RuntimeError('Missing Shelf Lurker cling/replant contract')
-print(f'PASS Shelf Lurker r2: {len(meshes)} meshes / {tris} tris / 8 actions / six-chain cling / 18 hooked talons / drop-pounce readable',flush=True)
+print(f'PASS Shelf Lurker r2: {len(meshes)} meshes / {tris} tris / 8 actions / six-chain cling / 18 hooked talons / 24 scalloped lamellae / drop-pounce readable',flush=True)

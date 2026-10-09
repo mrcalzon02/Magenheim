@@ -4,6 +4,13 @@ from pathlib import Path
 from math import pi, sin, cos
 import bpy
 from mathutils import Vector
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+import ashmite_scute_geometry as ashgeo
+import ashmite_mandible_geometry as mandgeo
+import ashmite_scraper_geometry as scrapegeo
+import ashmite_leg_geometry as leggeo
+import ashmite_tarsal_geometry as tarsgeo
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'assets/models/source/underworld-creature-ashmite.blend'
@@ -37,6 +44,7 @@ def cone(name,loc,r,depth,mat,rot=(0,0,0)):
     bpy.ops.mesh.primitive_cone_add(vertices=14,radius1=r,radius2=r*.12,depth=depth,location=loc,rotation=rot); o=bpy.context.object; o.name=name; o.data.materials.append(mat); return o
 
 def uv(o):
+    if o.data.uv_layers.get('AshmiteUV'): return
     u=o.data.uv_layers.new(name='AshmiteUV')
     for p in o.data.polygons:
         axis=max(range(3),key=lambda i:abs(p.normal[i]))
@@ -52,18 +60,18 @@ def keep(o,b): parts[o.name]=b; return o
 keep(organic('Ashmite_Thorax',(0,0,.085),(.095,.105,.052),chitin,3,1),'Thorax'); keep(organic('Ashmite_Abdomen',(0,-.105,.080),(.105,.125,.060),chitin,3,2),'Abdomen'); keep(organic('Ashmite_Head',(0,.105,.070),(.080,.072,.048),chitin,3,3),'Head')
 # Five physically raised dorsal armor scutes, with sulfur accretion concentrated on fracture ridges.
 for i,y in enumerate((-.155,-.095,-.035,.030,.085),1):
-    z=.135-abs(y)*.10; keep(organic(f'Ashmite_DorsalScute_{i}',(0,y,z),(.092 if i<4 else .075,.047,.018),chitin,2,20+i),'Abdomen' if i<4 else 'Thorax')
+    z=.135-abs(y)*.10; keep(ashgeo.sculpted_scute(f'Ashmite_DorsalScute_{i}',(0,y,z),(.092 if i<4 else .075,.047,.018),chitin,i),'Abdomen' if i<4 else 'Thorax')
     for side in (-1,1): keep(segment(f'Ashmite_SulfurRidge_{i}_{"L" if side<0 else "R"}',(side*.020,y,z+.018),(side*.060,y-.010,z+.025),.006,sulfur,10),'Abdomen' if i<4 else 'Thorax')
 # Six recessed, visibly soft coxal joints and rapid legs. Terminal claws are vent-scraping tools.
 legpts={}
 for pair,y in enumerate((.065,0,-.070),1):
     for side in (-1,1):
         s='L' if side<0 else 'R'; hip=(side*.068,y,.070); knee=(side*.125,y+(.020 if pair==1 else -.008),.048); ankle=(side*.165,y-.012,.018); toe=(side*.188,y+.020,.008); legpts[(s,pair)]=(hip,knee,ankle,toe)
-        keep(organic(f'Ashmite_{s}_Joint{pair}',hip,(.020,.022,.017),joint,2,40+pair),f'{s}_Coxa{pair}'); keep(segment(f'Ashmite_{s}_Femur{pair}',hip,knee,.014,chitin),f'{s}_Coxa{pair}'); keep(segment(f'Ashmite_{s}_Tibia{pair}',knee,ankle,.011,chitin),f'{s}_Femur{pair}'); keep(segment(f'Ashmite_{s}_Tarsus{pair}',ankle,toe,.007,joint),f'{s}_Tarsus{pair}'); keep(cone(f'Ashmite_{s}_Scraper{pair}',(side*.198,toe[1]+.010,.007),.009,.030,mouth,(pi/2,0,0)),f'{s}_Tarsus{pair}')
+        keep(organic(f'Ashmite_{s}_Joint{pair}',hip,(.020,.022,.017),joint,2,40+pair),f'{s}_Coxa{pair}'); keep(leggeo.sculpted_leg(f'Ashmite_{s}_Femur{pair}',hip,knee,'femur',chitin),f'{s}_Coxa{pair}'); keep(leggeo.sculpted_leg(f'Ashmite_{s}_Tibia{pair}',knee,ankle,'tibia',chitin),f'{s}_Femur{pair}'); keep(tarsgeo.sculpted_tarsal(f'Ashmite_{s}_Tarsus{pair}',side,pair,'tarsus',joint),f'{s}_Tarsus{pair}'); keep(tarsgeo.sculpted_tarsal(f'Ashmite_{s}_Scraper{pair}',side,pair,'scraper',mouth),f'{s}_Tarsus{pair}')
 # Robust paired mandibles plus central mineral scraper for vent/carrion scavenging.
 for side in (-1,1):
-    s='L' if side<0 else 'R'; keep(segment(f'Ashmite_Mandible_{s}',(side*.034,.142,.065),(side*.060,.195,.045),.014,mouth),f'Mandible_{s}')
-keep(cone('Ashmite_VentScraper',(0,.185,.048),.018,.050,sulfur,(pi/2,0,0)),'Jaw')
+    s='L' if side<0 else 'R'; keep(mandgeo.sculpted_mandible(f'Ashmite_Mandible_{s}',side,mouth),f'Mandible_{s}')
+keep(scrapegeo.sculpted_scraper('Ashmite_VentScraper',sulfur),'Jaw')
 for side in (-1,1):
     s='L' if side<0 else 'R'; keep(organic(f'Ashmite_Eye_{s}',(side*.047,.151,.085),(.013,.009,.012),eye,2,70),'Head')
 for o in [x for x in bpy.context.scene.objects if x.type=='MESH']: uv(o)
