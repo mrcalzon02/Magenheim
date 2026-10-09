@@ -10,6 +10,7 @@ import ashmite_scute_geometry as ashgeo
 import ashmite_mandible_geometry as mandgeo
 import ashmite_scraper_geometry as scrapegeo
 import ashmite_leg_geometry as leggeo
+import ashmite_tarsal_geometry as tarsgeo
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'assets/models/source/underworld-creature-ashmite.blend'
@@ -66,7 +67,7 @@ legpts={}
 for pair,y in enumerate((.065,0,-.070),1):
     for side in (-1,1):
         s='L' if side<0 else 'R'; hip=(side*.068,y,.070); knee=(side*.125,y+(.020 if pair==1 else -.008),.048); ankle=(side*.165,y-.012,.018); toe=(side*.188,y+.020,.008); legpts[(s,pair)]=(hip,knee,ankle,toe)
-        keep(organic(f'Ashmite_{s}_Joint{pair}',hip,(.020,.022,.017),joint,2,40+pair),f'{s}_Coxa{pair}'); keep(leggeo.sculpted_leg(f'Ashmite_{s}_Femur{pair}',hip,knee,'femur',chitin),f'{s}_Coxa{pair}'); keep(leggeo.sculpted_leg(f'Ashmite_{s}_Tibia{pair}',knee,ankle,'tibia',chitin),f'{s}_Femur{pair}'); keep(segment(f'Ashmite_{s}_Tarsus{pair}',ankle,toe,.007,joint),f'{s}_Tarsus{pair}'); keep(cone(f'Ashmite_{s}_Scraper{pair}',(side*.198,toe[1]+.010,.007),.009,.030,mouth,(pi/2,0,0)),f'{s}_Tarsus{pair}')
+        keep(organic(f'Ashmite_{s}_Joint{pair}',hip,(.020,.022,.017),joint,2,40+pair),f'{s}_Coxa{pair}'); keep(leggeo.sculpted_leg(f'Ashmite_{s}_Femur{pair}',hip,knee,'femur',chitin),f'{s}_Coxa{pair}'); keep(leggeo.sculpted_leg(f'Ashmite_{s}_Tibia{pair}',knee,ankle,'tibia',chitin),f'{s}_Femur{pair}'); keep(tarsgeo.sculpted_tarsal(f'Ashmite_{s}_Tarsus{pair}',side,pair,'tarsus',joint),f'{s}_Tarsus{pair}'); keep(tarsgeo.sculpted_tarsal(f'Ashmite_{s}_Scraper{pair}',side,pair,'scraper',mouth),f'{s}_Tarsus{pair}')
 # Robust paired mandibles plus central mineral scraper for vent/carrion scavenging.
 for side in (-1,1):
     s='L' if side<0 else 'R'; keep(mandgeo.sculpted_mandible(f'Ashmite_Mandible_{s}',side,mouth),f'Mandible_{s}')

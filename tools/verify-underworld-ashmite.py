@@ -40,6 +40,7 @@ import ashmite_scute_geometry as ashgeo
 import ashmite_mandible_geometry as mandgeo
 import ashmite_scraper_geometry as scrapegeo
 import ashmite_leg_geometry as leggeo
+import ashmite_tarsal_geometry as tarsgeo
 for i in range(1,6):
     obj=bpy.data.objects.get(f'Ashmite_DorsalScute_{i}')
     if not obj or obj.type!='MESH': raise RuntimeError(f'Ashmite scute {i} missing')
@@ -117,6 +118,37 @@ for pair,y in enumerate((.065,0,-.070),1):
                 raise RuntimeError(f'{name}: heat-chitin material drift')
             uv=obj.data.uv_layers.get('AshmiteUV')
             if not uv or any(not 0<=c<=1 for item in uv.data for c in item.uv):
+                raise RuntimeError(f'{name}: authored UV drift')
+
+# The six protected tarsi and six backward-facing vent rasps are sculpted meshes.
+# Preserve each Tarsus bone, original attachment, material, topology and authored UVs.
+for pair in (1,2,3):
+    for side in (-1,1):
+        label='L' if side<0 else 'R'
+        bone=f'{label}_Tarsus{pair}'
+        for kind,part in (('tarsus','Tarsus'),('scraper','Scraper')):
+            name=f'Ashmite_{label}_{part}{pair}'
+            obj=bpy.data.objects.get(name)
+            if not obj or obj.type!='MESH': raise RuntimeError(f'{name}: missing sculpted foot mesh')
+            if (obj.get('magenheim_ashmite_tarsal_contract')!=tarsgeo.CONTRACT or
+                    obj.get('magenheim_ashmite_tarsal_kind')!=kind or
+                    obj.get('magenheim_ashmite_tarsal_pair')!=pair or
+                    obj.get('magenheim_ashmite_tarsal_side')!=side):
+                raise RuntimeError(f'{name}: sculpted foot identity drift')
+            anchor,_=tarsgeo.anchors(side,pair,kind)
+            if any(abs(obj.location[k]-anchor[k])>1e-6 for k in range(3)):
+                raise RuntimeError(f'{name}: original attachment drift')
+            if (len(obj.data.vertices)!=tarsgeo.RINGS[kind]*tarsgeo.SIDES+2 or
+                    sum(len(p.vertices)-2 for p in obj.data.polygons)!=2*tarsgeo.RINGS[kind]*tarsgeo.SIDES):
+                raise RuntimeError(f'{name}: sculpted foot topology drift')
+            if not obj.vertex_groups.get(bone) or not any(
+                    m.type=='ARMATURE' and m.object==arm for m in obj.modifiers):
+                raise RuntimeError(f'{name}: Tarsus rig binding drift')
+            expected_mat='Ashmite_ProtectedJoint' if kind=='tarsus' else 'Ashmite_Mouthpart'
+            if not obj.data.materials or obj.data.materials[0].name!=expected_mat:
+                raise RuntimeError(f'{name}: PBR material drift')
+            layer=obj.data.uv_layers.get('AshmiteUV')
+            if not layer or any(not 0<=c<=1 for item in layer.data for c in item.uv):
                 raise RuntimeError(f'{name}: authored UV drift')
 
 EXPECTED={'Idle':64,'Scavenge':52,'Walk':28,'Scuttle':16,'TurnLeft':22,'TurnRight':22,'Bite':18,'Hit':14,'Stagger':24,'Death':42}
