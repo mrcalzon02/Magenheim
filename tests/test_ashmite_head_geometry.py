@@ -3,7 +3,7 @@ import math
 import unittest
 from collections import Counter
 from tools.ashmite_head_geometry import (CONTRACT, ORIGIN, RINGS, SCALE, SIDES,
-                                         head_mesh_data, head_uv)
+                                         head_mesh_data, head_uv, face_uvs)
 
 
 def signed_volume(verts, faces):
@@ -77,6 +77,16 @@ class AshmiteHeadGeometryTests(unittest.TestCase):
         uv=[head_uv(v) for v in self.v]
         self.assertTrue(all(math.isfinite(q) and 0<=q<=1 for p in uv for q in p))
         self.assertGreater(len(set((round(a,4),round(b,4)) for a,b in uv)),500)
+
+    def test_seam_safe_cylindrical_uvs(self):
+        for face in self.f:
+            uv=face_uvs(face,self.v)
+            self.assertEqual(len(uv),len(face))
+            self.assertTrue(all(math.isfinite(q) and 0<=q<=1 for p in uv for q in p))
+            self.assertLessEqual(max(u for u,v in uv)-min(u for u,v in uv),.03)
+        # Top and underside at the same x/y cannot sample the same normal texel.
+        ring=self.v[1+10*SIDES:1+11*SIDES]
+        self.assertNotAlmostEqual(head_uv(ring[16])[0],head_uv(ring[48])[0])
 
     def test_invalid_dimensions_fail_closed(self):
         for scale in ((0,.07,.04),(-.08,.07,.04),(.08,math.nan,.04),(.08,.07,math.inf),(.08,.07),()):

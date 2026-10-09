@@ -4,7 +4,7 @@ Replaces only the generic ellipsoid head. Retains the approved head anchor,
 0.16 x 0.144 x 0.096 m nominal envelope, existing eyes and feeding-tool bones.
 Geometry is deterministic, closed, UV-authored and Blender-free for QA.
 """
-from math import cos, exp, isfinite, pi, sin, sqrt
+from math import atan2, cos, exp, isfinite, pi, sin
 
 RINGS = 22
 SIDES = 64
@@ -74,9 +74,32 @@ def head_mesh_data(scale=SCALE):
 
 
 def head_uv(vertex, scale=SCALE):
-    """Stable longitudinal cylindrical UVs; seam is handled per polygon."""
+    """Angular U and longitudinal V; unlike planar UVs, dorsal/ventral differ."""
     x, y, z = vertex
-    return (.5 + x/(2.30*scale[0]), .5 + y/(2.30*scale[1]))
+    u = (atan2(z/scale[2], x/scale[0])/(2*pi)) % 1.0
+    return (u, (y+scale[1])/(2*scale[1]))
+
+
+def face_uvs(face, vertices, scale=SCALE):
+    """Seam-safe loop UVs with cap-center interpolation; all values in [0,1]."""
+    center_ids = (0, len(vertices)-1)
+    values = []
+    for index in face:
+        if index in center_ids:
+            values.append(None)
+        else:
+            values.append(((index-1)%SIDES/SIDES,
+                           (vertices[index][1]+scale[1])/(2*scale[1])))
+    us = [p[0] for p in values if p is not None]
+    crosses_seam = min(us)<.1 and max(us)>.9
+    if crosses_seam:
+        values = [((1.0 if u<.1 else u),v) if p is not None else None
+                  for p in values for u,v in [p or (0,0)]]
+    if any(p is None for p in values):
+        avg=sum(p[0] for p in values if p is not None)/len(us)
+        values = [(avg, 0.0 if face[i]==0 else 1.0) if p is None else p
+                  for i,p in enumerate(values)]
+    return values
 
 
 def sculpted_head(name, material):
@@ -94,7 +117,7 @@ def sculpted_head(name, material):
     layer = mesh.uv_layers.new(name='AshmiteUV')
     for poly in mesh.polygons:
         poly.use_smooth = len(poly.vertices)==4
-        for li in poly.loop_indices:
-            v = mesh.vertices[mesh.loops[li].vertex_index].co
-            layer.data[li].uv = head_uv(v)
+        uvs = face_uvs(tuple(poly.vertices), vertices)
+        for li, pair in zip(poly.loop_indices, uvs):
+            layer.data[li].uv = pair
     return obj
