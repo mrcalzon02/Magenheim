@@ -11,7 +11,9 @@ def signed_uv_area(uv):
 
 
 def geometry_fingerprint(verts, faces):
-    return hashlib.sha256((repr(verts)+'\n'+repr(faces)).encode()).hexdigest()
+    payload = ';'.join(','.join(f'{x:.8f}' for x in vertex) for vertex in verts)
+    payload += '\n' + ';'.join(','.join(map(str, face)) for face in faces)
+    return hashlib.sha256(payload.encode()).hexdigest()
 
 
 class MandibleUVAtlasTests(unittest.TestCase):
@@ -27,7 +29,10 @@ class MandibleUVAtlasTests(unittest.TestCase):
             self.assertEqual(vertices[408],(0.,0.,0.))
             start, end = anchors(side)
             self.assertTrue(all(abs(vertices[409][k]-(end[k]-start[k]))<1e-12 for k in range(3)))
-            self.assertEqual(len(geometry_fingerprint(vertices,faces)),64)
+            self.assertEqual(geometry_fingerprint(vertices,faces), {
+                -1: 'bb8287195ff900a12d240548f5abf3581d12a64181b482cfcbe4a6b6ad327e81',
+                 1: '1bc2d42ff6f6b2901d1bc228a22b3b267afa7ccd53fce68ea39f045bd5943ab5',
+            }[side])
 
     def test_three_disjoint_islands_with_real_1024_pixel_gutters(self):
         self.assertGreater(SIDE_U[0],.03)
