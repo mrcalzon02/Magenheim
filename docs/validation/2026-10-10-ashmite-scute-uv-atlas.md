@@ -1,0 +1,11 @@
+# Ashmite five-scute loop-UV atlas — 2026-10-10
+
+**Scope:** Existing Sulfurous Wastes Ashmite only. No new creature, equipment, station or resource geometry. The five previously refined dorsal scutella retain the same closed 1,026-vertex, 2,048-triangle meshes, plate locations, skeletal attachments, material identity and physical trailing overlap lips / lateral buttresses.
+
+**Root-cause repair:** The previous UV adapter projected every scute face onto the same planar `(x,y)` region. That stacks dorsal and ventral texture samples and compresses the steep exposed perimeter edge into nearly overlapping UV lines. It also fails to give the rim its own usable texel area. The new per-face-loop UV atlas assigns distinct dorsal and ventral disk islands plus a continuous, seam-safe rim strip. Sector 63 unwraps into the end of the strip instead of crossing from `u≈1` to `u≈0`. The source retains the existing 1024×1024 heat-chitin albedo, normal and roughness maps; this change improves use of the existing texture without claiming new painted maps or higher effective texel density.
+
+**Geometry:** unchanged 5×2,048 = 10,240 triangles; all five approved plate silhouettes, heat fractures, raised rear lips and flank buttresses are unchanged. A separate UV identity contract forces regeneration before Blender verifier acceptance. The verifier checks per-loop UVs against the authoritative generator as well as the original scute anchors, bone assignments, material and mesh topology.
+
+**Offline verification:** 13 scute-only regression tests pass: five original geometry tests, three rear-overlap tests (previously unmerged), and five new UV island tests. UV tests cover all five plates, positive polygon UV area, disjoint islands, the wraparound sector, topology preservation and rejection of malformed inputs. Blender-free tests do not prove that the current checked-in `.blend`, GLB or Valheim prefab have been regenerated.
+
+**Acceptance pending:** regenerate the `.blend` using `tools/author-underworld-ashmite.py`, run `tools/verify-underworld-ashmite.py` in Blender, export GLB, compare top/front/side silhouettes to approved source art, inspect animation deformation and runtime visuals in Valheim, and measure the installed Tick donor mesh/texture floors. No production acceptance is claimed.

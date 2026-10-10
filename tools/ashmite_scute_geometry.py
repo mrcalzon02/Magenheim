@@ -52,10 +52,57 @@ def scute_mesh_data(rx, ry, rz, plate):
     return vertices, faces
 
 
-def scute_uv(vertex, rx, ry):
-    """Continuous plate-space mapping for existing heat-chitin PBR textures."""
-    x,y,_=vertex
-    return (.5+x/(2.30*rx), .5+y/(2.30*ry))
+# Separate the upper shell, lower shell and exposed overlap edge into UV islands.
+# This prevents the original planar projection from stacking dorsal and ventral
+# shell texture samples while keeping all three islands within the existing
+# 1024px heat-chitin PBR family. Blender must write UVs per face loop: adjacent
+# vertices intentionally have different coordinates across the island seams.
+UV_CONTRACT = 'ashmite-scute-three-island-uv-v1'
+DORSAL_UV_CENTER = (.25, .75)
+VENTRAL_UV_CENTER = (.75, .75)
+UV_DISK_RADIUS = .205
+RIM_U = (.055, .945)
+RIM_V = (.085, .395)
+
+
+def scute_uv(vertex, rx, ry, underside=False):
+    """Project the upper or lower carapace into a dedicated disk island."""
+    if not all(isfinite(v) and v > 0 for v in (rx, ry)):
+        raise ValueError('Ashmite scute UV radii must be positive finite numbers')
+    x, y, _ = vertex
+    center = VENTRAL_UV_CENTER if underside else DORSAL_UV_CENTER
+    return (center[0] + UV_DISK_RADIUS*x/rx,
+            center[1] + UV_DISK_RADIUS*y/ry)
+
+
+def scute_face_uvs(vertices, faces, rx, ry):
+    """Author loop UVs with separate dorsal, ventral and perimeter islands.
+
+    The perimeter has a deliberate angular seam at sector zero. Unwrapping
+    each edge quad independently avoids the 0->1 texture interpolation that
+    otherwise streaks across the entire final sector.
+    """
+    if len(vertices) != 2 + RINGS*SIDES or len(faces) != (RINGS+1)*SIDES:
+        raise ValueError('Ashmite scute UV topology does not match 16x64 shell')
+    if not all(isfinite(v) and v > 0 for v in (rx, ry)):
+        raise ValueError('Ashmite scute UV radii must be positive finite numbers')
+    dorsal_end = (1 + 10)*SIDES
+    rim_end = dorsal_end + SIDES
+    output = []
+    for fi, face in enumerate(faces):
+        if fi < dorsal_end:
+            uv = tuple(scute_uv(vertices[k], rx, ry) for k in face)
+        elif fi < rim_end:
+            sector = fi - dorsal_end
+            u0 = RIM_U[0] + (RIM_U[1]-RIM_U[0])*sector/SIDES
+            u1 = RIM_U[0] + (RIM_U[1]-RIM_U[0])*(sector+1)/SIDES
+            uv = ((u0,RIM_V[1]), (u0,RIM_V[0]),
+                  (u1,RIM_V[0]), (u1,RIM_V[1]))
+        else:
+            uv = tuple(scute_uv(vertices[k], rx, ry, underside=True)
+                       for k in face)
+        output.append(uv)
+    return output
 
 
 def sculpted_scute(name, loc, scale, material, plate):
@@ -72,10 +119,11 @@ def sculpted_scute(name, loc, scale, material, plate):
     mesh.materials.append(material)
     obj['magenheim_ashmite_scute_contract']=CONTRACT
     obj['magenheim_ashmite_scute_index']=plate
+    obj['magenheim_ashmite_scute_uv_contract']=UV_CONTRACT
     layer=mesh.uv_layers.new(name='AshmiteUV')
-    for poly in mesh.polygons:
+    loop_uvs=scute_face_uvs(vertices,faces,rx,ry)
+    for poly,uvs in zip(mesh.polygons,loop_uvs):
         poly.use_smooth=len(poly.vertices)==4
-        for li in poly.loop_indices:
-            vertex=mesh.vertices[mesh.loops[li].vertex_index].co
-            layer.data[li].uv=scute_uv(vertex,rx,ry)
+        for li,uv in zip(poly.loop_indices,uvs):
+            layer.data[li].uv=uv
     return obj
