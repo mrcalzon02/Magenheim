@@ -1,0 +1,3 @@
+# Ashmite scute rear-lip and flank-buttress regression coverage — 2026-10-10
+
+The previously committed physical scute-overlap geometry is now covered by the source-level regression suite. Five dorsal plates retain their existing 16-ring × 64-sector topology (2,048 triangles each), approved footprint, original material, anchors and skeletal assignments. The tests verify positive trailing-lip relief on the rear sector, reinforced lateral buttresses, stable mesh counts and bounded legacy radial UV projections. This test integration does not change physical geometry and does not certify full-creature silhouette or Valheim runtime acceptance.

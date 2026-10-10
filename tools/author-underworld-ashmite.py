@@ -7,6 +7,7 @@ from mathutils import Vector
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ashmite_scute_geometry as ashgeo
+import ashmite_body_geometry as bodygeo
 import ashmite_sulfur_ridge_geometry as ridgegeo
 import ashmite_head_geometry as headgeo
 import ashmite_eye_geometry as eyegeo
@@ -60,7 +61,7 @@ chitin=material('Ashmite_HeatChitin','heat-chitin'); sulfur=material('Ashmite_Su
 parts={}
 def keep(o,b): parts[o.name]=b; return o
 # 0.36 m long, extremely low center of mass: not a mushroom-insect reskin.
-keep(organic('Ashmite_Thorax',(0,0,.085),(.095,.105,.052),chitin,3,1),'Thorax'); keep(organic('Ashmite_Abdomen',(0,-.105,.080),(.105,.125,.060),chitin,3,2),'Abdomen'); keep(headgeo.sculpted_head('Ashmite_Head',chitin),'Head')
+keep(bodygeo.sculpted_body('Ashmite_Thorax','thorax',chitin),'Thorax'); keep(bodygeo.sculpted_body('Ashmite_Abdomen','abdomen',chitin),'Abdomen'); keep(headgeo.sculpted_head('Ashmite_Head',chitin),'Head')
 # Five physically raised dorsal armor scutes, with sulfur accretion concentrated on fracture ridges.
 for i,y in enumerate((-.155,-.095,-.035,.030,.085),1):
     z=.135-abs(y)*.10; keep(ashgeo.sculpted_scute(f'Ashmite_DorsalScute_{i}',(0,y,z),(.092 if i<4 else .075,.047,.018),chitin,i),'Abdomen' if i<4 else 'Thorax')
@@ -90,6 +91,16 @@ bone('AttackOrigin',(0,.15,.05),(0,.235,.05),head); bone('ScavengeOrigin',(0,.17
 for o in [x for x in bpy.context.scene.objects if x.type=='MESH']:
     b=parts.get(o.name,'Thorax'); mod=o.modifiers.new('AshmiteArmature','ARMATURE'); mod.object=arm; vg=o.vertex_groups.new(name=b); vg.add(range(len(o.data.vertices)),1.0,'REPLACE')
 # Production source gates.
+# Primary body shells must retain the approved silhouette and authored topology.
+for kind,name in (('thorax','Ashmite_Thorax'),('abdomen','Ashmite_Abdomen')):
+    obj=bpy.data.objects.get(name)
+    if not obj or obj.get('magenheim_ashmite_body_contract')!=bodygeo.CONTRACT:
+        raise RuntimeError(f'{name}: missing sculpted primary body envelope')
+    if obj.get('magenheim_ashmite_body_kind')!=kind:
+        raise RuntimeError(f'{name}: body segment identity drift')
+    if (len(obj.data.vertices)!=bodygeo.RINGS*bodygeo.SIDES+2 or
+            sum(len(p.vertices)-2 for p in obj.data.polygons)!=2*bodygeo.RINGS*bodygeo.SIDES):
+        raise RuntimeError(f'{name}: body topology drift')
 meshes=[x for x in bpy.context.scene.objects if x.type=='MESH']; dims=[max((v.co.y for v in o.data.vertices),default=0)+o.location.y for o in meshes]; mins=[min((v.co.y for v in o.data.vertices),default=0)+o.location.y for o in meshes]; length=max(dims)-min(mins)
 if not .25<=length<=.45: raise RuntimeError(f'Ashmite length outside 0.25-0.45m: {length:.3f}')
 if len(meshes)<45: raise RuntimeError(f'Insufficient anatomical breakup: {len(meshes)} meshes')

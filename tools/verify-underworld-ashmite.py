@@ -9,6 +9,7 @@ import bpy
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import ashmite_scute_geometry as ashgeo
+import ashmite_body_geometry as bodygeo
 import ashmite_sulfur_ridge_geometry as ridgegeo
 import ashmite_head_geometry as headgeo
 import ashmite_mandible_geometry as mandgeo
@@ -42,6 +43,39 @@ if bound<len(meshes): raise RuntimeError(f'Unbound Ashmite anatomy: {bound}/{len
 for prefix,count in (('Ashmite_DorsalScute_',5),('Ashmite_SulfurRidge_',10),('Ashmite_L_Joint',3),('Ashmite_R_Joint',3)):
     found=sum(1 for o in meshes if o.name.startswith(prefix))
     if found!=count: raise RuntimeError(f'{prefix} physical anatomy regression: {found} != {count}')
+
+# Primary body envelopes: reject stale ico-spheres, topology, UV or rig drift.
+for kind,name in (('thorax','Ashmite_Thorax'),('abdomen','Ashmite_Abdomen')):
+    obj=bpy.data.objects.get(name)
+    origin,_,bone=bodygeo.specification(kind)
+    if not obj or obj.type!='MESH':
+        raise RuntimeError(f'{name}: missing sculpted primary body')
+    if (obj.get('magenheim_ashmite_body_contract')!=bodygeo.CONTRACT or
+            obj.get('magenheim_ashmite_body_kind')!=kind):
+        raise RuntimeError(f'{name}: primary body identity drift')
+    if any(abs(obj.location[k]-origin[k])>1e-6 for k in range(3)):
+        raise RuntimeError(f'{name}: original body anchor drift')
+    if not obj.vertex_groups.get(bone) or not any(
+            m.type=='ARMATURE' and m.object==arm for m in obj.modifiers):
+        raise RuntimeError(f'{name}: original body rig binding drift')
+    if not obj.data.materials or obj.data.materials[0].name!='Ashmite_HeatChitin':
+        raise RuntimeError(f'{name}: body PBR material drift')
+    verts,faces,uvs=bodygeo.body_mesh_data(kind)
+    if len(obj.data.vertices)!=len(verts) or len(obj.data.polygons)!=len(faces):
+        raise RuntimeError(f'{name}: body topology drift')
+    if any(any(abs(a-b)>2e-6 for a,b in zip(actual.co,expected))
+           for actual,expected in zip(obj.data.vertices,verts)):
+        raise RuntimeError(f'{name}: body surface relief drift')
+    if any(tuple(poly.vertices)!=tuple(face)
+           for poly,face in zip(obj.data.polygons,faces)):
+        raise RuntimeError(f'{name}: body face winding drift')
+    layer=obj.data.uv_layers.get('AshmiteUV')
+    if not layer:
+        raise RuntimeError(f'{name}: missing authored body UV')
+    for poly,expected_uvs in zip(obj.data.polygons,uvs):
+        if any(any(abs(a-b)>2e-5 for a,b in zip(layer.data[li].uv,uv))
+               for li,uv in zip(poly.loop_indices,expected_uvs)):
+            raise RuntimeError(f'{name}: body UV loop drift')
 
 # Sculpted shovel-shaped cephalic shield preserves existing eyes and feeding-tool rig.
 head=bpy.data.objects.get('Ashmite_Head')
@@ -96,19 +130,43 @@ for side,label in ((-1,'L'),(1,'R')):
                for li,uv in zip(poly.loop_indices,expected_uvs)):
             raise RuntimeError(f'{name}: authored eye UV drift')
 
-# Five sculpted heat-fractured scutella must replace spherical placeholders.
-for i in range(1,6):
+# Five physical heat-scutella must retain their overlap silhouette, rig and
+# three-island authored UVs; stale .blend assets must fail closed.
+for i,y in enumerate((-.155,-.095,-.035,.030,.085),1):
     obj=bpy.data.objects.get(f'Ashmite_DorsalScute_{i}')
-    if not obj or obj.type!='MESH': raise RuntimeError(f'Ashmite scute {i} missing')
-    if obj.get('magenheim_ashmite_scute_contract')!=ashgeo.CONTRACT:
-        raise RuntimeError(f'Ashmite scute {i} lacks approved sculpted geometry')
-    if len(obj.data.vertices)!=2+ashgeo.RINGS*ashgeo.SIDES:
-        raise RuntimeError(f'Ashmite scute {i} vertex topology mismatch')
-    triangles=sum(len(p.vertices)-2 for p in obj.data.polygons)
-    if triangles!=2048: raise RuntimeError(f'Ashmite scute {i} triangles {triangles} != 2048')
+    if not obj or obj.type!='MESH':
+        raise RuntimeError(f'Ashmite scute {i} missing')
+    if (obj.get('magenheim_ashmite_scute_contract')!=ashgeo.CONTRACT or
+            obj.get('magenheim_ashmite_scute_index')!=i or
+            obj.get('magenheim_ashmite_scute_uv_contract')!=ashgeo.UV_CONTRACT):
+        raise RuntimeError(f'Ashmite scute {i} geometry/UV contract drift')
+    anchor=(0,y,.135-abs(y)*.10)
+    if any(abs(obj.location[k]-anchor[k])>1e-6 for k in range(3)):
+        raise RuntimeError(f'Ashmite scute {i} anchor drift')
+    bone='Abdomen' if i<4 else 'Thorax'
+    if not obj.vertex_groups.get(bone) or not any(
+            m.type=='ARMATURE' and m.object==arm for m in obj.modifiers):
+        raise RuntimeError(f'Ashmite scute {i} rig binding drift')
+    if not obj.data.materials or obj.data.materials[0].name!='Ashmite_HeatChitin':
+        raise RuntimeError(f'Ashmite scute {i} PBR material drift')
+    rx=.092 if i<4 else .075
+    verts,faces=ashgeo.scute_mesh_data(rx,.047,.018,i)
+    if len(obj.data.vertices)!=len(verts) or len(obj.data.polygons)!=len(faces):
+        raise RuntimeError(f'Ashmite scute {i} topology drift')
+    if any(any(abs(a-b)>2e-6 for a,b in zip(actual.co,expected))
+           for actual,expected in zip(obj.data.vertices,verts)):
+        raise RuntimeError(f'Ashmite scute {i} physical overlap relief drift')
+    if any(tuple(poly.vertices)!=tuple(face)
+           for poly,face in zip(obj.data.polygons,faces)):
+        raise RuntimeError(f'Ashmite scute {i} face winding drift')
     layer=obj.data.uv_layers.get('AshmiteUV')
-    if not layer or any(not 0<=c<=1 for item in layer.data for c in item.uv):
-        raise RuntimeError(f'Ashmite scute {i} radial UVs missing or out of bounds')
+    if not layer:
+        raise RuntimeError(f'Ashmite scute {i} authored UV missing')
+    expected_uvs=ashgeo.scute_face_uvs(verts,faces,rx,.047)
+    for poly,uvs in zip(obj.data.polygons,expected_uvs):
+        if any(any(abs(a-b)>2e-5 for a,b in zip(layer.data[li].uv,uv))
+               for li,uv in zip(poly.loop_indices,uvs)):
+            raise RuntimeError(f'Ashmite scute {i} UV island or seam drift')
 
 # Ten sculpted sulfur accretions preserve the scute anchors, materials and rig.
 for index in range(1,6):
