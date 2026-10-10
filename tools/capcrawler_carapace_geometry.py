@@ -17,9 +17,9 @@ def _rim(theta):
     """Broad front, scalloped sides, rear notches; never exceeds old shell bounds."""
     x, y = cos(theta), sin(theta)
     # Paired fungal shelf scallops, with shallower front brow and rear lobes.
-    scallop = 1.0 - .024 * (1.0 - cos(6 * theta)) / 2
+    scallop = 1.0 - .085 * sin(4 * theta) ** 2
     rear = 1.0 - .026 * max(0.0, -y) ** 4 * (1.0 - cos(4 * theta)) / 2
-    front_notch = 1.0 - .075 * exp(-(x / .18) ** 2) * max(0.0, y) ** 4
+    front_notch = 1.0 - .080 * exp(-(x / .18) ** 2) * max(0.0, y) ** 4
     return .356 * x * scallop * rear, .425 * y * scallop * rear * front_notch
 
 

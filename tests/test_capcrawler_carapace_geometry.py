@@ -46,7 +46,8 @@ class ShieldTests(unittest.TestCase):
     def test_fungal_scallops_are_physical(self):
         rim=1+(g.RADIAL_RINGS-1)*g.SECTORS
         radii=[math.hypot(self.vertices[rim+j][0]/.356,self.vertices[rim+j][1]/.425) for j in range(g.SECTORS)]
-        self.assertGreater(max(radii)-min(radii),.015)
+        self.assertGreater(max(radii)-min(radii),.07)
+        self.assertLess(min(radii),.93)
         self.assertGreater(len(set(round(r,4) for r in radii)),12)
 
     def test_uv_islands_separate_and_have_nonzero_area(self):
