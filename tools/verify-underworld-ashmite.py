@@ -240,6 +240,8 @@ for side,label in ((-1,'L'),(1,'R')):
         raise RuntimeError(f'Ashmite mandible {label} lacks sculpted geometry')
     if obj.get('magenheim_ashmite_mandible_side')!=side:
         raise RuntimeError(f'Ashmite mandible {label} side contract mismatch')
+    if obj.get('magenheim_ashmite_mandible_uv_contract')!=mandgeo.UV_CONTRACT:
+        raise RuntimeError(f'Ashmite mandible {label} three-island UV contract drift')
     if len(obj.data.vertices)!=mandgeo.RINGS*mandgeo.SIDES+2:
         raise RuntimeError(f'Ashmite mandible {label} vertex topology mismatch')
     tris=sum(len(p.vertices)-2 for p in obj.data.polygons)
@@ -248,9 +250,24 @@ for side,label in ((-1,'L'),(1,'R')):
     root,_=mandgeo.anchors(side)
     if any(abs(obj.location[k]-root[k])>1e-6 for k in range(3)):
         raise RuntimeError(f'Ashmite mandible {label} root attachment drift')
+    vertices,faces,uvs=mandgeo.mandible_mesh_data(side)
+    if len(obj.data.polygons)!=len(faces):
+        raise RuntimeError(f'Ashmite mandible {label} face count drift')
+    if any(any(abs(a-b)>2e-5 for a,b in zip(vertex.co,expected))
+           for vertex,expected in zip(obj.data.vertices,vertices)):
+        raise RuntimeError(f'Ashmite mandible {label} sculpted vertex drift')
+    for poly,expected in zip(obj.data.polygons,faces):
+        if tuple(poly.vertices)!=tuple(expected):
+            raise RuntimeError(f'Ashmite mandible {label} face topology/winding drift')
+    if not obj.data.materials or obj.data.materials[0].name!='Ashmite_Mouthpart':
+        raise RuntimeError(f'Ashmite mandible {label} mouthpart PBR material drift')
     layer=obj.data.uv_layers.get('AshmiteUV')
     if not layer or any(not 0<=c<=1 for item in layer.data for c in item.uv):
         raise RuntimeError(f'Ashmite mandible {label} UVs missing or out of bounds')
+    for poly,expected_uvs in zip(obj.data.polygons,uvs):
+        if any(any(abs(a-b)>2e-5 for a,b in zip(layer.data[li].uv,expected_uv))
+               for li,expected_uv in zip(poly.loop_indices,expected_uvs)):
+            raise RuntimeError(f'Ashmite mandible {label} UV island/seam drift')
 
 # Ashmite's central vent scraper is an authored sulfurized mouth tool.
 scraper=bpy.data.objects.get('Ashmite_VentScraper')

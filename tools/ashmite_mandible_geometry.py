@@ -8,6 +8,12 @@ from math import cos, exp, isfinite, pi, sin, sqrt
 RINGS = 17
 SIDES = 24
 CONTRACT = 'ashmite-paired-hooked-serrated-mandibles-17x24'
+UV_CONTRACT = 'ashmite-mandible-three-island-uv-v1'
+# Dedicated atlas regions keep 1024px mouthpart PBR cap texels off the flanks.
+SIDE_U = (.04, .96)
+SIDE_V = (.045, .635)
+ROOT_CAP = (.27, .82, .13)
+TIP_CAP = (.73, .82, .13)
 
 
 def anchors(side):
@@ -71,18 +77,25 @@ def mandible_mesh_data(side):
         k = (j+1)%SIDES
         faces.append((root,k,j))
         a, b = 2*pi*j/SIDES, 2*pi*k/SIDES
-        uv_faces.append(((.5,.5),(.5+.48*cos(b),.5+.48*sin(b)),(.5+.48*cos(a),.5+.48*sin(a))))
+        uv_faces.append(((ROOT_CAP[0],ROOT_CAP[1]),
+                         (ROOT_CAP[0]+ROOT_CAP[2]*cos(b),ROOT_CAP[1]+ROOT_CAP[2]*sin(b)),
+                         (ROOT_CAP[0]+ROOT_CAP[2]*cos(a),ROOT_CAP[1]+ROOT_CAP[2]*sin(a))))
     for i in range(RINGS-1):
         for j in range(SIDES):
             k=(j+1)%SIDES
             faces.append((i*SIDES+j,i*SIDES+k,(i+1)*SIDES+k,(i+1)*SIDES+j))
-            uv_faces.append(((j/SIDES,i/(RINGS-1)),((j+1)/SIDES,i/(RINGS-1)),
-                             ((j+1)/SIDES,(i+1)/(RINGS-1)),(j/SIDES,(i+1)/(RINGS-1))))
+            u0=SIDE_U[0]+(SIDE_U[1]-SIDE_U[0])*j/SIDES
+            u1=SIDE_U[0]+(SIDE_U[1]-SIDE_U[0])*(j+1)/SIDES
+            v0=SIDE_V[0]+(SIDE_V[1]-SIDE_V[0])*i/(RINGS-1)
+            v1=SIDE_V[0]+(SIDE_V[1]-SIDE_V[0])*(i+1)/(RINGS-1)
+            uv_faces.append(((u0,v0),(u1,v0),(u1,v1),(u0,v1)))
     for j in range(SIDES):
         k=(j+1)%SIDES
         faces.append((tip,(RINGS-1)*SIDES+j,(RINGS-1)*SIDES+k))
         a,b=2*pi*j/SIDES,2*pi*k/SIDES
-        uv_faces.append(((.5,.5),(.5+.48*cos(a),.5+.48*sin(a)),(.5+.48*cos(b),.5+.48*sin(b))))
+        uv_faces.append(((TIP_CAP[0],TIP_CAP[1]),
+                         (TIP_CAP[0]+TIP_CAP[2]*cos(a),TIP_CAP[1]+TIP_CAP[2]*sin(a)),
+                         (TIP_CAP[0]+TIP_CAP[2]*cos(b),TIP_CAP[1]+TIP_CAP[2]*sin(b))))
     if side == -1:
         faces = [tuple(reversed(face)) for face in faces]
         uv_faces = [tuple(reversed(uv)) for uv in uv_faces]
@@ -102,6 +115,7 @@ def sculpted_mandible(name, side, material):
     obj.location = start
     mesh.materials.append(material)
     obj['magenheim_ashmite_mandible_contract'] = CONTRACT
+    obj['magenheim_ashmite_mandible_uv_contract'] = UV_CONTRACT
     obj['magenheim_ashmite_mandible_side'] = side
     layer = mesh.uv_layers.new(name='AshmiteUV')
     for poly, face_uv in zip(mesh.polygons, uvs):
