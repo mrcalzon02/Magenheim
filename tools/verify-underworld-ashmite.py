@@ -330,6 +330,8 @@ for pair in (1,2,3):
                     obj.get('magenheim_ashmite_tarsal_pair')!=pair or
                     obj.get('magenheim_ashmite_tarsal_side')!=side):
                 raise RuntimeError(f'{name}: sculpted foot identity drift')
+            if obj.get('magenheim_ashmite_tarsal_uv_contract')!=tarsgeo.UV_CONTRACT:
+                raise RuntimeError(f'{name}: stale or missing three-island foot UV contract')
             anchor,_=tarsgeo.anchors(side,pair,kind)
             if any(abs(obj.location[k]-anchor[k])>1e-6 for k in range(3)):
                 raise RuntimeError(f'{name}: original attachment drift')
@@ -345,6 +347,18 @@ for pair in (1,2,3):
             layer=obj.data.uv_layers.get('AshmiteUV')
             if not layer or any(not 0<=c<=1 for item in layer.data for c in item.uv):
                 raise RuntimeError(f'{name}: authored UV drift')
+            expected_vertices,expected_faces,expected_uvs=tarsgeo.tarsal_mesh_data(side,pair,kind)
+            if (len(obj.data.polygons)!=len(expected_faces) or
+                    any(any(abs(a-b)>2e-6 for a,b in zip(actual.co,expected))
+                        for actual,expected in zip(obj.data.vertices,expected_vertices))):
+                raise RuntimeError(f'{name}: sculpted foot vertex/silhouette drift')
+            if any(tuple(poly.vertices)!=tuple(face)
+                   for poly,face in zip(obj.data.polygons,expected_faces)):
+                raise RuntimeError(f'{name}: sculpted foot face/winding drift')
+            for poly,face_uv in zip(obj.data.polygons,expected_uvs):
+                if any(any(abs(a-b)>2e-5 for a,b in zip(layer.data[li].uv,uv))
+                       for li,uv in zip(poly.loop_indices,face_uv)):
+                    raise RuntimeError(f'{name}: foot UV island or seam drift')
 
 EXPECTED={'Idle':64,'Scavenge':52,'Walk':28,'Scuttle':16,'TurnLeft':22,'TurnRight':22,'Bite':18,'Hit':14,'Stagger':24,'Death':42}
 for suffix,end in EXPECTED.items():
