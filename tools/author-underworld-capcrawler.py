@@ -2,6 +2,9 @@
 """Author the Fungal Forest Capcrawler production source model and HOST-LOW-CRAWLER rig."""
 from pathlib import Path
 from math import pi, atan2
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+import capcrawler_carapace_geometry as capgeo
 import bpy
 from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]; OUTDIR=ROOT/'assets/models/source'; OUTDIR.mkdir(parents=True,exist_ok=True)
@@ -43,7 +46,7 @@ car=material('CapcrawlerCarapace','cap-carapace'); flesh=material('CapcrawlerUnd
 parts={}
 def keep(o,b): parts[o.name]=b; return o
 keep(organic('Capcrawler_Body',(0,0,.22),(.29,.38,.13),flesh,3),'Body')
-keep(organic('Capcrawler_Carapace',(0,-.015,.31),(.36,.43,.105),car,3),'Body')
+keep(capgeo.sculpted_shield('Capcrawler_Carapace',car),'Body')
 for side in (-1,1):
  s='L' if side<0 else 'R'
  for i,(y,z,sy) in enumerate(((-.24,.305,.105),(-.06,.326,.125),(.13,.320,.115)),1): keep(organic(f'Capcrawler_RimScute_{s}{i}',(side*.315,y,z),(.085,sy,.035),car,3),'Body')

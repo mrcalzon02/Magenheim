@@ -3,6 +3,9 @@
 from pathlib import Path
 import bpy
 from mathutils import Vector
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+import capcrawler_carapace_geometry as capgeo
 ROOT=Path(__file__).resolve().parents[1]; MODEL=ROOT/'assets/models/source/underworld-creature-capcrawler.blend'
 REQ_MATS={'CapcrawlerCarapace','CapcrawlerUnderside','CapcrawlerLegPlate','CapcrawlerMandible','CapcrawlerGill'}
 REQ_BONES={'Root','Body','Mandible_L','Mandible_R','AttackOrigin','HitCenter','GillFX'}
@@ -37,6 +40,24 @@ def span(o):
  lo,hi=world_bounds(o); return tuple(hi[i]-lo[i] for i in range(3))
 body=bpy.data.objects.get('Capcrawler_Body'); cap=bpy.data.objects.get('Capcrawler_Carapace')
 if not body or not cap: raise RuntimeError('Body/carapace anatomy missing')
+if cap.get('magenheim_capcrawler_shield_contract')!=capgeo.CONTRACT or cap.get('magenheim_capcrawler_shield_uv_contract')!=capgeo.UV_CONTRACT:
+ raise RuntimeError('Capcrawler carapace sculpt/UV contract missing or stale')
+if any(abs(cap.location[i]-capgeo.ORIGIN[i])>1e-6 for i in range(3)):
+ raise RuntimeError('Capcrawler carapace origin drift')
+if not cap.data.materials or cap.data.materials[0].name!='CapcrawlerCarapace' or cap.vertex_groups.get('Body') is None:
+ raise RuntimeError('Capcrawler carapace material/Body bone drift')
+expected_vertices,expected_faces,expected_uvs=capgeo.shield_mesh_data()
+if len(cap.data.vertices)!=len(expected_vertices) or len(cap.data.polygons)!=len(expected_faces):
+ raise RuntimeError('Capcrawler carapace topology drift')
+for vertex,xyz in zip(cap.data.vertices,expected_vertices):
+ if any(abs(vertex.co[i]-xyz[i])>2e-6 for i in range(3)):
+  raise RuntimeError('Capcrawler carapace silhouette/relief drift')
+layer=cap.data.uv_layers.get('CapcrawlerUV')
+if not layer: raise RuntimeError('Capcrawler carapace authored UV missing')
+for poly,face,uvs in zip(cap.data.polygons,expected_faces,expected_uvs):
+ if tuple(poly.vertices)!=tuple(face): raise RuntimeError('Capcrawler carapace face winding drift')
+ if any(any(abs(layer.data[li].uv[k]-uv[k])>2e-5 for k in range(2)) for li,uv in zip(poly.loop_indices,uvs)):
+  raise RuntimeError('Capcrawler carapace UV atlas drift')
 bw,bl,bh=span(body); cw,cl,ch=span(cap)
 if cw < bw*1.15 or cl < bl*1.05: raise RuntimeError(f'Carapace no longer overhangs body: cap={cw:.3f}x{cl:.3f}, body={bw:.3f}x{bl:.3f}')
 if ch > cw*.42: raise RuntimeError(f'Carapace too domed for low-crawler silhouette: {ch/cw:.2f}')
