@@ -87,6 +87,8 @@ for kind,name in (('thorax','Ashmite_Thorax'),('abdomen','Ashmite_Abdomen')):
     if (obj.get('magenheim_ashmite_body_contract')!=bodygeo.CONTRACT or
             obj.get('magenheim_ashmite_body_kind')!=kind):
         raise RuntimeError(f'{name}: primary body identity drift')
+    if obj.get('magenheim_ashmite_body_uv_contract')!=bodygeo.UV_CONTRACT:
+        raise RuntimeError(f'{name}: body three-island UV contract drift')
     if any(abs(obj.location[k]-origin[k])>1e-6 for k in range(3)):
         raise RuntimeError(f'{name}: original body anchor drift')
     if not obj.vertex_groups.get(bone) or not any(
