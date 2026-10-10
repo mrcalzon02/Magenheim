@@ -17,6 +17,7 @@ import ashmite_scraper_geometry as scrapegeo
 import ashmite_leg_geometry as leggeo
 import ashmite_tarsal_geometry as tarsgeo
 import ashmite_eye_geometry as eyegeo
+import ashmite_joint_geometry as jointgeo
 
 ROOT=Path(__file__).resolve().parents[1]
 MODEL=ROOT/'assets/models/source/underworld-creature-ashmite.blend'
@@ -43,6 +44,39 @@ if bound<len(meshes): raise RuntimeError(f'Unbound Ashmite anatomy: {bound}/{len
 for prefix,count in (('Ashmite_DorsalScute_',5),('Ashmite_SulfurRidge_',10),('Ashmite_L_Joint',3),('Ashmite_R_Joint',3)):
     found=sum(1 for o in meshes if o.name.startswith(prefix))
     if found!=count: raise RuntimeError(f'{prefix} physical anatomy regression: {found} != {count}')
+
+# Six folded protected-joint membranes: fail on stale spheres, UVs or rig drift.
+joint_vertices,joint_faces,joint_uvs=jointgeo.joint_mesh_data()
+for pair in (1,2,3):
+    for side,label in ((-1,'L'),(1,'R')):
+        name=f'Ashmite_{label}_Joint{pair}'
+        obj=bpy.data.objects.get(name)
+        if not obj or obj.type!='MESH':
+            raise RuntimeError(f'{name}: sculpted coxal membrane missing')
+        if (obj.get('magenheim_ashmite_joint_contract')!=jointgeo.CONTRACT or
+                obj.get('magenheim_ashmite_joint_side')!=side or
+                obj.get('magenheim_ashmite_joint_pair')!=pair):
+            raise RuntimeError(f'{name}: joint identity drift')
+        if any(abs(obj.location[k]-jointgeo.anchor(side,pair)[k])>1e-6 for k in range(3)):
+            raise RuntimeError(f'{name}: original hip anchor drift')
+        if (not obj.data.materials or obj.data.materials[0].name!='Ashmite_ProtectedJoint' or
+                not obj.vertex_groups.get(f'{label}_Coxa{pair}') or
+                not any(m.type=='ARMATURE' and m.object==arm for m in obj.modifiers)):
+            raise RuntimeError(f'{name}: protected joint material or Coxa binding drift')
+        if len(obj.data.vertices)!=len(joint_vertices) or len(obj.data.polygons)!=len(joint_faces):
+            raise RuntimeError(f'{name}: folded membrane topology drift')
+        if any(any(abs(a-b)>2e-6 for a,b in zip(v.co,expected))
+               for v,expected in zip(obj.data.vertices,joint_vertices)):
+            raise RuntimeError(f'{name}: physical compression-fold drift')
+        if any(tuple(p.vertices)!=tuple(f) for p,f in zip(obj.data.polygons,joint_faces)):
+            raise RuntimeError(f'{name}: face winding drift')
+        layer=obj.data.uv_layers.get('AshmiteUV')
+        if not layer:
+            raise RuntimeError(f'{name}: authored joint UV missing')
+        for p,expected_uv in zip(obj.data.polygons,joint_uvs):
+            if any(any(abs(a-b)>2e-5 for a,b in zip(layer.data[li].uv,uv))
+                   for li,uv in zip(p.loop_indices,expected_uv)):
+                raise RuntimeError(f'{name}: joint UV loop drift')
 
 # Primary body envelopes: reject stale ico-spheres, topology, UV or rig drift.
 for kind,name in (('thorax','Ashmite_Thorax'),('abdomen','Ashmite_Abdomen')):
