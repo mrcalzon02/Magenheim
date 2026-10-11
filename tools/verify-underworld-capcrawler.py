@@ -6,6 +6,7 @@ from mathutils import Vector
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import capcrawler_carapace_geometry as capgeo
+import capcrawler_shelf_geometry as shelfgeo
 ROOT=Path(__file__).resolve().parents[1]; MODEL=ROOT/'assets/models/source/underworld-creature-capcrawler.blend'
 REQ_MATS={'CapcrawlerCarapace','CapcrawlerUnderside','CapcrawlerLegPlate','CapcrawlerMandible','CapcrawlerGill'}
 REQ_BONES={'Root','Body','Mandible_L','Mandible_R','AttackOrigin','HitCenter','GillFX'}
@@ -82,6 +83,33 @@ if len(gills)!=5 or len(mandibles)!=2 or len(distal)!=8: raise RuntimeError(f'An
 if len(pads)!=8 or len(claws)!=8: raise RuntimeError(f'Ground anatomy regression: pads={len(pads)} claws={len(claws)}')
 if len(scutes)!=6 or not crown: raise RuntimeError(f'Layered armor regression: rim_scutes={len(scutes)} crown={bool(crown)}')
 if len(shelves)!=4 or len(nodules)!=3: raise RuntimeError(f'Fungal silhouette regression: shelves={len(shelves)} spore_nodules={len(nodules)}')
+if sc.get('magenheim_shelf_geometry') != shelfgeo.CONTRACT:
+ raise RuntimeError('Capcrawler bracket-fungus shelf source contract missing')
+for side in (-1,1):
+ for index in (1,2):
+  name=f'Capcrawler_ShelfPlate_{"L" if side<0 else "R"}{index}'
+  o=bpy.data.objects.get(name)
+  if o is None: raise RuntimeError(f'{name}: missing')
+  if o.get('magenheim_capcrawler_shelf_contract')!=shelfgeo.CONTRACT or o.get('magenheim_capcrawler_shelf_uv_contract')!=shelfgeo.UV_CONTRACT:
+   raise RuntimeError(f'{name}: stale shelf sculpt or UV contract')
+  anchor=(side*.245,shelfgeo.POSITIONS[index-1][0],.382)
+  if any(abs(o.location[k]-anchor[k])>2e-6 for k in range(3)):
+   raise RuntimeError(f'{name}: original Body anchor drift')
+  if not o.data.materials or o.data.materials[0].name!='CapcrawlerCarapace' or o.vertex_groups.get('Body') is None:
+   raise RuntimeError(f'{name}: material or Body rig binding drift')
+  vertices,faces,uvs=shelfgeo.shelf_mesh_data(side,index)
+  if len(o.data.vertices)!=len(vertices) or len(o.data.polygons)!=len(faces):
+   raise RuntimeError(f'{name}: topology or triangle-count drift')
+  for vertex,xyz in zip(o.data.vertices,vertices):
+   if any(abs(vertex.co[k]-xyz[k])>2e-6 for k in range(3)):
+    raise RuntimeError(f'{name}: fungal fan geometry drift')
+  layer=o.data.uv_layers.get('CapcrawlerUV')
+  if not layer: raise RuntimeError(f'{name}: missing authored UV')
+  for polygon,face,face_uv in zip(o.data.polygons,faces,uvs):
+   if tuple(polygon.vertices)!=tuple(face):
+    raise RuntimeError(f'{name}: polygon winding drift')
+   if any(any(abs(layer.data[li].uv[k]-uv[k])>2e-5 for k in range(2)) for li,uv in zip(polygon.loop_indices,face_uv)):
+    raise RuntimeError(f'{name}: dorsal/ventral/rim UV drift')
 for o in shelves+nodules:
  if o.vertex_groups.get('Body') is None: raise RuntimeError(f'{o.name}: fungal silhouette anatomy is not Body-bound')
 if any(not o.data.materials or o.data.materials[0].name!='CapcrawlerCarapace' for o in shelves): raise RuntimeError('Dorsal shelf plates lost carapace material identity')

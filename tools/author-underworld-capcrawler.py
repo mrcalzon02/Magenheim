@@ -5,6 +5,7 @@ from math import pi, atan2
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import capcrawler_carapace_geometry as capgeo
+import capcrawler_shelf_geometry as shelfgeo
 import bpy
 from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]; OUTDIR=ROOT/'assets/models/source'; OUTDIR.mkdir(parents=True,exist_ok=True)
@@ -56,7 +57,7 @@ keep(organic('Capcrawler_CrownPlate',(0,-.285,.345),(.205,.105,.042),car,3),'Bod
 for side in (-1,1):
  s='L' if side<0 else 'R'
  for i,(y,sx,sy) in enumerate(((-.16,.13,.075),(.04,.145,.085)),1):
-  keep(organic(f'Capcrawler_ShelfPlate_{s}{i}',(side*.245,y,.382),(sx,sy,.022),car,2),'Body')
+  keep(shelfgeo.sculpted_shelf(f'Capcrawler_ShelfPlate_{s}{i}',side,i,car),'Body')
 for i,(x,y,z,r) in enumerate(((-.12,.245,.345,.050),(0,.285,.365,.060),(.12,.245,.345,.050)),1):
  keep(organic(f'Capcrawler_SporeNodule_{i}',(x,y,z),(r,r*.86,r*.72),gill,2),'Body')
 for i,y in enumerate((-.24,-.08,.10,.26),1):
@@ -135,5 +136,5 @@ if len(meshes)<60: raise RuntimeError(f'Capcrawler detail regression: {len(meshe
 for o in meshes:
  uv=o.data.uv_layers.get('CapcrawlerUV')
  if not uv or not uv.data: raise RuntimeError(f'Missing explicit UVs: {o.name}')
-sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-capcrawler'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='common'; sc['magenheim_host_rig']='HOST-LOW-CRAWLER'; sc['magenheim_length_m']=.90; sc['magenheim_width_m']=.98; sc['magenheim_fidelity']='production-creature-r8'; sc['magenheim_skinning']='rigid-segment-weighted'; sc['magenheim_uv_contract']='CapcrawlerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,GillFX'; sc['magenheim_authored_actions']='Capcrawler_Idle,Capcrawler_Scuttle,Capcrawler_Turn,Capcrawler_AttackLeft,Capcrawler_AttackRight,Capcrawler_AttackFront,Capcrawler_Guard,Capcrawler_Hit,Capcrawler_Stagger,Capcrawler_Death'; sc['magenheim_animation_manifest']='idle,scuttle,turn,attack-left,attack-right,attack-front,guard,hit,stagger,death'; sc['magenheim_carapace_language']='layered-fungal-rim-scutes+crown+dorsal-shelves'; sc['magenheim_ground_contact']='8-tarsal-pads+8-terminal-claws'; sc['magenheim_leg_rig']='coxa+tibia+tarsus-per-leg'; sc['magenheim_fungal_signature']='4-dorsal-shelf-plates+3-spore-nodules'
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-capcrawler'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='common'; sc['magenheim_host_rig']='HOST-LOW-CRAWLER'; sc['magenheim_length_m']=.90; sc['magenheim_width_m']=.98; sc['magenheim_fidelity']='production-creature-r8'; sc['magenheim_skinning']='rigid-segment-weighted'; sc['magenheim_uv_contract']='CapcrawlerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,GillFX'; sc['magenheim_authored_actions']='Capcrawler_Idle,Capcrawler_Scuttle,Capcrawler_Turn,Capcrawler_AttackLeft,Capcrawler_AttackRight,Capcrawler_AttackFront,Capcrawler_Guard,Capcrawler_Hit,Capcrawler_Stagger,Capcrawler_Death'; sc['magenheim_animation_manifest']='idle,scuttle,turn,attack-left,attack-right,attack-front,guard,hit,stagger,death'; sc['magenheim_carapace_language']='layered-fungal-rim-scutes+crown+dorsal-shelves'; sc['magenheim_ground_contact']='8-tarsal-pads+8-terminal-claws'; sc['magenheim_leg_rig']='coxa+tibia+tarsus-per-leg'; sc['magenheim_fungal_signature']='4-dorsal-shelf-plates+3-spore-nodules'; sc['magenheim_shelf_geometry']=shelfgeo.CONTRACT
 bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(OUT),compress=True); print(f'AUTHORED Capcrawler r8: {len(meshes)} meshes / {len(arm.data.bones)} bones / fungal silhouette anatomy -> {OUT.name}',flush=True)
