@@ -7,6 +7,7 @@ import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import capcrawler_carapace_geometry as capgeo
 import capcrawler_shelf_geometry as shelfgeo
+import capcrawler_leg_geometry as leggeo
 ROOT=Path(__file__).resolve().parents[1]; MODEL=ROOT/'assets/models/source/underworld-creature-capcrawler.blend'
 REQ_MATS={'CapcrawlerCarapace','CapcrawlerUnderside','CapcrawlerLegPlate','CapcrawlerMandible','CapcrawlerGill'}
 REQ_BONES={'Root','Body','Mandible_L','Mandible_R','AttackOrigin','HitCenter','GillFX'}
@@ -118,6 +119,33 @@ for s in ('L','R'):
  for i in range(1,5):
   if bpy.data.objects[f'Capcrawler_{s}_Leg{i}B'].vertex_groups.get(f'{s}_Tibia{i}') is None: raise RuntimeError(f'{s}{i}: distal leg is not tibia-bound')
   if bpy.data.objects[f'Capcrawler_{s}_FootPad{i}'].vertex_groups.get(f'{s}_Tarsus{i}') is None: raise RuntimeError(f'{s}{i}: foot pad is not tarsus-bound')
+if sc.get('magenheim_leg_plate_geometry') != leggeo.CONTRACT:
+ raise RuntimeError('Capcrawler tapered leg plate source contract missing')
+for side in (-1,1):
+ for index in range(1,5):
+  s='L' if side<0 else 'R'
+  for section,bone in (('A',f'{s}_Coxa{index}'),('B',f'{s}_Tibia{index}')):
+   name=f'Capcrawler_{s}_Leg{index}{section}'
+   o=bpy.data.objects.get(name)
+   if o is None: raise RuntimeError(f'{name}: missing leg plate')
+   if o.get('magenheim_capcrawler_leg_contract')!=leggeo.CONTRACT or o.get('magenheim_capcrawler_leg_uv_contract')!=leggeo.UV_CONTRACT:
+    raise RuntimeError(f'{name}: stale leg sculpt or UV contract')
+   if not o.data.materials or o.data.materials[0].name!='CapcrawlerLegPlate' or o.vertex_groups.get(bone) is None:
+    raise RuntimeError(f'{name}: leg material or bone binding drift')
+   vertices,faces,uvs,origin=leggeo.leg_mesh_data(side,index,section)
+   if any(abs(o.location[k]-origin[k])>2e-6 for k in range(3)):
+    raise RuntimeError(f'{name}: original leg segment midpoint drift')
+   if len(o.data.vertices)!=len(vertices) or len(o.data.polygons)!=len(faces):
+    raise RuntimeError(f'{name}: topology or triangle-count drift')
+   for vertex,xyz in zip(o.data.vertices,vertices):
+    if any(abs(vertex.co[k]-xyz[k])>2e-6 for k in range(3)):
+     raise RuntimeError(f'{name}: leg armor silhouette/relief drift')
+   layer=o.data.uv_layers.get('CapcrawlerUV')
+   if not layer: raise RuntimeError(f'{name}: authored UV missing')
+   for polygon,face,face_uv in zip(o.data.polygons,faces,uvs):
+    if tuple(polygon.vertices)!=tuple(face): raise RuntimeError(f'{name}: polygon winding drift')
+    if any(any(abs(layer.data[li].uv[k]-uv[k])>2e-5 for k in range(2)) for li,uv in zip(polygon.loop_indices,face_uv)):
+     raise RuntimeError(f'{name}: sidewall/end-cap UV drift')
 for side,sign in (('L',-1),('R',1)):
  side_scutes=[o for o in scutes if o.name.startswith(f'Capcrawler_RimScute_{side}')]
  if len(side_scutes)!=3: raise RuntimeError(f'{side} fungal rim incomplete')

@@ -6,6 +6,7 @@ import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 import capcrawler_carapace_geometry as capgeo
 import capcrawler_shelf_geometry as shelfgeo
+import capcrawler_leg_geometry as leggeo
 import bpy
 from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]; OUTDIR=ROOT/'assets/models/source'; OUTDIR.mkdir(parents=True,exist_ok=True)
@@ -62,8 +63,8 @@ for i,(x,y,z,r) in enumerate(((-.12,.245,.345,.050),(0,.285,.365,.060),(.12,.245
  keep(organic(f'Capcrawler_SporeNodule_{i}',(x,y,z),(r,r*.86,r*.72),gill,2),'Body')
 for i,y in enumerate((-.24,-.08,.10,.26),1):
  for side in (-1,1):
-  s='L' if side<0 else 'R'; hip=(side*.20,y,.22); knee=(side*.34,y+(i-2.5)*.018,.13); foot=(side*.43,y+(i-2.5)*.035,.035); toe=(side*.475,foot[1]+.008,.024)
-  keep(organic(f'Capcrawler_{s}_Coxa{i}',hip,(.045,.05,.035),plate,2),f'{s}_Coxa{i}'); keep(segment(f'Capcrawler_{s}_Leg{i}A',hip,knee,.027,plate),f'{s}_Coxa{i}'); keep(segment(f'Capcrawler_{s}_Leg{i}B',knee,foot,.020,plate),f'{s}_Tibia{i}')
+  s='L' if side<0 else 'R'; hip,knee,foot=leggeo.anchors(side,i); toe=(side*.475,foot[1]+.008,.024)
+  keep(organic(f'Capcrawler_{s}_Coxa{i}',hip,(.045,.05,.035),plate,2),f'{s}_Coxa{i}'); keep(leggeo.sculpted_leg(f'Capcrawler_{s}_Leg{i}A',side,i,'A',plate),f'{s}_Coxa{i}'); keep(leggeo.sculpted_leg(f'Capcrawler_{s}_Leg{i}B',side,i,'B',plate),f'{s}_Tibia{i}')
   keep(organic(f'Capcrawler_{s}_FootPad{i}',foot,(.042,.052,.018),plate,2),f'{s}_Tarsus{i}'); keep(segment(f'Capcrawler_{s}_Claw{i}',foot,toe,.012,mand),f'{s}_Tarsus{i}')
 for side in (-1,1):
  s='L' if side<0 else 'R'
@@ -136,5 +137,5 @@ if len(meshes)<60: raise RuntimeError(f'Capcrawler detail regression: {len(meshe
 for o in meshes:
  uv=o.data.uv_layers.get('CapcrawlerUV')
  if not uv or not uv.data: raise RuntimeError(f'Missing explicit UVs: {o.name}')
-sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-capcrawler'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='common'; sc['magenheim_host_rig']='HOST-LOW-CRAWLER'; sc['magenheim_length_m']=.90; sc['magenheim_width_m']=.98; sc['magenheim_fidelity']='production-creature-r8'; sc['magenheim_skinning']='rigid-segment-weighted'; sc['magenheim_uv_contract']='CapcrawlerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,GillFX'; sc['magenheim_authored_actions']='Capcrawler_Idle,Capcrawler_Scuttle,Capcrawler_Turn,Capcrawler_AttackLeft,Capcrawler_AttackRight,Capcrawler_AttackFront,Capcrawler_Guard,Capcrawler_Hit,Capcrawler_Stagger,Capcrawler_Death'; sc['magenheim_animation_manifest']='idle,scuttle,turn,attack-left,attack-right,attack-front,guard,hit,stagger,death'; sc['magenheim_carapace_language']='layered-fungal-rim-scutes+crown+dorsal-shelves'; sc['magenheim_ground_contact']='8-tarsal-pads+8-terminal-claws'; sc['magenheim_leg_rig']='coxa+tibia+tarsus-per-leg'; sc['magenheim_fungal_signature']='4-dorsal-shelf-plates+3-spore-nodules'; sc['magenheim_shelf_geometry']=shelfgeo.CONTRACT
+sc=bpy.context.scene; sc['magenheim_model_id']='underworld-creature-capcrawler'; sc['magenheim_biome']='fungal-forest'; sc['magenheim_tier']='common'; sc['magenheim_host_rig']='HOST-LOW-CRAWLER'; sc['magenheim_length_m']=.90; sc['magenheim_width_m']=.98; sc['magenheim_fidelity']='production-creature-r8'; sc['magenheim_skinning']='rigid-segment-weighted'; sc['magenheim_uv_contract']='CapcrawlerUV:explicit-object-local'; sc['magenheim_socket_manifest']='AttackOrigin,HitCenter,GillFX'; sc['magenheim_authored_actions']='Capcrawler_Idle,Capcrawler_Scuttle,Capcrawler_Turn,Capcrawler_AttackLeft,Capcrawler_AttackRight,Capcrawler_AttackFront,Capcrawler_Guard,Capcrawler_Hit,Capcrawler_Stagger,Capcrawler_Death'; sc['magenheim_animation_manifest']='idle,scuttle,turn,attack-left,attack-right,attack-front,guard,hit,stagger,death'; sc['magenheim_carapace_language']='layered-fungal-rim-scutes+crown+dorsal-shelves'; sc['magenheim_ground_contact']='8-tarsal-pads+8-terminal-claws'; sc['magenheim_leg_rig']='coxa+tibia+tarsus-per-leg'; sc['magenheim_fungal_signature']='4-dorsal-shelf-plates+3-spore-nodules'; sc['magenheim_shelf_geometry']=shelfgeo.CONTRACT; sc['magenheim_leg_plate_geometry']=leggeo.CONTRACT
 bpy.context.preferences.filepaths.save_version=0; bpy.ops.wm.save_as_mainfile(filepath=str(OUT),compress=True); print(f'AUTHORED Capcrawler r8: {len(meshes)} meshes / {len(arm.data.bones)} bones / fungal silhouette anatomy -> {OUT.name}',flush=True)
