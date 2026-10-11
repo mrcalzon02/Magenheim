@@ -6,6 +6,7 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from model_surface_authoring import bind_surface_if_needed, bind_object_texture
 from mathutils import Vector
+from abyss_shellback_runtime_lod import install as install_shellback_lod, remove as remove_shellback_lod, restore as restore_shellback_lod
 root=Path(__file__).resolve().parents[1]
 out=root/'assets/models'
 args=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
@@ -104,6 +105,7 @@ for file in files:
    creature_contract=rigid_creature_contract(scene,creature_armature)
   else:
    raise ValueError(file.name+': unsupported runtime skinning contract '+repr(skinning))
+ shellback_lod_ratios = install_shellback_lod(scene, bpy.context.evaluated_depsgraph_get()) if file.stem == 'underworld-creature-abyss-shellback' else {}
  bindings={p['path']:p for p in json.loads(scene.get('binding_metadata','[]'))}
  if 'binding_metadata' in scene:del scene['binding_metadata']
  parts=[]
@@ -232,6 +234,9 @@ for file in files:
  if 'runtime_rig' in scene:payload['rig']=json.loads(scene['runtime_rig'])
  if skin_contract:payload['skinRig']=skin_contract
  if creature_contract:payload['creatureRig']=creature_contract
+ if file.stem == 'underworld-creature-abyss-shellback':
+  from runpy import run_path
+  run_path(str(root/'tools'/'verify-abyss-shellback-runtime-budget.py'))['validate'](payload)
  if file.stem.startswith('earth-'):
   vs=[];uvs=[];indices=[]
   for part in parts:
@@ -251,7 +256,11 @@ for file in files:
 
  if not parts:raise ValueError('Empty model: '+str(file))
  (out/'runtime'/(file.stem+'.model.json')).write_text(json.dumps(payload,separators=(',',':')))
+ # Remove export-only decimation before persisting the high-detail editable source.
+ if shellback_lod_ratios: remove_shellback_lod(scene)
  bpy.context.preferences.filepaths.save_version=0
  bpy.ops.wm.save_as_mainfile(filepath=str(file),compress=True)
+ # Restore identical evaluated geometry for the GLB representation.
+ if shellback_lod_ratios: restore_shellback_lod(scene, shellback_lod_ratios)
  bpy.ops.export_scene.gltf(filepath=str(out/'glb'/(file.stem+'.glb')),export_format='GLB',export_extras=False,export_yup=True)
  print('EXPORTED',file.stem,flush=True)
