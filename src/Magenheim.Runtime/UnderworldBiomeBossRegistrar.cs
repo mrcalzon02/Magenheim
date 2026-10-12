@@ -74,6 +74,23 @@ internal static class UnderworldBiomeBossRegistrar
                 scaling.Configure(encounter.Damage, 140f);
                 if (species.AuthoredModelId is null || !ModelAssets.Exists(species.AuthoredModelId))
                     throw new InvalidOperationException("Biome encounter is missing authored apex anatomy: " + encounter.Name);
+
+                // The Maw has its own Blender-authored anatomy on the same seven-stage
+                // Deep Hunter aquatic rig. Keep the registered species' native AI,
+                // combat behaviors, persistent ZDO, and defeat/trophy authority.
+                // Only replace the inherited visual when the complete exported
+                // boss payload is present; existing saves retain the working fish
+                // silhouette if the art has not yet been produced on this install.
+                if (encounter.Trophy == "BlackwaterMaw" &&
+                    ModelAssets.Exists("underworld-boss-blackwater-maw"))
+                {
+                    var previousBody = clone.GetComponentInChildren<RigidCreaturePresentationDriver>(true);
+                    RigidCreatureSegmentBinder.Apply(
+                        clone, "underworld-boss-blackwater-maw", species.Scale);
+                    if (previousBody)
+                        UnityEngine.Object.DestroyImmediate(previousBody.gameObject);
+                }
+
                 var config = new CreatureConfig { Name = encounter.Name };
                 config.AddDropConfig(new DropConfig
                 {
