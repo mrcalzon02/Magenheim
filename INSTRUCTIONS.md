@@ -93,15 +93,18 @@ The default implementation question is **"does Valheim already handle this?"** I
 Updated 2026-10-12 from the user's concept-model review in this conversation.
 **Adequately reworked for this art campaign: 1 of 6 bosses.** This is art-review
 progress, not an assertion of installed model, animation or runtime performance acceptance.
+Evidence paths below refer to preserved local workspace artifacts; those art files
+are not part of this documentation-only GitHub update. User acceptance is recorded
+from the conversation, not inferred from unpublished image files.
 
 | Boss | Counts as adequately reworked? | Current state and evidence | Next action |
 | --- | --- | --- | --- |
-| The First Bloom | **Yes** | [r22 arm/shoulder seam repair](docs/art/creature-models/2026-10-04/first-bloom-arm-seams-r22/gallery.html). After the corrections to chest shelves, attached pulp, torso, feet, hips, shoulders and head, the user said “Good you can now Pro ceed to apply the level of detail standards we've set with this to our other bosses.” 8,846 triangles versus Troll 6,206; soft cap 9,309. | Preserve the accepted art baseline. Native animation, loader admission and live performance still require their own acceptance. |
-| The Blackwater Maw | **No** | [Last reviewed r13 teeth/eyes candidate](docs/art/creature-models/2026-10-04/blackwater-maw-teeth-eyes-r13/gallery.html): 7,109 triangles versus Serpent 4,872; soft cap 7,308. Fin anatomy, proportions, surface detail and interpretation were repeatedly rejected. “Closer....ish” was not acceptance. An r14 study exists, but its larger shortening was not accepted; the final requested shortening was 20%, followed by “no more.” | Keep this model paused. Preserve drafts; do not promote them or resume this boss without a new instruction. The 20% change must not be recorded as completed. |
-| The Rift Titan | **No** | [Existing r2 construction comparison](docs/art/creature-models/2026-10-04/detail-r2/gallery.html#rift-titan). No adequate concept-refinement acceptance in this conversation. Provisional study height 7 m. | Current next boss: start an individualized concept and donor-budget refinement. |
-| The Carrion Crown | **No** | [Existing r2 construction comparison](docs/art/creature-models/2026-10-04/detail-r2/gallery.html#carrion-crown). No adequate concept-refinement acceptance in this conversation. Provisional study height 6.8 m. | Queue after Rift Titan. |
-| The White Silence | **No** | [Existing r2 construction comparison](docs/art/creature-models/2026-10-04/detail-r2/gallery.html#white-silence). No adequate concept-refinement acceptance in this conversation. Provisional study height 5.5 m. | Queue after Carrion Crown. |
-| The Furnace Heart | **No** | [Existing r2 construction comparison](docs/art/creature-models/2026-10-04/detail-r2/gallery.html#furnace-heart). No adequate concept-refinement acceptance in this conversation. Provisional study height 5.2 m. Refinement of the ordinary Furnace Golem is not acceptance of this boss. | Queue after White Silence. |
+| The First Bloom | **Yes** | r22 arm/shoulder seam repair (`docs/art/creature-models/2026-10-04/first-bloom-arm-seams-r22/gallery.html`). After the corrections to chest shelves, attached pulp, torso, feet, hips, shoulders and head, the user said “Good you can now Pro ceed to apply the level of detail standards we've set with this to our other bosses.” 8,846 triangles versus Troll 6,206; soft cap 9,309. | Preserve the accepted art baseline. Native animation, loader admission and live performance still require their own acceptance. |
+| The Blackwater Maw | **No** | Last reviewed r13 teeth/eyes candidate (`docs/art/creature-models/2026-10-04/blackwater-maw-teeth-eyes-r13/gallery.html`): 7,109 triangles versus Serpent 4,872; soft cap 7,308. Fin anatomy, proportions, surface detail and interpretation were repeatedly rejected. “Closer....ish” was not acceptance. An r14 study exists, but its larger shortening was not accepted; the final requested shortening was 20%, followed by “no more.” | Keep this model paused. Preserve drafts; do not promote them or resume this boss without a new instruction. The 20% change must not be recorded as completed. |
+| The Rift Titan | **No** | Existing r2 construction comparison (`docs/art/creature-models/2026-10-04/detail-r2/gallery.html#rift-titan`). No adequate concept-refinement acceptance in this conversation. Provisional study height 7 m. | Current next boss: start an individualized concept and donor-budget refinement. |
+| The Carrion Crown | **No** | Existing r2 construction comparison (`docs/art/creature-models/2026-10-04/detail-r2/gallery.html#carrion-crown`). No adequate concept-refinement acceptance in this conversation. Provisional study height 6.8 m. | Queue after Rift Titan. |
+| The White Silence | **No** | Existing r2 construction comparison (`docs/art/creature-models/2026-10-04/detail-r2/gallery.html#white-silence`). No adequate concept-refinement acceptance in this conversation. Provisional study height 5.5 m. | Queue after Carrion Crown. |
+| The Furnace Heart | **No** | Existing r2 construction comparison (`docs/art/creature-models/2026-10-04/detail-r2/gallery.html#furnace-heart`). No adequate concept-refinement acceptance in this conversation. Provisional study height 5.2 m. Refinement of the ordinary Furnace Golem is not acceptance of this boss. | Queue after White Silence. |
 
 Maintain this table as a rolling tally when a boss is started, materially revised,
 explicitly accepted, rejected or stopped. Record the exact revision, user evidence,
@@ -113,8 +116,8 @@ older construction studies or count ordinary creatures as bosses.
 
 Continue bosses before ordinary creatures, taking the largest unaccepted, unpaused
 boss first. Sizes above are provisional art-study dimensions, not gameplay changes.
-Use the [adopted concepts](docs/art/creature-concepts/2026-10-03/README.md) and
-[refinement standards](docs/art/creature-models/REFINEMENT-STANDARDS.md).
+Use the adopted concepts (`docs/art/creature-concepts/2026-10-03/README.md`) and
+refinement standards (`docs/art/creature-models/REFINEMENT-STANDARDS.md`).
 The final triangle budget remains a **soft 1.5 times the actual native donor**;
 prioritize coherent surfaces and conservative removal of wholly buried geometry.
 Match reference orientation, compare primary silhouettes in clay before small
