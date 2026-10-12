@@ -98,6 +98,15 @@ if($LASTEXITCODE -ne 0){throw 'Blackwater creature runtime export failed.'}
 & python "$PSScriptRoot/verify-model-assets.py" @blackwaterCreatureIds
 if($LASTEXITCODE -ne 0){throw 'Blackwater creature runtime payload verification failed.'}
 
+# The biome boss shares the accepted Deep Hunter motion authority but has
+# separate editable anatomy, exporter identity and runtime visuals.
+& "$PSScriptRoot/blender.ps1" author-underworld-blackwater-maw
+if($LASTEXITCODE -ne 0){throw 'Blackwater Maw source authoring failed.'}
+& "$PSScriptRoot/blender.ps1" export-model-assets underworld-boss-blackwater-maw
+if($LASTEXITCODE -ne 0){throw 'Blackwater Maw runtime export failed.'}
+& python "$PSScriptRoot/verify-model-assets.py" underworld-boss-blackwater-maw
+if($LASTEXITCODE -ne 0){throw 'Blackwater Maw exported model validation failed.'}
+
 $sulfurCreatureJobs=@(
     @{Id='underworld-creature-ashmite'; Texture='generate-underworld-ashmite-textures.py'; Author='author-underworld-ashmite'; Animate='animate-underworld-ashmite'; Verify='verify-underworld-ashmite'},
     @{Id='underworld-creature-cinder-hound'; Texture='generate-underworld-cinder-hound-textures.py'; Author='author-underworld-cinder-hound'; Animate='author-underworld-cinder-hound-actions'; Verify='verify-underworld-cinder-hound'},
