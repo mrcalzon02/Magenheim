@@ -62,8 +62,8 @@ class AshmiteBodyGeometry(unittest.TestCase):
                     self.assertAlmostEqual(a[2],b[2],places=9)
             self.assertTrue(all(isfinite(x) and 0<=x<=1 for poly in uv for pair in poly for x in pair))
             seam=uv[g.SIDES+g.SIDES-1]
-            self.assertAlmostEqual(seam[2][0],1)
-            self.assertAlmostEqual(seam[3][0],1)
+            self.assertAlmostEqual(seam[2][0],g.SIDE_U[1])
+            self.assertAlmostEqual(seam[3][0],g.SIDE_U[1])
 
     def test_physical_fissures_and_sternites(self):
         for kind in g.BODIES:

@@ -17,6 +17,7 @@ import ashmite_scraper_geometry as scrapegeo
 import ashmite_leg_geometry as leggeo
 import ashmite_tarsal_geometry as tarsgeo
 import ashmite_eye_geometry as eyegeo
+import ashmite_joint_geometry as jointgeo
 
 ROOT=Path(__file__).resolve().parents[1]
 MODEL=ROOT/'assets/models/source/underworld-creature-ashmite.blend'
@@ -44,6 +45,39 @@ for prefix,count in (('Ashmite_DorsalScute_',5),('Ashmite_SulfurRidge_',10),('As
     found=sum(1 for o in meshes if o.name.startswith(prefix))
     if found!=count: raise RuntimeError(f'{prefix} physical anatomy regression: {found} != {count}')
 
+# Six folded protected-joint membranes: fail on stale spheres, UVs or rig drift.
+joint_vertices,joint_faces,joint_uvs=jointgeo.joint_mesh_data()
+for pair in (1,2,3):
+    for side,label in ((-1,'L'),(1,'R')):
+        name=f'Ashmite_{label}_Joint{pair}'
+        obj=bpy.data.objects.get(name)
+        if not obj or obj.type!='MESH':
+            raise RuntimeError(f'{name}: sculpted coxal membrane missing')
+        if (obj.get('magenheim_ashmite_joint_contract')!=jointgeo.CONTRACT or
+                obj.get('magenheim_ashmite_joint_side')!=side or
+                obj.get('magenheim_ashmite_joint_pair')!=pair):
+            raise RuntimeError(f'{name}: joint identity drift')
+        if any(abs(obj.location[k]-jointgeo.anchor(side,pair)[k])>1e-6 for k in range(3)):
+            raise RuntimeError(f'{name}: original hip anchor drift')
+        if (not obj.data.materials or obj.data.materials[0].name!='Ashmite_ProtectedJoint' or
+                not obj.vertex_groups.get(f'{label}_Coxa{pair}') or
+                not any(m.type=='ARMATURE' and m.object==arm for m in obj.modifiers)):
+            raise RuntimeError(f'{name}: protected joint material or Coxa binding drift')
+        if len(obj.data.vertices)!=len(joint_vertices) or len(obj.data.polygons)!=len(joint_faces):
+            raise RuntimeError(f'{name}: folded membrane topology drift')
+        if any(any(abs(a-b)>2e-6 for a,b in zip(v.co,expected))
+               for v,expected in zip(obj.data.vertices,joint_vertices)):
+            raise RuntimeError(f'{name}: physical compression-fold drift')
+        if any(tuple(p.vertices)!=tuple(f) for p,f in zip(obj.data.polygons,joint_faces)):
+            raise RuntimeError(f'{name}: face winding drift')
+        layer=obj.data.uv_layers.get('AshmiteUV')
+        if not layer:
+            raise RuntimeError(f'{name}: authored joint UV missing')
+        for p,expected_uv in zip(obj.data.polygons,joint_uvs):
+            if any(any(abs(a-b)>2e-5 for a,b in zip(layer.data[li].uv,uv))
+                   for li,uv in zip(p.loop_indices,expected_uv)):
+                raise RuntimeError(f'{name}: joint UV loop drift')
+
 # Primary body envelopes: reject stale ico-spheres, topology, UV or rig drift.
 for kind,name in (('thorax','Ashmite_Thorax'),('abdomen','Ashmite_Abdomen')):
     obj=bpy.data.objects.get(name)
@@ -53,6 +87,8 @@ for kind,name in (('thorax','Ashmite_Thorax'),('abdomen','Ashmite_Abdomen')):
     if (obj.get('magenheim_ashmite_body_contract')!=bodygeo.CONTRACT or
             obj.get('magenheim_ashmite_body_kind')!=kind):
         raise RuntimeError(f'{name}: primary body identity drift')
+    if obj.get('magenheim_ashmite_body_uv_contract')!=bodygeo.UV_CONTRACT:
+        raise RuntimeError(f'{name}: body three-island UV contract drift')
     if any(abs(obj.location[k]-origin[k])>1e-6 for k in range(3)):
         raise RuntimeError(f'{name}: original body anchor drift')
     if not obj.vertex_groups.get(bone) or not any(
@@ -204,6 +240,8 @@ for side,label in ((-1,'L'),(1,'R')):
         raise RuntimeError(f'Ashmite mandible {label} lacks sculpted geometry')
     if obj.get('magenheim_ashmite_mandible_side')!=side:
         raise RuntimeError(f'Ashmite mandible {label} side contract mismatch')
+    if obj.get('magenheim_ashmite_mandible_uv_contract')!=mandgeo.UV_CONTRACT:
+        raise RuntimeError(f'Ashmite mandible {label} three-island UV contract drift')
     if len(obj.data.vertices)!=mandgeo.RINGS*mandgeo.SIDES+2:
         raise RuntimeError(f'Ashmite mandible {label} vertex topology mismatch')
     tris=sum(len(p.vertices)-2 for p in obj.data.polygons)
@@ -212,9 +250,24 @@ for side,label in ((-1,'L'),(1,'R')):
     root,_=mandgeo.anchors(side)
     if any(abs(obj.location[k]-root[k])>1e-6 for k in range(3)):
         raise RuntimeError(f'Ashmite mandible {label} root attachment drift')
+    vertices,faces,uvs=mandgeo.mandible_mesh_data(side)
+    if len(obj.data.polygons)!=len(faces):
+        raise RuntimeError(f'Ashmite mandible {label} face count drift')
+    if any(any(abs(a-b)>2e-5 for a,b in zip(vertex.co,expected))
+           for vertex,expected in zip(obj.data.vertices,vertices)):
+        raise RuntimeError(f'Ashmite mandible {label} sculpted vertex drift')
+    for poly,expected in zip(obj.data.polygons,faces):
+        if tuple(poly.vertices)!=tuple(expected):
+            raise RuntimeError(f'Ashmite mandible {label} face topology/winding drift')
+    if not obj.data.materials or obj.data.materials[0].name!='Ashmite_Mouthpart':
+        raise RuntimeError(f'Ashmite mandible {label} mouthpart PBR material drift')
     layer=obj.data.uv_layers.get('AshmiteUV')
     if not layer or any(not 0<=c<=1 for item in layer.data for c in item.uv):
         raise RuntimeError(f'Ashmite mandible {label} UVs missing or out of bounds')
+    for poly,expected_uvs in zip(obj.data.polygons,uvs):
+        if any(any(abs(a-b)>2e-5 for a,b in zip(layer.data[li].uv,expected_uv))
+               for li,expected_uv in zip(poly.loop_indices,expected_uvs)):
+            raise RuntimeError(f'Ashmite mandible {label} UV island/seam drift')
 
 # Ashmite's central vent scraper is an authored sulfurized mouth tool.
 scraper=bpy.data.objects.get('Ashmite_VentScraper')
@@ -277,6 +330,8 @@ for pair in (1,2,3):
                     obj.get('magenheim_ashmite_tarsal_pair')!=pair or
                     obj.get('magenheim_ashmite_tarsal_side')!=side):
                 raise RuntimeError(f'{name}: sculpted foot identity drift')
+            if obj.get('magenheim_ashmite_tarsal_uv_contract')!=tarsgeo.UV_CONTRACT:
+                raise RuntimeError(f'{name}: stale or missing three-island foot UV contract')
             anchor,_=tarsgeo.anchors(side,pair,kind)
             if any(abs(obj.location[k]-anchor[k])>1e-6 for k in range(3)):
                 raise RuntimeError(f'{name}: original attachment drift')
@@ -292,6 +347,18 @@ for pair in (1,2,3):
             layer=obj.data.uv_layers.get('AshmiteUV')
             if not layer or any(not 0<=c<=1 for item in layer.data for c in item.uv):
                 raise RuntimeError(f'{name}: authored UV drift')
+            expected_vertices,expected_faces,expected_uvs=tarsgeo.tarsal_mesh_data(side,pair,kind)
+            if (len(obj.data.polygons)!=len(expected_faces) or
+                    any(any(abs(a-b)>2e-6 for a,b in zip(actual.co,expected))
+                        for actual,expected in zip(obj.data.vertices,expected_vertices))):
+                raise RuntimeError(f'{name}: sculpted foot vertex/silhouette drift')
+            if any(tuple(poly.vertices)!=tuple(face)
+                   for poly,face in zip(obj.data.polygons,expected_faces)):
+                raise RuntimeError(f'{name}: sculpted foot face/winding drift')
+            for poly,face_uv in zip(obj.data.polygons,expected_uvs):
+                if any(any(abs(a-b)>2e-5 for a,b in zip(layer.data[li].uv,uv))
+                       for li,uv in zip(poly.loop_indices,face_uv)):
+                    raise RuntimeError(f'{name}: foot UV island or seam drift')
 
 EXPECTED={'Idle':64,'Scavenge':52,'Walk':28,'Scuttle':16,'TurnLeft':22,'TurnRight':22,'Bite':18,'Hit':14,'Stagger':24,'Death':42}
 for suffix,end in EXPECTED.items():

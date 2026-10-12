@@ -10,6 +10,14 @@ from math import cos, exp, pi, sin
 RINGS = 36
 SIDES = 80
 CONTRACT = 'ashmite-sculpted-body-envelope-36x80-v1'
+UV_CONTRACT = 'ashmite-body-three-island-uv-v1'
+# Sidewall is given the lower 60% of the atlas; the two end caps occupy
+# separate upper disks. Keeping each island inside the 1024px PBR map
+# prevents the prior cap/sidewall overlap and leaves padding for mipmaps.
+SIDE_U = (.04, .96)
+SIDE_V = (.045, .615)
+CAP_CENTERS = ((.28, .81), (.72, .81))  # rear, front
+CAP_RADIUS = .15
 BODIES = {
     'thorax': ((0., 0., .085), (.095, .105, .052), 'Thorax'),
     'abdomen': ((0., -.105, .080), (.105, .125, .060), 'Abdomen'),
@@ -68,24 +76,27 @@ def body_mesh_data(kind):
         k=(j+1)%SIDES
         a,b=2*pi*j/SIDES,2*pi*k/SIDES
         faces.append((rear,1+j,1+k))
-        uvs.append(((.5,.5),(.5+.46*cos(a),.5+.46*sin(a)),
-                    (.5+.46*cos(b),.5+.46*sin(b))))
+        cx, cy = CAP_CENTERS[0]
+        uvs.append(((cx,cy), (cx+CAP_RADIUS*cos(a),cy+CAP_RADIUS*sin(a)),
+                    (cx+CAP_RADIUS*cos(b),cy+CAP_RADIUS*sin(b))))
     for i in range(RINGS-1):
         for j in range(SIDES):
             k=(j+1)%SIDES
             faces.append((1+i*SIDES+j,1+(i+1)*SIDES+j,
                           1+(i+1)*SIDES+k,1+i*SIDES+k))
-            uvs.append(((j/SIDES,(i+.5)/RINGS),
-                        (j/SIDES,(i+1.5)/RINGS),
-                        ((j+1)/SIDES,(i+1.5)/RINGS),
-                        ((j+1)/SIDES,(i+.5)/RINGS)))
+            u0 = SIDE_U[0] + (SIDE_U[1]-SIDE_U[0])*j/SIDES
+            u1 = SIDE_U[0] + (SIDE_U[1]-SIDE_U[0])*(j+1)/SIDES
+            v0 = SIDE_V[0] + (SIDE_V[1]-SIDE_V[0])*i/(RINGS-1)
+            v1 = SIDE_V[0] + (SIDE_V[1]-SIDE_V[0])*(i+1)/(RINGS-1)
+            uvs.append(((u0,v0),(u0,v1),(u1,v1),(u1,v0)))
     last=1+(RINGS-1)*SIDES
     for j in range(SIDES):
         k=(j+1)%SIDES
         a,b=2*pi*j/SIDES,2*pi*k/SIDES
         faces.append((front,last+k,last+j))
-        uvs.append(((.5,.5),(.5+.46*cos(b),.5+.46*sin(b)),
-                    (.5+.46*cos(a),.5+.46*sin(a))))
+        cx, cy = CAP_CENTERS[1]
+        uvs.append(((cx,cy), (cx+CAP_RADIUS*cos(b),cy+CAP_RADIUS*sin(b)),
+                    (cx+CAP_RADIUS*cos(a),cy+CAP_RADIUS*sin(a))))
     return vertices, faces, uvs
 
 
@@ -103,6 +114,7 @@ def sculpted_body(name, kind, material):
     mesh.materials.append(material)
     obj['magenheim_ashmite_body_contract']=CONTRACT
     obj['magenheim_ashmite_body_kind']=kind
+    obj['magenheim_ashmite_body_uv_contract']=UV_CONTRACT
     layer=mesh.uv_layers.new(name='AshmiteUV')
     for poly,loop_uv in zip(mesh.polygons,uvs):
         poly.use_smooth=len(poly.vertices)==4

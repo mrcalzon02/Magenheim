@@ -2,7 +2,7 @@
 import math
 import unittest
 from collections import Counter
-from ashmite_mandible_geometry import CONTRACT, RINGS, SIDES, anchors, centerline, mandible_mesh_data
+from ashmite_mandible_geometry import CONTRACT, UV_CONTRACT, SIDE_U, RINGS, SIDES, anchors, centerline, mandible_mesh_data
 
 
 def volume(vertices, faces):
@@ -81,8 +81,8 @@ class AshmiteMandibleTests(unittest.TestCase):
             self.assertTrue(all(len(f)==len(uv) for f,uv in zip(faces,uvs)))
             self.assertTrue(all(0<=u<=1 and 0<=v<=1 for uv in uvs for u,v in uv))
             seam=uvs[SIDES+SIDES-1]
-            self.assertEqual(seam[0][0],(SIDES-1)/SIDES)
-            self.assertEqual(seam[1][0],1)
+            self.assertEqual(seam[0][0],SIDE_U[0]+(SIDE_U[1]-SIDE_U[0])*(SIDES-1)/SIDES)
+            self.assertEqual(seam[1][0],SIDE_U[1])
         for side,t in ((0,.5),(2,.5),(1,-.1),(1,1.1),(1,float('nan'))):
             with self.assertRaises(ValueError): centerline(side,t)
 

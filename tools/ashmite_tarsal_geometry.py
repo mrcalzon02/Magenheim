@@ -6,6 +6,12 @@ materials and the old 30-mm scraper envelope. Pure geometry is Blender-free.
 from math import cos, exp, pi, sin, sqrt
 
 CONTRACT = 'ashmite-tarsal-rasp-six-pairs-v1'
+UV_CONTRACT = 'ashmite-tarsal-three-island-uv-v1'
+# The root/tip disks and sidewall cannot share texels on the 1024px PBR maps.
+SIDE_U = (.04, .96)
+SIDE_V = (.045, .635)
+ROOT_CAP = (.27, .82, .13)
+TIP_CAP = (.73, .82, .13)
 SIDES = 20
 RINGS = {'tarsus': 11, 'scraper': 17}
 
@@ -82,18 +88,25 @@ def tarsal_mesh_data(side, pair, kind):
         k=(j+1)%SIDES
         a,b=2*pi*j/SIDES,2*pi*k/SIDES
         faces.append((root,k,j))
-        uvs.append(((.5,.5),(.5+.48*cos(b),.5+.48*sin(b)),(.5+.48*cos(a),.5+.48*sin(a))))
+        uvs.append(((ROOT_CAP[0],ROOT_CAP[1]),
+                    (ROOT_CAP[0]+ROOT_CAP[2]*cos(b),ROOT_CAP[1]+ROOT_CAP[2]*sin(b)),
+                    (ROOT_CAP[0]+ROOT_CAP[2]*cos(a),ROOT_CAP[1]+ROOT_CAP[2]*sin(a))))
     for i in range(n-1):
         for j in range(SIDES):
             k=(j+1)%SIDES
             faces.append((i*SIDES+j,i*SIDES+k,(i+1)*SIDES+k,(i+1)*SIDES+j))
-            uvs.append(((j/SIDES,i/(n-1)),((j+1)/SIDES,i/(n-1)),
-                        ((j+1)/SIDES,(i+1)/(n-1)),(j/SIDES,(i+1)/(n-1))))
+            u0=SIDE_U[0]+(SIDE_U[1]-SIDE_U[0])*j/SIDES
+            u1=SIDE_U[0]+(SIDE_U[1]-SIDE_U[0])*(j+1)/SIDES
+            v0=SIDE_V[0]+(SIDE_V[1]-SIDE_V[0])*i/(n-1)
+            v1=SIDE_V[0]+(SIDE_V[1]-SIDE_V[0])*(i+1)/(n-1)
+            uvs.append(((u0,v0),(u1,v0),(u1,v1),(u0,v1)))
     for j in range(SIDES):
         k=(j+1)%SIDES
         a,b=2*pi*j/SIDES,2*pi*k/SIDES
         faces.append((tip,(n-1)*SIDES+j,(n-1)*SIDES+k))
-        uvs.append(((.5,.5),(.5+.48*cos(a),.5+.48*sin(a)),(.5+.48*cos(b),.5+.48*sin(b))))
+        uvs.append(((TIP_CAP[0],TIP_CAP[1]),
+                    (TIP_CAP[0]+TIP_CAP[2]*cos(a),TIP_CAP[1]+TIP_CAP[2]*sin(a)),
+                    (TIP_CAP[0]+TIP_CAP[2]*cos(b),TIP_CAP[1]+TIP_CAP[2]*sin(b))))
     return vertices,faces,uvs
 
 
@@ -110,6 +123,7 @@ def sculpted_tarsal(name, side, pair, kind, material):
     obj.location = start
     mesh.materials.append(material)
     obj['magenheim_ashmite_tarsal_contract'] = CONTRACT
+    obj['magenheim_ashmite_tarsal_uv_contract'] = UV_CONTRACT
     obj['magenheim_ashmite_tarsal_kind'] = kind
     obj['magenheim_ashmite_tarsal_pair'] = pair
     obj['magenheim_ashmite_tarsal_side'] = side
