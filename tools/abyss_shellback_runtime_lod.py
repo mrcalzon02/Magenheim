@@ -3,6 +3,7 @@
 Only evaluated runtime meshes are reduced; the saved .blend keeps its original
 high-detail geometry, armature, UVs, materials and anatomical object identities.
 """
+import math
 CAP=24000
 MODIFIER="MagenheimShellbackRuntimeLOD"
 
@@ -41,6 +42,38 @@ def allocate(counts,cap=CAP):
     if any(r<.045 for r in ratios.values()):raise ValueError("Shellback decimation would erase anatomical form")
     return ratios
 
+def projected_support_guard(reference, reduced, name="mesh", directions=48):
+    """Bound convex outer-silhouette drift in top/front/side projections.
+
+    Operates on world-space XYZ points. This is a source-preservation guard,
+    not an approved-concept-art silhouette acceptance test.
+    """
+    if not reference or not reduced:
+        raise RuntimeError(name + ": missing vertices for silhouette comparison")
+    if directions < 8:
+        raise ValueError("At least eight projection directions are required")
+    for axes in ((0, 1), (0, 2), (1, 2)):
+        extent = max(max(p[a] for p in reference) - min(p[a] for p in reference) for a in axes)
+        tolerance = max(.005, min(.035, .025 * extent))
+        for step in range(directions):
+            angle = 2 * math.pi * step / directions
+            c, s = math.cos(angle), math.sin(angle)
+            def limits(points):
+                projected = (p[axes[0]] * c + p[axes[1]] * s for p in points)
+                lo = hi = next(projected)
+                for value in projected:
+                    if value < lo: lo = value
+                    if value > hi: hi = value
+                return lo, hi
+            old_lo, old_hi = limits(reference)
+            new_lo, new_hi = limits(reduced)
+            drift = max(abs(old_lo-new_lo), abs(old_hi-new_hi))
+            if drift > tolerance:
+                raise RuntimeError(
+                    f"{name}: projected silhouette support drift {drift:.4f}m "
+                    f"exceeds {tolerance:.4f}m in axes {axes} direction {step}/{directions}")
+    return True
+
 def bounds(mesh):
     return [(min(v.co[axis] for v in mesh.vertices),max(v.co[axis] for v in mesh.vertices)) for axis in range(3)]
 
@@ -51,6 +84,14 @@ def install(scene,depsgraph):
     ratios=allocate(counts)
     if not ratios:return {}
     before={o.name:bounds(o.data) for o in meshes if o.name in ratios}
+    baseline={}
+    for o in meshes:
+        if o.name not in ratios:continue
+        evaluated=o.evaluated_get(depsgraph)
+        mesh=evaluated.to_mesh()
+        try:
+            baseline[o.name]=[tuple(o.matrix_world@v.co) for v in mesh.vertices]
+        finally:evaluated.to_mesh_clear()
     for o in meshes:
         if o.name in ratios:
             mod=o.modifiers.new(MODIFIER,"DECIMATE")
@@ -74,6 +115,9 @@ def install(scene,depsgraph):
         try:
             if not mesh.vertices or not mesh.uv_layers:raise RuntimeError(o.name+": decimation lost geometry/UV")
             after=bounds(mesh)
+            projected_support_guard(
+                baseline[o.name],
+                [tuple(o.matrix_world@v.co) for v in mesh.vertices],o.name)
             if any(abs(before[o.name][a][edge]-after[a][edge])>.035 for a in range(3) for edge in range(2)):
                 raise RuntimeError(o.name+": silhouette envelope shifted more than 3.5 cm")
         finally:evaluated.to_mesh_clear()
