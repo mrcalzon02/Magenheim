@@ -15,6 +15,7 @@ from mathutils import Vector
 import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from furnace_golem_armor_geometry import make_armor
+from furnace_golem_vent_geometry import make_vent
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'assets/models/source'
@@ -213,10 +214,24 @@ def build_furnace_golem():
     # front grates remain separate readable metal objects, not a texture.
     keep(box('FG_FurnaceMouth',(0,.15,1.28),(.30,.025,.28),furnace),'Torso')
     for i,x in enumerate((-.14,-.05,.05,.14),1): keep(box(f'FG_Grate_{i}',(x,.29,1.28),(.025,.035,.27),slag),'Torso')
+    def exhaust(name,loc,kind,material):
+        verts,faces,loops,regions=make_vent(kind)
+        mesh=bpy.data.meshes.new(name+'_exhaust')
+        mesh.from_pydata(verts,[],faces); mesh.update()
+        mesh.materials.append(material); mesh.materials.append(basalt)
+        obj=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(obj)
+        obj.location=loc
+        atlas=mesh.uv_layers.new(name='FurnaceGolemVentUV')
+        for poly,coords,region in zip(mesh.polygons,loops,regions):
+            for li,coord in zip(poly.loop_indices,coords): atlas.data[li].uv=coord
+            if region=='bore': poly.material_index=1
+        return keep(obj,'Torso')
     for side in (-1,1):
         s='L' if side<0 else 'R'
-        keep(seg(f'FG_VentStack_{s}',(side*.25,-.18,1.67),(side*.25,-.22,2.13),.075,iron), 'Torso')
-        keep(cone(f'FG_VentCap_{s}',(side*.25,-.22,2.18),.11,.18,slag,(0,0,0)),'Torso')
+        # The old capped cylinders/cones blocked the intended smoke exhaust.
+        # Both open tubes overlap slightly and retain the existing names/bones.
+        exhaust(f'FG_VentStack_{s}',(side*.25,-.20,1.90),'stack',iron)
+        exhaust(f'FG_VentCap_{s}',(side*.25,-.22,2.18),'cowl',slag)
     arms={}
     for side in (-1,1):
         s='L' if side<0 else 'R'; shoulder=(side*.50,.02,1.52); elbow=(side*.74,.06,1.15); hand=(side*.76,.28,.80); arms[s]=(shoulder,elbow,hand)
@@ -239,6 +254,9 @@ def build_furnace_golem():
     for s,(shoulder,elbow,hand) in arms.items(): u=bone(arm,f'Upper_{s}',shoulder,elbow,torso); bone(arm,f'Lower_{s}',elbow,hand,u)
     for s,(hip,knee,foot) in legs.items(): u=bone(arm,f'UpperLeg_{s}',hip,knee,pel); bone(arm,f'LowerLeg_{s}',knee,foot,u)
     bone(arm,'FurnaceCore',(0,.18,1.28),(0,.46,1.28),torso); bone(arm,'AttackOrigin',(0,.15,1.23),(0,.48,1.23),torso)
+    for side in (-1,1):
+        bone(arm,'VentFX_'+('L' if side<0 else 'R'),
+             (side*.25,-.22,2.24),(side*.25,-.22,2.38),torso)
     actions=['FurnaceGolem_Idle','FurnaceGolem_Walk','FurnaceGolem_Slam','FurnaceGolem_Swipe','FurnaceGolem_Vent','FurnaceGolem_Guard','FurnaceGolem_Hit','FurnaceGolem_Death']; finalize(arm,parts,'underworld-creature-furnace-golem',actions,'broad sloped basalt/iron fortress shoulders, recessed physical furnace throat, heavy armored thigh/greave mass, siege gauntlets and twin exhaust stacks',16)
     action(arm,'FurnaceGolem_Idle')
     for f,w in ((1,0),(13,.5),(25,1),(37,.5),(49,0)): key(arm,'Torso',f,scale=(1+w*.012,1+w*.012,1+w*.018))
