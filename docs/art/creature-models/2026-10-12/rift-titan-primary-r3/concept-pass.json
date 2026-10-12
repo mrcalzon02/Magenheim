@@ -1,0 +1,10 @@
+{
+  "scope": "primary silhouette and open cage; not final surface detail",
+  "anatomy": "layered broad shoulders, cleft irregular crown, elongated limb strata, bowed dark cage bands around suspended crystal cluster",
+  "donor": "StoneGolem",
+  "donor_triangles": 1200,
+  "soft_cap": 1800,
+  "preserved": "existing Rift Colossus rig hierarchy and seven named actions",
+  "remaining": "user silhouette review, individualized fracture/lichen textures, refinement of plate overlaps and cage clearance, native loader/animation/performance acceptance",
+  "status": "in progress; not adequately reworked"
+}
