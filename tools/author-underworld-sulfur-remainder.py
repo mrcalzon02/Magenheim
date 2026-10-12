@@ -12,6 +12,10 @@ from pathlib import Path
 from math import pi, radians, sin
 import bpy
 from mathutils import Vector
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from furnace_golem_armor_geometry import make_armor
+from furnace_golem_vent_geometry import make_vent
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'assets/models/source'
@@ -188,28 +192,72 @@ def build_furnace_golem():
     clear_scene(); parts={}
     iron=mat('FurnaceGolem_Iron',(.18,.17,.15),.74,.32); basalt=mat('FurnaceGolem_Basalt',(.16,.15,.13),.94); furnace=mat('FurnaceGolem_Furnace',(.50,.18,.06),.46,.06); slag=mat('FurnaceGolem_Slag',(.30,.23,.15),.82)
     def keep(o,b): parts[o.name]=b; return o
-    keep(box('FG_Pelvis',(0,0,.76),(.42,.31,.30),basalt),'Pelvis'); keep(box('FG_Torso',(0,.02,1.30),(.54,.37,.55),iron),'Torso'); keep(box('FG_Head',(0,.08,1.86),(.32,.28,.28),iron),'Head')
-    keep(box('FG_FurnaceMouth',(0,.40,1.28),(.24,.055,.24),furnace),'Torso')
-    for i,x in enumerate((-.27,-.09,.09,.27),1): keep(box(f'FG_Grate_{i}',(x,.465,1.28),(.025,.035,.22),slag),'Torso')
+    def armor(name,loc,dims,profile,material,bone,throat=False):
+        # Purpose-authored broad armor volumes; no subdivision-only detail.
+        verts,faces,loops,regions=make_armor(profile,*dims,furnace_throat=throat)
+        mesh=bpy.data.meshes.new(name+'_armor')
+        mesh.from_pydata(verts,[],faces); mesh.update()
+        mesh.materials.append(material)
+        if throat: mesh.materials.append(basalt)
+        obj=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(obj)
+        obj.location=loc
+        atlas=mesh.uv_layers.new(name='FurnaceGolemArmorUV')
+        for poly,coords,region in zip(mesh.polygons,loops,regions):
+            for li,coord in zip(poly.loop_indices,coords): atlas.data[li].uv=coord
+            if region.startswith('throat'): poly.material_index=1
+        return keep(obj,bone)
+    armor('FG_Pelvis',(0,0,.76),(.49,.38,.36),'pelvis',basalt,'Pelvis')
+    armor('FG_Torso',(0,.02,1.30),(.72,.78,.42),'torso',iron,'Torso',throat=True)
+    armor('FG_Head',(0,.08,1.86),(.35,.35,.31),'helm',iron,'Head')
+    armor('FG_Brow',(0,.22,1.99),(.44,.14,.23),'plate',basalt,'Head')
+    # Recess the luminous firebox behind the open armor aperture. The four
+    # front grates remain separate readable metal objects, not a texture.
+    keep(box('FG_FurnaceMouth',(0,.15,1.28),(.30,.025,.28),furnace),'Torso')
+    for i,x in enumerate((-.14,-.05,.05,.14),1): keep(box(f'FG_Grate_{i}',(x,.29,1.28),(.025,.035,.27),slag),'Torso')
+    def exhaust(name,loc,kind,material):
+        verts,faces,loops,regions=make_vent(kind)
+        mesh=bpy.data.meshes.new(name+'_exhaust')
+        mesh.from_pydata(verts,[],faces); mesh.update()
+        mesh.materials.append(material); mesh.materials.append(basalt)
+        obj=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(obj)
+        obj.location=loc
+        atlas=mesh.uv_layers.new(name='FurnaceGolemVentUV')
+        for poly,coords,region in zip(mesh.polygons,loops,regions):
+            for li,coord in zip(poly.loop_indices,coords): atlas.data[li].uv=coord
+            if region=='bore': poly.material_index=1
+        return keep(obj,'Torso')
     for side in (-1,1):
         s='L' if side<0 else 'R'
-        keep(seg(f'FG_VentStack_{s}',(side*.25,-.18,1.67),(side*.25,-.22,2.13),.075,iron), 'Torso')
-        keep(cone(f'FG_VentCap_{s}',(side*.25,-.22,2.18),.11,.18,slag,(0,0,0)),'Torso')
+        # The old capped cylinders/cones blocked the intended smoke exhaust.
+        # Both open tubes overlap slightly and retain the existing names/bones.
+        exhaust(f'FG_VentStack_{s}',(side*.25,-.20,1.90),'stack',iron)
+        exhaust(f'FG_VentCap_{s}',(side*.25,-.22,2.18),'cowl',slag)
     arms={}
     for side in (-1,1):
         s='L' if side<0 else 'R'; shoulder=(side*.50,.02,1.52); elbow=(side*.74,.06,1.15); hand=(side*.76,.28,.80); arms[s]=(shoulder,elbow,hand)
-        keep(seg(f'FG_Upper_{s}',shoulder,elbow,.16,iron),f'Upper_{s}'); keep(seg(f'FG_Lower_{s}',elbow,hand,.15,basalt),f'Lower_{s}'); keep(box(f'FG_Fist_{s}',hand,(.23,.22,.20),iron),f'Lower_{s}')
+        keep(seg(f'FG_Upper_{s}',shoulder,elbow,.16,iron),f'Upper_{s}'); keep(seg(f'FG_Lower_{s}',elbow,hand,.15,basalt),f'Lower_{s}')
+        armor(f'FG_Fist_{s}',hand,(.29,.27,.26),'plate',iron,f'Lower_{s}')
+        armor(f'FG_Pauldron_{s}',(side*.54,.02,1.53),(.42,.42,.30),'pauldron',basalt,f'Upper_{s}')
+        armor(f'FG_ForearmShield_{s}',(side*.75,.16,1.00),(.38,.53,.29),'plate',iron,f'Lower_{s}')
         for i in range(3): keep(cone(f'FG_FistSpike_{s}_{i+1}',(hand[0]+(i-1)*.06,hand[1]+.18,hand[2]),.025,.13,slag,(pi/2,0,0)),f'Lower_{s}')
     legs={}
     for side in (-1,1):
         s='L' if side<0 else 'R'; hip=(side*.28,-.02,.75); knee=(side*.31,.04,.39); foot=(side*.31,.28,.09); legs[s]=(hip,knee,foot)
-        keep(seg(f'FG_UpperLeg_{s}',hip,knee,.18,iron),f'UpperLeg_{s}'); keep(seg(f'FG_LowerLeg_{s}',knee,foot,.16,basalt),f'LowerLeg_{s}'); keep(box(f'FG_Foot_{s}',(side*.31,.34,.075),(.20,.30,.10),iron),f'LowerLeg_{s}')
-    for i,(x,y,z) in enumerate(((-.36,.02,1.48),(.36,.02,1.48),(-.28,-.10,1.07),(.28,-.10,1.07)),1): keep(box(f'FG_ArmorPlate_{i}',(x,y,z),(.15,.11,.26),iron),'Torso' if i<3 else 'Pelvis')
+        keep(seg(f'FG_UpperLeg_{s}',hip,knee,.18,iron),f'UpperLeg_{s}'); keep(seg(f'FG_LowerLeg_{s}',knee,foot,.16,basalt),f'LowerLeg_{s}')
+        armor(f'FG_Foot_{s}',(side*.31,.34,.075),(.24,.16,.34),'plate',iron,f'LowerLeg_{s}')
+        armor(f'FG_KneeGuard_{s}',knee,(.30,.27,.19),'plate',iron,f'LowerLeg_{s}')
+        armor(f'FG_ThighPlate_{s}',(side*.29,-.02,.58),(.35,.43,.31),'plate',iron,f'UpperLeg_{s}')
+        armor(f'FG_Greave_{s}',(side*.31,.17,.26),(.36,.45,.31),'plate',basalt,f'LowerLeg_{s}')
+    for i,(x,y,z) in enumerate(((-.36,.02,1.48),(.36,.02,1.48),(-.28,-.10,1.07),(.28,-.10,1.07)),1):
+        armor(f'FG_ArmorPlate_{i}',(x,y,z),(.30,.39,.18),'plate',iron,'Torso' if i<3 else 'Pelvis')
     arm,root=armature('RIG_FurnaceGolem_HOST_CONSTRUCT'); pel=bone(arm,'Pelvis',(0,-.05,.52),(0,.04,.92),root); torso=bone(arm,'Torso',(0,.02,.90),(0,.08,1.66),pel); head=bone(arm,'Head',(0,.08,1.62),(0,.10,2.04),torso)
     for s,(shoulder,elbow,hand) in arms.items(): u=bone(arm,f'Upper_{s}',shoulder,elbow,torso); bone(arm,f'Lower_{s}',elbow,hand,u)
     for s,(hip,knee,foot) in legs.items(): u=bone(arm,f'UpperLeg_{s}',hip,knee,pel); bone(arm,f'LowerLeg_{s}',knee,foot,u)
     bone(arm,'FurnaceCore',(0,.18,1.28),(0,.46,1.28),torso); bone(arm,'AttackOrigin',(0,.15,1.23),(0,.48,1.23),torso)
-    actions=['FurnaceGolem_Idle','FurnaceGolem_Walk','FurnaceGolem_Slam','FurnaceGolem_Swipe','FurnaceGolem_Vent','FurnaceGolem_Guard','FurnaceGolem_Hit','FurnaceGolem_Death']; finalize(arm,parts,'underworld-creature-furnace-golem',actions,'industrial basalt/iron construct with physical furnace grate and twin exhaust stacks',16)
+    for side in (-1,1):
+        bone(arm,'VentFX_'+('L' if side<0 else 'R'),
+             (side*.25,-.22,2.24),(side*.25,-.22,2.38),torso)
+    actions=['FurnaceGolem_Idle','FurnaceGolem_Walk','FurnaceGolem_Slam','FurnaceGolem_Swipe','FurnaceGolem_Vent','FurnaceGolem_Guard','FurnaceGolem_Hit','FurnaceGolem_Death']; finalize(arm,parts,'underworld-creature-furnace-golem',actions,'broad sloped basalt/iron fortress shoulders, recessed physical furnace throat, heavy armored thigh/greave mass, siege gauntlets and twin exhaust stacks',16)
     action(arm,'FurnaceGolem_Idle')
     for f,w in ((1,0),(13,.5),(25,1),(37,.5),(49,0)): key(arm,'Torso',f,scale=(1+w*.012,1+w*.012,1+w*.018))
     action(arm,'FurnaceGolem_Walk')
