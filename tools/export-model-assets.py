@@ -263,4 +263,7 @@ for file in files:
  # Restore identical evaluated geometry for the GLB representation.
  if shellback_lod_ratios: restore_shellback_lod(scene, shellback_lod_ratios)
  bpy.ops.export_scene.gltf(filepath=str(out/'glb'/(file.stem+'.glb')),export_format='GLB',export_extras=False,export_yup=True)
+ if file.stem == 'underworld-creature-abyss-shellback':
+  from shellback_glb_parity import validate_parity
+  validate_parity(payload, out/'glb'/(file.stem+'.glb'))
  print('EXPORTED',file.stem,flush=True)
