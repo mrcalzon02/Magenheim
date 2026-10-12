@@ -93,9 +93,10 @@ The default implementation question is **"does Valheim already handle this?"** I
 Updated 2026-10-12 from the user's concept-model review in this conversation.
 **Adequately reworked for this art campaign: 1 of 6 bosses.** This is art-review
 progress, not an assertion of installed model, animation or runtime performance acceptance.
-Evidence paths below refer to preserved local workspace artifacts; those art files
-are not part of this documentation-only GitHub update. User acceptance is recorded
-from the conversation, not inferred from unpublished image files.
+Evidence paths below refer to the preserved review artifacts. The initial tally
+was a documentation-only GitHub update; the user's subsequent full-source handoff
+publishes the art history as well. User acceptance is recorded from the conversation,
+not inferred from image files or verification reports.
 
 | Boss | Counts as adequately reworked? | Current state and evidence | Next action |
 | --- | --- | --- | --- |

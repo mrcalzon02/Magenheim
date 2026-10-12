@@ -17,6 +17,9 @@ followed by an explicit stop. The r14 draft used larger changes; **do not claim
 the 20% correction was completed**. Later online commits may contain a separate
 production Blackwater Maw author and runtime binding; inspect current `main`
 rather than replacing that work with the older study.
+During this handoff, remote `main` through `f49db4f6` was merged. Its later commits
+withdrew the premature Maw author/forge hook and restored the paused boss state.
+Preserve those withdrawals; do not resurrect the withdrawn runtime override.
 
 ## Current new candidate: Rift Titan primary r3
 
