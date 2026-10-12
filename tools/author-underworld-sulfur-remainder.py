@@ -16,6 +16,7 @@ import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from furnace_golem_armor_geometry import make_armor
 from furnace_golem_vent_geometry import make_vent
+from furnace_golem_siege_geometry import make_siege_fist, make_siege_tooth
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'assets/models/source'
@@ -206,6 +207,19 @@ def build_furnace_golem():
             for li,coord in zip(poly.loop_indices,coords): atlas.data[li].uv=coord
             if region.startswith('throat'): poly.material_index=1
         return keep(obj,bone)
+    def siege(name,loc,kind,material,bone):
+        # Physical impact silhouette: a hammer-like gauntlet and three forward
+        # hooked strike teeth. All original names and Lower_L/R rig links stay.
+        verts,faces,loops,regions=(make_siege_fist() if kind=='fist' else make_siege_tooth())
+        mesh=bpy.data.meshes.new(name+'_siege')
+        mesh.from_pydata(verts,[],faces); mesh.update()
+        mesh.materials.append(material)
+        obj=bpy.data.objects.new(name,mesh); bpy.context.collection.objects.link(obj)
+        obj.location=loc
+        atlas=mesh.uv_layers.new(name='FurnaceGolemSiegeUV')
+        for poly,coords in zip(mesh.polygons,loops):
+            for li,coord in zip(poly.loop_indices,coords): atlas.data[li].uv=coord
+        return keep(obj,bone)
     armor('FG_Pelvis',(0,0,.76),(.49,.38,.36),'pelvis',basalt,'Pelvis')
     armor('FG_Torso',(0,.02,1.30),(.72,.78,.42),'torso',iron,'Torso',throat=True)
     armor('FG_Head',(0,.08,1.86),(.35,.35,.31),'helm',iron,'Head')
@@ -236,10 +250,10 @@ def build_furnace_golem():
     for side in (-1,1):
         s='L' if side<0 else 'R'; shoulder=(side*.50,.02,1.52); elbow=(side*.74,.06,1.15); hand=(side*.76,.28,.80); arms[s]=(shoulder,elbow,hand)
         keep(seg(f'FG_Upper_{s}',shoulder,elbow,.16,iron),f'Upper_{s}'); keep(seg(f'FG_Lower_{s}',elbow,hand,.15,basalt),f'Lower_{s}')
-        armor(f'FG_Fist_{s}',hand,(.29,.27,.26),'plate',iron,f'Lower_{s}')
+        siege(f'FG_Fist_{s}',hand,'fist',iron,f'Lower_{s}')
         armor(f'FG_Pauldron_{s}',(side*.54,.02,1.53),(.42,.42,.30),'pauldron',basalt,f'Upper_{s}')
         armor(f'FG_ForearmShield_{s}',(side*.75,.16,1.00),(.38,.53,.29),'plate',iron,f'Lower_{s}')
-        for i in range(3): keep(cone(f'FG_FistSpike_{s}_{i+1}',(hand[0]+(i-1)*.06,hand[1]+.18,hand[2]),.025,.13,slag,(pi/2,0,0)),f'Lower_{s}')
+        for i in range(3): siege(f'FG_FistSpike_{s}_{i+1}',(hand[0]+(i-1)*.075,hand[1]+.18,hand[2]-.025),'tooth',slag,f'Lower_{s}')
     legs={}
     for side in (-1,1):
         s='L' if side<0 else 'R'; hip=(side*.28,-.02,.75); knee=(side*.31,.04,.39); foot=(side*.31,.28,.09); legs[s]=(hip,knee,foot)
@@ -257,7 +271,7 @@ def build_furnace_golem():
     for side in (-1,1):
         bone(arm,'VentFX_'+('L' if side<0 else 'R'),
              (side*.25,-.22,2.24),(side*.25,-.22,2.38),torso)
-    actions=['FurnaceGolem_Idle','FurnaceGolem_Walk','FurnaceGolem_Slam','FurnaceGolem_Swipe','FurnaceGolem_Vent','FurnaceGolem_Guard','FurnaceGolem_Hit','FurnaceGolem_Death']; finalize(arm,parts,'underworld-creature-furnace-golem',actions,'broad sloped basalt/iron fortress shoulders, recessed physical furnace throat, heavy armored thigh/greave mass, siege gauntlets and twin exhaust stacks',16)
+    actions=['FurnaceGolem_Idle','FurnaceGolem_Walk','FurnaceGolem_Slam','FurnaceGolem_Swipe','FurnaceGolem_Vent','FurnaceGolem_Guard','FurnaceGolem_Hit','FurnaceGolem_Death']; finalize(arm,parts,'underworld-creature-furnace-golem',actions,'broad sloped basalt/iron fortress shoulders, recessed physical furnace throat, heavy armored thigh/greave mass, hammer-profile siege gauntlets with three forward hooked impact teeth each and twin exhaust stacks',16)
     action(arm,'FurnaceGolem_Idle')
     for f,w in ((1,0),(13,.5),(25,1),(37,.5),(49,0)): key(arm,'Torso',f,scale=(1+w*.012,1+w*.012,1+w*.018))
     action(arm,'FurnaceGolem_Walk')

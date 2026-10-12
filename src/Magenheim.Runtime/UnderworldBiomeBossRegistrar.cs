@@ -74,6 +74,7 @@ internal static class UnderworldBiomeBossRegistrar
                 scaling.Configure(encounter.Damage, 140f);
                 if (species.AuthoredModelId is null || !ModelAssets.Exists(species.AuthoredModelId))
                     throw new InvalidOperationException("Biome encounter is missing authored apex anatomy: " + encounter.Name);
+
                 var config = new CreatureConfig { Name = encounter.Name };
                 config.AddDropConfig(new DropConfig
                 {
