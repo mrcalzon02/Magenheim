@@ -4,6 +4,7 @@ from rift_titan_primary_layout import SHOULDER_STRATA, limb_strata
 from rift_titan_rock_facets import faceted_plate_geometry
 from rift_titan_primary_masses import primary_mass_strata
 from rift_titan_head_layout import head_parts
+from rift_titan_skull_geometry import eye_socket_geometry
 from pathlib import Path
 from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]
@@ -62,10 +63,14 @@ def build(B,arm,record,profile,tube,cap):
  # Replace anonymous debris with the boss concept's stone skull and eyes.
  head_stones,head_eyes,remaining_motes=head_parts()
  for name,center,width,height,depth,tilt,seed,material in head_stones:
-  plate(name,center,width,height,depth,'Body',tilt,seed,material)
+  if name.startswith('EyeWell'):
+   vertices,faces=eye_socket_geometry(center,width,height,depth,tilt)
+   solid(name,vertices,faces,material,'Body','head-eye-socket')
+  else:
+   plate(name,center,width,height,depth,'Body',tilt,seed,material)
  for name,center,radius,length in (*head_eyes,*remaining_motes):
   prism(name,center,radius,length)
  for s in (-1,1):tube('ShoulderBinding'+str(s),[(s*.14,.02,2.78),(s*.47,-.02,2.81),(s*.88,0,2.69)],[.034,.040,.025],'rift-bands','Body',4,'bindings')
  bpy.context.scene['concept_target']='docs/art/creature-concepts/2026-10-03/the-rift-titan.png'
- (OUT/'concept-pass.json').write_text(json.dumps(dict(scope='primary silhouette and open cage; not final surface detail',anatomy='integrated thorax and stone brow, jaw, cheeks and purple eye wells beneath cleft crown, elongated limb strata and exposed core',donor='StoneGolem',donor_triangles=1200,soft_cap=1800,preserved='existing Rift Colossus rig hierarchy and seven named actions',remaining='user silhouette review, individualized fracture/lichen textures, refinement of plate overlaps and cage clearance, native loader/animation/performance acceptance',status='in progress; not adequately reworked'),indent=2)+'\n')
+ (OUT/'concept-pass.json').write_text(json.dumps(dict(scope='primary silhouette and open cage; not final surface detail',anatomy='integrated thorax and stone brow, jaw, cheeks and physically recessed purple eye sockets beneath cleft crown, elongated limb strata and exposed core',donor='StoneGolem',donor_triangles=1200,soft_cap=1800,preserved='existing Rift Colossus rig hierarchy and seven named actions',remaining='user silhouette review, individualized fracture/lichen textures, refinement of plate overlaps and cage clearance, native loader/animation/performance acceptance',status='in progress; not adequately reworked'),indent=2)+'\n')
  return first
