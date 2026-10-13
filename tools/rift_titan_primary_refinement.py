@@ -2,6 +2,7 @@
 import bpy,bmesh,math,json
 from rift_titan_primary_layout import SHOULDER_STRATA, limb_strata
 from rift_titan_rock_facets import faceted_plate_geometry
+from rift_titan_primary_masses import primary_mass_strata
 from pathlib import Path
 from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]
@@ -41,6 +42,10 @@ def build(B,arm,record,profile,tube,cap):
   for j in range(3):plate('FingerStratum'+side+str(j),hand+Vector(((j-1)*.17,.08,-.42)),.078,.44,.12,'Forearm'+side,s*.08,j+18)
   foot=arm.data.bones['Leg'+side].tail_local
   plate('Foot'+side,(foot.x,.12,.16),.37,.23,.37,'Leg'+side,s*.03,7)
+ # Load-bearing thorax and lower-body stone masses, matched to the adopted
+ # concept's integrated shoulders and side-supported exposed crystal cage.
+ for name,center,width,height,depth,tilt,seed in primary_mass_strata():
+  plate(name,center,width,height,depth,'Body',tilt,seed)
  # Pelvis hangs below the open core, keeping the torso's negative space.
  for j,x in enumerate((-.30,0,.30)):plate('PelvisKeystone'+str(j),(x,-.02,1.24+.05*(j%2)),.20,.37,.22,seed=j+4)
  # Asymmetric cleft menhirs, not a row of pipe-like horns.
