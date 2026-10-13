@@ -43,6 +43,19 @@ into the head. Check front, side and rear views; inspect isolated saved torso
 geometry when arms hide the wrap. Stone Golem reference: 1,200 triangles,
 soft cap 1,800. r6 remains an unaccepted torso candidate.
 
+Rift Titan side-review orientation is fixed: head/front screen-left and back
+screen-right, matching the supplied concept. The authored front axis is +Y;
+render from -X and assert that +Y projects toward screen-left. Apply that same
+camera direction to both sides of every comparison, including isolated torso
+views. Do not infer direction from the current model or mirror raster images.
+
+The user's next Rift Titan priority is the whole-creature front silhouette,
+followed by the side silhouette, before surface detail. Compare primary masses
+in clay against the supplied front and left-facing side references. Preserve
+the corrected torso rings and attachments while fitting proportions and depth.
+Show the true profile separately from an oblique reference-angle view. r7 is a
+shape candidate; “work is improving” is not adequate boss acceptance.
+
 Blackwater Maw anatomy correction: the front reference depicts a tall oval gape
 between a peaked upper skull and a pointed, projecting lower jaw. Perspective
 depth is not a flared cone. Tooth beds curve toward the cheek hinges; the inside

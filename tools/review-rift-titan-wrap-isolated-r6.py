@@ -29,7 +29,8 @@ for revision in ('rift-titan-torso-r5','rift-titan-wrap-r6'):
   data=bpy.data.lights.new(label,'AREA');data.energy=power*span*span;data.shape='DISK';data.size=span
   light=bpy.data.objects.new(label,data);scene.collection.objects.link(light);light.location=target+Vector(direction)*span;light.rotation_euler=(target-light.location).to_track_quat('-Z','Y').to_euler()
  data=bpy.data.cameras.new('Torso camera');data.type='ORTHO';data.ortho_scale=span*1.18;camera=bpy.data.objects.new('Torso camera',data);scene.collection.objects.link(camera);scene.camera=camera
- for view,direction in [('front',(0,2,.08)),('side',(2,0,.08)),('rear',(0,-2,.08))]:
+ for view,direction in [('front',(0,2,.08)),('side',(-2,0,.08)),('rear',(0,-2,.08))]:
   camera.location=target+Vector(direction)*span*2;camera.rotation_euler=(target-camera.location).to_track_quat('-Z','Y').to_euler()
+  if view=='side':assert camera.rotation_euler.to_matrix().col[0].dot(Vector((0,1,0)))<0, 'front +Y must project to screen-left'
   scene.render.filepath=str(OUT/(revision+'--isolated-'+view+'.png'));bpy.ops.render.render(write_still=True);print('RENDERED isolated torso '+revision+' '+view,flush=True)
 (OUT/'isolated-review.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')

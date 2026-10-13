@@ -1,0 +1,13 @@
+{
+  "source": "assets/models/studies/underworld-boss-rift-titan-wrap-r6.blend",
+  "source_sha256": "8a7425f04e69c93282d87138eac9e6f2f0ca5eb896921e60770b9a1d56929e96",
+  "camera_direction": [
+    -2,
+    0,
+    0.06
+  ],
+  "model_front_axis": "+Y",
+  "screen_direction": "front/head left, back right",
+  "method": "actual saved model rendered from -X; no raster mirroring",
+  "preserved_opposite_view": "underworld-boss-rift-titan-wrap-r6--side-right-facing.png"
+}

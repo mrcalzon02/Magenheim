@@ -1,0 +1,13 @@
+{
+  "source": "assets/models/studies/underworld-boss-rift-titan-torso-r5.blend",
+  "source_sha256": "ca15bde58a9c162c832ba8cbd25e5bb54a305eddaf0eadfdd8e309583a162cfd",
+  "camera_direction": [
+    -2,
+    0,
+    0.06
+  ],
+  "model_front_axis": "+Y",
+  "screen_direction": "front/head left, back right",
+  "method": "actual saved model rendered from -X; no raster mirroring",
+  "preserved_opposite_view": "underworld-boss-rift-titan-torso-r5--side-right-facing.png"
+}

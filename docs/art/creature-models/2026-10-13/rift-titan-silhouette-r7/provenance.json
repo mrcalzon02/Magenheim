@@ -1,0 +1,22 @@
+{
+  "base_commit": "9498cc95ea990a0a0629896c888f7ce5f9b125dd",
+  "hashes": {
+    "tools/rift_titan_r4_base.py": "8ce1878a7ad7d695fc784202539bdb83b413f6a9dbba7bb765e1e7aa8417e74f",
+    "tools/rift_titan_primary_layout.py": "3d4687c6291dc1f973bf32245faa7b84daffe2a26de9f1bd0b18205234bfa9ce",
+    "tools/rift_titan_rock_facets.py": "724a9233b2a6ada9494e979d2bc0e0a25b6eeafaa38dd660a910475a89a80365",
+    "tools/rift_titan_wrapped_torso.py": "7d625317756b55b37cbf7274cab6dae513dfae05be5450036065b06c7e88c01a",
+    "tools/rift_titan_silhouette_fit.py": "ac387d8fdad899b11d027e4abf3c724006fcd0852074a4a190687d9baae23417",
+    "tools/refine-rift-titan-silhouette-r7.py": "f116557a82457bc3c97ff6a9a24e365f9fed1c072d44ec8769e9cd75af9c7c2c",
+    "tools/review-rift-titan-wrap-r6.py": "ff6335b353584eeb89c765dfe48aab8dcfc0870876c7e9bcac6d6ba8f3045f16",
+    "tools/review-rift-titan-silhouette-r7.py": "f6d99afc1b59f4e51af679c97981296c1e58bc487c0696cc991c393e1145475e",
+    "tools/review-rift-titan-silhouette-before-r7.py": "3b6ddd4c7631da165a10a65a66a204f9e186194975e4e7f8b44111241cee3bec",
+    "tools/verify-rift-titan-silhouette-r7.py": "6572e619bbafe32248520cc4f497b7807fde4d29c4db5ca0fe9bfd51ca67a54b",
+    "tools/publish-rift-titan-silhouette-r7.py": "03f5207e2f53baaf5c06c7fba0568e1f728c38aa7717862d187205d50c6463e0",
+    "assets/models/studies/underworld-boss-rift-titan-silhouette-r7.blend": "ddd19e8f9196fe0239d401bc3aa1e6598729c3fa157c477f22018813d24b63fd",
+    "assets/models/studies/underworld-boss-rift-titan-wrap-r6.blend": "8a7425f04e69c93282d87138eac9e6f2f0ca5eb896921e60770b9a1d56929e96",
+    "docs/art/creature-concepts/2026-10-03/the-rift-titan.png": "b605ad324621ed89fe2e4f708e638a40b06946fee4ccc1215a8be8ba9fd94cfa",
+    "docs/art/creature-models/2026-10-13/rift-titan-silhouette-r7/concept-front.png": "e20a07c13df3b8dc1d75384f4f584e59947da86c8d1757a3564006f0850ea24f",
+    "docs/art/creature-models/2026-10-13/rift-titan-silhouette-r7/concept-side.png": "dbb07908a7803d2fc37171571d24247e7c77f28210c3ce62642deee7bc27240b"
+  },
+  "acceptance": "unaccepted front/side silhouette candidate; adequate boss tally remains 1/6"
+}
