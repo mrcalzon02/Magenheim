@@ -3,6 +3,7 @@ import bpy,bmesh,math,json
 from rift_titan_primary_layout import SHOULDER_STRATA, limb_strata
 from rift_titan_rock_facets import faceted_plate_geometry
 from rift_titan_primary_masses import primary_mass_strata
+from rift_titan_head_layout import head_parts
 from pathlib import Path
 from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]
@@ -16,11 +17,11 @@ def build(B,arm,record,profile,tube,cap):
   me=bpy.data.meshes.new(name);me.from_pydata(points,[],faces);me.materials.append(B.mats[key]);o=bpy.data.objects.new(name,me);bpy.context.collection.objects.link(o);record(o,bone,category)
   bpy.context.view_layer.objects.active=o;o.select_set(True);bm=bmesh.new();bm.from_mesh(me);bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces));bmesh.ops.triangulate(bm,faces=list(bm.faces),quad_method='FIXED',ngon_method='EAR_CLIP');bm.to_mesh(me);bm.free()
   bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT');bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=.006);bpy.ops.object.mode_set(mode='OBJECT');me.uv_layers.active.name='BossConstructionUV';o.select_set(False);return o
- def plate(name,c,width,height,depth,bone='Body',tilt=0,seed=0):
+ def plate(name,c,width,height,depth,bone='Body',tilt=0,seed=0,key='rift-strata'):
   # Sculpt a shallow ridge into the existing six-sided silhouette. The authored
   # front/back perimeter and object identity stay unchanged for rig continuity.
   vertices,faces=faceted_plate_geometry(c,width,height,depth,tilt,seed)
-  return solid(name,vertices,faces,'rift-strata',bone,'strata')
+  return solid(name,vertices,faces,key,bone,'strata')
  def prism(name,c,radius,length,bone='Body'):
   c=Vector(c);n=5;points=[c+Vector((0,0,length*.52)),c-Vector((0,0,length*.48))]+[c+Vector((radius*math.cos(k*math.tau/n),radius*.8*math.sin(k*math.tau/n),-.05*length)) for k in range(n)]
   faces=[(0,k+2,(k+1)%n+2) for k in range(n)]+[(1,(k+1)%n+2,k+2) for k in range(n)]
@@ -58,10 +59,13 @@ def build(B,arm,record,profile,tube,cap):
  for s in (-1,1):
   for rear in (-1,1):tube('DiagonalCage'+str(s)+'_'+str(rear),[(s*.40,.14+rear*.22,1.93),(s*.49,.14+rear*.28,2.28),(s*.29,.14+rear*.16,2.63)],[.032,.041,.027],'rift-bands','Body',4,'cage')
  for j,(x,y,z,r,l) in enumerate(((0,.14,2.25,.17,.68),(-.19,.10,2.27,.09,.46),(.19,.19,2.34,.08,.51),(0,.07,1.98,.07,.30))):prism('SuspendedCore'+str(j),(x,y,z),r,l)
- # Small offset strata and crystal fragments; all remain deliberate floating pieces.
- for j,(x,y,z) in enumerate(((-.67,0,3.25),(.74,-.04,3.35),(-.90,.05,3.18),(1.22,.10,3.09),(-.30,.11,1.61),(.35,.15,1.69))):plate('FloatingStratum'+str(j),(x,y,z),.105,.16,.09,tilt=.13*(j-2),seed=j)
- for j,(x,y,z) in enumerate(((-.48,.24,3.51),(.48,.18,3.48),(-1.33,.10,2.49),(1.39,.17,1.78),(-.75,.03,.81),(.70,.08,.66))):prism('FloatingPrism'+str(j),(x,y,z),.045,.15)
+ # Replace anonymous debris with the boss concept's stone skull and eyes.
+ head_stones,head_eyes,remaining_motes=head_parts()
+ for name,center,width,height,depth,tilt,seed,material in head_stones:
+  plate(name,center,width,height,depth,'Body',tilt,seed,material)
+ for name,center,radius,length in (*head_eyes,*remaining_motes):
+  prism(name,center,radius,length)
  for s in (-1,1):tube('ShoulderBinding'+str(s),[(s*.14,.02,2.78),(s*.47,-.02,2.81),(s*.88,0,2.69)],[.034,.040,.025],'rift-bands','Body',4,'bindings')
  bpy.context.scene['concept_target']='docs/art/creature-concepts/2026-10-03/the-rift-titan.png'
- (OUT/'concept-pass.json').write_text(json.dumps(dict(scope='primary silhouette and open cage; not final surface detail',anatomy='layered broad shoulders, cleft irregular crown, elongated limb strata, bowed dark cage bands around suspended crystal cluster',donor='StoneGolem',donor_triangles=1200,soft_cap=1800,preserved='existing Rift Colossus rig hierarchy and seven named actions',remaining='user silhouette review, individualized fracture/lichen textures, refinement of plate overlaps and cage clearance, native loader/animation/performance acceptance',status='in progress; not adequately reworked'),indent=2)+'\n')
+ (OUT/'concept-pass.json').write_text(json.dumps(dict(scope='primary silhouette and open cage; not final surface detail',anatomy='integrated thorax and stone brow, jaw, cheeks and purple eye wells beneath cleft crown, elongated limb strata and exposed core',donor='StoneGolem',donor_triangles=1200,soft_cap=1800,preserved='existing Rift Colossus rig hierarchy and seven named actions',remaining='user silhouette review, individualized fracture/lichen textures, refinement of plate overlaps and cage clearance, native loader/animation/performance acceptance',status='in progress; not adequately reworked'),indent=2)+'\n')
  return first
