@@ -1,0 +1,25 @@
+{
+  "id": "underworld-boss-rift-titan-strata-r4",
+  "source": "assets/models/studies/underworld-boss-rift-titan-strata-r4.blend",
+  "triangles": 1660,
+  "donor_triangles": 1200,
+  "soft_cap": 1800,
+  "ratio": 1.3833333333333333,
+  "previous_triangles": 1480,
+  "reduction_percent": -12.162162162162172,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "category_triangles": {
+    "strata": 1128,
+    "bindings": 160,
+    "cage": 272,
+    "binding-crystals": 100
+  },
+  "rig": "retained eight-bone Rift Colossus hierarchy and seven actions; one influence per rigid fragment",
+  "texture_bake": "owned r2 strata and crystal materials baked to four 512px maps; primary-form review",
+  "status": "unaccepted art candidate; native admission and performance pending",
+  "previous_id": "underworld-boss-rift-titan-primary-r3",
+  "study_height_metres": 7.0,
+  "changes": "online bone-aligned long limb strata, thinner shoulders, shallow fracture facets; closed hoop seams and supported brace roots"
+}

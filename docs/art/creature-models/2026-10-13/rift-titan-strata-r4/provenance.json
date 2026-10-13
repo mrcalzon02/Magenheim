@@ -1,0 +1,15 @@
+{
+  "base_commit": "d9c8c9b30ebc8439c4ecdd5d7f5c9e4e1b8006c2",
+  "hashes": {
+    "tools/rift_titan_primary_refinement.py": "bb6b41e4c78c3791136d85d64066723365ced5e595ec07fce687b505e63ef692",
+    "tools/rift_titan_primary_layout.py": "3d4687c6291dc1f973bf32245faa7b84daffe2a26de9f1bd0b18205234bfa9ce",
+    "tools/rift_titan_rock_facets.py": "724a9233b2a6ada9494e979d2bc0e0a25b6eeafaa38dd660a910475a89a80365",
+    "tools/rift_titan_cage_refinement.py": "68b0f340459dd72252b23b4b50f29b9e8cf019066b61998f7f769cc169284621",
+    "tools/refine-rift-titan-strata-r4.py": "cbb480ee5760332b7ae2141f92a418aaa1f2fbe4014d98ead37d46f6a03f7ae7",
+    "tools/review-rift-titan-strata-r4.py": "a6569f741f2881c26b483e1c2d6f048e4357001b8d1c56db88ac98529c31e95c",
+    "tools/verify-rift-titan-cage-r4.py": "4794fe837ba837330718a9b96df04aaee0febd3049e88b3e8e60d3ec3ab4e922",
+    "assets/models/studies/underworld-boss-rift-titan-strata-r4.blend": "6f1ca796312a681b372b59e9479d4b16b6be5d4fd5caa0a077ca4d1d87978277",
+    "docs/art/creature-concepts/2026-10-03/the-rift-titan.png": "b605ad324621ed89fe2e4f708e638a40b06946fee4ccc1215a8be8ba9fd94cfa"
+  },
+  "acceptance": "unaccepted primary-form candidate; tally remains 1/6"
+}

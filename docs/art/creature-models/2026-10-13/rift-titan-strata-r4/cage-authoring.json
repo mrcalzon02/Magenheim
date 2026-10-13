@@ -1,0 +1,7 @@
+{
+  "closed_hoops": 2,
+  "brace_roots": 8,
+  "removed_duplicate_end_cap_triangles": 8,
+  "weights": "all cage vertices bound to Body; hoop/brace contacts move together",
+  "method": "cyclic cross-sections, no overlapping seam caps; explicit embedded brace roots"
+}

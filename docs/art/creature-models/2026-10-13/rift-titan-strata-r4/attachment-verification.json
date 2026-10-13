@@ -1,0 +1,191 @@
+{
+  "result": "PASS",
+  "endpoints": 8,
+  "retained_actions": 7,
+  "sampled_poses": 35,
+  "max_outside_distance_metres": 0,
+  "tolerance_metres": 0.001,
+  "samples": [
+    {
+      "action": "REST",
+      "frame": 0,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Idle",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Idle",
+      "frame": 9,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Idle",
+      "frame": 16,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Idle",
+      "frame": 24,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Idle",
+      "frame": 32,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Walk",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Walk",
+      "frame": 9,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Walk",
+      "frame": 16,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Walk",
+      "frame": 24,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Walk",
+      "frame": 32,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Attack",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Attack",
+      "frame": 9,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Attack",
+      "frame": 16,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Attack",
+      "frame": 24,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Attack",
+      "frame": 32,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Guard",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Guard",
+      "frame": 9,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Guard",
+      "frame": 16,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Guard",
+      "frame": 24,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Guard",
+      "frame": 32,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Hit",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Hit",
+      "frame": 9,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Hit",
+      "frame": 16,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Hit",
+      "frame": 24,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Hit",
+      "frame": 32,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Stagger",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Stagger",
+      "frame": 9,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Stagger",
+      "frame": 16,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Stagger",
+      "frame": 24,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Stagger",
+      "frame": 32,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Death",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Death",
+      "frame": 13,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Death",
+      "frame": 24,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Death",
+      "frame": 36,
+      "outside_contacts": []
+    },
+    {
+      "action": "RiftColossus_Death",
+      "frame": 48,
+      "outside_contacts": []
+    }
+  ],
+  "scope": "saved rest and five Blender samples per retained action; ray containment with independent closed-support winding check for ambiguous hits; native and every-frame acceptance pending"
+}
