@@ -1,0 +1,10 @@
+{
+  "scope": "torso and neck interpretation correction; not final surface detail",
+  "anatomy": "metal ribs wrap around the crystal core above and below a solid V-shaped stone cross-chest band; upper stone collarbone supports separate metal neck ribs into the retained head",
+  "donor": "StoneGolem",
+  "donor_triangles": 1200,
+  "soft_cap": 1800,
+  "preserved": "existing Rift Colossus rig hierarchy and seven named actions",
+  "remaining": "user torso review; crown and shoulder silhouette; individualized weathering, stone fractures and corroded metal textures; native animation/performance acceptance",
+  "status": "in progress; not adequately reworked"
+}

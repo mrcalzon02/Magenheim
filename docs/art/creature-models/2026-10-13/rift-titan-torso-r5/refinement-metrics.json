@@ -1,0 +1,27 @@
+{
+  "id": "underworld-boss-rift-titan-torso-r5",
+  "source": "assets/models/studies/underworld-boss-rift-titan-torso-r5.blend",
+  "triangles": 1780,
+  "donor_triangles": 1200,
+  "soft_cap": 1800,
+  "ratio": 1.4833333333333334,
+  "previous_triangles": 1660,
+  "reduction_percent": -7.2289156626506035,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "category_triangles": {
+    "strata": 1080,
+    "bindings": 120,
+    "binding-crystals": 100,
+    "torso-stone": 68,
+    "torso-ribs": 328,
+    "neck-ribs": 84
+  },
+  "rig": "retained eight-bone Rift Colossus hierarchy and seven actions; one influence per rigid fragment",
+  "texture_bake": "owned r2 strata and crystal materials baked to four 512px maps; primary-form review",
+  "status": "unaccepted art candidate; user torso interpretation implemented for review",
+  "previous_id": "underworld-boss-rift-titan-strata-r4",
+  "study_height_metres": 7.0,
+  "changes": "fourteen swept metal torso ribs including a lower cage, central V stone plate, collarbone stone plate and six supported neck ribs"
+}

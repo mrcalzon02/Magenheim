@@ -34,6 +34,13 @@ Current working references: Troll 6,206 triangles / soft cap 9,309 for First
 Bloom; Serpent 4,872 / soft cap 7,308 for Blackwater Maw. Counts are from the
 local extracted native donor evidence, not from generated creature studies.
 
+Rift Titan torso correction (2026-10-13): many metal ribs sweep around the crystal
+core above and below a stone cross-chest band. Its central V is a solid downward
+bend in the stone, as shown in the supplied close-up. An upper stone collarbone
+spans the shoulders; separate metal neck ribs connect it to the head. Keep these
+groups distinct from the shoulder strata. Stone Golem reference: 1,200 triangles,
+soft cap 1,800. r5 is an unaccepted torso candidate, not an accepted boss.
+
 Blackwater Maw anatomy correction: the front reference depicts a tall oval gape
 between a peaked upper skull and a pointed, projecting lower jaw. Perspective
 depth is not a flared cone. Tooth beds curve toward the cheek hinges; the inside

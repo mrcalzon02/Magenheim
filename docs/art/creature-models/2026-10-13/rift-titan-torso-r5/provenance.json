@@ -1,0 +1,19 @@
+{
+  "base_commit": "971e393a59cce566aa4014a92fd98a705bb3d29a",
+  "hashes": {
+    "tools/rift_titan_r4_base.py": "8ce1878a7ad7d695fc784202539bdb83b413f6a9dbba7bb765e1e7aa8417e74f",
+    "tools/rift_titan_primary_layout.py": "3d4687c6291dc1f973bf32245faa7b84daffe2a26de9f1bd0b18205234bfa9ce",
+    "tools/rift_titan_rock_facets.py": "724a9233b2a6ada9494e979d2bc0e0a25b6eeafaa38dd660a910475a89a80365",
+    "tools/rift_titan_ribbed_torso.py": "35e42d2de503dc44cbeeb50271a036b1ac342bca025b73e1dc72429c56975efe",
+    "tools/refine-rift-titan-torso-r5.py": "61844883dc4cfd56be106566a99289f9df4de0028fc60eb7c3e34740eba4f0d7",
+    "tools/review-rift-titan-torso-r5.py": "be6489d37e5522caf1db8d914846de0ad0e39b599498c8311e39eeedf7366ac2",
+    "tools/verify-rift-titan-torso-r5.py": "428a0676f0e31069945b0ec9f689f78c2cc8fe2ac44c21c20e07e2c6e16cab9e",
+    "tools/publish-rift-titan-torso-r5.py": "6cdd7e2e0cf5ec4c48d1e5154545b4aa7d48c9923c30bd63d179711c1c0964f9",
+    "assets/models/studies/underworld-boss-rift-titan-torso-r5.blend": "ca15bde58a9c162c832ba8cbd25e5bb54a305eddaf0eadfdd8e309583a162cfd",
+    "docs/art/creature-concepts/2026-10-03/the-rift-titan.png": "b605ad324621ed89fe2e4f708e638a40b06946fee4ccc1215a8be8ba9fd94cfa",
+    "docs/art/creature-models/2026-10-13/rift-titan-torso-r5/concept-front.png": "e20a07c13df3b8dc1d75384f4f584e59947da86c8d1757a3564006f0850ea24f",
+    "docs/art/creature-models/2026-10-13/rift-titan-torso-r5/concept-side.png": "dbb07908a7803d2fc37171571d24247e7c77f28210c3ce62642deee7bc27240b",
+    "docs/art/creature-models/2026-10-13/rift-titan-torso-r5/concept-v-band-detail.png": "f0a43c96a1fc9f6aa4f432bb5f9681bfe09cb528a700f1227403095717b3692c"
+  },
+  "acceptance": "unaccepted torso candidate; tally remains 1/6"
+}
