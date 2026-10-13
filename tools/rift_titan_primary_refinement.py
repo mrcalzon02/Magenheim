@@ -1,5 +1,6 @@
 """Primary concept anatomy: layered strata around an open binding cage."""
 import bpy,bmesh,math,json
+from rift_titan_primary_layout import SHOULDER_STRATA, limb_strata
 from pathlib import Path
 from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]
@@ -28,17 +29,14 @@ def build(B,arm,record,profile,tube,cap):
  # Broad layered shoulders framing the open neck and chest; no solid barrel.
  first=None
  for side,s in [('L',-1),('R',1)]:
-  for j,(x,z,w,h,d,angle) in enumerate(((.65,2.85,.47,.39,.29,.10),(1.02,2.79,.35,.46,.25,.22),(.84,2.96,.38,.21,.21,-.14))):
+  for j,(x,z,w,h,d,angle) in enumerate(SHOULDER_STRATA):
    o=plate('ShoulderStratum'+side+str(j),(s*x,-.015+j*.025,z),w,h,d,tilt=s*angle,seed=j+5)
    if first is None:first=o
   # Three elongated plates per upper arm and leg, rather than identical stacks.
   for bone in ('Arm'+side,'Forearm'+side,'Leg'+side):
    b=arm.data.bones[bone];a=b.head_local;end=b.tail_local;direction=end-a
-   for j,t in enumerate((.18,.50,.82)):
-    p=a.lerp(end,t);p.y+=.04 if j==1 else -.015
-    w=(.25 if bone.startswith('Leg') else .24)*(1-.12*j)
-    h=direction.length*(.43 if j==1 else .37);angle=s*(.09 if j%2 else -.07)
-    plate('LongFracture'+bone+str(j),p,w,h,.20 if bone.startswith('Leg') else .18,bone,angle,j*3+len(bone))
+   for j,(p,w,h,depth,angle) in enumerate(limb_strata(a,end,s,leg=bone.startswith('Leg'))):
+    plate('LongFracture'+bone+str(j),p,w,h,depth,bone,angle,j*3+len(bone))
    tube('JointBinding'+bone,[a,a.lerp(end,.5),end],[.033,.026,.019],'rift-bands',bone,4,'bindings')
   hand=arm.data.bones['Forearm'+side].tail_local
   plate('Palm'+side,hand+Vector((s*.02,.02,-.12)),.27,.38,.22,'Forearm'+side,s*.04,13)
