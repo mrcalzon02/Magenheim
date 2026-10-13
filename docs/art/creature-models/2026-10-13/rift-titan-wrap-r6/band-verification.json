@@ -1,0 +1,11 @@
+{
+  "result": "PASS",
+  "triangles": 72,
+  "vertices": 36,
+  "edges": 108,
+  "connected_components": 1,
+  "all_edges_two_faces": true,
+  "euler_characteristic": 0,
+  "band_rib_seatings": 12,
+  "scope": "saved mesh closed continuous ring topology and twelve supported inner-ridge contacts; full 48 contacts audited separately across retained actions"
+}

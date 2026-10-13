@@ -1,0 +1,48 @@
+{
+  "rift-titan-torso-r5": {
+    "source_sha256": "ca15bde58a9c162c832ba8cbd25e5bb54a305eddaf0eadfdd8e309583a162cfd",
+    "visible_component_ids": [
+      1,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      74,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84
+    ],
+    "visible_triangles": 396,
+    "scope": "actual saved torso ribs, band, collar and lower keel; neck, head, shoulders, limbs and crystal cluster hidden for diagnostic visibility only"
+  },
+  "rift-titan-wrap-r6": {
+    "source_sha256": "8a7425f04e69c93282d87138eac9e6f2f0ca5eb896921e60770b9a1d56929e96",
+    "visible_component_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      55,
+      77,
+      82
+    ],
+    "visible_triangles": 416,
+    "scope": "actual saved torso ribs, band, collar and lower keel; neck, head, shoulders, limbs and crystal cluster hidden for diagnostic visibility only"
+  }
+}

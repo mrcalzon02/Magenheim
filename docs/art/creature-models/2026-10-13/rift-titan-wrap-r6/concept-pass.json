@@ -1,0 +1,10 @@
+{
+  "scope": "torso wrap and collar ring correction; not final surface detail",
+  "anatomy": "thin stone band encircles continuous metal rib cage with ribs above and below a small V; upper stone collar is a closed ring seated into the shoulder masses, supporting torso and neck ribs",
+  "donor": "StoneGolem",
+  "donor_triangles": 1200,
+  "soft_cap": 1800,
+  "preserved": "existing Rift Colossus rig hierarchy and seven named actions",
+  "remaining": "user torso review; crown and shoulder silhouette; individualized weathering, stone fractures and corroded metal textures; native animation/performance acceptance",
+  "status": "in progress; not adequately reworked"
+}
