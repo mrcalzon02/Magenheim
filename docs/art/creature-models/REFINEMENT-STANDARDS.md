@@ -56,6 +56,12 @@ the corrected torso rings and attachments while fitting proportions and depth.
 Show the true profile separately from an oblique reference-angle view. r7 is a
 shape candidate; “work is improving” is not adequate boss acceptance.
 
+Limb plate alignment must follow the joint direction in three dimensions,
+including elbow/wrist depth. An XZ-only tilt can match the front while still
+reading as stacked blocks in profile. Inspect those same joints in side clay;
+seat the full proximal section into its support and use compatible root/blend
+weights. Digit roots need the same support/weight check as larger attachments.
+
 Blackwater Maw anatomy correction: the front reference depicts a tall oval gape
 between a peaked upper skull and a pointed, projecting lower jaw. Perspective
 depth is not a flared cone. Tooth beds curve toward the cheek hinges; the inside

@@ -1,0 +1,10 @@
+{
+  "scope": "continue frontal and left-facing silhouette, with shoulder/arm/digit support refinement; surface detail deferred",
+  "anatomy": "steeper layered shoulder stones, 3D-aligned arm armor, backward elbows and forward wrists, closer leg stance, attached shorter digits and thicker instep",
+  "donor": "StoneGolem",
+  "donor_triangles": 1200,
+  "soft_cap": 1800,
+  "preserved": "1800 triangles, one material, four 512px maps, original eight-bone hierarchy and seven actions; both torso rings and all body supports retained",
+  "remaining": "user front/side silhouette review; surface fracture and weathering only after silhouette acceptance; native loader and live deformation/performance acceptance",
+  "status": "continued silhouette candidate; user says still far off, not adequately reworked"
+}

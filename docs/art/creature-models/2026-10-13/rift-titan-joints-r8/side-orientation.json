@@ -1,0 +1,12 @@
+{
+  "source": "assets/models/studies/underworld-boss-rift-titan-joints-r8.blend",
+  "source_sha256": "73f6b256ce1b6d4005c3241a1bc7477fea1f89934a540bedd905358300280d59",
+  "camera_direction": [
+    -2,
+    0,
+    0.06
+  ],
+  "model_front_axis": "+Y",
+  "screen_direction": "front/head left, back right",
+  "method": "saved model from -X; projected +Y guard passed"
+}
