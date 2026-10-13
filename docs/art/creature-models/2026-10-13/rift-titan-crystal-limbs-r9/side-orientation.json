@@ -1,0 +1,12 @@
+{
+  "source": "assets/models/studies/underworld-boss-rift-titan-crystal-limbs-r9.blend",
+  "source_sha256": "d5115952c15c82d3726452f13f3a72cfed185e34430f102f89510def9e677a06",
+  "camera_direction": [
+    -2,
+    0,
+    0.06
+  ],
+  "model_front_axis": "+Y",
+  "screen_direction": "front/head left, back right",
+  "method": "saved model from -X; projected +Y guard passed"
+}

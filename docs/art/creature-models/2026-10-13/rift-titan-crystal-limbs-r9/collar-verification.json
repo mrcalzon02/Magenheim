@@ -1,0 +1,11 @@
+{
+  "result": "PASS",
+  "triangles": 48,
+  "vertices": 24,
+  "edges": 72,
+  "connected_components": 1,
+  "all_edges_two_faces": true,
+  "euler_characteristic": 0,
+  "upper_torso_seatings": 2,
+  "scope": "saved closed upper collar ring and two upper torso seatings; full 74-contact audit over 35 action samples"
+}

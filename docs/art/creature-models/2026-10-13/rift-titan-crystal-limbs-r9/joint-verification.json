@@ -1,0 +1,15 @@
+{
+  "result": "PASS",
+  "supported_arm_roots": 2,
+  "supported_finger_roots": 6,
+  "vertices_per_root": 6,
+  "root_weights": "Body at arm/shoulder seatings; corresponding Forearm at finger/palm seatings",
+  "blended_ridge_vertices_per_arm": {
+    "L": 2,
+    "R": 2
+  },
+  "blend": "45% Body / 55% Arm at each proximal stone face ridge",
+  "contacts_across_actions": 74,
+  "sampled_poses": 35,
+  "scope": "saved support vertices, bone ownership and sparse blend; native every-frame deformation unverified"
+}

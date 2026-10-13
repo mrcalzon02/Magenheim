@@ -1,0 +1,28 @@
+{
+  "id": "underworld-boss-rift-titan-crystal-limbs-r9",
+  "source": "assets/models/studies/underworld-boss-rift-titan-crystal-limbs-r9.blend",
+  "triangles": 1800,
+  "donor_triangles": 1200,
+  "soft_cap": 1800,
+  "ratio": 1.5,
+  "previous_triangles": 1800,
+  "reduction_percent": 0.0,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "category_triangles": {
+    "strata": 1080,
+    "bindings": 48,
+    "binding-crystals": 172,
+    "torso-stone": 56,
+    "torso-ribs": 288,
+    "torso-band": 72,
+    "neck-ribs": 84
+  },
+  "rig": "original eight-bone hierarchy and seven actions; continued rest fit; sparse blended proximal arm roots",
+  "texture_bake": "owned r2 strata and crystal materials baked to four 512px maps; primary-form review",
+  "status": "unaccepted requested limb depth/detail and crystal candidate",
+  "previous_id": "underworld-boss-rift-titan-joints-r8",
+  "study_height_metres": 7.0,
+  "changes": "deeper individualized arm/leg facets and sixteen attached crystal growths; twelve new, four repurposed; joint bindings condensed"
+}
