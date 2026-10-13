@@ -1,6 +1,7 @@
 """Primary concept anatomy: layered strata around an open binding cage."""
 import bpy,bmesh,math,json
 from rift_titan_primary_layout import SHOULDER_STRATA, limb_strata
+from rift_titan_rock_facets import faceted_plate_geometry
 from pathlib import Path
 from mathutils import Vector
 ROOT=Path(__file__).resolve().parents[1]
@@ -15,13 +16,10 @@ def build(B,arm,record,profile,tube,cap):
   bpy.context.view_layer.objects.active=o;o.select_set(True);bm=bmesh.new();bm.from_mesh(me);bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces));bmesh.ops.triangulate(bm,faces=list(bm.faces),quad_method='FIXED',ngon_method='EAR_CLIP');bm.to_mesh(me);bm.free()
   bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT');bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=.006);bpy.ops.object.mode_set(mode='OBJECT');me.uv_layers.active.name='BossConstructionUV';o.select_set(False);return o
  def plate(name,c,width,height,depth,bone='Body',tilt=0,seed=0):
-  c=Vector(c);outline=[(-.90,-.33),(-.66,.35),(-.12,.50),(.80,.32),(1,-.10),(.22,-.50)];points=[]
-  for layer in (-1,1):
-   for k,(x,z) in enumerate(outline):
-    x*=width*(1+.07*math.sin(seed+k*2.1));z*=height
-    points.append(c+Vector((x*math.cos(tilt)+z*math.sin(tilt),layer*depth*(1+.12*math.cos(k*1.9+seed)),z*math.cos(tilt)-x*math.sin(tilt))))
-  faces=[tuple(reversed(range(6))),tuple(range(6,12))]+[(k,(k+1)%6,(k+1)%6+6,k+6) for k in range(6)]
-  return solid(name,points,faces,'rift-strata',bone,'strata')
+  # Sculpt a shallow ridge into the existing six-sided silhouette. The authored
+  # front/back perimeter and object identity stay unchanged for rig continuity.
+  vertices,faces=faceted_plate_geometry(c,width,height,depth,tilt,seed)
+  return solid(name,vertices,faces,'rift-strata',bone,'strata')
  def prism(name,c,radius,length,bone='Body'):
   c=Vector(c);n=5;points=[c+Vector((0,0,length*.52)),c-Vector((0,0,length*.48))]+[c+Vector((radius*math.cos(k*math.tau/n),radius*.8*math.sin(k*math.tau/n),-.05*length)) for k in range(n)]
   faces=[(0,k+2,(k+1)%n+2) for k in range(n)]+[(1,(k+1)%n+2,k+2) for k in range(n)]
