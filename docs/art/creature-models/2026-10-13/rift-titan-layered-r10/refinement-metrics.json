@@ -1,0 +1,28 @@
+{
+  "id": "underworld-boss-rift-titan-layered-r10",
+  "source": "assets/models/studies/underworld-boss-rift-titan-layered-r10.blend",
+  "triangles": 1800,
+  "donor_triangles": 1200,
+  "soft_cap": 1800,
+  "ratio": 1.5,
+  "previous_triangles": 1800,
+  "reduction_percent": 0.0,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "category_triangles": {
+    "strata": 1080,
+    "bindings": 48,
+    "binding-crystals": 172,
+    "torso-stone": 56,
+    "torso-ribs": 288,
+    "torso-band": 72,
+    "neck-ribs": 84
+  },
+  "rig": "original eight-bone hierarchy and seven actions; continued rest fit; sparse blended proximal arm roots",
+  "texture_bake": "owned spatial stone fracture/lichen/ochre, corroded metal and varied violet crystal shaders baked at 1024 and condensed to four 512px maps",
+  "status": "unaccepted concept refinement; 85% not achieved or measured",
+  "previous_id": "underworld-boss-rift-titan-crystal-limbs-r9",
+  "study_height_metres": 7.0,
+  "changes": "forward crest, supported fuller upper thorax, overlapping longer limb strata and authored weathering/crystal surfaces"
+}

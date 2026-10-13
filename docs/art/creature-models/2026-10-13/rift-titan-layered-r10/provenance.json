@@ -1,0 +1,30 @@
+{
+  "base_commit": "11c90480cacc9916e2a32543773b81c9196708ec",
+  "hashes": {
+    "tools/rift_titan_r4_base.py": "8ce1878a7ad7d695fc784202539bdb83b413f6a9dbba7bb765e1e7aa8417e74f",
+    "tools/rift_titan_primary_layout.py": "3d4687c6291dc1f973bf32245faa7b84daffe2a26de9f1bd0b18205234bfa9ce",
+    "tools/rift_titan_rock_facets.py": "724a9233b2a6ada9494e979d2bc0e0a25b6eeafaa38dd660a910475a89a80365",
+    "tools/rift_titan_wrapped_torso.py": "7d625317756b55b37cbf7274cab6dae513dfae05be5450036065b06c7e88c01a",
+    "tools/rift_titan_silhouette_fit.py": "ac387d8fdad899b11d027e4abf3c724006fcd0852074a4a190687d9baae23417",
+    "tools/rift_titan_joint_silhouette.py": "93c0a15224ada1abd8cee42334190ba47118239ac69ab82c1a083d0b24025782",
+    "tools/rift_titan_crystal_limbs.py": "1fef548b94160756a17cb1bfc50b1b2c16562385d817fabb971bc6d84277d4e6",
+    "tools/rift_titan_crown_profile.py": "c372a864293ec1d11e6c4c2623a67d5aa2792e8d4c831c6639f22ca7518133bc",
+    "tools/rift_titan_layered_weathering.py": "c1e52ed929e9ccb23e561f9cae2ae72d8c3aa007442d3d1b093f904b5574dcb0",
+    "tools/refine-rift-titan-layered-r10.py": "bd5a563c91a452282d57e35522958e210de7fc25236c7d646152d29c0da2bcd5",
+    "tools/review-rift-titan-layered-r10.py": "3303141b69ed55ca1d326c618d1e53a3574f216861d0eab44449a7cb8dee0202",
+    "tools/review-rift-titan-silhouette-r7.py": "f6d99afc1b59f4e51af679c97981296c1e58bc487c0696cc991c393e1145475e",
+    "tools/verify-rift-titan-layered-r10.py": "001f392af0c6221adfadbb5ac19e57868ea29804aa3406d078f439172c3627c7",
+    "tools/verify-rift-titan-crystal-limbs-r9.py": "cd1c944dabba97bd212f45b4cd3264b70374c0a8d3ec13645a5b22224890a458",
+    "tools/publish-rift-titan-layered-r10.py": "5f89ce6987f847eff5ace1c7f1504ec9c0b5a0d3e8ee680f7c56d632b161f0cd",
+    "assets/models/studies/underworld-boss-rift-titan-layered-r10.blend": "d6b2e87c4503fb517035cd3e8083c0e38d8c17ebb037121cbba5d585363789d4",
+    "assets/models/studies/underworld-boss-rift-titan-crystal-limbs-r9.blend": "d5115952c15c82d3726452f13f3a72cfed185e34430f102f89510def9e677a06",
+    "docs/art/creature-concepts/2026-10-03/the-rift-titan.png": "b605ad324621ed89fe2e4f708e638a40b06946fee4ccc1215a8be8ba9fd94cfa",
+    "docs/art/creature-models/RIFT-TITAN-REFINEMENT-OUTLOOK.md": "d63954a7be14b28c6505e83bcad8e657f3da663e19006f510691087c12240134"
+  },
+  "scope": "r9 limbs plus preserved online crest and mantle specifications; owned surface shaders",
+  "acceptance": "unaccepted; no 85% match claim; tally 1/6",
+  "estimated_remaining_substantial_passes": [
+    8,
+    12
+  ]
+}

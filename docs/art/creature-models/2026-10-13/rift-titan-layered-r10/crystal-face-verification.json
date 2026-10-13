@@ -1,0 +1,11 @@
+{
+  "result": "PASS",
+  "root_groups": 16,
+  "closing_triangles_total": 56,
+  "sampled_points": 14112,
+  "poses": 36,
+  "max_outside_distance_metres": 0,
+  "tolerance_metres": 0.001,
+  "outside_samples": [],
+  "scope": "saved evaluated closing-face centers and edges in rest plus five samples per retained action; native every-frame acceptance separate"
+}
