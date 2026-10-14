@@ -1,0 +1,12 @@
+{
+  "source": "assets/models/studies/underworld-boss-rift-titan-layered-r10.blend",
+  "source_sha256": "d6b2e87c4503fb517035cd3e8083c0e38d8c17ebb037121cbba5d585363789d4",
+  "camera_direction": [
+    1,
+    2,
+    0.15
+  ],
+  "target": "actor bounds center plus 0.30 actor span in Z",
+  "span": "0.48 actor span",
+  "scope": "preserved r10 source re-rendered for r11 head/shoulder comparison; original study not modified"
+}

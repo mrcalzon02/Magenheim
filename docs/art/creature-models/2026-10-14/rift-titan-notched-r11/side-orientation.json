@@ -1,0 +1,12 @@
+{
+  "source": "assets/models/studies/underworld-boss-rift-titan-notched-r11.blend",
+  "source_sha256": "cb4b3fe09c532b3f919364dd20c61d3128c7bd39fd9327509be514801eb14108",
+  "camera_direction": [
+    -2,
+    0,
+    0.06
+  ],
+  "model_front_axis": "+Y",
+  "screen_direction": "front/head left, back right",
+  "method": "saved model from -X; projected +Y guard passed"
+}

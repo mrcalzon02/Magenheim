@@ -1,0 +1,123 @@
+{
+  "result": "PASS",
+  "remodeled_components": {
+    "SplitCrown0": {
+      "triangles": 28,
+      "vertices": 16,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "SplitCrown1": {
+      "triangles": 28,
+      "vertices": 16,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "SplitCrown2": {
+      "triangles": 16,
+      "vertices": 10,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "PalmL": {
+      "triangles": 20,
+      "vertices": 12,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "PalmR": {
+      "triangles": 20,
+      "vertices": 12,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "FootL": {
+      "triangles": 20,
+      "vertices": 12,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "FootR": {
+      "triangles": 20,
+      "vertices": 12,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "PelvisKeystone0": {
+      "triangles": 20,
+      "vertices": 12,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "PelvisKeystone2": {
+      "triangles": 20,
+      "vertices": 12,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "ShoulderStratumL0": {
+      "triangles": 28,
+      "vertices": 16,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "ShoulderStratumL1": {
+      "triangles": 28,
+      "vertices": 16,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "ShoulderStratumL2": {
+      "triangles": 28,
+      "vertices": 16,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "LongFractureForearmL1": {
+      "triangles": 24,
+      "vertices": 14,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "LongFractureLegL1": {
+      "triangles": 24,
+      "vertices": 14,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "ShoulderStratumR0": {
+      "triangles": 28,
+      "vertices": 16,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "ShoulderStratumR1": {
+      "triangles": 28,
+      "vertices": 16,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "ShoulderStratumR2": {
+      "triangles": 28,
+      "vertices": 16,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "LongFractureForearmR1": {
+      "triangles": 24,
+      "vertices": 14,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    },
+    "LongFractureLegR1": {
+      "triangles": 24,
+      "vertices": 14,
+      "closed_edges": true,
+      "euler_characteristic": 2
+    }
+  },
+  "triangles_transferred": 32,
+  "net_triangle_change": 0,
+  "contacts": 76,
+  "scope": "saved individual closed shells and triangle redistribution; all original supported endpoint and basal-face checks retained"
+}

@@ -1,0 +1,10 @@
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1]
+source=(ROOT/'tools/review-first-bloom-refinement.py').read_text(encoding='utf-8').replace('first-bloom-refinement','rift-titan-notched-r11').replace('creature-models/2026-10-04','creature-models/2026-10-14').replace("row.get('study_height_metres',4.65)","row.get('study_height_metres',7.0)")
+source=source.replace("('side',(2,0,.06))","('side',(-2,0,.06))").replace("('attack',(1,2,.55))","('front-clay',(0,2,.06)),('side-clay',(-2,0,.06)),('side-reference',(-2,.65,.06)),('front-reference',(0,2,0)),('side-reference-clay',(-2,.9,0)),('crown-detail',(1,2,.15)),('attack',(1,2,.55))")
+source=source.replace("view=='clay'","view in ('clay','front-clay','side-clay','front-reference','side-reference-clay')")
+source=source.replace(' target=center;span=size',' target=center;span=size\n scene.render.resolution_x=scene.render.resolution_y=900\n if view in ("front-reference","side-reference-clay"):scene.render.resolution_x=600;scene.render.resolution_y=700;target=center+Vector((0,0,size*(.02 if view=="front-reference" else .045)))\n if view=="crown-detail":target=center+Vector((0,0,size*.30));span=size*.48')
+source=source.replace('cd.ortho_scale=span*1.18','cd.ortho_scale=span*(1/.94 if view=="front-reference" else 1/.89 if view=="side-reference-clay" else 1.18)')
+source=source.replace(" scene.render.filepath=str(OUT/(ID+'--'+view+'.png'))", " if view in ('side','side-clay','side-reference','side-reference-clay'):assert cam.rotation_euler.to_matrix().col[0].dot(Vector((0,1,0)))<0, 'front +Y must project screen-left'\n scene.render.filepath=str(OUT/(ID+'--'+view+'.png'))")
+exec(compile(source,str(__file__),'exec'))
+(OUT/'side-orientation.json').write_text(json.dumps(dict(source=row['source'],source_sha256=hashlib.sha256((ROOT/row['source']).read_bytes()).hexdigest(),camera_direction=[-2,0,.06],model_front_axis='+Y',screen_direction='front/head left, back right',method='saved model from -X; projected +Y guard passed'),indent=2)+'\n',encoding='utf-8')

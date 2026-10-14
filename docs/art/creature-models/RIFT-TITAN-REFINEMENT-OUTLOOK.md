@@ -1,7 +1,8 @@
 # Rift Titan concept-match outlook
 
-Updated 2026-10-13 after the r10 layered/owned-surface pass. The user's current
-rating is “not great.” Rift Titan is not adequately reworked and is not claimed
+Initial estimate recorded 2026-10-13 after r10; latest checkpoint is r11 on
+2026-10-14. The earlier rating was “not great”; latest feedback is “Good now
+continue that target.” Rift Titan is not adequately reworked and is not claimed
 to have reached 85% concept fidelity. The adequate boss tally remains 1/6.
 
 The planning estimate is **8–12 further substantial refinement passes after
@@ -37,3 +38,19 @@ Next pass: individually sculpt the head cleft and shoulder/arm contour chips,
 using the source front and left-facing side rather than copying the current
 model's large repeated wedges. Retain the torso rings, supported roots, donor
 rig and performance envelope. Revisit this estimate after two further passes.
+
+## October 14 checkpoint: r11
+
+r11 is the first checkpoint after that estimate. It gives the head halves and
+six shoulder plates stepped outer contours, and four central forearm/shin
+plates actual inward notches. Thirty-two triangles are redistributed from
+simpler closed surfaces while the total remains 1,800. Nineteen remodeled
+stone shells and all 76 support groups pass the saved checks. The first
+closing-face audit exposed an arm section bridging a shoulder notch; the
+complete section was reshaped inward and the cap interiors now pass.
+
+The latest user feedback is “Good now continue that target.” This authorizes
+continued refinement and does not establish 85% matching. The 8–12-pass range
+remains an estimate measured from r10; reassessment is due after r12. Fine
+fragmentation, crest debris, core density and purposeful texture placement
+are still unfinished. Review: `2026-10-14/rift-titan-notched-r11/gallery.html`.

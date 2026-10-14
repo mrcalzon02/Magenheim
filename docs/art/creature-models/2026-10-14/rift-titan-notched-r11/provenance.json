@@ -1,0 +1,27 @@
+{
+  "base_commit": "839a751b2899029d51a5aa39b16a42d1ae7084b7",
+  "hashes": {
+    "tools/rift_titan_r4_base.py": "8ce1878a7ad7d695fc784202539bdb83b413f6a9dbba7bb765e1e7aa8417e74f",
+    "tools/rift_titan_primary_layout.py": "3d4687c6291dc1f973bf32245faa7b84daffe2a26de9f1bd0b18205234bfa9ce",
+    "tools/rift_titan_rock_facets.py": "724a9233b2a6ada9494e979d2bc0e0a25b6eeafaa38dd660a910475a89a80365",
+    "tools/rift_titan_wrapped_torso.py": "7d625317756b55b37cbf7274cab6dae513dfae05be5450036065b06c7e88c01a",
+    "tools/rift_titan_silhouette_fit.py": "ac387d8fdad899b11d027e4abf3c724006fcd0852074a4a190687d9baae23417",
+    "tools/rift_titan_joint_silhouette.py": "93c0a15224ada1abd8cee42334190ba47118239ac69ab82c1a083d0b24025782",
+    "tools/rift_titan_crystal_limbs.py": "1fef548b94160756a17cb1bfc50b1b2c16562385d817fabb971bc6d84277d4e6",
+    "tools/rift_titan_crown_profile.py": "c372a864293ec1d11e6c4c2623a67d5aa2792e8d4c831c6639f22ca7518133bc",
+    "tools/rift_titan_layered_weathering.py": "c1e52ed929e9ccb23e561f9cae2ae72d8c3aa007442d3d1b093f904b5574dcb0",
+    "tools/rift_titan_notched_stone.py": "2d68655505ac3685f58910992f6ba70b4bd8b3a8faa5feb197e63edae2160f9a",
+    "tools/refine-first-bloom.py": "a1089cee40a79aab35b693f6487e2fb819a0c8636ec234a41d77aebf39495467",
+    "tools/refine-rift-titan-notched-r11.py": "a303fdf62a3fbe833054097375563a3d038225da38b59d5775ac5a8ddcb72824",
+    "tools/review-rift-titan-notched-r11.py": "7484788e278029e2b983f58190120605d28eb371b9dd5d4158c007783438a183",
+    "tools/review-rift-titan-notched-before-r11.py": "4579df8fdf8c31fe346ab657cb1da40093f031163c7871533782470a62b59d37",
+    "tools/verify-rift-titan-notched-r11.py": "acd6414d5b4f953cfc267ef94b19ba3258bdd009aa3e1e50dbe8cf54a4f0ad06",
+    "tools/publish-rift-titan-notched-r11.py": "7c1914ad2815b3c958a63c71871781e5f7cbe7e5a96a5e0a4791a5777ca1e70b",
+    "assets/models/studies/underworld-boss-rift-titan-notched-r11.blend": "cb4b3fe09c532b3f919364dd20c61d3128c7bd39fd9327509be514801eb14108",
+    "assets/models/studies/underworld-boss-rift-titan-layered-r10.blend": "d6b2e87c4503fb517035cd3e8083c0e38d8c17ebb037121cbba5d585363789d4",
+    "docs/art/creature-concepts/2026-10-03/the-rift-titan.png": "b605ad324621ed89fe2e4f708e638a40b06946fee4ccc1215a8be8ba9fd94cfa",
+    "docs/art/creature-models/RIFT-TITAN-REFINEMENT-OUTLOOK.md": "9b5c5b8d42ec981043248c0d9e2be93c5e2b9b04133b922513200dceb27049b0"
+  },
+  "scope": "r10 geometry continued with local outline topology redistribution; retained owned surfaces and rig",
+  "acceptance": "unaccepted; 85% target not claimed; tally 1/6"
+}
