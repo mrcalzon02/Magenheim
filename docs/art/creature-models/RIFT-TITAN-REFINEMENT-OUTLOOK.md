@@ -1,13 +1,29 @@
 # Rift Titan concept-match outlook
 
+**Current status, 2026-10-14: the numerical completion forecast is withdrawn.**
+The user rejected r12's leaf-shaped head and requested a systematic comparison
+of the whole model. The audit records 44 visual discrepancies and four process
+failures, including missing crest architecture, wrong cage/core construction,
+short hand reach, unresolved foot contact and generic stone surfaces.
+The authoritative correction backlog is
+`2026-10-14/rift-titan-systematic-audit-r12/AUDIT.md`, with structured entries in
+`findings.json` beside it. No model changes were made during the audit.
+
+The estimates and checkpoints below are historical context, not an active
+countdown or a promise of 85% matching. Future passes must identify the finding
+IDs they address, show those same regions before/after, retain unresolved items
+and reject obvious shape regressions before treating file validation as progress.
+Re-estimation requires a credible improvement history after primary discrepancies
+are corrected. No such basis currently exists.
+
 Initial estimate recorded 2026-10-13 after r10; latest checkpoint is r12 on
 2026-10-14. The user has corrected the head interpretation to one continuous
 crystal with a recessed beveled crack. Rift Titan is not adequately reworked and is not claimed
 to have reached 85% concept fidelity. The adequate boss tally remains 1/6.
 
-The planning estimate is **8–12 further substantial refinement passes after
-r10** to aim for an 85% visual match. This is an uncertain work estimate, not a
-measured similarity score or a guarantee. It assumes we keep the donor rig,
+The original planning estimate was **8–12 further substantial refinement passes after
+r10** to aim for an 85% visual match. It is now withdrawn. It was an uncertain
+work estimate, not a measured similarity score or a guarantee. It assumed we kept the donor rig,
 1,800-triangle soft cap and four 512px maps and make meaningful individualized
 remodeling changes per pass rather than minor parameter adjustments. Repeated
 visual regressions or native animation problems can extend the estimate.
@@ -66,9 +82,9 @@ to r11 except the six neck end sections reseated into the replacement head.
 
 This correction replaces an incorrect interpretation; it does not justify
 subtracting two revisions from the old forecast or asserting a similarity gain.
-At this reassessment, retain a broad 8–12 substantial-pass planning allowance
-for the remaining overall match, with low confidence until the corrected head
-is reviewed. The original range from r10 remains historical context, not a
+At that checkpoint a broad 8–12 substantial-pass allowance was retained,
+with low confidence pending head review. The subsequent rejection and systemic
+audit withdraw that allowance; it must not be treated as an active plan or a
 countdown. Core density, crest debris, individually fractured contours and
 purposeful surface placement remain. Review:
 `2026-10-14/rift-titan-cracked-head-r12/gallery.html`.

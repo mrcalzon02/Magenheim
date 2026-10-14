@@ -1,0 +1,17 @@
+{
+  "result": "PASS",
+  "findings": 44,
+  "process_failures": 4,
+  "priority_counts": {
+    "P0": 14,
+    "P1": 23,
+    "P2": 7
+  },
+  "model_source_sha256": "4c1a6da379f7beebab234d7b274b058c50c0d41ebc1ee3cb50c44ee2722ba700",
+  "model_unchanged": true,
+  "regions": 8,
+  "linked_assets_exist": true,
+  "crop_bounds_valid": true,
+  "browser_visual_validation": "not performed: local-file protocol blocked; no policy workaround",
+  "scope": "audit artifact integrity; not model or native visual acceptance"
+}

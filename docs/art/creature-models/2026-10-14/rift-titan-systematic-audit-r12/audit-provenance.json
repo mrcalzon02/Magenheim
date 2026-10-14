@@ -1,0 +1,18 @@
+{
+  "base_commit": "8d94f3be2510dde46461730e87544a7f01fb30ab",
+  "hashes": {
+    "assets/models/studies/underworld-boss-rift-titan-cracked-head-r12.blend": "4c1a6da379f7beebab234d7b274b058c50c0d41ebc1ee3cb50c44ee2722ba700",
+    "docs/art/creature-concepts/2026-10-03/the-rift-titan.png": "b605ad324621ed89fe2e4f708e638a40b06946fee4ccc1215a8be8ba9fd94cfa",
+    "tools/audit-rift-titan-r12.py": "e706655e7333839877153dca94f3850d2fd3c54de6a35b04f34a91052bebf139",
+    "tools/inspect-rift-titan-audit-regions.py": "9a445cc9a160f54eef758429a982bede42372d06ee75861a709d23fc9e72c68c",
+    "tools/publish-rift-titan-systematic-audit-r12.py": "c394591e2803028042d9e83f699fc262baf17ea0786e7155d93d246529a959e8",
+    "docs/art/creature-models/2026-10-14/rift-titan-cracked-head-r12/concept-front.png": "e20a07c13df3b8dc1d75384f4f584e59947da86c8d1757a3564006f0850ea24f",
+    "docs/art/creature-models/2026-10-14/rift-titan-cracked-head-r12/concept-side.png": "dbb07908a7803d2fc37171571d24247e7c77f28210c3ce62642deee7bc27240b",
+    "docs/art/creature-models/2026-10-14/rift-titan-cracked-head-r12/underworld-boss-rift-titan-cracked-head-r12--crown-detail.png": "97d619fe505bcb5eb8eed74ed4467722f3b91bb9543fe55b51c5930ecccfd924",
+    "docs/art/creature-models/2026-10-14/rift-titan-cracked-head-r12/underworld-boss-rift-titan-cracked-head-r12--detail.png": "68e515d5755d3313fe6d2a94ad857de9fb56b3119e284d4a57bb94dba3c75bb6",
+    "docs/art/creature-models/2026-10-14/rift-titan-cracked-head-r12/underworld-boss-rift-titan-cracked-head-r12--front.png": "d7be4bed841fd18bd42245f1c4c385349a19b682980f859e45650b8feaa069f4",
+    "docs/art/creature-models/2026-10-14/rift-titan-cracked-head-r12/underworld-boss-rift-titan-cracked-head-r12--side-reference.png": "5d9017471413970381810d03475f69247a87eeadcf5d9904f8cc508b3f33f08b"
+  },
+  "model_unchanged": true,
+  "scope": "reference/render/recipe snapshot for the discrepancy audit; all model findings remain open"
+}

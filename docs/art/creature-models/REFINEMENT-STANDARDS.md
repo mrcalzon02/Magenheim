@@ -71,6 +71,17 @@ floor and bevels to the outer shell, and check front and left-facing close-ups.
 Verify one connected closed head surface and floor depth behind the lips;
 reseat the complete neck end sections into that new head with matching weights.
 
+Rift Titan r12 visual audit (2026-10-14): the connected recessed head is still
+visually rejected because its smooth leaf outline and plain faces do not match
+the angular fractured crystal. Read
+`2026-10-14/rift-titan-systematic-audit-r12/AUDIT.md` before further modeling.
+Address its open finding IDs and compare the actual reference regions; a closed
+head, passing roots or staying under 1,800 triangles does not establish visual
+similarity. Preserve the correct single-crystal interpretation while replacing
+its incorrect silhouette and surface construction. Check hand reach and a real
+foot-contact plane; the audit found shin geometry below the named foot parts.
+The old numerical completion forecast is withdrawn.
+
 Blackwater Maw anatomy correction: the front reference depicts a tall oval gape
 between a peaked upper skull and a pointed, projecting lower jaw. Perspective
 depth is not a flared cone. Tooth beds curve toward the cheek hinges; the inside
