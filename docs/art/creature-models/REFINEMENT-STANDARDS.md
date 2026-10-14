@@ -62,6 +62,15 @@ reading as stacked blocks in profile. Inspect those same joints in side clay;
 seat the full proximal section into its support and use compatible root/blend
 weights. Digit roots need the same support/weight check as larger attachments.
 
+Rift Titan head correction (2026-10-14): the head is one crystal form. The
+apparent halves are facets surrounding a recessed, beveled crack in that
+continuous shape. Purple crystal belongs deeper inside the fissure. Do not
+build independent upright halves with floating purple slivers or a through-air
+slot between them. Keep the rear crystal wall continuous, connect the crack
+floor and bevels to the outer shell, and check front and left-facing close-ups.
+Verify one connected closed head surface and floor depth behind the lips;
+reseat the complete neck end sections into that new head with matching weights.
+
 Blackwater Maw anatomy correction: the front reference depicts a tall oval gape
 between a peaked upper skull and a pointed, projecting lower jaw. Perspective
 depth is not a flared cone. Tooth beds curve toward the cheek hinges; the inside

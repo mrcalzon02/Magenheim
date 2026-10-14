@@ -1,0 +1,36 @@
+{
+  "interpretation": "one continuous crystalline head shape; crack is a beveled surface recess, not an air gap between two upright halves",
+  "component": "UnifiedCrystalHead",
+  "removed": [
+    "SplitCrown0",
+    "SplitCrown1",
+    "SplitCrown2",
+    "SplitCrown3",
+    "FloatingPrism0",
+    "FloatingPrism1"
+  ],
+  "old_head_triangles": 116,
+  "new_head_triangles": 108,
+  "total_triangles": 1792,
+  "stations": 7,
+  "vertices_per_station": 8,
+  "roles": {
+    "1": "outer crystal cortex, rear shell and end caps",
+    "2": "sloping crack bevel walls",
+    "3": "purple crystalline floor recessed inside fissure"
+  },
+  "recess_depth_authored": [
+    0.008,
+    0.058,
+    0.085,
+    0.098,
+    0.08,
+    0.047,
+    0.0025
+  ],
+  "purple_floor_triangles": 8,
+  "neck_supports": 6,
+  "neck_repairs": [],
+  "preserved": "r11 shoulders, torso rings, limbs, other crystals, rig/actions and existing surface style",
+  "acceptance": "head interpretation correction; not final boss or 85% concept-match acceptance"
+}

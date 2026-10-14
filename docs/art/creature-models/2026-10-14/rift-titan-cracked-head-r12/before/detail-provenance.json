@@ -1,0 +1,19 @@
+{
+  "source": "assets/models/studies/underworld-boss-rift-titan-notched-r11.blend",
+  "source_sha256": "cb4b3fe09c532b3f919364dd20c61d3128c7bd39fd9327509be514801eb14108",
+  "cameras": {
+    "crown-detail": [
+      1,
+      2,
+      0.15
+    ],
+    "crown-side": [
+      -2,
+      0.65,
+      0.05
+    ]
+  },
+  "target": "actor bounds center plus 0.30 actor span in Z",
+  "span": "0.48 actor span",
+  "scope": "actual saved r11 source re-rendered into r12; previous study unchanged"
+}

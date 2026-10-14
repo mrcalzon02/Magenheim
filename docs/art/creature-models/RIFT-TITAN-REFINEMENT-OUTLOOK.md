@@ -1,8 +1,8 @@
 # Rift Titan concept-match outlook
 
-Initial estimate recorded 2026-10-13 after r10; latest checkpoint is r11 on
-2026-10-14. The earlier rating was “not great”; latest feedback is “Good now
-continue that target.” Rift Titan is not adequately reworked and is not claimed
+Initial estimate recorded 2026-10-13 after r10; latest checkpoint is r12 on
+2026-10-14. The user has corrected the head interpretation to one continuous
+crystal with a recessed beveled crack. Rift Titan is not adequately reworked and is not claimed
 to have reached 85% concept fidelity. The adequate boss tally remains 1/6.
 
 The planning estimate is **8–12 further substantial refinement passes after
@@ -54,3 +54,21 @@ continued refinement and does not establish 85% matching. The 8–12-pass range
 remains an estimate measured from r10; reassessment is due after r12. Fine
 fragmentation, crest debris, core density and purposeful texture placement
 are still unfinished. Review: `2026-10-14/rift-titan-notched-r11/gallery.html`.
+
+## October 14 checkpoint: r12 head interpretation correction
+
+The user explains that the apparent head halves are part of one crystal, with
+a recessed beveled fissure and purple crystal inside. The former split-shell
+interpretation is superseded. r12 rebuilds one connected closed crystal head,
+with a purple recess floor and continuous rear wall. It uses 108 head triangles
+instead of 116, reducing the actor to 1,792. Saved body geometry remains identical
+to r11 except the six neck end sections reseated into the replacement head.
+
+This correction replaces an incorrect interpretation; it does not justify
+subtracting two revisions from the old forecast or asserting a similarity gain.
+At this reassessment, retain a broad 8–12 substantial-pass planning allowance
+for the remaining overall match, with low confidence until the corrected head
+is reviewed. The original range from r10 remains historical context, not a
+countdown. Core density, crest debris, individually fractured contours and
+purposeful surface placement remain. Review:
+`2026-10-14/rift-titan-cracked-head-r12/gallery.html`.

@@ -1,0 +1,27 @@
+{
+  "base_commit": "53d769c4fae4af97b47a89e4ada4feedbca56aee",
+  "hashes": {
+    "tools/rift_titan_r4_base.py": "8ce1878a7ad7d695fc784202539bdb83b413f6a9dbba7bb765e1e7aa8417e74f",
+    "tools/rift_titan_wrapped_torso.py": "7d625317756b55b37cbf7274cab6dae513dfae05be5450036065b06c7e88c01a",
+    "tools/rift_titan_silhouette_fit.py": "ac387d8fdad899b11d027e4abf3c724006fcd0852074a4a190687d9baae23417",
+    "tools/rift_titan_joint_silhouette.py": "93c0a15224ada1abd8cee42334190ba47118239ac69ab82c1a083d0b24025782",
+    "tools/rift_titan_crystal_limbs.py": "1fef548b94160756a17cb1bfc50b1b2c16562385d817fabb971bc6d84277d4e6",
+    "tools/rift_titan_crown_profile.py": "c372a864293ec1d11e6c4c2623a67d5aa2792e8d4c831c6639f22ca7518133bc",
+    "tools/rift_titan_layered_weathering.py": "c1e52ed929e9ccb23e561f9cae2ae72d8c3aa007442d3d1b093f904b5574dcb0",
+    "tools/rift_titan_notched_stone.py": "2d68655505ac3685f58910992f6ba70b4bd8b3a8faa5feb197e63edae2160f9a",
+    "tools/rift_titan_cracked_head.py": "84bf5741cf2c448e56bc6d88f2bc3aa7a4bb07084759ba13775dd677617ad7a2",
+    "tools/refine-first-bloom.py": "a1089cee40a79aab35b693f6487e2fb819a0c8636ec234a41d77aebf39495467",
+    "tools/refine-rift-titan-cracked-head-r12.py": "655e33a710c5faf8db814834ee524c63a049eea6d3374a59e87e16c2c60311ab",
+    "tools/refine-rift-titan-notched-r11.py": "a303fdf62a3fbe833054097375563a3d038225da38b59d5775ac5a8ddcb72824",
+    "tools/review-rift-titan-cracked-head-r12.py": "c9653efe0ccd7ced817b99b07142ea84900a8717599b9ff7fc416f0825d372d3",
+    "tools/review-rift-titan-cracked-before-r12.py": "1de703d554fbe196dd7685a94ed8f68a74092865f62cd923afdefc0a5dde1476",
+    "tools/verify-rift-titan-cracked-head-r12.py": "a7a43c7ae2c3d793e6de66cdefc173a4a503c35e5b43842ff1aa8c1f5ace1576",
+    "tools/publish-rift-titan-cracked-head-r12.py": "e0fae06ef4cd5d7f1964c3395c3e7cfb81daab5657d4cf959be115b51106138e",
+    "assets/models/studies/underworld-boss-rift-titan-cracked-head-r12.blend": "4c1a6da379f7beebab234d7b274b058c50c0d41ebc1ee3cb50c44ee2722ba700",
+    "assets/models/studies/underworld-boss-rift-titan-notched-r11.blend": "cb4b3fe09c532b3f919364dd20c61d3128c7bd39fd9327509be514801eb14108",
+    "docs/art/creature-concepts/2026-10-03/the-rift-titan.png": "b605ad324621ed89fe2e4f708e638a40b06946fee4ccc1215a8be8ba9fd94cfa",
+    "docs/art/creature-models/RIFT-TITAN-REFINEMENT-OUTLOOK.md": "030507a9758fc0bc5d2cf3a990ecba12acdda9615ba6e60cebca47f5509c807e"
+  },
+  "scope": "user correction: one continuous crystal head with a beveled recessed purple fissure; body geometry preserved",
+  "acceptance": "unaccepted head correction; no 85% or final boss acceptance"
+}
