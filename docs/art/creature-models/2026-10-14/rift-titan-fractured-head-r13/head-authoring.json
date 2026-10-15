@@ -1,0 +1,36 @@
+{
+  "interpretation": "one continuous crystalline head shape; crack is a beveled surface recess, not an air gap between two upright halves",
+  "component": "UnifiedCrystalHead",
+  "removed": [
+    "SplitCrown0",
+    "SplitCrown1",
+    "SplitCrown2",
+    "SplitCrown3",
+    "FloatingPrism0",
+    "FloatingPrism1"
+  ],
+  "new_head_triangles": 116,
+  "total_triangles": 1800,
+  "outline_vertices": 20,
+  "fault_stations": 4,
+  "roles": {
+    "1": "outer crystal cortex, rear shell and end caps",
+    "2": "sloping crack bevel walls",
+    "3": "purple crystalline floor recessed inside fissure"
+  },
+  "recess_depth_authored": [
+    0.05,
+    0.115,
+    0.09,
+    0.04
+  ],
+  "purple_floor_triangles": 6,
+  "neck_supports": 6,
+  "neck_repairs": [],
+  "preserved": "body/limb/core geometry verified against the actual saved r12; only head and six neck sections excluded",
+  "acceptance": "unaccepted replacement after user rejected the still-oval first r13 attempt",
+  "outline": "extruded polygonal slab: straight upper shaft, abrupt shoulders and triangular lower breaks; no tapered ring shell",
+  "secondary_cortex_vertices": 4,
+  "construction_chain_removed_head_triangles": 116,
+  "previous_review_head_triangles": 108
+}

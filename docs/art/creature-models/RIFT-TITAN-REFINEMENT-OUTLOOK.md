@@ -9,6 +9,12 @@ The authoritative correction backlog is
 `2026-10-14/rift-titan-systematic-audit-r12/AUDIT.md`, with structured entries in
 `findings.json` beside it. No model changes were made during the audit.
 
+Repairs started with r13 (`2026-10-14/rift-titan-fractured-head-r13/REPAIR.md`):
+H01–H04 receive a first structural head repair. All 44 findings remain open;
+the coarse fracture hierarchy and cloudy surface still fall short. Exact-camera
+r12/r13 comparisons are included. The body geometry is preserved, and the actor
+now uses the full 1,800-triangle soft cap. This does not restore the old forecast.
+
 The estimates and checkpoints below are historical context, not an active
 countdown or a promise of 85% matching. Future passes must identify the finding
 IDs they address, show those same regions before/after, retain unresolved items
@@ -16,7 +22,7 @@ and reject obvious shape regressions before treating file validation as progress
 Re-estimation requires a credible improvement history after primary discrepancies
 are corrected. No such basis currently exists.
 
-Initial estimate recorded 2026-10-13 after r10; latest checkpoint is r12 on
+Initial estimate recorded 2026-10-13 after r10; latest repair checkpoint is r13 on
 2026-10-14. The user has corrected the head interpretation to one continuous
 crystal with a recessed beveled crack. Rift Titan is not adequately reworked and is not claimed
 to have reached 85% concept fidelity. The adequate boss tally remains 1/6.

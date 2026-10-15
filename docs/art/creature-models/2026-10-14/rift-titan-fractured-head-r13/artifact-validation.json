@@ -1,0 +1,13 @@
+{
+  "result": "PASS",
+  "links_exist": true,
+  "before_after_resolution": [
+    900,
+    900
+  ],
+  "before_source_hash_verified": true,
+  "model_source_sha256": "9fa5ea63f90eeb89e54e493e22e71229023e7c24d9b1c76d400c5c2950a788ec",
+  "browser_validation": "not performed; local-file browser policy respected",
+  "open_findings": 44,
+  "closed_findings": 0
+}

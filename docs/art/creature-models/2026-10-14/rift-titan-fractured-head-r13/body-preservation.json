@@ -1,0 +1,418 @@
+{
+  "result": "PASS",
+  "previous_source": "assets/models/studies/underworld-boss-rift-titan-cracked-head-r12.blend",
+  "components": {
+    "ShoulderStratumL0": {
+      "triangles": 28,
+      "vertices": 16,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ShoulderStratumL1": {
+      "triangles": 28,
+      "vertices": 16,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ShoulderStratumL2": {
+      "triangles": 28,
+      "vertices": 16,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureArmL0": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureArmL1": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureArmL2": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "JointBindingArmL": {
+      "triangles": 8,
+      "vertices": 6,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureForearmL0": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureForearmL1": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureForearmL2": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "JointBindingForearmL": {
+      "triangles": 8,
+      "vertices": 6,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureLegL0": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureLegL1": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureLegL2": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "JointBindingLegL": {
+      "triangles": 8,
+      "vertices": 6,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "PalmL": {
+      "triangles": 20,
+      "vertices": 12,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FingerStratumL0": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FingerStratumL1": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FingerStratumL2": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FootL": {
+      "triangles": 20,
+      "vertices": 12,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ShoulderStratumR0": {
+      "triangles": 28,
+      "vertices": 16,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ShoulderStratumR1": {
+      "triangles": 28,
+      "vertices": 16,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ShoulderStratumR2": {
+      "triangles": 28,
+      "vertices": 16,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureArmR0": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureArmR1": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureArmR2": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "JointBindingArmR": {
+      "triangles": 8,
+      "vertices": 6,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureForearmR0": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureForearmR1": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureForearmR2": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "JointBindingForearmR": {
+      "triangles": 8,
+      "vertices": 6,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureLegR0": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureLegR1": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LongFractureLegR2": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "JointBindingLegR": {
+      "triangles": 8,
+      "vertices": 6,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "PalmR": {
+      "triangles": 20,
+      "vertices": 12,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FingerStratumR0": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FingerStratumR1": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FingerStratumR2": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FootR": {
+      "triangles": 20,
+      "vertices": 12,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "PelvisKeystone0": {
+      "triangles": 20,
+      "vertices": 12,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "PelvisKeystone1": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "PelvisKeystone2": {
+      "triangles": 20,
+      "vertices": 12,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "SuspendedCore0": {
+      "triangles": 10,
+      "vertices": 7,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "SuspendedCore1": {
+      "triangles": 10,
+      "vertices": 7,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "SuspendedCore2": {
+      "triangles": 10,
+      "vertices": 7,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "SuspendedCore3": {
+      "triangles": 10,
+      "vertices": 7,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FloatingStratum0": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FloatingStratum1": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FloatingStratum2": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FloatingStratum3": {
+      "triangles": 24,
+      "vertices": 14,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FloatingPrism2": {
+      "triangles": 10,
+      "vertices": 7,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FloatingPrism3": {
+      "triangles": 10,
+      "vertices": 7,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FloatingPrism4": {
+      "triangles": 10,
+      "vertices": 7,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "FloatingPrism5": {
+      "triangles": 10,
+      "vertices": 7,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "StoneCollarbone": {
+      "triangles": 48,
+      "vertices": 24,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LowerRibKeel": {
+      "triangles": 8,
+      "vertices": 6,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ContinuousTorsoRib0": {
+      "triangles": 14,
+      "vertices": 15,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ContinuousTorsoRib1": {
+      "triangles": 14,
+      "vertices": 15,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ContinuousTorsoRib2": {
+      "triangles": 14,
+      "vertices": 15,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ContinuousTorsoRib3": {
+      "triangles": 14,
+      "vertices": 15,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ContinuousTorsoRib4": {
+      "triangles": 11,
+      "vertices": 12,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ContinuousTorsoRib5": {
+      "triangles": 11,
+      "vertices": 12,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ContinuousTorsoRib6": {
+      "triangles": 14,
+      "vertices": 15,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ContinuousTorsoRib7": {
+      "triangles": 11,
+      "vertices": 12,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ContinuousTorsoRib8": {
+      "triangles": 11,
+      "vertices": 12,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ContinuousTorsoRib9": {
+      "triangles": 14,
+      "vertices": 15,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ContinuousTorsoRib10": {
+      "triangles": 14,
+      "vertices": 15,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "ContinuousTorsoRib11": {
+      "triangles": 14,
+      "vertices": 15,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "WrappedStoneBand": {
+      "triangles": 72,
+      "vertices": 36,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LimbCrystalL0": {
+      "triangles": 6,
+      "vertices": 5,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LimbCrystalL1": {
+      "triangles": 6,
+      "vertices": 5,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LimbCrystalL2": {
+      "triangles": 6,
+      "vertices": 5,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LimbCrystalL3": {
+      "triangles": 6,
+      "vertices": 5,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LimbCrystalL4": {
+      "triangles": 6,
+      "vertices": 5,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LimbCrystalL5": {
+      "triangles": 6,
+      "vertices": 5,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LimbCrystalR0": {
+      "triangles": 6,
+      "vertices": 5,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LimbCrystalR1": {
+      "triangles": 6,
+      "vertices": 5,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LimbCrystalR2": {
+      "triangles": 6,
+      "vertices": 5,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LimbCrystalR3": {
+      "triangles": 6,
+      "vertices": 5,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LimbCrystalR4": {
+      "triangles": 6,
+      "vertices": 5,
+      "max_coordinate_difference_metres": 0.0
+    },
+    "LimbCrystalR5": {
+      "triangles": 6,
+      "vertices": 5,
+      "max_coordinate_difference_metres": 0.0
+    }
+  },
+  "max_coordinate_difference_metres": 0,
+  "scope": "all retained body/limb/core geometry unchanged from saved r12; replaced head and six reseated neck sections excluded"
+}

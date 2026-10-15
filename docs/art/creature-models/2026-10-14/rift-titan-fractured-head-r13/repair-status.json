@@ -1,0 +1,284 @@
+{
+  "date": "2026-10-14",
+  "revision": "r13",
+  "baseline": "r12",
+  "findings": [
+    {
+      "id": "H01",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "first repair candidate; user acceptance pending",
+      "change": "The tapered shell was discarded after the user rejected its still-oval shape. An explicit twenty-corner extruded slab perimeter now has long straight sides, abrupt ledges, an uneven summit and triangular lower wings.",
+      "remaining": "The slab is still a coarse interpretation; finer local breaks and reference-led facet proportions remain unresolved."
+    },
+    {
+      "id": "H02",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "first repair candidate; user acceptance pending",
+      "change": "Four integrated cortex fracture points interrupt the broad slab faces; front/back share the polygon perimeter and the fault remains recessed into one connected shell.",
+      "remaining": "The source has a much denser hierarchy of chips, staggered layers and secondary fracture planes. This is only a first structural repair."
+    },
+    {
+      "id": "H03",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "first repair candidate; user acceptance pending",
+      "change": "The connected fault changes direction, width and depth; asymmetric bevels expose a recessed violet floor backed by a solid shell.",
+      "remaining": "The opening still reads too cleanly in places, and the violet surface lacks the reference crystalline facet hierarchy."
+    },
+    {
+      "id": "H04",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "first repair candidate; user acceptance pending",
+      "change": "The lower reveal widens between broken, unequal cortex edges before closing into the connected base.",
+      "remaining": "The lower tip remains too simple; fractured ledges and the violet-to-stone transition need further fitting."
+    },
+    {
+      "id": "H05",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "H06",
+      "priority": "P2",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "C01",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "C02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "C03",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "S01",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "S02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "S03",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "S04",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "S05",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "T01",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "T02",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "T03",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "T04",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "T05",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "T06",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "T07",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "P01",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "P02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "A01",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "A02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "A03",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "D01",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "D02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "D03",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "L01",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "L02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "L03",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "F01",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "F02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "G01",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "G02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "G03",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "M01",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "M02",
+      "priority": "P2",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "M03",
+      "priority": "P2",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "M04",
+      "priority": "P2",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "M05",
+      "priority": "P2",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "M06",
+      "priority": "P2",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    },
+    {
+      "id": "M07",
+      "priority": "P2",
+      "status": "open",
+      "repair_state": "not changed in this head-only pass"
+    }
+  ],
+  "open_findings": 44,
+  "closed_findings": 0,
+  "adequate_bosses": 1,
+  "acceptance": "unaccepted",
+  "percentage_forecast": null
+}

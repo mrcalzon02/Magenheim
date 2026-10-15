@@ -82,6 +82,13 @@ its incorrect silhouette and surface construction. Check hand reach and a real
 foot-contact plane; the audit found shin geometry below the named foot parts.
 The old numerical completion forecast is withdrawn.
 
+The user also rejected the first r13 attempt because its overall shape was
+still oval. Adding corners, asymmetric facets or a crooked crack to the same
+tapered shell does not repair that primary silhouette. The replacement uses an
+explicit polygonal slab perimeter with long straight shaft edges, abrupt ledges
+and triangular lower breaks. Inspect the actual solid silhouette first; the
+replacement remains a candidate, not permission to mark the head accepted.
+
 Blackwater Maw anatomy correction: the front reference depicts a tall oval gape
 between a peaked upper skull and a pointed, projecting lower jaw. Perspective
 depth is not a flared cone. Tooth beds curve toward the cheek hinges; the inside

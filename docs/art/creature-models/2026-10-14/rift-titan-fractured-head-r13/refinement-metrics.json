@@ -1,0 +1,29 @@
+{
+  "id": "underworld-boss-rift-titan-fractured-head-r13",
+  "source": "assets/models/studies/underworld-boss-rift-titan-fractured-head-r13.blend",
+  "triangles": 1800,
+  "donor_triangles": 1200,
+  "soft_cap": 1800,
+  "ratio": 1.5,
+  "previous_triangles": 1792,
+  "reduction_percent": -0.44642857142858094,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "category_triangles": {
+    "strata": 984,
+    "bindings": 48,
+    "binding-crystals": 152,
+    "torso-stone": 56,
+    "torso-ribs": 288,
+    "torso-band": 72,
+    "neck-ribs": 84,
+    "head-crystal": 116
+  },
+  "rig": "original eight-bone hierarchy and seven retained actions; inherited rest fit and arm root blends",
+  "texture_bake": "retained r10 owned spatial shaders, re-baked at 1024 and condensed to four 512px maps for the new topology",
+  "status": "unaccepted replacement after user rejected the still-oval first r13 attempt",
+  "previous_id": "underworld-boss-rift-titan-cracked-head-r12",
+  "study_height_metres": 7.0,
+  "changes": "head only: tapered shell discarded; twenty-corner extruded slab perimeter with long straight shaft edges, abrupt shoulders and triangular lower breaks; four cortex fracture points, recessed variable fault and six reseated neck ends"
+}
