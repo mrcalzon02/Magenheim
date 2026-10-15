@@ -1,0 +1,287 @@
+{
+  "revision": "r14",
+  "date": "2026-10-14",
+  "user_direction": "Fracture mainly frontal, asymmetric and receding back on the left, lined with purple crystal; head must have real side volume and neck must be three-dimensional.",
+  "findings": [
+    {
+      "id": "H01",
+      "priority": "P0",
+      "status": "open",
+      "accepted_scope": "User accepted r13 front outline; all twenty X/Z landmarks preserved exactly.",
+      "user_evidence": "Good good you've got the outer shape looking right now",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "H02",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "H03",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "r14 specific head depth/rake and asymmetric crystal lining candidate; further visual review pending"
+    },
+    {
+      "id": "H04",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "r14 specific head depth/rake and asymmetric crystal lining candidate; further visual review pending"
+    },
+    {
+      "id": "H05",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "r14 specific head depth/rake and asymmetric crystal lining candidate; further visual review pending"
+    },
+    {
+      "id": "H06",
+      "priority": "P2",
+      "status": "open",
+      "repair_state": "r14 specific head depth/rake and asymmetric crystal lining candidate; further visual review pending"
+    },
+    {
+      "id": "C01",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "C02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "C03",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "S01",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "S02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "S03",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "S04",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "S05",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "T01",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "T02",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "T03",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "T04",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "T05",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "T06",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "T07",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "P01",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "P02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "A01",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "A02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "A03",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "D01",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "D02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "D03",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "L01",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "L02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "L03",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "F01",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "F02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "G01",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "G02",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "G03",
+      "priority": "P1",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "M01",
+      "priority": "P0",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "M02",
+      "priority": "P2",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "M03",
+      "priority": "P2",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "M04",
+      "priority": "P2",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "M05",
+      "priority": "P2",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "M06",
+      "priority": "P2",
+      "status": "open",
+      "repair_state": "preserved; no new acceptance inferred"
+    },
+    {
+      "id": "M07",
+      "priority": "P2",
+      "status": "open",
+      "repair_state": "r14 specific head depth/rake and asymmetric crystal lining candidate; further visual review pending"
+    }
+  ],
+  "open_findings": 44,
+  "closed_findings": 0,
+  "adequate_bosses": 1,
+  "accepted_scope": "r13 frontal head outline only",
+  "art_acceptance": "r14 pending; boss remains unaccepted",
+  "numerical_forecast": null,
+  "user_followups": [
+    {
+      "id": "N01",
+      "finding": "Neck was a near-planar array of iron bars",
+      "repair": "Six bars distributed across front/back arcs with complete collar/head sections",
+      "status": "r14 candidate; visual acceptance pending"
+    }
+  ]
+}

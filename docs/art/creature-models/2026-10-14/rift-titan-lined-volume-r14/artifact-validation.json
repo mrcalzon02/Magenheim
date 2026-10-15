@@ -1,0 +1,9 @@
+{
+  "result": "PASS",
+  "links_exist": true,
+  "previous_source_hash_verified": true,
+  "source_sha256": "2668bcf068512cef163eba23ecdbf7ac1c6939f383c536cbdfa656a35089c64c",
+  "open_findings": 44,
+  "accepted_scope": "r13 front outline only",
+  "browser_visual_validation": "not performed; local-file browser policy respected"
+}

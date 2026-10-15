@@ -15,6 +15,13 @@ the coarse fracture hierarchy and cloudy surface still fall short. Exact-camera
 r12/r13 comparisons are included. The body geometry is preserved, and the actor
 now uses the full 1,800-triangle soft cap. This does not restore the old forecast.
 
+The user subsequently accepted r13's frontal outline and requested corrections
+to the asymmetric, purple-lined fracture, slab-like head profile and flat neck.
+r14 (`2026-10-14/rift-titan-lined-volume-r14/REPAIR.md`) preserves all twenty
+front landmarks, rebuilds head depth/backward rake and left-receding lining,
+and distributes the neck bars across front/back arcs. It remains an unaccepted
+candidate at 1,800 triangles; the overall completion forecast stays withdrawn.
+
 The estimates and checkpoints below are historical context, not an active
 countdown or a promise of 85% matching. Future passes must identify the finding
 IDs they address, show those same regions before/after, retain unresolved items
@@ -22,7 +29,7 @@ and reject obvious shape regressions before treating file validation as progress
 Re-estimation requires a credible improvement history after primary discrepancies
 are corrected. No such basis currently exists.
 
-Initial estimate recorded 2026-10-13 after r10; latest repair checkpoint is r13 on
+Initial estimate recorded 2026-10-13 after r10; latest repair checkpoint is r14 on
 2026-10-14. The user has corrected the head interpretation to one continuous
 crystal with a recessed beveled crack. Rift Titan is not adequately reworked and is not claimed
 to have reached 85% concept fidelity. The adequate boss tally remains 1/6.

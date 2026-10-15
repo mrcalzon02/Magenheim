@@ -1,0 +1,57 @@
+{
+  "result": "PASS",
+  "approved_front_outline_landmarks": 20,
+  "max_front_xz_error_metres": 0,
+  "tip_recession_from_base_metres": 0.484761118888855,
+  "previous_head_volume_cubic_metres": 0.24619680482404283,
+  "head_volume_cubic_metres": 0.4500628256234146,
+  "volume_ratio": 1.8280611965905693,
+  "left_lined_wall_triangles": 12,
+  "lined_floor_triangles": 12,
+  "lining_nominal_uv_texel_area": 262.15428528626217,
+  "neck_middle_centers": [
+    [
+      -0.131329745054245,
+      0.928330659866333,
+      4.892991065979004
+    ],
+    [
+      6.208817349140361e-10,
+      0.9335626363754272,
+      4.892991542816162
+    ],
+    [
+      0.1313297301530838,
+      0.9283307790756226,
+      4.892991542816162
+    ],
+    [
+      -0.1313297301530838,
+      0.29113662242889404,
+      4.892991542816162
+    ],
+    [
+      6.208817349140361e-10,
+      0.2859047055244446,
+      4.892991065979004
+    ],
+    [
+      0.1313297152519226,
+      0.29113659262657166,
+      4.892991542816162
+    ]
+  ],
+  "neck_middle_extent_metres": [
+    0.2626594752073288,
+    0.6476579308509827,
+    4.76837158203125e-07
+  ],
+  "neck_coordinate_singular_values": [
+    3.3812242382908893,
+    1.090516439164649,
+    0.821740565344968
+  ],
+  "neck_closing_samples": 3024,
+  "poses": 36,
+  "scope": "saved front-shape preservation, increased head volume, left-receding violet lining and genuinely noncoplanar neck geometry; art and native acceptance remain separate"
+}

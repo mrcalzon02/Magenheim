@@ -1,0 +1,6 @@
+{
+  "source": "assets/models/studies/underworld-boss-rift-titan-fractured-head-r13.blend",
+  "source_sha256": "9fa5ea63f90eeb89e54e493e22e71229023e7c24d9b1c76d400c5c2950a788ec",
+  "cameras": "exact r14 camera-layout.json transforms and ortho scales",
+  "scope": "actual saved r13 source; neither source file modified"
+}

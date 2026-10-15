@@ -89,6 +89,16 @@ explicit polygonal slab perimeter with long straight shaft edges, abrupt ledges
 and triangular lower breaks. Inspect the actual solid silhouette first; the
 replacement remains a candidate, not permission to mark the head accepted.
 
+The user accepted r13's frontal outline, then specified that the fracture is
+predominantly frontal, asymmetric and recedes toward the back on the left side,
+with purple crystal lining the fracture. Preserve that approved front outline
+while correcting its volume: the side reference has a volumetric crystal head,
+whose upper point rakes back from the lower point. A forward-pointing extrusion
+of the front silhouette is incorrect. Review true and oblique left profiles.
+The neck bars must occupy front/back depth around the neck, with both ends
+seated into their hosts; a near-planar row of bars is incorrect. r14 is a
+candidate for these corrections; it does not establish full head acceptance.
+
 Blackwater Maw anatomy correction: the front reference depicts a tall oval gape
 between a peaked upper skull and a pointed, projecting lower jaw. Perspective
 depth is not a flared cone. Tooth beds curve toward the cheek hinges; the inside
