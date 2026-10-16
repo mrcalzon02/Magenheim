@@ -45,7 +45,7 @@ files=[source,out/(ID+'.glb'),(out/sheet).resolve(),*out.glob('*.png'),*(out/'be
 report=dict(result='PASS',source_sha256=source_hash,all_gallery_links_exist=True,historical_sources_and_cameras_verified=True,art_acceptance=False,native_acceptance=False,adequate_bosses=1,total_bosses=6,visual_inspection='actual original front/side and saved front/side/clay/head/action/hand/foot/crest images inspected',hashes={p.relative_to(ROOT).as_posix():sha(p) for p in files})
 (out/'artifact-validation.json').write_text(json.dumps(report,indent=2)+'\n')
 index=campaign/'gallery.html';text=index.read_text(encoding='utf-8');text=re.sub(r'<tr><td><a href="rift-titan-broken-strata-r18/gallery.html".*?</tr>','',text)
-text=text.replace('<table><tr><th>Review</th><th>Triangles</th></tr>','<table><tr><th>Review</th><th>Triangles</th></tr>\n<tr><td><a href="rift-titan-broken-strata-r18/gallery.html">Rift Titan r18 — broken stone forms</a></td><td>1,800</td></tr>');index.write_text(text,encoding='utf-8')
+text=text.replace('<table><tr><th>Review</th><th>Triangles</th></tr>','<table><tr><th>Review</th><th>Triangles</th></tr>\n<tr><td><a href="rift-titan-broken-strata-r18/gallery.html">Rift Titan r18 — broken stone forms</a></td><td>1,800</td></tr>');index.write_text(re.sub(r'\n{2,}','\n',text),encoding='utf-8')
 instructions=ROOT/'INSTRUCTIONS.md';lines=instructions.read_text(encoding='utf-8').splitlines()
 for i,line in enumerate(lines):
     if line.startswith('| The Rift Titan |'):
