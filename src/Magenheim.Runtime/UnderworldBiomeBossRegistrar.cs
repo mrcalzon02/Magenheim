@@ -10,10 +10,19 @@ using UnityEngine;
 
 namespace Magenheim.Runtime;
 
-/// <summary>Six biome encounters reuse the biome's authored apex anatomy and native AI/loot.</summary>
+/// <summary>Biome encounters retain native AI/loot and use dedicated refined art where available.</summary>
 internal static class UnderworldBiomeBossRegistrar
 {
-    internal sealed record Encounter(string Trophy, string Name, string Chassis, float Scale, float Health, float Damage, string Arena);
+    internal sealed record Encounter(string Trophy, string Name, string Chassis, float Scale, float Health, float Damage, string Arena)
+    {
+        internal string? RefinedModelId => Trophy switch
+        {
+            "FirstBloom" => "underworld-boss-first-bloom-refined",
+            "RiftTitan" => "underworld-boss-rift-titan-refined",
+            "CarrionCrown" => "underworld-boss-carrion-crown-refined",
+            _ => null,
+        };
+    }
     internal static readonly IReadOnlyList<Encounter> Encounters = new[]
     {
         new Encounter("FirstBloom", "The First Bloom", "Crowncap Brute", 1.35f, 4800f, 1.65f, "first-bloom"),
@@ -74,6 +83,16 @@ internal static class UnderworldBiomeBossRegistrar
                 scaling.Configure(encounter.Damage, 140f);
                 if (species.AuthoredModelId is null || !ModelAssets.Exists(species.AuthoredModelId))
                     throw new InvalidOperationException("Biome encounter is missing authored apex anatomy: " + encounter.Name);
+                if (encounter.RefinedModelId is string refined)
+                {
+                    if (!ModelAssets.Exists(refined)) throw new InvalidOperationException("Missing refined boss model: " + refined);
+                    // The ordinary apex clone already owns a presentation hierarchy. Remove only
+                    // that hierarchy, retaining the native Animator, attacks, sockets and colliders.
+                    foreach (var previous in clone.GetComponentsInChildren<RigidCreaturePresentationDriver>(true))
+                        UnityEngine.Object.DestroyImmediate(previous.gameObject);
+                    var detail = RigidCreatureSegmentBinder.Apply(clone, refined, species.Scale * encounter.Scale);
+                    _log?.LogInfo(encounter.Name + " uses " + refined + ": " + detail);
+                }
 
                 var config = new CreatureConfig { Name = encounter.Name };
                 config.AddDropConfig(new DropConfig

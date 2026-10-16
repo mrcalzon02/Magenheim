@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Renders an authored rigid-segment creature body while Valheim's donor creature remains the
+/// Renders authored weighted skins or rigid segments while Valheim's donor creature remains the
 /// invisible gameplay chassis. AI, hit boxes, attacks, networking, persistence and pathing stay on
 /// the donor. Magenheim owns the visible segmented anatomy and its presentation animation.
 /// </summary>
@@ -25,7 +25,8 @@ internal static class RigidCreatureSegmentBinder
 
         var rig = ModelAssets.CreatureRig(modelId)
             ?? throw new InvalidOperationException(modelId + " declares no creatureRig payload.");
-        if (!string.Equals((string?)rig["kind"], "rigid-segment-creature-v1", StringComparison.Ordinal))
+        var weighted = string.Equals((string?)rig["kind"], "weighted-creature-v1", StringComparison.Ordinal);
+        if (!weighted && !string.Equals((string?)rig["kind"], "rigid-segment-creature-v1", StringComparison.Ordinal))
             throw new InvalidOperationException(
                 modelId + " uses unsupported creature rig kind '" + (string?)rig["kind"] + "'.");
 
@@ -49,6 +50,30 @@ internal static class RigidCreatureSegmentBinder
         var restScale = new Dictionary<string, Vector3>(StringComparer.Ordinal);
         var skeletonBuilt = false;
         Transform? visualRoot = null;
+
+        if (weighted)
+        {
+            if ((string?)rig["poseSpace"] != "parent-local-absolute")
+                throw new InvalidOperationException(modelId + " has unsupported weighted animation coordinates.");
+            var weightedCharacter = prefab.GetComponent<Character>()
+                ?? throw new InvalidOperationException(prefab.name + " has no Character for creature visual driving.");
+            var weightedRoot = new GameObject("magenheim." + modelId + ".visual") { layer = prefab.layer };
+            weightedRoot.transform.SetParent(prefab.transform, false);
+            weightedRoot.transform.localScale = Vector3.one * (1f / chassisScale);
+            try
+            {
+                BuildSkeleton(weightedRoot.transform, specs, transforms, rest, restPosition, restScale, modelId);
+                var ordered = ((JArray)rig["bones"]!).Select(row => transforms[(string)row["name"]!]).ToArray();
+                ModelAssets.LoadCreatureSkin(prefab, modelId, weightedRoot.transform, ordered);
+                var weightedDriver = weightedRoot.AddComponent<RigidCreaturePresentationDriver>();
+                weightedDriver.ModelId = modelId;
+                weightedDriver.Bind(weightedCharacter, transforms, rest, restPosition, restScale, clips, fps, absolutePoses: true);
+                foreach (var renderer in donorRenderers) if (renderer) renderer.enabled = false;
+                foreach (var lod in prefab.GetComponentsInChildren<LODGroup>(true)) lod.enabled = false;
+                return ordered.Length + " weighted bones / " + clips.Count + " authored action(s) / one skinned renderer";
+            }
+            catch { UnityEngine.Object.DestroyImmediate(weightedRoot); throw; }
+        }
 
         Action<string, Transform> arrange = (path, part) =>
         {
@@ -124,7 +149,8 @@ internal static class RigidCreatureSegmentBinder
         if (bones.Count != specs.Count)
             throw new InvalidOperationException("Spawned creature clone lost authored bones: " + modelId);
         driver.Bind(driver.GetComponentInParent<Character>(), bones, rest, positions, scales,
-            ParseActions(rig, specs, modelId), (float?)rig["fps"] ?? 24f);
+            ParseActions(rig, specs, modelId), (float?)rig["fps"] ?? 24f,
+            absolutePoses: (string?)rig["poseSpace"] == "parent-local-absolute");
     }
 
     private static IReadOnlyDictionary<string, BoneSpec> ParseBones(
@@ -221,6 +247,8 @@ internal static class RigidCreatureSegmentBinder
                             modelId + " action '" + name + "' has non-finite/invalid pose for '" + property.Name + "'.");
                     frame[property.Name] = new BonePose(q.normalized, p, s);
                 }
+                if ((string?)rig["poseSpace"] == "parent-local-absolute" && frame.Count != bones.Count)
+                    throw new InvalidOperationException(modelId + " absolute action omits skeleton bones: " + name);
                 frames.Add(frame);
             }
 
@@ -364,6 +392,7 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
     private IReadOnlyDictionary<string, Vector3> _restScale = null!;
     private IReadOnlyList<RigidCreatureSegmentBinder.ActionClip> _clips = null!;
     private float _fps;
+    private bool _absolutePoses;
     private RigidCreatureSegmentBinder.ActionClip? _current;
     private float _startedAt;
     private float _lastHealth;
@@ -378,7 +407,8 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
         IReadOnlyDictionary<string, Vector3> restPosition,
         IReadOnlyDictionary<string, Vector3> restScale,
         IReadOnlyList<RigidCreatureSegmentBinder.ActionClip> clips,
-        float fps)
+        float fps,
+        bool absolutePoses = false)
     {
         _character = character ?? throw new ArgumentNullException(nameof(character));
         _bones = bones ?? throw new ArgumentNullException(nameof(bones));
@@ -387,6 +417,7 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
         _restScale = restScale ?? throw new ArgumentNullException(nameof(restScale));
         _clips = clips ?? throw new ArgumentNullException(nameof(clips));
         _fps = fps;
+        _absolutePoses = absolutePoses;
         _humanoid = character.GetComponent<Humanoid>();
         _body = character.GetComponent<Rigidbody>();
         // Registered prefab prototypes have no initialized Character.m_nview yet.
@@ -559,9 +590,9 @@ internal sealed class RigidCreaturePresentationDriver : MonoBehaviour
             var positionB = b?.Position ?? Vector3.zero;
             var scaleA = a?.Scale ?? Vector3.one;
             var scaleB = b?.Scale ?? Vector3.one;
-            pair.Value.localRotation = rest * Quaternion.Slerp(rotationA, rotationB, amount);
-            pair.Value.localPosition = basePosition + Vector3.Lerp(positionA, positionB, amount);
-            pair.Value.localScale = Vector3.Scale(baseScale, Vector3.Lerp(scaleA, scaleB, amount));
+            pair.Value.localRotation = (_absolutePoses ? Quaternion.identity : rest) * Quaternion.Slerp(rotationA, rotationB, amount);
+            pair.Value.localPosition = (_absolutePoses ? Vector3.zero : basePosition) + Vector3.Lerp(positionA, positionB, amount);
+            pair.Value.localScale = Vector3.Scale(_absolutePoses ? Vector3.one : baseScale, Vector3.Lerp(scaleA, scaleB, amount));
         }
     }
 

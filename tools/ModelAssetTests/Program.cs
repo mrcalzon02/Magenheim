@@ -90,6 +90,34 @@ foreach(var id in new[]{"underworld-descent-monolith","underworld-dais"})
  if(ModelAssets.LoadSingleMaterial(id).shader?.name!="Custom/StaticRock") throw new Exception("Single-mesh structure bypassed native material template.");
 foreach(var file in Directory.GetFiles(Path.Combine(AppContext.BaseDirectory,"assets/models/runtime"),"*.model.json")) {
  var id=Path.GetFileName(file).Replace(".model.json","");
+ var document=JObject.Parse(File.ReadAllText(file));
+ if((string?)document["creatureRig"]?["kind"]=="weighted-creature-v1")
+ {
+  (GameObject Host,GameObject Root,Transform[] Bones) WeightedHost()
+  {
+   var host=new GameObject(id);host.AddComponent<MeshRenderer>().sharedMaterial=new Material();
+   var root=new GameObject("weighted visual");root.transform.SetParent(host.transform);
+   var bones=((JArray)document["creatureRig"]!["bones"]!).Select(row=>{
+    var go=new GameObject("magenheim.creature-bone."+(string)row["name"]!);go.transform.SetParent(root.transform);
+    go.transform.localPosition=ModelAssets.Vector(row["head"]!);return go.transform;
+   }).ToArray();return(host,root,bones);
+  }
+  var weightedFirst=WeightedHost();var weightedSecond=WeightedHost();
+  ModelAssets.LoadCreatureSkin(weightedFirst.Host,id,weightedFirst.Root.transform,weightedFirst.Bones);
+  ModelAssets.LoadCreatureSkin(weightedSecond.Host,id,weightedSecond.Root.transform,weightedSecond.Bones);
+  var weightedA=weightedFirst.Root.GetComponentsInChildren<SkinnedMeshRenderer>(true).Single();var weightedB=weightedSecond.Root.GetComponentsInChildren<SkinnedMeshRenderer>(true).Single();
+  if(!ReferenceEquals(weightedA.sharedMesh,weightedB.sharedMesh)||weightedA.bones.Any(bone=>!bone.IsChildOf(weightedFirst.Root.transform))||weightedB.bones.Any(bone=>!bone.IsChildOf(weightedSecond.Root.transform)))throw new Exception("Weighted creature cache or instance bone binding failed: "+id);
+  if(weightedA.sharedMesh!.boneWeights.Length!=weightedA.sharedMesh.vertices.Length||weightedA.sharedMesh.bindposes.Length!=weightedFirst.Bones.Length||weightedA.rootBone!=weightedFirst.Root.transform||weightedA.localBounds.size.y<=0)throw new Exception("Weighted creature lost skin, bind poses or animated bounds: "+id);
+  if(weightedA.sharedMaterial!.shader!.name!="Custom/StaticRock"||weightedFirst.Root.GetComponentsInChildren<MeshCollider>(true).Length!=0)throw new Exception("Weighted creature shader or native collision ownership changed: "+id);
+  if(weightedA.sharedMesh.boneWeights.Any(w=>MathF.Abs(w.weight0+w.weight1-1)>.0001f||w.weight2!=0||w.weight3!=0))throw new Exception("Weighted creature lost its two-influence normalization: "+id);
+  if(!weightedA.sharedMesh.boneWeights.Any(w=>w.weight1>0))throw new Exception("Weighted creature lost all blended joints: "+id);
+  var rejected=false;try{ModelAssets.Load(weightedFirst.Host,id);}catch(InvalidOperationException e)when(e.Message.Contains("skinned presentation")){rejected=true;}
+  if(!rejected)throw new Exception("Weighted creature silently admitted as a static model: "+id);
+  var wrong=WeightedHost();rejected=false;
+  try{ModelAssets.LoadCreatureSkin(wrong.Host,id,wrong.Root.transform,wrong.Bones.Reverse().ToArray());}catch(InvalidDataException){rejected=true;}
+  if(!rejected||wrong.Root.GetComponentsInChildren<SkinnedMeshRenderer>(true).Length!=0)throw new Exception("Wrong bone order partially admitted: "+id);
+  Console.WriteLine("PASS: "+id+" imported twice with shared mesh, instance bones, blended joints, native shader and animated bounds.");count++;continue;
+ }
  GameObject Host(){var h=new GameObject(id);h.AddComponent<Character>();h.AddComponent<ZNetView>();h.AddComponent<MeshRenderer>().sharedMaterial=new Material();var b=new GameObject("body");b.transform.SetParent(h.transform);h.AddComponent<Turret>().m_turretBody=b;return h;}
  var first=Host();var second=Host();ModelAssets.Load(first,id);ModelAssets.Load(second,id);
  foreach(var renderer in first.GetComponentsInChildren<MeshRenderer>(true).Where(r=>r.enabled))

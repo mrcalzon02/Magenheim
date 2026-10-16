@@ -273,7 +273,7 @@ public class Renderer:Component
     public bool enabled=true;public Material? sharedMaterial;public Material[] sharedMaterials=Array.Empty<Material>();public bool receiveShadows=true;public UnityEngine.Rendering.ShadowCastingMode shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.On;
 }
 public class MeshRenderer:Renderer{}
-public class SkinnedMeshRenderer:Renderer{public Mesh? sharedMesh;public Transform[] bones=Array.Empty<Transform>();public Transform? rootBone;}
+public class SkinnedMeshRenderer:Renderer{public Mesh? sharedMesh;public Transform[] bones=Array.Empty<Transform>();public Transform? rootBone;public Bounds localBounds;}
 public class ParticleSystemRenderer:Renderer{}
 public struct LOD { public float screenRelativeTransitionHeight; public Renderer[] renderers;
  public LOD(float height,Renderer[] value){screenRelativeTransitionHeight=height;renderers=value;} }

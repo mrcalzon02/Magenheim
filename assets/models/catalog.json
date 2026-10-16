@@ -4152,6 +4152,42 @@
     "glb_sha256": "193ed27040e81642eb29311de97543ff2b77828d53002e85e451ad68aab932b0"
   },
   {
+    "id": "underworld-boss-carrion-crown-refined",
+    "parts": 1,
+    "triangles": 2046,
+    "materials": 1,
+    "source": "studies/underworld-boss-carrion-crown-anatomy-r3.blend",
+    "glb": "glb/underworld-boss-carrion-crown-refined.glb",
+    "runtime": "runtime/underworld-boss-carrion-crown-refined.model.json",
+    "source_sha256": "1527eb91e57e5450f547ac87cb4e94efd73845b577adf0cc48c575abe5542d7e",
+    "runtime_sha256": "c984d15ec662fa74fbee78875d45dd80f90a06b415e880305631c32685905dae",
+    "glb_sha256": "af39eb646a2c7bc4a26479558b24b68038db54b01c46edffcf214fb13dfd1358"
+  },
+  {
+    "id": "underworld-boss-first-bloom-refined",
+    "parts": 1,
+    "triangles": 8846,
+    "materials": 1,
+    "source": "studies/underworld-boss-first-bloom-arm-seams-r22.blend",
+    "glb": "glb/underworld-boss-first-bloom-refined.glb",
+    "runtime": "runtime/underworld-boss-first-bloom-refined.model.json",
+    "source_sha256": "a89ffd7b6a48d04f3e4e488d5306fc204e94d5ea2669173cb315a7265f4a429d",
+    "runtime_sha256": "c8d4d835803cf7c1c62065846796f211735dd624455ad40c65587fc7b35868d5",
+    "glb_sha256": "938802e36fce9e43589e7d54117e9a7aa455338e6c6ce79b90efdcd07a601ebf"
+  },
+  {
+    "id": "underworld-boss-rift-titan-refined",
+    "parts": 1,
+    "triangles": 1800,
+    "materials": 1,
+    "source": "studies/underworld-boss-rift-titan-broken-strata-r18.blend",
+    "glb": "glb/underworld-boss-rift-titan-refined.glb",
+    "runtime": "runtime/underworld-boss-rift-titan-refined.model.json",
+    "source_sha256": "df85bf6cd829d769f29007a0c6bbf3059fd64c87275f476f8ff3420f7b0094d9",
+    "runtime_sha256": "4f2a675b7a483e1d773cd97a947b5b234c825df2e0e7c427661b905be35b8850",
+    "glb_sha256": "da040955ad39c619d75e6a47150eb43b7a7ca616bf1ec49a87cd185d324ad006"
+  },
+  {
     "id": "underworld-creature-abyss-shellback",
     "parts": 64,
     "triangles": 50088,
@@ -4267,7 +4303,7 @@
     "source": "source/underworld-creature-corpse-orchard.blend",
     "glb": "glb/underworld-creature-corpse-orchard.glb",
     "runtime": "runtime/underworld-creature-corpse-orchard.model.json",
-    "source_sha256": "f0d92e3f4dc76ef55bb131b06369250fc042eacb3f446c25e21dbe145adc3128",
+    "source_sha256": "e3c31e67629081bd6db9a34d2f9d2ce5b1f3cd8929b9c93a78187c3a465d5d44",
     "runtime_sha256": "bf11203f078ecd8bdc25975bb591fde8cfdfdbc74b08578bb04f849ab507cd7e",
     "glb_sha256": "5f43da74841e6d2fa2d3a8fd0522b4323b9ad927142bdd8de9bd9f3eb290f305"
   },
@@ -4279,7 +4315,7 @@
     "source": "source/underworld-creature-crowncap-brute.blend",
     "glb": "glb/underworld-creature-crowncap-brute.glb",
     "runtime": "runtime/underworld-creature-crowncap-brute.model.json",
-    "source_sha256": "03d0fedbf6522509b5b455d3198d898473178ca65ec71917ac0949258dd3bf09",
+    "source_sha256": "6f0581f5caf44f1eb82276af9b1a122b6dca4fe7f6509cfc3f492152fd1be183",
     "runtime_sha256": "f7b07245e97baf73ae29f2e3b4b3ba59503a4e094a9a99fb405556830ed0fd2f",
     "glb_sha256": "5efc761c8b9629f7bb2c283c16e4265ca2fe662a6a407d0152c1cd12637fa3c8"
   },
@@ -4291,7 +4327,7 @@
     "source": "source/underworld-creature-cryolith-guardian.blend",
     "glb": "glb/underworld-creature-cryolith-guardian.glb",
     "runtime": "runtime/underworld-creature-cryolith-guardian.model.json",
-    "source_sha256": "d22cdcd413b623ad72dbeda67e448f2bb0bdb694d81802949b2e9b8716861deb",
+    "source_sha256": "04155e012f33bd651173d19819d4875fbcfedcd135cd12e5c3ef4c52aea7668b",
     "runtime_sha256": "0ec9ffd2dcffb606684876df1d9947c78d3caa1e73961d3b129d5f0634236c44",
     "glb_sha256": "f085a83b95d9cb1b5e833c79be0eaf338ef112d7fd4e383c05787ffe940d02cd"
   },
@@ -4315,7 +4351,7 @@
     "source": "source/underworld-creature-deep-hunter.blend",
     "glb": "glb/underworld-creature-deep-hunter.glb",
     "runtime": "runtime/underworld-creature-deep-hunter.model.json",
-    "source_sha256": "e2d1e9b07404997038215ae5290da572bab32b0a4748e30e3aa04a76dabf1503",
+    "source_sha256": "c55386b9db43eb4f977937aa6f8e1cbf19e4e8ff7da955751c57e029d0eabfd7",
     "runtime_sha256": "68c2af2bf973b51fa47a559e6e814a6be37a3d8a0fc82d7d1e91b1dff80dfe06",
     "glb_sha256": "67a4dca41e13650550d9cc05c2071bea52eeaa4cc6e2970607475a97cb0fa158"
   },
@@ -4363,7 +4399,7 @@
     "source": "source/underworld-creature-furnace-golem.blend",
     "glb": "glb/underworld-creature-furnace-golem.glb",
     "runtime": "runtime/underworld-creature-furnace-golem.model.json",
-    "source_sha256": "71ee55bf7e6c9abbccddbeb6427b3b361f82496c584a1f5e6b302c184b8e810c",
+    "source_sha256": "8a594f8cb35ca9caa9978a853e9cd2bc13dcab349565538dc02ef2c730e23813",
     "runtime_sha256": "67811a752cd14b454d124971b01f0cb3aaba531252537ea5cbedacdad57901cb",
     "glb_sha256": "5f3a161369fb4ab97ce6f83d155eb52b8849c33467bb2ca7416a8c8c1718af62"
   },
@@ -4519,7 +4555,7 @@
     "source": "source/underworld-creature-rift-colossus.blend",
     "glb": "glb/underworld-creature-rift-colossus.glb",
     "runtime": "runtime/underworld-creature-rift-colossus.model.json",
-    "source_sha256": "ad48ad89d25b000697078b81a21de086a5290863d54016e1efcee52066f714ce",
+    "source_sha256": "84539529791a31f4204633ef17ea6635a3a6179e5f633d33e7b90e6aa5fb095d",
     "runtime_sha256": "c53e99eea71504b383e88287a4d82c281e2a56d99cf4de75bc18ce69863c2b02",
     "glb_sha256": "ca5033df6a04bd2a14552443dac690eab6c121b410267b68690ea5da975ba306"
   },

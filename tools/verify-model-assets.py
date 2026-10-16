@@ -28,13 +28,19 @@ for file in sorted((assets/'runtime').glob('*.model.json')):
  id=file.name.removesuffix('.model.json')
  if selected and id not in selected: continue
  found.add(id)
- source=assets/'source'/(id+'.blend');glb=assets/'glb'/(id+'.glb')
+ doc=json.loads(file.read_text())
+ source=(assets/doc.get('source','source/'+id+'.blend')).resolve();glb=assets/'glb'/(id+'.glb')
+ assert assets.resolve() in source.parents,('Source path escapes model assets',id)
  assert source.exists() and glb.exists(),f'Missing editable/interchange model: {id}'
  # Compressed Blender files use Zstandard; uncompressed files begin with BLENDER.
  head=source.read_bytes()[:7];assert head.startswith(b'BLENDER') or head.startswith(bytes.fromhex('28b52ffd')),f'Invalid Blender file: {id}'
- doc=json.loads(file.read_text());assert doc['parts'],id
+ assert doc['parts'],id
+ weighted=doc.get('creatureRig',{}).get('kind')=='weighted-creature-v1'
+ if weighted:
+  assert doc['source_sha256']==hashlib.sha256(source.read_bytes()).hexdigest(),(id,'Refined study/export drift')
+  assert len(doc['parts'])==1 and doc['creatureRig'].get('poseSpace')=='parent-local-absolute',(id,'Weighted contract drift')
  if 'creatureRig' in doc:
-  rig=doc['creatureRig'];assert rig.get('kind')=='rigid-segment-creature-v1',(id,'bad creature rig kind')
+  rig=doc['creatureRig'];assert rig.get('kind') in ('rigid-segment-creature-v1','weighted-creature-v1'),(id,'bad creature rig kind')
   assert math.isfinite(rig.get('fps',0)) and 0<rig['fps']<=240,(id,'bad creature rig fps')
   bones=rig.get('bones',[]);assert bones,(id,'creature rig has no bones')
   bone_names=[b.get('name') for b in bones]
@@ -54,6 +60,7 @@ for file in sorted((assets/'runtime').glob('*.model.json')):
    for sample in samples:
     assert isinstance(sample,dict),(id,'creature action sample is not an object',action.get('name'))
     assert set(sample)<=bone_set,(id,'creature action animates unknown bone',action.get('name'))
+    if weighted:assert set(sample)==bone_set,(id,'Absolute creature action omits bones',action.get('name'))
     for bone_name,pose in sample.items():
      assert isinstance(pose,dict),(id,'invalid creature action pose',action.get('name'),bone_name)
      quat=pose.get('rotation');position=pose.get('position');scale=pose.get('scale')
@@ -62,12 +69,20 @@ for file in sorted((assets/'runtime').glob('*.model.json')):
      assert isinstance(scale,list) and len(scale)==3 and all(math.isfinite(x) and x>0 for x in scale),(id,'invalid creature action scale',action.get('name'),bone_name)
  triangles=0;materials=set();names=set()
  for part in doc['parts']:
-  if 'creatureRig' in doc:
+  if 'creatureRig' in doc and not weighted:
    path=part.get('path','')
    assert path.startswith('creaturebone:'),(id,'creature part is not bone-bound',part.get('name'))
    bound=path[len('creaturebone:'):].split('/',1)[0]
    assert bound in bone_set,(id,'creature part binds unknown bone',part.get('name'),bound)
   vertices=part['vertices'];indices=part['triangles'];uv=part['uv'];normals=part['normals']
+  if weighted:
+   assert part['path']=='creatureskin' and not part.get('collider') and not part.get('crystal'),(id,'Weighted part must retain native collision')
+   skin=part.get('skinWeights',[]);assert len(skin)==len(vertices),(id,'Skin stream mismatch')
+   for row in skin:
+    assert 1<=len(row)<=2 and abs(sum(w for _,w in row)-1)<1e-5,(id,'Invalid blended skin weights')
+    assert all(isinstance(b,int) and 0<=b<len(bone_names) and math.isfinite(w) and w>0 for b,w in row),(id,'Invalid weighted bone')
+   for key in ('texture','normalTexture','metallicGlossTexture','emissionTexture'):
+    path=assets/'textures'/part['material'][key];png=path.read_bytes();assert struct.unpack('>II',png[16:24])==(512,512),(id,key,'Atlas cost drift')
   assert vertices and len(indices)%3==0 and len(vertices)==len(uv)==len(normals),id
   assert part['name'] not in names,('Duplicate object',id,part['name']);names.add(part['name'])
   assert all(0<=i<len(vertices) for i in indices),id
@@ -112,7 +127,7 @@ for file in sorted((assets/'runtime').glob('*.model.json')):
  for m in gltf['meshes']:
   for primitive in m['primitives']:
    for key in ('POSITION','NORMAL','TEXCOORD_0'):assert key in primitive['attributes'],(id,key)
- rows.append(dict(id=id,parts=len(doc['parts']),triangles=triangles,materials=len(materials),source='source/'+source.name,glb='glb/'+glb.name,runtime='runtime/'+file.name,source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),runtime_sha256=hashlib.sha256(file.read_bytes()).hexdigest(),glb_sha256=hashlib.sha256(data).hexdigest()))
+ rows.append(dict(id=id,parts=len(doc['parts']),triangles=triangles,materials=len(materials),source=source.relative_to(assets.resolve()).as_posix(),glb='glb/'+glb.name,runtime='runtime/'+file.name,source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),runtime_sha256=hashlib.sha256(file.read_bytes()).hexdigest(),glb_sha256=hashlib.sha256(data).hexdigest()))
 if selected:
  missing=sorted(selected-found)
  assert not missing,('Requested model(s) have no runtime payload',missing)

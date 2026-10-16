@@ -221,6 +221,8 @@ internal static class ModelAssets
         if (!source) source = new Material(ResolveSurfaceShader());
         source = Uncouple(source, id);
         var document = Document(id);
+        if ((string?)document["creatureRig"]?["kind"] == "weighted-creature-v1")
+            throw new InvalidOperationException("Weighted creature requires its skinned presentation binder: " + id);
         // Load and validate every mesh before changing the host's visible state.
         var loaded = ((JArray)document["parts"]!).Select((p, i) => new { Data = p, Mesh = LoadMesh(id + "/" + i, p), Material = LoadMaterial(id + "/" + i, p["material"]!, source!) }).ToArray();
         foreach(var entry in loaded) { var data=(JObject)entry.Data; data.Remove("vertices");data.Remove("normals");data.Remove("uv");data.Remove("triangles"); }
@@ -338,19 +340,58 @@ internal static class ModelAssets
         catch { UnityEngine.Object.DestroyImmediate(root); throw; }
     }
 
-    private static Mesh LoadSkinnedMesh(string key, JToken part, Transform[] bones, Transform meshTransform)
+    internal static void LoadCreatureSkin(GameObject prefab, string id, Transform visualRoot, Transform[] bones)
     {
+        var document = Document(id);
+        var rig = document["creatureRig"];
+        if ((string?)rig?["kind"] != "weighted-creature-v1" ||
+            !(rig["bones"] is JArray names) || names.Count != bones.Length ||
+            names.Where((row, i) => bones[i].gameObject.name != "magenheim.creature-bone." + (string?)row["name"]).Any())
+            throw new InvalidDataException("Creature skin and skeleton order disagree: " + id);
+        var source = CreateSurfaceMaterial();
+        var parts = (JArray)document["parts"]!;
+        if (parts.Count != 1) throw new InvalidDataException("Refined creature must use one skinned surface: " + id);
+        var bounds = rig["animatedBounds"] ?? throw new InvalidDataException("Creature has no animated bounds: " + id);
+        var center = Vector(bounds["center"]!); var size = Vector(bounds["size"]!);
+        if (!Finite(center.x) || !Finite(center.y) || !Finite(center.z) ||
+            !Finite(size.x) || !Finite(size.y) || !Finite(size.z) || size.x <= 0 || size.y <= 0 || size.z <= 0)
+            throw new InvalidDataException("Creature animated bounds are invalid: " + id);
+        var loaded = parts.Select((data, i) => new
+        {
+            Data = data,
+            Mesh = LoadSkinnedMesh(id + "/creature-skin/" + i, data, bones, visualRoot, cache: true, maximumInfluences: 2),
+            Material = LoadMaterial(id + "/creature-skin/" + i, data["material"]!, source),
+        }).ToArray();
+        foreach (var entry in loaded)
+        {
+            var go = new GameObject((string?)entry.Data["name"] ?? "skin") { layer = prefab.layer };
+            go.transform.SetParent(visualRoot, false);
+            var renderer = go.AddComponent<SkinnedMeshRenderer>();
+            renderer.sharedMesh = entry.Mesh; renderer.sharedMaterial = entry.Material;
+            renderer.bones = bones; renderer.rootBone = visualRoot;
+            renderer.localBounds = new Bounds(center, size);
+            // Geometry and weights are retained in the shared Unity mesh after import.
+            var data = (JObject)entry.Data;
+            foreach (var key in new[] { "vertices", "normals", "uv", "triangles", "skinWeights" }) data.Remove(key);
+        }
+    }
+
+    private static Mesh LoadSkinnedMesh(string key, JToken part, Transform[] bones, Transform meshTransform, bool cache = false, int maximumInfluences = 4)
+    {
+        if (cache && Meshes.TryGetValue(key, out var cached)) return cached;
         var vertices = part["vertices"]!.Select(Vector).ToArray(); var triangles = part["triangles"]!.Select(v => (int)v).ToArray();
         var normals = part["normals"]!.Select(Vector).ToArray(); var uv = part["uv"]!.Select(v => new Vector2((float)v[0]!, (float)v[1]!)).ToArray();
         if (vertices.Length == 0 || triangles.Length == 0 || triangles.Length % 3 != 0 || normals.Length != vertices.Length || uv.Length != vertices.Length)
             throw new InvalidDataException("Invalid skinned model surface: " + key);
+        if (triangles.Any(i => i < 0 || i >= vertices.Length) || vertices.Any(v => !Finite(v.x) || !Finite(v.y) || !Finite(v.z)))
+            throw new InvalidDataException("Invalid skinned model positions or indices: " + key);
         if (!(part["skinWeights"] is JArray rows) || rows.Count != vertices.Length)
             throw new InvalidDataException("Skinned weight stream mismatch: " + key);
         var weights = new BoneWeight[vertices.Length];
         for (var vertex = 0; vertex < rows.Count; vertex++)
         {
             var influences = rows[vertex] as JArray;
-            if (influences is null || influences.Count == 0 || influences.Count > 4) throw new InvalidDataException("Invalid skin influence count: " + key);
+            if (influences is null || influences.Count == 0 || influences.Count > maximumInfluences) throw new InvalidDataException("Invalid skin influence count: " + key);
             var indices = new int[4]; var values = new float[4]; var total = 0f;
             for (var j = 0; j < influences.Count; j++)
             {
@@ -363,7 +404,9 @@ internal static class ModelAssets
             weights[vertex] = new BoneWeight { boneIndex0=indices[0],weight0=values[0],boneIndex1=indices[1],weight1=values[1],boneIndex2=indices[2],weight2=values[2],boneIndex3=indices[3],weight3=values[3] };
         }
         var mesh = new Mesh { name=key,indexFormat=vertices.Length>65535?IndexFormat.UInt32:IndexFormat.UInt16,vertices=vertices,triangles=triangles,normals=normals,uv=uv,boneWeights=weights,bindposes=bones.Select(bone=>bone.worldToLocalMatrix*meshTransform.localToWorldMatrix).ToArray() };
-        mesh.RecalculateBounds(); mesh.RecalculateTangents(); return mesh;
+        mesh.RecalculateBounds(); mesh.RecalculateTangents();
+        if (cache) Meshes.Add(key, mesh);
+        return mesh;
     }
 
     private static Mesh LoadMesh(string key, JToken part)

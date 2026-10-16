@@ -1,4 +1,4 @@
 {
-  "version": "0.0.176",
-  "description": "0.0.176: Repairs Underworld cavern visibility, map colors, terrain scale, arrival bosses and Null Mantle equipment checks. Adds Understone deposits and authored forest scattering; reduces mushroom geometry to native tree budgets."
+  "version": "0.0.177",
+  "description": "0.0.177: Implements refined First Bloom, Rift Titan and Carrion Crown boss models with blended joint skinning, retained animations and owned stone/fungal atlases. Native AI, attacks, drops and persistence remain on their existing chassis."
 }

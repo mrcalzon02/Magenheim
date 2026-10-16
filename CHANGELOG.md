@@ -1,3 +1,14 @@
+## 0.0.177 - Refined boss model implementation
+
+- Connects First Bloom r22, Rift Titan r18 and Carrion Crown r3 to their actual
+  biome boss encounters instead of reusing the ordinary apex creature visuals.
+- Imports each as one skinned mesh/material with four owned 512px maps and
+  blended joint weights. Retains all ten/seven/five authored actions respectively.
+- Preserves native AI, attacks, colliders, loot, persistent prefab identities and
+  encounter progression. Reviewed editable art sources remain unchanged.
+- Adds actual importer regressions and Blender/production/GLB skin comparisons.
+  In-game visual, hitbox and performance acceptance remains pending.
+
 ## 0.0.155 - Underworld dungeon program and Deep Fracture admission
 
 - Admits the existing Deep Fracture expedition as a sparse Fracture Zones dungeon inside the

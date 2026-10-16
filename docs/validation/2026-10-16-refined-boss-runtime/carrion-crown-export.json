@@ -1,0 +1,22 @@
+{
+  "model": "underworld-boss-carrion-crown-refined",
+  "study": "assets/models/studies/underworld-boss-carrion-crown-anatomy-r3.blend",
+  "source_sha256": "1527eb91e57e5450f547ac87cb4e94efd73845b577adf0cc48c575abe5542d7e",
+  "runtime_sha256": "c984d15ec662fa74fbee78875d45dd80f90a06b415e880305631c32685905dae",
+  "glb_sha256": "af39eb646a2c7bc4a26479558b24b68038db54b01c46edffcf214fb13dfd1358",
+  "triangles": 2046,
+  "bones": 7,
+  "actions": 5,
+  "animation_frames": 159,
+  "compared_posed_vertices": 30475,
+  "max_skin_error_metres": 2.545187377541189e-06,
+  "backward_smooth_cap_normals_repaired": 0,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_maps": 4,
+  "atlas_pixels": 512,
+  "front": "Blender +Y -> Unity +Z",
+  "ground_offset_metres": -0.006666210945695639,
+  "source_unchanged": true,
+  "scope": "exported parent-local transforms and linear skin compared against Blender posed vertices; native AI/hitbox/live acceptance separate"
+}

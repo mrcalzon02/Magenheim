@@ -2117,6 +2117,48 @@
       "output_sha256": {
         "src/Magenheim.Runtime/UnderworldDonorArmourProfiles.g.cs": "b3e68827c2a4e5a18240739fb72c9be0191f16cf2078c690e3450b7e846739d8"
       }
+    },
+    {
+      "id": "refined-boss-runtime",
+      "generator": "tools/export-refined-boss-runtime.py",
+      "command": [
+        "powershell",
+        "-NoLogo",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "tools/blender.ps1",
+        "export-refined-boss-runtime",
+        "-LogDirectory",
+        "dist/art-inspection-logs/refined-boss-owned"
+      ],
+      "inputs": [
+        "assets/models/studies/underworld-boss-first-bloom-arm-seams-r22.blend",
+        "assets/models/studies/underworld-boss-rift-titan-broken-strata-r18.blend",
+        "assets/models/studies/underworld-boss-carrion-crown-anatomy-r3.blend"
+      ],
+      "outputs": [
+        "assets/models/runtime/underworld-boss-*-refined.model.json",
+        "assets/models/glb/underworld-boss-*-refined.glb",
+        "docs/validation/2026-10-16-refined-boss-runtime/*-export.json",
+        "docs/validation/2026-10-16-refined-boss-runtime/export-summary.json"
+      ],
+      "hash": "generator-only",
+      "generator_sha256": "c87b8882a27056bed111e05c947eae792d9d8c546c653aab39569a04f3873720",
+      "inputs_sha256": "8ef7cb58ea5373b0e341f4c17782a69197ec6aa9ccf89f9a0d38c5ac939bea59",
+      "output_sha256": {
+        "assets/models/glb/underworld-boss-carrion-crown-refined.glb": null,
+        "assets/models/glb/underworld-boss-first-bloom-refined.glb": null,
+        "assets/models/glb/underworld-boss-rift-titan-refined.glb": null,
+        "assets/models/runtime/underworld-boss-carrion-crown-refined.model.json": null,
+        "assets/models/runtime/underworld-boss-first-bloom-refined.model.json": null,
+        "assets/models/runtime/underworld-boss-rift-titan-refined.model.json": null,
+        "docs/validation/2026-10-16-refined-boss-runtime/carrion-crown-export.json": null,
+        "docs/validation/2026-10-16-refined-boss-runtime/export-summary.json": null,
+        "docs/validation/2026-10-16-refined-boss-runtime/first-bloom-export.json": null,
+        "docs/validation/2026-10-16-refined-boss-runtime/rift-titan-export.json": null
+      }
     }
   ],
   "retired_generators": [

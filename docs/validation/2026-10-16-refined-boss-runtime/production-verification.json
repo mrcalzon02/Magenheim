@@ -1,0 +1,56 @@
+[
+  {
+    "model": "underworld-boss-first-bloom-refined",
+    "result": "PASS",
+    "triangles": 8846,
+    "bones": 22,
+    "actions": 10,
+    "glb_json_max_position_error_metres": 0.0,
+    "glb_json_max_weight_error": 2.6940136232944667e-08,
+    "textures": {
+      "b835707bcc6cce60.png": "b835707bcc6cce601f02c300382a9d52b4725c6b4392d0c85ce3806987c068f8",
+      "2ce145d17a94902e.png": "2ce145d17a94902e118ff6e73a7aca9c39f11927fe13ba639164594f510f12d0",
+      "a78c989c7942e637.png": "a78c989c7942e637c9948514255044b594b6672db0263be219a02607067c1ce0",
+      "819043878795e878.png": "819043878795e878417430dba271e87c64acde5ea722df113642e965629dedf2"
+    },
+    "source_sha256": "a89ffd7b6a48d04f3e4e488d5306fc204e94d5ea2669173cb315a7265f4a429d",
+    "runtime_sha256": "c8d4d835803cf7c1c62065846796f211735dd624455ad40c65587fc7b35868d5",
+    "glb_sha256": "938802e36fce9e43589e7d54117e9a7aa455338e6c6ce79b90efdcd07a601ebf"
+  },
+  {
+    "model": "underworld-boss-rift-titan-refined",
+    "result": "PASS",
+    "triangles": 1800,
+    "bones": 8,
+    "actions": 7,
+    "glb_json_max_position_error_metres": 0.0,
+    "glb_json_max_weight_error": 0.0,
+    "textures": {
+      "1e15484aa01f5ed9.png": "1e15484aa01f5ed9ffd9bf49c2c545c791016dbc48e5dda580737bb87baca3e7",
+      "a2788925e54451c5.png": "a2788925e54451c5f74e91e917d68b8221415a21d3f49372e6e2fb7e61836175",
+      "71d2043faa241617.png": "71d2043faa241617018b4bf068c7c630eb75c7033c56d699f304f70518605e87",
+      "ec6ffec856b08296.png": "ec6ffec856b0829654bc529fa2884c635384e073cbf8e98a0d22a1dd554ecdfc"
+    },
+    "source_sha256": "df85bf6cd829d769f29007a0c6bbf3059fd64c87275f476f8ff3420f7b0094d9",
+    "runtime_sha256": "4f2a675b7a483e1d773cd97a947b5b234c825df2e0e7c427661b905be35b8850",
+    "glb_sha256": "da040955ad39c619d75e6a47150eb43b7a7ca616bf1ec49a87cd185d324ad006"
+  },
+  {
+    "model": "underworld-boss-carrion-crown-refined",
+    "result": "PASS",
+    "triangles": 2046,
+    "bones": 7,
+    "actions": 5,
+    "glb_json_max_position_error_metres": 0.0,
+    "glb_json_max_weight_error": 2.1776247027815998e-08,
+    "textures": {
+      "d24a60031d20d7b5.png": "d24a60031d20d7b51f90646024e9e37e4b95cc08b66a54cccb3b9b90bca0c82c",
+      "87e92ae3f0a4ea2f.png": "87e92ae3f0a4ea2f589b1f2316efe80e6e9f3933e5271dded490aad1f7cc70ce",
+      "89bde9a0488bb5e2.png": "89bde9a0488bb5e295a67d64734ed247f6ba4d8a2902e60f08f5f2ab3407fab1",
+      "91c2496afc2dafd8.png": "91c2496afc2dafd82e71bc295fbd86e22819849c8e4e6719dc2c89a59529f84c"
+    },
+    "source_sha256": "1527eb91e57e5450f547ac87cb4e94efd73845b577adf0cc48c575abe5542d7e",
+    "runtime_sha256": "c984d15ec662fa74fbee78875d45dd80f90a06b415e880305631c32685905dae",
+    "glb_sha256": "af39eb646a2c7bc4a26479558b24b68038db54b01c46edffcf214fb13dfd1358"
+  }
+]

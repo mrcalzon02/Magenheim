@@ -1,0 +1,148 @@
+{
+  "result": "KNOWN BASELINE FAILURES",
+  "stale_families": [
+    {
+      "generator": "underworld-sporeling-source",
+      "git_unchanged_from_pre_task_HEAD": true,
+      "working_copy_CRLF_differences": [
+        "tools/author-underworld-sporeling.py"
+      ]
+    },
+    {
+      "generator": "crystal-weapon-models",
+      "git_unchanged_from_pre_task_HEAD": true,
+      "working_copy_CRLF_differences": [
+        "tools/export-model-assets.py",
+        "tools/model_surface_authoring.py"
+      ]
+    },
+    {
+      "generator": "rootforged-models",
+      "git_unchanged_from_pre_task_HEAD": true,
+      "working_copy_CRLF_differences": [
+        "tools/author-rootforged-placeables.py",
+        "default-data/foundation.json",
+        "tools/rebuild-rootforged-assets.ps1",
+        "tools/export-model-assets.py",
+        "tools/model_surface_authoring.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py",
+        "tools/worked_surface_authoring.py"
+      ]
+    },
+    {
+      "generator": "underworld-station-models",
+      "git_unchanged_from_pre_task_HEAD": true,
+      "working_copy_CRLF_differences": [
+        "tools/author-underworld-stations.py",
+        "tools/rebuild-underworld-stations.ps1",
+        "tools/worked_surface_authoring.py",
+        "tools/render-underworld-station-icons.py",
+        "tools/export-model-assets.py",
+        "tools/model_surface_authoring.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py",
+        "tools/station_process_authoring.py"
+      ]
+    },
+    {
+      "generator": "underworld-tool-models",
+      "git_unchanged_from_pre_task_HEAD": true,
+      "working_copy_CRLF_differences": [
+        "tools/author-underworld-tools.py",
+        "tools/rebuild-underworld-tools.ps1",
+        "tools/render-underworld-tool-icons.py",
+        "tools/export-model-assets.py",
+        "tools/model_surface_authoring.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py"
+      ]
+    },
+    {
+      "generator": "underworld-weapon-models",
+      "git_unchanged_from_pre_task_HEAD": true,
+      "working_copy_CRLF_differences": [
+        "tools/author-underworld-weapons.py",
+        "tools/rebuild-underworld-weapons.ps1",
+        "tools/export-model-assets.py",
+        "tools/render-weapon-icons.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py"
+      ]
+    },
+    {
+      "generator": "staff-model-exports",
+      "git_unchanged_from_pre_task_HEAD": true,
+      "working_copy_CRLF_differences": [
+        "tools/rebuild-staff-production-assets.ps1",
+        "tools/export-model-assets.py",
+        "tools/model_surface_authoring.py"
+      ]
+    },
+    {
+      "generator": "underworld-geothermal-vent-models",
+      "git_unchanged_from_pre_task_HEAD": true,
+      "working_copy_CRLF_differences": [
+        "tools/author-underworld-geothermal-vents.py",
+        "tools/rebuild-underworld-geothermal-vents.ps1",
+        "tools/export-model-assets.py",
+        "tools/model_surface_authoring.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py"
+      ]
+    },
+    {
+      "generator": "underworld-material-item-models",
+      "git_unchanged_from_pre_task_HEAD": true,
+      "working_copy_CRLF_differences": [
+        "tools/author-underworld-material-items.py",
+        "tools/underworld-material-item-specs.json",
+        "tools/rebuild-underworld-material-items.ps1",
+        "tools/export-model-assets.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py"
+      ]
+    },
+    {
+      "generator": "blackstone-throne-set",
+      "git_unchanged_from_pre_task_HEAD": true,
+      "working_copy_CRLF_differences": [
+        "tools/author-blackstone-throne-set.py",
+        "tools/generate-blackstone-throne-textures.py",
+        "tools/export-model-assets.py",
+        "tools/rebuild-blackstone-throne-set.ps1",
+        "tools/verify-blackstone-throne-set.py"
+      ]
+    },
+    {
+      "generator": "underworld-progression-flora",
+      "git_unchanged_from_pre_task_HEAD": true,
+      "working_copy_CRLF_differences": [
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py",
+        "tools/export-model-assets.py"
+      ]
+    },
+    {
+      "generator": "underworld-progression-arenas",
+      "git_unchanged_from_pre_task_HEAD": true,
+      "working_copy_CRLF_differences": [
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py",
+        "tools/export-model-assets.py"
+      ]
+    },
+    {
+      "generator": "underworld-fracture-creatures",
+      "git_unchanged_from_pre_task_HEAD": true,
+      "working_copy_CRLF_differences": [
+        "tools/author-underworld-frozen-creatures.py",
+        "tools/underworld_material_library.py",
+        "tools/generate-underworld-material-textures.py",
+        "tools/export-model-assets.py"
+      ]
+    }
+  ],
+  "scope": "Implicated sources are Git-unchanged from pre-task HEAD; differences from Git blob bytes are only CRLF/LF. No unrelated generated hashes or outputs were refreshed. This records the existing byte-hash gate failure, not a successful full freshness check.",
+  "baseline_commit": "851869c0497b22fc9c8eac970281d01ab86e51e6"
+}

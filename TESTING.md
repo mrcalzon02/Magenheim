@@ -4,14 +4,34 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.176 by Local** and start its description with
-**0.0.176: Repairs Underworld cavern visibility**.
+show **Magenheim v0.0.177 by Local** and start its description with
+**0.0.177: Implements refined First Bloom**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.176]` and the runtime image line reports
-`Runtime image 0.0.176` with the actual assembly path before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.177]` and the runtime image line reports
+`Runtime image 0.0.177` with the actual assembly path before reporting game results.
 Future versions must update `release.json` and this expected version together.
+
+For 0.0.177, inspect the actual biome boss encounter prefabs in a disposable
+test world. The ordinary Crowncap Brute, Rift Colossus and Corpse Orchard remain
+their own species; the refined boss models belong to the encounters below.
+Use `devcommands`, then spawn one encounter at a time:
+
+```
+spawn Magenheim_Underworld_Encounter_FirstBloom
+spawn Magenheim_Underworld_Encounter_RiftTitan
+spawn Magenheim_Underworld_Encounter_CarrionCrown
+```
+
+Check First Bloom r22, Rift Titan r18 and Carrion Crown r3 for correct front
+orientation, foot placement, opaque stone/fungal textures and restrained emission.
+Check blended neck/shoulder roots while idling, moving, attacking, taking damage
+and dying. Compare visible reach with the native attacks/colliders and check
+distance culling. Save/reload with a living encounter and confirm the refined
+skin still binds. Natural encounters, defeat keys and trophy drops retain the
+existing progression rules. Carrion Crown and Rift Titan remain art candidates;
+installation does not declare them finished. Blackwater Maw remains paused.
 
 For 0.0.176, use a fresh disposable world to inspect the enlarged 10,500 m-radius
 Underworld and one-fifth regional relief/massifs. Existing placed objects retain saved

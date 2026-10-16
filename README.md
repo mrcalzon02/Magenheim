@@ -2,6 +2,15 @@
 
 **Magic begins as geology.**
 
+## 0.0.177 refined boss testing candidate
+
+First Bloom r22, Rift Titan r18 and Carrion Crown r3 now have dedicated weighted
+boss visuals with their retained animations and owned atlases. These belong to
+the biome boss encounters; ordinary apex species keep their existing visuals.
+Native AI, attacks, collision and progression remain authoritative. See
+[the testing steps](TESTING.md) for the exact encounter names. Art and native
+visual/performance acceptance remain separate.
+
 ## 0.0.162 runtime repair candidate
 
 Repairs the live 0.0.161 boot: scenery network component lifetime, disabled dungeon-room

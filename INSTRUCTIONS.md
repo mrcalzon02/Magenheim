@@ -90,6 +90,16 @@ The default implementation question is **"does Valheim already handle this?"** I
 
 ## Rolling boss creature rework tally
 
+Runtime implementation update, 2026-10-16: **0.0.177 is installed and hash-verified
+in Central Fuckery**. First Bloom r22, Rift Titan r18 and Carrion Crown r3 now
+replace the older apex visuals on their actual biome boss encounters, using one
+weighted skin/material and four 512px maps each. Their ordinary apex species are
+unchanged. See `docs/validation/2026-10-16-refined-boss-runtime.md` for source,
+animation, importer and installation proof, and `TESTING.md` for exact encounter
+spawn names. These are implemented test visuals; live appearance, attack/collider
+fit, performance and save/reload still need review. Blackwater Maw remains paused.
+Art acceptance and the **1/6** adequate tally remain unchanged.
+
 Updated 2026-10-16 from the user's concept-model review and continued boss work.
 **Adequately reworked for this art campaign: 1 of 6 bosses.** This is art-review
 progress, not an assertion of installed model, animation or runtime performance acceptance.
