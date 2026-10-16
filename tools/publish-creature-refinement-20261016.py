@@ -182,3 +182,7 @@ were untouched. No runtime model, release package or installed profile changed.
 [Open the comparison index](../art/creature-models/2026-10-16/gallery.html).
 ''',encoding='utf-8')
 print('VERIFIED four comparison galleries, current source hashes and unchanged adequate tally')
+# Preserve the latest continuation when this historical publisher is rerun.
+if (CAMPAIGN/'rift-titan-broken-strata-r18/artifact-validation.json').exists():
+    import runpy
+    runpy.run_path(str(ROOT/'tools/publish-rift-titan-strata-r18.py'),run_name='__main__')

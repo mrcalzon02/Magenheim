@@ -1,0 +1,30 @@
+{
+  "id": "underworld-boss-rift-titan-broken-strata-r18",
+  "source": "assets/models/studies/underworld-boss-rift-titan-broken-strata-r18.blend",
+  "triangles": 1800,
+  "donor_triangles": 1200,
+  "soft_cap": 1800,
+  "ratio": 1.5,
+  "previous_triangles": 1798,
+  "reduction_percent": -0.11123470522802492,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "category_triangles": {
+    "strata": 912,
+    "bindings": 48,
+    "binding-crystals": 148,
+    "torso-stone": 56,
+    "torso-ribs": 288,
+    "torso-band": 72,
+    "neck-ribs": 84,
+    "head-crystal": 116,
+    "crest": 76
+  },
+  "rig": "eight original bones and seven actions; exact r17 rest rig preserved",
+  "texture_bake": "locally directed gray stone fractures and sparse warm mineral; four packed 512 maps",
+  "status": "continued concept candidate; art and native acceptance pending",
+  "previous_id": "underworld-boss-rift-titan-concept-body-r17",
+  "study_height_metres": 7.0,
+  "changes": "thick bent fingers, three fractured toe masses per foot, bent/chipped rear crest, longer mantle/limb strata; head/neck and torso ring geometry preserved"
+}

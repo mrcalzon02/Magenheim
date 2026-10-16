@@ -1,0 +1,67 @@
+{
+  "source": "assets/models/studies/underworld-boss-rift-titan-broken-strata-r18.blend",
+  "source_sha256": "df85bf6cd829d769f29007a0c6bbf3059fd64c87275f476f8ff3420f7b0094d9",
+  "source_unchanged": true,
+  "current_source_sha256": "df85bf6cd829d769f29007a0c6bbf3059fd64c87275f476f8ff3420f7b0094d9",
+  "camera_configuration": {
+    "hand-detail": {
+      "location": [
+        3.9534177780151367,
+        11.009688377380371,
+        2.5388033390045166
+      ],
+      "rotation": [
+        1.4218465089797974,
+        -1.934241389278668e-08,
+        2.601173162460327
+      ],
+      "ortho_scale": 2.592879831790924,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "foot-detail": {
+      "location": [
+        4.060857772827148,
+        9.400341987609863,
+        3.0585482120513916
+      ],
+      "rotation": [
+        1.2732263803482056,
+        3.517777713568648e-08,
+        2.638749361038208
+      ],
+      "ortho_scale": 2.142992115020752,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "crest-detail": {
+      "location": [
+        -15.55222225189209,
+        1.8459399938583374,
+        6.91135835647583
+      ],
+      "rotation": [
+        1.4970530271530151,
+        1.339905111308326e-07,
+        -1.7440420389175415
+      ],
+      "ortho_scale": 3.8675834655761716,
+      "resolution": [
+        900,
+        900
+      ]
+    }
+  },
+  "cameras": "exact recorded current study transforms, ortho scale and resolution",
+  "lighting": "same normalized three-area-light recipe and AgX",
+  "native": false,
+  "views": [
+    "hand-detail",
+    "foot-detail",
+    "crest-detail"
+  ]
+}

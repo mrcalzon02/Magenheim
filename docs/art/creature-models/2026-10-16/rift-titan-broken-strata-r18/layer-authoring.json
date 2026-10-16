@@ -1,0 +1,34 @@
+{
+  "changes": [
+    "forward-raking crest using preserved online crown profile",
+    "longer oblique overlapping limb strata; existing root-blended upper-arm plates retained",
+    "broader diagonal upper-thorax stones with two complete shoulder seatings",
+    "retained core crystals re-angled into an irregular cluster",
+    "owned weathered blue-gray/ochre stone, olive lichen, shallow fracture normals, dark rusted ribs and varied violet crystals"
+  ],
+  "layered_plates": [
+    "LongFractureArmL1",
+    "LongFractureArmL2",
+    "LongFractureForearmL0",
+    "LongFractureForearmL1",
+    "LongFractureForearmL2",
+    "LongFractureLegL0",
+    "LongFractureLegL1",
+    "LongFractureLegL2",
+    "LongFractureArmR1",
+    "LongFractureArmR2",
+    "LongFractureForearmR0",
+    "LongFractureForearmR1",
+    "LongFractureForearmR2",
+    "LongFractureLegR0",
+    "LongFractureLegR1",
+    "LongFractureLegR2"
+  ],
+  "new_thorax_contacts": 2,
+  "contacts": 76,
+  "cost": "1800 unchanged triangles; four packed 512px maps; one mesh/material; original eight bones and seven actions",
+  "remaining": "fractured head/shoulder contours, limb edge chips, fuller irregular crystal core and floating crest debris, fine texture direction and native acceptance",
+  "acceptance": "continued unaccepted candidate; no 85% match claim",
+  "intermediate_build_stage_only": true,
+  "final_saved_geometry_authority": "body-verification.json"
+}

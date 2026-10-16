@@ -1,0 +1,16 @@
+{
+  "reference": "full concept and user supplied torso close-ups; thin wrapped band and upper collar ring correction, 2026-10-13",
+  "torso_ribs": 12,
+  "neck_ribs": 6,
+  "central_plate": "closed 360-degree narrow sculpted stone band with a small central V; 12 wedge-section stations, 72 triangles",
+  "band_height_authored": 0.058,
+  "band_radial_thickness_authored": 0.035,
+  "band_rib_contacts": 12,
+  "upper_plate": "closed eight-station stone collar ring, 48 triangles; full left and right sections embedded into the larger shoulder/upper torso stones",
+  "supports": "all twelve torso ribs run continuously from upper collar ring to lower keel; middle band seats into every rib; neck ribs attach to the collar front arc and retained head; collar joins both upper torso masses",
+  "removed": "r5 thick front V plate, flat collar bridge and split upper/lower rib layout",
+  "scope": "torso and collar ring; neck roots reseated; previous limbs, shoulders, head, rig and actions retained",
+  "acceptance": "candidate for concept review",
+  "intermediate_build_stage_only": true,
+  "final_saved_geometry_authority": "body-verification.json"
+}

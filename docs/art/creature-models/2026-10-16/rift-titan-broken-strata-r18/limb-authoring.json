@@ -1,0 +1,149 @@
+{
+  "changes": [
+    "deeper staggered front and rear rock facets",
+    "narrow splinter tips and oblique face ridges",
+    "twelve added limb shards and four formerly floating shards seated into limbs"
+  ],
+  "crystal_growths": [
+    {
+      "name": "LimbCrystalL0",
+      "support": "LongFractureArmL1",
+      "bone": "ArmL",
+      "triangles": 6,
+      "basal_vertices": 4,
+      "basal_faces": 3
+    },
+    {
+      "name": "LimbCrystalL1",
+      "support": "LongFractureArmL2",
+      "bone": "ArmL",
+      "triangles": 6,
+      "basal_vertices": 4,
+      "basal_faces": 3
+    },
+    {
+      "name": "LimbCrystalL2",
+      "support": "LongFractureForearmL0",
+      "bone": "ForearmL",
+      "triangles": 6,
+      "basal_vertices": 4,
+      "basal_faces": 3
+    },
+    {
+      "name": "LimbCrystalL3",
+      "support": "LongFractureForearmL1",
+      "bone": "ForearmL",
+      "triangles": 6,
+      "basal_vertices": 4,
+      "basal_faces": 3
+    },
+    {
+      "name": "LimbCrystalL4",
+      "support": "LongFractureLegL0",
+      "bone": "LegL",
+      "triangles": 6,
+      "basal_vertices": 4,
+      "basal_faces": 3
+    },
+    {
+      "name": "LimbCrystalL5",
+      "support": "LongFractureLegL1",
+      "bone": "LegL",
+      "triangles": 6,
+      "basal_vertices": 4,
+      "basal_faces": 3
+    },
+    {
+      "name": "LimbCrystalR0",
+      "support": "LongFractureArmR1",
+      "bone": "ArmR",
+      "triangles": 6,
+      "basal_vertices": 4,
+      "basal_faces": 3
+    },
+    {
+      "name": "LimbCrystalR1",
+      "support": "LongFractureArmR2",
+      "bone": "ArmR",
+      "triangles": 6,
+      "basal_vertices": 4,
+      "basal_faces": 3
+    },
+    {
+      "name": "LimbCrystalR2",
+      "support": "LongFractureForearmR0",
+      "bone": "ForearmR",
+      "triangles": 6,
+      "basal_vertices": 4,
+      "basal_faces": 3
+    },
+    {
+      "name": "LimbCrystalR3",
+      "support": "LongFractureForearmR1",
+      "bone": "ForearmR",
+      "triangles": 6,
+      "basal_vertices": 4,
+      "basal_faces": 3
+    },
+    {
+      "name": "LimbCrystalR4",
+      "support": "LongFractureLegR0",
+      "bone": "LegR",
+      "triangles": 6,
+      "basal_vertices": 4,
+      "basal_faces": 3
+    },
+    {
+      "name": "LimbCrystalR5",
+      "support": "LongFractureLegR1",
+      "bone": "LegR",
+      "triangles": 6,
+      "basal_vertices": 4,
+      "basal_faces": 3
+    },
+    {
+      "name": "FloatingPrism2",
+      "support": "LongFractureForearmL2",
+      "bone": "ForearmL",
+      "triangles": 10,
+      "basal_vertices": 6,
+      "basal_faces": 5
+    },
+    {
+      "name": "FloatingPrism3",
+      "support": "LongFractureForearmR2",
+      "bone": "ForearmR",
+      "triangles": 10,
+      "basal_vertices": 6,
+      "basal_faces": 5
+    },
+    {
+      "name": "FloatingPrism4",
+      "support": "LongFractureLegL2",
+      "bone": "LegL",
+      "triangles": 10,
+      "basal_vertices": 6,
+      "basal_faces": 5
+    },
+    {
+      "name": "FloatingPrism5",
+      "support": "LongFractureLegR2",
+      "bone": "LegR",
+      "triangles": 10,
+      "basal_vertices": 6,
+      "basal_faces": 5
+    }
+  ],
+  "budget": {
+    "binding_before": 120,
+    "binding_after": 48,
+    "freed_triangles": 72,
+    "new_crystals": 72,
+    "total": 1800
+  },
+  "preserved": "original head, torso rings, shoulder mantle, rig, actions, arm root blends and existing supports",
+  "scope": "requested limb depth/detail and crystal growth; remaining full-creature texture refinement and native acceptance pending",
+  "acceptance": "unaccepted candidate",
+  "intermediate_build_stage_only": true,
+  "final_saved_geometry_authority": "body-verification.json"
+}

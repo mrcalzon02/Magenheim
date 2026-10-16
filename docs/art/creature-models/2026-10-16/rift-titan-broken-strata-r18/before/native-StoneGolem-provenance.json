@@ -1,0 +1,67 @@
+{
+  "source": "dist/boss-donor-quality/native-source/StoneGolem.blend",
+  "source_sha256": "99db5ee7debc39e86f9ba4750c4382dd9022abaf9b2b3a0bf549d414b1d201b2",
+  "source_unchanged": true,
+  "current_source_sha256": "df85bf6cd829d769f29007a0c6bbf3059fd64c87275f476f8ff3420f7b0094d9",
+  "camera_configuration": {
+    "front": {
+      "location": [
+        0.010337591171264648,
+        27.76913070678711,
+        4.151151180267334
+      ],
+      "rotation": [
+        1.540805459022522,
+        8.738346224390625e-08,
+        3.1415927410125732
+      ],
+      "ortho_scale": 8.260001182556152,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "side": {
+      "location": [
+        -27.989665985107422,
+        -0.23087388277053833,
+        4.151151180267334
+      ],
+      "rotation": [
+        1.540805459022522,
+        -1.1919588160935746e-07,
+        -1.5707964897155762
+      ],
+      "ortho_scale": 8.260001182556152,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "front-clay": {
+      "location": [
+        0.010337591171264648,
+        27.76913070678711,
+        4.151151180267334
+      ],
+      "rotation": [
+        1.540805459022522,
+        8.738346224390625e-08,
+        3.1415927410125732
+      ],
+      "ortho_scale": 8.260001182556152,
+      "resolution": [
+        900,
+        900
+      ]
+    }
+  },
+  "cameras": "recorded current study directions and normalized native framing",
+  "lighting": "same normalized three-area-light recipe and AgX",
+  "native": true,
+  "views": [
+    "front",
+    "side",
+    "front-clay"
+  ]
+}
