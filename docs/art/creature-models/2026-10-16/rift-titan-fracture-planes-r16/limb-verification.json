@@ -1,0 +1,20 @@
+{
+  "result": "PASS",
+  "new_shards": 12,
+  "repurposed_shards": 4,
+  "attached_limb_growths": 16,
+  "contacts": 76,
+  "budget": {
+    "binding_before": 120,
+    "binding_after": 48,
+    "freed_triangles": 72,
+    "new_crystals": 72,
+    "total": 1800,
+    "r9_historical_total": 1800
+  },
+  "weights": "sixteen complete basal sections share their respective Arm, Forearm or Leg host weights",
+  "basal_faces": 56,
+  "crystal_point_samples": 14112,
+  "poses": 36,
+  "scope": "retained r9 limb topology/root ownership, with current actor cost after unified head correction"
+}

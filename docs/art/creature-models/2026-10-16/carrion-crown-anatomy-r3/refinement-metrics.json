@@ -1,0 +1,29 @@
+{
+  "id": "underworld-boss-carrion-crown-anatomy-r3",
+  "source": "assets/models/studies/underworld-boss-carrion-crown-anatomy-r3.blend",
+  "triangles": 2046,
+  "donor_triangles": 1422,
+  "soft_cap": 2133,
+  "ratio": 1.4388185654008439,
+  "previous_triangles": 29212,
+  "reduction_percent": 92.9960290291661,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "category_triangles": {
+    "trunk": 240,
+    "timber": 600,
+    "flower-cups": 300,
+    "teeth": 304,
+    "crown-spires": 98,
+    "amber-pods": 260,
+    "pod-stems": 48,
+    "ivory-ribs": 112,
+    "lichen": 84
+  },
+  "rig": "original seven-bone Corpse Orchard hierarchy and five retained actions; support-matched branch/root sections",
+  "texture_bake": "owned directional bark, dark cavity, ivory and amber; supersampled into four packed 512px maps",
+  "status": "new anatomy candidate; art and native acceptance pending",
+  "previous_id": "underworld-boss-carrion-crown-detail-r2",
+  "study_height_metres": 6.8
+}

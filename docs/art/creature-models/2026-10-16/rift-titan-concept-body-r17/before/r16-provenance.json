@@ -1,0 +1,15 @@
+{
+  "source": "assets/models/studies/underworld-boss-rift-titan-fracture-planes-r16.blend",
+  "source_sha256": "e3e4ca49d27484061e00308e9e0db4c96887f31cdeae4a491a4e06b4bbe4049b",
+  "source_unchanged": true,
+  "cameras": "exact recorded current study transforms, ortho scale and resolution",
+  "lighting": "same normalized three-area-light recipe and AgX",
+  "native": false,
+  "views": [
+    "front",
+    "side",
+    "three-quarter",
+    "front-clay",
+    "side-clay"
+  ]
+}

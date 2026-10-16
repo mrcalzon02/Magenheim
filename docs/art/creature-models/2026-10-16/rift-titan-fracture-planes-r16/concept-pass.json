@@ -1,0 +1,10 @@
+{
+  "previous_id": "underworld-boss-rift-titan-paired-recesses-r15",
+  "previous_triangles": 1800,
+  "reduction_percent": 0,
+  "study_height_metres": 7.0,
+  "rig": "original eight-bone Rift Colossus hierarchy and seven actions; six neck bars retain their three-dimensional spread",
+  "texture_bake": "owned spatial head stone and localized violet; dedicated upper atlas strip; four packed 512px maps",
+  "changes": "continuous ridged stone face, narrower broken side sockets, localized lower violet and dedicated upper atlas strip for crisp head stone patches",
+  "status": "head correction candidate; art acceptance pending"
+}

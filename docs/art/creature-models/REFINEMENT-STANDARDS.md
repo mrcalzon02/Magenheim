@@ -109,3 +109,30 @@ Direction in review renders must match the concept: Blackwater Maw mouth left, t
 Blackwater Maw lower-fin correction: the forward blade attaches directly to the body with no shoulder or stubby arm; only the middle blade has a powerful tapered muscular member. The upper jaw follows the body skyline. Distinguish the snout-to-cheek armor ridge from the body crown that joins the first dorsal fin; crown feelers sweep over the body.
 
 Blackwater Maw face: scale the outer rear head; confine flesh to a narrow seam between low armor sections. Keep the crown nub small and mouth brow low. Spread sensory feelers independently in projection; inspect blue bulb tips and eye surfaces for tiny unbaked atlas patches. Fangs need thickness and distinct upper/lower rake. Small-detail supersampling is an offline bake step; final atlas dimensions remain within the donor budget.
+
+## October 16 interpretation and review continuation
+
+The supplied side crop supersedes the earlier Rift Titan median-fracture
+instructions above. Preserve a continuous solid stone front plate, with a
+separate deep crystal-lined recess on each flank behind it, resembling recessed
+eyes. No violet slit passes through the median front plate. Preserve the twenty
+accepted frontal X/Z landmarks while matching the long backward side rake and
+overlapping stone planes. The upper recess is dark; violet is localized lower
+down. Inspect front, true anatomical left, oblique left and opposite-side images.
+
+r15's formerly unbuilt height mask was built during this continuation. Its broad
+smooth sockets were rejected in direct comparison; r16 is the narrower stepped
+head candidate. r17 preserves that saved head/neck and continues the body. It
+corrects the rest-geometry sole/shin ordering and long hand reach, but all broader
+art acceptance remains pending. Use the actual current source hash and render
+proof; inherited authoring-stage JSON is not proof of the final saved mesh.
+
+Carrion Crown refinement was explicitly requested next. Its native donor is
+Greydwarf_Shaman: 1,422 triangles, soft cap 2,133. Read the actual front/side
+concept before moving geometry: hollow timber abdomen, broad buttress roots,
+one central open crown cup plus four grafted cups, thick uneven rim teeth,
+crooked rear crown timber, hanging stem-supported amber pods and diagonal ribs.
+Do not substitute a solid barrel, a flat flower mask, or disconnected paddle
+petals. Preserve the source's seven bone identities/hierarchy and five retained
+actions; inspect complete supports across retained poses. r3 is a starting
+anatomy candidate, not adequate art acceptance. Boss tally remains 1/6.

@@ -1,0 +1,15 @@
+{
+  "source": "assets/models/studies/underworld-boss-rift-titan-lined-volume-r14.blend",
+  "source_sha256": "2668bcf068512cef163eba23ecdbf7ac1c6939f383c536cbdfa656a35089c64c",
+  "source_unchanged": true,
+  "cameras": "exact recorded current study transforms, ortho scale and resolution",
+  "lighting": "same normalized three-area-light recipe and AgX",
+  "native": false,
+  "views": [
+    "crown-front",
+    "crown-side",
+    "crown-profile",
+    "crown-right",
+    "crown-profile-clay"
+  ]
+}

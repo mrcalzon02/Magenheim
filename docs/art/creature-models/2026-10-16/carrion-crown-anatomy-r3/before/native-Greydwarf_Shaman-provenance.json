@@ -1,0 +1,67 @@
+{
+  "source": "dist/boss-donor-quality/native-source/Greydwarf_Shaman.blend",
+  "source_sha256": "823fc3526a44f3d679df082aa552ac2649560fd7b514b3fbecf52665894d39ce",
+  "source_unchanged": true,
+  "current_source_sha256": "1527eb91e57e5450f547ac87cb4e94efd73845b577adf0cc48c575abe5542d7e",
+  "camera_configuration": {
+    "front": {
+      "location": [
+        0.03493988513946533,
+        27.19803810119629,
+        4.222665786743164
+      ],
+      "rotation": [
+        1.540805459022522,
+        8.738346224390625e-08,
+        3.1415927410125732
+      ],
+      "ortho_scale": 8.023999214172363,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "side": {
+      "location": [
+        -27.165058135986328,
+        -0.0019608736038208008,
+        4.222665786743164
+      ],
+      "rotation": [
+        1.5408055782318115,
+        -5.870416686093449e-08,
+        -1.5707964897155762
+      ],
+      "ortho_scale": 8.023999214172363,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "front-clay": {
+      "location": [
+        0.03493988513946533,
+        27.19803810119629,
+        4.222665786743164
+      ],
+      "rotation": [
+        1.540805459022522,
+        8.738346224390625e-08,
+        3.1415927410125732
+      ],
+      "ortho_scale": 8.023999214172363,
+      "resolution": [
+        900,
+        900
+      ]
+    }
+  },
+  "cameras": "recorded current study directions and normalized native framing",
+  "lighting": "same normalized three-area-light recipe and AgX",
+  "native": true,
+  "views": [
+    "front",
+    "side",
+    "front-clay"
+  ]
+}

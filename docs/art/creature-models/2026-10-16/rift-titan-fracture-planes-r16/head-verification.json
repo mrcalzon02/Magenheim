@@ -1,0 +1,30 @@
+{
+  "result": "PASS",
+  "connected_components": 1,
+  "closed": true,
+  "vertices": 60,
+  "triangles": 116,
+  "euler_characteristic": 2,
+  "surface_role_triangles": {
+    "1": 90,
+    "2": 20,
+    "3": 6
+  },
+  "recess_depth_metres": [
+    0.10042861104011536,
+    0.16223086416721344,
+    0.08497807383537292,
+    0.14678026735782623,
+    0.131329745054245,
+    0.09038575738668442,
+    0.14600776135921478,
+    0.07648026943206787,
+    0.13210228085517883,
+    0.1181967556476593
+  ],
+  "solid_rear_wall_metres": [],
+  "neck_supports": 6,
+  "neck_face_samples": 3024,
+  "total_actor_triangles": 1800,
+  "scope": "saved connected shell, shared bevel/floor edges, recessed purple floor and continuous solid rear wall; user visual acceptance remains separate"
+}

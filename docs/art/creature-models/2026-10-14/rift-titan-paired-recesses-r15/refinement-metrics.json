@@ -1,0 +1,29 @@
+{
+  "id": "underworld-boss-rift-titan-paired-recesses-r15",
+  "source": "assets/models/studies/underworld-boss-rift-titan-paired-recesses-r15.blend",
+  "triangles": 1800,
+  "donor_triangles": 1200,
+  "soft_cap": 1800,
+  "ratio": 1.5,
+  "previous_triangles": 1800,
+  "reduction_percent": 0,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "category_triangles": {
+    "strata": 984,
+    "bindings": 48,
+    "binding-crystals": 152,
+    "torso-stone": 56,
+    "torso-ribs": 288,
+    "torso-band": 72,
+    "neck-ribs": 84,
+    "head-crystal": 116
+  },
+  "rig": "original eight-bone hierarchy and seven retained actions; inherited rest fit and arm root blends",
+  "texture_bake": "retained r10 owned spatial shaders, re-baked at 1024 and condensed to four 512px maps for the new topology",
+  "status": "unaccepted paired-pocket candidate",
+  "previous_id": "underworld-boss-rift-titan-lined-volume-r14",
+  "study_height_metres": 7.0,
+  "changes": "continuous frontal plate restored; two deep crystal-lined flank pockets behind it; approved front outline and r14 rake retained"
+}

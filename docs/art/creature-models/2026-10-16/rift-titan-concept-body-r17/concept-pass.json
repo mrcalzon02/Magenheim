@@ -1,0 +1,10 @@
+{
+  "previous_id": "underworld-boss-rift-titan-fracture-planes-r16",
+  "previous_triangles": 1800,
+  "reduction_percent": 0.11111111111110628,
+  "study_height_metres": 7.0,
+  "rig": "eight original bones/hierarchy and seven actions; forearm tails fitted with geometry; support-matched roots",
+  "texture_bake": "fracture-plane stone pigment, baked local occlusion and small edge bevel normals; four packed 512px maps; head uses a dedicated atlas strip",
+  "changes": "raised rear crest; fuller canted cage/core; lower wrists and long ridged digits; hanging pelvic rocks; cleft planted foot masses; r16 head and neck preserved",
+  "status": "whole-creature correction candidate; art and native acceptance pending"
+}

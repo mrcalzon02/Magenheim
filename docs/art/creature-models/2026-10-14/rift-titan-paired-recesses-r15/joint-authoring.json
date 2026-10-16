@@ -1,0 +1,18 @@
+{
+  "reference": "adopted front and left-facing side concept; continue silhouette before surface detail",
+  "changes": [
+    "steeper layered shoulder mantle instead of horizontal wings",
+    "modest inward arm fit, elbows back and wrists forward",
+    "arm stone axes follow the full three-dimensional joint direction",
+    "individual wedge sections replace repeated square-ended profiles",
+    "slightly closer leg stance, forward knees and lower foot masses",
+    "shorter attached stone fingers instead of detached long claws"
+  ],
+  "new_contacts": "two arm/shoulder roots and six digit/palm roots; fifty existing body roots retained and reseated",
+  "weights": "Body at proximal arm section, 45/55 Body/Arm ridge, remaining Arm vertices; matching Forearm digit roots; maximum two influences",
+  "cost": "1800 existing triangles; eight original rig identities and seven retained actions; four existing 512px maps",
+  "scope": "silhouette and attachment shaping only; no texture detail, no runtime promotion",
+  "acceptance": "continued unaccepted silhouette candidate",
+  "intermediate_build_stage_only": true,
+  "final_saved_geometry_authority": "paired-recess-verification.json"
+}

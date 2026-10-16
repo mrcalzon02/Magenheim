@@ -1,0 +1,217 @@
+{
+  "changes": [
+    {
+      "name": "FingerStratumL0",
+      "before": 24,
+      "after": 16
+    },
+    {
+      "name": "FingerStratumL0",
+      "before": 16,
+      "after": 18
+    },
+    {
+      "name": "FingerStratumL1",
+      "before": 24,
+      "after": 16
+    },
+    {
+      "name": "FingerStratumL1",
+      "before": 16,
+      "after": 18
+    },
+    {
+      "name": "FingerStratumL2",
+      "before": 24,
+      "after": 16
+    },
+    {
+      "name": "FingerStratumL2",
+      "before": 16,
+      "after": 18
+    },
+    {
+      "name": "FingerStratumR0",
+      "before": 24,
+      "after": 16
+    },
+    {
+      "name": "FingerStratumR0",
+      "before": 16,
+      "after": 18
+    },
+    {
+      "name": "FingerStratumR1",
+      "before": 24,
+      "after": 16
+    },
+    {
+      "name": "FingerStratumR1",
+      "before": 16,
+      "after": 18
+    },
+    {
+      "name": "FingerStratumR2",
+      "before": 24,
+      "after": 16
+    },
+    {
+      "name": "FingerStratumR2",
+      "before": 16,
+      "after": 18
+    },
+    {
+      "name": "LongFractureArmL1",
+      "change": "rear face hub dissolved; visible front and perimeter retained"
+    },
+    {
+      "name": "LongFractureArmL2",
+      "change": "rear face hub dissolved; visible front and perimeter retained"
+    },
+    {
+      "name": "LongFractureForearmL0",
+      "change": "rear face hub dissolved; visible front and perimeter retained"
+    },
+    {
+      "name": "LongFractureForearmL2",
+      "change": "rear face hub dissolved; visible front and perimeter retained"
+    },
+    {
+      "name": "LongFractureLegL0",
+      "change": "rear face hub dissolved; visible front and perimeter retained"
+    },
+    {
+      "name": "LongFractureLegL2",
+      "change": "rear face hub dissolved; visible front and perimeter retained"
+    },
+    {
+      "name": "LongFractureArmR1",
+      "change": "rear face hub dissolved; visible front and perimeter retained"
+    },
+    {
+      "name": "LongFractureArmR2",
+      "change": "rear face hub dissolved; visible front and perimeter retained"
+    },
+    {
+      "name": "LongFractureForearmR0",
+      "change": "rear face hub dissolved; visible front and perimeter retained"
+    },
+    {
+      "name": "LongFractureForearmR2",
+      "change": "rear face hub dissolved; visible front and perimeter retained"
+    },
+    {
+      "name": "LongFractureLegR0",
+      "change": "rear face hub dissolved; visible front and perimeter retained"
+    },
+    {
+      "name": "LongFractureLegR2",
+      "change": "rear face hub dissolved; visible front and perimeter retained"
+    },
+    {
+      "name": "FloatingStratum2",
+      "before": 24,
+      "after": 12
+    },
+    {
+      "name": "FloatingStratum3",
+      "before": 24,
+      "after": 12
+    },
+    {
+      "name": "PelvisKeystone1",
+      "before": 24,
+      "after": 16
+    },
+    {
+      "name": "SuspendedCore0",
+      "before": 10,
+      "after": 8
+    },
+    {
+      "name": "SuspendedCore1",
+      "before": 10,
+      "after": 8
+    },
+    {
+      "name": "SuspendedCore2",
+      "before": 10,
+      "after": 8
+    },
+    {
+      "name": "SuspendedCore3",
+      "before": 10,
+      "after": 8
+    },
+    {
+      "name": "CoreFracture4",
+      "before": 0,
+      "after": 8
+    },
+    {
+      "name": "CoreFracture5",
+      "before": 0,
+      "after": 8
+    },
+    {
+      "name": "BrokenCrestBeam0",
+      "before": 0,
+      "after": 12
+    },
+    {
+      "name": "BrokenCrestBeam1",
+      "before": 0,
+      "after": 12
+    },
+    {
+      "name": "BrokenCrestBeam2",
+      "before": 0,
+      "after": 12
+    },
+    {
+      "name": "RaisedCrestFragment0",
+      "before": 0,
+      "after": 4
+    },
+    {
+      "name": "RaisedCrestFragment1",
+      "before": 0,
+      "after": 4
+    },
+    {
+      "name": "RaisedCrestFragment2",
+      "before": 0,
+      "after": 4
+    },
+    {
+      "name": "CrestVioletMote0",
+      "before": 0,
+      "after": 6
+    },
+    {
+      "name": "CrestVioletMote1",
+      "before": 0,
+      "after": 6
+    },
+    {
+      "name": "CrestVioletMote2",
+      "before": 0,
+      "after": 6
+    },
+    {
+      "name": "FootL",
+      "before": 20,
+      "after": 28
+    },
+    {
+      "name": "FootR",
+      "before": 20,
+      "after": 28
+    }
+  ],
+  "actor_triangles": 1798,
+  "foot_plane_authored": -0.12222833931446075,
+  "reference": "unaltered adopted front and left-facing side; long hands, raised rear crest, rounded densely occupied core cage, hanging pelvic rocks and cleft foot masses",
+  "preserved": "r16 head and neck; eight bone identities/hierarchy, seven actions; forearm tails fitted to longer reference arms",
+  "acceptance": "candidate; no visual or runtime acceptance inferred"
+}

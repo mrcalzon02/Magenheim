@@ -1,0 +1,30 @@
+{
+  "id": "underworld-boss-rift-titan-concept-body-r17",
+  "source": "assets/models/studies/underworld-boss-rift-titan-concept-body-r17.blend",
+  "triangles": 1798,
+  "donor_triangles": 1200,
+  "soft_cap": 1800,
+  "ratio": 1.4983333333333333,
+  "previous_triangles": 1800,
+  "reduction_percent": 0.11111111111110628,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "category_triangles": {
+    "strata": 908,
+    "bindings": 48,
+    "binding-crystals": 160,
+    "torso-stone": 56,
+    "torso-ribs": 288,
+    "torso-band": 72,
+    "neck-ribs": 84,
+    "head-crystal": 116,
+    "crest": 66
+  },
+  "rig": "eight original bones/hierarchy and seven actions; forearm tails fitted with geometry; support-matched roots",
+  "texture_bake": "fracture-plane stone pigment, baked local occlusion and small edge bevel normals; four packed 512px maps; head uses a dedicated atlas strip",
+  "status": "whole-creature correction candidate; art and native acceptance pending",
+  "previous_id": "underworld-boss-rift-titan-fracture-planes-r16",
+  "study_height_metres": 7.0,
+  "changes": "raised rear crest; fuller canted cage/core; lower wrists and long ridged digits; hanging pelvic rocks; cleft planted foot masses; r16 head and neck preserved"
+}

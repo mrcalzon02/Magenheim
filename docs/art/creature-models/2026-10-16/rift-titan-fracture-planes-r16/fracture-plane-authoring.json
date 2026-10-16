@@ -1,0 +1,43 @@
+{
+  "front_landmarks": "twenty r13/r14/r15 frontal X/Z landmarks unchanged; side depth/rake corrected",
+  "front_plate": "twelve inner vertices form three chains of long stepped stone planes; no central opening",
+  "budget": "eight rear perimeter vertices and five-corner paired pockets; 60 vertices / 116 triangles",
+  "pockets": [
+    {
+      "side": 1,
+      "lip": [
+        40,
+        41,
+        42,
+        43,
+        44
+      ],
+      "floor": [
+        45,
+        46,
+        47,
+        48,
+        49
+      ]
+    },
+    {
+      "side": 2,
+      "lip": [
+        50,
+        51,
+        52,
+        53,
+        54
+      ],
+      "floor": [
+        55,
+        56,
+        57,
+        58,
+        59
+      ]
+    }
+  ],
+  "scope": "head and necessary head-end seating only; body, non-end neck geometry and rig preserved",
+  "art_acceptance": false
+}

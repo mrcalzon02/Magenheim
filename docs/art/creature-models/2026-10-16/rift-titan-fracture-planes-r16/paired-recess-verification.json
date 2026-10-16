@@ -1,0 +1,48 @@
+{
+  "result": "PASS",
+  "connected_closed_head": true,
+  "vertices": 60,
+  "triangles": 116,
+  "solid_front_plate_triangles": 42,
+  "median_crystal_faces": 0,
+  "approved_front_outline_max_xz_difference_metres": 0.0,
+  "sockets": [
+    {
+      "side": "left",
+      "rim_vertices": 5,
+      "floor_vertices": 5,
+      "wall_triangles": 10,
+      "floor_triangles": 3,
+      "lined_triangles": 9,
+      "depths_metres": [
+        0.10042861104011536,
+        0.16223086416721344,
+        0.08497807383537292,
+        0.14678026735782623,
+        0.131329745054245
+      ]
+    },
+    {
+      "side": "right",
+      "rim_vertices": 5,
+      "floor_vertices": 5,
+      "wall_triangles": 10,
+      "floor_triangles": 3,
+      "lined_triangles": 9,
+      "depths_metres": [
+        0.09038575738668442,
+        0.14600776135921478,
+        0.07648026943206787,
+        0.13210228085517883,
+        0.1181967556476593
+      ]
+    }
+  ],
+  "central_bridge_interior_samples": 5,
+  "front_plate_interior_samples": 42,
+  "neck_non_head_end_max_difference_metres": 0,
+  "neck_closing_samples": 3024,
+  "poses": 36,
+  "actor_triangles": 1800,
+  "scope": "actual saved solid front plate, two independently closed crystal-lined side recesses and preserved outline/neck; user art and native acceptance remain separate"
+}

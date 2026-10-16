@@ -1,0 +1,15 @@
+{
+  "source": "assets/models/studies/underworld-boss-rift-titan-paired-recesses-r15.blend",
+  "source_sha256": "91d6e9f7c441cfbeb7bc7cbc99568af35b1b4e27edf2d6f400677e1bbd3aabbb",
+  "source_unchanged": true,
+  "cameras": "exact recorded current study transforms, ortho scale and resolution",
+  "lighting": "same normalized three-area-light recipe and AgX",
+  "native": false,
+  "views": [
+    "crown-front",
+    "crown-side",
+    "crown-profile",
+    "crown-right",
+    "crown-profile-clay"
+  ]
+}

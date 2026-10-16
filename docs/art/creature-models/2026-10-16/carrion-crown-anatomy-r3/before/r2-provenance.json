@@ -1,0 +1,85 @@
+{
+  "source": "assets/models/source/underworld-boss-carrion-crown-detail-r2.blend",
+  "source_sha256": "7d2e479b56114e4408e56caee25061e07fd77042099a77ac9bfa49d9b3ded0c2",
+  "source_unchanged": true,
+  "current_source_sha256": "1527eb91e57e5450f547ac87cb4e94efd73845b577adf0cc48c575abe5542d7e",
+  "camera_configuration": {
+    "front": {
+      "location": [
+        0.03493988513946533,
+        27.19803810119629,
+        4.222665786743164
+      ],
+      "rotation": [
+        1.540805459022522,
+        8.738346224390625e-08,
+        3.1415927410125732
+      ],
+      "ortho_scale": 8.023999214172363,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "side": {
+      "location": [
+        -27.165058135986328,
+        -0.0019608736038208008,
+        4.222665786743164
+      ],
+      "rotation": [
+        1.5408055782318115,
+        -5.870416686093449e-08,
+        -1.5707964897155762
+      ],
+      "ortho_scale": 8.023999214172363,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "front-clay": {
+      "location": [
+        0.03493988513946533,
+        27.19803810119629,
+        4.222665786743164
+      ],
+      "rotation": [
+        1.540805459022522,
+        8.738346224390625e-08,
+        3.1415927410125732
+      ],
+      "ortho_scale": 8.023999214172363,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "three-quarter": {
+      "location": [
+        13.634939193725586,
+        27.19803810119629,
+        10.886666297912598
+      ],
+      "rotation": [
+        1.3296165466308594,
+        -7.48755795143552e-08,
+        2.677945137023926
+      ],
+      "ortho_scale": 8.023999214172363,
+      "resolution": [
+        900,
+        900
+      ]
+    }
+  },
+  "cameras": "exact recorded current study transforms, ortho scale and resolution",
+  "lighting": "same normalized three-area-light recipe and AgX",
+  "native": false,
+  "views": [
+    "front",
+    "side",
+    "front-clay",
+    "three-quarter"
+  ]
+}

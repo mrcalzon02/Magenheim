@@ -1,0 +1,42 @@
+{
+  "reference_front": "supplied concept-front.png and full sheet frontal figure; one long cleft head, broader mantle and limb stone masses, narrower overall arm spread and fitted lower-body proportion",
+  "reference_side": "supplied left-facing concept-side.png; tapered depth of shoulder/limb strata, forward head/cage and projecting knees/feet",
+  "front_first": true,
+  "screen_side_direction": "front/head left, back right",
+  "horizontal_fit": 0.95,
+  "height_stations": [
+    [
+      0,
+      0
+    ],
+    [
+      1.177826,
+      1.5
+    ],
+    [
+      1.65,
+      1.9
+    ],
+    [
+      2.2,
+      2.38
+    ],
+    [
+      2.76,
+      3.02
+    ],
+    [
+      3.1,
+      3.27
+    ],
+    [
+      3.95,
+      4.45
+    ]
+  ],
+  "rig": "eight original bone identities/hierarchy and seven retained actions; rest positions fitted to visible silhouette, native deformation pending",
+  "cost": "existing vertex and triangle allocations reshaped; no surface detail work",
+  "acceptance": "silhouette candidate; do not claim exact concept or boss acceptance",
+  "intermediate_build_stage_only": true,
+  "final_saved_geometry_authority": "body-verification.json"
+}
