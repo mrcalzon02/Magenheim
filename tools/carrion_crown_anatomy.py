@@ -149,20 +149,35 @@ def build(B,arm,record,profile,tube,cap):
         seat(o,list(range(5)),trunk,'grafted-branch-root');arms.append(o)
     def cup(name,c,r,bone,n=10):
         c=Vector(c);verts=[]
-        # Rear support, torn outer rim, thick inner lip, deeply recessed floor.
-        for ring,(scale,depth) in enumerate(((.78,-.10),(1,.13),(.91,.105),(.25,-.15))):
+        # Five-ring cup: rear support, torn primary sepals, offset overlapping
+        # secondary sepals, thick inner lip and deeply recessed floor. The
+        # overlap ring spends the remaining donor budget on the concept's
+        # broken crown silhouette instead of tertiary surface noise.
+        phase=(sum(ord(ch) for ch in name)%17)*.13
+        rings=((.78,-.10),(1,.13),(1.06,.055),(.91,.105),(.25,-.15))
+        for ring,(scale,depth) in enumerate(rings):
             for k in range(n):
-                a=k*math.tau/n;irregular=1+.10*math.sin(k*2.2+.7)
+                a=k*math.tau/n
+                aa=a+(.075*math.sin(k*1.91+phase) if ring==2 else 0)
+                irregular=1+.10*math.sin(k*2.2+.7)
+                if ring==1:
+                    torn=1+.16*math.sin(k*1.7+phase)+.08*math.sin(k*3.1+.4)
+                elif ring==2:
+                    torn=1+.10*math.sin(k*1.7+phase+1.1)
+                else:
+                    torn=1
                 flare=(1.10+.13*math.sin(k*2.7)) if ring==1 else 1
-                x=math.cos(a)*r*scale*irregular*flare;z=math.sin(a)*r*scale*irregular*flare
-                verts.append(c+Vector((x,depth-z*.85+(.035*math.sin(k*2.1) if ring==1 else 0),z)))
+                rr=r*scale*irregular*torn*flare
+                x=math.cos(aa)*rr;z=math.sin(aa)*rr
+                fold=(.035*math.sin(k*2.1) if ring==1 else 0)+(.028*math.cos(k*2.4+phase) if ring==2 else 0)
+                verts.append(c+Vector((x,depth-z*.85+fold,z)))
         ff=[]
-        for row in range(3):
+        for row in range(4):
             for k in range(n):a=row*n+k;b=row*n+(k+1)%n;ff.append((a,b,b+n,a+n))
-        ff.extend((tuple(reversed(range(n))),tuple(3*n+k for k in range(n))))
+        ff.extend((tuple(reversed(range(n))),tuple(4*n+k for k in range(n))))
         o=solid(name,verts,ff,'carrion-sepal',bone,'flower-cups');o.data.materials.append(B.mats['cavity'])
         for f in o.data.polygons:
-            if all(i>=3*n for i in f.vertices):f.material_index=1
+            if all(i>=4*n for i in f.vertices):f.material_index=1
         return o
     main=cup('CentralCrownCup',(0,.30,1.60),.29,'Stalk_2',12)
     seat(main,[8,9,10],trunk,'central-crown-root')
@@ -233,6 +248,6 @@ def build(B,arm,record,profile,tube,cap):
         o=branch('HangingLichen'+str(j),[(x,.20,z),(x+s*.035,.23,z-.14),(x+s*.01,.25,z-.25)],[.025,.018,.001],'Stalk_2',3,'lichen','lichen');seat(o,[0,1,2],trunk,'lichen-timber-root')
     bpy.context.scene['silhouette_components']=json.dumps(components);bpy.context.scene['tissue_attachment_contract']=json.dumps(contacts)
     total=sum(len(o.data.loop_triangles) for o in bpy.context.scene.objects if o.type=='MESH')
-    (OUT/'anatomy-authoring.json').write_text(json.dumps(dict(triangles=total,donor='Greydwarf_Shaman',donor_triangles=1422,soft_cap=2133,anatomy=['hollow timber abdomen with real front opening','eight broad attached buttress roots','central deep crown cup and four grafted secondary cups','rooted unequal timber teeth and crown spires','four animated grafted branch arms','six individually stem-supported amber pods','diagonal ribs across the hollow front'],supports=len(contacts),rig_bones=[b.name for b in arm.data.bones],actions=str(bpy.context.scene['magenheim_authored_actions']),remaining='reference-led refinement of torn sepal layers, porous amber, hanging moss, branching silhouette and native animation',status='new anatomy candidate; no art acceptance'),indent=2)+'\n')
+    (OUT/'anatomy-authoring.json').write_text(json.dumps(dict(triangles=total,donor='Greydwarf_Shaman',donor_triangles=1422,soft_cap=2133,anatomy=['hollow timber abdomen with real front opening','eight broad attached buttress roots','central deep crown cup and four grafted secondary cups','rooted unequal timber teeth and crown spires','four animated grafted branch arms','six individually stem-supported amber pods','diagonal ribs across the hollow front'],supports=len(contacts),rig_bones=[b.name for b in arm.data.bones],actions=str(bpy.context.scene['magenheim_authored_actions']),remaining='reference-led refinement of crooked timber/tissue, porous amber, branch/rib asymmetry, bark/lichen and native animation',status='torn overlapping sepal candidate; no art acceptance'),indent=2)+'\n')
     assert total<=2133,total
     return trunk
