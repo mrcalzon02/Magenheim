@@ -2,8 +2,8 @@
 import bpy,json,hashlib,struct,sys,argparse,math
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-p=argparse.ArgumentParser();p.add_argument('--slug',required=True);args=p.parse_args(sys.argv[sys.argv.index('--')+1:])
-ID='underworld-boss-'+args.slug;out=ROOT/'docs/art/creature-models/2026-10-16'/args.slug
+p=argparse.ArgumentParser();p.add_argument('--slug',required=True);p.add_argument('--date',default='2026-10-16');args=p.parse_args(sys.argv[sys.argv.index('--')+1:])
+ID='underworld-boss-'+args.slug;out=ROOT/'docs/art/creature-models'/args.date/args.slug
 source=ROOT/'assets/models/studies'/(ID+'.blend');original=hashlib.sha256(source.read_bytes()).hexdigest()
 bpy.ops.wm.open_mainfile(filepath=str(source));arm=next(o for o in bpy.context.scene.objects if o.type=='ARMATURE');o=next(o for o in bpy.context.scene.objects if o.type=='MESH')
 assert len([o for o in bpy.context.scene.objects if o.type=='MESH'])==len(o.data.materials)==1

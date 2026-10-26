@@ -1,0 +1,103 @@
+{
+  "source": "assets/models/studies/underworld-boss-carrion-crown-anatomy-r3.blend",
+  "source_sha256": "1527eb91e57e5450f547ac87cb4e94efd73845b577adf0cc48c575abe5542d7e",
+  "source_unchanged": true,
+  "current_source_sha256": "8fe917dfc4b407f179876d47e6c332624b980b13fa80ec59d268e7a4eeaea7d3",
+  "camera_configuration": {
+    "front": {
+      "location": [
+        0.03508925437927246,
+        27.19989585876465,
+        4.2517828941345215
+      ],
+      "rotation": [
+        1.540805459022522,
+        8.73834551384789e-08,
+        3.1415927410125732
+      ],
+      "ortho_scale": 8.02400016784668,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "side": {
+      "location": [
+        -27.1649112701416,
+        -0.00010478496551513672,
+        4.2517828941345215
+      ],
+      "rotation": [
+        1.5408055782318115,
+        6.227924131962936e-08,
+        -1.5707963705062866
+      ],
+      "ortho_scale": 8.02400016784668,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "three-quarter": {
+      "location": [
+        13.635089874267578,
+        27.19989585876465,
+        10.915782928466797
+      ],
+      "rotation": [
+        1.3296165466308594,
+        -1.344877205156081e-07,
+        2.677945137023926
+      ],
+      "ortho_scale": 8.02400016784668,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "front-clay": {
+      "location": [
+        0.03508925437927246,
+        27.19989585876465,
+        4.2517828941345215
+      ],
+      "rotation": [
+        1.540805459022522,
+        8.73834551384789e-08,
+        3.1415927410125732
+      ],
+      "ortho_scale": 8.02400016784668,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "side-clay": {
+      "location": [
+        -27.1649112701416,
+        -0.00010478496551513672,
+        4.2517828941345215
+      ],
+      "rotation": [
+        1.5408055782318115,
+        6.227924131962936e-08,
+        -1.5707963705062866
+      ],
+      "ortho_scale": 8.02400016784668,
+      "resolution": [
+        900,
+        900
+      ]
+    }
+  },
+  "cameras": "exact recorded current study transforms, ortho scale and resolution",
+  "lighting": "same normalized three-area-light recipe and AgX",
+  "native": false,
+  "views": [
+    "front",
+    "side",
+    "three-quarter",
+    "front-clay",
+    "side-clay"
+  ]
+}

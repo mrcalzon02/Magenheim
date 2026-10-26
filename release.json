@@ -1,4 +1,4 @@
 {
-  "version": "0.0.177",
-  "description": "0.0.177: Implements refined First Bloom, Rift Titan and Carrion Crown boss models with blended joint skinning, retained animations and owned stone/fungal atlases. Native AI, attacks, drops and persistence remain on their existing chassis."
+  "version": "0.0.178",
+  "description": "0.0.178: Corrects the forward orientation of legacy custom creature visuals so heads face native movement and attack direction. Refined weighted bosses retain their existing orientation. New Rift Titan and Carrion Crown art studies remain separate review candidates."
 }

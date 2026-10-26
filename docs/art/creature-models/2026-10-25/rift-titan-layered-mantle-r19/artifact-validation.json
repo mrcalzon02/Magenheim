@@ -1,0 +1,31 @@
+{
+  "result": "PASS",
+  "source_sha256": "7eba1069792697976ea7d202cc818c64aa9bc4405b6267ab331f510c300dea93",
+  "all_gallery_links_exist": true,
+  "matching_historical_cameras_verified": true,
+  "art_accepted": false,
+  "installed": false,
+  "remaining": "The unchanged inner mantle remains too bulky and faceted. The upper cage, core and rear architecture still lack the concept-specific layered structure. Body stone remains coarse at full view and needs authored chips and deliberate lichen. The head/neck geometry is preserved; no new whole-boss acceptance is inferred.",
+  "hashes": {
+    "assets/models/studies/underworld-boss-rift-titan-layered-mantle-r19.blend": "7eba1069792697976ea7d202cc818c64aa9bc4405b6267ab331f510c300dea93",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/underworld-boss-rift-titan-layered-mantle-r19.glb": "7a91d5631db9c793ac5f9da2c45a8f463ec572d58958c935d5f38842f8997495",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/underworld-boss-rift-titan-layered-mantle-r19--attack.png": "e66427f8409c967dcaa4d9f2d844c6b836e308e1f2e417addc6ea0465c2710dd",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/underworld-boss-rift-titan-layered-mantle-r19--crown-detail.png": "f5293627784241a10a6756393097ac347bfc0c0238fb500c59acd5e30262c20d",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/underworld-boss-rift-titan-layered-mantle-r19--crown-front-clay.png": "1a31d11f164eaefa53b036f5aa05ecfef34b9c9fa5a945b81bd9b2b4e0b07608",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/underworld-boss-rift-titan-layered-mantle-r19--crown-front.png": "06a51a2f37973d5d777fec3ade7a7780d41f235f67979eedaba5c3d93dacd2e7",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/underworld-boss-rift-titan-layered-mantle-r19--crown-side-clay.png": "47eadfc062476fb41196ef5cf06938bcc2dc9194be7a79f084292cd38cd8c465",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/underworld-boss-rift-titan-layered-mantle-r19--crown-side.png": "352f44956b9937f555f192cf16a475c85bf07b9f46927a7d551fb60f37e7c1e0",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/underworld-boss-rift-titan-layered-mantle-r19--front-clay.png": "f2dd7b799854e379aa9628fa7927ea84bcfd4fc977d38da91673c33c5807f679",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/underworld-boss-rift-titan-layered-mantle-r19--front.png": "d0535bea52fa3c8fd8ec9c64d579af421dc6c42786c7ec5f207fa3d0b617a5d4",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/underworld-boss-rift-titan-layered-mantle-r19--side-clay.png": "52a2ac80badb0ab3adcf959232449eb73058d0be33bf1f381b2f79e42dbfc774",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/underworld-boss-rift-titan-layered-mantle-r19--side.png": "df308e5d8813eac7c3a0fd1b34f706ddd371e944269c3cacdf463170e581ecca",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/underworld-boss-rift-titan-layered-mantle-r19--three-quarter.png": "b995b4b8d84c4f42e4666f6789e68f47800c456236540ed6a775202dfae6c276",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/before/native-StoneGolem--front-clay.png": "2cfd398ae8b1c68d9e679474b62b52c0076119bb259b3da66ed4bc0a518ca577",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/before/native-StoneGolem--front.png": "60f19ebd83939427ff3b4dad365758d62f7c1324620afe0f5645df37d576a28e",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/before/native-StoneGolem--side.png": "1315b733d46f3f29e06b690819240ac7dff69b713b6bf92336a313fe7fbf5a2b",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/before/r18--front-clay.png": "e3773148ddd5afe9ed18bfe89249c5959c9287ce6d574c78560b1dc933bccb0f",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/before/r18--front.png": "508e5bb7d52933477e46d8f4dce4d753292174b9cba625f152fa0a33a1f8b633",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/before/r18--side-clay.png": "7c7be32266b2e02cebd1f4dd7d68b37a67ae1ae805b22f54a287f32e1c6915ef",
+    "docs/art/creature-models/2026-10-25/rift-titan-layered-mantle-r19/before/r18--side.png": "d464bbbcbcc77f7a83f112a1b22ef5b35b9b7df1f3594a231023170014c7b47b"
+  }
+}

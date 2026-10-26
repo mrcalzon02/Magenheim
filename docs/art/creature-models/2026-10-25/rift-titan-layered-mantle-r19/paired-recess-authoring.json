@@ -1,0 +1,71 @@
+{
+  "interpretation": "one continuous stone front plate with a deep purple-crystal-lined pocket on each flank behind it; no central purple stripe or median split",
+  "preserved": "all 32 r14 front/back shell vertices, rake and outer volume; neck/collar geometry except any necessary head-end seating",
+  "head_triangles": 116,
+  "head_vertices": 60,
+  "total_actor_triangles": 1800,
+  "sockets": [
+    {
+      "side": "left",
+      "lip_vertices": [
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "floor_vertices": [
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45
+      ],
+      "authored_depths": [
+        0.06,
+        0.095,
+        0.085,
+        0.045,
+        0.075,
+        0.11,
+        0.085
+      ]
+    },
+    {
+      "side": "right",
+      "lip_vertices": [
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52
+      ],
+      "floor_vertices": [
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59
+      ],
+      "authored_depths": [
+        0.0528,
+        0.08360000000000001,
+        0.0748,
+        0.039599999999999996,
+        0.066,
+        0.0968,
+        0.0748
+      ]
+    }
+  ],
+  "root_moves": [],
+  "acceptance": "unaccepted side-pocket interpretation candidate"
+}

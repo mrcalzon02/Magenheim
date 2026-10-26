@@ -1,0 +1,256 @@
+{
+  "actor_triangles": 1800,
+  "changes": [
+    {
+      "name": "ShoulderStratumL0",
+      "before": 28,
+      "after": 26
+    },
+    {
+      "name": "ShoulderStratumL1",
+      "before": 28,
+      "after": 24
+    },
+    {
+      "name": "ShoulderStratumL2",
+      "before": 28,
+      "after": 24
+    },
+    {
+      "name": "ShoulderStratumR0",
+      "before": 28,
+      "after": 26
+    },
+    {
+      "name": "ShoulderStratumR1",
+      "before": 28,
+      "after": 24
+    },
+    {
+      "name": "ShoulderStratumR2",
+      "before": 28,
+      "after": 24
+    },
+    {
+      "name": "LongFractureArmL1",
+      "before": 22,
+      "after": 22
+    },
+    {
+      "name": "LongFractureArmL2",
+      "before": 22,
+      "after": 22
+    },
+    {
+      "name": "LongFractureForearmL0",
+      "before": 22,
+      "after": 22
+    },
+    {
+      "name": "LongFractureForearmL1",
+      "before": 24,
+      "after": 24
+    },
+    {
+      "name": "LongFractureForearmL2",
+      "before": 22,
+      "after": 22
+    },
+    {
+      "name": "LongFractureLegL0",
+      "before": 22,
+      "after": 22
+    },
+    {
+      "name": "LongFractureLegL1",
+      "before": 24,
+      "after": 24
+    },
+    {
+      "name": "LongFractureLegL2",
+      "before": 22,
+      "after": 22
+    },
+    {
+      "name": "LongFractureArmR1",
+      "before": 22,
+      "after": 22
+    },
+    {
+      "name": "LongFractureArmR2",
+      "before": 22,
+      "after": 22
+    },
+    {
+      "name": "LongFractureForearmR0",
+      "before": 22,
+      "after": 22
+    },
+    {
+      "name": "LongFractureForearmR1",
+      "before": 24,
+      "after": 24
+    },
+    {
+      "name": "LongFractureForearmR2",
+      "before": 22,
+      "after": 22
+    },
+    {
+      "name": "LongFractureLegR0",
+      "before": 22,
+      "after": 22
+    },
+    {
+      "name": "LongFractureLegR1",
+      "before": 24,
+      "after": 24
+    },
+    {
+      "name": "LongFractureLegR2",
+      "before": 22,
+      "after": 22
+    },
+    {
+      "name": "FingerStratumL0",
+      "before": 18,
+      "after": 22
+    },
+    {
+      "name": "FingerStratumL1",
+      "before": 18,
+      "after": 22
+    },
+    {
+      "name": "FingerStratumL2",
+      "before": 18,
+      "after": 22
+    },
+    {
+      "name": "FingerStratumR0",
+      "before": 18,
+      "after": 22
+    },
+    {
+      "name": "FingerStratumR1",
+      "before": 18,
+      "after": 22
+    },
+    {
+      "name": "FingerStratumR2",
+      "before": 18,
+      "after": 22
+    },
+    {
+      "name": "FootL",
+      "before": 28,
+      "after": 28
+    },
+    {
+      "name": "FootR",
+      "before": 28,
+      "after": 28
+    },
+    {
+      "name": "BrokenCrestBeam0",
+      "before": 12,
+      "after": 16
+    },
+    {
+      "name": "BrokenCrestBeam1",
+      "before": 12,
+      "after": 16
+    },
+    {
+      "name": "BrokenCrestBeam2",
+      "before": 12,
+      "after": 20
+    },
+    {
+      "name": "CrestVioletMote0",
+      "before": 6,
+      "after": 4
+    },
+    {
+      "name": "CrestVioletMote1",
+      "before": 6,
+      "after": 4
+    },
+    {
+      "name": "CrestVioletMote2",
+      "before": 6,
+      "after": 4
+    },
+    {
+      "name": "SuspendedCore1",
+      "before": 8,
+      "after": 4
+    },
+    {
+      "name": "CoreFracture4",
+      "before": 8,
+      "after": 4
+    },
+    {
+      "name": "CoreFracture5",
+      "before": 8,
+      "after": 4
+    }
+  ],
+  "rechecked_contacts": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    66,
+    67,
+    68,
+    69,
+    70,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76
+  ],
+  "preserved": "exact head/neck geometry, torso ring geometry, eight bone transforms/hierarchy and seven actions from r17",
+  "reference": "committed unaltered front and left-facing side concept; thick bent rocky fingers, low broken toe groups, long mantle/limb strata and bent rear architecture",
+  "surface": "locally directed long gray fracture patches, sparse warm/olive mineral, thin recessed seams; baked into existing four 512 maps",
+  "acceptance": "candidate; user art and native acceptance separate"
+}

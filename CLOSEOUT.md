@@ -1,4 +1,15 @@
-# Current runtime repair candidate - 0.0.162
+# Current creature orientation candidate — 0.0.178
+
+Corrects the legacy rigid creature visual frame from -Z to native +Z by rotating
+the complete bound visual/skeleton together. The three refined weighted bosses
+retain their current frame. Actual exported jaw/tail regression checks pass,
+and the runtime compiles against the installed game with zero warnings/errors.
+The full 534-model importer suite passes. Installation/catalog/hash proof is in
+[the October 25 report](docs/validation/2026-10-25-creature-orientation.md).
+Live walking, turning and attack-direction acceptance remains pending. New art
+studies are separate and unaccepted; Blackwater Maw stays paused.
+
+# Previous runtime repair candidate - 0.0.162
 
 The completed 0.0.161 run contains 27,861 error headers, largely repeated scene-view
 and companion joystick failures. Repairs address the causes rather than hiding exceptions:

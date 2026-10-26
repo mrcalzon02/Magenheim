@@ -1,0 +1,10 @@
+{
+  "previous_id": "underworld-boss-rift-titan-broken-strata-r18",
+  "previous_triangles": 1800,
+  "study_height_metres": 7.0,
+  "rig": "original eight-bone Rift Colossus hierarchy and seven actions; six neck bars retain their three-dimensional spread",
+  "texture_bake": "owned spatial head stone and localized violet; dedicated upper atlas strip; four packed 512px maps",
+  "changes": "four leaner staggered outer mantle plates with long front ridges and reduced rear depth, finer discrete stone chips, dark long seams and sparse upward olive lichen",
+  "status": "intermediate concept refinement; art and native acceptance pending",
+  "triangle_delta": 0
+}

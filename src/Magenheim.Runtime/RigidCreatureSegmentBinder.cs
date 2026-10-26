@@ -113,6 +113,7 @@ internal static class RigidCreatureSegmentBinder
         root.transform.localScale = Vector3.Scale(
             root.transform.localScale,
             Vector3.one * (1f / chassisScale));
+        root.transform.localRotation = CreatureVisualOrientation.Correction((string)rig["kind"]!);
 
         foreach (var renderer in donorRenderers)
             if (renderer)

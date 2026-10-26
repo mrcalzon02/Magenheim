@@ -1,0 +1,141 @@
+{
+  "result": "PASS",
+  "endpoints": 120,
+  "retained_actions": 5,
+  "sampled_poses": 25,
+  "max_outside_distance_metres": 0,
+  "tolerance_metres": 0.001,
+  "samples": [
+    {
+      "action": "REST",
+      "frame": 0,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Idle",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Idle",
+      "frame": 13,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Idle",
+      "frame": 25,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Idle",
+      "frame": 37,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Idle",
+      "frame": 49,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Pulse",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Pulse",
+      "frame": 9,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Pulse",
+      "frame": 16,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Pulse",
+      "frame": 24,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Pulse",
+      "frame": 32,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Cast",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Cast",
+      "frame": 6,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Cast",
+      "frame": 10,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Cast",
+      "frame": 15,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Cast",
+      "frame": 20,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Hit",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Hit",
+      "frame": 5,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Hit",
+      "frame": 8,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Hit",
+      "frame": 12,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Hit",
+      "frame": 16,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Death",
+      "frame": 1,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Death",
+      "frame": 11,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Death",
+      "frame": 22,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Death",
+      "frame": 32,
+      "outside_contacts": []
+    },
+    {
+      "action": "CorpseOrchard_Death",
+      "frame": 42,
+      "outside_contacts": []
+    }
+  ],
+  "scope": "saved rest and five Blender samples per retained action; ray containment with independent closed-support winding check for ambiguous hits; native and every-frame acceptance pending"
+}

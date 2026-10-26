@@ -1,0 +1,21 @@
+{
+  "result": "PASS",
+  "source_sha256": "debaa7ba65c162912779f2954c47beefb15db81bab2a723e3aafb6aa84f4365e",
+  "all_gallery_links_exist": true,
+  "matching_historical_cameras_verified": true,
+  "art_accepted": false,
+  "installed": false,
+  "remaining": "This builds the previously committed fifth sepal ring. It remains close to r3: regular cups, broad smooth timber and insufficient seed/bark anatomy. Preserved as an intermediate, superseded for review by r5.",
+  "hashes": {
+    "assets/models/studies/underworld-boss-carrion-crown-sepals-r4.blend": "debaa7ba65c162912779f2954c47beefb15db81bab2a723e3aafb6aa84f4365e",
+    "docs/art/creature-models/2026-10-25/carrion-crown-sepals-r4/underworld-boss-carrion-crown-sepals-r4.glb": "8951b60147f74c98282d763d02072122dc1d0c7729b39545b502a20c7f228d69",
+    "docs/art/creature-models/2026-10-25/carrion-crown-sepals-r4/underworld-boss-carrion-crown-sepals-r4--attack.png": "bda8241778ef0ff149a9cb0105f71a202d0f9b043e66e3f44a445589c44edae1",
+    "docs/art/creature-models/2026-10-25/carrion-crown-sepals-r4/underworld-boss-carrion-crown-sepals-r4--clay.png": "4d27abd31c0bbb23b5f0c00696c1e2ab5affb1664fe9dd3f03073edbfa4a6a25",
+    "docs/art/creature-models/2026-10-25/carrion-crown-sepals-r4/underworld-boss-carrion-crown-sepals-r4--detail.png": "f304cf3f3ecfcc6a5397d41544860bf08734e6293de70fa132512437b0b59077",
+    "docs/art/creature-models/2026-10-25/carrion-crown-sepals-r4/underworld-boss-carrion-crown-sepals-r4--front-clay.png": "3e7b1f98996876236f6065a0392b91d46e66b78e3598d4a4f2e6d32fcf0ed4be",
+    "docs/art/creature-models/2026-10-25/carrion-crown-sepals-r4/underworld-boss-carrion-crown-sepals-r4--front.png": "97313f8db8473439033e4c721f9a7e5e5bdcf46711bd8e42aaae288dbb11f1be",
+    "docs/art/creature-models/2026-10-25/carrion-crown-sepals-r4/underworld-boss-carrion-crown-sepals-r4--side-clay.png": "a32168831624f1d24c8112bae572b72e8fffeee7c2cc262b68d47e4a7e8cfc10",
+    "docs/art/creature-models/2026-10-25/carrion-crown-sepals-r4/underworld-boss-carrion-crown-sepals-r4--side.png": "4b8af1b363263c0ed0f867be8f1520658feec1aa6559ce0a87c2c4127132414f",
+    "docs/art/creature-models/2026-10-25/carrion-crown-sepals-r4/underworld-boss-carrion-crown-sepals-r4--three-quarter.png": "d527430373935be4a46b3d98cb454b65f37d7333b82fab6a3e10d17c1f0f9622"
+  }
+}

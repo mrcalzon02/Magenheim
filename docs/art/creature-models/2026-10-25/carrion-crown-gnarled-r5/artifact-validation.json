@@ -1,0 +1,29 @@
+{
+  "result": "PASS",
+  "source_sha256": "8fe917dfc4b407f179876d47e6c332624b980b13fa80ec59d268e7a4eeaea7d3",
+  "all_gallery_links_exist": true,
+  "matching_historical_cameras_verified": true,
+  "art_accepted": false,
+  "installed": false,
+  "remaining": "The five mouths still read as regular polygonal cups. The seed needs convincing porous amber volume and drips, the pods need fibrous husks, and the trunk needs better bark, crooked support and lichen. Smooth broad root and arm sections remain too simple. This is not at the accepted First Bloom standard.",
+  "hashes": {
+    "assets/models/studies/underworld-boss-carrion-crown-gnarled-r5.blend": "8fe917dfc4b407f179876d47e6c332624b980b13fa80ec59d268e7a4eeaea7d3",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/underworld-boss-carrion-crown-gnarled-r5.glb": "7b82c6708939ca5a9feec3161c0ab5ec4ed7ee5ddbf73d7e32399009b6425ca9",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/underworld-boss-carrion-crown-gnarled-r5--attack.png": "9f721f75e9b6bfd4606cd256ad592915ad25d34fb76b51cb56968d3d5980eb4c",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/underworld-boss-carrion-crown-gnarled-r5--clay.png": "d2fe3f11774de5475a9e2f9366b87d0af817f17531d4cc3ca3ff62462f1f2738",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/underworld-boss-carrion-crown-gnarled-r5--detail.png": "e93153ee72205c4d1d6f201150c541dc11d9f4d4a661d65078e44cc3c4d77236",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/underworld-boss-carrion-crown-gnarled-r5--front-clay.png": "db27d460f47ef1d5eda3bd0e6451810a9ccf18fd545f3049d2a95f726ec3ca42",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/underworld-boss-carrion-crown-gnarled-r5--front.png": "8d27aa3546937a952dabad4592f5cf4a824a6ddfca8fa71e253d145ce94fdc21",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/underworld-boss-carrion-crown-gnarled-r5--side-clay.png": "25e4d22ecad2e76913250c905b64c2018dbaf7de56d308b4a87290db915e9e3e",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/underworld-boss-carrion-crown-gnarled-r5--side.png": "c29f923ae72f4b8d5683244c9e3bb034571836353158d01dbb5452da393ab901",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/underworld-boss-carrion-crown-gnarled-r5--three-quarter.png": "8c3e6602361c5eb08e05d7ad8d63d95e5580187472fad6bf29ece78d1a3983fc",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/before/native-Greydwarf_Shaman--front-clay.png": "91f413e9e236bf3c4594f875115f2ce4f8bfe09acbd36d329f7edae9a6929db8",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/before/native-Greydwarf_Shaman--front.png": "75f45c1028bf5c25a74fb7f5798aaff1b2d557f7baa113d0e86eb4f282501051",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/before/native-Greydwarf_Shaman--side.png": "5987f261c11f4f44e6c897a7cf1275b85ba899ad076ecef045103bba74523511",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/before/r3--front-clay.png": "04ff60dce1b01eaa36e780843dcc872dc26a1d2d6830ba15462fae00e33a8498",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/before/r3--front.png": "a4efa82575657a9a480124036a25c7cfa141f80a58d0dd426c86ba789c43f01c",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/before/r3--side-clay.png": "71028f3f95b188991a341d4d5257cc427fdaa9092fbb15480c730376422f775d",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/before/r3--side.png": "612f8317c2a2c8a61f73eee30dab5d4780232ef42d122165cc0cc168392e16bc",
+    "docs/art/creature-models/2026-10-25/carrion-crown-gnarled-r5/before/r3--three-quarter.png": "f2bbe40ada3229be55b94fa532015a648ac9ff1d2cc804af0d7fbc27bc8479a7"
+  }
+}

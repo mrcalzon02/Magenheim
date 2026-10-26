@@ -1,0 +1,28 @@
+{
+  "triangles": 2126,
+  "donor": "Greydwarf_Shaman",
+  "donor_triangles": 1422,
+  "soft_cap": 2133,
+  "anatomy": [
+    "hollow timber abdomen with real front opening",
+    "eight broad attached buttress roots",
+    "central deep crown cup and four grafted secondary cups",
+    "rooted unequal timber teeth and crown spires",
+    "four animated grafted branch arms",
+    "six individually stem-supported amber pods",
+    "diagonal ribs across the hollow front"
+  ],
+  "supports": 120,
+  "rig_bones": [
+    "Root",
+    "Root.001",
+    "Stalk_1",
+    "Stalk_2",
+    "Stalk_3",
+    "Stalk_4",
+    "AttackOrigin"
+  ],
+  "actions": "CorpseOrchard_Idle,CorpseOrchard_Pulse,CorpseOrchard_Cast,CorpseOrchard_Hit,CorpseOrchard_Death",
+  "remaining": "reference-led refinement of crooked timber/tissue, porous amber, branch/rib asymmetry, bark/lichen and native animation",
+  "status": "torn overlapping sepal candidate; no art acceptance"
+}

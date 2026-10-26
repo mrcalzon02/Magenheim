@@ -1,6 +1,36 @@
 using UnityEngine;
 using Magenheim.Runtime;
 using Newtonsoft.Json.Linq;
+// Reported rear-facing creature previews exposed two opposite export frames.
+// Check actual named anatomical landmarks, not a symmetric bounding box.
+{
+ var modelRoot=Path.Combine(AppContext.BaseDirectory,"assets/models/runtime");
+ var legacy=CreatureVisualOrientation.Correction("rigid-segment-creature-v1");
+ var weighted=CreatureVisualOrientation.Correction("weighted-creature-v1");
+ if(Vector3.Dot(legacy*(-Vector3.forward),Vector3.forward)<.99999f || Vector3.Dot(weighted*Vector3.forward,Vector3.forward)<.99999f)
+  throw new Exception("Creature forward conventions do not reach native +Z.");
+ foreach(var (id,front,back) in new[]{
+  ("glacier-stalker","GS_Jaw","GS_Tail_2"),
+  ("cinder-hound","CH_LowerJaw","CH_Tail_3")})
+ {
+  var doc=JObject.Parse(File.ReadAllText(Path.Combine(modelRoot,"underworld-creature-"+id+".model.json")));
+  Vector3 Center(string name) {
+   var part=((JArray)doc["parts"]!).Single(p=>(string?)p["name"]==name);
+   var points=((JArray)part["vertices"]!).Select(ModelAssets.Vector).ToArray();
+   return points.Aggregate(Vector3.zero,(a,b)=>a+b)*(1f/points.Length);
+  }
+  var head=Center(front);var tail=Center(back);
+  if(head.z>=0 || tail.z<=0 || (legacy*head).z<=0 || (legacy*tail).z>=0)
+   throw new Exception("Actual jaw/tail orientation regression: "+id);
+  if(MathF.Abs((legacy*head).y-head.y)>.00001f || MathF.Abs((legacy*head).magnitude-head.magnitude)>.00001f)
+   throw new Exception("Creature orientation changed height or scale: "+id);
+ }
+ var rigidCount=Directory.GetFiles(modelRoot,"underworld-creature-*.model.json").Count(p=>(string?)JObject.Parse(File.ReadAllText(p))["creatureRig"]?["kind"]=="rigid-segment-creature-v1");
+ if(rigidCount!=42)throw new Exception("Creature orientation coverage changed; review model conventions: "+rigidCount);
+ var rejected=false;try{CreatureVisualOrientation.Correction("unknown");}catch(InvalidOperationException){rejected=true;}
+ if(!rejected)throw new Exception("Unknown creature orientation silently admitted.");
+ Console.WriteLine("PASS: 42 legacy creature frames rotate together to +Z; actual exported jaws/tails, height and scale verified; weighted boss forward preserved.");
+}
 // Regression from actual exported geometry: two 2m root pillars snapped end to
 // end leave a gap greater than the installed engine's .15m neighbour tolerance.
 {

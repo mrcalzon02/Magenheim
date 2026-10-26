@@ -4,14 +4,23 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.177 by Local** and start its description with
-**0.0.177: Implements refined First Bloom**.
+show **Magenheim v0.0.178 by Local** and start its description with
+**0.0.178: Corrects the forward orientation**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.177]` and the runtime image line reports
-`Runtime image 0.0.177` with the actual assembly path before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.178]` and the runtime image line reports
+`Runtime image 0.0.178` with the actual assembly path before reporting game results.
 Future versions must update `release.json` and this expected version together.
+
+For 0.0.178, check ordinary creatures in a disposable world while they walk,
+turn and attack. Their visible heads must face their native movement/attack
+direction; tails must trail. Check Glacier Stalker/Cinder Hound and one humanoid
+or flying species, then confirm the three weighted bosses below retain their
+prior orientation. The old rigid export frame was -Z; the complete visual and
+rig are now rotated together to native +Z. The [orientation report](docs/validation/2026-10-25-creature-orientation.md)
+and [corrected front/rear comparisons](docs/art/entity-review/2026-10-25/gallery.html)
+record offline evidence. New r19/r5 art studies are not installed by this fix.
 
 For 0.0.177, inspect the actual biome boss encounter prefabs in a disposable
 test world. The ordinary Crowncap Brute, Rift Colossus and Corpse Orchard remain

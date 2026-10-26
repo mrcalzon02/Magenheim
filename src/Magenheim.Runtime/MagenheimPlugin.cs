@@ -18,7 +18,7 @@ internal sealed class MagenheimPlugin : BaseUnityPlugin
 {
     internal const string PluginGuid = "mrcalzon02.magenheim";
     internal const string PluginName = "Magenheim";
-    internal const string PluginVersion = "0.0.177";
+    internal const string PluginVersion = "0.0.178";
 
     private UnderworldResourceRegistrar? _underworldResourceRegistrar;
     private UnderworldFloraWorldgenRegistrar? _underworldFloraWorldgenRegistrar;

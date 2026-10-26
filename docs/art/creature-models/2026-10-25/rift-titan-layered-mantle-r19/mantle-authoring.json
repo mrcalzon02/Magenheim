@@ -1,0 +1,32 @@
+{
+  "triangles": 1800,
+  "changes": [
+    {
+      "component": "ShoulderStratumL1",
+      "triangles": 24,
+      "change": "leaner depth, staggered overlapping outline and long front fracture ridge; four-corner rear"
+    },
+    {
+      "component": "ShoulderStratumL2",
+      "triangles": 24,
+      "change": "leaner depth, staggered overlapping outline and long front fracture ridge; four-corner rear"
+    },
+    {
+      "component": "ShoulderStratumR1",
+      "triangles": 24,
+      "change": "leaner depth, staggered overlapping outline and long front fracture ridge; four-corner rear"
+    },
+    {
+      "component": "ShoulderStratumR2",
+      "triangles": 24,
+      "change": "leaner depth, staggered overlapping outline and long front fracture ridge; four-corner rear"
+    }
+  ],
+  "reseated_contacts": [
+    51,
+    55
+  ],
+  "preserved": "all r18 head, neck, collar, wrap, inner shoulders, bone matrices and actions; only the two upper-arm roots reseated",
+  "surface": "directional large gray fracture fields, smaller discrete stone chips, dark seams and sparse upward olive lichen; four 512px baked maps",
+  "status": "candidate, requires visual comparison and native checks"
+}

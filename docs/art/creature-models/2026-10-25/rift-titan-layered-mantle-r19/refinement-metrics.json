@@ -1,0 +1,30 @@
+{
+  "id": "underworld-boss-rift-titan-layered-mantle-r19",
+  "source": "assets/models/studies/underworld-boss-rift-titan-layered-mantle-r19.blend",
+  "triangles": 1800,
+  "donor_triangles": 1200,
+  "soft_cap": 1800,
+  "ratio": 1.5,
+  "previous_triangles": 1800,
+  "renderers": 1,
+  "materials": 1,
+  "atlas_size": 512,
+  "category_triangles": {
+    "strata": 912,
+    "bindings": 48,
+    "binding-crystals": 148,
+    "torso-stone": 56,
+    "torso-ribs": 288,
+    "torso-band": 72,
+    "neck-ribs": 84,
+    "head-crystal": 116,
+    "crest": 76
+  },
+  "rig": "original eight-bone Rift Colossus hierarchy and seven actions; six neck bars retain their three-dimensional spread",
+  "texture_bake": "owned spatial head stone and localized violet; dedicated upper atlas strip; four packed 512px maps",
+  "status": "intermediate concept refinement; art and native acceptance pending",
+  "previous_id": "underworld-boss-rift-titan-broken-strata-r18",
+  "study_height_metres": 7.0,
+  "changes": "four leaner staggered outer mantle plates with long front ridges and reduced rear depth, finer discrete stone chips, dark long seams and sparse upward olive lichen",
+  "triangle_delta": 0
+}

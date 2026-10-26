@@ -1,0 +1,20 @@
+{
+  "result": "PASS",
+  "source_sha256": "debaa7ba65c162912779f2954c47beefb15db81bab2a723e3aafb6aa84f4365e",
+  "glb_sha256": "8951b60147f74c98282d763d02072122dc1d0c7729b39545b502a20c7f228d69",
+  "triangles": 2126,
+  "vertices": 5919,
+  "attributes": [
+    "POSITION",
+    "NORMAL",
+    "TEXCOORD_0",
+    "JOINTS_0",
+    "WEIGHTS_0"
+  ],
+  "atlas_maps": 4,
+  "atlas_pixels": 512,
+  "skin_joints": 7,
+  "unused_paint_streams_exported": false,
+  "source_unchanged": true,
+  "scope": "actual exported accessors, compact normalized skin weights, indices, embedded maps and no unused paint channels; native acceptance separate"
+}

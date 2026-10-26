@@ -1,0 +1,159 @@
+{
+  "changes": [
+    {
+      "name": "SplitCrown0",
+      "before": 24,
+      "after": 28,
+      "vertices": 16,
+      "change": "eight-station outer head step; concave cap triangulation"
+    },
+    {
+      "name": "SplitCrown1",
+      "before": 24,
+      "after": 28,
+      "vertices": 16,
+      "change": "eight-station outer head step; concave cap triangulation"
+    },
+    {
+      "name": "SplitCrown2",
+      "before": 24,
+      "after": 16,
+      "vertices": 10,
+      "change": "five-station rear plate; eight triangles transferred to visible head notches"
+    },
+    {
+      "name": "PalmL",
+      "before": 24,
+      "after": 20,
+      "vertices": 12,
+      "change": "retain all six perimeter stations; remove two central face-ridge vertices, four triangles"
+    },
+    {
+      "name": "PalmR",
+      "before": 24,
+      "after": 20,
+      "vertices": 12,
+      "change": "retain all six perimeter stations; remove two central face-ridge vertices, four triangles"
+    },
+    {
+      "name": "FootL",
+      "before": 24,
+      "after": 20,
+      "vertices": 12,
+      "change": "retain all six perimeter stations; remove two central face-ridge vertices, four triangles"
+    },
+    {
+      "name": "FootR",
+      "before": 24,
+      "after": 20,
+      "vertices": 12,
+      "change": "retain all six perimeter stations; remove two central face-ridge vertices, four triangles"
+    },
+    {
+      "name": "PelvisKeystone0",
+      "before": 24,
+      "after": 20,
+      "vertices": 12,
+      "change": "retain all six perimeter stations; remove two central face-ridge vertices, four triangles"
+    },
+    {
+      "name": "PelvisKeystone2",
+      "before": 24,
+      "after": 20,
+      "vertices": 12,
+      "change": "retain all six perimeter stations; remove two central face-ridge vertices, four triangles"
+    },
+    {
+      "name": "ShoulderStratumL0",
+      "before": 24,
+      "after": 28,
+      "vertices": 16,
+      "change": "individual eight-station shoulder chip; deeper uneven outer step"
+    },
+    {
+      "name": "ShoulderStratumL1",
+      "before": 24,
+      "after": 28,
+      "vertices": 16,
+      "change": "individual eight-station shoulder chip; deeper uneven outer step"
+    },
+    {
+      "name": "ShoulderStratumL2",
+      "before": 24,
+      "after": 28,
+      "vertices": 16,
+      "change": "individual eight-station shoulder chip; deeper uneven outer step"
+    },
+    {
+      "name": "LongFractureForearmL1",
+      "before": 24,
+      "after": 24,
+      "vertices": 14,
+      "change": "seven-station forearm/shin notch replaces six-station face-ridge layout at identical cost"
+    },
+    {
+      "name": "LongFractureLegL1",
+      "before": 24,
+      "after": 24,
+      "vertices": 14,
+      "change": "seven-station forearm/shin notch replaces six-station face-ridge layout at identical cost"
+    },
+    {
+      "name": "ShoulderStratumR0",
+      "before": 24,
+      "after": 28,
+      "vertices": 16,
+      "change": "individual eight-station shoulder chip; deeper uneven outer step"
+    },
+    {
+      "name": "ShoulderStratumR1",
+      "before": 24,
+      "after": 28,
+      "vertices": 16,
+      "change": "individual eight-station shoulder chip; deeper uneven outer step"
+    },
+    {
+      "name": "ShoulderStratumR2",
+      "before": 24,
+      "after": 28,
+      "vertices": 16,
+      "change": "individual eight-station shoulder chip; deeper uneven outer step"
+    },
+    {
+      "name": "LongFractureForearmR1",
+      "before": 24,
+      "after": 24,
+      "vertices": 14,
+      "change": "seven-station forearm/shin notch replaces six-station face-ridge layout at identical cost"
+    },
+    {
+      "name": "LongFractureLegR1",
+      "before": 24,
+      "after": 24,
+      "vertices": 14,
+      "change": "seven-station forearm/shin notch replaces six-station face-ridge layout at identical cost"
+    }
+  ],
+  "net_triangle_change": 0,
+  "triangles_transferred": 32,
+  "contacts": 76,
+  "coherent_root_repairs": [
+    {
+      "tissue": "LongFractureArmL0",
+      "support": "ShoulderStratumL1",
+      "root_vertices": 6,
+      "closing_triangles": 4,
+      "contraction": 0.55
+    },
+    {
+      "tissue": "FloatingStratum0",
+      "support": "ShoulderStratumL0",
+      "root_vertices": 6,
+      "closing_triangles": 4,
+      "contraction": 0.7
+    }
+  ],
+  "scope": "real outline notches and angular cap facets, not texture-only cracks; r10 surfaces/rig/torso/crystals retained",
+  "remaining": "more individual fragmentation, crest debris/core density, intentional texture placement and native acceptance",
+  "acceptance": "continued candidate; 85% not claimed"
+}

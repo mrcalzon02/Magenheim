@@ -1,0 +1,15 @@
+{
+  "source": "dist/vanilla-creature-comparison/native-metrics.json",
+  "source_sha256": "26fc8dacaf26f0431fadcd42b7bd5e07be776c15cc06f8094b1c1eca94d03049",
+  "high_detail_triangles": {
+    "Seeker": 5353,
+    "Tick": 2210,
+    "Lox": 3350,
+    "Wolf": 1962,
+    "Troll": 6206,
+    "Bat": 812,
+    "Serpent": 4872,
+    "StoneGolem": 1200,
+    "Greydwarf_Shaman": 1422
+  }
+}

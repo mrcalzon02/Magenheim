@@ -1,0 +1,85 @@
+{
+  "source": "assets/models/studies/underworld-boss-rift-titan-broken-strata-r18.blend",
+  "source_sha256": "df85bf6cd829d769f29007a0c6bbf3059fd64c87275f476f8ff3420f7b0094d9",
+  "source_unchanged": true,
+  "current_source_sha256": "7eba1069792697976ea7d202cc818c64aa9bc4405b6267ab331f510c300dea93",
+  "camera_configuration": {
+    "front": {
+      "location": [
+        0.010337591171264648,
+        27.76913070678711,
+        4.151151180267334
+      ],
+      "rotation": [
+        1.540805459022522,
+        8.738346224390625e-08,
+        3.1415927410125732
+      ],
+      "ortho_scale": 8.260001182556152,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "side": {
+      "location": [
+        -27.989665985107422,
+        -0.23087388277053833,
+        4.151151180267334
+      ],
+      "rotation": [
+        1.540805459022522,
+        -1.1919588160935746e-07,
+        -1.5707964897155762
+      ],
+      "ortho_scale": 8.260001182556152,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "front-clay": {
+      "location": [
+        0.010337591171264648,
+        27.76913070678711,
+        4.151151180267334
+      ],
+      "rotation": [
+        1.540805459022522,
+        8.738346224390625e-08,
+        3.1415927410125732
+      ],
+      "ortho_scale": 8.260001182556152,
+      "resolution": [
+        900,
+        900
+      ]
+    },
+    "side-clay": {
+      "location": [
+        -27.989665985107422,
+        -0.23087388277053833,
+        4.151151180267334
+      ],
+      "rotation": [
+        1.540805459022522,
+        -1.1919588160935746e-07,
+        -1.5707964897155762
+      ],
+      "ortho_scale": 8.260001182556152,
+      "resolution": [
+        900,
+        900
+      ]
+    }
+  },
+  "cameras": "exact recorded current study transforms, ortho scale and resolution",
+  "lighting": "same normalized three-area-light recipe and AgX",
+  "native": false,
+  "views": [
+    "front",
+    "side",
+    "front-clay",
+    "side-clay"
+  ]
+}

@@ -1,0 +1,1788 @@
+[
+  {
+    "name": "The Rift Titan",
+    "runtime": "assets/models/runtime/underworld-boss-rift-titan-refined.model.json",
+    "runtime_sha256": "4f2a675b7a483e1d773cd97a947b5b234c825df2e0e7c427661b905be35b8850",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "the-rift-titan--front.png": "f6774b14aed19bbeeaeafdd3477f55993203f6443309ddc5b80bc7d8974581a9",
+      "the-rift-titan--side.png": "d4b20c28cebe45a3efda845dd75293f83037356e6d079e67b97ac42ad139e485",
+      "the-rift-titan--three-quarter.png": "0ce7f23575fe1d6a61a6bf6775394d7ece16dab913a803a3fdf1815f1490ef65",
+      "the-rift-titan--rear.png": "0f4095dadbaa528b549b8111fd50edf847080bedca9aec50e6b0226761e56e1f"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "+Z",
+      "exporter": "tools/export-refined-boss-runtime.py: [-x,z,y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "The Carrion Crown",
+    "runtime": "assets/models/runtime/underworld-boss-carrion-crown-refined.model.json",
+    "runtime_sha256": "c984d15ec662fa74fbee78875d45dd80f90a06b415e880305631c32685905dae",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "the-carrion-crown--front.png": "befa1d73b5954feac9ea53c518f7f0629d5ff6042dc183d5d29711ee7b68a5c1",
+      "the-carrion-crown--side.png": "46f853fd763acbdddd4f2c3386c1982f408127be3844ad8a65acce646320671d",
+      "the-carrion-crown--three-quarter.png": "cb72e3b31938570324a4f1a9eb81c247a37f74e9fc613ef465f2c9b35bf57d8c",
+      "the-carrion-crown--rear.png": "f33da1d0f2411bdfb8d52f8e7fd784bd3a5dc2f2c139a4f8d6c0fc05d30cac17"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "+Z",
+      "exporter": "tools/export-refined-boss-runtime.py: [-x,z,y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "The White Silence",
+    "runtime": "assets/models/runtime/underworld-creature-cryolith-guardian.model.json",
+    "runtime_sha256": "0ec9ffd2dcffb606684876df1d9947c78d3caa1e73961d3b129d5f0634236c44",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "the-white-silence--front.png": "6e7fc582d87ef12060420096df4b144beffbba6e453db95e7b303541eb6be50e",
+      "the-white-silence--side.png": "22969eace0dc9058aba26f767553bb17f893a3edb77528b602942934a3b24eed",
+      "the-white-silence--three-quarter.png": "cf0908ad5531d79cd0909b6dd9100dfe06c03bfae185995905deb6ead2596589",
+      "the-white-silence--rear.png": "127b0c234391921a7fe8c75000d91f32a15afbd5f1a5047765ed02031dddb8e3"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "The Furnace Heart",
+    "runtime": "assets/models/runtime/underworld-creature-furnace-golem.model.json",
+    "runtime_sha256": "67811a752cd14b454d124971b01f0cb3aaba531252537ea5cbedacdad57901cb",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "the-furnace-heart--front.png": "b6cbb6745abc408a1e35b7d7ac9fca29d7f165e8530d1e5c80b0ec941d3a79b0",
+      "the-furnace-heart--side.png": "a1fd8b10d27c65b16d5845615167c9138d1164c000ea79647cbedc6b0283624e",
+      "the-furnace-heart--three-quarter.png": "69ce2109818f21c3fcc06060ca8e65a89fdd78d6e10115ab7498a782d4d20b7f",
+      "the-furnace-heart--rear.png": "e5335afe467b66579f83ead08bab602b8700f39c1b1322f4d6d3a16f8ed7cce2"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "The First Bloom",
+    "runtime": "assets/models/runtime/underworld-boss-first-bloom-refined.model.json",
+    "runtime_sha256": "c8d4d835803cf7c1c62065846796f211735dd624455ad40c65587fc7b35868d5",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "the-first-bloom--front.png": "86a81bbc6ed9746d0ae44b215c5b53023dd1913202c787e3053e1fd8d0c38f4f",
+      "the-first-bloom--side.png": "82513537ce4d7e472d594e197d341680f2d5f684c592d3cd8d956f7c55c2f2a3",
+      "the-first-bloom--three-quarter.png": "57b54a9dc5565e09b0591ef97951eaee52ef09a511131c50f8b70f0acf0445cf",
+      "the-first-bloom--rear.png": "755a64e82ce226b969452991df88d1cb628c394a98eed68f3aa941fc40827f64"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "+Z",
+      "exporter": "tools/export-refined-boss-runtime.py: [-x,z,y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Deep Hunter",
+    "runtime": "assets/models/runtime/underworld-creature-deep-hunter.model.json",
+    "runtime_sha256": "68c2af2bf973b51fa47a559e6e814a6be37a3d8a0fc82d7d1e91b1dff80dfe06",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "deep-hunter--front.png": "b471e9608e2a15b13e7addb6f49573329037df7ca46c745b1641ef9ac6b83a3d",
+      "deep-hunter--side.png": "3863ce388be950c6026258e4655759592374e70f8c2e207dedd59fcc522eb20c",
+      "deep-hunter--three-quarter.png": "5aeb5905a443d8a8ed64dd3dc835cfb518d2bc2592cefa86ee65d21ccf1050b1",
+      "deep-hunter--rear.png": "bcfe1e2907bf1d7c2a73637eda7d5978ce6002ba8032c916697c7f3fc22e34be"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Abyss Shellback",
+    "runtime": "assets/models/runtime/underworld-creature-abyss-shellback.model.json",
+    "runtime_sha256": "c2b11aa354545c5560eacf48be6d7a977d77457f3b990eac4b015cb755dcc7fd",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "abyss-shellback--front.png": "ab544b2966729e7000391bf53cfdd392d90d7daefe37db96d6fe97a1f74d2678",
+      "abyss-shellback--side.png": "a15fec1be4602271c111b6442a8908de7f6f1f9a0aa8968de98b77e433eac0bc",
+      "abyss-shellback--three-quarter.png": "31bf4ecb9c9da8550502364d0593bc0a93d53e55def4b7d35bcb8462751c42a0",
+      "abyss-shellback--rear.png": "da56958f1f7443691b8b42828c6deb355effc58417f8999c8bf66c5404286d65"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Rift Colossus",
+    "runtime": "assets/models/runtime/underworld-creature-rift-colossus.model.json",
+    "runtime_sha256": "c53e99eea71504b383e88287a4d82c281e2a56d99cf4de75bc18ce69863c2b02",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "rift-colossus--front.png": "fce9314b9cc264094d59eb890cca7e786f698ecb09dd6d5be63845e92b22a2c6",
+      "rift-colossus--side.png": "f4c6a0ad8fa4843bf3102fb0a35958a750e224a7c41188cfbe1b010129d4c713",
+      "rift-colossus--three-quarter.png": "0862ea00338cc09f0c1132af51a75e739670f098142af279f98c05fe6410e8ad",
+      "rift-colossus--rear.png": "2a32a2379d12476a6fcc0f838fa6b42475bcba0dd9782fec010e8940e97fb6ae"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Cave Ray",
+    "runtime": "assets/models/runtime/underworld-creature-cave-ray.model.json",
+    "runtime_sha256": "03efdae291bea7badea0d54fc6907ffa32db82aa0e9eb89c44426cf929187e51",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "cave-ray--front.png": "d0150f203826405fe1de603253abea181c656fbda28e8ce4b85222d3756a1a4b",
+      "cave-ray--side.png": "afee1ef6ecf565ba1a2507ad2e9626ff74dc6265f3fb5eef817c6eb0a168cafa",
+      "cave-ray--three-quarter.png": "12136b819e8a8ff3595139d5af06c3efd59e5c83202e3773dfed5e95b102b787",
+      "cave-ray--rear.png": "c4418d8ea4d903a11c62ea9d67f44bb568fec8c73a6372038f81fd8cf697fff4"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Puffback",
+    "runtime": "assets/models/runtime/underworld-creature-puffback.model.json",
+    "runtime_sha256": "906345134554afe36483c7ac7d4ed8dfcf2d373777d5e7516311610f49bc1e68",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "puffback--front.png": "007be61219cc8b7e90d392392d73e1f1313f8e143913b2fae641d9cd5923bed2",
+      "puffback--side.png": "b97769848120f207dc0b923b910993dc886a79e46dd86d7bbcb1c1c9119bc6e2",
+      "puffback--three-quarter.png": "ecde2fbdb28e41e2fecd667adccb021b02f7a7b95a9382ccb4ff298d66e93096",
+      "puffback--rear.png": "e925853d148b68a3a2f9dc700f7aedb17e91a9c6c0e994b54ef4e23508dc041e"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Shelf Lurker",
+    "runtime": "assets/models/runtime/underworld-creature-shelf-lurker.model.json",
+    "runtime_sha256": "c191a8d54fa4db0cd46627a2118e084239f2f8fd1b409f668ab501bcc3589e6d",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "shelf-lurker--front.png": "28a9310ee434d6b407c505522e2436a0192e04c87978ad5a54a63303d6551bb2",
+      "shelf-lurker--side.png": "a793aa8e8a780b5e336f2f4c1977b1c06bedeb623b68354f9885254bd87ec228",
+      "shelf-lurker--three-quarter.png": "3ec4596498cf27800d64c622711ab722ce62f1bc7ea08310224c39d9c3cdd50f",
+      "shelf-lurker--rear.png": "219b4f6d006739fc1e5f9f2d2e2ec48189eefab360d990a943baf7d4094d1d1d"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Crowncap Brute",
+    "runtime": "assets/models/runtime/underworld-creature-crowncap-brute.model.json",
+    "runtime_sha256": "f7b07245e97baf73ae29f2e3b4b3ba59503a4e094a9a99fb405556830ed0fd2f",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "crowncap-brute--front.png": "9274409c69fa1661dcb3e79ff854cb02023e7d50c1b24e4fd8b8b9566113317f",
+      "crowncap-brute--side.png": "a6686e4b027108e20bc2088a7fba3816e3b9eaf181a87a20c5296d5eeb2daef0",
+      "crowncap-brute--three-quarter.png": "99a5b274ad56d162509a2840475cebfae2c15ee670f0574a359eca4277979456",
+      "crowncap-brute--rear.png": "5249f6e55e79731f0a3254b14e2acc57222e3cec6ede006e8da67c5252b93d72"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Cinder Hound",
+    "runtime": "assets/models/runtime/underworld-creature-cinder-hound.model.json",
+    "runtime_sha256": "d2b0d742b91e3f3824b68eb700a6ade48087dc2b1a348eae79a6f56d08082c6b",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "cinder-hound--front.png": "e5398bcad350cbf7d2bf5e04e6cf495c9d1037cbf919162109afd0d7367a75fb",
+      "cinder-hound--side.png": "bc053adadb5afb4472ec28931c240f162d22b9279dff97b69df49c55eb0e0da7",
+      "cinder-hound--three-quarter.png": "38084aa3ec7e89a065e77714aa3b8e99674013d5e76bbab8de12f49e2232d9d6",
+      "cinder-hound--rear.png": "968eb9cbf93f7ada2f97cf05e84896027698300a5d3754c91734ebad1d44f087"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Stonebound",
+    "runtime": "assets/models/runtime/underworld-creature-stonebound.model.json",
+    "runtime_sha256": "9ec2c9596c5fb414c6fcc3059e9de9befba8d787b0dcf270a6fe01e908a167a5",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "stonebound--front.png": "90dc251afb823c56a87aeca11a732c4a95950ca985b0932dd42748ab9d4706ee",
+      "stonebound--side.png": "115b0af2dccf4554d755c426c7769b033a7c970fffed64e5e4f45b06f2248ab1",
+      "stonebound--three-quarter.png": "a2da359ede254e039b938382978b9004602719480f8a1602a424cbd5ab4a1b7c",
+      "stonebound--rear.png": "7b6d6ea6537f982b916b333fdcfeae72b74e75bbc14f44123a4ae9999b416d9f"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Chasm Stalker",
+    "runtime": "assets/models/runtime/underworld-creature-chasm-stalker.model.json",
+    "runtime_sha256": "3dcee8680315950c86eb7171b594db4fe6a212ed7ba586b243c9214c2ddad775",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "chasm-stalker--front.png": "5e862b133dece2b79d08d3680451d312b9331589fb01ca545c567a0f334c5cea",
+      "chasm-stalker--side.png": "7bc12ff33ab34f439552ea0341dddd34349e644215e7b0b6392c045f5e182476",
+      "chasm-stalker--three-quarter.png": "a1babecc9ba34e658f82ed56bcc9f7092183a9ba35621902dee90386f1b42273",
+      "chasm-stalker--rear.png": "8d0ba41ab50959c9bb6975478d40d93f74401ef79d314958700b478fbf7351d2"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Mycelial Stalker",
+    "runtime": "assets/models/runtime/underworld-creature-mycelial-stalker.model.json",
+    "runtime_sha256": "7758ee7fe7f8191e8f6b7834d18ada5980b3fd2fb95eb0ea2a33b22eec4bea01",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "mycelial-stalker--front.png": "e58f9697be91c9e2023a77e860515241780f57e5d8c96cc0c29a6ce9492a49c8",
+      "mycelial-stalker--side.png": "1f5c25defee7421cedea3d0af4cbed0270d3eff8f486d0443646f3689cc3b83f",
+      "mycelial-stalker--three-quarter.png": "8485e741f09a2b2990ff549ab6370bf5efdfee1a0e6ec2c3a962085d6fcbc847",
+      "mycelial-stalker--rear.png": "dbcd3216db51841821d2f8aa03e18a8bdea636307635a17c7c7601a53415b17b"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Shoreclaw",
+    "runtime": "assets/models/runtime/underworld-creature-shoreclaw.model.json",
+    "runtime_sha256": "31ad544812301b4a2f0aa01a87f1c0a9fe2d5580699d324fe10ca7039aca003c",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "shoreclaw--front.png": "95c284ac6d878ff90fbb6614ecac9987dcdee82be91e5b165b67f78025bfd23b",
+      "shoreclaw--side.png": "6355b4f8b4e9f99dba699282e47d9e4a97764d7b6c3c63b83932768dd9c9c86c",
+      "shoreclaw--three-quarter.png": "aa04371281d5339782b139c9347e4cb05a11b313c742e158c8034418c23b8528",
+      "shoreclaw--rear.png": "29a7fe7ffca602d02c7ea621c4b965da4ccd189a8e802b201971e07e5bce80d6"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Glacier Stalker",
+    "runtime": "assets/models/runtime/underworld-creature-glacier-stalker.model.json",
+    "runtime_sha256": "eab91da4af42ec05049f552b2b5ed26b0e101918447bd2e2727251852835be8c",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "glacier-stalker--front.png": "5ca9128f6e6667867dd68c1f87e86fd840b4a71b7830f114287084cfb6a3657a",
+      "glacier-stalker--side.png": "d44dd521918ba3661a2954332ea3b53eb30e4cf55e36161b75cde9ad7c7f1057",
+      "glacier-stalker--three-quarter.png": "69eb98f8c74bdddb4d381da10692d90ce5730882f4bcf65cf352d69495f1a584",
+      "glacier-stalker--rear.png": "a66873c7148c687fae4ba12bcedccceafa472965f77edeb201f48386d9244696"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Iceblind",
+    "runtime": "assets/models/runtime/underworld-creature-iceblind.model.json",
+    "runtime_sha256": "596b57a63145ad7553d01f22cc8103aa0014fa93e3f47925bcafb2cdeea331ba",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "iceblind--front.png": "c83593d8a2e7920d2ca27dac947066c36a6632105502033084d354aaeba3e303",
+      "iceblind--side.png": "e1dd6bd9ea0eac1cb55cd95153a8a31ccd0784b7373109ee26ea0d585002e165",
+      "iceblind--three-quarter.png": "fe239a8b0b33bab0a8509ed958e57051819d11041c2faf14c27d86ec941e6efb",
+      "iceblind--rear.png": "320fc7448a2c1e2891b1cc41ea6e9d8dcd01691a1ba2ee4640ba655b99d185dd"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Vent Spitter",
+    "runtime": "assets/models/runtime/underworld-creature-vent-spitter.model.json",
+    "runtime_sha256": "473a72abc940c271e5194b3fdf379b2c495c5834b3c92fcd96f33f577877e2f9",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "vent-spitter--front.png": "d8e717dd4becef07aa964b9c04ea4b567e79f941bafcfdacebdd5b33681a206f",
+      "vent-spitter--side.png": "b6005f24d06c289a751c43d94bc77c6236933724e35c1ccc64f267a9b418d80b",
+      "vent-spitter--three-quarter.png": "bac6bf762268afb94fb0c4a4f2066fd3dc7cbbeba4fe565eee7959ec0b566371",
+      "vent-spitter--rear.png": "4bd6e36ec6149ba4c48d4729c9213f4fb3cda57e72e3b798e21a074b42c9be11"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Shardwing",
+    "runtime": "assets/models/runtime/underworld-creature-shardwing.model.json",
+    "runtime_sha256": "9be4baaacbc222f2e03781f04dec18beb4b5c1fef584110ab6e1acf0af216e76",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "shardwing--front.png": "866693e23d4418b0f2c4123cdecb1cf5a31cd23cb4afdffdf5d7a723dbbbb8be",
+      "shardwing--side.png": "2b75f498551e5b8d8a4739234bf023c7f582ac9ba814694c9b5ae9a04adc35e2",
+      "shardwing--three-quarter.png": "9f56ceeae7a25c6a93f88e308d9efa9cb1b315c32e718b34b74e997912e4cfb8",
+      "shardwing--rear.png": "b39fb8c9ad5f208c037905a5f3b3607e50f862e072329ae44d9e61c653740097"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Furnace Golem",
+    "runtime": "assets/models/runtime/underworld-creature-furnace-golem.model.json",
+    "runtime_sha256": "67811a752cd14b454d124971b01f0cb3aaba531252537ea5cbedacdad57901cb",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "furnace-golem--front.png": "f1887ec96e0c7270d088cf391562a8fb4cecb4a8f31c7be784df1689f56464c8",
+      "furnace-golem--side.png": "037354cbb38a6f2f81d676397e817a7ed1bb8f2ca3ce118e17f89a00870299be",
+      "furnace-golem--three-quarter.png": "7242adf7bdc6bd4c09df62b261fe1412580f8bda6518c366f229a8899243a50b",
+      "furnace-golem--rear.png": "c046f6b27e074d59093d518d4f55bfbb884d3f802585af33b0b33c08b0dbef66"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Decay Hound",
+    "runtime": "assets/models/runtime/underworld-creature-decay-hound.model.json",
+    "runtime_sha256": "3b9fa0db7b19d7a73a8af99f95922adc8f17708da5dac91a243a7d9edc6cbec9",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "decay-hound--front.png": "065bf862f46533ee8a5d080bcc893087c1f2873cdf92c525280de6ef8667c852",
+      "decay-hound--side.png": "58449c374d5cf00cd8a529bb9a35e693655d71a45f485b0a4adc696c2c71d32f",
+      "decay-hound--three-quarter.png": "24bf107986f206b480a2e3800fd7967d33d5d17bc2ce99539a8291b34d04422d",
+      "decay-hound--rear.png": "684643dcd753afef6561b8d00fa32ed9dc7f4ad9d682a15a7a9a679a466f40c1"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Lantern Angler",
+    "runtime": "assets/models/runtime/underworld-creature-lantern-angler.model.json",
+    "runtime_sha256": "645a11d65f557e05d423924b2be880195f7b4b5f066d4fffcd05907f53416773",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "lantern-angler--front.png": "13154b55856ccf83e3e2cca2c41a834aa88de230ee82edf91be0133637660884",
+      "lantern-angler--side.png": "9dbc5a44e205f8ae90e6b1a8c13ef52fbe99ae2f64c22d54d1f3707d22a7f6c0",
+      "lantern-angler--three-quarter.png": "e31b2635a14b35b95f93118878a99608a53329e94c46d93bb040d9fdf35a5aac",
+      "lantern-angler--rear.png": "2d7f719342fdeaf9e0b4588d3f1d018c686831587c751ca30435c9a08394a969"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Corpse Orchard",
+    "runtime": "assets/models/runtime/underworld-creature-corpse-orchard.model.json",
+    "runtime_sha256": "bf11203f078ecd8bdc25975bb591fde8cfdfdbc74b08578bb04f849ab507cd7e",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "corpse-orchard--front.png": "dbf7e3dc39a5c024a144e6b533df331dd83680a2836da9aaecb3b27f739036ac",
+      "corpse-orchard--side.png": "0d310df1f45383d45c1a8289bfc7e2718fa090525182aa055c00c287c4397843",
+      "corpse-orchard--three-quarter.png": "695f60f57d4db0e46525dc3bbc208384b1085c718dcf39655f4ae34bad09391b",
+      "corpse-orchard--rear.png": "7f0bcf79f1311c585488bd832cab1e31f0ed533c1ac7b7b97dc6f16a05164b8c"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Rimewing",
+    "runtime": "assets/models/runtime/underworld-creature-rimewing.model.json",
+    "runtime_sha256": "d56784e23fa188c6e6b22d67d0b31466a42b4b27c1e5b19bda3197ccec4268cb",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "rimewing--front.png": "c8252b3514c5e7cde6bd83dd5ad25d5bc87a0bdc8c0299a206c52cd91b5e7b27",
+      "rimewing--side.png": "0a39a3376f8dff3eb1109385173a215d23eda00a8f85817d2b95853d9a104f9a",
+      "rimewing--three-quarter.png": "55c98bc58410726ab6d6af3af1d0b0d12e672146c0a62c183bb51bf3226485d1",
+      "rimewing--rear.png": "aec5a9509b7c756d79455dd3561521467dcd6dc2128e2f7f14f74ab597d8cb56"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Rime Moth",
+    "runtime": "assets/models/runtime/underworld-creature-rime-moth.model.json",
+    "runtime_sha256": "b5cad4e263d07b2c6581a44dc95ecb788a3320157d2c4353236b02576bfed461",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "rime-moth--front.png": "f2f8bf1a4b6b589939ac80de7c29d44d9c566637acdc45117155de8fc6d5c90a",
+      "rime-moth--side.png": "c100a76fef01e1b7610e34a0cf78043000b933815ab31c252c2f9cdd867641d4",
+      "rime-moth--three-quarter.png": "7bedd3d2285c2af3978666672b667ecfcd1cdf80b02733a6c488ef3500a07735",
+      "rime-moth--rear.png": "6ca3673a51b1dcbeb016cced170caaa567f15878d9b80c1bf6e6d6e13a549723"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Cryolith Guardian",
+    "runtime": "assets/models/runtime/underworld-creature-cryolith-guardian.model.json",
+    "runtime_sha256": "0ec9ffd2dcffb606684876df1d9947c78d3caa1e73961d3b129d5f0634236c44",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "cryolith-guardian--front.png": "dd32855ac4ab3d1a3d06db43d99b445015d048240ee418ae0f3e64cc6eec6f1f",
+      "cryolith-guardian--side.png": "fcbaae3e98f0a9bf6b9874f026dbf9f01931ad142888af65b46286e0ac8afe3d",
+      "cryolith-guardian--three-quarter.png": "b3103e8902850c0cc8c8d08faf96b6818be0a794264fe7f2350a9481032b435e",
+      "cryolith-guardian--rear.png": "f67661c86b32e897c7de0ff06ff5544d347b16c7205e72608344ea84ae5e1211"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Fume Wraith",
+    "runtime": "assets/models/runtime/underworld-creature-fume-wraith.model.json",
+    "runtime_sha256": "3123da9ea2202dd63ad684487fd2e8cf7bd4ff762ed1bc3d7126e6b2bec058d6",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "fume-wraith--front.png": "3c27c7bee6d84c71337afa0fd7325dba879280a693ef9b4bebd6599a59ad26cb",
+      "fume-wraith--side.png": "6e5a3d591fa69c53961b8554a12b0590ce5a3ff579c8a0530befbce34e6b9d98",
+      "fume-wraith--three-quarter.png": "bdce5aa6033971f3cdb6f78e11b6d34ad9a3ae6c8f846ceab5b1a2547dd10903",
+      "fume-wraith--rear.png": "4ffdca67dcdb82b0fb8d7a51372fbf83e2b13b604ca8f9c1508172a0b845c657"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Gravity Leech",
+    "runtime": "assets/models/runtime/underworld-creature-gravity-leech.model.json",
+    "runtime_sha256": "be318a503a26e807baba847d8d9cc74067eb7747350807e776faa21220036118",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "gravity-leech--front.png": "75be941b6d0b60ae0daf8405a4fdd0d68aa1830152fcd016ad55ca86e86af8bc",
+      "gravity-leech--side.png": "ff851656317559718a46b349a27e8f450b5c91a615924c6b3fed6c9e266596ee",
+      "gravity-leech--three-quarter.png": "83359731ace9247a01c5d676819f65acbf83134f6856acda2c7a24fbc1477b2b",
+      "gravity-leech--rear.png": "da70e9c17c39df9b80b32f38c379ebabfdee72129372e3c8ef527c4bfcebe843"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Graft Warden",
+    "runtime": "assets/models/runtime/underworld-creature-graft-warden.model.json",
+    "runtime_sha256": "6e2ce0918ddfd24d7c83854011a2e88ec6d935960cf13905421b510e227bfbff",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "graft-warden--front.png": "89fddf0e038a787c52c4b3e5b7148fa595d313f0974d8f80f3485b3559302677",
+      "graft-warden--side.png": "0a7fb228fe63b5ca36b8f1e527940e446f0ecad5bd7eee1c3b280c20ef779a38",
+      "graft-warden--three-quarter.png": "10458d195a5ac682ecd9666ccda562aaa85298adb97cf0edcca17cdfdcc80a5a",
+      "graft-warden--rear.png": "7539c3de9bb28f57a6d7e176496783375f4b5f7f17b41f59f6b62e60f7f7a081"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Spore Husk",
+    "runtime": "assets/models/runtime/underworld-creature-spore-husk.model.json",
+    "runtime_sha256": "67055f70f2965e128b24b8297c603c8548b143f4a600283a50b8b216b505bff3",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "spore-husk--front.png": "9638bf1a7610400a8fb2b094c1bca1a43d2d2dac4fcbc46b28a290d68f641192",
+      "spore-husk--side.png": "c14ccbf428abd8356dbb24acc64972fffb6adaba0dc8a9f19cc9b581ae8ba666",
+      "spore-husk--three-quarter.png": "5531df431f5e5756d5550570324669bf627bb7f6ebfa154c0519ee2b796bac0a",
+      "spore-husk--rear.png": "3c2c566987ac18ac2461ef3e9955800db89b47ab8b16a3e494c00e1f0aa17fca"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Basalt Crawler",
+    "runtime": "assets/models/runtime/underworld-creature-basalt-crawler.model.json",
+    "runtime_sha256": "8054e7c6eb502fd7d96519401f47c44722b73d98d398d7d406260c8c8987cffa",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "basalt-crawler--front.png": "842f5f484559891edc5731a7758c15d4b7b047e49ccf545c31f3fef74190a678",
+      "basalt-crawler--side.png": "8b8dccd833778b1b131b3686c866af60d679a72a51c5bb7aa2f1d186271d3b41",
+      "basalt-crawler--three-quarter.png": "61d5478ba9efbc1e87914784e0691959dd14fa08dc99e42f2948637054c6b594",
+      "basalt-crawler--rear.png": "d7467b1f2dfaa0e8057950d41cec33d25bfa3884cf497a0b4c9502745b975bdd"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Gloomfin",
+    "runtime": "assets/models/runtime/underworld-creature-gloomfin.model.json",
+    "runtime_sha256": "a9eba32a69c20d78f455e8aa8445c006ccabde2b5bf4e56a6ee1208f1758a3d0",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "gloomfin--front.png": "952877864bf31dee6993fb5ccf489b5bf036e359ec8639b9edb147f8758e8ae7",
+      "gloomfin--side.png": "75fe83e7c3e2de55b25633f402cb0799b7468e3725ca82fbc9ccf0e1a7982da5",
+      "gloomfin--three-quarter.png": "2a0448fac8cc34dc23e7be2f7bcad4746cf26f7bc7302d05e033074a12461d22",
+      "gloomfin--rear.png": "ae3b8be1901fb2b8a2023b29c86833405be517769adfbdcdb1895bf0d5505d59"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Pale Burrower",
+    "runtime": "assets/models/runtime/underworld-creature-pale-burrower.model.json",
+    "runtime_sha256": "07c018cfb88b752a3f62f53164dbba385bc47c3ee410a3e16d144cc1beba24d8",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "pale-burrower--front.png": "42ab668db660666740a4cc708cef4560c00b652d8d2339461fb4284b43191c3a",
+      "pale-burrower--side.png": "7d9755ab6402300651dffd8e73841069c52b630a2375ba3ba36442d24be77e4a",
+      "pale-burrower--three-quarter.png": "7f929ed997bc3c488e24ac172f5fa2b837a4a54cb64d5e57528d7d46b835fda9",
+      "pale-burrower--rear.png": "586fa61c2c312f9c1fd142761f9ea7796a8459e525ce2fc932438f3bc5e61adc"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Magma Leaper",
+    "runtime": "assets/models/runtime/underworld-creature-magma-leaper.model.json",
+    "runtime_sha256": "51032a541d4b286cecd3d143ee4e8df097fb47242b16b4bdc2777f8684646bd3",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "magma-leaper--front.png": "35af5daa072611f3043e5327da9fd4a66dc66b030f635cbe5718f61ac42b41a4",
+      "magma-leaper--side.png": "1a22f7cfb8c10d16b3226cd1c3bf47d11ebaaca713a317620ec1dda374404914",
+      "magma-leaper--three-quarter.png": "77c7fbe07476d1255ed6f8f56d14ab8dea5ac0b624679f4b2138bd97ee64d891",
+      "magma-leaper--rear.png": "fa9072271920f521aea484312112e2a334f794fb9675ca51f816d3fffaf6393c"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Carrion Bloom",
+    "runtime": "assets/models/runtime/underworld-creature-carrion-bloom.model.json",
+    "runtime_sha256": "ac668cb6398659711d20f2d19bacf26f885b1f6ca72f96195d59268517ff561d",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "carrion-bloom--front.png": "196290f678b4cd83c3249623c102da4fa7740cf6acd6dfa173d49b7099ae697a",
+      "carrion-bloom--side.png": "240dfcb197009cdab6e184bf82b5e4dfb80d5b2318a534e0149a45fe5ec05b9e",
+      "carrion-bloom--three-quarter.png": "269d5122279cfee1436b16189aed4e07b1bf667c701f8b9871fe481f4839c56b",
+      "carrion-bloom--rear.png": "97dff9dddfc9ed973504e9430d4b1c73d40a50698379e1aed59079de2d65f029"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Marrow Creeper",
+    "runtime": "assets/models/runtime/underworld-creature-marrow-creeper.model.json",
+    "runtime_sha256": "b637391405e9851a4e53fa40f80acc773d965867426952fbb63864a7cc302f6b",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "marrow-creeper--front.png": "9e90781a0cc4b9748cd784d8856ec9d38e7e26382362b44f5af4eed9052ddfb8",
+      "marrow-creeper--side.png": "e82f33fe46be84368a2cd44c327cce5d05920986dd9e85800ae9178f42bb847f",
+      "marrow-creeper--three-quarter.png": "cc8a6673ef5a1a8292abf65255177772a3b026b10e872e722b5384c47d8ecb53",
+      "marrow-creeper--rear.png": "c56d27e5451a6560ced22156c6293926e497161cc15192abda484da10011c1e4"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Rift Skitter",
+    "runtime": "assets/models/runtime/underworld-creature-rift-skitter.model.json",
+    "runtime_sha256": "4ed3229eda44df3d80c9f7e3fdb95b6235f865f35e4ec72a8302c56c2dd9a38d",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "rift-skitter--front.png": "a6fee830e9c1e2041642671728d6613bf0416871544dd240b67bd25f732e52bc",
+      "rift-skitter--side.png": "1951cbe2e4105382f7529e7917127e74fc68c4ba33629f9cae2859d43d877f3a",
+      "rift-skitter--three-quarter.png": "9bc5e03dd09bdcbe2449d5680c8ba140b5515dae3e6597b9f829b853efcee9d0",
+      "rift-skitter--rear.png": "67371fd1eb2b835ecc47e0f18eff9e53cefea90f8e09a6a0d0dc65696b1bde19"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Blackwater Lamprey",
+    "runtime": "assets/models/runtime/underworld-creature-blackwater-lamprey.model.json",
+    "runtime_sha256": "c7846efcb4c659ba02580245119d6432cd37ecf951431221ae98c062b2246a35",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "blackwater-lamprey--front.png": "1db81188d011c94dd5e970d31028991e102b4164073820728f813d2b0e256a3e",
+      "blackwater-lamprey--side.png": "d09a4d2dac017388cd550a4fde0333931d5443ac17e0049dca850773c9149baa",
+      "blackwater-lamprey--three-quarter.png": "374d474bc32b74343cc331ea76d4885123cbbeeab846353dd7c85c7f4734d367",
+      "blackwater-lamprey--rear.png": "31a0b18a3d9ea6fd87da63fb23aa6b83d711a5c3cd6a09ab2437cee7b6a6da4c"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Capcrawler",
+    "runtime": "assets/models/runtime/underworld-creature-capcrawler.model.json",
+    "runtime_sha256": "0532ba0c67e726d0166fe0abfbf6ea98bd89656cc1285d90f7408ce80112841b",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "capcrawler--front.png": "d4e96bc5e4f897107a5d61a158b40e79544808c8807ad9bce0169cdd2e5cf237",
+      "capcrawler--side.png": "5e95ddded49c70f0b16cd3bdf466b5b8d228744893d86b0337618c4a3e671619",
+      "capcrawler--three-quarter.png": "03d70e4244876c710282cd681721f8012b05767ebbeb24df797a2049a05be119",
+      "capcrawler--rear.png": "d538d10a00b52b5f539205e9542a54dde3cf1c903ce578fe16f205267d35637f"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Rotling",
+    "runtime": "assets/models/runtime/underworld-creature-rotling.model.json",
+    "runtime_sha256": "52e1f99d33c94fae92c9765e84fc3f5605d87e915ef0201ee12a808911191360",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "rotling--front.png": "e66beab4610ff0c4a5226009b6ed894e7fabe2b7b41bf8c107e14a56c16f0e52",
+      "rotling--side.png": "8386f5c1e52df70b90081691ca3bda295cbbdf8c0c931d3e3b696be67d48bb12",
+      "rotling--three-quarter.png": "36a27ad8102aa9f10820c682e4978fe30de508900a24ce3e9cf058a6f2b694b2",
+      "rotling--rear.png": "a8014a356e390b894c7cc25192677bf772ef6d35a6a5bd305a391557b41b9298"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Frost Tick",
+    "runtime": "assets/models/runtime/underworld-creature-frost-tick.model.json",
+    "runtime_sha256": "4c4f0158934e2a6338ca64029c008c6d1ad40b42b41b66cc8e85b4d145418f3c",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "frost-tick--front.png": "57bc303719630303a1e4fd3b743d5163a8088189d6ec9d17a5d7f73598bf47fd",
+      "frost-tick--side.png": "7d37d16677c1020bb444c15052d665f0f4e7509043aa72c0e3471f6bc5a43dd6",
+      "frost-tick--three-quarter.png": "2f1f03b83fe88727c49d1cfc7526ff672eb075645236254dbde9f4ea335438ec",
+      "frost-tick--rear.png": "27ef63aa183e4f5e39ecc4d0fa847e758dad5b4c65aeb35e916cb91ca9757aa8"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Fracture Wisp",
+    "runtime": "assets/models/runtime/underworld-creature-fracture-wisp.model.json",
+    "runtime_sha256": "d2a33657986a8609ab8d8bc0216ef08be84208eb6c3a21e7b058d98d42139b4b",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "fracture-wisp--front.png": "96b11c78ef341558c4ac7668b1ac9a1ff62131f8a9cbd7d2e44f52d745fc2338",
+      "fracture-wisp--side.png": "35b8fbe7c856be1ebfee24a275f1ba8383906942789ae1e5ead4496a92030225",
+      "fracture-wisp--three-quarter.png": "a95727f5d75dfbd713e246ae156c4df2b4463af35de859cb203b3ec4e2d327b1",
+      "fracture-wisp--rear.png": "1b9c982957a374efaeeec781d7c47281f0fcc09fe53dffe5746e9d19851a87dc"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Sporeling",
+    "runtime": "assets/models/runtime/underworld-creature-sporeling.model.json",
+    "runtime_sha256": "52dd8511e074529b71b0a005154412a9774e486caedd0d5abdaf950575563ce8",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "sporeling--front.png": "20b3a8f9776f3359aadae2ec72fcf012be636bdeeb163796ec552cc9c55871f9",
+      "sporeling--side.png": "a43cd6a8a0606b40f7e45a256719d94c3325789d0bf84bceed358d61018b3011",
+      "sporeling--three-quarter.png": "bed86eb1a14ac3e3deeae719d98a49cbea836a81c895fc645621ec43ceb1752d",
+      "sporeling--rear.png": "355c1a6a62a0f4408f07d3a0ada864ff55b7399bcebeebeae18a945e7a5fef31"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Lantern Moth",
+    "runtime": "assets/models/runtime/underworld-creature-lantern-moth.model.json",
+    "runtime_sha256": "8140f90a2bbf6d2211233c7d4576d8d7590f01ef81cce09e9cade7f047dffee7",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "lantern-moth--front.png": "653ae117ef53f7b7d48ccbde0c22295261153ca0e4c118f4e70563d559fa4289",
+      "lantern-moth--side.png": "b3b350903468b42582a8e30c23190b171f1b402b756603f7a895095743200bb7",
+      "lantern-moth--three-quarter.png": "b436bc7abb534a7eb6e4efc1b4b727a602f8851e048658c6beb3d387d5d117e7",
+      "lantern-moth--rear.png": "b56b1c6283dd1bfe9369ef5d850ad92e547ac47d38aeae9c836f3d3c63a42d7e"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  },
+  {
+    "name": "Ashmite",
+    "runtime": "assets/models/runtime/underworld-creature-ashmite.model.json",
+    "runtime_sha256": "b0b44df54ec8f2eeb1818132550ae4a0d57faae96532f91f66d462591f688c9d",
+    "geometry": "actual current runtime JSON rest vertices, triangles, normals, UVs and owned material maps; no anatomy generation",
+    "lighting": "same normalized three-area-light recipe and AgX; framing normalized to rest envelope",
+    "renders": {
+      "ashmite--front.png": "bba8da4b60f200f47f1f30c7735fb857cd08c3c1db088da62685e816ebd38b58",
+      "ashmite--side.png": "895587e36c1799db7dc25c9cb9d3f8cde53a80a1fbc45b2973e8c5195ec4bb59",
+      "ashmite--three-quarter.png": "e01e62d7c8e1f4ada07c858786caf3aeac8753674216cd204cc8a9b2fdb29af0",
+      "ashmite--rear.png": "78c275373e24735b43cae2d27dcbc027010f5bca89633498aa863e3cda951e1c"
+    },
+    "runtime_unchanged": true,
+    "recipe_sha256": "106dd88b57ead9d4bd0c56ebe1cbd4cb97798393782e3f7abc34c371308c7807",
+    "orientation": {
+      "anatomical_forward_in_stored_runtime": "-Z",
+      "exporter": "tools/export-model-assets.py: [x,z,-y]",
+      "review_frame": "Blender +Y anatomical forward / +Z up; front camera +Y; rear camera -Y",
+      "runtime_to_review_basis": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -1.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ]
+      ],
+      "scope": "anatomical views; no source or runtime model rotation written"
+    }
+  }
+]
