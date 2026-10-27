@@ -1,5 +1,54 @@
 # Rift Titan concept-match outlook
 
+## Current source and review gate — 2026-10-27
+
+**Active saved study is r19, not the r12 audit model or the r14 historical
+checkpoint.** Source:
+`assets/models/studies/underworld-boss-rift-titan-layered-mantle-r19.blend`
+(SHA-256 `7eba1069792697976ea7d202cc818c64aa9bc4405b6267ab331f510c300dea93`).
+[Current r19 comparison](2026-10-25/rift-titan-layered-mantle-r19/gallery.html),
+[repair record](2026-10-25/rift-titan-layered-mantle-r19/REPAIR.md),
+[artifact proof](2026-10-25/rift-titan-layered-mantle-r19/artifact-validation.json),
+and [pose/contact proof](2026-10-25/rift-titan-layered-mantle-r19/body-verification.json)
+are the starting evidence for the next edit. The installed runtime remains **r18**;
+r19 is unaccepted and not installed.
+
+The r12 audit's **H01/H02** findings describe its rejected *old* leaf-shaped
+head. Later r13–r17 work changed that construction, and the user approved the
+twenty frontal landmarks while correcting the side interpretation: a solid
+continuous median front plate with **two separate recessed flanks**, not a
+central purple stripe. r19 intentionally preserves the r18/r17 head, neck,
+collar, wrapped band, inner shoulders and rest-bone matrices. **Do not rebuild
+the approved head merely because an old r12 P0 finding remains open in a
+historical table.** New head edits require a demonstrated mismatch in current
+r19 matched front/true-side/oblique references and must preserve the approved
+landmarks and side rake.
+
+The **active, still-unaccepted silhouette work** is the bulky inner mantle,
+concept-specific upper rib cage and dense violet core, and broken rear crest
+architecture; secondary work includes individually chipped stone and restrained
+upward lichen. Next bounded geometry pass should fit the **inner mantle-to-cage
+negative space** against the original front and correctly oriented side
+concept, not add decorative spikes. Preserve the two supported upper-arm roots,
+single connected head, seven actions, eight-bone rig, all 76 attachment
+contracts, standing plane, one material, four 512px atlases and the
+1,800-triangle soft cap (StoneGolem donor: 1,200).
+
+Before declaring progress, regenerate and save an **editable .blend**, a
+portable skinned **.glb**, matched front/true-side clay and material comparisons,
+and actual pose/closing-face/UV/geometry proof. r19's saved technical record
+reports 30,240 closing-face samples across 36 poses, but these are historical
+r19 results, **not** proof for any new revision. Neither source-only authoring
+changes nor passing offline checks imply user visual acceptance, native
+deformation/performance acceptance, or an increased adequately reworked boss
+tally (**1/6**). If Blender, the actual saved model or the reference imagery
+cannot be inspected, leave the geometry untouched and report that blocker.
+
+The remaining text below is a chronological history of earlier studies and
+withdrawn estimates; its dated “next pass” statements are **not current
+instructions**.
+
+
 **Current status, 2026-10-14: the numerical completion forecast is withdrawn.**
 The user rejected r12's leaf-shaped head and requested a systematic comparison
 of the whole model. The audit records 44 visual discrepancies and four process
