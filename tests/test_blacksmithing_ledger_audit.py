@@ -47,6 +47,21 @@ class ForgedCuttingLedgerAuditTests(unittest.TestCase):
                          {"wood-forms", "hide-forms"})
         self.assertEqual(len(result["missing_conservation_inputs"]), 4)
 
+    def test_native_pickaxe_hammer_family_is_reported_not_assigned(self):
+        fixture = copy.deepcopy(self.native)
+        fixture["items"].append({"prefab": "PickaxeIron", "maxQuality": 4})
+        pickaxe = copy.deepcopy(fixture["recipes"][0])
+        pickaxe.update(id="Recipe_PickaxeIron", outputPrefab="PickaxeIron", family="Hammer")
+        fixture["recipes"].append(pickaxe)
+        result = AUDIT.audit(fixture, self.grammar)
+        self.assertEqual(result["status"], "BLOCKED_MISSING_AUTHORED_LEDGER")
+        self.assertEqual(result["candidate_native_recipes"], 1)
+        self.assertEqual(result["native_pickaxe_family_exclusions"], [{
+            "recipe": "Recipe_PickaxeIron", "output_prefab": "PickaxeIron",
+            "native_family": "Hammer",
+        }])
+        self.assertFalse(result["conservation_verified"])
+
     def test_quality_four_budget_corruption_rejected(self):
         fixture = copy.deepcopy(self.native)
         fixture["recipes"][0]["costs"][0]["qualityCosts"][3] = 39
