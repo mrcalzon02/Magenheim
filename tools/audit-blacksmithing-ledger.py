@@ -79,6 +79,18 @@ def audit(catalog, grammar):
             errors.append(f"forged-cutting has missing/duplicate {field}")
     items = unique(catalog.get("items", []), "prefab", "item", errors)
     unique(catalog.get("recipes", []), "id", "recipe", errors)
+    # Native Valheim classifies named pickaxes as Hammer. A family-only route
+    # filter would silently omit them from forged-cutting and could later send
+    # them through the forged-striking route. Report, never auto-reclassify.
+    pickaxe_exclusions = [
+        {"recipe": recipe.get("id"), "output_prefab": recipe["outputPrefab"],
+         "native_family": recipe.get("family")}
+        for recipe in catalog.get("recipes", [])
+        if recipe.get("enabled") and recipe.get("disposition") in ("Replace", "Adapt")
+        and isinstance(recipe.get("outputPrefab"), str)
+        and recipe["outputPrefab"].startswith("Pickaxe")
+        and recipe.get("family") not in route["families"]
+    ]
     candidate_count = 0
     checked_costs = 0
     checked_quality_entries = 0
@@ -138,6 +150,7 @@ def audit(catalog, grammar):
         "route": "forged-cutting", "grammar_route_families": len(route["families"]),
         "grammar_operations": len(route["operations"]), "grammar_components": len(route["components"]),
         "external_component_producers": external,
+        "native_pickaxe_family_exclusions": pickaxe_exclusions,
         "candidate_native_recipes": candidate_count, "native_cost_rows_checked": checked_costs,
         "native_quality_entries_checked": checked_quality_entries,
         "errors": errors, "missing_conservation_inputs": missing,
