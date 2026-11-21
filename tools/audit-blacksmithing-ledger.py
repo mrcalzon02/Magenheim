@@ -109,7 +109,7 @@ def audit(catalog, grammar):
             errors.append(f"{rid}: missing output item")
             continue
         quality = output.get("maxQuality", 0)
-        if not isinstance(quality, int) or quality < 1:
+        if type(quality) is not int or quality < 1:
             errors.append(f"{rid}: invalid output quality")
             continue
         costs = unique(recipe.get("costs", []), "prefab", f"{rid} resource", errors)

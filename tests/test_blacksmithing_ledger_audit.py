@@ -67,6 +67,22 @@ class ForgedCuttingLedgerAuditTests(unittest.TestCase):
         fixture["recipes"][0]["costs"][0]["qualityCosts"][3] = 39
         self.assertEqual(AUDIT.audit(fixture, self.grammar)["status"], "INVALID_NATIVE_LEDGER")
 
+    def test_boolean_output_quality_cannot_masquerade_as_level_one(self):
+        fixture = copy.deepcopy(self.native)
+        fixture["items"][0]["maxQuality"] = True
+        fixture["recipes"][0]["costs"][0]["qualityCosts"] = [20]
+        result = AUDIT.audit(fixture, self.grammar)
+        self.assertEqual(result["status"], "INVALID_NATIVE_LEDGER")
+        self.assertIn("Recipe_SwordIron: invalid output quality", result["errors"])
+        self.assertFalse(result["conservation_verified"])
+
+        # A genuine integer level-one item remains a valid native census,
+        # but still cannot authorize the unbound manufacturing route.
+        fixture["items"][0]["maxQuality"] = 1
+        valid = AUDIT.audit(fixture, self.grammar)
+        self.assertEqual(valid["status"], "BLOCKED_MISSING_AUTHORED_LEDGER")
+        self.assertFalse(valid["conservation_verified"])
+
     def test_zero_cost_output_rejected(self):
         fixture = copy.deepcopy(self.native)
         fixture["recipes"][0]["costs"] = []
