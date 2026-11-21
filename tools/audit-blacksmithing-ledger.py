@@ -79,6 +79,9 @@ def audit(catalog, grammar):
             errors.append(f"forged-cutting has missing/duplicate {field}")
     items = unique(catalog.get("items", []), "prefab", "item", errors)
     unique(catalog.get("recipes", []), "id", "recipe", errors)
+    for recipe in catalog.get("recipes", []):
+        if type(recipe.get("enabled")) is not bool:
+            errors.append(f"{recipe.get('id', '<missing>')}: invalid native enabled flag")
     # Native Valheim classifies named pickaxes as Hammer. A family-only route
     # filter would silently omit them from forged-cutting and could later send
     # them through the forged-striking route. Report, never auto-reclassify.
@@ -86,7 +89,7 @@ def audit(catalog, grammar):
         {"recipe": recipe.get("id"), "output_prefab": recipe["outputPrefab"],
          "native_family": recipe.get("family")}
         for recipe in catalog.get("recipes", [])
-        if recipe.get("enabled") and recipe.get("disposition") in ("Replace", "Adapt")
+        if recipe.get("enabled") is True and recipe.get("disposition") in ("Replace", "Adapt")
         and isinstance(recipe.get("outputPrefab"), str)
         and recipe["outputPrefab"].startswith("Pickaxe")
         and recipe.get("family") not in route["families"]
@@ -98,7 +101,7 @@ def audit(catalog, grammar):
     # Family membership identifies candidates only. A sword can also use a cast or
     # exotic route; no material-condition routing can be proven from this grammar.
     for recipe in catalog.get("recipes", []):
-        if not recipe.get("enabled") or recipe.get("disposition") not in ("Replace", "Adapt"):
+        if recipe.get("enabled") is not True or recipe.get("disposition") not in ("Replace", "Adapt"):
             continue
         if recipe.get("family") not in route["families"]:
             continue

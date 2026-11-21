@@ -107,5 +107,49 @@ class ForgedCuttingLedgerAuditTests(unittest.TestCase):
                 AUDIT.load(path)
 
 
+    def test_malformed_enabled_flags_fail_closed_and_are_never_counted(self):
+        for invalid in ("false", "true", 1, 0, None):
+            with self.subTest(enabled=invalid):
+                fixture = copy.deepcopy(self.native)
+                fixture["recipes"][0]["enabled"] = invalid
+                result = AUDIT.audit(fixture, self.grammar)
+                self.assertEqual(result["status"], "INVALID_NATIVE_LEDGER")
+                self.assertIn("Recipe_SwordIron: invalid native enabled flag", result["errors"])
+                self.assertEqual(result["candidate_native_recipes"], 0)
+                self.assertEqual(result["native_cost_rows_checked"], 0)
+                self.assertFalse(result["conservation_verified"])
+
+    def test_missing_enabled_flag_is_invalid_not_a_silent_disable(self):
+        fixture = copy.deepcopy(self.native)
+        del fixture["recipes"][0]["enabled"]
+        result = AUDIT.audit(fixture, self.grammar)
+        self.assertEqual(result["status"], "INVALID_NATIVE_LEDGER")
+        self.assertIn("Recipe_SwordIron: invalid native enabled flag", result["errors"])
+        self.assertEqual(result["candidate_native_recipes"], 0)
+
+    def test_false_enabled_and_valid_true_enabled_preserve_native_counts(self):
+        fixture = copy.deepcopy(self.native)
+        disabled = copy.deepcopy(fixture["recipes"][0])
+        disabled.update(id="Recipe_DisabledSword", enabled=False)
+        fixture["recipes"].append(disabled)
+        result = AUDIT.audit(fixture, self.grammar)
+        self.assertEqual(result["status"], "BLOCKED_MISSING_AUTHORED_LEDGER")
+        self.assertEqual(result["errors"], [])
+        self.assertEqual(result["candidate_native_recipes"], 1)
+        self.assertEqual(result["native_cost_rows_checked"], 1)
+        self.assertEqual(result["native_quality_entries_checked"], 4)
+        self.assertFalse(result["conservation_verified"])
+
+    def test_invalid_enabled_flag_outside_route_also_invalidates_catalog(self):
+        fixture = copy.deepcopy(self.native)
+        excluded = copy.deepcopy(fixture["recipes"][0])
+        excluded.update(id="Recipe_Unrelated", family="Armour", enabled="false")
+        fixture["recipes"].append(excluded)
+        result = AUDIT.audit(fixture, self.grammar)
+        self.assertEqual(result["status"], "INVALID_NATIVE_LEDGER")
+        self.assertIn("Recipe_Unrelated: invalid native enabled flag", result["errors"])
+        self.assertEqual(result["candidate_native_recipes"], 1)
+        self.assertFalse(result["conservation_verified"])
+
 if __name__ == "__main__":
     unittest.main()
