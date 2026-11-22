@@ -23,8 +23,16 @@ def load(path):
 
 
 def unique(records, field, kind, errors):
+    # JSON arrays must contain objects; otherwise a malformed native resource
+    # can crash the audit before its fail-closed status is reported.
+    if not isinstance(records, list):
+        errors.append(f"invalid {kind} collection: expected array")
+        return {}
     found = {}
-    for record in records:
+    for index, record in enumerate(records):
+        if not isinstance(record, dict):
+            errors.append(f"invalid {kind} entry {index}: expected object")
+            continue
         key = record.get(field)
         if not isinstance(key, str) or not key or key in found:
             errors.append(f"missing/duplicate {kind}: {key!r}")
