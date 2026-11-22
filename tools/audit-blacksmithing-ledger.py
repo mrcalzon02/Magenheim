@@ -66,6 +66,17 @@ def audit(catalog, grammar):
     if route is None:
         errors.append("forged-cutting route is missing")
         return {"status": "INVALID_GRAMMAR", "errors": errors, "conservation_verified": False}
+    # Do not treat strings/maps as route arrays: Python membership on a string
+    # could make a malformed family contract look like a valid native census.
+    invalid_route_shape = False
+    for field in ("families", "operations", "components"):
+        values = route.get(field)
+        if (not isinstance(values, list) or not values or
+                any(not isinstance(value, str) or not value.strip() for value in values)):
+            invalid_route_shape = True
+            errors.append(f"forged-cutting {field}: expected nonempty array of nonempty strings")
+    if invalid_route_shape:
+        return {"status": "INVALID_GRAMMAR", "errors": errors, "conservation_verified": False}
     for operation in route.get("operations", []):
         if operation not in owners:
             errors.append(f"forged-cutting operation has no owner: {operation}")
