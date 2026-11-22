@@ -10,6 +10,14 @@ import hashlib
 import json
 from pathlib import Path
 
+# Native Piece.Requirement fields are signed 32-bit integers. The inspected
+# C# quality formula uses single-precision floats; integer arithmetic in this
+# offline audit is exact only while the calculated quality amount fits the
+# consecutive-integer range of float32. Reject larger derived amounts rather
+# than silently claim an unverified native match.
+MAX_NATIVE_INT = (1 << 31) - 1
+MAX_EXACT_FLOAT32_INT = 1 << 24
+
 
 def load(path):
     def unique_keys(pairs):
@@ -142,9 +150,9 @@ def audit(catalog, grammar):
             checked_costs += 1
             if resource not in items:
                 errors.append(f"{rid}: unknown resource {resource}")
-            if any(type(cost.get(field)) is not int or cost[field] < 0
+            if any(type(cost.get(field)) is not int or not 0 <= cost[field] <= MAX_NATIVE_INT
                    for field in ("amount", "amountPerLevel", "extraAmountOnlyOneIngredient")):
-                errors.append(f"{rid}/{resource}: invalid nonnegative native amounts")
+                errors.append(f"{rid}/{resource}: invalid nonnegative int32 native amounts")
                 continue
             if not isinstance(cost.get("upgraderResource"), bool):
                 errors.append(f"{rid}/{resource}: missing upgrader flag")
@@ -155,7 +163,13 @@ def audit(catalog, grammar):
                 continue
             for q, observed in enumerate(actual, 1):
                 checked_quality_entries += 1
-                if type(observed) is not int or observed != native_amount(cost, q):
+                if type(observed) is not int or not 0 <= observed <= MAX_NATIVE_INT:
+                    errors.append(f"{rid}/{resource}: native quality {q} exceeds int32 or is not an integer")
+                    continue
+                expected = native_amount(cost, q)
+                if q > 1 and expected > MAX_EXACT_FLOAT32_INT:
+                    errors.append(f"{rid}/{resource}: native quality {q} exceeds exact float32 audit range")
+                elif observed != expected:
                     errors.append(f"{rid}/{resource}: native quality {q} differs")
             total_base += cost["amount"]
         if recipe.get("upgradeOnly") is False and total_base <= 0:
