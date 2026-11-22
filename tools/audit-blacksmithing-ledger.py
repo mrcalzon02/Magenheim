@@ -82,6 +82,8 @@ def audit(catalog, grammar):
     for recipe in catalog.get("recipes", []):
         if type(recipe.get("enabled")) is not bool:
             errors.append(f"{recipe.get('id', '<missing>')}: invalid native enabled flag")
+        if type(recipe.get("upgradeOnly")) is not bool:
+            errors.append(f"{recipe.get('id', '<missing>')}: invalid native upgradeOnly flag")
     # Native Valheim classifies named pickaxes as Hammer. A family-only route
     # filter would silently omit them from forged-cutting and could later send
     # them through the forged-striking route. Report, never auto-reclassify.
@@ -137,7 +139,7 @@ def audit(catalog, grammar):
                 if type(observed) is not int or observed != native_amount(cost, q):
                     errors.append(f"{rid}/{resource}: native quality {q} differs")
             total_base += cost["amount"]
-        if not recipe.get("upgradeOnly") and total_base <= 0:
+        if recipe.get("upgradeOnly") is False and total_base <= 0:
             zero_cost.append(rid)
     for rid in zero_cost:
         errors.append(f"{rid}: enabled replacement/adaptation has zero native base input")
