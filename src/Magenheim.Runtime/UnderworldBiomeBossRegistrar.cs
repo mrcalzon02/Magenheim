@@ -48,13 +48,17 @@ internal static class UnderworldBiomeBossRegistrar
         }
         catch { UnityEngine.Object.Destroy(root); throw; }
     }
-    internal static void ExtendFoundation(GameObject arena, bool drownedRing)
+    internal static void ExtendFoundation(GameObject arena, float footingHeight)
     {
-        var depthScale = drownedRing ? 2.25f : 1.30f;
-        var floor = arena.GetComponentsInChildren<MeshCollider>(true)
-            .Single(collider => collider.name == "combat-foundation").transform;
-        var top = (float)UnderworldArenaGrounding.FloorHeightFromOrigin;
-        var topOffset = arena.transform.InverseTransformPoint(floor.position).y - top;
+        var foundation = arena.GetComponentsInChildren<MeshCollider>(true)
+            .Single(collider => collider.name == "combat-foundation");
+        var floor = foundation.transform;
+        var bounds = foundation.sharedMesh.bounds;
+        var top = floor.TransformPoint(bounds.max).y;
+        var bottom = floor.TransformPoint(bounds.min).y;
+        if (bottom <= footingHeight) return;
+        var depthScale = (top - footingHeight) / (top - bottom);
+        var topOffset = floor.position.y - top;
         floor.position += Vector3.up * (topOffset * (depthScale - 1f));
         var scale = floor.localScale;
         scale.y *= depthScale;

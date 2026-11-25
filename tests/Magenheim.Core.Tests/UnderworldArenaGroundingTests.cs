@@ -23,11 +23,13 @@ internal static class UnderworldArenaGroundingTests
             "A suitable gentle slope may not break through the combat floor.");
         Verify(!Resolve(45d, false, (x, _) => 45d + (x - 800d) * .14d, out _),
             "A steep site should be rejected.");
-        Verify(Resolve(27.85d, true, (_, _) => 27.85d, out var drowned) &&
+        Verify(Resolve(26.85d, true, (_, _) => 26.85d, out var drowned) &&
             Math.Abs(drowned + UnderworldArenaGrounding.FloorHeightFromOrigin - 29.4d) < 1e-9,
             "The Drowned Ring floor must be in wading water with room for a swimming boss in the center.");
         Verify(!Resolve(14d, true, (_, _) => 14d, out _), "A deep bed cannot host the Drowned Ring.");
         Verify(!Resolve(28.8d, true, (_, _) => 28.8d, out _), "The boss needs room to swim in the pool.");
+        Verify(!Resolve(27.3d, true, (_, _) => 27.3d, out _),
+            "The enlarged serpent capsule needs clearance below its equilibrium swimming height.");
         Verify(!UnderworldArenaGrounding.IsOutsideArrival(750d, 0d) &&
             UnderworldArenaGrounding.IsOutsideArrival(768d, 0d), "Arrival buffer must be radial and inclusive at its edge.");
         Verify(!UnderworldArenaGrounding.HasFeatureClearance(75d, 0d, 24d, 44d) &&

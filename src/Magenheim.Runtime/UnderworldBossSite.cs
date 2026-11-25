@@ -18,14 +18,19 @@ internal static class UnderworldBossSite
     }
 
     internal static bool TryGetOrigin(UnderworldTerrainBiome biome, Vector3 point, float waterLevel,
-        Func<double, double, double> groundHeight, out double origin)
+        Func<double, double, double> groundHeight, out double origin) =>
+        TryGetGrade(biome, point, waterLevel, groundHeight, out origin, out _);
+
+    internal static bool TryGetGrade(UnderworldTerrainBiome biome, Vector3 point, float waterLevel,
+        Func<double, double, double> groundHeight, out double origin, out double footing)
     {
         origin = point.y;
+        footing = point.y;
         if (!UnderworldArenaGrounding.IsOutsideArrival(point.x, point.z)) return false;
         var terrain = UnderworldTerrainRuntime.SampleForDiagnostics(point.x, point.z);
         return terrain.Admitted && terrain.Biome == biome &&
-            UnderworldArenaGrounding.TryResolveOriginHeight(point.x, point.z, point.y, waterLevel,
-                biome == UnderworldTerrainBiome.BlackwaterDeep, groundHeight, out origin);
+            UnderworldArenaGrounding.TryResolveGrade(point.x, point.z, point.y, waterLevel,
+                biome == UnderworldTerrainBiome.BlackwaterDeep, groundHeight, out origin, out footing);
     }
 
     internal static double GeneratedHeight(double x, double z) =>

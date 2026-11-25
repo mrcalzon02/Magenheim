@@ -109,7 +109,8 @@ internal sealed class UnderworldNativeStructureLocationRuntime : MonoBehaviour
                 {
                     var drownedRing = family.Biome == UnderworldTerrainBiome.BlackwaterDeep;
                     var waterLevel = context.ZoneSystem.m_waterLevel;
-                    if (!UnderworldBossSite.TryGetOrigin(family.Biome, position, waterLevel, GroundHeight, out var origin))
+                    if (!UnderworldBossSite.TryGetGrade(family.Biome, position, waterLevel, GroundHeight,
+                            out var origin, out var footing))
                     {
                         _log?.LogWarning($"Skipped arena '{_familyKind}' at ({position.x:F1}, {position.z:F1}) because its loaded ground is unsuitable.");
                         return;
@@ -117,8 +118,8 @@ internal sealed class UnderworldNativeStructureLocationRuntime : MonoBehaviour
                     position.y = (float)origin;
                     content = UnderworldBiomeBossRegistrar.ComposeArena(
                         bossLocation.CanonicalLocationId, position, transform.rotation);
-                    UnderworldBiomeBossRegistrar.ExtendFoundation(content, drownedRing);
-                    var spawnHeight = drownedRing ? waterLevel - .9f : position.y + 1.5f;
+                    UnderworldBiomeBossRegistrar.ExtendFoundation(content, (float)footing);
+                    var spawnHeight = drownedRing ? waterLevel - UnderworldArenaGrounding.BossSwimmingDepth : position.y + 1.5f;
                     content.AddComponent<UnderworldBiomeBossArenaRuntime>()
                         .Bind(bossLocation.CanonicalLocationId, spawnHeight);
                 }

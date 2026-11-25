@@ -65,7 +65,7 @@ internal static class UnderworldArrivalBossMigration
                     UnderworldBossSite.GeneratedHeight, out var origin))
                 continue;
             point.y = boss.Family.Biome == UnderworldTerrainBiome.BlackwaterDeep
-                ? waterLevel - .9f : (float)origin + 1.5f;
+                ? waterLevel - UnderworldArenaGrounding.BossSwimmingDepth : (float)origin + 1.5f;
 
             using (ValheimWorldInstanceExecution.Enter(context))
             {

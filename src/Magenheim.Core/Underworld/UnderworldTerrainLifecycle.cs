@@ -454,7 +454,9 @@ public static class UnderworldTerrainLifecycle
         // The deeper channel begins past the shelf and still reaches 30 m at the seam.
         var bank = Smooth01((channel01 - .24d) / (HexRiverBiomeThreshold - .24d));
         var core = Smooth01((channel01 - .73d) / (1d - .73d));
-        var bed = waterLevel - (2.15d + 27.85d * core);
+        // A 3.15 m natural shelf clears the Maw's swimming capsule, with a
+        // shallower, raised wading ring fitted to this grade by the location.
+        var bed = waterLevel - (3.15d + 26.85d * core);
         return Lerp(height, Math.Min(height, bed), bank);
     }
 
