@@ -2,20 +2,142 @@ using System;
 using System.IO;
 using System.Reflection;
 using BepInEx.Logging;
+using HarmonyLib;
 using Magenheim.Core.Underworld;
 using UnityEngine;
 
 namespace Magenheim.Runtime;
 
 /// <summary>
-/// Resolves optional packaged production terrain artwork beside the runtime assembly.
-/// Missing or malformed authored maps are non-fatal: the chunk materializer remains
-/// responsible for its deterministic procedural fallback.
+/// Binds the packaged biome artwork to Valheim's native terrain material instances.
 /// </summary>
 internal static class UnderworldTerrainTextureAssets
 {
     private const int AuthoredTextureSize = 256;
     private static readonly string RelativeTerrainDirectory = Path.Combine("assets", "textures", "underworld", "terrain");
+    private static readonly int DiffuseArray = Shader.PropertyToID("_DiffuseArrayTex");
+    private static readonly int NormalArray = Shader.PropertyToID("_NormalArrayTex");
+    private static Texture2DArray? _diffuse;
+    private static Texture2DArray? _normal;
+    private static ManualLogSource? _log;
+    private static bool _attempted;
+
+    internal static void Configure(ManualLogSource log) => _log = log;
+
+    internal static void Apply(Material material)
+    {
+        if (!material || _log is null || !material.HasProperty(DiffuseArray) ||
+            !material.HasProperty(NormalArray) || !SystemInfo.supports2DArrayTextures)
+            return;
+
+        if (!_attempted)
+        {
+            _attempted = true;
+            BuildArrays(material, _log);
+        }
+        if (!_diffuse || !_normal || material.GetTexture(DiffuseArray) == _diffuse) return;
+        material.SetTexture(DiffuseArray, _diffuse);
+        material.SetTexture(NormalArray, _normal);
+    }
+
+    // Custom/Heightmap blends these fixed color keys and array slots for near and distant
+    // terrain. Reuse the shader's native cliff, shore and ground-paint layers.
+    private static readonly UnderworldTerrainBiome[] DiffuseSlots =
+    {
+        UnderworldTerrainBiome.FungalForest,      // grass surface
+        UnderworldTerrainBiome.FrozenCaverns,    // snow
+        UnderworldTerrainBiome.FrozenCaverns,    // ice
+        UnderworldTerrainBiome.GreatDecay,       // forest floor
+        UnderworldTerrainBiome.FractureZones,    // cliff
+        UnderworldTerrainBiome.BlackwaterDeep,   // base soil and submerged terrain
+        UnderworldTerrainBiome.BlackwaterDeep,   // wet shoreline
+        UnderworldTerrainBiome.SulfurousWastes,   // ash
+        UnderworldTerrainBiome.FractureZones,    // dry ground
+        UnderworldTerrainBiome.GreatDecay,       // cultivated ground
+        UnderworldTerrainBiome.FractureZones,    // paved ground
+        UnderworldTerrainBiome.BlackwaterDeep,   // wet sediment
+        UnderworldTerrainBiome.FrozenCaverns,    // packed snow
+        UnderworldTerrainBiome.SulfurousWastes,   // ash variation
+        UnderworldTerrainBiome.FractureZones,    // cliffs
+        UnderworldTerrainBiome.FungalForest,
+    };
+
+    private static readonly UnderworldTerrainBiome[] NormalSlots =
+    {
+        UnderworldTerrainBiome.FungalForest,
+        UnderworldTerrainBiome.FractureZones,
+        UnderworldTerrainBiome.FrozenCaverns,
+        UnderworldTerrainBiome.BlackwaterDeep,
+        UnderworldTerrainBiome.SulfurousWastes,
+        UnderworldTerrainBiome.GreatDecay,
+    };
+
+    private static void BuildArrays(Material native, ManualLogSource log)
+    {
+        if (native.GetTexture(DiffuseArray) is not Texture2DArray nativeDiffuse ||
+            native.GetTexture(NormalArray) is not Texture2DArray nativeNormal ||
+            nativeDiffuse.depth != DiffuseSlots.Length || nativeNormal.depth != NormalSlots.Length)
+        {
+            log.LogWarning("Underworld terrain artwork requires the native heightmap texture array layout.");
+            return;
+        }
+
+        var albedos = new Color32[NormalSlots.Length][];
+        var normals = new Color32[NormalSlots.Length][];
+        Texture2DArray? diffuse = null;
+        Texture2DArray? normal = null;
+        try
+        {
+            foreach (var biome in NormalSlots)
+            {
+                if (!TryLoadFamily(biome, log, out var albedoMap, out var normalMap, out var roughnessMap))
+                {
+                    log.LogWarning($"Underworld terrain artwork is incomplete for {biome}; using native textures.");
+                    return;
+                }
+                try
+                {
+                    albedos[(int)biome] = albedoMap!.GetPixels32();
+                    normals[(int)biome] = normalMap!.GetPixels32();
+                }
+                finally { DestroyFamily(albedoMap, normalMap, roughnessMap); }
+            }
+            diffuse = MakeArray("Magenheim_Underworld_Diffuse", DiffuseSlots, albedos, linear: false);
+            normal = MakeArray("Magenheim_Underworld_Normal", NormalSlots, normals, linear: true);
+            _diffuse = diffuse;
+            _normal = normal;
+            log.LogInfo("Bound six authored Underworld terrain palettes to native heightmap texture arrays.");
+        }
+        catch (Exception exception)
+        {
+            if (diffuse) UnityEngine.Object.Destroy(diffuse);
+            if (normal) UnityEngine.Object.Destroy(normal);
+            log.LogWarning("Underworld terrain arrays could not be built; using native textures. " + exception.Message);
+        }
+    }
+
+    private static Texture2DArray MakeArray(string name, UnderworldTerrainBiome[] slots, Color32[][] pixels, bool linear)
+    {
+        var array = new Texture2DArray(AuthoredTextureSize, AuthoredTextureSize, slots.Length,
+            TextureFormat.RGBA32, true, linear)
+        {
+            name = name,
+            wrapMode = TextureWrapMode.Repeat,
+            filterMode = FilterMode.Trilinear,
+            anisoLevel = 8,
+        };
+        try
+        {
+            for (var index = 0; index < slots.Length; index++) array.SetPixels32(pixels[(int)slots[index]], index);
+            array.Apply(updateMipmaps: true, makeNoLongerReadable: true);
+            return array;
+        }
+        catch
+        {
+            UnityEngine.Object.Destroy(array);
+            throw;
+        }
+    }
 
     internal static bool TryLoadFamily(
         UnderworldTerrainBiome biome,
@@ -117,4 +239,33 @@ internal static class UnderworldTerrainTextureAssets
         UnderworldTerrainBiome.GreatDecay => "great_decay",
         _ => null,
     };
+}
+
+[HarmonyPatch(typeof(Heightmap), "GetBiomeColor", new[] { typeof(Heightmap.Biome) })]
+internal static class UnderworldHeightmapBiomeColorPatch
+{
+    private static void Prefix(ref Heightmap.Biome __0)
+    {
+        __0 = __0 switch
+        {
+            UnderworldTerrainRuntime.FungalForestBiome => Heightmap.Biome.Meadows,
+            UnderworldTerrainRuntime.BlackwaterDeepBiome => Heightmap.Biome.Swamp,
+            UnderworldTerrainRuntime.SulfurousWastesBiome => Heightmap.Biome.AshLands,
+            UnderworldTerrainRuntime.FrozenCavernsBiome => Heightmap.Biome.Mountain,
+            UnderworldTerrainRuntime.FractureZonesBiome => Heightmap.Biome.Plains,
+            UnderworldTerrainRuntime.GreatDecayBiome => Heightmap.Biome.BlackForest,
+            _ => __0,
+        };
+    }
+}
+
+[HarmonyPatch(typeof(Heightmap), "RebuildRenderMesh")]
+internal static class UnderworldHeightmapTerrainMaterialPatch
+{
+    private static void Postfix(Heightmap __instance, Material ___m_materialInstance)
+    {
+        if (ValheimWorldInstanceExecution.TryGetContextForScene(__instance.gameObject.scene.handle, out var context) &&
+            context is not null && context.InstanceId.IsUnderworld)
+            UnderworldTerrainTextureAssets.Apply(___m_materialInstance);
+    }
 }

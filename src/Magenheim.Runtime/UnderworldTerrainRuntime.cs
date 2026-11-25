@@ -116,6 +116,7 @@ internal static class UnderworldTerrainRuntime
         _services = services ?? throw new ArgumentNullException(nameof(services));
         _log = log ?? throw new ArgumentNullException(nameof(log));
         _ = services.TerrainDomain ?? throw new InvalidOperationException("Native Underworld terrain domain is unavailable.");
+        UnderworldTerrainTextureAssets.Configure(log);
         _capturedWaterLevel = 30d;
         log.LogInfo("Native Underworld terrain authority configured for instance-scoped WorldGenerator hooks; Surface worldgen remains untouched.");
     }
