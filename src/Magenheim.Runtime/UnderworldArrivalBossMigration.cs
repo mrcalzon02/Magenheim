@@ -43,6 +43,11 @@ internal static class UnderworldArrivalBossMigration
     internal static IEnumerator RelocateEncounters(ValheimWorldInstanceContext context,
         IReadOnlyList<RetiredSite> retired)
     {
+        var proxies = new List<ZDO>();
+        var proxyCursor = 0;
+        var proxyPrefab = context.ZoneSystem.m_locationProxyPrefab.name;
+        while (!context.ZdoMan.GetAllZDOsWithPrefabIterative(proxyPrefab, proxies, ref proxyCursor)) yield return null;
+
         var locations = context.ZoneSystem.m_locationInstances.Values.ToArray();
         foreach (var group in retired.GroupBy(site => site.Boss.PrefabName))
         {
@@ -51,11 +56,22 @@ internal static class UnderworldArrivalBossMigration
                 UnderworldZoneCatalogGuard.LocationName(location.m_location) == boss.PrefabName);
             if (replacement.m_location is null) continue;
 
+            var oldPositions = group.Select(site => site.Position).ToArray();
+            var locationHash = boss.PrefabName.GetStableHashCode();
+            using (ValheimWorldInstanceExecution.Enter(context))
+                foreach (var proxy in proxies)
+                {
+                    if (proxy.GetInt(ZDOVars.s_location) != locationHash ||
+                        !oldPositions.Any(old => Utils.DistanceXZ(old, proxy.GetPosition()) <= 2f)) continue;
+                    proxy.SetOwner(ZDOMan.GetSessionID());
+                    context.ZdoMan.DestroyZDO(proxy);
+                }
+
             var encounterPrefab = boss.PrefabName.Replace("Magenheim_Underworld_Boss_", "Magenheim_Underworld_Encounter_");
             var existing = new List<ZDO>();
             var cursor = 0;
             while (!context.ZdoMan.GetAllZDOsWithPrefabIterative(encounterPrefab, existing, ref cursor)) yield return null;
-            if (existing.Count != 1 || !group.Any(site => Utils.DistanceXZ(site.Position, existing[0].GetPosition()) <= 128f))
+            if (existing.Count != 1 || !oldPositions.Any(old => Utils.DistanceXZ(old, existing[0].GetPosition()) <= 128f))
                 continue;
 
             var point = replacement.m_position;

@@ -363,8 +363,9 @@ internal sealed class UnderworldDungeonPlacementRuntime : MonoBehaviour
         _finished = true;
         _log?.LogInfo(
             "Underworld dungeon placement audit PASS: " + _diagnostic);
-        foreach (var entry in _zoneSystem.m_locationInstances.Values)
+        foreach (var pair in _zoneSystem.m_locationInstances)
         {
+            var entry = pair.Value;
             if (entry.m_location is null || UnderworldBossSite.Find(entry.m_location) is not { } boss) continue;
             var point = entry.m_position;
             var terrain = UnderworldTerrainRuntime.SampleForDiagnostics(point.x, point.z);
@@ -373,8 +374,14 @@ internal sealed class UnderworldDungeonPlacementRuntime : MonoBehaviour
                     UnderworldBossSite.GeneratedHeight, out var origin)) continue;
             var distance = Utils.LengthXZ(point);
             var floor = origin + UnderworldArenaGrounding.FloorHeightFromOrigin;
+            var featureGap = _zoneSystem.m_locationInstances
+                .Where(other => !other.Key.Equals(pair.Key) && other.Value.m_location is not null)
+                .Select(other => Utils.DistanceXZ(point, other.Value.m_position) -
+                    entry.m_location.m_exteriorRadius - other.Value.m_location.m_exteriorRadius)
+                .DefaultIfEmpty(float.PositiveInfinity).Min();
             _log?.LogInfo($"Underworld boss site {boss.PrefabName}: ({point.x:F1}, {point.z:F1}), " +
-                $"spawn distance {distance:F1} m, ground Y {terrain.Height:F2}, floor Y {floor:F2}, " +
+                $"spawn distance {distance:F1} m, nearest feature gap {featureGap:F1} m, " +
+                $"ground Y {terrain.Height:F2}, floor Y {floor:F2}, " +
                 $"floor water depth {Math.Max(0d, _zoneSystem.m_waterLevel - floor):F2} m.");
         }
     }

@@ -1,4 +1,4 @@
 {
-  "version": "0.0.178",
-  "description": "0.0.178: Corrects the forward orientation of legacy custom creature visuals so heads face native movement and attack direction. Refined weighted bosses retain their existing orientation. New Rift Titan and Carrion Crown art studies remain separate review candidates."
+  "version": "0.0.179",
+  "description": "0.0.179: Gentler Underworld hills, continuous riverbanks, native terrain textures, and boss arenas fitted to local ground with clearance from spawn and other sites. Blackwater Maw has a shallow wading ring around its swimming pool."
 }

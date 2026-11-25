@@ -4,6 +4,7 @@ using System.Reflection;
 using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Magenheim.Core.Underworld;
 
 namespace Magenheim.Runtime;
@@ -316,6 +317,51 @@ internal static class UnderworldNativeHeightmapBiomePatch
         __result = UnderworldTerrainRuntime.ToNativeBiome(terrain.Biome);
         return false;
     }
+}
+
+[HarmonyPatch(typeof(TerrainLod), "Update")]
+internal static class UnderworldNativeTerrainLodPatch
+{
+    private static readonly FieldInfo[] Configuration = Array.ConvertAll(
+        new[] { "m_updateStepDistance", "m_terrainSize", "m_regionsPerAxis", "m_vertexDistance", "m_material" },
+        name => AccessTools.Field(typeof(TerrainLod), name)
+            ?? throw new MissingFieldException(typeof(TerrainLod).FullName, name));
+    private static TerrainLod? _underworldLod;
+
+    private static bool Prefix(TerrainLod __instance, out IDisposable? __state)
+    {
+        __state = null;
+        var player = Player.m_localPlayer;
+        var scene = __instance.gameObject.scene;
+        var viewScene = player is not null && player ? player.gameObject.scene : default;
+        var viewingUnderworld = viewScene.IsValid() &&
+            ValheimWorldInstanceExecution.TryGetContextForScene(viewScene.handle, out var view) &&
+            view is not null && view.InstanceId.IsUnderworld;
+
+        if (ValheimWorldInstanceExecution.TryGetContextForScene(scene.handle, out var owner) &&
+            owner is not null && owner.InstanceId.IsUnderworld)
+        {
+            if (!viewingUnderworld || viewScene.handle != scene.handle) return false;
+            __state = ValheimWorldInstanceExecution.Enter(owner);
+            return true;
+        }
+
+        if (!viewingUnderworld) return true;
+        if (_underworldLod is null || !_underworldLod || _underworldLod.gameObject.scene.handle != viewScene.handle)
+        {
+            // Native LOD generates Heightmap children in its own scene. Give the
+            // Underworld its own renderer using the actual installed LOD settings.
+            var root = new GameObject("Magenheim_Underworld_TerrainLod");
+            root.SetActive(false);
+            SceneManager.MoveGameObjectToScene(root, viewScene);
+            _underworldLod = root.AddComponent<TerrainLod>();
+            foreach (var field in Configuration) field.SetValue(_underworldLod, field.GetValue(__instance));
+            root.SetActive(true);
+        }
+        return false;
+    }
+
+    private static void Finalizer(IDisposable? __state) => __state?.Dispose();
 }
 
 
