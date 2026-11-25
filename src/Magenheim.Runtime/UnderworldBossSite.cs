@@ -117,8 +117,9 @@ internal static class UnderworldBossSitePlacementPatch
             .Select(instruction => new CodeInstruction(instruction.opcode, instruction.operand)).ToList();
         guard[0].labels.AddRange(code[entry].labels);
         code[entry].labels.Clear();
-        guard.Add(new CodeInstruction(OpCodes.Call,
-            AccessTools.Method(typeof(UnderworldBossSite), nameof(UnderworldBossSite.AcceptCandidate))));
+        var accept = AccessTools.Method(typeof(UnderworldBossSite), nameof(UnderworldBossSite.AcceptCandidate),
+            new[] { typeof(ZoneSystem), typeof(ZoneSystem.ZoneLocation), typeof(Vector3) });
+        guard.Add(new CodeInstruction(OpCodes.Call, accept));
         guard.Add(new CodeInstruction(OpCodes.Brfalse, reject));
         code.InsertRange(entry, guard);
         return code;

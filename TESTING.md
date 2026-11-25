@@ -4,14 +4,21 @@
 
 Run `./closeout.ps1` (`-Offline` when using cached dependencies) with Valheim and
 r2modman closed. Reopen r2modman and select Central Fuckery. The enabled entry must
-show **Magenheim v0.0.178 by Local** and start its description with
-**0.0.178: Corrects the forward orientation**.
+show **Magenheim v0.0.179 by Local** and start its description with
+**0.0.179: Gentler Underworld hills**.
 
 The closeout verifies the catalog version/description and the installed DLL hashes.
 If either differs, installation is incomplete. After Launch Modded, confirm the
-BepInEx startup log says `Loading [Magenheim 0.0.178]` and the runtime image line reports
-`Runtime image 0.0.178` with the actual assembly path before reporting game results.
+BepInEx startup log says `Loading [Magenheim 0.0.179]` and the runtime image line reports
+`Runtime image 0.0.179` with the actual assembly path before reporting game results.
 Future versions must update `release.json` and this expected version together.
+
+In a fresh disposable world, the native location audit should list all six biome boss
+arenas with their measured ground height, combat-floor height, spawn distance and gap to
+the nearest feature. The generated centers must be at least 768 m from the world origin
+with at least 8 m between location footprints. The five land floors should sit above the
+local ground with buried footings. Blackwater Maw's ring should have 0.60 m of nominal
+water over the standing floor and a 2.96–3.55 m pool for the enlarged Serpent capsule.
 
 For 0.0.178, check ordinary creatures in a disposable world while they walk,
 turn and attack. Their visible heads must face their native movement/attack
