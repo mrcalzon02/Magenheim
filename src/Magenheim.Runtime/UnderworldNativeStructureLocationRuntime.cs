@@ -73,21 +73,61 @@ internal sealed class UnderworldNativeStructureLocationRuntime : MonoBehaviour
             UnderworldBossLocationRegistrar.BossLocation? bossLocation = null;
             foreach (var boss in UnderworldBossLocationRegistrar.Locations)
                 if (string.Equals(boss.Family.Kind, _familyKind, StringComparison.Ordinal)) bossLocation = boss;
-            if (bossLocation is not null && UnderworldArrivalBossMigration.AtArrival(transform.position))
+            if (bossLocation is not null && UnderworldArrivalBossMigration.IsRetired(
+                    context.ZoneSystem, bossLocation.PrefabName, transform.position))
             {
-                _log?.LogInfo("Retired obsolete arrival-area boss location proxy: " + bossLocation.PrefabName);
+                _log?.LogInfo("Retired obsolete boss location proxy: " + bossLocation.PrefabName);
                 _composed = true;
                 return;
             }
+            var position = transform.position;
+            var terrain = UnderworldTerrainRuntime.SampleForDiagnostics(position.x, position.z);
+            if (!terrain.Admitted) return;
+            var groundMask = LayerMask.GetMask("terrain");
+            var domain = _services.TerrainDomain;
+            var rayStart = (float)domain.MaximumY + 1f;
+            var rayLength = (float)(domain.MaximumY - domain.MinimumY) + 2f;
+            double GroundHeight(double x, double z)
+            {
+                var probe = new Vector3((float)x, rayStart, (float)z);
+                if (context.PhysicsScene.Raycast(probe, Vector3.down, out var hit, rayLength, groundMask,
+                        QueryTriggerInteraction.Ignore))
+                    return hit.point.y;
+
+                return UnderworldBossSite.GeneratedHeight(x, z);
+            }
+
+            var centerHeight = GroundHeight(position.x, position.z);
+            position.y = (float)centerHeight;
             using (ValheimWorldInstanceExecution.Enter(context))
-                content = bossLocation is null ? family.Compose(transform.position, identity, key) :
-                    UnderworldBiomeBossRegistrar.ComposeArena(bossLocation.CanonicalLocationId, transform.position, transform.rotation);
+            {
+                if (bossLocation is null)
+                {
+                    content = family.Compose(position, identity, key);
+                }
+                else
+                {
+                    var drownedRing = family.Biome == UnderworldTerrainBiome.BlackwaterDeep;
+                    var waterLevel = context.ZoneSystem.m_waterLevel;
+                    if (!UnderworldBossSite.TryGetOrigin(family.Biome, position, waterLevel, GroundHeight, out var origin))
+                    {
+                        _log?.LogWarning($"Skipped arena '{_familyKind}' at ({position.x:F1}, {position.z:F1}) because its loaded ground is unsuitable.");
+                        return;
+                    }
+                    position.y = (float)origin;
+                    content = UnderworldBiomeBossRegistrar.ComposeArena(
+                        bossLocation.CanonicalLocationId, position, transform.rotation);
+                    UnderworldBiomeBossRegistrar.ExtendFoundation(content, drownedRing);
+                    var spawnHeight = drownedRing ? waterLevel - .9f : position.y + 1.5f;
+                    content.AddComponent<UnderworldBiomeBossArenaRuntime>()
+                        .Bind(bossLocation.CanonicalLocationId, spawnHeight);
+                }
+            }
             content.transform.SetParent(transform, worldPositionStays: true);
-            if (bossLocation is not null)
-                content.AddComponent<UnderworldBiomeBossArenaRuntime>().Bind(bossLocation.CanonicalLocationId);
             _composed = true;
             _log?.LogInfo(
-                $"Composed native Underworld location '{_familyKind}' at chunk {key.X},{key.Z}.");
+                $"Composed native Underworld location '{_familyKind}' at chunk {key.X},{key.Z}, " +
+                $"origin Y {position.y:F2}, center terrain Y {centerHeight:F2}.");
         }
         catch
         {

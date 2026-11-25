@@ -78,6 +78,9 @@ internal sealed class UnderworldDungeonPlacementRuntime : MonoBehaviour
         if (_finished || _running || !_zoneSystem) return;
         if (!LocationsGenerated()) return;
 
+        var retired = ZNet.instance is not null && ZNet.instance.IsServer()
+            ? UnderworldArrivalBossMigration.RetireInvalidSites(_zoneSystem, _log)
+            : Array.Empty<UnderworldArrivalBossMigration.RetiredSite>();
         var audit = Analyze(_zoneSystem);
         if (audit.Invalid.Count != 0)
         {
@@ -103,10 +106,11 @@ internal sealed class UnderworldDungeonPlacementRuntime : MonoBehaviour
         _state = PlacementState.Reconciling;
         _diagnostic =
             "Reconciling missing admitted Underworld dungeon positions through native Valheim placement.";
-        StartCoroutine(Reconcile(audit.Missing));
+        StartCoroutine(Reconcile(audit.Missing, retired));
     }
 
-    private IEnumerator Reconcile(IReadOnlyList<MissingFamily> missing)
+    private IEnumerator Reconcile(IReadOnlyList<MissingFamily> missing,
+        IReadOnlyList<UnderworldArrivalBossMigration.RetiredSite> retired)
     {
         Exception? failure = null;
         try
@@ -162,6 +166,10 @@ internal sealed class UnderworldDungeonPlacementRuntime : MonoBehaviour
             }
             else
             {
+                if (retired.Count > 0 && ValheimWorldInstanceExecution.TryGetContextForScene(
+                        _zoneSystem.gameObject.scene.handle, out var context) && context is not null)
+                    yield return UnderworldArrivalBossMigration.RelocateEncounters(context, retired);
+
                 try
                 {
                     var after = Analyze(_zoneSystem);
@@ -355,6 +363,20 @@ internal sealed class UnderworldDungeonPlacementRuntime : MonoBehaviour
         _finished = true;
         _log?.LogInfo(
             "Underworld dungeon placement audit PASS: " + _diagnostic);
+        foreach (var entry in _zoneSystem.m_locationInstances.Values)
+        {
+            if (entry.m_location is null || UnderworldBossSite.Find(entry.m_location) is not { } boss) continue;
+            var point = entry.m_position;
+            var terrain = UnderworldTerrainRuntime.SampleForDiagnostics(point.x, point.z);
+            point.y = (float)terrain.Height;
+            if (!UnderworldBossSite.TryGetOrigin(boss.Family.Biome, point, _zoneSystem.m_waterLevel,
+                    UnderworldBossSite.GeneratedHeight, out var origin)) continue;
+            var distance = Utils.LengthXZ(point);
+            var floor = origin + UnderworldArenaGrounding.FloorHeightFromOrigin;
+            _log?.LogInfo($"Underworld boss site {boss.PrefabName}: ({point.x:F1}, {point.z:F1}), " +
+                $"spawn distance {distance:F1} m, ground Y {terrain.Height:F2}, floor Y {floor:F2}, " +
+                $"floor water depth {Math.Max(0d, _zoneSystem.m_waterLevel - floor):F2} m.");
+        }
     }
 
     private void Fail(string message)

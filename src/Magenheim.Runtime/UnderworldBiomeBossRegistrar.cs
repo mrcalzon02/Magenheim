@@ -48,6 +48,19 @@ internal static class UnderworldBiomeBossRegistrar
         }
         catch { UnityEngine.Object.Destroy(root); throw; }
     }
+    internal static void ExtendFoundation(GameObject arena, bool drownedRing)
+    {
+        var depthScale = drownedRing ? 2.25f : 1.30f;
+        var floor = arena.GetComponentsInChildren<MeshCollider>(true)
+            .Single(collider => collider.name == "combat-foundation").transform;
+        var top = (float)UnderworldArenaGrounding.FloorHeightFromOrigin;
+        var topOffset = arena.transform.InverseTransformPoint(floor.position).y - top;
+        floor.position += Vector3.up * (topOffset * (depthScale - 1f));
+        var scale = floor.localScale;
+        scale.y *= depthScale;
+        floor.localScale = scale;
+    }
+
     private static ManualLogSource? _log;
 
     internal static void Register(ManualLogSource log)
@@ -114,17 +127,19 @@ internal sealed class UnderworldBiomeBossArenaRuntime : MonoBehaviour
 {
     private UnderworldBossDefinition? _boss;
     private UnderworldBiomeBossRegistrar.Encounter? _encounter;
+    private float _spawnHeight;
     private readonly List<ZDO> _existing = new();
     private int _cursor;
     private bool _searchComplete;
     private float _nextCheck;
     private ZDO? _living;
 
-    internal void Bind(string locationId)
+    internal void Bind(string locationId, float spawnHeight)
     {
         _boss = UnderworldDeepstoneRuntimeAuthority.Bosses.Single(b => b.UniqueLocationId == locationId);
         _encounter = UnderworldBiomeBossRegistrar.Encounters.Single(e =>
             _boss.Id == UnderworldBiomeBossRegistrar.BossId(e));
+        _spawnHeight = spawnHeight;
     }
 
     private void Update()
@@ -160,7 +175,8 @@ internal sealed class UnderworldBiomeBossArenaRuntime : MonoBehaviour
             Vector3.Distance(player.transform.position, transform.position) <= 40f)) return;
         var prefab = PrefabManager.Instance.GetPrefab(UnderworldBiomeBossRegistrar.Prefab(encounter));
         if (!prefab) { Debug.LogError("Biome boss prefab unavailable: " + encounter.Name); enabled = false; return; }
-        var position = transform.position + Vector3.up * 1.5f;
+        var position = transform.position;
+        position.y = _spawnHeight;
         var instance = Instantiate(prefab, position, transform.rotation);
         var view = instance.GetComponent<ZNetView>();
         if (!view || !view.IsValid()) { Destroy(instance); Debug.LogError("Biome boss has no native persistent ZDO: " + encounter.Name); enabled = false; return; }
