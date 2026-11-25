@@ -5,7 +5,7 @@ namespace Magenheim.Core.Underworld;
 /// <summary>Metre-scale geography per biome. Amplitudes bound the noise naturally; heights are never clipped.</summary>
 public static class UnderworldBiomeTerrain
 {
-    public const string AlgorithmId = "biome-relief-v5-one-fifth-amplitude";
+    public const string AlgorithmId = "biome-relief-v6-gentle-local-relief";
     public const double ReliefScale = .2d;
     private enum Form { Rolling, Ridges, Faults, Basins }
     private sealed record Profile(double Offset, double RegionalLift, Form Form,
@@ -64,7 +64,10 @@ public static class UnderworldBiomeTerrain
                     Form.Basins => 1d - 2d * Math.Pow(1d - Math.Abs(value), 2d),
                     _ => value,
                 };
-            total += value * profile.Amplitudes[octave] * (octave < 3 ? regionalWeight : 1d);
+            // Preserve the small arrival details. Soften short waves farther out so the
+            // ordinary ground rolls between the much larger regional features.
+            var weight = octave < 3 ? regionalWeight : 1d - regionalWeight * .65d;
+            total += value * profile.Amplitudes[octave] * weight;
             octaveSeed = unchecked((int)UnderworldTerrainNoise.Mix((uint)octaveSeed));
         }
         return total * ReliefScale;

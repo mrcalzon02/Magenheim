@@ -35,9 +35,9 @@ public readonly record struct UnderworldTerrainResult(
 /// </summary>
 public static class UnderworldTerrainLifecycle
 {
-    public const string BiomeLayoutAlgorithmId = "biome-layout-v2-hex50-voronoi-plasma-rivers";
+    public const string BiomeLayoutAlgorithmId = "biome-layout-v3-continuous-river-shelves";
     public const string EdgeOceanAlgorithmId = "edge-ocean-v1-plasma-shore";
-    public const string RareCellElevationAlgorithmId = "rare-cell-massif-v2-one-fifth-amplitude";
+    public const string RareCellElevationAlgorithmId = "rare-cell-massif-v3-cell-owned-lift";
     public const string GateFoundationAlgorithmId = "deep-gate-foundation-v1-flat-footprint-blend";
     public const double ArrivalProtectionRadiusMeters = 80d;
     public const double GateFoundationCenterXMeters = 36d;
@@ -111,18 +111,20 @@ public static class UnderworldTerrainLifecycle
             distance,
             domain.RadiusMeters);
         var selection = SelectBiome(sample.X, sample.Z, distance, domain.RadiusMeters, derivedSeed32);
-        var biome = selection.Primary;
+        var landBiome = selection.Primary;
+        var biome = selection.Channel01 >= HexRiverBiomeThreshold
+            ? UnderworldTerrainBiome.BlackwaterDeep : selection.Owner;
         var regionalWeight = RegionalReliefWeight(distance, domain.RadiusMeters);
         double Delta(UnderworldTerrainBiome selected) => UnderworldBiomeTerrain.HeightDelta(
             selected, derivedSeed32, sample.X, sample.Z, regionalWeight);
-        var delta = Delta(biome);
+        var delta = Delta(landBiome);
 
         // Ecology/weather ownership remains discrete, but plasma-softened Voronoi borders blend
         // the neighbouring terrain profiles so the cellular geography does not create hard steps.
-        if (selection.Secondary != biome && selection.TerrainBlend01 > 0d)
+        if (selection.Secondary != landBiome && selection.TerrainBlend01 > 0d)
             delta = Lerp(delta, Delta(selection.Secondary), selection.TerrainBlend01 * .5d);
         var fungalBlend = FungalTransition(distance, domain.RadiusMeters);
-        if (fungalBlend > 0d && biome != UnderworldTerrainBiome.FungalForest)
+        if (fungalBlend > 0d && landBiome != UnderworldTerrainBiome.FungalForest)
             delta = Lerp(delta, Delta(UnderworldTerrainBiome.FungalForest), fungalBlend);
 
         var height = BaseElevationMeters + delta;
@@ -165,6 +167,7 @@ public static class UnderworldTerrainLifecycle
     }
 
     private readonly record struct BiomeSelection(
+        UnderworldTerrainBiome Owner,
         UnderworldTerrainBiome Primary,
         UnderworldTerrainBiome Secondary,
         double TerrainBlend01,
@@ -187,6 +190,7 @@ public static class UnderworldTerrainLifecycle
             return new BiomeSelection(
                 UnderworldTerrainBiome.FungalForest,
                 UnderworldTerrainBiome.FungalForest,
+                UnderworldTerrainBiome.FungalForest,
                 0d,
                 0d,
                 0d,
@@ -195,6 +199,7 @@ public static class UnderworldTerrainLifecycle
         var cellular = SampleCellular(seed, x, z);
         var primary = BiomeForSite(seed, cellular.Nearest, radius);
         var secondary = BiomeForSite(seed, cellular.Second, radius);
+        var owner = primary;
 
         // The protected Fungal country is a noisy shoulder rather than a circular ownership rule.
         // A low-frequency field decides where the shoulder protrudes or retreats.
@@ -203,10 +208,7 @@ public static class UnderworldTerrainLifecycle
         {
             var fungalField = Field01(seed, 0x1f123bb5u, x, z, 3, 2600d);
             if (fungalField + fungalBias * .8d > .82d)
-            {
-                secondary = primary;
-                primary = UnderworldTerrainBiome.FungalForest;
-            }
+                owner = UnderworldTerrainBiome.FungalForest;
         }
 
         // Fade the hydrology in outside the guaranteed arrival core so the Deep Gate is never
@@ -218,7 +220,8 @@ public static class UnderworldTerrainLifecycle
 
         var rareInterior = 0d;
         var rareLift = 0d;
-        var normalizedRadius = distance / radius;
+        var site = cellular.Nearest;
+        var normalizedRadius = Math.Sqrt(site.X * site.X + site.Z * site.Z) / radius;
         if (primary != UnderworldTerrainBiome.BlackwaterDeep &&
             normalizedRadius >= RareCellMassifMinRadiusFraction &&
             normalizedRadius <= RareCellMassifMaxRadiusFraction &&
@@ -230,18 +233,7 @@ public static class UnderworldTerrainLifecycle
                        (RareCellMassifMaxLiftMeters - RareCellMassifMinLiftMeters);
         }
 
-        if (channel >= HexRiverBiomeThreshold)
-        {
-            var bankBiome = primary;
-            primary = UnderworldTerrainBiome.BlackwaterDeep;
-            if (bankBiome != primary) secondary = bankBiome;
-
-            // Deep channel cores own their terrain; closer to the bank, allow some neighbouring
-            // geology to influence the underwater slope.
-            terrainBlend = Math.Min(terrainBlend, (1d - channel) * .75d);
-        }
-
-        return new BiomeSelection(primary, secondary, terrainBlend, channel, rareInterior, rareLift);
+        return new BiomeSelection(owner, primary, secondary, terrainBlend, channel, rareInterior, rareLift);
     }
 
     private static CellularSample SampleCellular(int seed, double x, double z)
@@ -458,23 +450,12 @@ public static class UnderworldTerrainLifecycle
     {
         if (channel01 <= 0d) return height;
 
-        // Banks ease in broadly. Once a point crosses the Blackwater ownership threshold, it is
-        // guaranteed below the shared water plane; the deepest Voronoi seam reaches ~30m depth.
-        var carve = Smooth01((channel01 - .20d) / .80d);
-        var desiredDepth = 5d + 25d * Math.Pow(channel01, 1.35d);
-        var bed = waterLevel - desiredDepth;
-        if (bed < height)
-            height = Lerp(height, bed, carve);
-
-        if (channel01 >= HexRiverBiomeThreshold)
-        {
-            var core = Smooth01(
-                (channel01 - HexRiverBiomeThreshold) /
-                (1d - HexRiverBiomeThreshold));
-            height = Math.Min(height, waterLevel - (2d + 24d * core));
-        }
-
-        return height;
+        // A broad shelf gives shores a continuous grade and leaves room for the Drowned Ring.
+        // The deeper channel begins past the shelf and still reaches 30 m at the seam.
+        var bank = Smooth01((channel01 - .24d) / (HexRiverBiomeThreshold - .24d));
+        var core = Smooth01((channel01 - .73d) / (1d - .73d));
+        var bed = waterLevel - (2.15d + 27.85d * core);
+        return Lerp(height, Math.Min(height, bed), bank);
     }
 
     private static uint BiomeSalt(UnderworldTerrainBiome biome) => biome switch
